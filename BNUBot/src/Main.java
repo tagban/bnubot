@@ -11,7 +11,8 @@ public class Main {
 		cs.password = "test";
 		cs.username = "test";
 		if(true) {
-			cs.server = "uswest.battle.net";
+			//cs.server = "uswest.battle.net";
+			cs.server = "pyroserver.no-ip.org";
 			cs.port = 6112;
 		} else {
 			cs.server = "sigpi.ath.cx";
