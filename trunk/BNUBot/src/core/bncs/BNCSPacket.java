@@ -38,7 +38,5 @@ public class BNCSPacket extends BNCSOutputStream {
 			e.printStackTrace();
 			System.exit(1);
 		}
-
-		System.out.println("Sucessfully wrote " + (data.length + 4) + " bytes.");
 	}
 }
