@@ -32,8 +32,7 @@ public class BNCSPacket extends BNetOutputStream {
 		
 		data = baos.toByteArray();
 		
-		System.out.println("SEND");
-		System.out.println(util.HexDump.hexDump(data));
+		//System.out.println("SEND\n" + util.HexDump.hexDump(data));
 		try {
 			out.write(data);
 		} catch (IOException e) {
