@@ -28,19 +28,6 @@ public class BNCSConnection extends Connection {
 	DataOutputStream dos = null;
 	EventHandler e = null;
 	boolean connected = false;
-
-	// These are for BNLS/JBLS
-    private static final byte PRODUCT_STARCRAFT         = 0x01; //Fully supported
-    private static final byte PRODUCT_BROODWAR          = 0x02; //Fully Supported
-    private static final byte PRODUCT_WAR2BNE           = 0x03; //Fully Supported
-    private static final byte PRODUCT_DIABLO2           = 0x04; //Fully Supported
-    private static final byte PRODUCT_LORDOFDESTRUCTION = 0x05; //Fully Supported
-    private static final byte PRODUCT_JAPANSTARCRAFT    = 0x06; //Fully Supported
-    private static final byte PRODUCT_WARCRAFT3         = 0x07; //Fully Supported
-    private static final byte PRODUCT_THEFROZENTHRONE   = 0x08; //Fully Supported
-    private static final byte PRODUCT_DIABLO            = 0x09; //Fully Supported
-    private static final byte PRODUCT_DIABLOSHAREWARE   = 0x0A; //Fully Supported
-    private static final byte PRODUCT_STARCRAFTSHAREWARE= 0x0B; //Fully Supported
  	
 	public BNCSConnection(ConnectionSettings cs, EventHandler e) {
 		super(cs);
@@ -68,9 +55,8 @@ public class BNCSConnection extends Connection {
 			
 			// Game
 			dos.writeByte(0x01);
-			dos.flush();
 			
-			int verByte = HashMain.getVerByte(PRODUCT_DIABLO2);
+			int verByte = HashMain.getVerByte(cs.product);
 			
 			BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_AUTH_INFO);
 			p.writeDWord(0);		// Protocol ID (0)
@@ -85,7 +71,6 @@ public class BNCSConnection extends Connection {
 			p.writeNTString("USA");	// Country abreviation
 			p.writeNTString("United States");	// Country
 			p.SendPacket(dos);
-			dos.flush();
 			
 			while(s.isConnected()) {
 				if(dis.available() > 0) {
@@ -129,13 +114,18 @@ public class BNCSConnection extends Connection {
 						byte keyHash[] = HashMain.hashKey(clientToken, serverToken, cs.cdkey).getBuffer();
 						
 						// Hash the game files
-						String tmp = MPQFileName.substring(MPQFileName.indexOf("IX86")+5);
+						
+					/*	String tmp = MPQFileName.substring(MPQFileName.indexOf("IX86")+5);
 						tmp = tmp.substring(0,tmp.indexOf("."));
 						int mpqNum = Integer.parseInt(tmp);
                     	String files[] = HashMain.getFiles(PRODUCT_DIABLO2, HashMain.PLATFORM_INTEL);
 						int exeHash = CheckRevision.checkRevision(ValueStr, files, mpqNum);
 						
-				    	/*OutPacketBuffer exeHashBuf = CheckRevisionBNLS.checkRevision(ValueStr, PRODUCT_WARCRAFT3, MPQFileName, MPQFileTime);
+				    	int exeVersion = HashMain.getExeVer(PRODUCT_DIABLO2);
+						String exeInfo = HashMain.getExeInfo(PRODUCT_DIABLO2);
+					*/
+						
+				    	OutPacketBuffer exeHashBuf = CheckRevisionBNLS.checkRevision(ValueStr, cs.product, MPQFileName, MPQFileTime);
 				    	BNetInputStream exeStream = new BNetInputStream(new ByteArrayInputStream(exeHashBuf.getBuffer()));
 				    	exeStream.skipBytes(3);
 				    	int success = exeStream.readDWord();
@@ -148,11 +138,7 @@ public class BNCSConnection extends Connection {
 				    	String exeInfo = exeStream.readNTString();
 				    	exeStream.readDWord(); // cookie
 				    	int exeVerbyte = exeStream.readDWord();
-				    	assert(exeStream.available() == 0);*/
-				    	
-				    	// Alternatively,
-				    	int exeVersion = HashMain.getExeVer(PRODUCT_DIABLO2);
-						String exeInfo = HashMain.getExeInfo(PRODUCT_DIABLO2);
+				    	assert(exeStream.available() == 0);
 
 						// Respond
 						p = new BNCSPacket(BNCSCommandIDs.SID_AUTH_CHECK);
