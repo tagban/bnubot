@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import core.BNetOutputStream;
+import core.ConnectionSettings;
 
 public class BNCSPacket extends BNetOutputStream {
 	byte packetId;
@@ -19,6 +20,17 @@ public class BNCSPacket extends BNetOutputStream {
 		//BNCSOutputStream sckout = new BNCSOutputStream(out);
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		BNetOutputStream sckout = new BNetOutputStream(baos);
+		
+		if(packetId == BNCSCommandIDs.SID_CHATCOMMAND) {
+			if(data.length > 0xFB) {
+				System.err.println("Chat command is too long; ignoring.");
+				return;
+			}
+			if(data[data.length-1] != 0x00) {
+				System.err.println("Chat command is not null terminated; ignoring.");
+				return;
+			}
+		}
 		
 		try {
 			sckout.writeByte(0xFF);
