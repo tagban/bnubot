@@ -352,7 +352,12 @@ public class BNCSConnection extends Connection {
 							System.out.println(String.format("<{1}> {2}", userName, text));
 							break;
 						case BNCSCommandIDs.EID_EMOTE:
-							System.out.println(String.format("<{1} {2}>", userName, text));
+							System.out.println(String.format("<{C} {2}>", userName, text));
+							break;
+						case BNCSCommandIDs.EID_CHANNEL:
+							p = new BNCSPacket(BNCSCommandIDs.SID_CHATCOMMAND);
+							p.writeNTString("it begins again...");
+							p.SendPacket(dos);
 							break;
 						default:
 							System.err.println("Unknown EID 0x" + Integer.toHexString(eventID));
