@@ -18,12 +18,16 @@ public class BNetOutputStream extends DataOutputStream {
 	}
 
 	public void writeDWord(int doubleword) throws IOException {
-		int dw = 0;
-		dw |= (doubleword & 0xFF000000) >> 24;
-		dw |= (doubleword & 0x00FF0000) >> 8;
-		dw |= (doubleword & 0x0000FF00) << 8;
+		/*int dw = 0;
 		dw |= (doubleword & 0x000000FF) << 24;
-		writeInt(dw);
+		dw |= (doubleword & 0x0000FF00) << 8;
+		dw |= (doubleword & 0x00FF0000) >> 8;
+		dw |= (doubleword & 0xFF000000) >> 24;
+		writeInt(dw);*/
+		writeByte((doubleword & 0x000000FF));
+		writeByte((doubleword & 0x0000FF00) >> 8);
+		writeByte((doubleword & 0x00FF0000) >> 16);
+		writeByte((doubleword & 0xFF000000) >> 24);
 	}
 
 	public void writeQWord(long quadword) throws IOException {

@@ -36,8 +36,7 @@ public class BNCSPacketReader {
 		os.writeByte(packetId);
 		os.writeWord(packetLength);
 		os.write(data);
-		System.out.println("RECV:");
-		System.out.println(util.HexDump.hexDump(baos.toByteArray()));
+		//System.out.println("RECV\n" + util.HexDump.hexDump(baos.toByteArray()));
 	}
 	
 	public BNetInputStream getData() {
