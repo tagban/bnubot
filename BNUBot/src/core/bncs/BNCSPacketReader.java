@@ -5,13 +5,16 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import core.BNetOutputStream;
+import core.BNetInputStream;
+
 public class BNCSPacketReader {
 	int packetId;
 	int packetLength;
 	byte data[];
 	
 	public BNCSPacketReader(InputStream rawis) throws IOException {
-		BNCSInputStream is = new BNCSInputStream(rawis);
+		BNetInputStream is = new BNetInputStream(rawis);
 		
 		byte magic;
 		do {
@@ -28,7 +31,7 @@ public class BNCSPacketReader {
 		}
 		
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		BNCSOutputStream os = new BNCSOutputStream(baos);
+		BNetOutputStream os = new BNetOutputStream(baos);
 		os.writeByte(0xFF);
 		os.writeByte(packetId);
 		os.writeWord(packetLength);
@@ -37,7 +40,7 @@ public class BNCSPacketReader {
 		System.out.println(util.HexDump.hexDump(baos.toByteArray()));
 	}
 	
-	public BNCSInputStream getData() {
-		return new BNCSInputStream(new ByteArrayInputStream(data));
+	public BNetInputStream getData() {
+		return new BNetInputStream(new ByteArrayInputStream(data));
 	}
 }

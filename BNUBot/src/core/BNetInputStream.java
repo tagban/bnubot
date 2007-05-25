@@ -1,13 +1,13 @@
-package core.bncs;
+package core;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class BNCSInputStream extends DataInputStream {
+public class BNetInputStream extends DataInputStream {
 
-	public BNCSInputStream(InputStream in) {
+	public BNetInputStream(InputStream in) {
 		super(in);
 	}
 

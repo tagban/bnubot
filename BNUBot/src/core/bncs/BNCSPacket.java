@@ -4,7 +4,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class BNCSPacket extends BNCSOutputStream {
+import core.BNetOutputStream;
+
+public class BNCSPacket extends BNetOutputStream {
 	byte packetId;
 
 	public BNCSPacket(byte packetId) {
@@ -16,7 +18,7 @@ public class BNCSPacket extends BNCSOutputStream {
 		byte data[] = ((ByteArrayOutputStream)this.out).toByteArray();
 		//BNCSOutputStream sckout = new BNCSOutputStream(out);
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		BNCSOutputStream sckout = new BNCSOutputStream(baos);
+		BNetOutputStream sckout = new BNetOutputStream(baos);
 		
 		try {
 			sckout.writeByte(0xFF);

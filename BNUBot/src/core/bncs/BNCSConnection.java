@@ -17,6 +17,7 @@ import sun.misc.HexDumpEncoder;
 import sun.reflect.ReflectionFactory.GetReflectionFactoryAction;
 import util.Constants;
 
+import core.BNetInputStream;
 import core.Connection;
 import core.ConnectionSettings;
 import core.EventHandler;
@@ -25,6 +26,7 @@ public class BNCSConnection extends Connection {
 	Socket s = null;
 	DataInputStream dis = null;
 	DataOutputStream dos = null;
+	EventHandler e = null;
 	boolean connected = false;
 
 	// These are for BNLS/JBLS
@@ -39,9 +41,10 @@ public class BNCSConnection extends Connection {
     private static final byte PRODUCT_DIABLO            = 0x09; //Fully Supported
     private static final byte PRODUCT_DIABLOSHAREWARE   = 0x0A; //Fully Supported
     private static final byte PRODUCT_STARCRAFTSHAREWARE= 0x0B; //Fully Supported
-	
+ 	
 	public BNCSConnection(ConnectionSettings cs, EventHandler e) {
-		super(cs, e);
+		super(cs);
+		this.e = e;
 	}
 	
 	public void run() {
@@ -67,18 +70,18 @@ public class BNCSConnection extends Connection {
 			dos.writeByte(0x01);
 			dos.flush();
 			
-			int verByte = 0xd1; //HashMain.getVerByte(PRODUCT_STARCRAFT);
+			int verByte = HashMain.getVerByte(PRODUCT_DIABLO2);
 			
 			BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_AUTH_INFO);
 			p.writeDWord(0);		// Protocol ID (0)
 			p.writeDWord("IX86");	// Platform ID (IX86)
-			p.writeDWord("STAR");	// Product ID (STAR)
+			p.writeDWord("WAR3");	// Product ID (SEXP)
 			p.writeDWord(verByte);	// Version byte
-			p.writeDWord(0);		// Product language
+			p.writeDWord("enUS");	// Product language
 			p.writeDWord(0);		// Local IP
-			p.writeDWord(0);		// TZ bias
-			p.writeDWord(0);		// Locale ID
-			p.writeDWord(0);		// Language ID
+			p.writeDWord(0xf0);		// TZ bias
+			p.writeDWord(0x409);	// Locale ID
+			p.writeDWord(0x409);	// Language ID
 			p.writeNTString("USA");	// Country abreviation
 			p.writeNTString("United States");	// Country
 			p.SendPacket(dos);
@@ -87,13 +90,12 @@ public class BNCSConnection extends Connection {
 			while(s.isConnected()) {
 				if(dis.available() > 0) {
 					BNCSPacketReader pr = new BNCSPacketReader(dis);
-					BNCSInputStream is = pr.getData();
+					BNetInputStream is = pr.getData();
 					
 					switch(pr.packetId) {
 					case BNCSCommandIDs.SID_NULL:
 						p = new BNCSPacket(BNCSCommandIDs.SID_NULL);
 						p.SendPacket(dos);
-						System.out.println("SEND/RECV NULL");
 						break;
 						
 					case BNCSCommandIDs.SID_PING:
@@ -109,18 +111,32 @@ public class BNCSConnection extends Connection {
 						long MPQFileTime = is.readQWord();
 						String MPQFileName = is.readNTString();
 						String ValueStr = is.readNTString();
+						byte extraData[] = null;
+						if(is.available() == 0x80) {
+							extraData = new byte[0x80];
+							is.read(extraData, 0, 0x80);
+						}
 						assert(is.available() == 0);
 						
+						//logonType = 2;
+						//serverToken = 0xC07AA8C5;
+						//MPQFileName = "ver-IX86-5.mpq";
+						//ValueStr = "C=3607986392 A=733117271 B=3628884414 4 A=A^S B=B^C C=C^A A=A^B";
 						
 						// Hash the CD key
+						//int clientToken = 0x07EA279E;
 						int clientToken = Math.abs(new Random().nextInt());
 						byte keyHash[] = HashMain.hashKey(clientToken, serverToken, cs.cdkey).getBuffer();
 						
 						// Hash the game files
-						//int mpqNum = Integer.parseInt(IX86ver.substring(IX86ver.indexOf("IX86")+5).substring(0,2));
-				        
-				    	OutPacketBuffer exeHashBuf = CheckRevisionBNLS.checkRevision(ValueStr, PRODUCT_STARCRAFT, MPQFileName, MPQFileTime);
-				    	BNCSInputStream exeStream = new BNCSInputStream(new ByteArrayInputStream(exeHashBuf.getBuffer()));
+						String tmp = MPQFileName.substring(MPQFileName.indexOf("IX86")+5);
+						tmp = tmp.substring(0,tmp.indexOf("."));
+						int mpqNum = Integer.parseInt(tmp);
+                    	String files[] = HashMain.getFiles(PRODUCT_DIABLO2, HashMain.PLATFORM_INTEL);
+						int exeHash = CheckRevision.checkRevision(ValueStr, files, mpqNum);
+						
+				    	/*OutPacketBuffer exeHashBuf = CheckRevisionBNLS.checkRevision(ValueStr, PRODUCT_WARCRAFT3, MPQFileName, MPQFileTime);
+				    	BNetInputStream exeStream = new BNetInputStream(new ByteArrayInputStream(exeHashBuf.getBuffer()));
 				    	exeStream.skipBytes(3);
 				    	int success = exeStream.readDWord();
 				    	if(success != 1) {
@@ -132,11 +148,11 @@ public class BNCSConnection extends Connection {
 				    	String exeInfo = exeStream.readNTString();
 				    	exeStream.readDWord(); // cookie
 				    	int exeVerbyte = exeStream.readDWord();
-				    	assert(exeStream.available() == 0);
+				    	assert(exeStream.available() == 0);*/
 				    	
 				    	// Alternatively,
-				    	//int exeVersion2 = HashMain.getExeVer(PRODUCT_STARCRAFT);
-						//String exeInfo2 = HashMain.getExeInfo(PRODUCT_STARCRAFT);
+				    	int exeVersion = HashMain.getExeVer(PRODUCT_DIABLO2);
+						String exeInfo = HashMain.getExeInfo(PRODUCT_DIABLO2);
 
 						// Respond
 						p = new BNCSPacket(BNCSCommandIDs.SID_AUTH_CHECK);

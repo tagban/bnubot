@@ -1,12 +1,12 @@
-package core.bncs;
+package core;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class BNCSOutputStream extends DataOutputStream {
+public class BNetOutputStream extends DataOutputStream {
 
-	public BNCSOutputStream(OutputStream out) {
+	public BNetOutputStream(OutputStream out) {
 		super(out);
 	}
 
@@ -24,6 +24,13 @@ public class BNCSOutputStream extends DataOutputStream {
 		dw |= (doubleword & 0x0000FF00) << 8;
 		dw |= (doubleword & 0x000000FF) << 24;
 		writeInt(dw);
+	}
+
+	public void writeQWord(long quadword) throws IOException {
+		int low =	(int)((quadword >> 0l) & 0xFFFFFFFF);
+		int high =	(int)((quadword >> 32l) & 0xFFFFFFFF);
+		writeDWord(low);
+		writeDWord(high);
 	}
 	
 	public void writeDWord(String str) throws IOException {
