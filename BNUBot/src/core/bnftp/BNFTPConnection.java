@@ -20,12 +20,12 @@ public class BNFTPConnection extends Connection {
 	public void run() {
 		System.out.println("BNFTPConnection running");
 		
-		Connect();
+		connect();
 		
 		System.out.println("BNFTPonnection terminated");
 	}
 
-	public void Connect() {
+	public void connect() {
 		try {
 			s = new Socket(cs.server, cs.port);
 			dis = new DataInputStream(s.getInputStream());
@@ -66,7 +66,7 @@ public class BNFTPConnection extends Connection {
 				yield();
 			}
 			
-			Disconnect();
+			disconnect();
 			s.close();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -74,7 +74,7 @@ public class BNFTPConnection extends Connection {
 		}
 	}
 
-	public void Disconnect() {
+	public void disconnect() {
 		connected = false;
 	}
 }

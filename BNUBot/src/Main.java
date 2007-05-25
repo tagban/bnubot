@@ -1,7 +1,7 @@
 
 import core.*;
 import core.bncs.BNCSConnection;
-import core.bnftp.BNFTPConnection;
+import core.bot.ConsoleEventHandler;
 
 public class Main {
 
@@ -28,11 +28,11 @@ public class Main {
 		//cs.port = 80;
 		
 		//BNFTPConnection f = new BNFTPConnection(cs, "Icons.bni");
-		//f.run();
+		//f.start();
 		
-		EventHandler e = null;
-		BNCSConnection c = new BNCSConnection(cs, e);
-		c.run();
+		BNCSConnection c = new BNCSConnection(cs);
+		c.addEventHandler("test", new ConsoleEventHandler());
+		c.start();
 	}
 
 }

@@ -2,6 +2,7 @@ package core.bncs;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.Socket;
 import java.util.Random;
 
@@ -27,21 +28,20 @@ public class BNCSConnection extends Connection {
 	String statString = null;
 	String accountName = null;
 
-	public BNCSConnection(ConnectionSettings cs, EventHandler e) {
+	public BNCSConnection(ConnectionSettings cs) {
 		super(cs);
-		this.e = e;
 	}
 	
 	public void run() {
 		System.out.println("BNCSConnection running");
 		
 		if(cs.autoconnect)
-			Connect();
+			connect();
 		
 		System.out.println("BNCSConnection terminated");
 	}
 
-	public void Connect() {
+	public void connect() {
 		try {
 			s = new Socket(cs.server, cs.port);
 			dis = new DataInputStream(s.getInputStream());
@@ -332,35 +332,38 @@ public class BNCSConnection extends Connection {
 					}
 					
 					case BNCSCommandIDs.SID_CHATEVENT: {
-						int eventID = is.readDWord();
-						int userFlags = is.readDWord();
+						int eid = is.readDWord();
+						int flags = is.readDWord();
 						int ping = is.readDWord();
 						is.skip(12);
 					//	is.readDWord();	// IP Address (defunct)
 					//	is.readDWord();	// Account number (defunct)
 					//	is.readDWord(); // Registration authority (defunct)
-						String userName = is.readNTString();
+						String user = is.readNTString();
 						String text = is.readNTString();
 						
-						switch(eventID) {
+						switch(eid) {
 						case BNCSCommandIDs.EID_SHOWUSER:
-						case BNCSCommandIDs.EID_JOIN:
 						case BNCSCommandIDs.EID_USERFLAGS:
-							System.out.println(String.format("User {1} flags {2} ping {3} text {4}", userName, userFlags, ping, text));
+							channelUser(user, flags, ping, text);
+							break;
+						case BNCSCommandIDs.EID_JOIN:
+							channelJoin(user, flags, ping, text);
+							break;
+						case BNCSCommandIDs.EID_LEAVE:
+							channelLeave(user, flags, ping, text);
 							break;
 						case BNCSCommandIDs.EID_TALK:
-							System.out.println(String.format("<{1}> {2}", userName, text));
+							recieveChat(user, text);
 							break;
 						case BNCSCommandIDs.EID_EMOTE:
-							System.out.println(String.format("<{C} {2}>", userName, text));
+							recieveEmote(user, text);
 							break;
 						case BNCSCommandIDs.EID_CHANNEL:
-							p = new BNCSPacket(BNCSCommandIDs.SID_CHATCOMMAND);
-							p.writeNTString("it begins again...");
-							p.SendPacket(dos);
+							joinedChannel(text);
 							break;
 						default:
-							System.err.println("Unknown EID 0x" + Integer.toHexString(eventID));
+							System.err.println("Unknown EID 0x" + Integer.toHexString(eid));
 							break;
 						}
 						
@@ -376,7 +379,7 @@ public class BNCSConnection extends Connection {
 				yield();
 			}
 			
-			Disconnect();
+			disconnect();
 			s.close();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -384,8 +387,21 @@ public class BNCSConnection extends Connection {
 		}
 	}
 
-	public void Disconnect() {
+	public void disconnect() {
 		connected = false;
+	}
+	
+	public void sendChat(String text) {
+		try {
+			BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_CHATCOMMAND);
+			p.writeNTString(text);
+			p.SendPacket(dos);
+			
+			recieveChat(uniqueUserName, text);
+		} catch(Exception e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
 	}
 
 }
