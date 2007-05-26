@@ -2,6 +2,8 @@ package core;
 
 import java.io.Serializable;
 
+import util.Ini;
+
 public class ConnectionSettings implements Serializable {
 	private static final long serialVersionUID = 0L;
 
@@ -20,6 +22,34 @@ public class ConnectionSettings implements Serializable {
 	
 	public ConnectionSettings() {
 		
+	}
+	
+	public void save() {
+		String file = "settings.ini";
+		String header = "test";
+		Ini.WriteIni(file, header, "server", server);
+		Ini.WriteIni(file, header, "port", Integer.toString(port));
+		Ini.WriteIni(file, header, "username", username);
+		Ini.WriteIni(file, header, "password", password);
+		Ini.WriteIni(file, header, "cdkey", cdkey);
+		Ini.WriteIni(file, header, "product", Byte.toString(product));
+		Ini.WriteIni(file, header, "autoconnect", Boolean.toString(autoconnect));
+	}
+	
+	public void load() {
+		String file = "settings.ini";
+		String header = "test";
+
+		server =	Ini.ReadIni(file, header, "server", "useast.battle.net");
+		port = Integer.parseInt(
+					Ini.ReadIni(file, header, "port", "6112"));
+		username =	Ini.ReadIni(file, header, "username", null);
+		password =	Ini.ReadIni(file, header, "password", null);
+		cdkey =		Ini.ReadIni(file, header, "cdkey", null);
+		product = Byte.parseByte(
+					Ini.ReadIni(file, header, "product", "-1"));
+		autoconnect = Boolean.parseBoolean(
+					Ini.ReadIni(file, header, "autoconnect", "false"));
 	}
 	
 	public String server;
