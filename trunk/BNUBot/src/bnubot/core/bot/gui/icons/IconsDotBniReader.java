@@ -30,7 +30,7 @@ public class IconsDotBniReader {
 			if(bniVersion != 1)
 				throw new Exception("Unknown BNI version");
 			
-			System.out.println("Reading " + numIcons + " icons in format " + bniVersion + " from offset " + dataOffset);
+			//System.out.println("Reading " + numIcons + " icons in format " + bniVersion + " from offset " + dataOffset);
 
 			//Image headers
 			BNetIcon[] icons = new BNetIcon[numIcons];
@@ -61,7 +61,7 @@ public class IconsDotBniReader {
 				for(int j = 0; j < numProducts; j++)
 					icon.products[j] = products[j];
 				icons[i] = icon;
-				System.out.println(icon.toString());
+				//System.out.println(icon.toString());
 			}
 			
 			//Image in targa format
