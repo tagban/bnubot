@@ -363,7 +363,7 @@ public class BNCSConnection extends Connection {
 							joinedChannel(text);
 							break;
 						default:
-							System.err.println("Unknown EID 0x" + Integer.toHexString(eid));
+							System.err.println("Unknown EID 0x" + Integer.toHexString(eid) + ": " + text);
 							break;
 						}
 						

@@ -5,6 +5,7 @@ import core.EventHandler;
 
 public class ConsoleEventHandler implements EventHandler {
 	Connection c = null;
+	boolean oppedCamel = false;
 	
 	public void initialize(Connection c) {
 		this.c = c;
@@ -12,7 +13,12 @@ public class ConsoleEventHandler implements EventHandler {
 
 	public void joinedChannel(String channel) {
 		System.out.println("Joining channel " + channel);
-		c.sendChat("it begins again...");
+		//c.sendChat("it begins again...");
+		if(!oppedCamel) {
+			oppedCamel = true;
+			c.sendChat("/designate bnu-camel@useast");
+			c.sendChat("/resign");
+		}
 	}
 
 	public void channelUser(String user, int flags, int ping, String statstr) {
