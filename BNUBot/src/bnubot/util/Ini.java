@@ -1,4 +1,4 @@
-package util;
+package bnubot.util;
 import java.io.*;
 
 /**

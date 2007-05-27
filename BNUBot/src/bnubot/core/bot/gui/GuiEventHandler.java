@@ -1,21 +1,21 @@
-package core.bot.gui;
+package bnubot.core.bot.gui;
 
 import java.awt.*;
 import java.awt.event.*;
 
 import javax.swing.*;
 
-import core.Connection;
-import core.EventHandler;
-import core.bnftp.BNFTPConnection;
-import core.bot.gui.icons.IconsDotBniReader;
+import bnubot.core.Connection;
+import bnubot.core.EventHandler;
+import bnubot.core.bot.gui.icons.IconsDotBniReader;
+
 
 public class GuiEventHandler implements EventHandler {
 	private JFrame frame = null;
 	private Connection c = null;
 	private JTextArea mainTextArea = null;
 	private JTextArea chatTextArea = null;
-	private JLabel channelLabel = null;
+	private JTextArea channelTextArea = null;
 	private UserList userList = null;
 	
 	public void initialize(Connection c) {
@@ -86,62 +86,54 @@ public class GuiEventHandler implements EventHandler {
 		frame.setLayout(new BotLayoutManager());
 		mainTextArea = new JTextArea();
 		mainTextArea.setBackground(Color.BLACK);
-		mainTextArea.setForeground(Color.GRAY);
+		mainTextArea.setForeground(Color.LIGHT_GRAY);
 		chatTextArea = new JTextArea();
 		chatTextArea.setBackground(Color.BLACK);
-		chatTextArea.setForeground(Color.GRAY);
+		chatTextArea.setForeground(Color.LIGHT_GRAY);
 		chatTextArea.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent e) {}
 			public void keyReleased(KeyEvent e) {}
-			public void keyTyped(KeyEvent e) { keyEvent(e); }
+			public void keyTyped(KeyEvent e) {
+				if(e.getKeyChar() == '\n') {
+					c.sendChat(chatTextArea.getText());
+					chatTextArea.setText(null);
+				}
+			}
 		});
-		channelLabel = new JLabel("blah");
-		channelLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		channelLabel.setVerticalAlignment(SwingConstants.CENTER);
+		channelTextArea = new JTextArea();
+		channelTextArea.setAlignmentX(SwingConstants.CENTER);
+		channelTextArea.setAlignmentY(SwingConstants.CENTER);
+		channelTextArea.setBackground(Color.BLACK);
+		channelTextArea.setForeground(Color.LIGHT_GRAY);
 		userList = new UserList(IconsDotBniReader.readIconsDotBni(c.downloadFile("Icons.bni")));
+		userList.setBackground(Color.BLACK);
+		userList.setForeground(Color.LIGHT_GRAY);
 		frame.add(mainTextArea);
 		frame.add(chatTextArea);
-		frame.add(channelLabel);
+		frame.add(channelTextArea);
 		frame.add(userList);
 		
 		//Display the window
 		frame.pack();
 		frame.setVisible(true);
 	}
-	
-	public String safeString(String input) {
-		String output = "";
-		byte[] data = input.getBytes();
-		for(int i = 0; i < data.length; i++) {
-			if(data[i] >= 0x20)
-				output += (char)data[i];
-		}
-		return output;
-	}
-	
-	public void keyEvent(KeyEvent e) {
-		//System.out.println("KeyEvent: " + e.toString());
-		if(e.getKeyChar() == '\n') {
-			c.sendChat(safeString(chatTextArea.getText()));
-			chatTextArea.setText(null);
-		}
-	}
 
 	public void channelJoin(String user, int flags, int ping, String statstr) {
-		userList.userJoin(user, flags, ping, statstr);
+		userList.showUser(user, flags, ping, statstr);
 	}
 
 	public void channelLeave(String user, int flags, int ping, String statstr) {
-		userList.userLeave(user);
+		userList.removeUser(user);
 	}
 
 	public void channelUser(String user, int flags, int ping, String statstr) {
-		userList.userShow(user, flags, ping, statstr);
+		userList.showUser(user, flags, ping, statstr);
 	}
 
 	public void joinedChannel(String channel) {
+		userList.clear();
 		mainTextArea.append("Joining channel " + channel + ".\n");
-		channelLabel.setText(channel);
+		channelTextArea.setText(channel);
 	}
 
 	public void recieveChat(String user, String text) {
@@ -152,4 +144,7 @@ public class GuiEventHandler implements EventHandler {
 		mainTextArea.append("<" + user + " " + text + ">\n");
 	}
 
+	public void recieveInfo(String text) {
+		mainTextArea.append(text + "\n");
+	}
 }

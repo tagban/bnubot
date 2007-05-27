@@ -1,4 +1,4 @@
-package core.bot.gui.icons;
+package bnubot.core.bot.gui.icons;
 
 import java.awt.*;
 import java.awt.image.*;
@@ -6,7 +6,8 @@ import java.io.*;
 
 import javax.swing.*;
 
-import core.BNetInputStream;
+import bnubot.core.BNetInputStream;
+
 
 @SuppressWarnings("serial")
 public class IconsDotBniReader {
@@ -22,7 +23,7 @@ public class IconsDotBniReader {
 			BNetInputStream is = new BNetInputStream(new FileInputStream(f));
 			int headerSize = is.readDWord();
 			int bniVersion = is.readWord();
-			is.readWord();	// Alignment Padding (unused)
+			is.skip(2);	// Alignment Padding (unused)
 			int numIcons = is.readDWord();
 			int dataOffset = is.readDWord();
 			
@@ -38,6 +39,10 @@ public class IconsDotBniReader {
 				icon.flags = is.readDWord();
 				icon.xSize = is.readDWord();
 				icon.ySize = is.readDWord();
+				if(icon.flags != 0)
+					icon.sortIndex = i;
+				else
+					icon.sortIndex = numIcons;
 				int numProducts;
 				String products[] = new String[32];
 				for(numProducts = 0; numProducts < 32; numProducts++) {
@@ -46,10 +51,10 @@ public class IconsDotBniReader {
 						break;
 					
 					byte[] b = new byte[4];
-					b[3] = (byte)((p & 0x000000FF) >> 0);
-					b[2] = (byte)((p & 0x0000FF00) >> 8);
-					b[1] = (byte)((p & 0x00FF0000) >> 16);
-					b[0] = (byte)((p & 0xFF000000) >> 24);
+					b[0] = (byte)((p & 0x000000FF) >> 0);
+					b[1] = (byte)((p & 0x0000FF00) >> 8);
+					b[2] = (byte)((p & 0x00FF0000) >> 16);
+					b[3] = (byte)((p & 0xFF000000) >> 24);
 					products[numProducts] = new String(b);
 				}
 				icon.products = new String[numProducts];
@@ -80,9 +85,6 @@ public class IconsDotBniReader {
 			//Pixel data
 			int[] pixelData = new int[width*height];
 			int currentPixel = 0;
-		//	byte[] b = new byte[160];
-		//	is.read(b, 0, 160);
-		//	System.out.println(util.HexDump.hexDump(b));
 			
 			while(currentPixel < pixelData.length) {
 				byte packetHeader = is.readByte();	// if bit 7 (0x80) is set, run-length packet;
@@ -110,15 +112,17 @@ public class IconsDotBniReader {
 			//Split up the big image in to individual images
 			currentPixel = 0;
 			JFrame util = new JFrame();
-		//	util.setLayout(new FlowLayout(FlowLayout.CENTER));
+			util.setLayout(new FlowLayout(FlowLayout.CENTER));
 			for(int i = 0; i < numIcons; i++) {
 				BNetIcon bni = icons[i];
-				bni.img = util.createImage(new MemoryImageSource(bni.xSize, bni.ySize, pixelData, currentPixel, bni.xSize));
+				bni.icon = new ImageIcon(
+						util.createImage(
+								new MemoryImageSource(bni.xSize, bni.ySize, pixelData, currentPixel, bni.xSize)));
 				currentPixel += bni.xSize * bni.ySize;
-		//		util.add(new JLabel(new ImageIcon(bni.img)));
+				util.add(new JLabel(bni.icon));
 			}
-		//	util.pack();
-		//	util.setVisible(true);
+			util.pack();
+			util.setVisible(true);
 			
 			return icons;
 		} catch (Exception e) {

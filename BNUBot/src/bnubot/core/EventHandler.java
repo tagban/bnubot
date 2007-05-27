@@ -1,4 +1,4 @@
-package core;
+package bnubot.core;
 
 public interface EventHandler {
 	public void initialize(Connection c);
@@ -9,4 +9,5 @@ public interface EventHandler {
 	public void channelLeave(String user, int flags, int ping, String statstr);
 	public void recieveChat(String user, String text);
 	public void recieveEmote(String user, String text);
+	public void recieveInfo(String text);
 }

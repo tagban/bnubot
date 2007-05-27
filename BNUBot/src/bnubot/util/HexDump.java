@@ -1,4 +1,4 @@
-package util;
+package bnubot.util;
 
 public class HexDump {
 	private static String hexChr(int b) {

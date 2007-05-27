@@ -1,4 +1,4 @@
-package core;
+package bnubot.core;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;

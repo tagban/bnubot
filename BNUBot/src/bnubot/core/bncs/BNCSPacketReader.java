@@ -1,12 +1,13 @@
-package core.bncs;
+package bnubot.core.bncs;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import core.BNetOutputStream;
-import core.BNetInputStream;
+import bnubot.core.BNetInputStream;
+import bnubot.core.BNetOutputStream;
+
 
 public class BNCSPacketReader {
 	int packetId;
