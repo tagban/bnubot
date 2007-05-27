@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.Socket;
 
 import core.*;
+import core.bot.gui.icons.IconsDotBniReader;
 
 public class BNFTPConnection {
 	public static final String path = "downloads/";
@@ -55,9 +56,12 @@ public class BNFTPConnection {
 			//The rest is the data
 			new File(path).mkdir();
 			File f = new File(path + fileName);
-			FileWriter fw = new FileWriter(f);
-			for(int i = 0; i < fileSize; i++)
-					fw.write(is.readByte());
+			FileOutputStream fw = new FileOutputStream(f);
+			for(int i = 0; i < fileSize; i++) {
+				int b = is.readByte();
+				b = b & 0xFF;
+				fw.write(b);
+			}
 			System.out.println(fileSize + " bytes recieved.");
 			
 			return f;

@@ -1,8 +1,10 @@
 package core;
 
-import java.io.IOException;
+import java.io.File;
 import java.util.Enumeration;
 import java.util.Hashtable;
+
+import core.bnftp.BNFTPConnection;
 
 public abstract class Connection extends Thread implements EventHandler {
 	protected ConnectionSettings cs;
@@ -28,6 +30,10 @@ public abstract class Connection extends Thread implements EventHandler {
 	public abstract void connect();
 	public abstract void disconnect();
 	public abstract void sendChat(String text);
+	
+	public File downloadFile(String filename) {
+		return BNFTPConnection.downloadFile(cs, filename);
+	}
 
 	/*
 	 * EventHandler methods follow
