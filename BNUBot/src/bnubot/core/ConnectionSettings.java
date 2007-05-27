@@ -21,6 +21,16 @@ public class ConnectionSettings implements Serializable {
     public static final byte PRODUCT_DIABLOSHAREWARE   = 0x0A; //Fully Supported
     public static final byte PRODUCT_STARCRAFTSHAREWARE= 0x0B; //Fully Supported
 	
+	public String server;
+	public int port;
+	public String username;
+	public String password;
+	public String cdkey;
+	public byte product;
+	public boolean autoconnect;
+	public boolean enableCLI;
+	public boolean enableGUI;
+	
 	public ConnectionSettings() {
 		
 	}
@@ -35,6 +45,8 @@ public class ConnectionSettings implements Serializable {
 		Ini.WriteIni(file, header, "cdkey", cdkey);
 		Ini.WriteIni(file, header, "product", Byte.toString(product));
 		Ini.WriteIni(file, header, "autoconnect", Boolean.toString(autoconnect));
+		Ini.WriteIni(file, header, "enableCLI", Boolean.toString(enableCLI));
+		Ini.WriteIni(file, header, "enableGUI", Boolean.toString(enableGUI));
 	}
 	
 	public void load() {
@@ -51,13 +63,9 @@ public class ConnectionSettings implements Serializable {
 					Ini.ReadIni(file, header, "product", "-1"));
 		autoconnect = Boolean.parseBoolean(
 					Ini.ReadIni(file, header, "autoconnect", "false"));
+		enableCLI = Boolean.parseBoolean(
+					Ini.ReadIni(file, header, "enableCLI", "false"));
+		enableGUI = Boolean.parseBoolean(
+					Ini.ReadIni(file, header, "enableGUI", "true"));
 	}
-	
-	public String server;
-	public int port;
-	public String username;
-	public String password;
-	public String cdkey;
-	public byte product;
-	public boolean autoconnect;
 }

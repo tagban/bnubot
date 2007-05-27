@@ -10,10 +10,13 @@ public class Main {
 	public static void main(String[] args) throws Exception {
 		ConnectionSettings cs = new ConnectionSettings();
 		cs.load();
+		cs.save();
 
 		BNCSConnection c = new BNCSConnection(cs);
-		c.addEventHandler("console", new ConsoleEventHandler());
-		c.addEventHandler("gui", new GuiEventHandler());
+		if(cs.enableCLI)
+			c.addEventHandler("console", new ConsoleEventHandler());
+		if(cs.enableGUI)
+			c.addEventHandler("gui", new GuiEventHandler());
 		c.start();
 	}
 
