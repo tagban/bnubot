@@ -20,6 +20,10 @@ public abstract class Connection extends Thread implements EventHandler {
 	public void removeEventHandler(String key) {
 		eventHandlers.remove(key);
 	}
+	
+	public void removeEventHandler(EventHandler eh) {
+		eventHandlers.remove(eh);
+	}
 
 	public abstract void connect();
 	public abstract void disconnect();
