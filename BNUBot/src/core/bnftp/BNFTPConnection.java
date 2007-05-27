@@ -5,37 +5,31 @@ import java.net.Socket;
 
 import core.*;
 
-public class BNFTPConnection extends Connection {
-	Socket s = null;
-	DataInputStream dis = null;
-	DataOutputStream dos = null;
-	boolean connected = false;
-	String fileName;
+public class BNFTPConnection {
+	public static final String path = "downloads/";
 	
-	public BNFTPConnection(ConnectionSettings cs, String fileName) {
-		super(cs);
-		this.fileName = fileName;
-	}
-	
-	public void run() {
-		System.out.println("BNFTPConnection running");
-		
-		connect();
-		
-		System.out.println("BNFTPonnection terminated");
-	}
-
-	public void connect() {
+	public static File downloadFile(ConnectionSettings cs, String fileName) {
 		try {
-			s = new Socket(cs.server, cs.port);
-			dis = new DataInputStream(s.getInputStream());
-			dos = new DataOutputStream(s.getOutputStream());
+			Socket s = new Socket(cs.server, cs.port);
+			File f = downloadFile(s, fileName);
+			s.close();
+			return f;
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+		return null;
+	}
+	
+	public static File downloadFile(Socket s, String fileName) {
+		try {
+			System.out.println("Downloading " + fileName + "...");
 			
-			connected = true;
+			DataInputStream dis = new DataInputStream(s.getInputStream());
+			DataOutputStream dos = new DataOutputStream(s.getOutputStream());
 			
 			// FTP
 			dos.writeByte(0x02);
-			dos.flush();
 			
 			BNetOutputStream p = new BNetOutputStream(dos);
 			p.writeWord(32 + fileName.length() + 1);
@@ -47,34 +41,30 @@ public class BNFTPConnection extends Connection {
 			p.writeDWord(0);		// File position
 			p.writeQWord(0);		// Filetime
 			p.writeNTString(fileName);
-			dos.flush();
+	
+			//Recieve the file
+			BNetInputStream is = new BNetInputStream(dis);
+			int headerLength = is.readWord();
+			int unknown = is.readWord();
+			int fileSize = is.readDWord();
+			int bannersID = is.readDWord();
+			int bannersFileExt = is.readDWord();
+			long fileTime = is.readQWord();
+			fileName = is.readNTString();
+	
+			//The rest is the data
+			new File(path).mkdir();
+			File f = new File(path + fileName);
+			FileWriter fw = new FileWriter(f);
+			for(int i = 0; i < fileSize; i++)
+					fw.write(is.readByte());
+			System.out.println(fileSize + " bytes recieved.");
 			
-			while(s.isConnected()) {
-				if(dis.available() > 0) {
-					BNetInputStream is = new BNetInputStream(dis);
-					int headerLength = is.readWord();
-					int unknown = is.readWord();
-					int fileSize = is.readDWord();
-					int bannersID = is.readDWord();
-					int bannersFileExt = is.readDWord();
-					long fileTime = is.readQWord();
-					fileName = is.readNTString();
-					
-					// the rest is the data
-				}
-				
-				yield();
-			}
-			
-			disconnect();
-			s.close();
+			return f;
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.exit(1);
 		}
-	}
-
-	public void disconnect() {
-		connected = false;
+		return null;
 	}
 }
