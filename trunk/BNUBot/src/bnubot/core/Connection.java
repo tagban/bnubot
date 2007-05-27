@@ -1,10 +1,11 @@
-package core;
+package bnubot.core;
 
 import java.io.File;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
-import core.bnftp.BNFTPConnection;
+import bnubot.core.bnftp.BNFTPConnection;
+
 
 public abstract class Connection extends Thread implements EventHandler {
 	protected ConnectionSettings cs;
@@ -79,5 +80,11 @@ public abstract class Connection extends Thread implements EventHandler {
 		Enumeration<EventHandler> en = eventHandlers.elements();
 		while(en.hasMoreElements())
 			en.nextElement().recieveEmote(user, text);
+	}
+
+	public void recieveInfo(String text) {
+		Enumeration<EventHandler> en = eventHandlers.elements();
+		while(en.hasMoreElements())
+			en.nextElement().recieveInfo(text);
 	}
 }

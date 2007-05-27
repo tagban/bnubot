@@ -1,17 +1,17 @@
-package core.bncs;
+package bnubot.core.bncs;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.IOException;
 import java.net.Socket;
 import java.util.Random;
 
+import bnubot.core.BNetInputStream;
+import bnubot.core.Connection;
+import bnubot.core.ConnectionSettings;
+import bnubot.core.EventHandler;
+
 import Hashing.*;
 
-import core.BNetInputStream;
-import core.Connection;
-import core.ConnectionSettings;
-import core.EventHandler;
 
 public class BNCSConnection extends Connection {
 	Socket s = null;
@@ -96,8 +96,8 @@ public class BNCSConnection extends Connection {
 					case BNCSCommandIDs.SID_AUTH_INFO: {
 						nlsRevision = is.readDWord();
 						serverToken = is.readDWord();
-						int udpValue = is.readDWord();
-						long MPQFileTime = is.readQWord();
+						is.skip(4);	//int udpValue = is.readDWord();
+						is.skip(8);	//long MPQFileTime = is.readQWord();
 						String MPQFileName = is.readNTString();
 						String ValueStr = is.readNTString();
 						byte extraData[] = null;
@@ -359,6 +359,9 @@ public class BNCSConnection extends Connection {
 						case BNCSCommandIDs.EID_EMOTE:
 							recieveEmote(user, text);
 							break;
+						case BNCSCommandIDs.EID_INFO:
+							recieveInfo(text);
+							break;
 						case BNCSCommandIDs.EID_CHANNEL:
 							joinedChannel(text);
 							break;
@@ -392,6 +395,15 @@ public class BNCSConnection extends Connection {
 	}
 	
 	public void sendChat(String text) {
+		//Remove all chars under 0x20
+		byte[] data = text.getBytes();
+		text = "";
+		for(int i = 0; i < data.length; i++) {
+			if(data[i] >= 0x20)
+				text += (char)data[i];
+		}
+		
+		//Write the packet
 		try {
 			BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_CHATCOMMAND);
 			p.writeNTString(text);

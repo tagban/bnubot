@@ -1,4 +1,4 @@
-package core;
+package bnubot.core;
 
 import java.io.DataOutputStream;
 import java.io.IOException;

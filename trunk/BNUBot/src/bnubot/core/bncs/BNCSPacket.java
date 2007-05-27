@@ -1,11 +1,11 @@
-package core.bncs;
+package bnubot.core.bncs;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import core.BNetOutputStream;
-import core.ConnectionSettings;
+import bnubot.core.BNetOutputStream;
+
 
 public class BNCSPacket extends BNetOutputStream {
 	byte packetId;

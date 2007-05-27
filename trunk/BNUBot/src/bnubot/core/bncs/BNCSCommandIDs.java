@@ -1,4 +1,4 @@
-package core.bncs;
+package bnubot.core.bncs;
 
 public interface BNCSCommandIDs {
 	public static final byte SID_NULL						= (byte)0x00;

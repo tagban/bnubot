@@ -1,13 +1,26 @@
-package core.bot.gui.icons;
+package bnubot.core.bot.gui.icons;
 
-import java.awt.Image;
+import javax.swing.Icon;
 
 public class BNetIcon {
 	int flags;
 	int xSize;
 	int ySize;
 	String products[];
-	Image img;
+	Icon icon;
+	int sortIndex;
+	
+	public boolean useFor(int flags, String product) {
+		if((flags & this.flags) != 0)
+			return true;
+		
+		for(int i = 0; i < products.length; i++) {
+			if(product.compareTo(products[i]) == 0)
+				return true;
+		}
+		
+		return false;
+	}
 	
 	public String toString() {
 		String out = "Icon[flags=0x" + Integer.toHexString(flags)  + ",xSize=" + xSize + ",ySize=" + ySize;
@@ -20,5 +33,13 @@ public class BNetIcon {
 		}
 		out += "]";
 		return out;
+	}
+
+	public Icon getIcon() {
+		return icon;
+	}
+	
+	public int getSortIndex() {
+		return sortIndex;
 	}
 }

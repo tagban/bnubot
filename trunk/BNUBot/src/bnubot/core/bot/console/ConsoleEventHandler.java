@@ -1,13 +1,14 @@
-package core.bot;
+package bnubot.core.bot.console;
 
-import core.Connection;
-import core.EventHandler;
+import bnubot.core.Connection;
+import bnubot.core.EventHandler;
 
 public class ConsoleEventHandler implements EventHandler {
 	Connection c = null;
 	
 	public void initialize(Connection c) {
 		this.c = c;
+		new CLIThread(c).start();
 	}
 
 	public void joinedChannel(String channel) {
@@ -36,4 +37,7 @@ public class ConsoleEventHandler implements EventHandler {
 		System.out.println("<" + user + " " + text + ">");
 	}
 
+	public void recieveInfo(String text) {
+		System.out.println(text);
+	}
 }

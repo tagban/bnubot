@@ -1,10 +1,10 @@
-package core.bnftp;
+package bnubot.core.bnftp;
 
 import java.io.*;
 import java.net.Socket;
 
-import core.*;
-import core.bot.gui.icons.IconsDotBniReader;
+import bnubot.core.*;
+
 
 public class BNFTPConnection {
 	public static final String path = "downloads/";
@@ -45,12 +45,12 @@ public class BNFTPConnection {
 	
 			//Recieve the file
 			BNetInputStream is = new BNetInputStream(dis);
-			int headerLength = is.readWord();
-			int unknown = is.readWord();
+			is.skip(2);	//int headerLength = is.readWord();
+			is.skip(2);	//int unknown = is.readWord();
 			int fileSize = is.readDWord();
-			int bannersID = is.readDWord();
-			int bannersFileExt = is.readDWord();
-			long fileTime = is.readQWord();
+			is.skip(4);	//int bannersID = is.readDWord();
+			is.skip(4);	//int bannersFileExt = is.readDWord();
+			is.skip(8);	//long fileTime = is.readQWord();
 			fileName = is.readNTString();
 	
 			//The rest is the data

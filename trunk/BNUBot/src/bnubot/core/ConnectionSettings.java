@@ -1,8 +1,9 @@
-package core;
+package bnubot.core;
 
 import java.io.Serializable;
 
-import util.Ini;
+import bnubot.util.Ini;
+
 
 public class ConnectionSettings implements Serializable {
 	private static final long serialVersionUID = 0L;
