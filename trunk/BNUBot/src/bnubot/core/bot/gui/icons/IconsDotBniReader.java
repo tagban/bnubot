@@ -17,15 +17,14 @@ public class IconsDotBniReader {
 		return ((height - y - 1) * width) + x;
 	}
 
-	@SuppressWarnings("unused")
 	public static BNetIcon[] readIconsDotBni(File f) {
 		try {
 			BNetInputStream is = new BNetInputStream(new FileInputStream(f));
-			int headerSize = is.readDWord();
+			is.skip(4); //int headerSize = is.readDWord();
 			int bniVersion = is.readWord();
 			is.skip(2);	// Alignment Padding (unused)
 			int numIcons = is.readDWord();
-			int dataOffset = is.readDWord();
+			is.skip(4);	//int dataOffset = is.readDWord();
 			
 			if(bniVersion != 1)
 				throw new Exception("Unknown BNI version");
@@ -69,13 +68,13 @@ public class IconsDotBniReader {
 			is.skip(1);							// ColorMapType
 			byte imageType = is.readByte();		// run-length true-color image types = 0x0A
 			is.skip(5);							// ColorMapSpecification - color map data
-			int xOrigin = is.readWord();
-			int yOrigin = is.readWord();
+			is.skip(2);	//int xOrigin = is.readWord();
+			is.skip(2);	//int yOrigin = is.readWord();
 			int width = is.readWord();
 			int height = is.readWord();
 			byte depth = is.readByte();			// 24 bit depth is good
 			byte descriptor = is.readByte();	// bits 5 and 4 (00110000) specify the corner to start coloring pixels - 00=bl, 01=br, 10=tl, 11=tr
-			String info = is.readFixedLengthString(infoLength);
+			is.skip(infoLength);	//String info = is.readFixedLengthString(infoLength);
 			
 			if(imageType != 0x0A)
 				throw new Exception("Unknown image type");
@@ -107,7 +106,6 @@ public class IconsDotBniReader {
 					}
 				}
 			}
-			
 			
 			//Split up the big image in to individual images
 			currentPixel = 0;

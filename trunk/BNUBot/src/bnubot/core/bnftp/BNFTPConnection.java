@@ -26,25 +26,29 @@ public class BNFTPConnection {
 		try {
 			System.out.println("Downloading " + fileName + "...");
 			
-			DataInputStream dis = new DataInputStream(s.getInputStream());
-			DataOutputStream dos = new DataOutputStream(s.getOutputStream());
+			BNetInputStream is = new BNetInputStream(s.getInputStream());
+			BNetOutputStream os = new BNetOutputStream(s.getOutputStream());
 			
-			// FTP
-			dos.writeByte(0x02);
+			//FTP
+			os.writeByte(0x02);
 			
-			BNetOutputStream p = new BNetOutputStream(dos);
-			p.writeWord(32 + fileName.length() + 1);
-			p.writeWord(0x100);		// Protocol version
-			p.writeDWord("IX86");	// Platform ID
-			p.writeDWord("STAR");	// Product ID
-			p.writeDWord(0);		// Banners ID
-			p.writeDWord(0);		// Banners File Extension
-			p.writeDWord(0);		// File position
-			p.writeQWord(0);		// Filetime
-			p.writeNTString(fileName);
+			//File request
+			os.writeWord(32 + fileName.length() + 1);
+			os.writeWord(0x100);		// Protocol version
+			os.writeDWord("IX86");	// Platform ID
+			os.writeDWord("STAR");	// Product ID
+			os.writeDWord(0);		// Banners ID
+			os.writeDWord(0);		// Banners File Extension
+			os.writeDWord(0);		// File position
+			os.writeQWord(0);		// Filetime
+			os.writeNTString(fileName);
+			
+			while(is.available() == 0) {
+				if(!s.isConnected())
+					throw new Exception("Download failed");
+			}
 	
 			//Recieve the file
-			BNetInputStream is = new BNetInputStream(dis);
 			is.skip(2);	//int headerLength = is.readWord();
 			is.skip(2);	//int unknown = is.readWord();
 			int fileSize = is.readDWord();

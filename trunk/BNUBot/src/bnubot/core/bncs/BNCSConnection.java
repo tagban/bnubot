@@ -27,6 +27,7 @@ public class BNCSConnection extends Connection {
 	String uniqueUserName = null;
 	String statString = null;
 	String accountName = null;
+	String channelName = null;
 
 	public BNCSConnection(ConnectionSettings cs) {
 		super(cs);
@@ -97,7 +98,7 @@ public class BNCSConnection extends Connection {
 						nlsRevision = is.readDWord();
 						serverToken = is.readDWord();
 						is.skip(4);	//int udpValue = is.readDWord();
-						is.skip(8);	//long MPQFileTime = is.readQWord();
+						long MPQFileTime = is.readQWord();	//is.skip(8);	//
 						String MPQFileName = is.readNTString();
 						String ValueStr = is.readNTString();
 						byte extraData[] = null;
@@ -111,7 +112,6 @@ public class BNCSConnection extends Connection {
 						byte keyHash[] = HashMain.hashKey(clientToken, serverToken, cs.cdkey).getBuffer();
 						
 						// Hash the game files
-						
 						String tmp = MPQFileName.substring(MPQFileName.indexOf("IX86")+5);
 						tmp = tmp.substring(0,tmp.indexOf("."));
 						int mpqNum = Integer.parseInt(tmp);
@@ -120,14 +120,14 @@ public class BNCSConnection extends Connection {
 					
 				    	int exeVersion = HashMain.getExeVer(cs.product);
 						String exeInfo = HashMain.getExeInfo(cs.product);
-						
+					
 						/*
-				    	OutPacketBuffer exeHashBuf = CheckRevisionBNLS.checkRevision(ValueStr, cs.product, MPQFileName, MPQFileTime);
-				    	BNetInputStream exeStream = new BNetInputStream(new ByteArrayInputStream(exeHashBuf.getBuffer()));
+						BNLSProtocol.OutPacketBuffer exeHashBuf = CheckRevisionBNLS.checkRevision(ValueStr, cs.product, MPQFileName, MPQFileTime);
+				    	BNetInputStream exeStream = new BNetInputStream(new java.io.ByteArrayInputStream(exeHashBuf.getBuffer()));
 				    	exeStream.skipBytes(3);
 				    	int success = exeStream.readDWord();
 				    	if(success != 1) {
-				    		System.err.println(util.HexDump.hexDump(exeHashBuf.getBuffer()));
+				    		System.err.println(bnubot.util.HexDump.hexDump(exeHashBuf.getBuffer()));
 				    		throw new Exception("BNLS failed to complete 0x1A sucessfully");
 				    	}
 				    	int exeVersion = exeStream.readDWord();
@@ -289,7 +289,6 @@ public class BNCSConnection extends Connection {
 						
 						switch(status) {
 						case 0x00:
-							System.out.println("Login successful.");
 							break;
 						case 0x02:
 							throw new Exception("Incorrect password");
@@ -307,6 +306,8 @@ public class BNCSConnection extends Connection {
 								throw new Exception("Server couldn't prove password");
 						}
 
+						System.out.println("Login successful; entering chat.");
+
 						p = new BNCSPacket(BNCSCommandIDs.SID_ENTERCHAT);
 						p.writeNTString("");
 						p.writeNTString("");
@@ -318,6 +319,8 @@ public class BNCSConnection extends Connection {
 						uniqueUserName = is.readNTString();
 						statString = is.readNTString();
 						accountName = is.readNTString();
+						
+						System.out.println("Logged in as " + uniqueUserName);
 						
 						// We are officially logged in and in the channel!
 						p = new BNCSPacket(BNCSCommandIDs.SID_JOINCHANNEL);
@@ -363,6 +366,7 @@ public class BNCSConnection extends Connection {
 							recieveInfo(text);
 							break;
 						case BNCSCommandIDs.EID_CHANNEL:
+							channelName = text;
 							joinedChannel(text);
 							break;
 						default:
@@ -416,4 +420,11 @@ public class BNCSConnection extends Connection {
 		}
 	}
 
+	public String toString() {
+		String out = accountName;
+		if(channelName != null)
+			out += " - " + channelName;
+		return out;
+	}
+	
 }

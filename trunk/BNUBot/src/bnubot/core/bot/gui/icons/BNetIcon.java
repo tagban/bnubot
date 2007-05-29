@@ -22,12 +22,19 @@ public class BNetIcon {
 		return false;
 	}
 	
+	private String strReverse(String s) {
+		String out = "";
+		for(int i = 0; i < s.length(); i++)
+			out = s.charAt(i) + out;
+		return out;
+	}
+	
 	public String toString() {
 		String out = "Icon[flags=0x" + Integer.toHexString(flags)  + ",xSize=" + xSize + ",ySize=" + ySize;
 		if(products.length > 0) {
 			out += ",products=[";
 			for(int i = 0; i < products.length; i++)
-				out += products[i] + ",";
+				out += strReverse(products[i]) + ",";
 			out = out.substring(0, out.length() - 1);
 			out += "]";
 		}

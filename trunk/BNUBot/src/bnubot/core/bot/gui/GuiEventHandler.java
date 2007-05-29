@@ -2,8 +2,11 @@ package bnubot.core.bot.gui;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
 
 import javax.swing.*;
+import javax.swing.text.*;
+import javax.swing.text.html.*;
 
 import bnubot.core.Connection;
 import bnubot.core.EventHandler;
@@ -13,6 +16,9 @@ import bnubot.core.bot.gui.icons.IconsDotBniReader;
 public class GuiEventHandler implements EventHandler {
 	private JFrame frame = null;
 	private Connection c = null;
+	//private JTextPane mainTextArea = null;
+	//private HTMLDocument mainDocument = null;
+	//private Element mainBody = null;
 	private JTextArea mainTextArea = null;
 	private JTextArea chatTextArea = null;
 	private JTextArea channelTextArea = null;
@@ -53,12 +59,7 @@ public class GuiEventHandler implements EventHandler {
 				menu.addSeparator();
 				
 				menuItem = new JMenuItem("Exit");
-				menuItem.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						JFrame frame = (JFrame) SwingUtilities.getRoot((Component) e.getSource());
-						frame.dispose();
-					}
-				});
+				menuItem.addActionListener(new ActionListener() { public void actionPerformed(ActionEvent e) { System.exit(0); } });
 				menu.add(menuItem);
 			}
 			menuBar.add(menu);	
@@ -82,11 +83,23 @@ public class GuiEventHandler implements EventHandler {
 		}
 		frame.setJMenuBar(menuBar);
 		
-		//Create a panel to organize the gui
+		//Create a LayoutManager to organize the frame
 		frame.setLayout(new BotLayoutManager());
+		
+		//Main text area
+		/*mainTextArea = new JTextPane();
+		mainTextArea.setContentType("text/html");
+		mainDocument = (HTMLDocument) mainTextArea.getDocument();
+		mainBody = mainDocument.getRootElements()[0].getElement(0);
+		try {
+			mainDocument.insertBeforeStart(mainBody, "<head><style>.channel { color: green; }</style></head>");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}*/
 		mainTextArea = new JTextArea();
 		mainTextArea.setBackground(Color.BLACK);
 		mainTextArea.setForeground(Color.LIGHT_GRAY);
+		//Send chat textbox
 		chatTextArea = new JTextArea();
 		chatTextArea.setBackground(Color.BLACK);
 		chatTextArea.setForeground(Color.LIGHT_GRAY);
@@ -100,14 +113,18 @@ public class GuiEventHandler implements EventHandler {
 				}
 			}
 		});
+		//Channel text box (above userlist)
 		channelTextArea = new JTextArea();
 		channelTextArea.setAlignmentX(SwingConstants.CENTER);
 		channelTextArea.setAlignmentY(SwingConstants.CENTER);
 		channelTextArea.setBackground(Color.BLACK);
 		channelTextArea.setForeground(Color.LIGHT_GRAY);
+		//The userlist
 		userList = new UserList(IconsDotBniReader.readIconsDotBni(c.downloadFile("Icons.bni")));
 		userList.setBackground(Color.BLACK);
 		userList.setForeground(Color.LIGHT_GRAY);
+		
+		//Add them to the frame
 		frame.add(mainTextArea);
 		frame.add(chatTextArea);
 		frame.add(channelTextArea);
@@ -120,10 +137,12 @@ public class GuiEventHandler implements EventHandler {
 
 	public void channelJoin(String user, int flags, int ping, String statstr) {
 		userList.showUser(user, flags, ping, statstr);
+		mainTextArea.append(user + " has joined.\n");
 	}
 
 	public void channelLeave(String user, int flags, int ping, String statstr) {
 		userList.removeUser(user);
+		mainTextArea.append(user + " has left.\n");
 	}
 
 	public void channelUser(String user, int flags, int ping, String statstr) {
@@ -134,6 +153,7 @@ public class GuiEventHandler implements EventHandler {
 		userList.clear();
 		mainTextArea.append("Joining channel " + channel + ".\n");
 		channelTextArea.setText(channel);
+		frame.setTitle(c.toString());
 	}
 
 	public void recieveChat(String user, String text) {
