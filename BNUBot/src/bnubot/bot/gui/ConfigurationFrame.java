@@ -136,6 +136,7 @@ public class ConfigurationFrame extends JDialog {
 		String out = new String(in);
 		out = out.replaceAll("-", "");
 		out = out.replaceAll(" ", "");
+		out = out.replaceAll("\t", "");
 		return out.toUpperCase();
 	}
 	
