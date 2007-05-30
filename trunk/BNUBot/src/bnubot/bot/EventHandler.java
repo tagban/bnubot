@@ -1,4 +1,6 @@
-package bnubot.core;
+package bnubot.bot;
+
+import bnubot.core.Connection;
 
 public interface EventHandler {
 	public void initialize(Connection c);
@@ -10,4 +12,5 @@ public interface EventHandler {
 	public void recieveChat(String user, String text);
 	public void recieveEmote(String user, String text);
 	public void recieveInfo(String text);
+	public void recieveError(String text);
 }

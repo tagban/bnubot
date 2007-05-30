@@ -1,4 +1,4 @@
-package bnubot.core.bot.console;
+package bnubot.bot.console;
 
 import bnubot.core.Connection;
 

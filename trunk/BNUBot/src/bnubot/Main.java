@@ -1,11 +1,11 @@
 package bnubot;
 
+import bnubot.bot.console.ConsoleEventHandler;
+import bnubot.bot.gui.GuiEventHandler;
+import bnubot.bot.gui.userlist.IconsDotBniReader;
 import bnubot.core.*;
 import bnubot.core.bncs.BNCSConnection;
 import bnubot.core.bnftp.BNFTPConnection;
-import bnubot.core.bot.console.ConsoleEventHandler;
-import bnubot.core.bot.gui.GuiEventHandler;
-import bnubot.core.bot.gui.icons.IconsDotBniReader;
 
 public class Main {
 

@@ -1,12 +1,9 @@
-package bnubot.core.bot.gui;
+package bnubot.bot.gui.userlist;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
 
 import javax.swing.*;
-
-import bnubot.core.bot.gui.icons.BNetIcon;
-
 
 @SuppressWarnings("serial")
 public class UserList extends Box {

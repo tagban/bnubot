@@ -1,4 +1,4 @@
-package bnubot.core.bot.gui.icons;
+package bnubot.bot.gui.userlist;
 
 import javax.swing.Icon;
 

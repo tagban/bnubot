@@ -10,9 +10,13 @@ public class BNFTPConnection {
 	public static final String path = "downloads/";
 	
 	public static File downloadFile(ConnectionSettings cs, String fileName) {
+		File f = new File(path + fileName);
+		if(f.exists())
+			return f;
+		
 		try {
 			Socket s = new Socket(cs.server, cs.port);
-			File f = downloadFile(s, fileName);
+			f = downloadFile(s, fileName);
 			s.close();
 			return f;
 		} catch (Exception e) {

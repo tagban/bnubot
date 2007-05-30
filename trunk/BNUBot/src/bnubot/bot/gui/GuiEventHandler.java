@@ -1,4 +1,4 @@
-package bnubot.core.bot.gui;
+package bnubot.bot.gui;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -8,9 +8,11 @@ import javax.swing.*;
 import javax.swing.text.*;
 import javax.swing.text.html.*;
 
+import bnubot.bot.EventHandler;
+import bnubot.bot.gui.textwindow.TextWindow;
+import bnubot.bot.gui.userlist.IconsDotBniReader;
+import bnubot.bot.gui.userlist.UserList;
 import bnubot.core.Connection;
-import bnubot.core.EventHandler;
-import bnubot.core.bot.gui.icons.IconsDotBniReader;
 
 
 public class GuiEventHandler implements EventHandler {
@@ -19,7 +21,7 @@ public class GuiEventHandler implements EventHandler {
 	//private JTextPane mainTextArea = null;
 	//private HTMLDocument mainDocument = null;
 	//private Element mainBody = null;
-	private JTextArea mainTextArea = null;
+	private TextWindow mainTextArea = null;
 	private JTextArea chatTextArea = null;
 	private JTextArea channelTextArea = null;
 	private UserList userList = null;
@@ -96,7 +98,7 @@ public class GuiEventHandler implements EventHandler {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}*/
-		mainTextArea = new JTextArea();
+		mainTextArea = new TextWindow();
 		mainTextArea.setBackground(Color.BLACK);
 		mainTextArea.setForeground(Color.LIGHT_GRAY);
 		//Send chat textbox
@@ -137,12 +139,12 @@ public class GuiEventHandler implements EventHandler {
 
 	public void channelJoin(String user, int flags, int ping, String statstr) {
 		userList.showUser(user, flags, ping, statstr);
-		mainTextArea.append(user + " has joined.\n");
+		mainTextArea.channelInfo(user + " has joined.");
 	}
 
 	public void channelLeave(String user, int flags, int ping, String statstr) {
 		userList.removeUser(user);
-		mainTextArea.append(user + " has left.\n");
+		mainTextArea.channelInfo(user + " has left.");
 	}
 
 	public void channelUser(String user, int flags, int ping, String statstr) {
@@ -151,20 +153,24 @@ public class GuiEventHandler implements EventHandler {
 
 	public void joinedChannel(String channel) {
 		userList.clear();
-		mainTextArea.append("Joining channel " + channel + ".\n");
+		mainTextArea.channelInfo("Joining channel " + channel + ".");
 		channelTextArea.setText(channel);
 		frame.setTitle(c.toString());
 	}
 
 	public void recieveChat(String user, String text) {
-		mainTextArea.append("<" + user + "> " + text + "\n");
+		mainTextArea.userChat(user, text);
 	}
 
 	public void recieveEmote(String user, String text) {
-		mainTextArea.append("<" + user + " " + text + ">\n");
+		mainTextArea.userEmote(user, text);
 	}
 
 	public void recieveInfo(String text) {
-		mainTextArea.append(text + "\n");
+		mainTextArea.recieveInfo(text);
+	}
+
+	public void recieveError(String text) {
+		mainTextArea.recieveError(text);
 	}
 }

@@ -1,7 +1,7 @@
-package bnubot.core.bot.console;
+package bnubot.bot.console;
 
+import bnubot.bot.EventHandler;
 import bnubot.core.Connection;
-import bnubot.core.EventHandler;
 
 public class ConsoleEventHandler implements EventHandler {
 	Connection c = null;
@@ -38,6 +38,10 @@ public class ConsoleEventHandler implements EventHandler {
 	}
 
 	public void recieveInfo(String text) {
+		System.out.println(text);
+	}
+
+	public void recieveError(String text) {
 		System.out.println(text);
 	}
 }

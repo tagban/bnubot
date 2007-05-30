@@ -1,4 +1,4 @@
-package bnubot.core.bot.gui.icons;
+package bnubot.bot.gui.userlist;
 
 import java.awt.*;
 import java.awt.image.*;
