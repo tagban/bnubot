@@ -1,12 +1,14 @@
 package bnubot.bot.gui.userlist;
 
+import java.awt.Color;
+import java.awt.FlowLayout;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
 import javax.swing.*;
 
 @SuppressWarnings("serial")
-public class UserList extends Box {
+public class UserList extends JPanel {
 	private class UserInfo {
 		int flags;
 		int ping;
@@ -16,23 +18,26 @@ public class UserList extends Box {
 	
 	BNetIcon[] icons = null;
 	Hashtable<String, UserInfo> users = null;
+	Box b = null;
 	
 	public UserList(BNetIcon[] icons) {
-		//super(new FlowLayout(FlowLayout.LEFT));
-		super(BoxLayout.Y_AXIS);
+		super(new FlowLayout(FlowLayout.LEFT));
 		this.icons = icons;
 		this.users = new Hashtable<String, UserInfo>();
+		setBackground(Color.BLACK);
+		b = new Box(BoxLayout.Y_AXIS);
+		add(b);
 	}
 	
 	public void clear() {
 		Enumeration<UserInfo> e = users.elements();
 		while(e.hasMoreElements()) {
 			UserInfo ui = e.nextElement();
-			remove(ui.label);
+			b.remove(ui.label);
 			ui.label = null;
 		}
 		users.clear();
-		this.validate();
+		validate();
 	}
 	
 	public void showUser(String user, int flags, int ping, String statstr) {
@@ -45,7 +50,8 @@ public class UserList extends Box {
 		}
 		if(ui.label == null) {
 			ui.label = new JLabel();
-			this.add(ui.label);
+			ui.label.setForeground(Color.LIGHT_GRAY);
+			b.add(ui.label);
 		}
 		
 		Icon icon = null;
@@ -64,14 +70,18 @@ public class UserList extends Box {
 			ui.label.setIcon(icon);
 		
 		users.put(user, ui);
-		this.validate();
+		validate();
 	}
 	
 	public void removeUser(String user) {
 		UserInfo ui = users.get(user);
-		this.remove(ui.label);
-		ui.label = null;
-		users.remove(user);
-		this.validate();
+		if(ui != null) {
+			b.remove(ui.label);
+			ui.label = null;
+			users.remove(user);
+			validate();
+		} else {
+			System.err.println("Attempted to remove a user that was not in the UserList: " + user);
+		}
 	}
 }
