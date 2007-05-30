@@ -12,11 +12,13 @@ public class Ini{
 		try{
 			BufferedReader inputStream = new BufferedReader(new FileReader(FN));
 			while ((var = inputStream.readLine()) != null){
+				if(var.length() == 0)
+					continue;
 				if (var.toLowerCase().equals("[" + Header.toLowerCase() + "]"))
 					fndHdr=true;
 				else if (fndHdr==true && var.substring(0, 1).equals("[")==true) 
 					break; 
-				else if( var.length() >= Setting.length()+1 && fndHdr==true && var.toLowerCase().substring(0, Setting.length()).equals(Setting.toLowerCase()))
+				else if( var.length() >= Setting.length()+1 && fndHdr==true && var.toLowerCase().substring(0, Setting.length() + 1).equals(Setting.toLowerCase() + "="))
 					return (var.length() == Setting.length()+1) ? Default : var.substring(Setting.length()+1,var.length()); 
 			}
 		}catch(FileNotFoundException e){
