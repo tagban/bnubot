@@ -20,7 +20,8 @@ public class BNCSConnection extends Connection {
 	DataOutputStream dos = null;
 	EventHandler e = null;
 	boolean connected = false;
-	int nlsRevision = 0;
+	String productID = null;
+	int nlsRevision = -1;
 	int serverToken = 0;
 	int clientToken = Math.abs(new Random().nextInt());
 	SRP srp = null;
@@ -65,18 +66,24 @@ public class BNCSConnection extends Connection {
 	}
 
 	public void run() {
+		boolean allowAutoConnect = true;
 		while(true) {
 			try {
-				if(!cs.autoconnect) {
-					while(!isConnected())
+				if(!cs.autoconnect || !allowAutoConnect) {
+					while(!isConnected()) {
 						yield();
+						sleep(100);
+					}
 				}
+				allowAutoConnect = false;
 	
 				setConnected(true);
 				recieveInfo("Connecting to " + cs.server + ":" + cs.port);
 				s = new Socket(cs.server, cs.port);
 				dis = new DataInputStream(s.getInputStream());
 				dos = new DataOutputStream(s.getOutputStream());
+				nlsRevision = -1;
+				productID = util.Constants.prods[cs.product-1];
 				
 				//dos.write("GET / HTTP/1.0\n\n".getBytes());
 				
@@ -85,19 +92,84 @@ public class BNCSConnection extends Connection {
 				
 				int verByte = HashMain.getVerByte(cs.product);
 				
-				BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_AUTH_INFO);
-				p.writeDWord(0);		// Protocol ID (0)
-				p.writeDWord("IX86");	// Platform ID (IX86)
-				p.writeDWord(util.Constants.prods[cs.product-1]);	// Product ID (SEXP)
-				p.writeDWord(verByte);	// Version byte
-				p.writeDWord("enUS");	// Product language
-				p.writeDWord(0);		// Local IP
-				p.writeDWord(0xf0);		// TZ bias
-				p.writeDWord(0x409);	// Locale ID
-				p.writeDWord(0x409);	// Language ID
-				p.writeNTString("USA");	// Country abreviation
-				p.writeNTString("United States");	// Country
-				p.SendPacket(dos, cs.packetLog);
+				BNCSPacket p;
+				
+				switch(cs.product) {
+				case ConnectionSettings.PRODUCT_STARCRAFT:
+				case ConnectionSettings.PRODUCT_BROODWAR:
+				case ConnectionSettings.PRODUCT_DIABLO2:
+				case ConnectionSettings.PRODUCT_LORDOFDESTRUCTION:
+				case ConnectionSettings.PRODUCT_WARCRAFT3:
+				case ConnectionSettings.PRODUCT_THEFROZENTHRONE:
+					p = new BNCSPacket(BNCSCommandIDs.SID_AUTH_INFO);
+					p.writeDWord(0);		// Protocol ID (0)
+					p.writeDWord("IX86");	// Platform ID (IX86)
+					p.writeDWord(productID);// Product ID
+					p.writeDWord(verByte);	// Version byte
+					p.writeDWord("enUS");	// Product language
+					p.writeDWord(0);		// Local IP
+					p.writeDWord(0xf0);		// TZ bias
+					p.writeDWord(0x409);	// Locale ID
+					p.writeDWord(0x409);	// Language ID
+					p.writeNTString("USA");	// Country abreviation
+					p.writeNTString("United States");	// Country
+					p.SendPacket(dos, cs.packetLog);
+					break;
+
+				case ConnectionSettings.PRODUCT_STARCRAFTSHAREWARE:
+				case ConnectionSettings.PRODUCT_JAPANSTARCRAFT:
+					p = new BNCSPacket(BNCSCommandIDs.SID_CLIENTID);
+					p.writeDWord(0);	// Registration Version
+					p.writeDWord(0);	// Registration Authority
+					p.writeDWord(0);	// Account Number
+					p.writeDWord(0);	// Registration Token
+					p.writeByte(0);		// LAN computer name
+					p.writeByte(0);		// LAN username
+					p.SendPacket(dos, cs.packetLog);
+					
+					p = new BNCSPacket(BNCSCommandIDs.SID_STARTVERSIONING);
+					p.writeDWord("IX86");	// Platform ID (IX86)
+					p.writeDWord(productID);// Product ID
+					p.writeDWord(verByte);	// Version byte
+					p.writeDWord(0);		// Unknown (0)
+					p.SendPacket(dos, cs.packetLog);
+					break;
+					
+				case ConnectionSettings.PRODUCT_WAR2BNE:
+					p = new BNCSPacket(BNCSCommandIDs.SID_CLIENTID2);
+					p.writeDWord(1);	// Server version
+					p.writeDWord(0);	// Registration Version
+					p.writeDWord(0);	// Registration Authority
+					p.writeDWord(0);	// Account Number
+					p.writeDWord(0);	// Registration Token
+					p.writeByte(0);		// LAN computer name
+					p.writeByte(0);		// LAN username
+					p.SendPacket(dos, cs.packetLog);
+					
+					p = new BNCSPacket(BNCSCommandIDs.SID_LOCALEINFO);
+					p.writeQWord(0);		// System time
+					p.writeQWord(0);		// Local time
+					p.writeDWord(0xf0);		// TZ bias
+					p.writeDWord(0x409);	// SystemDefaultLCID
+					p.writeDWord(0x409);	// UserDefaultLCID
+					p.writeDWord(0x409);	// UserDefaultLangID	
+					p.writeNTString("ena");	// Abbreviated language name		
+					p.writeNTString("1");	// Country code
+					p.writeNTString("USA");	// Abbreviated country name
+					p.writeNTString("United States");	// Country (English)
+					p.SendPacket(dos, cs.packetLog);
+					
+					p = new BNCSPacket(BNCSCommandIDs.SID_STARTVERSIONING);
+					p.writeDWord("IX86");	// Platform ID (IX86)
+					p.writeDWord(productID);// Product ID
+					p.writeDWord(verByte);	// Version byte
+					p.writeDWord(0);		// Unknown (0)
+					p.SendPacket(dos, cs.packetLog);
+					break;
+					
+				default:
+					recieveError("Don't know how to connect with product " + productID);
+				}
 				
 				while(s.isConnected() && connected) {
 					if(dis.available() > 0) {
@@ -122,13 +194,17 @@ public class BNCSConnection extends Connection {
 							break;
 						}
 						
-						case BNCSCommandIDs.SID_AUTH_INFO: {
-							nlsRevision = is.readDWord();
-							serverToken = is.readDWord();
-							is.skip(4);	//int udpValue = is.readDWord();
-							/*is.skip(8);	/*/long MPQFileTime = is.readQWord();
+						case BNCSCommandIDs.SID_AUTH_INFO:
+						case BNCSCommandIDs.SID_STARTVERSIONING: {
+							if(pr.packetId == BNCSCommandIDs.SID_AUTH_INFO) {
+								nlsRevision = is.readDWord();
+								serverToken = is.readDWord();
+								is.skip(4);	//int udpValue = is.readDWord();
+							}
+							long MPQFileTime = is.readQWord();
 							String MPQFileName = is.readNTString();
 							String ValueStr = is.readNTString();
+						
 							byte extraData[] = null;
 							if(is.available() == 0x80) {
 								extraData = new byte[0x80];
@@ -137,54 +213,92 @@ public class BNCSConnection extends Connection {
 							assert(is.available() == 0);
 							
 							// Hash the CD key
-							byte keyHash[] = HashMain.hashKey(clientToken, serverToken, cs.cdkey).getBuffer();
+							byte keyHash[] = null;
+							byte keyHash2[] = null;
+							if(nlsRevision != -1) {
+								keyHash = HashMain.hashKey(clientToken, serverToken, cs.cdkey).getBuffer();
+								if(cs.product == ConnectionSettings.PRODUCT_LORDOFDESTRUCTION)
+									keyHash2 = HashMain.hashKey(clientToken, serverToken, cs.cdkeyLOD).getBuffer();
+								if(cs.product == ConnectionSettings.PRODUCT_THEFROZENTHRONE)
+									keyHash2 = HashMain.hashKey(clientToken, serverToken, cs.cdkeyTFT).getBuffer();
+							}
 							
 							// Hash the game files
-						/*
 						  	String tmp = MPQFileName.substring(MPQFileName.indexOf("IX86")+5);
 							tmp = tmp.substring(0,tmp.indexOf("."));
 							int mpqNum = Integer.parseInt(tmp);
 	                    	String files[] = HashMain.getFiles(cs.product, HashMain.PLATFORM_INTEL);
-							int exeHash = CheckRevision.checkRevision(ValueStr, files, mpqNum);
-						
-					    	int exeVersion = HashMain.getExeVer(cs.product);
-							String exeInfo = HashMain.getExeInfo(cs.product);
-						
-							/*/
-							BNLSProtocol.OutPacketBuffer exeHashBuf = CheckRevisionBNLS.checkRevision(ValueStr, cs.product, MPQFileName, MPQFileTime);
-					    	BNetInputStream exeStream = new BNetInputStream(new java.io.ByteArrayInputStream(exeHashBuf.getBuffer()));
-					    	exeStream.skipBytes(3);
-					    	int success = exeStream.readDWord();
-					    	if(success != 1) {
-					    		System.err.println(bnubot.util.HexDump.hexDump(exeHashBuf.getBuffer()));
-					    		throw new Exception("BNLS failed to complete 0x1A sucessfully");
-					    	}
-					    	int exeVersion = exeStream.readDWord();
-					    	int exeHash = exeStream.readDWord();
-					    	String exeInfo = exeStream.readNTString();
-					    	exeStream.readDWord(); // cookie
-					    	int exeVerbyte = exeStream.readDWord();
-					    	assert(exeStream.available() == 0);
-					    	//*/
+							
+	                    	int exeHash;
+	                    	int exeVersion;
+	                    	String exeInfo;
+	                    	
+	                    	try {
+		                    	exeHash = CheckRevision.checkRevision(ValueStr, files, mpqNum);
+						    	exeVersion = HashMain.getExeVer(cs.product);
+								exeInfo = HashMain.getExeInfo(cs.product);
+	                    	} catch(Exception e) {
+	                    		recieveError("Local hashing failed (" + e.getMessage() + "); trying remote JBLS server.");
+	                    		
+	                    		BNLSProtocol.OutPacketBuffer exeHashBuf = CheckRevisionBNLS.checkRevision(ValueStr, cs.product, MPQFileName, MPQFileTime);
+						    	BNetInputStream exeStream = new BNetInputStream(new java.io.ByteArrayInputStream(exeHashBuf.getBuffer()));
+						    	exeStream.skipBytes(3);
+						    	int success = exeStream.readDWord();
+						    	if(success != 1) {
+						    		System.err.println(bnubot.util.HexDump.hexDump(exeHashBuf.getBuffer()));
+						    		throw new Exception("BNLS failed to complete 0x1A sucessfully");
+						    	}
+						    	exeVersion = exeStream.readDWord();
+						    	exeHash = exeStream.readDWord();
+						    	exeInfo = exeStream.readNTString();
+						    	exeStream.readDWord(); // cookie
+						    	int exeVerbyte = exeStream.readDWord();
+						    	assert(exeStream.available() == 0);
+	                    	}
 	
 							// Respond
-							p = new BNCSPacket(BNCSCommandIDs.SID_AUTH_CHECK);
-							p.writeDWord(clientToken);
-							p.writeDWord(exeVersion);
-							p.writeDWord(exeHash);
-							p.writeDWord(1);			// Number of keys
-							p.writeDWord(0);			// Spawn?
-							
-							//For each key..
-							if(keyHash.length != 36)
-								throw new Exception("Invalid keyHash length");
-							p.write(keyHash);
-							
-							//Finally,
-							p.writeNTString(exeInfo);
-							p.writeNTString(cs.username);
-							p.SendPacket(dos, cs.packetLog);
-							
+	                    	if(nlsRevision != -1) {
+								p = new BNCSPacket(BNCSCommandIDs.SID_AUTH_CHECK);
+								p.writeDWord(clientToken);
+								p.writeDWord(exeVersion);
+								p.writeDWord(exeHash);
+								if(keyHash2 == null)
+									p.writeDWord(1);		// Number of keys
+								else
+									p.writeDWord(2);		// Number of keys
+								p.writeDWord(0);			// Spawn?
+								
+								//For each key..
+								if(keyHash.length != 36)
+									throw new Exception("Invalid keyHash length");
+								p.write(keyHash);
+								if(keyHash2 != null) {
+									if(keyHash2.length != 36)
+										throw new Exception("Invalid keyHash2 length");
+									p.write(keyHash2);
+								}
+								
+								//Finally,
+								p.writeNTString(exeInfo);
+								p.writeNTString(cs.username);
+								p.SendPacket(dos, cs.packetLog);
+	                    	} else {
+	                    		/* (DWORD)		 Platform ID
+	                    		 * (DWORD)		 Product ID
+	                    		 * (DWORD)		 Version Byte
+	                    		 * (DWORD)		 EXE Version
+	                    		 * (DWORD)		 EXE Hash
+	                    		 * (STRING) 	 EXE Information
+	                    		 */
+	                    		p = new BNCSPacket(BNCSCommandIDs.SID_REPORTVERSION);
+	                    		p.writeDWord("IX86");
+	                    		p.writeDWord(productID);
+	                    		p.writeDWord(verByte);
+								p.writeDWord(exeVersion);
+								p.writeDWord(exeHash);
+								p.writeNTString(exeInfo);
+								p.SendPacket(dos, cs.packetLog);
+	                    	}
 							break;
 						}
 						
@@ -374,6 +488,22 @@ public class BNCSConnection extends Connection {
 							break;
 						}
 						
+						case BNCSCommandIDs.SID_CLIENTID: {
+							//Sends new registration values; no longer used
+							break;
+						}
+						
+						case BNCSCommandIDs.SID_LOGONCHALLENGE: {
+							serverToken = is.readDWord();
+							break;
+						}
+						
+						case BNCSCommandIDs.SID_LOGONCHALLENGEEX: {
+							int udpToken = is.readDWord();
+							serverToken = is.readDWord();
+							break;
+						}
+						
 						case BNCSCommandIDs.SID_CREATEACCOUNT2: {
 							int status = is.readDWord();
 							String suggestion = is.readNTString();
@@ -381,7 +511,7 @@ public class BNCSConnection extends Connection {
 							switch(status) {
 							case 0x00:
 								recieveInfo("Account created");
-								//sendPassword();
+								sendPassword();
 								break;
 							case 0x02:
 								recieveError("Name contained invalid characters");
@@ -404,6 +534,19 @@ public class BNCSConnection extends Connection {
 								setConnected(false);
 								break;
 							}
+							break;
+						}
+						
+						case BNCSCommandIDs.SID_SETEMAIL: {
+							if((cs.email != null) && (cs.email.length() > 0)) {
+								recieveError("No email address has been specified; setting it to " + cs.email);
+								p = new BNCSPacket(BNCSCommandIDs.SID_SETEMAIL);
+								p.writeNTString(cs.email);
+								p.SendPacket(dos, cs.packetLog);
+							} else {
+								recieveError("No email address has been specified");
+							}
+							break;
 						}
 						
 						case BNCSCommandIDs.SID_ENTERCHAT: {
@@ -493,7 +636,7 @@ public class BNCSConnection extends Connection {
 						}
 						
 						default:
-							recieveError("Unknown SID 0x" + Integer.toHexString(pr.packetId));
+							recieveError("Unknown SID 0x" + Integer.toHexString(pr.packetId) + "\n" + bnubot.util.HexDump.hexDump(pr.data));
 							break;
 						}
 					}
