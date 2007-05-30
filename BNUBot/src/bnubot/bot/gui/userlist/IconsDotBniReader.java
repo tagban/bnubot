@@ -110,17 +110,17 @@ public class IconsDotBniReader {
 			//Split up the big image in to individual images
 			currentPixel = 0;
 			JFrame util = new JFrame();
-			util.setLayout(new FlowLayout(FlowLayout.CENTER));
+			//util.setLayout(new FlowLayout(FlowLayout.CENTER));
 			for(int i = 0; i < numIcons; i++) {
 				BNetIcon bni = icons[i];
 				bni.icon = new ImageIcon(
 						util.createImage(
 								new MemoryImageSource(bni.xSize, bni.ySize, pixelData, currentPixel, bni.xSize)));
 				currentPixel += bni.xSize * bni.ySize;
-				util.add(new JLabel(bni.icon));
+				//util.add(new JLabel(bni.icon));
 			}
-			util.pack();
-			util.setVisible(true);
+			//util.pack();
+			//util.setVisible(true);
 			
 			return icons;
 		} catch (Exception e) {

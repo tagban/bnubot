@@ -42,6 +42,16 @@ public class ConsoleEventHandler implements EventHandler {
 	}
 
 	public void recieveError(String text) {
-		System.out.println(text);
+		System.err.println(text);
+	}
+
+	public void bnetConnected() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void bnetDisconnected() {
+		// TODO Auto-generated method stub
+		
 	}
 }

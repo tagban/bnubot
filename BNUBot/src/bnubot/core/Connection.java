@@ -29,12 +29,16 @@ public abstract class Connection extends Thread implements EventHandler {
 		eventHandlers.remove(eh);
 	}
 
-	public abstract void connect();
-	public abstract void disconnect();
+	public abstract boolean isConnected();
+	public abstract void setConnected(boolean c);
 	public abstract void sendChat(String text);
 	
 	public File downloadFile(String filename) {
 		return BNFTPConnection.downloadFile(cs, filename);
+	}
+	
+	public ConnectionSettings getConnectionSettings() {
+		return cs;
 	}
 
 	/*
@@ -45,6 +49,18 @@ public abstract class Connection extends Thread implements EventHandler {
 	public void initialize(Connection c) {
 		new Exception("Invalid use of EventHandler.initialize()").printStackTrace();
 		System.exit(1);
+	}
+	
+	public void bnetConnected() {
+		Enumeration<EventHandler> en = eventHandlers.elements();
+		while(en.hasMoreElements())
+			en.nextElement().bnetConnected();
+	}
+	
+	public void bnetDisconnected() {
+		Enumeration<EventHandler> en = eventHandlers.elements();
+		while(en.hasMoreElements())
+			en.nextElement().bnetDisconnected();
 	}
 	
 	public void joinedChannel(String channel) {

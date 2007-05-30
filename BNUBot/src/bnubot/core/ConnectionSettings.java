@@ -30,9 +30,35 @@ public class ConnectionSettings implements Serializable {
 	public boolean autoconnect;
 	public boolean enableCLI;
 	public boolean enableGUI;
+	public boolean packetLog;
 	
 	public ConnectionSettings() {
 		
+	}
+	
+	public boolean isValid() {
+		if(server == null)
+			return false;
+		if(server.length() == 0)
+			return false;
+		if(port == 0)
+			return false;
+		if(username == null)
+			return false;
+		if(username.length() == 0)
+			return false;
+		if(password == null)
+			return false;
+		if(password.length() == 0)
+			return false;
+		if(cdkey == null)
+			return false;
+		if(cdkey.length() == 0)
+			return false;
+		if(product == -1)
+			return false;
+		
+		return true;
 	}
 	
 	public void save() {
@@ -43,10 +69,12 @@ public class ConnectionSettings implements Serializable {
 		Ini.WriteIni(file, header, "username", username);
 		Ini.WriteIni(file, header, "password", password);
 		Ini.WriteIni(file, header, "cdkey", cdkey);
-		Ini.WriteIni(file, header, "product", Byte.toString(product));
+		if(product != -1)
+		Ini.WriteIni(file, header, "product", util.Constants.prods[product-1]);
 		Ini.WriteIni(file, header, "autoconnect", Boolean.toString(autoconnect));
 		Ini.WriteIni(file, header, "enableCLI", Boolean.toString(enableCLI));
 		Ini.WriteIni(file, header, "enableGUI", Boolean.toString(enableGUI));
+		Ini.WriteIni(file, header, "packetLog", Boolean.toString(packetLog));
 	}
 	
 	public void load() {
@@ -59,13 +87,19 @@ public class ConnectionSettings implements Serializable {
 		username =	Ini.ReadIni(file, header, "username", null);
 		password =	Ini.ReadIni(file, header, "password", null);
 		cdkey =		Ini.ReadIni(file, header, "cdkey", null);
-		product = Byte.parseByte(
-					Ini.ReadIni(file, header, "product", "-1"));
+		String prod = Ini.ReadIni(file, header, "product", null);
+		product = -1;
+		for(int i = 0; i < util.Constants.prods.length; i++) {
+			if(util.Constants.prods[i].compareTo(prod) == 0)
+				product = (byte)(i+1);
+		}
 		autoconnect = Boolean.parseBoolean(
 					Ini.ReadIni(file, header, "autoconnect", "false"));
 		enableCLI = Boolean.parseBoolean(
 					Ini.ReadIni(file, header, "enableCLI", "false"));
 		enableGUI = Boolean.parseBoolean(
 					Ini.ReadIni(file, header, "enableGUI", "true"));
+		packetLog = Boolean.parseBoolean(
+					Ini.ReadIni(file, header, "packetLog", "false"));
 	}
 }
