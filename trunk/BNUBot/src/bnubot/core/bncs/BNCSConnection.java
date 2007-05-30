@@ -437,9 +437,10 @@ public class BNCSConnection extends Connection {
 							is.skip(12);
 							
 							for(int i = 0; i < numEntries; i++) {
-								is.skip(4);	//int timeStamp = is.readDWord();
+								int timeStamp = is.readDWord();
 								String news = is.readNTString();
-								recieveInfo(news);
+								if(timeStamp == 0)	// MOTD
+									recieveInfo(news);
 							}
 							
 							break;
