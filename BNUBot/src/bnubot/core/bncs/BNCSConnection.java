@@ -5,10 +5,10 @@ import java.io.DataOutputStream;
 import java.net.Socket;
 import java.util.Random;
 
+import bnubot.bot.EventHandler;
 import bnubot.core.BNetInputStream;
 import bnubot.core.Connection;
 import bnubot.core.ConnectionSettings;
-import bnubot.core.EventHandler;
 
 import Hashing.*;
 
@@ -364,6 +364,9 @@ public class BNCSConnection extends Connection {
 							break;
 						case BNCSCommandIDs.EID_INFO:
 							recieveInfo(text);
+							break;
+						case BNCSCommandIDs.EID_ERROR:
+							recieveError(text);
 							break;
 						case BNCSCommandIDs.EID_CHANNEL:
 							channelName = text;

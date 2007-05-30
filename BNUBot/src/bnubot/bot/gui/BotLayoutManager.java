@@ -1,4 +1,4 @@
-package bnubot.core.bot.gui;
+package bnubot.bot.gui;
 
 import java.awt.Color;
 import java.awt.Component;

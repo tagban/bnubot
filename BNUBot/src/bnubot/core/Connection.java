@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
+import bnubot.bot.EventHandler;
 import bnubot.core.bnftp.BNFTPConnection;
 
 
@@ -86,5 +87,11 @@ public abstract class Connection extends Thread implements EventHandler {
 		Enumeration<EventHandler> en = eventHandlers.elements();
 		while(en.hasMoreElements())
 			en.nextElement().recieveInfo(text);
+	}
+
+	public void recieveError(String text) {
+		Enumeration<EventHandler> en = eventHandlers.elements();
+		while(en.hasMoreElements())
+			en.nextElement().recieveError(text);
 	}
 }
