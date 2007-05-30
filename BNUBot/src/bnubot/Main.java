@@ -14,12 +14,18 @@ public class Main {
 		ConnectionSettings cs = new ConnectionSettings();
 		cs.load();
 		
+		boolean forceConfig = false;
+		
 		for(int i = 0; i < args.length; i++) {
 			if(args[i].charAt(0) == '-') {
 				switch(args[i].charAt(1)) {
 				case 'c':
 					if(args[i].compareToIgnoreCase("-cli") == 0) {
 						cs.enableCLI = true;
+						continue;
+					}
+					if(args[i].compareToIgnoreCase("-cfg") == 0) {
+						forceConfig = true;
 						continue;
 					}
 				case 'g':
@@ -43,7 +49,7 @@ public class Main {
 			System.exit(1);
 		}
 		
-		if(!cs.isValid()) {
+		if(!cs.isValid() || forceConfig) {
 			ConfigurationFrame cf = new ConfigurationFrame(cs);
 			cf.setVisible(true);
 			
