@@ -41,7 +41,7 @@ public class ConnectionSettings implements Serializable {
 			return false;
 		if(server.length() == 0)
 			return false;
-		if(port == 0)
+		if(port <= 0)
 			return false;
 		if(username == null)
 			return false;
@@ -55,7 +55,7 @@ public class ConnectionSettings implements Serializable {
 			return false;
 		if(cdkey.length() == 0)
 			return false;
-		if(product == -1)
+		if(product <= 0)
 			return false;
 		
 		return true;
@@ -69,7 +69,7 @@ public class ConnectionSettings implements Serializable {
 		Ini.WriteIni(file, header, "username", username);
 		Ini.WriteIni(file, header, "password", password);
 		Ini.WriteIni(file, header, "cdkey", cdkey);
-		if(product != -1)
+		if(product != 0)
 		Ini.WriteIni(file, header, "product", util.Constants.prods[product-1]);
 		Ini.WriteIni(file, header, "autoconnect", Boolean.toString(autoconnect));
 		Ini.WriteIni(file, header, "enableCLI", Boolean.toString(enableCLI));
@@ -88,10 +88,12 @@ public class ConnectionSettings implements Serializable {
 		password =	Ini.ReadIni(file, header, "password", null);
 		cdkey =		Ini.ReadIni(file, header, "cdkey", null);
 		String prod = Ini.ReadIni(file, header, "product", null);
-		product = -1;
-		for(int i = 0; i < util.Constants.prods.length; i++) {
-			if(util.Constants.prods[i].compareTo(prod) == 0)
-				product = (byte)(i+1);
+		product = 0;
+		if(prod != null) {
+			for(int i = 0; i < util.Constants.prods.length; i++) {
+				if(util.Constants.prods[i].compareTo(prod) == 0)
+					product = (byte)(i+1);
+			}
 		}
 		autoconnect = Boolean.parseBoolean(
 					Ini.ReadIni(file, header, "autoconnect", "false"));
