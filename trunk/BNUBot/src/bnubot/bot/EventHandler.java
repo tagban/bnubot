@@ -5,6 +5,9 @@ import bnubot.core.Connection;
 public interface EventHandler {
 	public void initialize(Connection c);
 	
+	public void bnetConnected();
+	public void bnetDisconnected();
+	
 	public void joinedChannel(String channel);
 	public void channelUser(String user, int flags, int ping, String statstr);
 	public void channelJoin(String user, int flags, int ping, String statstr);

@@ -2,11 +2,8 @@ package bnubot.bot.gui;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.io.IOException;
 
 import javax.swing.*;
-import javax.swing.text.*;
-import javax.swing.text.html.*;
 
 import bnubot.bot.EventHandler;
 import bnubot.bot.gui.textwindow.TextWindow;
@@ -18,9 +15,6 @@ import bnubot.core.Connection;
 public class GuiEventHandler implements EventHandler {
 	private JFrame frame = null;
 	private Connection c = null;
-	//private JTextPane mainTextArea = null;
-	//private HTMLDocument mainDocument = null;
-	//private Element mainBody = null;
 	private TextWindow mainTextArea = null;
 	private JTextArea chatTextArea = null;
 	private JTextArea channelTextArea = null;
@@ -51,11 +45,17 @@ public class GuiEventHandler implements EventHandler {
 			menu = new JMenu("File");
 			{	
 				menuItem = new JMenuItem("Connect");
-				menuItem.addActionListener(new ActionListener() { public void actionPerformed(ActionEvent e) { c.connect(); } });
+				menuItem.addActionListener(new ActionListener() { public void actionPerformed(ActionEvent e) { c.setConnected(true); } });
 				menu.add(menuItem);
 				
 				menuItem = new JMenuItem("Disconnect");
-				menuItem.addActionListener(new ActionListener() { public void actionPerformed(ActionEvent e) { c.disconnect(); } });
+				menuItem.addActionListener(new ActionListener() { public void actionPerformed(ActionEvent e) { c.setConnected(false); } });
+				menu.add(menuItem);
+				
+				menu.addSeparator();
+				
+				menuItem = new JMenuItem("Settings");
+				menuItem.addActionListener(new ActionListener() { public void actionPerformed(ActionEvent e) { new ConfigurationFrame(c.getConnectionSettings()).setVisible(true); } });
 				menu.add(menuItem);
 				
 				menu.addSeparator();
@@ -89,15 +89,6 @@ public class GuiEventHandler implements EventHandler {
 		frame.setLayout(new BotLayoutManager());
 		
 		//Main text area
-		/*mainTextArea = new JTextPane();
-		mainTextArea.setContentType("text/html");
-		mainDocument = (HTMLDocument) mainTextArea.getDocument();
-		mainBody = mainDocument.getRootElements()[0].getElement(0);
-		try {
-			mainDocument.insertBeforeStart(mainBody, "<head><style>.channel { color: green; }</style></head>");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}*/
 		mainTextArea = new TextWindow();
 		mainTextArea.setBackground(Color.BLACK);
 		mainTextArea.setForeground(Color.LIGHT_GRAY);
@@ -131,6 +122,12 @@ public class GuiEventHandler implements EventHandler {
 		frame.add(chatTextArea);
 		frame.add(channelTextArea);
 		frame.add(userList);
+		/*JSplitPane leftPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, mainTextScroll, chatTextArea);
+		leftPane.setResizeWeight(1);
+		JSplitPane rightPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, channelTextArea, userList);
+		JSplitPane mainPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPane, rightPane);
+		mainPane.setResizeWeight(1);
+		frame.add(mainPane);*/
 		
 		//Display the window
 		frame.pack();
@@ -172,5 +169,15 @@ public class GuiEventHandler implements EventHandler {
 
 	public void recieveError(String text) {
 		mainTextArea.recieveError(text);
+	}
+
+	public void bnetConnected() {
+		userList.clear();
+		channelTextArea.setText(null);
+	}
+
+	public void bnetDisconnected() {
+		userList.clear();
+		channelTextArea.setText(null);
 	}
 }

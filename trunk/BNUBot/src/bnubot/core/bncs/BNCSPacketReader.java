@@ -7,14 +7,14 @@ import java.io.InputStream;
 
 import bnubot.core.BNetInputStream;
 import bnubot.core.BNetOutputStream;
-
+import bnubot.util.HexDump;
 
 public class BNCSPacketReader {
 	int packetId;
 	int packetLength;
 	byte data[];
 	
-	public BNCSPacketReader(InputStream rawis) throws IOException {
+	public BNCSPacketReader(InputStream rawis, boolean packetLog) throws IOException {
 		BNetInputStream is = new BNetInputStream(rawis);
 		
 		byte magic;
@@ -37,7 +37,9 @@ public class BNCSPacketReader {
 		os.writeByte(packetId);
 		os.writeWord(packetLength);
 		os.write(data);
-		//System.out.println("RECV\n" + util.HexDump.hexDump(baos.toByteArray()));
+		
+		if(packetLog)
+			System.out.println("RECV\n" + HexDump.hexDump(baos.toByteArray()));
 	}
 	
 	public BNetInputStream getData() {
