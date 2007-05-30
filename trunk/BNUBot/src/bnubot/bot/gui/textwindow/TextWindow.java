@@ -36,7 +36,7 @@ public class TextWindow extends JScrollPane {
 			jtp = new JTextPane();
 			jtp.setText(text);
 			jtp.setBackground(bgColor);
-			jtp.setForeground(Color.GRAY);
+			jtp.setForeground(Color.LIGHT_GRAY);
 			add(jtp);
 		}
 	}
