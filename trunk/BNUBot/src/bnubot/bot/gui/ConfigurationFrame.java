@@ -14,8 +14,11 @@ public class ConfigurationFrame extends JDialog {
 	
 	JTextArea txtUsername = null;
 	JPasswordField txtPassword = null;
+	JTextArea txtEmail = null;
 	JComboBox cmbProduct = null;
 	JTextArea txtCDKey = null;
+	JTextArea txtCDKeyLOD = null;
+	JTextArea txtCDKeyTFT = null;
 	JTextArea txtServer = null;
 	JCheckBox chkAutoConnect = null;
 	JCheckBox chkEnableGUI = null;
@@ -50,6 +53,10 @@ public class ConfigurationFrame extends JDialog {
 				txtPassword = new JPasswordField(cs.password);
 				pnlSettings.add(txtPassword);
 				
+				pnlSettings.add(new JLabel("Email"));
+				txtEmail = new JTextArea(cs.email);
+				pnlSettings.add(txtEmail);
+				
 				pnlSettings.add(new JLabel("Product"));
 				cmbProduct = new JComboBox(util.Constants.prods);
 				cmbProduct.setSelectedIndex(cs.product - 1);
@@ -58,6 +65,14 @@ public class ConfigurationFrame extends JDialog {
 				pnlSettings.add(new JLabel("CD Key"));
 				txtCDKey = new JTextArea(cs.cdkey);
 				pnlSettings.add(txtCDKey);
+				
+				pnlSettings.add(new JLabel("LOD Key"));
+				txtCDKeyLOD = new JTextArea(cs.cdkeyLOD);
+				pnlSettings.add(txtCDKeyLOD);
+				
+				pnlSettings.add(new JLabel("TFT Key"));
+				txtCDKeyTFT = new JTextArea(cs.cdkeyTFT);
+				pnlSettings.add(txtCDKeyTFT);
 				
 				pnlSettings.add(new JLabel("Server"));
 				txtServer = new JTextArea(cs.server);
@@ -117,11 +132,21 @@ public class ConfigurationFrame extends JDialog {
 		});
 	}
 	
+	private String formatCDKey(String in) {
+		String out = new String(in);
+		out = out.replaceAll("-", "");
+		out = out.replaceAll(" ", "");
+		return out.toUpperCase();
+	}
+	
 	private void save() {
 		cs.username = txtUsername.getText();
 		cs.password = new String(txtPassword.getPassword());
+		cs.email = txtEmail.getText();
 		cs.product = (byte)(cmbProduct.getSelectedIndex() + 1);
-		cs.cdkey = txtCDKey.getText();
+		cs.cdkey = formatCDKey(txtCDKey.getText());
+		cs.cdkeyLOD = formatCDKey(txtCDKeyLOD.getText());
+		cs.cdkeyTFT = formatCDKey(txtCDKeyTFT.getText());
 		cs.server = txtServer.getText();
 		cs.autoconnect = chkAutoConnect.isSelected();
 		cs.enableGUI = chkEnableGUI.isSelected();
