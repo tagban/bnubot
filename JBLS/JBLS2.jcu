@@ -1,0 +1,35 @@
+<?xml?>
+<workspace_user>
+	<active_project>
+		<label>JBLS</label>
+	</active_project>
+	<projects>
+		<project>
+			<label>JBLS</label>
+			<showfiles>false</showfiles>
+			<folderitem>
+				<path>Admin</path>
+			</folderitem>
+			<folderitem>
+				<path>BNLSProtocol</path>
+			</folderitem>
+			<folderitem>
+				<path>Hashing</path>
+			</folderitem>
+			<folderitem>
+				<path>util</path>
+			</folderitem>
+			<folderitem>
+				<path>HTTP</path>
+			</folderitem>
+		</project>
+	</projects>
+	<open_files>
+		<docitem>
+			<path>util\PE.java</path>
+			<source>true</source>
+			<index>0</index>
+			<active>true</active>
+		</docitem>
+	</open_files>
+</workspace_user>
