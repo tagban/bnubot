@@ -85,8 +85,9 @@ public class TextWindow extends JScrollPane {
 		//Scroll to the bottom
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
+				validate();
 				JScrollBar vsb = getVerticalScrollBar();
-				vsb.setValue(vsb.getMaximum() + 1);
+				vsb.setValue(vsb.getMaximum());
 			}
 		});
 	}
