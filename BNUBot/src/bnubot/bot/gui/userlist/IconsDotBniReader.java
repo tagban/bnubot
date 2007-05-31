@@ -73,7 +73,7 @@ public class IconsDotBniReader {
 			int width = is.readWord();
 			int height = is.readWord();
 			byte depth = is.readByte();			// 24 bit depth is good
-			byte descriptor = is.readByte();	// bits 5 and 4 (00110000) specify the corner to start coloring pixels - 00=bl, 01=br, 10=tl, 11=tr
+			/*byte descriptor =*/ is.readByte();	// bits 5 and 4 (00110000) specify the corner to start coloring pixels - 00=bl, 01=br, 10=tl, 11=tr
 			is.skip(infoLength);	//String info = is.readFixedLengthString(infoLength);
 			
 			if(imageType != 0x0A)
