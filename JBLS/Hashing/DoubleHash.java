@@ -31,7 +31,6 @@ public class DoubleHash
             secondHash.add(serverToken);
             for(int i = 0; i < 5; i++)
                 secondHash.add(hash1[i]);
-            System.out.println(secondHash.toString());
 
             return BrokenSHA1.calcHashBuffer(secondHash.getBuffer());
     }
