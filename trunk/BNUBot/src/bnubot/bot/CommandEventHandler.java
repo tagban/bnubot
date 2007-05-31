@@ -6,6 +6,7 @@ import bnubot.core.Connection;
 public class CommandEventHandler implements EventHandler {
 	Connection c = null;
 	Database d = null;
+	Boolean sweepBanInProgress = false;
 	
 	public CommandEventHandler(Database d) {
 		this.d = d;
@@ -42,6 +43,7 @@ public class CommandEventHandler implements EventHandler {
 		
 		if(text.charAt(0) == '~') {
 			String[] command = text.substring(1).split(" ");
+			String paramString = text.substring(text.indexOf(' ') + 1);
 		
 			switch(command[0].charAt(0)) {
 			case 'a':
@@ -75,7 +77,16 @@ public class CommandEventHandler implements EventHandler {
 						c.sendChat("Usage: ~kick <user>[@<realm>] [reason]");
 						break;
 					}
-					c.sendChat("/" + text.substring(1));
+					break;
+				}
+			case 's':
+				if(command[0].compareToIgnoreCase("sweepban") == 0) {
+					if(command.length < 2) {
+						c.sendChat("Usage: ~sweepban <channel>");
+						break;
+					}
+					sweepBanInProgress = true;
+					c.sendChat("/who " + paramString);
 					break;
 				}
 			case 'u':
@@ -122,6 +133,30 @@ public class CommandEventHandler implements EventHandler {
 
 	public void recieveInfo(String text) {
 		// TODO Auto-generated method stub
+		if(sweepBanInProgress) {
+			boolean turnItOff = true;
+			
+			if(text.substring(0, 17).compareTo("Users in channel ") == 0)
+				turnItOff = false;
+			
+			String users[] = text.split(", ");
+			if(users.length == 2) {
+				if(users[0].indexOf(' ') == -1) {
+					if(users[1].indexOf(' ') == -1) {
+						c.sendChat("| /ban " + users[0]);
+						c.sendChat("| /ban " + users[1]);
+						turnItOff = false;
+						
+
+						c.sendChat("[temporary fix]...turning sweepban mode off to prevent flooding");
+						turnItOff = true;
+					}
+				}
+			}
+			
+			if(turnItOff)
+				sweepBanInProgress = false;
+		}
 		
 	}
 
