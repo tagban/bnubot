@@ -648,13 +648,14 @@ public class BNCSConnection extends Connection {
 					yield();
 				}
 				
-				setConnected(false);
-				s.close();
-				recieveError("Disconnected from battle.net.");
-			} catch (Exception e) {
+			} catch(Exception e) {
+				recieveError(e.getMessage());
 				e.printStackTrace();
-				System.exit(1);
 			}
+			
+			setConnected(false);
+			try { s.close(); } catch (Exception e) { }
+			recieveError("Disconnected from battle.net.");
 		}
 	}
 
