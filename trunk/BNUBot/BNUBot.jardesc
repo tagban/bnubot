@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jardesc>
-<jar path="BNUBot.jar"/>
+<jar path="BNUBot/BNUBot.jar"/>
 <options buildIfNeeded="true" compress="true" descriptionLocation="/BNUBot/BNUBot.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
 <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
 <selectedProjects/>
@@ -11,6 +11,7 @@
 </sealing>
 </manifest>
 <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
+<javaElement handleIdentifier="=JBLS/&lt;BNLSProtocol"/>
 <javaElement handleIdentifier="=JBLS/&lt;Hashing"/>
 <javaElement handleIdentifier="=JBLS/&lt;util"/>
 <javaElement handleIdentifier="=BNUBot/src"/>
