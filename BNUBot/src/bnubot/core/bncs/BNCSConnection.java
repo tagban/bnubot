@@ -3,6 +3,7 @@ package bnubot.core.bncs;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
+import java.util.Date;
 import java.util.Random;
 
 import bnubot.bot.EventHandler;
@@ -671,8 +672,41 @@ public class BNCSConnection extends Connection {
 		else
 			bnetDisconnected();
 	}
-	
+
+	int lastTime = (int)(new Date().getTime() / 1000);
+	int sentBytes = 0;
+	static final int perPacket = 200;
+	static final int perByte = 10;
+	static final int maxBytes = 600;
+	private int requiredDelay(int bytes) {
+		int thisTime = (int)(new Date().getTime() / 1000);
+		
+		if( (lastTime - thisTime) > (sentBytes * perByte) )
+			sentBytes = 0;
+		else
+			sentBytes = sentBytes - (thisTime - lastTime) / perByte;
+		
+		lastTime = thisTime;
+		
+		if((sentBytes + perPacket + bytes) > maxBytes)
+			return (sentBytes + perPacket + bytes - maxBytes) * perByte;
+		
+		sentBytes = sentBytes + perPacket + bytes;
+		return 0;
+	}
+
 	public void sendChat(String text) {
+		int delay = requiredDelay(text.length());
+		if(delay > 0) {
+			System.out.println("Delaying " + delay + "ms");
+			try {
+				Thread.sleep(delay);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+				System.exit(1);
+			}
+		}
+		
 		//Remove all chars under 0x20
 		byte[] data = text.getBytes();
 		text = "";
