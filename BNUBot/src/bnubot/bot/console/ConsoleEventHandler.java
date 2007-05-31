@@ -37,6 +37,14 @@ public class ConsoleEventHandler implements EventHandler {
 		System.out.println("<" + user + " " + text + ">");
 	}
 
+	public void whisperRecieved(String user, String text) {
+		System.out.println("<From: " + user + "> " + text);
+	}
+
+	public void whisperSent(String user, String text) {
+		System.out.println("<To: " + user + "> " + text);
+	}
+
 	public void recieveInfo(String text) {
 		System.out.println(text);
 	}

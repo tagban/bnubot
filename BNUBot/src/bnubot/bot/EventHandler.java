@@ -16,4 +16,6 @@ public interface EventHandler {
 	public void recieveEmote(String user, String text);
 	public void recieveInfo(String text);
 	public void recieveError(String text);
+	public void whisperSent(String user, String text);
+	public void whisperRecieved(String user, String text);
 }

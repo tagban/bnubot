@@ -135,4 +135,14 @@ public class CommandEventHandler implements EventHandler {
 		
 	}
 
+	public void whisperRecieved(String user, String text) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void whisperSent(String user, String text) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

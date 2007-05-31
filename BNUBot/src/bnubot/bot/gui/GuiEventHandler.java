@@ -45,23 +45,37 @@ public class GuiEventHandler implements EventHandler {
 			menu = new JMenu("File");
 			{	
 				menuItem = new JMenuItem("Connect");
-				menuItem.addActionListener(new ActionListener() { public void actionPerformed(ActionEvent e) { c.setConnected(true); } });
+				menuItem.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						if(!c.isConnected())
+							c.setConnected(true);
+					} });
 				menu.add(menuItem);
 				
 				menuItem = new JMenuItem("Disconnect");
-				menuItem.addActionListener(new ActionListener() { public void actionPerformed(ActionEvent e) { c.setConnected(false); } });
+				menuItem.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						if(c.isConnected())
+							c.setConnected(false);
+					} });
 				menu.add(menuItem);
 				
 				menu.addSeparator();
 				
 				menuItem = new JMenuItem("Settings");
-				menuItem.addActionListener(new ActionListener() { public void actionPerformed(ActionEvent e) { new ConfigurationFrame(c.getConnectionSettings()).setVisible(true); } });
+				menuItem.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						new ConfigurationFrame(c.getConnectionSettings()).setVisible(true);
+					} });
 				menu.add(menuItem);
 				
 				menu.addSeparator();
 				
 				menuItem = new JMenuItem("Exit");
-				menuItem.addActionListener(new ActionListener() { public void actionPerformed(ActionEvent e) { System.exit(0); } });
+				menuItem.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						System.exit(0);
+					} });
 				menu.add(menuItem);
 			}
 			menuBar.add(menu);	
@@ -169,6 +183,14 @@ public class GuiEventHandler implements EventHandler {
 
 	public void recieveError(String text) {
 		mainTextArea.recieveError(text);
+	}
+
+	public void whisperRecieved(String user, String text) {
+		mainTextArea.userChat("From: " + user, text);
+	}
+
+	public void whisperSent(String user, String text) {
+		mainTextArea.userChat("To: " + user, text);
 	}
 
 	public void bnetConnected() {
