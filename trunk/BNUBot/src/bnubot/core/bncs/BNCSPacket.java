@@ -17,7 +17,7 @@ public class BNCSPacket extends BNetOutputStream {
 		this.packetId = packetId;
 	}
 	
-	public void SendPacket(OutputStream out, boolean packetLog) throws SocketException {
+	public void SendPacket(OutputStream out, boolean packetLog) {
 		byte data[] = ((ByteArrayOutputStream)this.out).toByteArray();
 		//BNCSOutputStream sckout = new BNCSOutputStream(out);
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -51,7 +51,8 @@ public class BNCSPacket extends BNetOutputStream {
 		
 		try {
 			out.write(data);
-		} catch (IOException e) {
+			out.flush();
+		} catch (Exception e) {
 			e.printStackTrace();
 			System.exit(1);
 		}
