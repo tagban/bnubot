@@ -32,8 +32,6 @@ public class ConfigurationFrame extends JDialog {
 		
 		this.cs = cs;
 
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		//setLayout(new FlowLayout(FlowLayout.LEFT));
 		initializeGui();
 		setupActions();
 		setTitle(cs.username);
