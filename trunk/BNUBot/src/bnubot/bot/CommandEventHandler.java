@@ -7,6 +7,7 @@ public class CommandEventHandler implements EventHandler {
 	Connection c = null;
 	Database d = null;
 	Boolean sweepBanInProgress = false;
+	int sweepBannedUsers;
 	
 	public CommandEventHandler(Database d) {
 		this.d = d;
@@ -86,6 +87,7 @@ public class CommandEventHandler implements EventHandler {
 						break;
 					}
 					sweepBanInProgress = true;
+					sweepBannedUsers = 0;
 					c.sendChat("/who " + paramString);
 					break;
 				}
@@ -131,26 +133,44 @@ public class CommandEventHandler implements EventHandler {
 		
 	}
 
+	// If the name is "[NAME]", return "NAME" otherwise pass name through
+	private String removeOpUserBrackets(String name) {
+		if(name.charAt(0) == '[') {
+			if(name.charAt(name.length() - 1) == ']') {
+				return name.substring(1, name.length() - 1); 
+			}
+		}
+		return name;
+	}
 	public void recieveInfo(String text) {
 		// TODO Auto-generated method stub
 		if(sweepBanInProgress) {
 			boolean turnItOff = true;
 			
-			if(text.substring(0, 17).compareTo("Users in channel ") == 0)
-				turnItOff = false;
+			if(text.length() > 17) {
+				if(text.substring(0, 17).compareTo("Users in channel ") == 0) {
+					if(sweepBannedUsers == 0) {
+						turnItOff = false;
+						c.sendChat("Sweepbanning channel " + text.substring(17, text.length() - 1));
+					}
+				}
+			}
 			
 			String users[] = text.split(", ");
 			if(users.length == 2) {
 				if(users[0].indexOf(' ') == -1) {
 					if(users[1].indexOf(' ') == -1) {
-						c.sendChat("| /ban " + users[0]);
-						c.sendChat("| /ban " + users[1]);
+						c.sendChat("/ban " + removeOpUserBrackets(users[0]));
+						c.sendChat("/ban " + removeOpUserBrackets(users[1]));
+						sweepBannedUsers += 2;
 						turnItOff = false;
-						
-
-						c.sendChat("[temporary fix]...turning sweepban mode off to prevent flooding");
-						turnItOff = true;
 					}
+				}
+			} else {
+				if(text.indexOf(' ') == -1) {
+					c.sendChat("/ban " + removeOpUserBrackets(text));
+					sweepBannedUsers++;
+					turnItOff = true;
 				}
 			}
 			
