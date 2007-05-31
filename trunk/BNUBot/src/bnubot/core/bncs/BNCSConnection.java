@@ -625,6 +625,12 @@ public class BNCSConnection extends Connection {
 								channelName = text;
 								joinedChannel(text);
 								break;
+							case BNCSCommandIDs.EID_WHISPERSENT:
+								whisperSent(user, text);
+								break;
+							case BNCSCommandIDs.EID_WHISPER:
+								whisperRecieved(user, text);
+								break;
 							default:
 								recieveError("Unknown SID_CHATEVENT EID 0x" + Integer.toHexString(eid) + ": " + text);
 								break;

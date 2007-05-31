@@ -110,4 +110,16 @@ public abstract class Connection extends Thread implements EventHandler {
 		while(en.hasMoreElements())
 			en.nextElement().recieveError(text);
 	}
+	
+	public void whisperSent(String user, String text) {
+		Enumeration<EventHandler> en = eventHandlers.elements();
+		while(en.hasMoreElements())
+			en.nextElement().whisperSent(user, text);
+	}
+	
+	public void whisperRecieved(String user, String text) {
+		Enumeration<EventHandler> en = eventHandlers.elements();
+		while(en.hasMoreElements())
+			en.nextElement().whisperRecieved(user, text);
+	}
 }

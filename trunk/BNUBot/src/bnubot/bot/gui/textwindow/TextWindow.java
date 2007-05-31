@@ -6,7 +6,6 @@ import javax.swing.*;
 
 @SuppressWarnings("serial")
 public class TextWindow extends JScrollPane {
-	private static final int HEIGHT_PER_LINE = 15;
 	private static final Color bgColor = Color.BLACK;
 	
 	private Box b = null;
