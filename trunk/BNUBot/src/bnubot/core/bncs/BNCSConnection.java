@@ -640,6 +640,21 @@ public class BNCSConnection extends Connection {
 							break;
 						}
 						
+						case BNCSCommandIDs.SID_MESSAGEBOX: {
+							int style = is.readDWord();
+							String text = is.readNTString();
+							String caption = is.readNTString();
+							
+							recieveInfo("<" + caption + "> " + text);
+							break;
+						}
+						
+						case BNCSCommandIDs.SID_FLOODDETECTED: {
+							recieveError("You have been disconnected for flooding.");
+							setConnected(false);
+							break;
+						}
+						
 						default:
 							recieveError("Unknown SID 0x" + Integer.toHexString(pr.packetId) + "\n" + bnubot.util.HexDump.hexDump(pr.data));
 							break;
@@ -696,6 +711,9 @@ public class BNCSConnection extends Connection {
 	}
 
 	public void sendChat(String text) {
+		if(!isConnected())
+			return;
+		
 		int delay = requiredDelay(text.length());
 		if(delay > 0) {
 			System.out.println("Delaying " + delay + "ms");
