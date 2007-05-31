@@ -2,13 +2,11 @@ package bnubot.core.bncs;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.IOException;
 import java.net.Socket;
 import java.util.Random;
 
 import bnubot.bot.EventHandler;
 import bnubot.core.BNetInputStream;
-import bnubot.core.BNetOutputStream;
 import bnubot.core.Connection;
 import bnubot.core.ConnectionSettings;
 
@@ -252,7 +250,7 @@ public class BNCSConnection extends Connection {
 						    	exeHash = exeStream.readDWord();
 						    	exeInfo = exeStream.readNTString();
 						    	exeStream.readDWord(); // cookie
-						    	int exeVerbyte = exeStream.readDWord();
+						    	/*int exeVerbyte =*/ exeStream.readDWord();
 						    	assert(exeStream.available() == 0);
 	                    	}
 	
@@ -499,14 +497,14 @@ public class BNCSConnection extends Connection {
 						}
 						
 						case BNCSCommandIDs.SID_LOGONCHALLENGEEX: {
-							int udpToken = is.readDWord();
+							/*int udpToken =*/ is.readDWord();
 							serverToken = is.readDWord();
 							break;
 						}
 						
 						case BNCSCommandIDs.SID_CREATEACCOUNT2: {
 							int status = is.readDWord();
-							String suggestion = is.readNTString();
+							/*String suggestion =*/ is.readNTString();
 							
 							switch(status) {
 							case 0x00:
