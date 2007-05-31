@@ -3,6 +3,7 @@ package bnubot.core.bncs;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.SocketException;
 
 import bnubot.core.BNetOutputStream;
 import bnubot.util.HexDump;
@@ -16,7 +17,7 @@ public class BNCSPacket extends BNetOutputStream {
 		this.packetId = packetId;
 	}
 	
-	public void SendPacket(OutputStream out, boolean packetLog) {
+	public void SendPacket(OutputStream out, boolean packetLog) throws SocketException {
 		byte data[] = ((ByteArrayOutputStream)this.out).toByteArray();
 		//BNCSOutputStream sckout = new BNCSOutputStream(out);
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
