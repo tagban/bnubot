@@ -3,6 +3,7 @@ package bnubot.core.bncs;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.Date;
 import java.util.Random;
 
@@ -641,7 +642,7 @@ public class BNCSConnection extends Connection {
 						}
 						
 						case BNCSCommandIDs.SID_MESSAGEBOX: {
-							int style = is.readDWord();
+							/*int style =*/ is.readDWord();
 							String text = is.readNTString();
 							String caption = is.readNTString();
 							
@@ -661,16 +662,19 @@ public class BNCSConnection extends Connection {
 						}
 					}
 					
+					sleep(10);
 					yield();
 				}
-				
+			
+			} catch(SocketException e) {
 			} catch(Exception e) {
-				recieveError(e.getMessage());
+				recieveError("Unhandled exception: " + e.getMessage());
 				e.printStackTrace();
 			}
 			
 			setConnected(false);
 			try { s.close(); } catch (Exception e) { }
+			s = null;
 			recieveError("Disconnected from battle.net.");
 		}
 	}
@@ -688,26 +692,24 @@ public class BNCSConnection extends Connection {
 			bnetDisconnected();
 	}
 
-	int lastTime = (int)(new Date().getTime() / 1000);
-	int sentBytes = 0;
-	static final int perPacket = 200;
-	static final int perByte = 10;
-	static final int maxBytes = 600;
+	long lastTime = 0;
+	int lastChatLen = 0;
 	private int requiredDelay(int bytes) {
-		int thisTime = (int)(new Date().getTime() / 1000);
+		long thisTime = new Date().getTime();
 		
-		if( (lastTime - thisTime) > (sentBytes * perByte) )
-			sentBytes = 0;
-		else
-			sentBytes = sentBytes - (thisTime - lastTime) / perByte;
+		if(lastTime == 0) {
+			lastTime = thisTime;
+			return 0;
+		}
+		
+		int delay = (lastChatLen * 15) + 2700;
+		delay -= (thisTime - lastTime);
+		if(delay < 0)
+			delay = 0;
 		
 		lastTime = thisTime;
-		
-		if((sentBytes + perPacket + bytes) > maxBytes)
-			return (sentBytes + perPacket + bytes - maxBytes) * perByte;
-		
-		sentBytes = sentBytes + perPacket + bytes;
-		return 0;
+		lastChatLen = bytes;
+		return delay;
 	}
 
 	public void sendChat(String text) {
@@ -716,7 +718,6 @@ public class BNCSConnection extends Connection {
 		
 		int delay = requiredDelay(text.length());
 		if(delay > 0) {
-			System.out.println("Delaying " + delay + "ms");
 			try {
 				Thread.sleep(delay);
 			} catch (InterruptedException e) {
