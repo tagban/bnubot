@@ -72,7 +72,7 @@ public class BNCSConnection extends Connection {
 				if(!cs.autoconnect || !allowAutoConnect) {
 					while(!isConnected()) {
 						yield();
-						sleep(100);
+						sleep(10);
 					}
 				}
 				allowAutoConnect = false;
@@ -713,6 +713,10 @@ public class BNCSConnection extends Connection {
 	}
 
 	public void sendChat(String text) {
+		if(text == null)
+			return;
+		if(text.length() == 0)
+			return;
 		if(!isConnected())
 			return;
 		
@@ -748,6 +752,14 @@ public class BNCSConnection extends Connection {
 		}
 	}
 
+	public void setClanRank(String user, int newRank) throws Exception {
+		BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_CLANRANKCHANGE);
+		p.writeDWord(0);		//Cookie
+		p.writeNTString(user);	//Username
+		p.writeByte(newRank);	//New rank
+		p.SendPacket(dos, cs.packetLog);
+	}
+	
 	public String toString() {
 		String out = accountName;
 		if(channelName != null)
