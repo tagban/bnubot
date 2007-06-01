@@ -1,6 +1,5 @@
 package bnubot.bot;
 
-import java.util.Enumeration;
 import java.util.Properties;
 
 import bnubot.bot.database.*;
