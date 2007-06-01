@@ -769,9 +769,18 @@ public class BNCSConnection extends Connection {
 	public void sendChat(String text) {
 		if(text == null)
 			return;
-		if(text.length() == 0)
-			return;
 		if(!isConnected())
+			return;
+		
+		//Remove all chars under 0x20
+		byte[] data = text.getBytes();
+		text = "";
+		for(int i = 0; i < data.length; i++) {
+			if(data[i] >= 0x20)
+				text += (char)data[i];
+		}
+		
+		if(text.length() == 0)
 			return;
 		
 		int delay = requiredDelay(text.length());
@@ -782,14 +791,6 @@ public class BNCSConnection extends Connection {
 				e.printStackTrace();
 				System.exit(1);
 			}
-		}
-		
-		//Remove all chars under 0x20
-		byte[] data = text.getBytes();
-		text = "";
-		for(int i = 0; i < data.length; i++) {
-			if(data[i] >= 0x20)
-				text += (char)data[i];
 		}
 		
 		//Write the packet
