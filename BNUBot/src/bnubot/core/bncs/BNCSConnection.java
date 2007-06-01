@@ -332,6 +332,7 @@ public class BNCSConnection extends Connection {
 									break;
 								}
 								setConnected(false);
+								break;
 							}
 							
 							recieveInfo("Passed CD key challenge and CheckRevision");
