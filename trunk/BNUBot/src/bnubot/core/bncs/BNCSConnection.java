@@ -688,6 +688,18 @@ public class BNCSConnection extends Connection {
 							case BNCSCommandIDs.EID_WHISPER:
 								whisperRecieved(user, text);
 								break;
+							case BNCSCommandIDs.EID_CHANNELDOESNOTEXIST:
+								p = new BNCSPacket(BNCSCommandIDs.SID_JOINCHANNEL);
+								p.writeDWord(2); // create join
+								p.writeNTString(text);
+								p.SendPacket(dos, cs.packetLog);
+								break;
+							case BNCSCommandIDs.EID_CHANNELRESTRICTED:
+								recieveError("Channel " + text + " is restricted");
+								break;
+							case BNCSCommandIDs.EID_CHANNELFULL:
+								recieveError("Channel " + text + " is full");
+								break;
 							default:
 								recieveError("Unknown SID_CHATEVENT EID 0x" + Integer.toHexString(eid) + ": " + text);
 								break;
