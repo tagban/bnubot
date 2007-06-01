@@ -1,8 +1,6 @@
 package bnubot.bot.gui.textwindow;
 
 import java.awt.*;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 
 import javax.swing.*;

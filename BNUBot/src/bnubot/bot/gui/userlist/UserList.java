@@ -1,10 +1,7 @@
 package bnubot.bot.gui.userlist;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.FlowLayout;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
