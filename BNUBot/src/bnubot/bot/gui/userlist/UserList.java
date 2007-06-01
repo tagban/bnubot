@@ -14,6 +14,7 @@ import javax.swing.*;
 public class UserList extends JPanel {
 	private class UserInfo {
 		int flags;
+		int priority;
 		int ping;
 		String statstr;
 		JLabel label;
@@ -58,14 +59,13 @@ public class UserList extends JPanel {
 		return PRIORITY_NORMAL;
 	}
 	
-	private int getInsertPosition(int flags) {
-		int prioNew = getPrioByFlags(flags);
+	private int getInsertPosition(int priority) {
 		for(int i = 0; i < b.getComponentCount(); i++) {
 			JLabel lbl = (JLabel)b.getComponent(i);
 			UserInfo ui = users.get(lbl.getText());
-			int prioOld = getPrioByFlags(ui.flags);
+			int pCurrent = getPrioByFlags(ui.flags);
 			
-			if(prioNew > prioOld)
+			if(priority > pCurrent)
 				return i;
 		}
 		return b.getComponentCount();
@@ -78,20 +78,29 @@ public class UserList extends JPanel {
 			ui.flags = flags;
 			ui.ping = ping;
 			ui.statstr = statstr;
+			ui.priority = getPrioByFlags(flags);
 		}
 		if(ui.label == null) {
 			ui.label = new JLabel(user);
 			ui.label.setForeground(Color.LIGHT_GRAY);
-			b.add(ui.label, getInsertPosition(ui.flags));
+			b.add(ui.label, getInsertPosition(ui.priority));
 		}
 		
 		//Check if the user's flags updated
 		if(ui.flags != flags) {
 			//They did; order the list appropriately
+
+			int newPriority = getPrioByFlags(flags);
+			if(ui.priority != newPriority) {
+				ui.priority = newPriority;
+				b.remove(ui.label);
+				b.add(ui.label, getInsertPosition(newPriority));
+			}
+			
 			ui.flags = flags;
-			b.remove(ui.label);
-			b.add(ui.label, getInsertPosition(ui.flags));
 		}
+		ui.ping = ping;
+		ui.statstr = statstr;
 				
 		Icon icon = null;
 		String product = null;
