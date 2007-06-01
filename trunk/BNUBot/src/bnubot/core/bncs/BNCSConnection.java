@@ -355,27 +355,48 @@ public class BNCSConnection extends Connection {
 								recieveInfo("Login accepted; requires proof.");
 								break;
 							case 0x01:
-								recieveError("Account doesn't exist");
-								setConnected(false);
+								recieveError("Account doesn't exist; creating...");
+								
+								if(srp == null) {
+									recieveError("SRP is not initialized!");
+									setConnected(false);
+									break;
+								}
+
+						        byte[] salt = new byte[32];
+						        new Random().nextBytes(salt);
+						        byte[] verifier = srp.get_v(salt).toByteArray();
+
+						        if(salt.length != 32)
+						        	throw new Exception("Salt length wasn't 32!");
+						        if(verifier.length != 32)
+						        	throw new Exception("Verifier length wasn't 32!");
+						        
+						        p = new BNCSPacket(BNCSCommandIDs.SID_AUTH_ACCOUNTCREATE);
+						        p.write(salt);
+						        p.write(verifier);
+						        p.writeNTString(cs.username);
+						        p.SendPacket(dos, cs.packetLog);
+								
 								break;
 							case 0x05:
 								recieveError("Account requires upgrade");
 								setConnected(false);
 								break;
 							default:
-								recieveError("Unknown SID_AUTH_ACCOUNTLOGON status");
+								recieveError("Unknown SID_AUTH_ACCOUNTLOGON status 0x" + Integer.toHexString(status));
 								setConnected(false);
 								break;
 							}
+							
+							if(status != 0)
+								break;
 							
 							if(srp == null) {
 								recieveError("SRP is not initialized!");
 								setConnected(false);
 								break;
 							}
-							
-							if(!isConnected())
-								break;
 							
 							byte s[] = new byte[32];
 							byte B[] = new byte[32];
@@ -390,6 +411,32 @@ public class BNCSConnection extends Connection {
 							p = new BNCSPacket(BNCSCommandIDs.SID_AUTH_ACCOUNTLOGONPROOF);
 							p.write(M1);
 							p.SendPacket(dos, cs.packetLog);
+							break;
+						}
+						
+						case BNCSCommandIDs.SID_AUTH_ACCOUNTCREATE: {
+							/* 
+							 * (DWORD)		 Status
+							 * 0x00: Successfully created account name.
+							 * 0x04: Name already exists.
+							 * 0x07: Name is too short/blank.
+							 * 0x08: Name contains an illegal character.
+							 * 0x09: Name contains an illegal word.
+							 * 0x0a: Name contains too few alphanumeric characters.
+							 * 0x0b: Name contains adjacent punctuation characters.
+							 * 0x0c: Name contains too many punctuation characters.
+							 * Any other: Name already exists.
+							 */
+							int status = is.readDWord();
+							switch(status) {
+							case 0x00:
+								recieveInfo("Create account succeeded; logging in.");
+								sendPassword();
+								break;
+							default:
+								recieveError("Create account failed with error code 0x" + Integer.toHexString(status));
+								break;
+							}
 							break;
 						}
 						
@@ -420,6 +467,7 @@ public class BNCSConnection extends Connection {
 								break;
 							case 0x0E:
 								recieveError("An email address should be registered for this account.");
+								registerEmail();
 								break;
 							case 0x0F:
 								recieveError("Custom bnet error: " + additionalInfo);
@@ -538,14 +586,8 @@ public class BNCSConnection extends Connection {
 						}
 						
 						case BNCSCommandIDs.SID_SETEMAIL: {
-							if((cs.email != null) && (cs.email.length() > 0)) {
-								recieveError("No email address has been specified; setting it to " + cs.email);
-								p = new BNCSPacket(BNCSCommandIDs.SID_SETEMAIL);
-								p.writeNTString(cs.email);
-								p.SendPacket(dos, cs.packetLog);
-							} else {
-								recieveError("No email address has been specified");
-							}
+							recieveError("An email address should be registered for this account.");
+							registerEmail();
 							break;
 						}
 						
@@ -677,6 +719,17 @@ public class BNCSConnection extends Connection {
 			s = null;
 			recieveError("Disconnected from battle.net.");
 		}
+	}
+	
+	private void registerEmail() throws Exception {
+		if(cs.email == null)
+			return;
+		if(cs.email.length() == 0)
+			return;
+		recieveInfo("Register email address: " + cs.email);
+		BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_SETEMAIL);
+		p.writeNTString(cs.email);
+		p.SendPacket(dos, cs.packetLog);
 	}
 
 	public boolean isConnected() {
