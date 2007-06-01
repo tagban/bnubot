@@ -16,14 +16,17 @@ public class ConfigurationFrame extends JDialog {
 	JPasswordField txtPassword = null;
 	JTextArea txtEmail = null;
 	JComboBox cmbProduct = null;
+	JTextArea txtTrigger = null;
 	JTextArea txtCDKey = null;
 	JTextArea txtCDKeyLOD = null;
 	JTextArea txtCDKeyTFT = null;
 	JTextArea txtServer = null;
+	JTextArea txtChannel = null;
 	JCheckBox chkAutoConnect = null;
 	JCheckBox chkEnableGUI = null;
 	JCheckBox chkEnableCLI = null;
 	JCheckBox chkPacketLog = null;
+	JButton btnLoad = null;
 	JButton btnSave = null;
 	JButton btnCancel = null;
 	
@@ -60,6 +63,12 @@ public class ConfigurationFrame extends JDialog {
 				cmbProduct.setSelectedIndex(cs.product - 1);
 				pnlSettings.add(cmbProduct);
 				
+				pnlSettings.add(new JLabel("Trigger"));
+				txtTrigger = new JTextArea(cs.trigger);
+				txtTrigger.setRows(1);
+				txtTrigger.setColumns(1);
+				pnlSettings.add(txtTrigger);
+				
 				pnlSettings.add(new JLabel("CD Key"));
 				txtCDKey = new JTextArea(cs.cdkey);
 				pnlSettings.add(txtCDKey);
@@ -75,6 +84,10 @@ public class ConfigurationFrame extends JDialog {
 				pnlSettings.add(new JLabel("Server"));
 				txtServer = new JTextArea(cs.server);
 				pnlSettings.add(txtServer);
+				
+				pnlSettings.add(new JLabel("Channel"));
+				txtChannel = new JTextArea(cs.channel);
+				pnlSettings.add(txtChannel);
 			}
 			boxAll.add(pnlSettings);
 
@@ -98,9 +111,11 @@ public class ConfigurationFrame extends JDialog {
 			
 			Box boxButtons = new Box(BoxLayout.X_AXIS);
 			{
-				btnSave = new JButton("Save");
+				btnLoad = new JButton("Load");
+				btnSave = new JButton("OK");
 				btnCancel = new JButton("Cancel");
 				boxButtons.add(Box.createHorizontalGlue());
+				boxButtons.add(btnLoad);
 				boxButtons.add(btnSave);
 				boxButtons.add(btnCancel);
 			}
@@ -110,11 +125,21 @@ public class ConfigurationFrame extends JDialog {
 	}
 
 	private void setupActions() {
+		btnLoad.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent act) {
+				SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
+						load();
+					}
+				});
+			}
+		});
 		btnSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent act) {
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
 						save();
+						close();
 					}
 				});
 			}
@@ -123,7 +148,7 @@ public class ConfigurationFrame extends JDialog {
 			public void actionPerformed(ActionEvent act) {
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
-						close();
+						cancel();
 					}
 				});
 			}
@@ -143,28 +168,49 @@ public class ConfigurationFrame extends JDialog {
 		cs.password = new String(txtPassword.getPassword());
 		cs.email = txtEmail.getText();
 		cs.product = (byte)(cmbProduct.getSelectedIndex() + 1);
+		cs.trigger = txtTrigger.getText();
 		cs.cdkey = formatCDKey(txtCDKey.getText());
 		cs.cdkeyLOD = formatCDKey(txtCDKeyLOD.getText());
 		cs.cdkeyTFT = formatCDKey(txtCDKeyTFT.getText());
 		cs.server = txtServer.getText();
+		cs.channel = txtChannel.getText();
 		cs.autoconnect = chkAutoConnect.isSelected();
 		cs.enableGUI = chkEnableGUI.isSelected();
 		cs.enableCLI = chkEnableCLI.isSelected();
 		cs.packetLog = chkPacketLog.isSelected();
 		
-		if(cs.isValid()) {
-			cs.save();
-			close();
-		} else {
-			JOptionPane.showMessageDialog(this, "The configuration is invalid!");
-		}
+		cs.save();
+	}
+	
+	private void load() {
+		cs.load();
+		txtUsername.setText(cs.username);
+		txtPassword.setText(cs.password);
+		txtEmail.setText(cs.email);
+		cmbProduct.setSelectedIndex(cs.product - 1);
+		txtTrigger.setText(cs.trigger);
+		txtCDKey.setText(cs.cdkey);
+		txtCDKeyLOD.setText(cs.cdkeyLOD);
+		txtCDKeyTFT.setText(cs.cdkeyTFT);
+		txtServer.setText(cs.server);
+		txtChannel.setText(cs.channel);
+		chkAutoConnect.setSelected(cs.autoconnect);
+		chkEnableGUI.setSelected(cs.enableGUI);
+		chkEnableCLI.setSelected(cs.enableCLI);
+		chkPacketLog.setSelected(cs.packetLog);
+	}
+	
+	private void cancel() {
+		load();
+		close();
 	}
 	
 	private void close() {
-		if(cs.isValid()) {
+		String v = cs.isValid();
+		if(v == null) {
 			dispose();
 		} else {
-			JOptionPane.showMessageDialog(this, "The configuration is invalid!");
+			JOptionPane.showMessageDialog(this, "The configuration is invalid: " + v);
 		}
 	}
 }
