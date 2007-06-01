@@ -618,7 +618,7 @@ public class BNCSConnection extends Connection {
 							
 							p = new BNCSPacket(BNCSCommandIDs.SID_JOINCHANNEL);
 							p.writeDWord(0); // nocreate join
-							p.writeNTString("Clan BNU");
+							p.writeNTString(cs.channel);
 							p.SendPacket(dos, cs.packetLog);
 							break;
 						}
