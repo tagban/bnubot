@@ -32,6 +32,7 @@ public abstract class Connection extends Thread implements EventHandler {
 	public abstract boolean isConnected();
 	public abstract void setConnected(boolean c);
 	public abstract void sendChat(String text);
+	public abstract void setClanRank(String string, int newRank) throws Exception;
 	
 	public File downloadFile(String filename) {
 		return BNFTPConnection.downloadFile(cs, filename);
