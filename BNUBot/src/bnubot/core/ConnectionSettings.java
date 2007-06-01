@@ -26,10 +26,12 @@ public class ConnectionSettings implements Serializable {
 	public String username;
 	public String password;
 	public String email;
+	public String channel;
 	public String cdkey;
 	public String cdkeyLOD;
 	public String cdkeyTFT;
 	public byte product;
+	public String trigger;
 	public boolean autoconnect;
 	public boolean enableCLI;
 	public boolean enableGUI;
@@ -39,21 +41,31 @@ public class ConnectionSettings implements Serializable {
 		
 	}
 	
-	public boolean isValid() {
+	public String isValid() {
 		if(server == null)
-			return false;
+			return "Server unset";
 		if(server.length() == 0)
-			return false;
+			return "Server unset";
 		if(port <= 0)
-			return false;
+			return "Port invalid";
 		if(username == null)
-			return false;
+			return "Username unset";
 		if(username.length() == 0)
-			return false;
+			return "Username unset";
 		if(password == null)
-			return false;
+			return "Password unset";
 		if(password.length() == 0)
-			return false;
+			return "Password unset";
+		
+		switch(product) {
+		case PRODUCT_DIABLO2:
+		case PRODUCT_LORDOFDESTRUCTION:
+		case PRODUCT_WARCRAFT3:
+		case PRODUCT_THEFROZENTHRONE:
+			break;
+		default:
+			return "Unsupported product";	
+		}
 		
 		switch(product) {
 		case PRODUCT_DIABLOSHAREWARE:
@@ -61,27 +73,27 @@ public class ConnectionSettings implements Serializable {
 			break;
 		default:
 			if(cdkey == null)
-				return false;
+				return "Unset CD key";
 			if(cdkey.length() == 0)
-				return false;
+				return "Unset CD key";
 				break;
 		}
 		
 		if(product == PRODUCT_LORDOFDESTRUCTION) {
 			if(cdkeyLOD == null)
-				return false;
+				return "Unset LOD CD key";
 			if(cdkeyLOD.length() == 0)
-				return false;
+				return "Unset LOD CD key";
 		}
 		
 		if(product == PRODUCT_THEFROZENTHRONE) {
 			if(cdkeyTFT == null)
-				return false;
+				return "Unset TFT CD key";
 			if(cdkeyTFT.length() == 0)
-				return false;
+				return "Unset TFT CD key";
 		}
 		
-		return true;
+		return null;
 	}
 	
 	public void save() {
@@ -92,11 +104,13 @@ public class ConnectionSettings implements Serializable {
 		Ini.WriteIni(file, header, "username", username);
 		Ini.WriteIni(file, header, "password", password);
 		Ini.WriteIni(file, header, "email", email);
+		Ini.WriteIni(file, header, "channel", channel);
 		Ini.WriteIni(file, header, "cdkey", cdkey);
 		Ini.WriteIni(file, header, "cdkeyLOD", cdkeyLOD);
 		Ini.WriteIni(file, header, "cdkeyTFT", cdkeyTFT);
 		if(product != 0)
 		Ini.WriteIni(file, header, "product", util.Constants.prods[product-1]);
+		Ini.WriteIni(file, header, "trigger", trigger);
 		Ini.WriteIni(file, header, "autoconnect", Boolean.toString(autoconnect));
 		Ini.WriteIni(file, header, "enableCLI", Boolean.toString(enableCLI));
 		Ini.WriteIni(file, header, "enableGUI", Boolean.toString(enableGUI));
@@ -113,6 +127,7 @@ public class ConnectionSettings implements Serializable {
 		username =	Ini.ReadIni(file, header, "username", null);
 		password =	Ini.ReadIni(file, header, "password", null);
 		email =		Ini.ReadIni(file, header, "email", null);
+		channel =	Ini.ReadIni(file, header, "channel", "Clan BNU");
 		cdkey =		Ini.ReadIni(file, header, "cdkey", null);
 		cdkeyLOD =	Ini.ReadIni(file, header, "cdkeyLOD", null);
 		cdkeyTFT =	Ini.ReadIni(file, header, "cdkeyTFT", null);
@@ -124,6 +139,7 @@ public class ConnectionSettings implements Serializable {
 					product = (byte)(i+1);
 			}
 		}
+		trigger = 	Ini.ReadIni(file, header, "trigger", "!");
 		autoconnect = Boolean.parseBoolean(
 					Ini.ReadIni(file, header, "autoconnect", "false"));
 		enableCLI = Boolean.parseBoolean(
