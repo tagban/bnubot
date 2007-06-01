@@ -49,9 +49,20 @@ public class Main {
 			System.exit(1);
 		}
 		
-		if(!cs.isValid() || forceConfig) {
-			ConfigurationFrame cf = new ConfigurationFrame(cs);
-			cf.setVisible(true);
+		if((cs.isValid() == null) || forceConfig) {
+			ConfigurationFrame cf = null;
+			try {
+				cf = new ConfigurationFrame(cs);
+				cf.setVisible(true);
+			} catch(Exception e) {
+				String s = cs.isValid();
+				if(s == null) {
+					System.out.println("There was an error initializing the configuraiton window, but the configuration was valid.");
+				} else {
+					System.out.println("There was an error initializing the configuration window, and the configuration was invalid: " + s);
+				}
+				System.exit(1);
+			}
 			
 			while(cf.isVisible())
 				Thread.yield();
