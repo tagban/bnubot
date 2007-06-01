@@ -16,8 +16,9 @@ public abstract class Connection extends Thread implements EventHandler {
 		this.cs = cs;
 	}
 	
-	public void addEventHandler(String key, EventHandler e) {
-		eventHandlers.put(key, e);
+	public void addEventHandler(EventHandler e) {
+		System.out.println("Loading EventHandler: " + e.getClass().getName());
+		eventHandlers.put(e.toString(), e);
 		e.initialize(this);
 	}
 	

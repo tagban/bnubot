@@ -1,6 +1,7 @@
 package bnubot;
 
 import bnubot.bot.CommandEventHandler;
+import bnubot.bot.EventHandler;
 import bnubot.bot.console.ConsoleEventHandler;
 import bnubot.bot.database.*;
 import bnubot.bot.gui.ConfigurationFrame;
@@ -15,6 +16,7 @@ public class Main {
 		cs.load();
 		
 		boolean forceConfig = false;
+		String plugins[] = null;
 		
 		for(int i = 0; i < args.length; i++) {
 			if(args[i].charAt(0) == '-') {
@@ -41,6 +43,10 @@ public class Main {
 					if(args[i].compareToIgnoreCase("-nogui") == 0) {
 						cs.enableGUI = false;
 						continue;
+					}
+				case 'p':
+					if(args[i].compareToIgnoreCase("-plugins") == 0) {
+						plugins = args[++i].split(":");
 					}
 				}
 			}
@@ -69,11 +75,20 @@ public class Main {
 		}
 		
 		BNCSConnection c = new BNCSConnection(cs);
-		c.addEventHandler("command", new CommandEventHandler(new Database()));
+		
+		if(plugins != null) {
+			for(int i = 0; i < plugins.length; i++) {
+				Class plugin = Class.forName(plugins[i]);
+				EventHandler eh = (EventHandler)plugin.newInstance();
+				c.addEventHandler(eh);
+			}
+		}
+		
+		c.addEventHandler(new CommandEventHandler(new Database()));
 		if(cs.enableCLI)
-			c.addEventHandler("console", new ConsoleEventHandler());
+			c.addEventHandler(new ConsoleEventHandler());
 		if(cs.enableGUI)
-			c.addEventHandler("gui", new GuiEventHandler());
+			c.addEventHandler(new GuiEventHandler());
 		c.start();
 	
 		//IconsDotBniReader.readIconsDotBni(BNFTPConnection.downloadFile(cs, "icons_STAR.bni"));
