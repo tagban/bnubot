@@ -325,7 +325,19 @@ public class BNCSConnection extends Connection {
 									recieveError("Banned key");
 									break;
 								case 0x203:
-									recieveError("Wrong product");
+									recieveError("Wrong product for CD key");
+									break;
+								case 0x210:
+									recieveError("Invalid second CD key");
+									break;
+								case 0x211:
+									recieveError("Second CD key in use by " + extraInfo);
+									break;
+								case 0x212:
+									recieveError("Banned second key");
+									break;
+								case 0x213:
+									recieveError("Wrong product for second CD key");
 									break;
 								default:
 									recieveError("Unknown SID_AUTH_CHECK result 0x" + Integer.toHexString(result));
