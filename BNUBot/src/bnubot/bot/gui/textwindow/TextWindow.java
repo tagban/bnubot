@@ -1,6 +1,9 @@
 package bnubot.bot.gui.textwindow;
 
 import java.awt.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 import javax.swing.*;
 
@@ -10,32 +13,42 @@ public class TextWindow extends JScrollPane {
 	
 	private Box b = null;
 	
-	private class Emote extends JTextPane {
-		public Emote(String name, String text) {
-			setText("<" + name + " " + text + ">");
-			setBackground(bgColor);
-			setForeground(Color.YELLOW);
-		}
-	}
-
-	private class Chat extends JPanel {
-		public Chat(String name, String text) {
+	private class TimedMessage extends JPanel {
+		public TimedMessage() {
 			super(new FlowLayout(FlowLayout.LEFT));
 			FlowLayout layout = (FlowLayout)getLayout();
 			layout.setHgap(1);
 			layout.setVgap(1);
 			setBackground(bgColor);
-			
+
 			JTextPane jtp = new JTextPane();
-			jtp.setText("<" + name + "> ");
-			jtp.setBackground(bgColor);
-			jtp.setForeground(Color.YELLOW);
-			add(jtp);
-			
-			jtp = new JTextPane();
-			jtp.setText(text);
+			jtp.setText(String.format("[%1$tH:%1$tM:%1$tS] ", new GregorianCalendar()));
 			jtp.setBackground(bgColor);
 			jtp.setForeground(Color.LIGHT_GRAY);
+			add(jtp);
+		}
+	}
+	
+	private class SingleColorMessage extends TimedMessage {
+		public SingleColorMessage(String text, Color color) {
+			super();
+
+			JTextPane jtp = new JTextPane();
+			jtp.setText(text);
+			jtp.setBackground(bgColor);
+			jtp.setForeground(color);
+			add(jtp);
+		}
+	}
+
+	private class DoubleColorMessage extends SingleColorMessage {
+		public DoubleColorMessage(String text1, Color color1, String text2, Color color2) {
+			super(text1, color1);
+			
+			JTextPane jtp = new JTextPane();
+			jtp.setText(text2);
+			jtp.setBackground(bgColor);
+			jtp.setForeground(color2);
 			add(jtp);
 		}
 	}
@@ -43,40 +56,41 @@ public class TextWindow extends JScrollPane {
 	public TextWindow() {
 		super(new Box(BoxLayout.Y_AXIS));
 		setBackground(bgColor);
+		setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		JViewport vp = (JViewport)getComponent(0);
 		b = (Box)vp.getComponent(0);
 	}
 	
 	public void channelInfo(String text) {
-		JTextPane jtp = new JTextPane();
-		jtp.setText(text);
-		jtp.setForeground(Color.GREEN);
-		jtp.setBackground(bgColor);
-		insert(jtp);
+		insert(new SingleColorMessage(
+				text,
+				Color.GREEN));
 	}
 	
 	public void recieveInfo(String text) {
-		JTextPane jtp = new JTextPane();
-		jtp.setText(text);
-		jtp.setForeground(Color.BLUE);
-		jtp.setBackground(bgColor);
-		insert(jtp);
+		insert(new SingleColorMessage(
+				text,
+				Color.BLUE));
 	}
 	
 	public void recieveError(String text) {
-		JTextPane jtp = new JTextPane();
-		jtp.setText(text);
-		jtp.setForeground(Color.RED);
-		jtp.setBackground(bgColor);
-		insert(jtp);
+		insert(new SingleColorMessage(
+				text,
+				Color.RED));
 	}
 	
 	public void userChat(String user, String text) {
-		insert(new Chat(user, text));
+		insert(new DoubleColorMessage(
+				"<" + user + "> ",
+				Color.YELLOW,
+				text,
+				Color.LIGHT_GRAY));
 	}
 	
 	public void userEmote(String user, String text) {
-		insert(new Emote(user, text));
+		insert(new SingleColorMessage(
+				"<" + user + " " + text + ">",
+				Color.YELLOW));
 	}
 	
 	public void insert(Component c) {
