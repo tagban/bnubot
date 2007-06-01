@@ -1,5 +1,8 @@
 package bnubot.bot;
 
+import java.util.Enumeration;
+import java.util.Properties;
+
 import bnubot.bot.database.*;
 import bnubot.core.Connection;
 
@@ -72,6 +75,14 @@ public class CommandEventHandler implements EventHandler {
 					c.sendChat("/" + text.substring(1));
 					break;
 				}
+			
+			case 'i':
+				if(command[0].compareToIgnoreCase("info") == 0) {
+					Properties p = System.getProperties();
+					c.sendChat("BNU-Bot v2.0 beta running on " + p.getProperty("os.name") + " (" + p.getProperty("os.arch") + ")");
+					break;
+				}
+				
 			case 'k':
 				if(command[0].compareToIgnoreCase("kick") == 0) {
 					if(command.length <= 1) {
@@ -81,6 +92,28 @@ public class CommandEventHandler implements EventHandler {
 					break;
 				}
 			case 's':
+				if(command[0].compareToIgnoreCase("setrank") == 0) {
+					int newRank;
+					try {
+						if(command.length != 3)
+							throw new Exception();
+						newRank = Integer.valueOf(command[2]);
+						if((newRank < 1) || (newRank > 3))
+							throw new Exception();
+					} catch(Exception e) {
+						c.sendChat("Usage: ~setrank <user> <rank:1-3>");
+						break;
+					}
+					
+					// TODO: validate that command[1] is in the clan
+					try {
+						c.setClanRank(command[1], newRank);
+						c.sendChat("Success");
+					} catch(Exception e) {
+						c.sendChat("Failure");
+					}
+					break;
+				}
 				if(command[0].compareToIgnoreCase("sweepban") == 0) {
 					if(command.length < 2) {
 						c.sendChat("Usage: ~sweepban <channel>");
