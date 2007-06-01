@@ -43,6 +43,10 @@ public class CommandEventHandler implements EventHandler {
 			return;
 		if(u.getAccess() <= 0)
 			return;
+		if(text == null)
+			return;
+		if(text.length() == 0)
+			return;
 		
 		if(text.charAt(0) == '~') {
 			String[] command = text.substring(1).split(" ");
