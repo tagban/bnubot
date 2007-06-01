@@ -6,6 +6,9 @@ Create a class that implements bnubot.bot.EventHandler:
 	import bnubot.bot.EventHandler;
 	public class CustomEventHandler implements EventHandler {
 		Connection c;
+		
+		public CustomEventHandler() {}
+		
 		public void initialize(Connection c) {
 			this.c = c;
 		}
