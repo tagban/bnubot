@@ -13,7 +13,6 @@ public class ConsoleEventHandler implements EventHandler {
 
 	public void joinedChannel(String channel) {
 		System.out.println("Joining channel " + channel);
-		//c.sendChat("it begins again...");
 	}
 
 	public void channelUser(String user, int flags, int ping, String statstr) {
@@ -53,13 +52,7 @@ public class ConsoleEventHandler implements EventHandler {
 		System.err.println(text);
 	}
 
-	public void bnetConnected() {
-		// TODO Auto-generated method stub
-		
-	}
+	public void bnetConnected() {}
 
-	public void bnetDisconnected() {
-		// TODO Auto-generated method stub
-		
-	}
+	public void bnetDisconnected() {}
 }
