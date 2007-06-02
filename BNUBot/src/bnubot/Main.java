@@ -22,30 +22,30 @@ public class Main {
 			if(args[i].charAt(0) == '-') {
 				switch(args[i].charAt(1)) {
 				case 'c':
-					if(args[i].compareToIgnoreCase("-cli") == 0) {
+					if(args[i].equals("-cli")) {
 						cs.enableCLI = true;
 						continue;
 					}
-					if(args[i].compareToIgnoreCase("-cfg") == 0) {
+					if(args[i].equals("-cfg")) {
 						forceConfig = true;
 						continue;
 					}
 				case 'g':
-					if(args[i].compareToIgnoreCase("-gui") == 0) {
+					if(args[i].equals("-gui")) {
 						cs.enableGUI = true;
 						continue;
 					}
 				case 'n':
-					if(args[i].compareToIgnoreCase("-nocli") == 0) {
+					if(args[i].equals("-nocli")) {
 						cs.enableCLI = false;
 						continue;
 					}
-					if(args[i].compareToIgnoreCase("-nogui") == 0) {
+					if(args[i].equals("-nogui")) {
 						cs.enableGUI = false;
 						continue;
 					}
 				case 'p':
-					if(args[i].compareToIgnoreCase("-plugins") == 0) {
+					if(args[i].equals("-plugins")) {
 						plugins = args[++i].split(":");
 						continue;
 					}

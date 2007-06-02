@@ -24,7 +24,7 @@ public class CommandEventHandler implements EventHandler {
 		
 		switch(command.charAt(0)) {
 		case 'a':
-			if(command.compareToIgnoreCase("add") == 0) {
+			if(command.equals("add")) {
 				try {
 					if(params.length != 2)
 						throw new Exception();
@@ -40,7 +40,7 @@ public class CommandEventHandler implements EventHandler {
 			}
 			
 		case 'b':
-			if(command.compareToIgnoreCase("ban") == 0) {
+			if(command.equals("ban")) {
 				if(param.length() == 0) {
 					c.sendChat("Usage: ~ban <user>[@<realm>] [reason]");
 					break;
@@ -50,14 +50,14 @@ public class CommandEventHandler implements EventHandler {
 			}
 		
 		case 'i':
-			if(command.compareToIgnoreCase("info") == 0) {
+			if(command.equals("info")) {
 				Properties p = System.getProperties();
 				c.sendChat("BNU-Bot v2.0 beta running on " + p.getProperty("os.name") + " (" + p.getProperty("os.arch") + ")");
 				break;
 			}
 			
 		case 'k':
-			if(command.compareToIgnoreCase("kick") == 0) {
+			if(command.equals("kick")) {
 				if(params.length != 1) {
 					c.sendChat("Usage: ~kick <user>[@<realm>]");
 					break;
@@ -66,7 +66,7 @@ public class CommandEventHandler implements EventHandler {
 				break;
 			}
 		case 's':
-			if(command.compareToIgnoreCase("setrank") == 0) {
+			if(command.equals("setrank")) {
 				int newRank;
 				try {
 					if(params.length != 2)
@@ -88,7 +88,7 @@ public class CommandEventHandler implements EventHandler {
 				}
 				break;
 			}
-			if(command.compareToIgnoreCase("sweepban") == 0) {
+			if(command.equals("sweepban")) {
 				if(params.length < 1) {
 					c.sendChat("Usage: ~sweepban <channel>");
 					break;
@@ -99,7 +99,7 @@ public class CommandEventHandler implements EventHandler {
 				break;
 			}
 		case 'u':
-			if(command.compareToIgnoreCase("unban") == 0) {
+			if(command.equals("unban")) {
 				if(params.length != 1) {
 					c.sendChat("Usage: ~unban <user>[@<realm>]");
 					break;
@@ -108,7 +108,7 @@ public class CommandEventHandler implements EventHandler {
 				break;
 			}
 		case 'w':
-			if(command.compareToIgnoreCase("whois") == 0) {
+			if(command.equals("whois")) {
 				if(params.length != 1) {
 					c.sendChat("Usage: ~whois <user>[@realm]");
 					break;
@@ -155,7 +155,7 @@ public class CommandEventHandler implements EventHandler {
 		
 		char trigger = c.getConnectionSettings().trigger.charAt(0);
 		
-		if(text.compareToIgnoreCase("?trigger") == 0)
+		if(text.equals("?trigger"))
 			c.sendChat("The bot's trigger is: " + trigger);
 		
 		if(text.charAt(0) == trigger) {
@@ -184,7 +184,7 @@ public class CommandEventHandler implements EventHandler {
 			boolean turnItOff = true;
 			
 			if(text.length() > 17) {
-				if(text.substring(0, 17).compareTo("Users in channel ") == 0) {
+				if(text.substring(0, 17).equals("Users in channel ")) {
 					if(sweepBannedUsers == 0) {
 						turnItOff = false;
 						c.sendChat("Sweepbanning channel " + text.substring(17, text.length() - 1));
