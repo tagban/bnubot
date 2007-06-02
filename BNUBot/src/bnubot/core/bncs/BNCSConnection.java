@@ -21,6 +21,7 @@ public class BNCSConnection extends Connection {
 	EventHandler e = null;
 	boolean connected = false;
 	String productID = null;
+	int verByte;
 	int nlsRevision = -1;
 	int serverToken = 0;
 	int clientToken = Math.abs(new Random().nextInt());
@@ -78,8 +79,8 @@ public class BNCSConnection extends Connection {
 				allowAutoConnect = false;
 	
 				setConnected(true);
-				recieveInfo("Connecting to " + cs.server + ":" + cs.port);
-				s = new Socket(cs.server, cs.port);
+				recieveInfo("Connecting to " + cs.bncsServer + ":" + cs.port);
+				s = new Socket(cs.bncsServer, cs.port);
 				dis = new DataInputStream(s.getInputStream());
 				dos = new DataOutputStream(s.getOutputStream());
 				nlsRevision = -1;
@@ -90,7 +91,7 @@ public class BNCSConnection extends Connection {
 				// Game
 				dos.writeByte(0x01);
 				
-				int verByte = HashMain.getVerByte(cs.product);
+				verByte = HashMain.getVerByte(cs.product);
 				
 				BNCSPacket p;
 				
@@ -169,580 +170,594 @@ public class BNCSConnection extends Connection {
 					
 				default:
 					recieveError("Don't know how to connect with product " + productID);
+					setConnected(false);
+					break;
 				}
 				
-				while(s.isConnected() && connected) {
-					if(dis.available() > 0) {
-						BNCSPacketReader pr = new BNCSPacketReader(dis, cs.packetLog);
-						BNetInputStream is = pr.getData();
-						
-						switch(pr.packetId) {
-						case BNCSCommandIDs.SID_EXTRAWORK:
-						case BNCSCommandIDs.SID_REQUIREDWORK:
-							break;
-							
-						case BNCSCommandIDs.SID_NULL: {
-							p = new BNCSPacket(BNCSCommandIDs.SID_NULL);
-							p.SendPacket(dos, cs.packetLog);
-							break;
-						}
-						
-						case BNCSCommandIDs.SID_PING: {
-							p = new BNCSPacket(BNCSCommandIDs.SID_PING);
-							p.writeDWord(is.readDWord());
-							p.SendPacket(dos, cs.packetLog);
-							break;
-						}
-						
-						case BNCSCommandIDs.SID_AUTH_INFO:
-						case BNCSCommandIDs.SID_STARTVERSIONING: {
-							if(pr.packetId == BNCSCommandIDs.SID_AUTH_INFO) {
-								nlsRevision = is.readDWord();
-								serverToken = is.readDWord();
-								is.skip(4);	//int udpValue = is.readDWord();
-							}
-							long MPQFileTime = is.readQWord();
-							String MPQFileName = is.readNTString();
-							String ValueStr = is.readNTString();
-						
-							byte extraData[] = null;
-							if(is.available() == 0x80) {
-								extraData = new byte[0x80];
-								is.read(extraData, 0, 0x80);
-							}
-							assert(is.available() == 0);
-							
-							// Hash the CD key
-							byte keyHash[] = null;
-							byte keyHash2[] = null;
-							if(nlsRevision != -1) {
-								keyHash = HashMain.hashKey(clientToken, serverToken, cs.cdkey).getBuffer();
-								if(cs.product == ConnectionSettings.PRODUCT_LORDOFDESTRUCTION)
-									keyHash2 = HashMain.hashKey(clientToken, serverToken, cs.cdkeyLOD).getBuffer();
-								if(cs.product == ConnectionSettings.PRODUCT_THEFROZENTHRONE)
-									keyHash2 = HashMain.hashKey(clientToken, serverToken, cs.cdkeyTFT).getBuffer();
-							}
-							
-							// Hash the game files
-						  	String tmp = MPQFileName.substring(MPQFileName.indexOf("IX86")+5);
-							tmp = tmp.substring(0,tmp.indexOf("."));
-							int mpqNum = Integer.parseInt(tmp);
-	                    	String files[] = HashMain.getFiles(cs.product, HashMain.PLATFORM_INTEL);
-							
-	                    	int exeHash;
-	                    	int exeVersion;
-	                    	String exeInfo;
-	                    	
-	                    	try {
-		                    	exeHash = CheckRevision.checkRevision(ValueStr, files, mpqNum);
-						    	exeVersion = HashMain.getExeVer(cs.product);
-								exeInfo = HashMain.getExeInfo(cs.product);
-	                    	} catch(Exception e) {
-	                    		recieveError("Local hashing failed (" + e.getMessage() + "); trying remote JBLS server.");
-	                    		
-	                    		BNLSProtocol.OutPacketBuffer exeHashBuf = CheckRevisionBNLS.checkRevision(ValueStr, cs.product, MPQFileName, MPQFileTime);
-						    	BNetInputStream exeStream = new BNetInputStream(new java.io.ByteArrayInputStream(exeHashBuf.getBuffer()));
-						    	exeStream.skipBytes(3);
-						    	int success = exeStream.readDWord();
-						    	if(success != 1) {
-						    		System.err.println(bnubot.util.HexDump.hexDump(exeHashBuf.getBuffer()));
-						    		throw new Exception("BNLS failed to complete 0x1A sucessfully");
-						    	}
-						    	exeVersion = exeStream.readDWord();
-						    	exeHash = exeStream.readDWord();
-						    	exeInfo = exeStream.readNTString();
-						    	exeStream.readDWord(); // cookie
-						    	/*int exeVerbyte =*/ exeStream.readDWord();
-						    	assert(exeStream.available() == 0);
-	                    	}
-	
-							// Respond
-	                    	if(nlsRevision != -1) {
-								p = new BNCSPacket(BNCSCommandIDs.SID_AUTH_CHECK);
-								p.writeDWord(clientToken);
-								p.writeDWord(exeVersion);
-								p.writeDWord(exeHash);
-								if(keyHash2 == null)
-									p.writeDWord(1);		// Number of keys
-								else
-									p.writeDWord(2);		// Number of keys
-								p.writeDWord(0);			// Spawn?
-								
-								//For each key..
-								if(keyHash.length != 36)
-									throw new Exception("Invalid keyHash length");
-								p.write(keyHash);
-								if(keyHash2 != null) {
-									if(keyHash2.length != 36)
-										throw new Exception("Invalid keyHash2 length");
-									p.write(keyHash2);
-								}
-								
-								//Finally,
-								p.writeNTString(exeInfo);
-								p.writeNTString(cs.username);
-								p.SendPacket(dos, cs.packetLog);
-	                    	} else {
-	                    		/* (DWORD)		 Platform ID
-	                    		 * (DWORD)		 Product ID
-	                    		 * (DWORD)		 Version Byte
-	                    		 * (DWORD)		 EXE Version
-	                    		 * (DWORD)		 EXE Hash
-	                    		 * (STRING) 	 EXE Information
-	                    		 */
-	                    		p = new BNCSPacket(BNCSCommandIDs.SID_REPORTVERSION);
-	                    		p.writeDWord("IX86");
-	                    		p.writeDWord(productID);
-	                    		p.writeDWord(verByte);
-								p.writeDWord(exeVersion);
-								p.writeDWord(exeHash);
-								p.writeNTString(exeInfo);
-								p.SendPacket(dos, cs.packetLog);
-	                    	}
-							break;
-						}
-						
-						case BNCSCommandIDs.SID_AUTH_CHECK: {
-							int result = is.readDWord();
-							String extraInfo = is.readNTString();
-							assert(is.available() == 0);
-							
-							if(result != 0) {
-								switch(result) {
-								case 0x0101:
-									recieveError("Invalid version");
-									break;
-								case 0x102:
-									recieveError("Game version must be downgraded: " + extraInfo);
-									break;
-								case 0x200:
-									recieveError("Invalid CD key");
-									break;
-								case 0x201:
-									recieveError("CD key in use by " + extraInfo);
-									break;
-								case 0x202:
-									recieveError("Banned key");
-									break;
-								case 0x203:
-									recieveError("Wrong product for CD key");
-									break;
-								case 0x210:
-									recieveError("Invalid second CD key");
-									break;
-								case 0x211:
-									recieveError("Second CD key in use by " + extraInfo);
-									break;
-								case 0x212:
-									recieveError("Banned second key");
-									break;
-								case 0x213:
-									recieveError("Wrong product for second CD key");
-									break;
-								default:
-									recieveError("Unknown SID_AUTH_CHECK result 0x" + Integer.toHexString(result));
-									break;
-								}
-								setConnected(false);
-								break;
-							}
-							
-							recieveInfo("Passed CD key challenge and CheckRevision");
-							sendPassword();
-							break;
-						}
-						
-						case BNCSCommandIDs.SID_AUTH_ACCOUNTLOGON: {
-							/* (DWORD)		 Status
-							 * (BYTE[32])	 Salt (s)
-							 * (BYTE[32])	 Server Key (B)
-							 * 
-							 * 0x00: Logon accepted, requires proof.
-							 * 0x01: Account doesn't exist.
-							 * 0x05: Account requires upgrade.
-							 * Other: Unknown (failure).
-							 */
-							int status = is.readDWord();
-							switch(status) {
-							case 0x00:
-								recieveInfo("Login accepted; requires proof.");
-								break;
-							case 0x01:
-								recieveError("Account doesn't exist; creating...");
-								
-								if(srp == null) {
-									recieveError("SRP is not initialized!");
-									setConnected(false);
-									break;
-								}
-
-						        byte[] salt = new byte[32];
-						        new Random().nextBytes(salt);
-						        byte[] verifier = srp.get_v(salt).toByteArray();
-
-						        if(salt.length != 32)
-						        	throw new Exception("Salt length wasn't 32!");
-						        if(verifier.length != 32)
-						        	throw new Exception("Verifier length wasn't 32!");
-						        
-						        p = new BNCSPacket(BNCSCommandIDs.SID_AUTH_ACCOUNTCREATE);
-						        p.write(salt);
-						        p.write(verifier);
-						        p.writeNTString(cs.username);
-						        p.SendPacket(dos, cs.packetLog);
-								
-								break;
-							case 0x05:
-								recieveError("Account requires upgrade");
-								setConnected(false);
-								break;
-							default:
-								recieveError("Unknown SID_AUTH_ACCOUNTLOGON status 0x" + Integer.toHexString(status));
-								setConnected(false);
-								break;
-							}
-							
-							if(status != 0)
-								break;
-							
-							if(srp == null) {
-								recieveError("SRP is not initialized!");
-								setConnected(false);
-								break;
-							}
-							
-							byte s[] = new byte[32];
-							byte B[] = new byte[32];
-							is.read(s, 0, 32);
-							is.read(B, 0, 32);
-	
-							byte M1[] = srp.getM1(s, B);
-							proof_M2 = srp.getM2(s, B);
-							if(M1.length != 20)
-								throw new Exception("Invalid M1 length");
-	
-							p = new BNCSPacket(BNCSCommandIDs.SID_AUTH_ACCOUNTLOGONPROOF);
-							p.write(M1);
-							p.SendPacket(dos, cs.packetLog);
-							break;
-						}
-						
-						case BNCSCommandIDs.SID_AUTH_ACCOUNTCREATE: {
-							/* 
-							 * (DWORD)		 Status
-							 * 0x00: Successfully created account name.
-							 * 0x04: Name already exists.
-							 * 0x07: Name is too short/blank.
-							 * 0x08: Name contains an illegal character.
-							 * 0x09: Name contains an illegal word.
-							 * 0x0a: Name contains too few alphanumeric characters.
-							 * 0x0b: Name contains adjacent punctuation characters.
-							 * 0x0c: Name contains too many punctuation characters.
-							 * Any other: Name already exists.
-							 */
-							int status = is.readDWord();
-							switch(status) {
-							case 0x00:
-								recieveInfo("Create account succeeded; logging in.");
-								sendPassword();
-								break;
-							default:
-								recieveError("Create account failed with error code 0x" + Integer.toHexString(status));
-								break;
-							}
-							break;
-						}
-						
-						case BNCSCommandIDs.SID_AUTH_ACCOUNTLOGONPROOF: {
-							/* (DWORD)		 Status
-							 * (BYTE[20])	 Server Password Proof (M2)
-							 * (STRING) 	 Additional information
-							 * 
-							 * Status:
-							 * 0x00: Logon successful.
-							 * 0x02: Incorrect password.
-							 * 0x0E: An email address should be registered for this account.
-							 * 0x0F: Custom error. A string at the end of this message contains the error.
-							 */
-							int status = is.readDWord();
-							byte server_M2[] = new byte[20];
-							is.read(server_M2, 0, 20);
-							String additionalInfo = null;
-							if(is.available() != 0)
-								additionalInfo = is.readNTString();
-							
-							switch(status) {
-							case 0x00:
-								break;
-							case 0x02:
-								recieveError("Incorrect password");
-								setConnected(false);
-								break;
-							case 0x0E:
-								recieveError("An email address should be registered for this account.");
-								registerEmail();
-								break;
-							case 0x0F:
-								recieveError("Custom bnet error: " + additionalInfo);
-								setConnected(false);
-								break;
-							default:
-								recieveError("Unknown SID_AUTH_ACCOUNTLOGONPROOF status: 0x" + Integer.toHexString(status));
-								setConnected(false);
-								break;
-							}
-							if(!isConnected())
-								break;
-	
-							for(int i = 0; i < 20; i++) {
-								if(server_M2[i] != proof_M2[i])
-									throw new Exception("Server couldn't prove password");
-							}
-	
-							recieveInfo("Login successful; entering chat.");
-	
-							p = new BNCSPacket(BNCSCommandIDs.SID_ENTERCHAT);
-							p.writeNTString("");
-							p.writeNTString("");
-							p.SendPacket(dos, cs.packetLog);
-							break;
-						}
-						
-						case BNCSCommandIDs.SID_LOGONRESPONSE2: {
-							int result = is.readDWord();
-							switch(result) {
-							case 0x00:	// Success
-								recieveInfo("Login successful; entering chat.");
-	
-								p = new BNCSPacket(BNCSCommandIDs.SID_ENTERCHAT);
-								p.writeNTString("");
-								p.writeNTString("");
-								p.SendPacket(dos, cs.packetLog);
-								break;
-							case 0x01:	// Account doesn't exist
-								recieveInfo("Account doesn't exist; creating...");
-								
-								int[] passwordHash = BrokenSHA1.calcHashBuffer(cs.password.toLowerCase().getBytes());
-								
-								p = new BNCSPacket(BNCSCommandIDs.SID_CREATEACCOUNT2);
-								p.writeDWord(passwordHash[0]);
-								p.writeDWord(passwordHash[1]);
-								p.writeDWord(passwordHash[2]);
-								p.writeDWord(passwordHash[3]);
-								p.writeDWord(passwordHash[4]);
-								p.writeNTString(cs.username);
-								p.SendPacket(dos, cs.packetLog);
-								break;
-							case 0x02:	// Invalid password;
-								recieveError("Incorrect password");
-								setConnected(false);
-								break;
-							case 0x06:	// Account is cloed
-								recieveError("Your account is closed.");
-								setConnected(false);
-								break;
-							default:
-								recieveError("Unknown SID_LOGONRESPONSE2 result 0x" + Integer.toHexString(result));
-								setConnected(false);
-								break;
-							}
-							break;
-						}
-						
-						case BNCSCommandIDs.SID_CLIENTID: {
-							//Sends new registration values; no longer used
-							break;
-						}
-						
-						case BNCSCommandIDs.SID_LOGONCHALLENGE: {
-							serverToken = is.readDWord();
-							break;
-						}
-						
-						case BNCSCommandIDs.SID_LOGONCHALLENGEEX: {
-							/*int udpToken =*/ is.readDWord();
-							serverToken = is.readDWord();
-							break;
-						}
-						
-						case BNCSCommandIDs.SID_CREATEACCOUNT2: {
-							int status = is.readDWord();
-							/*String suggestion =*/ is.readNTString();
-							
-							switch(status) {
-							case 0x00:
-								recieveInfo("Account created");
-								sendPassword();
-								break;
-							case 0x02:
-								recieveError("Name contained invalid characters");
-								setConnected(false);
-								break;
-							case 0x03:
-								recieveError("Name contained a banned word");
-								setConnected(false);
-								break;
-							case 0x04:
-								recieveError("Account already exists");
-								setConnected(false);
-								break;
-							case 0x06:
-								recieveError("Name did not contain enough alphanumeric characters");
-								setConnected(false);
-								break;
-							default:
-								recieveError("Unknown SID_CREATEACCOUNT2 status 0x" + Integer.toHexString(status));
-								setConnected(false);
-								break;
-							}
-							break;
-						}
-						
-						case BNCSCommandIDs.SID_SETEMAIL: {
-							recieveError("An email address should be registered for this account.");
-							registerEmail();
-							break;
-						}
-						
-						case BNCSCommandIDs.SID_ENTERCHAT: {
-							uniqueUserName = is.readNTString();
-							statString = is.readNTString();
-							accountName = is.readNTString();
-							
-							recieveInfo("Logged in as " + uniqueUserName);
-							
-							// We are officially logged in; get MOTD and join a channel!
-							p = new BNCSPacket(BNCSCommandIDs.SID_NEWS_INFO);
-							p.writeDWord((int)(new java.util.Date().getTime() / 1000)); // timestamp
-							p.SendPacket(dos, cs.packetLog);
-							
-							p = new BNCSPacket(BNCSCommandIDs.SID_JOINCHANNEL);
-							p.writeDWord(0); // nocreate join
-							p.writeNTString(cs.channel);
-							p.SendPacket(dos, cs.packetLog);
-							break;
-						}
-						
-						case BNCSCommandIDs.SID_CLANINFO: {
-							break;
-						}
-						
-						case BNCSCommandIDs.SID_NEWS_INFO: {
-							int numEntries = is.readByte();
-							//int lastLogon = is.readDWord();
-							//int oldestNews = is.readDWord();
-							//int newestNews = is.readDWord();;
-							is.skip(12);
-							
-							for(int i = 0; i < numEntries; i++) {
-								int timeStamp = is.readDWord();
-								String news = is.readNTString();
-								if(timeStamp == 0)	// MOTD
-									recieveInfo(news);
-							}
-							
-							break;
-						}
-						
-						case BNCSCommandIDs.SID_CHATEVENT: {
-							int eid = is.readDWord();
-							int flags = is.readDWord();
-							int ping = is.readDWord();
-							is.skip(12);
-						//	is.readDWord();	// IP Address (defunct)
-						//	is.readDWord();	// Account number (defunct)
-						//	is.readDWord(); // Registration authority (defunct)
-							String user = is.readNTString();
-							String text = is.readNTString();
-							
-							switch(eid) {
-							case BNCSCommandIDs.EID_SHOWUSER:
-							case BNCSCommandIDs.EID_USERFLAGS:
-								channelUser(user, flags, ping, text);
-								break;
-							case BNCSCommandIDs.EID_JOIN:
-								channelJoin(user, flags, ping, text);
-								break;
-							case BNCSCommandIDs.EID_LEAVE:
-								channelLeave(user, flags, ping, text);
-								break;
-							case BNCSCommandIDs.EID_TALK:
-								recieveChat(user, text);
-								break;
-							case BNCSCommandIDs.EID_EMOTE:
-								recieveEmote(user, text);
-								break;
-							case BNCSCommandIDs.EID_INFO:
-								recieveInfo(text);
-								break;
-							case BNCSCommandIDs.EID_ERROR:
-								recieveError(text);
-								break;
-							case BNCSCommandIDs.EID_CHANNEL:
-								channelName = text;
-								joinedChannel(text);
-								break;
-							case BNCSCommandIDs.EID_WHISPERSENT:
-								whisperSent(user, text);
-								break;
-							case BNCSCommandIDs.EID_WHISPER:
-								whisperRecieved(user, text);
-								break;
-							case BNCSCommandIDs.EID_CHANNELDOESNOTEXIST:
-								p = new BNCSPacket(BNCSCommandIDs.SID_JOINCHANNEL);
-								p.writeDWord(2); // create join
-								p.writeNTString(text);
-								p.SendPacket(dos, cs.packetLog);
-								break;
-							case BNCSCommandIDs.EID_CHANNELRESTRICTED:
-								recieveError("Channel " + text + " is restricted");
-								break;
-							case BNCSCommandIDs.EID_CHANNELFULL:
-								recieveError("Channel " + text + " is full");
-								break;
-							default:
-								recieveError("Unknown SID_CHATEVENT EID 0x" + Integer.toHexString(eid) + ": " + text);
-								break;
-							}
-							
-							break;
-						}
-						
-						case BNCSCommandIDs.SID_MESSAGEBOX: {
-							/*int style =*/ is.readDWord();
-							String text = is.readNTString();
-							String caption = is.readNTString();
-							
-							recieveInfo("<" + caption + "> " + text);
-							break;
-						}
-						
-						case BNCSCommandIDs.SID_FLOODDETECTED: {
-							recieveError("You have been disconnected for flooding.");
-							setConnected(false);
-							break;
-						}
-						
-						default:
-							recieveError("Unknown SID 0x" + Integer.toHexString(pr.packetId) + "\n" + bnubot.util.HexDump.hexDump(pr.data));
-							break;
-						}
-					}
-					
-					sleep(10);
-					yield();
-				}
+				if(isConnected());
+					connectedLoop();
 			
 			} catch(SocketException e) {
 			} catch(Exception e) {
 				recieveError("Unhandled exception: " + e.getMessage());
 				e.printStackTrace();
 			}
-			
+
 			setConnected(false);
+			recieveError("Disconnected from battle.net.");
 			try { s.close(); } catch (Exception e) { }
 			s = null;
-			recieveError("Disconnected from battle.net.");
+		}
+	}
+	
+	private void connectedLoop() throws Exception {
+		BNCSPacket p;
+		while(s.isConnected() && connected) {
+			if(dis.available() > 0) {
+				BNCSPacketReader pr = new BNCSPacketReader(dis, cs.packetLog);
+				BNetInputStream is = pr.getData();
+				
+				switch(pr.packetId) {
+				case BNCSCommandIDs.SID_EXTRAWORK:
+				case BNCSCommandIDs.SID_REQUIREDWORK:
+					break;
+					
+				case BNCSCommandIDs.SID_NULL: {
+					p = new BNCSPacket(BNCSCommandIDs.SID_NULL);
+					p.SendPacket(dos, cs.packetLog);
+					break;
+				}
+				
+				case BNCSCommandIDs.SID_PING: {
+					p = new BNCSPacket(BNCSCommandIDs.SID_PING);
+					p.writeDWord(is.readDWord());
+					p.SendPacket(dos, cs.packetLog);
+					break;
+				}
+				
+				case BNCSCommandIDs.SID_AUTH_INFO:
+				case BNCSCommandIDs.SID_STARTVERSIONING: {
+					if(pr.packetId == BNCSCommandIDs.SID_AUTH_INFO) {
+						nlsRevision = is.readDWord();
+						serverToken = is.readDWord();
+						is.skip(4);	//int udpValue = is.readDWord();
+					}
+					long MPQFileTime = is.readQWord();
+					String MPQFileName = is.readNTString();
+					String ValueStr = is.readNTString();
+				
+					byte extraData[] = null;
+					if(is.available() == 0x80) {
+						extraData = new byte[0x80];
+						is.read(extraData, 0, 0x80);
+					}
+					assert(is.available() == 0);
+					
+					// Hash the CD key
+					byte keyHash[] = null;
+					byte keyHash2[] = null;
+					if(nlsRevision != -1) {
+						keyHash = HashMain.hashKey(clientToken, serverToken, cs.cdkey).getBuffer();
+						if(cs.product == ConnectionSettings.PRODUCT_LORDOFDESTRUCTION)
+							keyHash2 = HashMain.hashKey(clientToken, serverToken, cs.cdkeyLOD).getBuffer();
+						if(cs.product == ConnectionSettings.PRODUCT_THEFROZENTHRONE)
+							keyHash2 = HashMain.hashKey(clientToken, serverToken, cs.cdkeyTFT).getBuffer();
+					}
+					
+					// Hash the game files
+				  	String tmp = MPQFileName.substring(MPQFileName.indexOf("IX86")+5);
+					tmp = tmp.substring(0,tmp.indexOf("."));
+					int mpqNum = Integer.parseInt(tmp);
+                	String files[] = HashMain.getFiles(cs.product, HashMain.PLATFORM_INTEL);
+					
+                	int exeHash;
+                	int exeVersion;
+                	String exeInfo;
+                	
+                	try {
+                    	exeHash = CheckRevision.checkRevision(ValueStr, files, mpqNum);
+				    	exeVersion = HashMain.getExeVer(cs.product);
+						exeInfo = HashMain.getExeInfo(cs.product);
+                	} catch(Exception e) {
+                		recieveError("Local hashing failed (" + e.getMessage() + "). Trying BNLS server.");
+                		
+                		BNLSProtocol.OutPacketBuffer exeHashBuf;
+                		if((cs.bnlsServer == null)
+                		|| (cs.bnlsServer.length() == 0)) {
+                			exeHashBuf = CheckRevisionBNLS.checkRevision(ValueStr, cs.product, MPQFileName, MPQFileTime);
+                		} else {
+                			exeHashBuf = CheckRevisionBNLS.checkRevision(ValueStr, cs.product, MPQFileName, MPQFileTime, cs.bnlsServer);
+                		}
+				    	BNetInputStream exeStream = new BNetInputStream(new java.io.ByteArrayInputStream(exeHashBuf.getBuffer()));
+				    	exeStream.skipBytes(3);
+				    	int success = exeStream.readDWord();
+				    	if(success != 1) {
+				    		System.err.println(bnubot.util.HexDump.hexDump(exeHashBuf.getBuffer()));
+				    		throw new Exception("BNLS failed to complete 0x1A sucessfully");
+				    	}
+				    	exeVersion = exeStream.readDWord();
+				    	exeHash = exeStream.readDWord();
+				    	exeInfo = exeStream.readNTString();
+				    	exeStream.readDWord(); // cookie
+				    	/*int exeVerbyte =*/ exeStream.readDWord();
+				    	assert(exeStream.available() == 0);
+                	}
+
+					// Respond
+                	if(nlsRevision != -1) {
+						p = new BNCSPacket(BNCSCommandIDs.SID_AUTH_CHECK);
+						p.writeDWord(clientToken);
+						p.writeDWord(exeVersion);
+						p.writeDWord(exeHash);
+						if(keyHash2 == null)
+							p.writeDWord(1);		// Number of keys
+						else
+							p.writeDWord(2);		// Number of keys
+						p.writeDWord(0);			// Spawn?
+						
+						//For each key..
+						if(keyHash.length != 36)
+							throw new Exception("Invalid keyHash length");
+						p.write(keyHash);
+						if(keyHash2 != null) {
+							if(keyHash2.length != 36)
+								throw new Exception("Invalid keyHash2 length");
+							p.write(keyHash2);
+						}
+						
+						//Finally,
+						p.writeNTString(exeInfo);
+						p.writeNTString(cs.username);
+						p.SendPacket(dos, cs.packetLog);
+                	} else {
+                		/* (DWORD)		 Platform ID
+                		 * (DWORD)		 Product ID
+                		 * (DWORD)		 Version Byte
+                		 * (DWORD)		 EXE Version
+                		 * (DWORD)		 EXE Hash
+                		 * (STRING) 	 EXE Information
+                		 */
+                		p = new BNCSPacket(BNCSCommandIDs.SID_REPORTVERSION);
+                		p.writeDWord("IX86");
+                		p.writeDWord(productID);
+                		p.writeDWord(verByte);
+						p.writeDWord(exeVersion);
+						p.writeDWord(exeHash);
+						p.writeNTString(exeInfo);
+						p.SendPacket(dos, cs.packetLog);
+                	}
+					break;
+				}
+				
+				case BNCSCommandIDs.SID_AUTH_CHECK: {
+					int result = is.readDWord();
+					String extraInfo = is.readNTString();
+					assert(is.available() == 0);
+					
+					if(result != 0) {
+						switch(result) {
+						case 0x0101:
+							recieveError("Invalid version");
+							break;
+						case 0x102:
+							recieveError("Game version must be downgraded: " + extraInfo);
+							break;
+						case 0x200:
+							recieveError("Invalid CD key");
+							break;
+						case 0x201:
+							recieveError("CD key in use by " + extraInfo);
+							break;
+						case 0x202:
+							recieveError("Banned key");
+							break;
+						case 0x203:
+							recieveError("Wrong product for CD key");
+							break;
+						case 0x210:
+							recieveError("Invalid second CD key");
+							break;
+						case 0x211:
+							recieveError("Second CD key in use by " + extraInfo);
+							break;
+						case 0x212:
+							recieveError("Banned second key");
+							break;
+						case 0x213:
+							recieveError("Wrong product for second CD key");
+							break;
+						default:
+							recieveError("Unknown SID_AUTH_CHECK result 0x" + Integer.toHexString(result));
+							break;
+						}
+						setConnected(false);
+						break;
+					}
+					
+					recieveInfo("Passed CD key challenge and CheckRevision");
+					sendPassword();
+					break;
+				}
+				
+				case BNCSCommandIDs.SID_AUTH_ACCOUNTLOGON: {
+					/* (DWORD)		 Status
+					 * (BYTE[32])	 Salt (s)
+					 * (BYTE[32])	 Server Key (B)
+					 * 
+					 * 0x00: Logon accepted, requires proof.
+					 * 0x01: Account doesn't exist.
+					 * 0x05: Account requires upgrade.
+					 * Other: Unknown (failure).
+					 */
+					int status = is.readDWord();
+					switch(status) {
+					case 0x00:
+						recieveInfo("Login accepted; requires proof.");
+						break;
+					case 0x01:
+						recieveError("Account doesn't exist; creating...");
+						
+						if(srp == null) {
+							recieveError("SRP is not initialized!");
+							setConnected(false);
+							break;
+						}
+
+				        byte[] salt = new byte[32];
+				        new Random().nextBytes(salt);
+				        byte[] verifier = srp.get_v(salt).toByteArray();
+
+				        if(salt.length != 32)
+				        	throw new Exception("Salt length wasn't 32!");
+				        if(verifier.length != 32)
+				        	throw new Exception("Verifier length wasn't 32!");
+				        
+				        p = new BNCSPacket(BNCSCommandIDs.SID_AUTH_ACCOUNTCREATE);
+				        p.write(salt);
+				        p.write(verifier);
+				        p.writeNTString(cs.username);
+				        p.SendPacket(dos, cs.packetLog);
+						
+						break;
+					case 0x05:
+						recieveError("Account requires upgrade");
+						setConnected(false);
+						break;
+					default:
+						recieveError("Unknown SID_AUTH_ACCOUNTLOGON status 0x" + Integer.toHexString(status));
+						setConnected(false);
+						break;
+					}
+					
+					if(status != 0)
+						break;
+					
+					if(srp == null) {
+						recieveError("SRP is not initialized!");
+						setConnected(false);
+						break;
+					}
+					
+					byte s[] = new byte[32];
+					byte B[] = new byte[32];
+					is.read(s, 0, 32);
+					is.read(B, 0, 32);
+
+					byte M1[] = srp.getM1(s, B);
+					proof_M2 = srp.getM2(s, B);
+					if(M1.length != 20)
+						throw new Exception("Invalid M1 length");
+
+					p = new BNCSPacket(BNCSCommandIDs.SID_AUTH_ACCOUNTLOGONPROOF);
+					p.write(M1);
+					p.SendPacket(dos, cs.packetLog);
+					break;
+				}
+				
+				case BNCSCommandIDs.SID_AUTH_ACCOUNTCREATE: {
+					/* 
+					 * (DWORD)		 Status
+					 * 0x00: Successfully created account name.
+					 * 0x04: Name already exists.
+					 * 0x07: Name is too short/blank.
+					 * 0x08: Name contains an illegal character.
+					 * 0x09: Name contains an illegal word.
+					 * 0x0a: Name contains too few alphanumeric characters.
+					 * 0x0b: Name contains adjacent punctuation characters.
+					 * 0x0c: Name contains too many punctuation characters.
+					 * Any other: Name already exists.
+					 */
+					int status = is.readDWord();
+					switch(status) {
+					case 0x00:
+						recieveInfo("Create account succeeded; logging in.");
+						sendPassword();
+						break;
+					default:
+						recieveError("Create account failed with error code 0x" + Integer.toHexString(status));
+						break;
+					}
+					break;
+				}
+				
+				case BNCSCommandIDs.SID_AUTH_ACCOUNTLOGONPROOF: {
+					/* (DWORD)		 Status
+					 * (BYTE[20])	 Server Password Proof (M2)
+					 * (STRING) 	 Additional information
+					 * 
+					 * Status:
+					 * 0x00: Logon successful.
+					 * 0x02: Incorrect password.
+					 * 0x0E: An email address should be registered for this account.
+					 * 0x0F: Custom error. A string at the end of this message contains the error.
+					 */
+					int status = is.readDWord();
+					byte server_M2[] = new byte[20];
+					is.read(server_M2, 0, 20);
+					String additionalInfo = null;
+					if(is.available() != 0)
+						additionalInfo = is.readNTString();
+					
+					switch(status) {
+					case 0x00:
+						break;
+					case 0x02:
+						recieveError("Incorrect password");
+						setConnected(false);
+						break;
+					case 0x0E:
+						recieveError("An email address should be registered for this account.");
+						registerEmail();
+						break;
+					case 0x0F:
+						recieveError("Custom bnet error: " + additionalInfo);
+						setConnected(false);
+						break;
+					default:
+						recieveError("Unknown SID_AUTH_ACCOUNTLOGONPROOF status: 0x" + Integer.toHexString(status));
+						setConnected(false);
+						break;
+					}
+					if(!isConnected())
+						break;
+
+					for(int i = 0; i < 20; i++) {
+						if(server_M2[i] != proof_M2[i])
+							throw new Exception("Server couldn't prove password");
+					}
+
+					recieveInfo("Login successful; entering chat.");
+
+					p = new BNCSPacket(BNCSCommandIDs.SID_ENTERCHAT);
+					p.writeNTString("");
+					p.writeNTString("");
+					p.SendPacket(dos, cs.packetLog);
+					break;
+				}
+				
+				case BNCSCommandIDs.SID_LOGONRESPONSE2: {
+					int result = is.readDWord();
+					switch(result) {
+					case 0x00:	// Success
+						recieveInfo("Login successful; entering chat.");
+
+						p = new BNCSPacket(BNCSCommandIDs.SID_ENTERCHAT);
+						p.writeNTString("");
+						p.writeNTString("");
+						p.SendPacket(dos, cs.packetLog);
+						break;
+					case 0x01:	// Account doesn't exist
+						recieveInfo("Account doesn't exist; creating...");
+						
+						int[] passwordHash = BrokenSHA1.calcHashBuffer(cs.password.toLowerCase().getBytes());
+						
+						p = new BNCSPacket(BNCSCommandIDs.SID_CREATEACCOUNT2);
+						p.writeDWord(passwordHash[0]);
+						p.writeDWord(passwordHash[1]);
+						p.writeDWord(passwordHash[2]);
+						p.writeDWord(passwordHash[3]);
+						p.writeDWord(passwordHash[4]);
+						p.writeNTString(cs.username);
+						p.SendPacket(dos, cs.packetLog);
+						break;
+					case 0x02:	// Invalid password;
+						recieveError("Incorrect password");
+						setConnected(false);
+						break;
+					case 0x06:	// Account is cloed
+						recieveError("Your account is closed.");
+						setConnected(false);
+						break;
+					default:
+						recieveError("Unknown SID_LOGONRESPONSE2 result 0x" + Integer.toHexString(result));
+						setConnected(false);
+						break;
+					}
+					break;
+				}
+				
+				case BNCSCommandIDs.SID_CLIENTID: {
+					//Sends new registration values; no longer used
+					break;
+				}
+				
+				case BNCSCommandIDs.SID_LOGONCHALLENGE: {
+					serverToken = is.readDWord();
+					break;
+				}
+				
+				case BNCSCommandIDs.SID_LOGONCHALLENGEEX: {
+					/*int udpToken =*/ is.readDWord();
+					serverToken = is.readDWord();
+					break;
+				}
+				
+				case BNCSCommandIDs.SID_CREATEACCOUNT2: {
+					int status = is.readDWord();
+					/*String suggestion =*/ is.readNTString();
+					
+					switch(status) {
+					case 0x00:
+						recieveInfo("Account created");
+						sendPassword();
+						break;
+					case 0x02:
+						recieveError("Name contained invalid characters");
+						setConnected(false);
+						break;
+					case 0x03:
+						recieveError("Name contained a banned word");
+						setConnected(false);
+						break;
+					case 0x04:
+						recieveError("Account already exists");
+						setConnected(false);
+						break;
+					case 0x06:
+						recieveError("Name did not contain enough alphanumeric characters");
+						setConnected(false);
+						break;
+					default:
+						recieveError("Unknown SID_CREATEACCOUNT2 status 0x" + Integer.toHexString(status));
+						setConnected(false);
+						break;
+					}
+					break;
+				}
+				
+				case BNCSCommandIDs.SID_SETEMAIL: {
+					recieveError("An email address should be registered for this account.");
+					registerEmail();
+					break;
+				}
+				
+				case BNCSCommandIDs.SID_ENTERCHAT: {
+					uniqueUserName = is.readNTString();
+					statString = is.readNTString();
+					accountName = is.readNTString();
+					
+					recieveInfo("Logged in as " + uniqueUserName);
+					
+					// We are officially logged in; get MOTD and join a channel!
+					p = new BNCSPacket(BNCSCommandIDs.SID_NEWS_INFO);
+					p.writeDWord((int)(new java.util.Date().getTime() / 1000)); // timestamp
+					p.SendPacket(dos, cs.packetLog);
+					
+					p = new BNCSPacket(BNCSCommandIDs.SID_JOINCHANNEL);
+					p.writeDWord(0); // nocreate join
+					p.writeNTString(cs.channel);
+					p.SendPacket(dos, cs.packetLog);
+					break;
+				}
+				
+				case BNCSCommandIDs.SID_CLANINFO: {
+					break;
+				}
+				
+				case BNCSCommandIDs.SID_NEWS_INFO: {
+					int numEntries = is.readByte();
+					//int lastLogon = is.readDWord();
+					//int oldestNews = is.readDWord();
+					//int newestNews = is.readDWord();;
+					is.skip(12);
+					
+					for(int i = 0; i < numEntries; i++) {
+						int timeStamp = is.readDWord();
+						String news = is.readNTString();
+						if(timeStamp == 0)	// MOTD
+							recieveInfo(news);
+					}
+					
+					break;
+				}
+				
+				case BNCSCommandIDs.SID_CHATEVENT: {
+					int eid = is.readDWord();
+					int flags = is.readDWord();
+					int ping = is.readDWord();
+					is.skip(12);
+				//	is.readDWord();	// IP Address (defunct)
+				//	is.readDWord();	// Account number (defunct)
+				//	is.readDWord(); // Registration authority (defunct)
+					String user = is.readNTString();
+					String text = is.readNTString();
+					
+					switch(eid) {
+					case BNCSCommandIDs.EID_SHOWUSER:
+					case BNCSCommandIDs.EID_USERFLAGS:
+						channelUser(user, flags, ping, text);
+						break;
+					case BNCSCommandIDs.EID_JOIN:
+						channelJoin(user, flags, ping, text);
+						break;
+					case BNCSCommandIDs.EID_LEAVE:
+						channelLeave(user, flags, ping, text);
+						break;
+					case BNCSCommandIDs.EID_TALK:
+						recieveChat(user, text);
+						break;
+					case BNCSCommandIDs.EID_EMOTE:
+						recieveEmote(user, text);
+						break;
+					case BNCSCommandIDs.EID_INFO:
+						recieveInfo(text);
+						break;
+					case BNCSCommandIDs.EID_ERROR:
+						recieveError(text);
+						break;
+					case BNCSCommandIDs.EID_CHANNEL:
+						channelName = text;
+						joinedChannel(text);
+						break;
+					case BNCSCommandIDs.EID_WHISPERSENT:
+						whisperSent(user, text);
+						break;
+					case BNCSCommandIDs.EID_WHISPER:
+						whisperRecieved(user, text);
+						break;
+					case BNCSCommandIDs.EID_CHANNELDOESNOTEXIST:
+						p = new BNCSPacket(BNCSCommandIDs.SID_JOINCHANNEL);
+						p.writeDWord(2); // create join
+						p.writeNTString(text);
+						p.SendPacket(dos, cs.packetLog);
+						break;
+					case BNCSCommandIDs.EID_CHANNELRESTRICTED:
+						recieveError("Channel " + text + " is restricted");
+						break;
+					case BNCSCommandIDs.EID_CHANNELFULL:
+						recieveError("Channel " + text + " is full");
+						break;
+					default:
+						recieveError("Unknown SID_CHATEVENT EID 0x" + Integer.toHexString(eid) + ": " + text);
+						break;
+					}
+					
+					break;
+				}
+				
+				case BNCSCommandIDs.SID_MESSAGEBOX: {
+					/*int style =*/ is.readDWord();
+					String text = is.readNTString();
+					String caption = is.readNTString();
+					
+					recieveInfo("<" + caption + "> " + text);
+					break;
+				}
+				
+				case BNCSCommandIDs.SID_FLOODDETECTED: {
+					recieveError("You have been disconnected for flooding.");
+					setConnected(false);
+					break;
+				}
+				
+				default:
+					recieveError("Unknown SID 0x" + Integer.toHexString(pr.packetId) + "\n" + bnubot.util.HexDump.hexDump(pr.data));
+					break;
+				}
+			}
+			
+			sleep(10);
+			yield();
 		}
 	}
 	

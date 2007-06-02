@@ -15,7 +15,7 @@ public class BNFTPConnection {
 			return f;
 		
 		try {
-			Socket s = new Socket(cs.server, cs.port);
+			Socket s = new Socket(cs.bncsServer, cs.port);
 			f = downloadFile(s, fileName);
 			s.close();
 			return f;

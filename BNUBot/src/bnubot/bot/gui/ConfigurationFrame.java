@@ -20,7 +20,8 @@ public class ConfigurationFrame extends JDialog {
 	JTextArea txtCDKey = null;
 	JTextArea txtCDKeyLOD = null;
 	JTextArea txtCDKeyTFT = null;
-	JTextArea txtServer = null;
+	JTextArea txtBNCSServer = null;
+	JTextArea txtBNLSServer = null;
 	JTextArea txtChannel = null;
 	JCheckBox chkAutoConnect = null;
 	JCheckBox chkEnableGUI = null;
@@ -81,9 +82,13 @@ public class ConfigurationFrame extends JDialog {
 				txtCDKeyTFT = new JTextArea(cs.cdkeyTFT);
 				pnlSettings.add(txtCDKeyTFT);
 				
-				pnlSettings.add(new JLabel("Server"));
-				txtServer = new JTextArea(cs.server);
-				pnlSettings.add(txtServer);
+				pnlSettings.add(new JLabel("Battle.net Server"));
+				txtBNCSServer = new JTextArea(cs.bncsServer);
+				pnlSettings.add(txtBNCSServer);
+				
+				pnlSettings.add(new JLabel("BNLS Server"));
+				txtBNLSServer = new JTextArea(cs.bnlsServer);
+				pnlSettings.add(txtBNLSServer);
 				
 				pnlSettings.add(new JLabel("Channel"));
 				txtChannel = new JTextArea(cs.channel);
@@ -172,7 +177,8 @@ public class ConfigurationFrame extends JDialog {
 		cs.cdkey = formatCDKey(txtCDKey.getText());
 		cs.cdkeyLOD = formatCDKey(txtCDKeyLOD.getText());
 		cs.cdkeyTFT = formatCDKey(txtCDKeyTFT.getText());
-		cs.server = txtServer.getText();
+		cs.bncsServer = txtBNCSServer.getText();
+		cs.bnlsServer = txtBNLSServer.getText();
 		cs.channel = txtChannel.getText();
 		cs.autoconnect = chkAutoConnect.isSelected();
 		cs.enableGUI = chkEnableGUI.isSelected();
@@ -192,7 +198,8 @@ public class ConfigurationFrame extends JDialog {
 		txtCDKey.setText(cs.cdkey);
 		txtCDKeyLOD.setText(cs.cdkeyLOD);
 		txtCDKeyTFT.setText(cs.cdkeyTFT);
-		txtServer.setText(cs.server);
+		txtBNCSServer.setText(cs.bncsServer);
+		txtBNLSServer.setText(cs.bnlsServer);
 		txtChannel.setText(cs.channel);
 		chkAutoConnect.setSelected(cs.autoconnect);
 		chkEnableGUI.setSelected(cs.enableGUI);

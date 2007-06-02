@@ -20,9 +20,10 @@ public class ConnectionSettings implements Serializable {
     public static final byte PRODUCT_DIABLO            = (byte)0x09; //Fully Supported
     public static final byte PRODUCT_DIABLOSHAREWARE   = (byte)0x0A; //Fully Supported
     public static final byte PRODUCT_STARCRAFTSHAREWARE= (byte)0x0B; //Fully Supported
-	
-	public String server;
+
+	public String bncsServer;
 	public int port;
+	public String bnlsServer;
 	public String username;
 	public String password;
 	public String email;
@@ -42,9 +43,9 @@ public class ConnectionSettings implements Serializable {
 	}
 	
 	public String isValid() {
-		if(server == null)
+		if(bncsServer == null)
 			return "Server unset";
-		if(server.length() == 0)
+		if(bncsServer.length() == 0)
 			return "Server unset";
 		if(port <= 0)
 			return "Port invalid";
@@ -99,8 +100,9 @@ public class ConnectionSettings implements Serializable {
 	public void save() {
 		String file = "settings.ini";
 		String header = "test";
-		Ini.WriteIni(file, header, "server", server);
+		Ini.WriteIni(file, header, "server", bncsServer);
 		Ini.WriteIni(file, header, "port", Integer.toString(port));
+		Ini.WriteIni(file, header, "bnlsserver", bnlsServer);
 		Ini.WriteIni(file, header, "username", username);
 		Ini.WriteIni(file, header, "password", password);
 		Ini.WriteIni(file, header, "email", email);
@@ -121,9 +123,10 @@ public class ConnectionSettings implements Serializable {
 		String file = "settings.ini";
 		String header = "test";
 
-		server =	Ini.ReadIni(file, header, "server", "useast.battle.net");
+		bncsServer =Ini.ReadIni(file, header, "server", "useast.battle.net");
 		port = Integer.parseInt(
 					Ini.ReadIni(file, header, "port", "6112"));
+		bnlsServer =Ini.ReadIni(file, header, "bnlsserver", "logon.berzerkerjbls.com");
 		username =	Ini.ReadIni(file, header, "username", null);
 		password =	Ini.ReadIni(file, header, "password", null);
 		email =		Ini.ReadIni(file, header, "email", null);
