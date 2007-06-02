@@ -47,6 +47,7 @@ public class Main {
 				case 'p':
 					if(args[i].compareToIgnoreCase("-plugins") == 0) {
 						plugins = args[++i].split(":");
+						continue;
 					}
 				}
 			}
