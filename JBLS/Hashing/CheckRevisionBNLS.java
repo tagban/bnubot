@@ -21,7 +21,11 @@ public class CheckRevisionBNLS extends Thread{
     public static void main(String[] args){}
     
     
-    public static OutPacketBuffer checkRevision(String versionString, int prod, String mpq, Long fileTime)
+    public static OutPacketBuffer checkRevision(String versionString, int prod, String mpq, Long fileTime) {
+    	return checkRevision(versionString, prod, mpq, fileTime, bnServer);
+    }
+    
+    public static OutPacketBuffer checkRevision(String versionString, int prod, String mpq, Long fileTime, String bnServer)
     {
 	    Socket bnSCK = null;
 	    OutputStream out = null;
@@ -84,7 +88,11 @@ public class CheckRevisionBNLS extends Thread{
 			return null;
 		}
     }    
-    public static OutPacketBuffer checkRevision(String versionString, int prod, int mpq)
+    public static OutPacketBuffer checkRevision(String versionString, int prod, int mpq) {
+    	return checkRevision(versionString, prod, mpq, bnServer);
+    }
+    
+    public static OutPacketBuffer checkRevision(String versionString, int prod, int mpq, String bnServer)
     {
 	    Socket bnSCK = null;
 	    OutputStream out = null;
