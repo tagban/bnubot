@@ -23,6 +23,7 @@ public class TextWindow extends JScrollPane {
 			jtp.setText(String.format("[%1$tH:%1$tM:%1$tS] ", new GregorianCalendar()));
 			jtp.setBackground(bgColor);
 			jtp.setForeground(Color.LIGHT_GRAY);
+			jtp.setEditable(false);
 			add(jtp);
 		}
 	}
@@ -35,6 +36,7 @@ public class TextWindow extends JScrollPane {
 			jtp.setText(text);
 			jtp.setBackground(bgColor);
 			jtp.setForeground(color);
+			jtp.setEditable(false);
 			add(jtp);
 		}
 	}
@@ -47,6 +49,7 @@ public class TextWindow extends JScrollPane {
 			jtp.setText(text2);
 			jtp.setBackground(bgColor);
 			jtp.setForeground(color2);
+			jtp.setEditable(false);
 			add(jtp);
 		}
 	}
@@ -100,6 +103,8 @@ public class TextWindow extends JScrollPane {
 				validate();
 				JScrollBar vsb = getVerticalScrollBar();
 				vsb.setValue(vsb.getMaximum());
+				JScrollBar hsb = getHorizontalScrollBar();
+				hsb.setValue(0);
 			}
 		});
 	}
