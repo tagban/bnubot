@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 
 import bnubot.core.ConnectionSettings;
 
@@ -17,6 +18,7 @@ public class ConfigurationFrame extends JDialog {
 	JTextArea txtEmail = null;
 	JComboBox cmbProduct = null;
 	JTextArea txtTrigger = null;
+	JTextArea txtAntiIdle = null;
 	JTextArea txtCDKey = null;
 	JTextArea txtCDKeyLOD = null;
 	JTextArea txtCDKeyTFT = null;
@@ -30,6 +32,13 @@ public class ConfigurationFrame extends JDialog {
 	JButton btnLoad = null;
 	JButton btnSave = null;
 	JButton btnCancel = null;
+	
+	private class ConfigTextArea extends JTextArea {
+		public ConfigTextArea(String text) {
+			super(text);
+			setBorder(BorderFactory.createEtchedBorder());
+		}
+	}
 	
 	public ConfigurationFrame(ConnectionSettings cs) {
 		super();
@@ -48,7 +57,7 @@ public class ConfigurationFrame extends JDialog {
 			JPanel pnlSettings = new JPanel(new GridLayout(0, 2));
 			{
 				pnlSettings.add(new JLabel("Username"));
-				txtUsername = new JTextArea(cs.username);
+				txtUsername = new ConfigTextArea(cs.username);
 				pnlSettings.add(txtUsername);
 				
 				pnlSettings.add(new JLabel("Password"));
@@ -56,7 +65,7 @@ public class ConfigurationFrame extends JDialog {
 				pnlSettings.add(txtPassword);
 				
 				pnlSettings.add(new JLabel("Email"));
-				txtEmail = new JTextArea(cs.email);
+				txtEmail = new ConfigTextArea(cs.email);
 				pnlSettings.add(txtEmail);
 				
 				pnlSettings.add(new JLabel("Product"));
@@ -65,33 +74,35 @@ public class ConfigurationFrame extends JDialog {
 				pnlSettings.add(cmbProduct);
 				
 				pnlSettings.add(new JLabel("Trigger"));
-				txtTrigger = new JTextArea(cs.trigger);
-				txtTrigger.setRows(1);
-				txtTrigger.setColumns(1);
+				txtTrigger = new ConfigTextArea(cs.trigger);
 				pnlSettings.add(txtTrigger);
 				
+				pnlSettings.add(new JLabel("Anti-Idle"));
+				txtAntiIdle = new ConfigTextArea(cs.antiIdle);
+				pnlSettings.add(txtAntiIdle);
+				
 				pnlSettings.add(new JLabel("CD Key"));
-				txtCDKey = new JTextArea(cs.cdkey);
+				txtCDKey = new ConfigTextArea(cs.cdkey);
 				pnlSettings.add(txtCDKey);
 				
 				pnlSettings.add(new JLabel("LOD Key"));
-				txtCDKeyLOD = new JTextArea(cs.cdkeyLOD);
+				txtCDKeyLOD = new ConfigTextArea(cs.cdkeyLOD);
 				pnlSettings.add(txtCDKeyLOD);
 				
 				pnlSettings.add(new JLabel("TFT Key"));
-				txtCDKeyTFT = new JTextArea(cs.cdkeyTFT);
+				txtCDKeyTFT = new ConfigTextArea(cs.cdkeyTFT);
 				pnlSettings.add(txtCDKeyTFT);
 				
 				pnlSettings.add(new JLabel("Battle.net Server"));
-				txtBNCSServer = new JTextArea(cs.bncsServer);
+				txtBNCSServer = new ConfigTextArea(cs.bncsServer);
 				pnlSettings.add(txtBNCSServer);
 				
 				pnlSettings.add(new JLabel("BNLS Server"));
-				txtBNLSServer = new JTextArea(cs.bnlsServer);
+				txtBNLSServer = new ConfigTextArea(cs.bnlsServer);
 				pnlSettings.add(txtBNLSServer);
 				
 				pnlSettings.add(new JLabel("Channel"));
-				txtChannel = new JTextArea(cs.channel);
+				txtChannel = new ConfigTextArea(cs.channel);
 				pnlSettings.add(txtChannel);
 			}
 			boxAll.add(pnlSettings);
@@ -174,6 +185,7 @@ public class ConfigurationFrame extends JDialog {
 		cs.email = txtEmail.getText();
 		cs.product = (byte)(cmbProduct.getSelectedIndex() + 1);
 		cs.trigger = txtTrigger.getText();
+		cs.antiIdle = txtAntiIdle.getText();
 		cs.cdkey = formatCDKey(txtCDKey.getText());
 		cs.cdkeyLOD = formatCDKey(txtCDKeyLOD.getText());
 		cs.cdkeyTFT = formatCDKey(txtCDKeyTFT.getText());
@@ -195,6 +207,7 @@ public class ConfigurationFrame extends JDialog {
 		txtEmail.setText(cs.email);
 		cmbProduct.setSelectedIndex(cs.product - 1);
 		txtTrigger.setText(cs.trigger);
+		txtAntiIdle.setText(cs.antiIdle);
 		txtCDKey.setText(cs.cdkey);
 		txtCDKeyLOD.setText(cs.cdkeyLOD);
 		txtCDKeyTFT.setText(cs.cdkeyTFT);

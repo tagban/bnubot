@@ -33,6 +33,7 @@ public class ConnectionSettings implements Serializable {
 	public String cdkeyTFT;
 	public byte product;
 	public String trigger;
+	public String antiIdle;
 	public boolean autoconnect;
 	public boolean enableCLI;
 	public boolean enableGUI;
@@ -113,6 +114,7 @@ public class ConnectionSettings implements Serializable {
 		if(product != 0)
 		Ini.WriteIni(file, header, "product", util.Constants.prods[product-1]);
 		Ini.WriteIni(file, header, "trigger", trigger);
+		Ini.WriteIni(file, header, "antiidle", antiIdle);
 		Ini.WriteIni(file, header, "autoconnect", Boolean.toString(autoconnect));
 		Ini.WriteIni(file, header, "enableCLI", Boolean.toString(enableCLI));
 		Ini.WriteIni(file, header, "enableGUI", Boolean.toString(enableGUI));
@@ -143,6 +145,7 @@ public class ConnectionSettings implements Serializable {
 			}
 		}
 		trigger = 	Ini.ReadIni(file, header, "trigger", "!");
+		antiIdle = 	Ini.ReadIni(file, header, "antiidle", "/me is a BNU-Bot");
 		autoconnect = Boolean.parseBoolean(
 					Ini.ReadIni(file, header, "autoconnect", "false"));
 		enableCLI = Boolean.parseBoolean(
