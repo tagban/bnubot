@@ -45,20 +45,33 @@ public class ConnectionSettings implements Serializable {
 	
 	public String isValid() {
 		if(bncsServer == null)
-			return "Server unset";
+			return "Server not set";
 		if(bncsServer.length() == 0)
-			return "Server unset";
+			return "Server not set";
+		
 		if(port <= 0)
 			return "Port invalid";
-		if(username == null)
-			return "Username unset";
-		if(username.length() == 0)
-			return "Username unset";
-		if(password == null)
-			return "Password unset";
-		if(password.length() == 0)
-			return "Password unset";
 		
+		if(username == null)
+			return "Username not set";
+		if(username.length() == 0)
+			return "Username not set";
+		
+		if(password == null)
+			return "Password not set";
+		if(password.length() == 0)
+			return "Password not set";
+		
+		if(channel == null)
+			return "Channel unset";
+		if(channel.length() == 0)
+			return "Channel unset";
+		
+		if(trigger == null)
+			return "Trigger not set";
+		if(trigger.length() != 1)
+			return "Trigger invalid";
+
 		switch(product) {
 		case PRODUCT_DIABLO2:
 		case PRODUCT_LORDOFDESTRUCTION:
@@ -75,24 +88,24 @@ public class ConnectionSettings implements Serializable {
 			break;
 		default:
 			if(cdkey == null)
-				return "Unset CD key";
+				return "CD key not set";
 			if(cdkey.length() == 0)
-				return "Unset CD key";
+				return "CD key not set";
 				break;
 		}
 		
 		if(product == PRODUCT_LORDOFDESTRUCTION) {
 			if(cdkeyLOD == null)
-				return "Unset LOD CD key";
+				return "LOD CD key not set";
 			if(cdkeyLOD.length() == 0)
-				return "Unset LOD CD key";
+				return "LOD CD key not set";
 		}
 		
 		if(product == PRODUCT_THEFROZENTHRONE) {
 			if(cdkeyTFT == null)
-				return "Unset TFT CD key";
+				return "TFT CD key not set";
 			if(cdkeyTFT.length() == 0)
-				return "Unset TFT CD key";
+				return "TFT CD key not set";
 		}
 		
 		return null;
