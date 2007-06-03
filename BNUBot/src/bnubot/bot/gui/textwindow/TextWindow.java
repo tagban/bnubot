@@ -5,9 +5,11 @@ import java.util.GregorianCalendar;
 
 import javax.swing.*;
 
+import bnubot.bot.gui.ColorScheme.Diablo2ColorConstants;
+
 @SuppressWarnings("serial")
 public class TextWindow extends JScrollPane {
-	private static final Color bgColor = Color.BLACK;
+	private static final Color bgColor = Diablo2ColorConstants.D2Black;
 	
 	private Box b = null;
 	
@@ -65,33 +67,33 @@ public class TextWindow extends JScrollPane {
 	public void channelInfo(String text) {
 		insert(new SingleColorMessage(
 				text,
-				Color.GREEN));
+				Diablo2ColorConstants.D2Green));
 	}
 	
 	public void recieveInfo(String text) {
 		insert(new SingleColorMessage(
 				text,
-				Color.BLUE));
+				Diablo2ColorConstants.D2Blue));
 	}
 	
 	public void recieveError(String text) {
 		insert(new SingleColorMessage(
 				text,
-				Color.RED));
+				Diablo2ColorConstants.D2Red));
 	}
 	
-	public void userChat(String user, String text) {
+	public void userChat(String user, int flags, String text) {
 		insert(new DoubleColorMessage(
 				"<" + user + "> ",
-				Color.YELLOW,
+				Diablo2ColorConstants.getUserNameColor(flags),
 				text,
-				Color.LIGHT_GRAY));
+				Diablo2ColorConstants.getChatColor(flags)));
 	}
 	
-	public void userEmote(String user, String text) {
+	public void userEmote(String user, int flags, String text) {
 		insert(new SingleColorMessage(
 				"<" + user + " " + text + ">",
-				Color.YELLOW));
+				Diablo2ColorConstants.getUserNameColor(flags)));
 	}
 	
 	public void insert(Component c) {

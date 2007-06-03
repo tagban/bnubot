@@ -90,16 +90,16 @@ public abstract class Connection extends Thread implements EventHandler {
 			en.nextElement().channelLeave(user, flags, ping, statstr);
 	}
 
-	public void recieveChat(String user, String text) {
+	public void recieveChat(String user, int flags, int ping, String text) {
 		Enumeration<EventHandler> en = eventHandlers.elements();
 		while(en.hasMoreElements())
-			en.nextElement().recieveChat(user, text);
+			en.nextElement().recieveChat(user, flags, ping, text);
 	}
 
-	public void recieveEmote(String user, String text) {
+	public void recieveEmote(String user, int flags, int ping, String text) {
 		Enumeration<EventHandler> en = eventHandlers.elements();
 		while(en.hasMoreElements())
-			en.nextElement().recieveEmote(user, text);
+			en.nextElement().recieveEmote(user, flags, ping, text);
 	}
 
 	public void recieveInfo(String text) {
@@ -114,15 +114,15 @@ public abstract class Connection extends Thread implements EventHandler {
 			en.nextElement().recieveError(text);
 	}
 	
-	public void whisperSent(String user, String text) {
+	public void whisperSent(String user, int flags, int ping, String text) {
 		Enumeration<EventHandler> en = eventHandlers.elements();
 		while(en.hasMoreElements())
-			en.nextElement().whisperSent(user, text);
+			en.nextElement().whisperSent(user, flags, ping, text);
 	}
 	
-	public void whisperRecieved(String user, String text) {
+	public void whisperRecieved(String user, int flags, int ping, String text) {
 		Enumeration<EventHandler> en = eventHandlers.elements();
 		while(en.hasMoreElements())
-			en.nextElement().whisperRecieved(user, text);
+			en.nextElement().whisperRecieved(user, flags, ping, text);
 	}
 }

@@ -7,6 +7,8 @@ import java.util.Hashtable;
 
 import javax.swing.*;
 
+import bnubot.bot.gui.ColorScheme.Diablo2ColorConstants;
+
 @SuppressWarnings("serial")
 public class UserList extends JPanel {
 	private class UserInfo {
@@ -79,7 +81,7 @@ public class UserList extends JPanel {
 		}
 		if(ui.label == null) {
 			ui.label = new JLabel(user);
-			ui.label.setForeground(Color.LIGHT_GRAY);
+			ui.label.setForeground(Diablo2ColorConstants.getUserNameListColor(flags));
 			b.add(ui.label, getInsertPosition(ui.priority));
 		}
 		
