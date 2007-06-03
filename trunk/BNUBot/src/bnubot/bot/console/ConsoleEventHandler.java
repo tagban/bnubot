@@ -28,19 +28,19 @@ public class ConsoleEventHandler implements EventHandler {
 		System.out.println(user + " has left the channel.");
 	}
 
-	public void recieveChat(String user, String text) {
+	public void recieveChat(String user, int flags, int ping, String text) {
 		System.out.println("<" + user + "> " + text);
 	}
 
-	public void recieveEmote(String user, String text) {
+	public void recieveEmote(String user, int flags, int ping, String text) {
 		System.out.println("<" + user + " " + text + ">");
 	}
 
-	public void whisperRecieved(String user, String text) {
+	public void whisperRecieved(String user, int flags, int ping, String text) {
 		System.out.println("<From: " + user + "> " + text);
 	}
 
-	public void whisperSent(String user, String text) {
+	public void whisperSent(String user, int flags, int ping, String text) {
 		System.out.println("<To: " + user + "> " + text);
 	}
 

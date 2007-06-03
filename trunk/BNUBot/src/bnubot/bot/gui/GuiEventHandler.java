@@ -169,12 +169,12 @@ public class GuiEventHandler implements EventHandler {
 		frame.setTitle(c.toString());
 	}
 
-	public void recieveChat(String user, String text) {
-		mainTextArea.userChat(user, text);
+	public void recieveChat(String user, int flags, int ping, String text) {
+		mainTextArea.userChat(user, flags, text);
 	}
 
-	public void recieveEmote(String user, String text) {
-		mainTextArea.userEmote(user, text);
+	public void recieveEmote(String user, int flags, int ping, String text) {
+		mainTextArea.userEmote(user, flags, text);
 	}
 
 	public void recieveInfo(String text) {
@@ -185,12 +185,12 @@ public class GuiEventHandler implements EventHandler {
 		mainTextArea.recieveError(text);
 	}
 
-	public void whisperRecieved(String user, String text) {
-		mainTextArea.userChat("From: " + user, text);
+	public void whisperRecieved(String user, int flags, int ping, String text) {
+		mainTextArea.userChat("From: " + user, flags, text);
 	}
 
-	public void whisperSent(String user, String text) {
-		mainTextArea.userChat("To: " + user, text);
+	public void whisperSent(String user, int flags, int ping, String text) {
+		mainTextArea.userChat("To: " + user, flags, text);
 	}
 
 	public void bnetConnected() {

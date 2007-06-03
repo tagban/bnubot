@@ -31,6 +31,10 @@ public class BNCSConnection extends Connection {
 	String statString = null;
 	String accountName = null;
 	String channelName = null;
+	boolean forceReconnect = false;
+	int myFlags = 0;
+	int myPing = -1;
+	long lastAntiIdle;
 
 	public BNCSConnection(ConnectionSettings cs) {
 		super(cs);
@@ -70,14 +74,18 @@ public class BNCSConnection extends Connection {
 		boolean allowAutoConnect = true;
 		while(true) {
 			try {
-				if(!cs.autoconnect || !allowAutoConnect) {
-					while(!isConnected()) {
-						yield();
-						sleep(10);
+				if(forceReconnect)
+					forceReconnect = false;
+				else {
+					if(!cs.autoconnect || !allowAutoConnect) {
+						while(!isConnected()) {
+							yield();
+							sleep(10);
+						}
 					}
+					allowAutoConnect = false;
 				}
-				allowAutoConnect = false;
-	
+				
 				setConnected(true);
 				recieveInfo("Connecting to " + cs.bncsServer + ":" + cs.port);
 				s = new Socket(cs.bncsServer, cs.port);
@@ -193,7 +201,7 @@ public class BNCSConnection extends Connection {
 	
 	private void connectedLoop() throws Exception {
 		BNCSPacket p;
-		long lastAntiIdle = new Date().getTime();
+		lastAntiIdle = new Date().getTime();
 		while(s.isConnected() && connected) {
 			if(channelName != null) {
 				long timeSinceAntiIdle = new Date().getTime() - lastAntiIdle;
@@ -699,6 +707,17 @@ public class BNCSConnection extends Connection {
 					switch(eid) {
 					case BNCSCommandIDs.EID_SHOWUSER:
 					case BNCSCommandIDs.EID_USERFLAGS:
+						if(user.equals(uniqueUserName)) {
+							myFlags = flags;
+							myPing = ping;
+							System.out.println("flags=0x" + Integer.toHexString(flags) + ", ping=" + ping + "ms");
+						}
+						break;
+					}
+					
+					switch(eid) {
+					case BNCSCommandIDs.EID_SHOWUSER:
+					case BNCSCommandIDs.EID_USERFLAGS:
 						channelUser(user, flags, ping, text);
 						break;
 					case BNCSCommandIDs.EID_JOIN:
@@ -708,10 +727,10 @@ public class BNCSConnection extends Connection {
 						channelLeave(user, flags, ping, text);
 						break;
 					case BNCSCommandIDs.EID_TALK:
-						recieveChat(user, text);
+						recieveChat(user, flags, ping, text);
 						break;
 					case BNCSCommandIDs.EID_EMOTE:
-						recieveEmote(user, text);
+						recieveEmote(user, flags, ping, text);
 						break;
 					case BNCSCommandIDs.EID_INFO:
 						recieveInfo(text);
@@ -724,10 +743,10 @@ public class BNCSConnection extends Connection {
 						joinedChannel(text);
 						break;
 					case BNCSCommandIDs.EID_WHISPERSENT:
-						whisperSent(user, text);
+						whisperSent(user, flags, ping, text);
 						break;
 					case BNCSCommandIDs.EID_WHISPER:
-						whisperRecieved(user, text);
+						whisperRecieved(user, flags, ping, text);
 						break;
 					case BNCSCommandIDs.EID_CHANNELDOESNOTEXIST:
 						p = new BNCSPacket(BNCSCommandIDs.SID_JOINCHANNEL);
@@ -852,8 +871,10 @@ public class BNCSConnection extends Connection {
 			p.writeNTString(text);
 			p.SendPacket(dos, cs.packetLog);
 			
+			lastAntiIdle = new Date().getTime(); 
+			
 			if(text.charAt(0) != '/')
-				recieveChat(uniqueUserName, text);
+				recieveChat(uniqueUserName, myFlags, myPing, text);
 		} catch(Exception e) {
 			e.printStackTrace();
 			System.exit(1);
@@ -875,4 +896,8 @@ public class BNCSConnection extends Connection {
 		return out;
 	}
 	
+	public void reconnect() {
+		forceReconnect = true;
+		setConnected(false);
+	}
 }

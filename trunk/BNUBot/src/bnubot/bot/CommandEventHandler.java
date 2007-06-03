@@ -65,6 +65,11 @@ public class CommandEventHandler implements EventHandler {
 				c.sendChat("/kick " + params[0]);
 				break;
 			}
+		case 'r':
+			if(command.equals("reconnect")) {
+				c.reconnect();
+				break;
+			}
 		case 's':
 			if(command.equals("setrank")) {
 				int newRank;
@@ -142,7 +147,7 @@ public class CommandEventHandler implements EventHandler {
 	public void channelUser(String user, int flags, int ping, String statstr) {}
 	public void joinedChannel(String channel) {}
 
-	public void recieveChat(String user, String text) {
+	public void recieveChat(String user, int flags, int ping, String text) {
 		User u = d.getUserDatabase().getUser(user);
 		if(u == null)
 			return;
@@ -166,7 +171,7 @@ public class CommandEventHandler implements EventHandler {
 		}
 	}
 
-	public void recieveEmote(String user, String text) {}
+	public void recieveEmote(String user, int flags, int ping, String text) {}
 	public void recieveError(String text) {}
 
 	// If the name is "[NAME]", return "NAME" otherwise pass name through
@@ -219,7 +224,7 @@ public class CommandEventHandler implements EventHandler {
 	public void bnetConnected() {}
 	public void bnetDisconnected() {}
 
-	public void whisperRecieved(String user, String text) {
+	public void whisperRecieved(String user, int flags, int ping, String text) {
 		User u = d.getUserDatabase().getUser(user);
 		if(u == null)
 			return;
@@ -236,6 +241,6 @@ public class CommandEventHandler implements EventHandler {
 		parseCommand(user, command[0], paramString);
 	}
 
-	public void whisperSent(String user, String text) {}
+	public void whisperSent(String user, int flags, int ping, String text) {}
 
 }
