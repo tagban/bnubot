@@ -54,77 +54,156 @@ public class ConfigurationFrame extends JDialog {
 	private void initializeGui() {
 		Box boxAll = new Box(BoxLayout.Y_AXIS);
 		{
-			JPanel pnlSettings = new JPanel(new GridLayout(0, 2));
+			Box boxSettings = new Box(BoxLayout.Y_AXIS);
 			{
-				pnlSettings.add(new JLabel("Username"));
-				txtUsername = new ConfigTextArea(cs.username);
-				pnlSettings.add(txtUsername);
+				int lblWidth = 100;
+				Dimension maxSize = new Dimension(lblWidth, 0);
 				
-				pnlSettings.add(new JLabel("Password"));
-				txtPassword = new JPasswordField(cs.password);
-				pnlSettings.add(txtPassword);
-				
-				pnlSettings.add(new JLabel("Email"));
-				txtEmail = new ConfigTextArea(cs.email);
-				pnlSettings.add(txtEmail);
-				
-				pnlSettings.add(new JLabel("Product"));
-				cmbProduct = new JComboBox(util.Constants.prods);
-				cmbProduct.setSelectedIndex(cs.product - 1);
-				pnlSettings.add(cmbProduct);
-				
-				pnlSettings.add(new JLabel("Trigger"));
-				txtTrigger = new ConfigTextArea(cs.trigger);
-				pnlSettings.add(txtTrigger);
-				
-				pnlSettings.add(new JLabel("Anti-Idle"));
-				txtAntiIdle = new ConfigTextArea(cs.antiIdle);
-				pnlSettings.add(txtAntiIdle);
-				
-				pnlSettings.add(new JLabel("CD Key"));
-				txtCDKey = new ConfigTextArea(cs.cdkey);
-				pnlSettings.add(txtCDKey);
-				
-				pnlSettings.add(new JLabel("LOD Key"));
-				txtCDKeyLOD = new ConfigTextArea(cs.cdkeyLOD);
-				pnlSettings.add(txtCDKeyLOD);
-				
-				pnlSettings.add(new JLabel("TFT Key"));
-				txtCDKeyTFT = new ConfigTextArea(cs.cdkeyTFT);
-				pnlSettings.add(txtCDKeyTFT);
-				
-				pnlSettings.add(new JLabel("Battle.net Server"));
-				txtBNCSServer = new ConfigTextArea(cs.bncsServer);
-				pnlSettings.add(txtBNCSServer);
-				
-				pnlSettings.add(new JLabel("BNLS Server"));
-				txtBNLSServer = new ConfigTextArea(cs.bnlsServer);
-				pnlSettings.add(txtBNLSServer);
-				
-				pnlSettings.add(new JLabel("Channel"));
-				txtChannel = new ConfigTextArea(cs.channel);
-				pnlSettings.add(txtChannel);
-			}
-			boxAll.add(pnlSettings);
+				Box boxLine = new Box(BoxLayout.X_AXIS);
+				{
+					JLabel jl = new JLabel("Username");
+					jl.setPreferredSize(maxSize);
+					boxLine.add(jl);
+					txtUsername = new ConfigTextArea(cs.username);
+					boxLine.add(txtUsername);
+				}
+				boxSettings.add(boxLine);
 
-			Box boxCheckboxes = new Box(BoxLayout.Y_AXIS);
-			{
-				chkAutoConnect = new JCheckBox("Auto Connect", cs.autoconnect);
-				boxCheckboxes.add(chkAutoConnect);
+				boxLine = new Box(BoxLayout.X_AXIS);
+				{
+					JLabel jl = new JLabel("Password");
+					jl.setPreferredSize(maxSize);
+					boxLine.add(jl);
+					txtPassword = new JPasswordField(cs.password);
+					boxLine.add(txtPassword);
+				}
+				boxSettings.add(boxLine);
+
+				boxLine = new Box(BoxLayout.X_AXIS);
+				{
+					JLabel jl = new JLabel("Email");
+					jl.setPreferredSize(maxSize);
+					boxLine.add(jl);
+					txtEmail = new ConfigTextArea(cs.email);
+					boxLine.add(txtEmail);
+				}
+				boxSettings.add(boxLine);
+
+				boxLine = new Box(BoxLayout.X_AXIS);
+				{
+					JLabel jl = new JLabel("Product");
+					jl.setPreferredSize(maxSize);
+					boxLine.add(jl);
+					cmbProduct = new JComboBox(util.Constants.prods);
+					cmbProduct.setSelectedIndex(cs.product - 1);
+					boxLine.add(cmbProduct);
+				}
+				boxSettings.add(boxLine);
+
+				boxLine = new Box(BoxLayout.X_AXIS);
+				{
+					JLabel jl = new JLabel("Trigger");
+					jl.setPreferredSize(maxSize);
+					boxLine.add(jl);
+					txtTrigger = new ConfigTextArea(cs.trigger);
+					boxLine.add(txtTrigger);
+				}
+				boxSettings.add(boxLine);
+
+				boxLine = new Box(BoxLayout.X_AXIS);
+				{
+					JLabel jl = new JLabel("Anti-Idle");
+					jl.setPreferredSize(maxSize);
+					boxLine.add(jl);
+					txtAntiIdle = new ConfigTextArea(cs.antiIdle);
+					boxLine.add(txtAntiIdle);
+				}
+				boxSettings.add(boxLine);
+
+				boxLine = new Box(BoxLayout.X_AXIS);
+				{
+					JLabel jl = new JLabel("CD Key");
+					jl.setPreferredSize(maxSize);
+					boxLine.add(jl);
+					txtCDKey = new ConfigTextArea(cs.cdkey);
+					boxLine.add(txtCDKey);
+				}
+				boxSettings.add(boxLine);
+
+				boxLine = new Box(BoxLayout.X_AXIS);
+				{
+					JLabel jl = new JLabel("LOD Key");
+					jl.setPreferredSize(maxSize);
+					boxLine.add(jl);
+					txtCDKeyLOD = new ConfigTextArea(cs.cdkeyLOD);
+					boxLine.add(txtCDKeyLOD);
+				}
+				boxSettings.add(boxLine);
+
+				boxLine = new Box(BoxLayout.X_AXIS);
+				{
+					JLabel jl = new JLabel("TFT Key");
+					jl.setPreferredSize(maxSize);
+					boxLine.add(jl);
+					txtCDKeyTFT = new ConfigTextArea(cs.cdkeyTFT);
+					boxLine.add(txtCDKeyTFT);
+				}
+				boxSettings.add(boxLine);
+
+				boxLine = new Box(BoxLayout.X_AXIS);
+				{
+					JLabel jl = new JLabel("Battle.net Server");
+					jl.setPreferredSize(maxSize);
+					boxLine.add(jl);
+					txtBNCSServer = new ConfigTextArea(cs.bncsServer);
+					boxLine.add(txtBNCSServer);
+				}
+				boxSettings.add(boxLine);
+
+				boxLine = new Box(BoxLayout.X_AXIS);
+				{
+					JLabel jl = new JLabel("BNLS Server");
+					jl.setPreferredSize(maxSize);
+					boxLine.add(jl);
+					txtBNLSServer = new ConfigTextArea(cs.bnlsServer);
+					boxLine.add(txtBNLSServer);
+				}
+				boxSettings.add(boxLine);
+
+				boxLine = new Box(BoxLayout.X_AXIS);
+				{
+					JLabel jl = new JLabel("Channel");
+					jl.setPreferredSize(maxSize);
+					boxLine.add(jl);
+					txtChannel = new ConfigTextArea(cs.channel);
+					boxLine.add(txtChannel);
+				}
+				boxSettings.add(boxLine);
 				
-				chkEnableGUI = new JCheckBox("Enable GUI", cs.enableGUI);
-				boxCheckboxes.add(chkEnableGUI);
-				
-				chkEnableCLI = new JCheckBox("Enable CLI", cs.enableCLI);
-				boxCheckboxes.add(chkEnableCLI);
-				
-				chkPacketLog = new JCheckBox("Packet Log", cs.packetLog);
-				boxCheckboxes.add(chkPacketLog);
+				boxLine = new Box(BoxLayout.X_AXIS);
+				{
+					Box boxCheckboxes = new Box(BoxLayout.Y_AXIS);
+					{
+						chkAutoConnect = new JCheckBox("Auto Connect", cs.autoconnect);
+						boxCheckboxes.add(chkAutoConnect);
+	
+						chkEnableGUI = new JCheckBox("Enable GUI", cs.enableGUI);
+						boxCheckboxes.add(chkEnableGUI);
+	
+						chkEnableCLI = new JCheckBox("Enable CLI", cs.enableCLI);
+						boxCheckboxes.add(chkEnableCLI);
+	
+						chkPacketLog = new JCheckBox("Packet Log", cs.packetLog);
+						boxCheckboxes.add(chkPacketLog);
+					}
+					boxLine.add(boxCheckboxes);
+				}
+				boxSettings.add(boxLine);
 			}
-			boxAll.add(boxCheckboxes);
-			
+			boxAll.add(boxSettings);
+
 			boxAll.add(Box.createVerticalGlue());
-			
+
 			Box boxButtons = new Box(BoxLayout.X_AXIS);
 			{
 				btnLoad = new JButton("Load");
@@ -230,7 +309,7 @@ public class ConfigurationFrame extends JDialog {
 		if(v == null) {
 			dispose();
 		} else {
-			JOptionPane.showMessageDialog(this, "The configuration is invalid: " + v);
+			JOptionPane.showMessageDialog(this, "The configuration is invalid:\n" + v);
 		}
 	}
 }
