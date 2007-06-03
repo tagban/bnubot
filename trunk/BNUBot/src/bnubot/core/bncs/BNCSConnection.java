@@ -184,6 +184,7 @@ public class BNCSConnection extends Connection {
 			}
 
 			setConnected(false);
+			channelName = null;
 			recieveError("Disconnected from battle.net.");
 			try { s.close(); } catch (Exception e) { }
 			s = null;
@@ -192,7 +193,20 @@ public class BNCSConnection extends Connection {
 	
 	private void connectedLoop() throws Exception {
 		BNCSPacket p;
+		long lastAntiIdle = new Date().getTime();
 		while(s.isConnected() && connected) {
+			if(channelName != null) {
+				long timeSinceAntiIdle = new Date().getTime() - lastAntiIdle;
+				
+				//Wait 5 minutes
+				timeSinceAntiIdle /= 1000;
+				timeSinceAntiIdle /= 60;
+				if(timeSinceAntiIdle > 5) {
+					lastAntiIdle = new Date().getTime();
+					sendChat(cs.antiIdle);
+				}
+			}
+			
 			if(dis.available() > 0) {
 				BNCSPacketReader pr = new BNCSPacketReader(dis, cs.packetLog);
 				BNetInputStream is = pr.getData();
