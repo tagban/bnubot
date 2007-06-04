@@ -9,6 +9,7 @@ import bnubot.bot.EventHandler;
 import bnubot.bot.gui.textwindow.TextWindow;
 import bnubot.bot.gui.userlist.IconsDotBniReader;
 import bnubot.bot.gui.userlist.UserList;
+import bnubot.core.BNetUser;
 import bnubot.core.Connection;
 
 
@@ -148,18 +149,18 @@ public class GuiEventHandler implements EventHandler {
 		frame.setVisible(true);
 	}
 
-	public void channelJoin(String user, int flags, int ping, String statstr) {
-		userList.showUser(user, flags, ping, statstr);
+	public void channelJoin(BNetUser user, int flags, int ping, String statstr) {
+		userList.showUser(user.toString(), flags, ping, statstr);
 		mainTextArea.channelInfo(user + " has joined.");
 	}
 
-	public void channelLeave(String user, int flags, int ping, String statstr) {
-		userList.removeUser(user);
+	public void channelLeave(BNetUser user, int flags, int ping, String statstr) {
+		userList.removeUser(user.toString());
 		mainTextArea.channelInfo(user + " has left.");
 	}
 
-	public void channelUser(String user, int flags, int ping, String statstr) {
-		userList.showUser(user, flags, ping, statstr);
+	public void channelUser(BNetUser user, int flags, int ping, String statstr) {
+		userList.showUser(user.toString(), flags, ping, statstr);
 	}
 
 	public void joinedChannel(String channel) {
@@ -169,12 +170,12 @@ public class GuiEventHandler implements EventHandler {
 		frame.setTitle(c.toString());
 	}
 
-	public void recieveChat(String user, int flags, int ping, String text) {
-		mainTextArea.userChat(user, flags, text);
+	public void recieveChat(BNetUser user, int flags, int ping, String text) {
+		mainTextArea.userChat(user.toString(), flags, text);
 	}
 
-	public void recieveEmote(String user, int flags, int ping, String text) {
-		mainTextArea.userEmote(user, flags, text);
+	public void recieveEmote(BNetUser user, int flags, int ping, String text) {
+		mainTextArea.userEmote(user.toString(), flags, text);
 	}
 
 	public void recieveInfo(String text) {
@@ -185,11 +186,11 @@ public class GuiEventHandler implements EventHandler {
 		mainTextArea.recieveError(text);
 	}
 
-	public void whisperRecieved(String user, int flags, int ping, String text) {
+	public void whisperRecieved(BNetUser user, int flags, int ping, String text) {
 		mainTextArea.userChat("From: " + user, flags, text);
 	}
 
-	public void whisperSent(String user, int flags, int ping, String text) {
+	public void whisperSent(BNetUser user, int flags, int ping, String text) {
 		mainTextArea.userChat("To: " + user, flags, text);
 	}
 

@@ -9,6 +9,7 @@ import java.util.Random;
 
 import bnubot.bot.EventHandler;
 import bnubot.core.BNetInputStream;
+import bnubot.core.BNetUser;
 import bnubot.core.Connection;
 import bnubot.core.ConnectionSettings;
 
@@ -27,9 +28,8 @@ public class BNCSConnection extends Connection {
 	int clientToken = Math.abs(new Random().nextInt());
 	SRP srp = null;
 	byte proof_M2[] = null;
-	String uniqueUserName = null;
+	BNetUser myUser = null;
 	String statString = null;
-	String accountName = null;
 	String channelName = null;
 	boolean forceReconnect = false;
 	int myFlags = 0;
@@ -654,11 +654,12 @@ public class BNCSConnection extends Connection {
 				}
 				
 				case BNCSCommandIDs.SID_ENTERCHAT: {
-					uniqueUserName = is.readNTString();
+					String uniqueUserName = is.readNTString();
 					statString = is.readNTString();
-					accountName = is.readNTString();
+					String accountName = is.readNTString();
 					
-					recieveInfo("Logged in as " + uniqueUserName);
+					myUser = new BNetUser(uniqueUserName, cs.myRealm);
+					recieveInfo("Logged in as " + myUser.getFullLogonName());
 					
 					// We are officially logged in; get MOTD and join a channel!
 					p = new BNCSPacket(BNCSCommandIDs.SID_NEWS_INFO);
@@ -701,13 +702,13 @@ public class BNCSConnection extends Connection {
 				//	is.readDWord();	// IP Address (defunct)
 				//	is.readDWord();	// Account number (defunct)
 				//	is.readDWord(); // Registration authority (defunct)
-					String user = is.readNTString();
+					BNetUser user = new BNetUser(is.readNTString(), cs.myRealm);
 					String text = is.readNTString();
 					
 					switch(eid) {
 					case BNCSCommandIDs.EID_SHOWUSER:
 					case BNCSCommandIDs.EID_USERFLAGS:
-						if(user.equals(uniqueUserName)) {
+						if(user.equals(myUser)) {
 							myFlags = flags;
 							myPing = ping;
 						}
@@ -873,7 +874,7 @@ public class BNCSConnection extends Connection {
 			lastAntiIdle = new Date().getTime(); 
 			
 			if(text.charAt(0) != '/')
-				recieveChat(uniqueUserName, myFlags, myPing, text);
+				recieveChat(myUser, myFlags, myPing, text);
 		} catch(Exception e) {
 			e.printStackTrace();
 			System.exit(1);
@@ -889,10 +890,17 @@ public class BNCSConnection extends Connection {
 	}
 	
 	public String toString() {
-		String out = accountName;
-		if(channelName != null)
-			out += " - " + channelName;
-		return out;
+		if(myUser == null) {
+			if(channelName != null)
+				return channelName;
+		} else {
+			String out = myUser.getShortLogonName();
+			if(channelName != null)
+				out += " - " + channelName;
+			return out;
+		}
+		
+		return "BNU-Bot";
 	}
 	
 	public void reconnect() {

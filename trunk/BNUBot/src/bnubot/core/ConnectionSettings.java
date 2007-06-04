@@ -39,6 +39,8 @@ public class ConnectionSettings implements Serializable {
 	public boolean enableGUI;
 	public boolean packetLog;
 	
+	public String myRealm;
+	
 	public ConnectionSettings() {
 		
 	}
@@ -108,6 +110,36 @@ public class ConnectionSettings implements Serializable {
 				return "TFT CD key not set";
 		}
 		
+		myRealm = getMyRealm();
+		if(myRealm == null) {
+			return "I don't know what realm I will be on";
+		}
+		
+		return null;
+	}
+	
+	private String getMyRealm() {
+		switch(product) {
+		case PRODUCT_WARCRAFT3:
+		case PRODUCT_THEFROZENTHRONE: {
+			if(bncsServer.equals("useast.battle.net"))
+				return "Azeroth";
+			break;
+		}
+		
+		default: {
+			if(bncsServer.equals("useast.battle.net"))
+				return "USEast";
+			if(bncsServer.equals("uswest.battle.net"))
+				return "USWest";
+			if(bncsServer.equals("asia.battle.net"))
+				return "Asia";
+			if(bncsServer.equals("europe.battle.net"))
+				return "Europe";
+			break;
+		}
+		
+		}
 		return null;
 	}
 	

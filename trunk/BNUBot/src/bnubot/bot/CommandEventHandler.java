@@ -3,6 +3,7 @@ package bnubot.bot;
 import java.util.Properties;
 
 import bnubot.bot.database.*;
+import bnubot.core.BNetUser;
 import bnubot.core.Connection;
 
 public class CommandEventHandler implements EventHandler {
@@ -19,7 +20,7 @@ public class CommandEventHandler implements EventHandler {
 		this.c = c;
 	}
 	
-	private void parseCommand(String user, String command, String param) {
+	private void parseCommand(BNetUser user, String command, String param) {
 		String[] params = param.split(" ");
 		
 		switch(command.charAt(0)) {
@@ -135,27 +136,27 @@ public class CommandEventHandler implements EventHandler {
 	}
 	
 
-	public void channelJoin(String user, int flags, int ping, String statstr) {
-		if((user.compareToIgnoreCase("bnu-camel@azeroth") == 0)
-		|| (user.compareToIgnoreCase("bnu-camel@useast") == 0)
-		|| (user.compareToIgnoreCase("bnu-camel") == 0)) {
+	public void channelJoin(BNetUser user, int flags, int ping, String statstr) {
+		if((user.getFullAccountName().compareToIgnoreCase("BNU-Camel@Azeroth") == 0)
+		|| (user.getFullAccountName().compareToIgnoreCase("BNU-Camel@USEast") == 0)) {
 			c.sendChat("/me hails Camel");
 		}
 	}
 
-	public void channelLeave(String user, int flags, int ping, String statstr) {}
-	public void channelUser(String user, int flags, int ping, String statstr) {}
+	public void channelLeave(BNetUser user, int flags, int ping, String statstr) {}
+	public void channelUser(BNetUser user, int flags, int ping, String statstr) {}
 	public void joinedChannel(String channel) {}
 
-	public void recieveChat(String user, int flags, int ping, String text) {
-		User u = d.getUserDatabase().getUser(user);
-		if(u == null)
-			return;
-		if(u.getAccess() <= 0)
-			return;
+	public void recieveChat(BNetUser user, int flags, int ping, String text) {
 		if(text == null)
 			return;
 		if(text.length() == 0)
+			return;
+		
+		User u = d.getUserDatabase().getUser(user.getFullAccountName());
+		if(u == null)
+			return;
+		if(u.getAccess() <= 0)
 			return;
 		
 		char trigger = c.getConnectionSettings().trigger.charAt(0);
@@ -171,7 +172,7 @@ public class CommandEventHandler implements EventHandler {
 		}
 	}
 
-	public void recieveEmote(String user, int flags, int ping, String text) {}
+	public void recieveEmote(BNetUser user, int flags, int ping, String text) {}
 	public void recieveError(String text) {}
 
 	// If the name is "[NAME]", return "NAME" otherwise pass name through
@@ -224,15 +225,16 @@ public class CommandEventHandler implements EventHandler {
 	public void bnetConnected() {}
 	public void bnetDisconnected() {}
 
-	public void whisperRecieved(String user, int flags, int ping, String text) {
-		User u = d.getUserDatabase().getUser(user);
-		if(u == null)
-			return;
-		if(u.getAccess() <= 0)
-			return;
+	public void whisperRecieved(BNetUser user, int flags, int ping, String text) {
 		if(text == null)
 			return;
 		if(text.length() == 0)
+			return;
+		
+		User u = d.getUserDatabase().getUser(user.getFullAccountName());
+		if(u == null)
+			return;
+		if(u.getAccess() <= 0)
 			return;
 		
 		String[] command = text.substring(1).split(" ");
@@ -241,6 +243,6 @@ public class CommandEventHandler implements EventHandler {
 		parseCommand(user, command[0], paramString);
 	}
 
-	public void whisperSent(String user, int flags, int ping, String text) {}
+	public void whisperSent(BNetUser user, int flags, int ping, String text) {}
 
 }
