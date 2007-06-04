@@ -124,6 +124,12 @@ public class ConnectionSettings implements Serializable {
 		case PRODUCT_THEFROZENTHRONE: {
 			if(bncsServer.equals("useast.battle.net"))
 				return "Azeroth";
+			if(bncsServer.equals("uswest.battle.net"))
+				return "Lordaeron";
+			if(bncsServer.equals("europe.battle.net"))
+				return "Northrend";
+			if(bncsServer.equals("asia.battle.net"))
+				return "Kalimdor";
 			break;
 		}
 		
@@ -132,10 +138,10 @@ public class ConnectionSettings implements Serializable {
 				return "USEast";
 			if(bncsServer.equals("uswest.battle.net"))
 				return "USWest";
-			if(bncsServer.equals("asia.battle.net"))
-				return "Asia";
 			if(bncsServer.equals("europe.battle.net"))
 				return "Europe";
+			if(bncsServer.equals("asia.battle.net"))
+				return "Asia";
 			break;
 		}
 		
