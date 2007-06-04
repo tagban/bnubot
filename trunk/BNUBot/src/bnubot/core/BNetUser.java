@@ -88,7 +88,7 @@ public class BNetUser {
 	public boolean equals(Object o) {
 		if(o instanceof BNetUser) {
 			BNetUser u = (BNetUser)o;
-			if(u.getFullLogonName().equals(fullLogonName))
+			if(u.getFullLogonName().compareToIgnoreCase(fullLogonName) == 0)
 				return true;
 		}
 		
