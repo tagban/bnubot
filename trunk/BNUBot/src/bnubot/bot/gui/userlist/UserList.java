@@ -1,13 +1,12 @@
 package bnubot.bot.gui.userlist;
 
-import java.awt.Color;
 import java.awt.FlowLayout;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
 import javax.swing.*;
 
-import bnubot.bot.gui.ColorScheme.Diablo2ColorConstants;
+import bnubot.bot.gui.ColorScheme.ColorScheme;
 
 @SuppressWarnings("serial")
 public class UserList extends JPanel {
@@ -19,15 +18,17 @@ public class UserList extends JPanel {
 		JLabel label;
 	}
 	
-	BNetIcon[] icons = null;
-	Hashtable<String, UserInfo> users = null;
-	Box b = null;
+	private BNetIcon[] icons = null;
+	private Hashtable<String, UserInfo> users = null;
+	private Box b = null;
+	private ColorScheme cs = null;
 	
-	public UserList(BNetIcon[] icons) {
+	public UserList(BNetIcon[] icons, ColorScheme cs) {
 		super(new FlowLayout(FlowLayout.LEFT));
 		this.icons = icons;
 		this.users = new Hashtable<String, UserInfo>();
-		setBackground(Color.BLACK);
+		this.cs = cs;
+		setBackground(cs.getBackgroundColor());
 		b = new Box(BoxLayout.Y_AXIS);
 		add(b);
 	}
@@ -81,7 +82,7 @@ public class UserList extends JPanel {
 		}
 		if(ui.label == null) {
 			ui.label = new JLabel(user);
-			ui.label.setForeground(Diablo2ColorConstants.getUserNameListColor(flags));
+			ui.label.setForeground(cs.getUserNameListColor(flags));
 			b.add(ui.label, getInsertPosition(ui.priority));
 		}
 		
@@ -97,6 +98,8 @@ public class UserList extends JPanel {
 			}
 			
 			ui.flags = flags;
+			
+			ui.label.setForeground(cs.getUserNameListColor(flags));
 		}
 		ui.ping = ping;
 		ui.statstr = statstr;
