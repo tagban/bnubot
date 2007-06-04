@@ -37,8 +37,6 @@ public class Database implements Serializable {
 		try {
 			ObjectOutputStream so = new ObjectOutputStream(new FileOutputStream(f));
 			so.writeObject(this);
-			
-			System.out.println("Wrote database to " + f.getAbsoluteFile());
 		} catch(Exception e) {
 			e.printStackTrace();
 			System.exit(1);
