@@ -710,7 +710,6 @@ public class BNCSConnection extends Connection {
 						if(user.equals(uniqueUserName)) {
 							myFlags = flags;
 							myPing = ping;
-							System.out.println("flags=0x" + Integer.toHexString(flags) + ", ping=" + ping + "ms");
 						}
 						break;
 					}
