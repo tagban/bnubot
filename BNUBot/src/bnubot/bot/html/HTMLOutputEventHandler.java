@@ -11,11 +11,12 @@ import java.util.Hashtable;
 import javax.swing.SwingUtilities;
 
 import bnubot.bot.EventHandler;
+import bnubot.core.BNetUser;
 import bnubot.core.Connection;
 
 public class HTMLOutputEventHandler implements EventHandler {
 	private class UserInfo {
-		String user;
+		BNetUser user;
 		int flags;
 		int ping;
 		String statstr;
@@ -37,9 +38,9 @@ public class HTMLOutputEventHandler implements EventHandler {
 		writeUserList();
 	}
 
-	public void channelJoin(String user, int flags, int ping, String statstr) {
+	public void channelJoin(BNetUser user, int flags, int ping, String statstr) {
 		UserInfo ui = new UserInfo();
-		users.put(user, ui);
+		users.put(user.toString(), ui);
 		ui.user = user;
 		ui.flags = flags;
 		ui.ping = ping;
@@ -48,15 +49,15 @@ public class HTMLOutputEventHandler implements EventHandler {
 		writeUserList();
 	}
 	
-	public void channelLeave(String user, int flags, int ping, String statstr) {
-		users.remove(user);
+	public void channelLeave(BNetUser user, int flags, int ping, String statstr) {
+		users.remove(user.toString());
 	}
 	
-	public void channelUser(String user, int flags, int ping, String statstr) {
-		UserInfo ui = users.get(user);
+	public void channelUser(BNetUser user, int flags, int ping, String statstr) {
+		UserInfo ui = users.get(user.toString());
 		if(ui == null) {
 			ui = new UserInfo();
-			users.put(user, ui);
+			users.put(user.toString(), ui);
 		}
 		ui.user = user;
 		ui.flags = flags;
@@ -71,12 +72,12 @@ public class HTMLOutputEventHandler implements EventHandler {
 		this.channel = channel;
 		users.clear();
 	}
-	public void recieveChat(String user, int flags, int ping, String text) {}
-	public void recieveEmote(String user, int flags, int ping, String text) {}
+	public void recieveChat(BNetUser user, int flags, int ping, String text) {}
+	public void recieveEmote(BNetUser user, int flags, int ping, String text) {}
 	public void recieveError(String text) {}
 	public void recieveInfo(String text) {}
-	public void whisperRecieved(String user, int flags, int ping, String text) {}
-	public void whisperSent(String user, int flags, int ping, String text) {}
+	public void whisperRecieved(BNetUser user, int flags, int ping, String text) {}
+	public void whisperSent(BNetUser user, int flags, int ping, String text) {}
 	
 	private String getIcon(String product, int flags) {
 		if((flags & 0x01) != 0)	return "blizrep";

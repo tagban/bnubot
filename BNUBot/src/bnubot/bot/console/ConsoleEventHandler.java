@@ -1,6 +1,7 @@
 package bnubot.bot.console;
 
 import bnubot.bot.EventHandler;
+import bnubot.core.BNetUser;
 import bnubot.core.Connection;
 
 public class ConsoleEventHandler implements EventHandler {
@@ -15,32 +16,32 @@ public class ConsoleEventHandler implements EventHandler {
 		System.out.println("Joining channel " + channel);
 	}
 
-	public void channelUser(String user, int flags, int ping, String statstr) {
+	public void channelUser(BNetUser user, int flags, int ping, String statstr) {
 		if(statstr.length() > 4)
 			statstr = statstr.substring(0, 4);
 		System.out.println(user + " (" + ping + "ms) " + statstr);
 	}
 	
-	public void channelJoin(String user, int flags, int ping, String statstr) {
+	public void channelJoin(BNetUser user, int flags, int ping, String statstr) {
 		System.out.println(user + " has joined the channel.");
 	}
-	public void channelLeave(String user, int flags, int ping, String statstr) {
+	public void channelLeave(BNetUser user, int flags, int ping, String statstr) {
 		System.out.println(user + " has left the channel.");
 	}
 
-	public void recieveChat(String user, int flags, int ping, String text) {
+	public void recieveChat(BNetUser user, int flags, int ping, String text) {
 		System.out.println("<" + user + "> " + text);
 	}
 
-	public void recieveEmote(String user, int flags, int ping, String text) {
+	public void recieveEmote(BNetUser user, int flags, int ping, String text) {
 		System.out.println("<" + user + " " + text + ">");
 	}
 
-	public void whisperRecieved(String user, int flags, int ping, String text) {
+	public void whisperRecieved(BNetUser user, int flags, int ping, String text) {
 		System.out.println("<From: " + user + "> " + text);
 	}
 
-	public void whisperSent(String user, int flags, int ping, String text) {
+	public void whisperSent(BNetUser user, int flags, int ping, String text) {
 		System.out.println("<To: " + user + "> " + text);
 	}
 
@@ -53,6 +54,5 @@ public class ConsoleEventHandler implements EventHandler {
 	}
 
 	public void bnetConnected() {}
-
 	public void bnetDisconnected() {}
 }

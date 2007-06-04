@@ -72,31 +72,31 @@ public abstract class Connection extends Thread implements EventHandler {
 			en.nextElement().joinedChannel(channel);
 	}
 	
-	public void channelUser(String user, int flags, int ping, String statstr) {
+	public void channelUser(BNetUser user, int flags, int ping, String statstr) {
 		Enumeration<EventHandler> en = eventHandlers.elements();
 		while(en.hasMoreElements())
 			en.nextElement().channelUser(user, flags, ping, statstr);
 	}
 	
-	public void channelJoin(String user, int flags, int ping, String statstr) {
+	public void channelJoin(BNetUser user, int flags, int ping, String statstr) {
 		Enumeration<EventHandler> en = eventHandlers.elements();
 		while(en.hasMoreElements())
 			en.nextElement().channelJoin(user, flags, ping, statstr);
 	}
 	
-	public void channelLeave(String user, int flags, int ping, String statstr) {
+	public void channelLeave(BNetUser user, int flags, int ping, String statstr) {
 		Enumeration<EventHandler> en = eventHandlers.elements();
 		while(en.hasMoreElements())
 			en.nextElement().channelLeave(user, flags, ping, statstr);
 	}
 
-	public void recieveChat(String user, int flags, int ping, String text) {
+	public void recieveChat(BNetUser user, int flags, int ping, String text) {
 		Enumeration<EventHandler> en = eventHandlers.elements();
 		while(en.hasMoreElements())
 			en.nextElement().recieveChat(user, flags, ping, text);
 	}
 
-	public void recieveEmote(String user, int flags, int ping, String text) {
+	public void recieveEmote(BNetUser user, int flags, int ping, String text) {
 		Enumeration<EventHandler> en = eventHandlers.elements();
 		while(en.hasMoreElements())
 			en.nextElement().recieveEmote(user, flags, ping, text);
@@ -114,13 +114,13 @@ public abstract class Connection extends Thread implements EventHandler {
 			en.nextElement().recieveError(text);
 	}
 	
-	public void whisperSent(String user, int flags, int ping, String text) {
+	public void whisperSent(BNetUser user, int flags, int ping, String text) {
 		Enumeration<EventHandler> en = eventHandlers.elements();
 		while(en.hasMoreElements())
 			en.nextElement().whisperSent(user, flags, ping, text);
 	}
 	
-	public void whisperRecieved(String user, int flags, int ping, String text) {
+	public void whisperRecieved(BNetUser user, int flags, int ping, String text) {
 		Enumeration<EventHandler> en = eventHandlers.elements();
 		while(en.hasMoreElements())
 			en.nextElement().whisperRecieved(user, flags, ping, text);
