@@ -1,5 +1,7 @@
 package bnubot;
 
+import java.io.File;
+
 import bnubot.bot.CommandEventHandler;
 import bnubot.bot.EventHandler;
 import bnubot.bot.console.ConsoleEventHandler;
@@ -77,6 +79,20 @@ public class Main {
 		
 		BNCSConnection c = new BNCSConnection(cs);
 		
+		//CLI
+		if(cs.enableCLI)
+			c.addEventHandler(new ConsoleEventHandler());
+		
+		//GUI
+		if(cs.enableGUI)
+			c.addEventHandler(new GuiEventHandler());
+		
+		//Bot
+		Database d = Database.load(new File("database.bin"));
+		d.save();
+		c.addEventHandler(new CommandEventHandler(d));
+		
+		//Other plugins
 		if(plugins != null) {
 			for(int i = 0; i < plugins.length; i++) {
 				Class plugin = Class.forName(plugins[i]);
@@ -85,11 +101,6 @@ public class Main {
 			}
 		}
 		
-		c.addEventHandler(new CommandEventHandler(new Database()));
-		if(cs.enableCLI)
-			c.addEventHandler(new ConsoleEventHandler());
-		if(cs.enableGUI)
-			c.addEventHandler(new GuiEventHandler());
 		c.start();
 	
 		//IconsDotBniReader.readIconsDotBni(BNFTPConnection.downloadFile(cs, "icons_STAR.bni"));
