@@ -1,18 +1,50 @@
 package bnubot.bot.database;
 
-public class Database {
+import java.io.*;
+
+public class Database implements Serializable {
+	private static final long serialVersionUID = 9064719758285921969L;
 	UserDatabase ud = null;
+	File f;
 	
-	public Database() {
-		ud = new UserDatabase();
-		ud.addUser("bnu-camel@azeroth", new User(100));
-		ud.addUser("bnu-camel@useast", new User(100));
-		ud.addUser("bnu-camel", new User(100));
-		ud.addUser("bnu-bot@azeroth", new User(100));
-		ud.addUser("bnu-bot@useast", new User(100));
-		ud.addUser("bnu-bot", new User(100));
+	public static Database load(File f) {
+		Database d = null;
+		try {
+			ObjectInputStream si = new ObjectInputStream(new FileInputStream(f));
+			d = (Database)si.readObject();
+		} catch(Exception e) {
+			System.err.println(e.getMessage());
+		}
+		
+		if(d == null)
+			d = new Database(f);
+		d.setFile(f);
+		if(d.ud == null)
+			d.ud = new UserDatabase(d);
+		return d;
 	}
 	
+	public Database(File f) {
+		ud = new UserDatabase(this);
+		this.f = f;
+	}
+	
+	public void setFile(File f) {
+		this.f = f;
+	}
+	
+	public void save() {
+		try {
+			ObjectOutputStream so = new ObjectOutputStream(new FileOutputStream(f));
+			so.writeObject(this);
+			
+			System.out.println("Wrote database to " + f.getAbsoluteFile());
+		} catch(Exception e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+	}
+
 	public UserDatabase getUserDatabase() {
 		return ud;
 	}

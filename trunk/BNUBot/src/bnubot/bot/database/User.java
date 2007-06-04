@@ -1,6 +1,9 @@
 package bnubot.bot.database;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
+	private static final long serialVersionUID = -8494495858058893950L;
 	private int access;
 	
 	public User(int access) {
