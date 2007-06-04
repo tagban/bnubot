@@ -11,6 +11,16 @@ public class CommandEventHandler implements EventHandler {
 	Database d = null;
 	Boolean sweepBanInProgress = false;
 	int sweepBannedUsers;
+
+	private class InvalidUsageException extends Exception {
+		private static final long serialVersionUID = 3993849990858233332L;
+	}
+	private class InsufficientAccessException extends Exception {
+		private static final long serialVersionUID = -1954683087381833989L;
+		public InsufficientAccessException(String string) {
+			super(string);
+		}
+	}
 	
 	public CommandEventHandler(Database d) {
 		this.d = d;
@@ -22,116 +32,157 @@ public class CommandEventHandler implements EventHandler {
 	
 	private void parseCommand(BNetUser user, String command, String param) {
 		String[] params = param.split(" ");
+
+		User u = d.getUserDatabase().getUser(user.getFullAccountName());
+		boolean superUser = false;
 		
-		switch(command.charAt(0)) {
-		case 'a':
-			if(command.equals("add")) {
-				try {
-					if(params.length != 2)
-						throw new Exception();
-					int access = Integer.valueOf(params[1]);
-					d.getUserDatabase().addUser(params[0], new User(access));
+		if(c.getMyUser().equals(user) == false) {
+			if(u == null)
+				return;
+			if(u.getAccess() <= 0)
+				return;
+		} else {
+			superUser = true;
+			if(u == null) {
+				u = new User(0);
+				d.getUserDatabase().addUser(user.getFullAccountName(), u);
+			}
+		}
+		
+		try {
+		
+			switch(command.charAt(0)) {
+			case 'a':
+				if(command.equals("add")) {
+					try {
+						if(params.length != 2)
+							throw new InvalidUsageException();
+						
+						BNetUser target = new BNetUser(params[0], user.getFullAccountName());
+						int access = Integer.valueOf(params[1]);
+						
+						if(!superUser) {
+							if(access > u.getAccess())
+								throw new InsufficientAccessException("to add users beyond " + u.getAccess());
+							if(target.equals(user))
+								throw new InsufficientAccessException("to modify your self");
+						}
+						
+						d.getUserDatabase().addUser(target.getFullAccountName(), new User(access));
+						c.sendChat(user, "Added user [" + params[0] + "] sucessfully with access " + access);
+					} catch(InvalidUsageException e) {
+						c.sendChat(user, "Usage: ~add <user>[@<realm>] <access>");
+						break;
+					}
+					break;
+				}
+				
+			case 'b':
+				if(command.equals("ban")) {
+					if(param.length() == 0) {
+						c.sendChat(user, "Usage: ~ban <user>[@<realm>] [reason]");
+						break;
+					}
+					c.sendChat("/ban " + param);
+					break;
+				}
+			case 'd':
+				if(command.equals("disconnect")) {
+					c.setConnected(false);
+					break;
+				}
+			case 'i':
+				if(command.equals("info")) {
+					Properties p = System.getProperties();
+					c.sendChat(user, "BNU-Bot v2.0 beta running on " + p.getProperty("os.name") + " (" + p.getProperty("os.arch") + ")");
+					break;
+				}
+				
+			case 'k':
+				if(command.equals("kick")) {
+					if(params.length != 1) {
+						c.sendChat(user, "Usage: ~kick <user>[@<realm>]");
+						break;
+					}
+					c.sendChat("/kick " + params[0]);
+					break;
+				}
+			case 'r':
+				if(command.equals("reconnect")) {
+					c.reconnect();
+					break;
+				}
+			case 's':
+				if(command.equals("setrank")) {
+					int newRank;
+					try {
+						if(params.length != 2)
+							throw new InvalidUsageException();
+						newRank = Integer.valueOf(params[1]);
+						if((newRank < 1) || (newRank > 3))
+							throw new InvalidUsageException();
+					} catch(InvalidUsageException e) {
+						c.sendChat(user, "Usage: ~setrank <user> <rank:1-3>");
+						break;
+					}
 					
-					c.sendChat("Added user [" + params[0] + "] sucessfully with access " + access);
-				} catch(Exception e) {
-					c.sendChat("Usage: ~add <user>[@<realm>] <access>");
+					// TODO: validate that params[0] is in the clan
+					c.setClanRank(params[0], newRank);
+					c.sendChat(user, "Success");
 					break;
 				}
-				break;
-			}
-			
-		case 'b':
-			if(command.equals("ban")) {
-				if(param.length() == 0) {
-					c.sendChat("Usage: ~ban <user>[@<realm>] [reason]");
+				if(command.equals("sweepban")) {
+					if(params.length < 1) {
+						c.sendChat(user, "Usage: ~sweepban <channel>");
+						break;
+					}
+					sweepBanInProgress = true;
+					sweepBannedUsers = 0;
+					c.sendChat("/who " + param);
 					break;
 				}
-				c.sendChat("/ban " + param);
-				break;
+			case 'u':
+				if(command.equals("unban")) {
+					if(params.length != 1) {
+						c.sendChat(user, "Usage: ~unban <user>[@<realm>]");
+						break;
+					}
+					c.sendChat("/unban " + params[0]);
+					break;
+				}
+			case 'w':
+				if(command.equals("whoami")) {
+					parseCommand(user, "whois", user.toString());
+					break;
+				}
+				
+				if(command.equals("whois")) {
+					try {
+						if(params.length != 1)
+							throw new InvalidUsageException();
+	
+						params[0] = new BNetUser(params[0], user.getFullAccountName()).getFullAccountName();
+						User usr = d.getUserDatabase().getUser(params[0]);
+						
+						if(usr == null) {
+							c.sendChat(user, "User [" + params[0] + "] not found in database");
+							break;
+						}
+						
+						c.sendChat(user, "User [" + params[0] + "] has access " + usr.getAccess());
+					} catch(InvalidUsageException e) {
+						c.sendChat(user, "Usage: ~whois <user>[@realm]");
+						break;
+					}
+					break;
+				}
 			}
 		
-		case 'i':
-			if(command.equals("info")) {
-				Properties p = System.getProperties();
-				c.sendChat("BNU-Bot v2.0 beta running on " + p.getProperty("os.name") + " (" + p.getProperty("os.arch") + ")");
-				break;
-			}
-			
-		case 'k':
-			if(command.equals("kick")) {
-				if(params.length != 1) {
-					c.sendChat("Usage: ~kick <user>[@<realm>]");
-					break;
-				}
-				c.sendChat("/kick " + params[0]);
-				break;
-			}
-		case 'r':
-			if(command.equals("reconnect")) {
-				c.reconnect();
-				break;
-			}
-		case 's':
-			if(command.equals("setrank")) {
-				int newRank;
-				try {
-					if(params.length != 2)
-						throw new Exception();
-					newRank = Integer.valueOf(params[1]);
-					if((newRank < 1) || (newRank > 3))
-						throw new Exception();
-				} catch(Exception e) {
-					c.sendChat("Usage: ~setrank <user> <rank:1-3>");
-					break;
-				}
-				
-				// TODO: validate that params[0] is in the clan
-				try {
-					c.setClanRank(params[0], newRank);
-					c.sendChat("Success");
-				} catch(Exception e) {
-					c.sendChat("Failure");
-				}
-				break;
-			}
-			if(command.equals("sweepban")) {
-				if(params.length < 1) {
-					c.sendChat("Usage: ~sweepban <channel>");
-					break;
-				}
-				sweepBanInProgress = true;
-				sweepBannedUsers = 0;
-				c.sendChat("/who " + param);
-				break;
-			}
-		case 'u':
-			if(command.equals("unban")) {
-				if(params.length != 1) {
-					c.sendChat("Usage: ~unban <user>[@<realm>]");
-					break;
-				}
-				c.sendChat("/unban " + params[0]);
-				break;
-			}
-		case 'w':
-			if(command.equals("whois")) {
-				if(params.length != 1) {
-					c.sendChat("Usage: ~whois <user>[@realm]");
-					break;
-				}
-				
-				User usr = d.getUserDatabase().getUser(params[0]);
-				
-				if(usr == null) {
-					c.sendChat("User [" + params[0] + "] not found in database");
-					break;
-				}
-				
-				c.sendChat("User [" + params[0] + "] has access " + usr.getAccess());
-				break;
-			}
-		default:
-			c.sendChat("Command not recognized.");
+		} catch(InsufficientAccessException e) {
+			c.sendChat(user, "You have insufficient access " + e.getMessage());
+		} catch(Exception e) {
+			e.printStackTrace();
+			c.sendChat(user, "Error: " + e.getMessage());
 		}
 	}
 	
@@ -153,16 +204,10 @@ public class CommandEventHandler implements EventHandler {
 		if(text.length() == 0)
 			return;
 		
-		User u = d.getUserDatabase().getUser(user.getFullAccountName());
-		if(u == null)
-			return;
-		if(u.getAccess() <= 0)
-			return;
-		
 		char trigger = c.getConnectionSettings().trigger.charAt(0);
 		
 		if(text.equals("?trigger"))
-			c.sendChat("The bot's trigger is: " + trigger);
+			c.sendChat(user, "The bot's trigger is: " + trigger);
 		
 		if(text.charAt(0) == trigger) {
 			String[] command = text.substring(1).split(" ");
@@ -229,12 +274,6 @@ public class CommandEventHandler implements EventHandler {
 		if(text == null)
 			return;
 		if(text.length() == 0)
-			return;
-		
-		User u = d.getUserDatabase().getUser(user.getFullAccountName());
-		if(u == null)
-			return;
-		if(u.getAccess() <= 0)
 			return;
 		
 		String[] command = text.substring(1).split(" ");
