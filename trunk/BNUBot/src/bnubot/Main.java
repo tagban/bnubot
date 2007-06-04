@@ -58,7 +58,7 @@ public class Main {
 			System.exit(1);
 		}
 		
-		if((cs.isValid() == null) || forceConfig) {
+		if((cs.isValid() != null) || forceConfig) {
 			ConfigurationFrame cf = null;
 			try {
 				cf = new ConfigurationFrame(cs);
