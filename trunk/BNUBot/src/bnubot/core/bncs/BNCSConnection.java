@@ -7,7 +7,6 @@ import java.net.SocketException;
 import java.util.Date;
 import java.util.Random;
 
-import bnubot.bot.EventHandler;
 import bnubot.core.BNetInputStream;
 import bnubot.core.BNetUser;
 import bnubot.core.Connection;
@@ -19,8 +18,6 @@ public class BNCSConnection extends Connection {
 	Socket s = null;
 	DataInputStream dis = null;
 	DataOutputStream dos = null;
-	EventHandler e = null;
-	boolean connected = false;
 	String productID = null;
 	int verByte;
 	int nlsRevision = -1;
@@ -28,7 +25,6 @@ public class BNCSConnection extends Connection {
 	int clientToken = Math.abs(new Random().nextInt());
 	SRP srp = null;
 	byte proof_M2[] = null;
-	BNetUser myUser = null;
 	String statString = null;
 	String channelName = null;
 	boolean forceReconnect = false;
@@ -656,7 +652,7 @@ public class BNCSConnection extends Connection {
 				case BNCSCommandIDs.SID_ENTERCHAT: {
 					String uniqueUserName = is.readNTString();
 					statString = is.readNTString();
-					String accountName = is.readNTString();
+					/*String accountName =*/ is.readNTString();
 					
 					myUser = new BNetUser(uniqueUserName, cs.myRealm);
 					recieveInfo("Logged in as " + myUser.getFullLogonName());
@@ -702,8 +698,22 @@ public class BNCSConnection extends Connection {
 				//	is.readDWord();	// IP Address (defunct)
 				//	is.readDWord();	// Account number (defunct)
 				//	is.readDWord(); // Registration authority (defunct)
-					BNetUser user = new BNetUser(is.readNTString(), cs.myRealm);
+					String username = is.readNTString();
 					String text = is.readNTString();
+
+					BNetUser user = null;
+					switch(eid) {
+					case BNCSCommandIDs.EID_SHOWUSER:
+					case BNCSCommandIDs.EID_USERFLAGS:
+					case BNCSCommandIDs.EID_JOIN:
+					case BNCSCommandIDs.EID_LEAVE:
+					case BNCSCommandIDs.EID_TALK:
+					case BNCSCommandIDs.EID_EMOTE:
+					case BNCSCommandIDs.EID_WHISPERSENT:
+					case BNCSCommandIDs.EID_WHISPER:
+						user = new BNetUser(username, cs.myRealm);
+						break;
+					}
 					
 					switch(eid) {
 					case BNCSCommandIDs.EID_SHOWUSER:
@@ -712,12 +722,6 @@ public class BNCSConnection extends Connection {
 							myFlags = flags;
 							myPing = ping;
 						}
-						break;
-					}
-					
-					switch(eid) {
-					case BNCSCommandIDs.EID_SHOWUSER:
-					case BNCSCommandIDs.EID_USERFLAGS:
 						channelUser(user, flags, ping, text);
 						break;
 					case BNCSCommandIDs.EID_JOIN:
@@ -805,19 +809,6 @@ public class BNCSConnection extends Connection {
 		p.SendPacket(dos, cs.packetLog);
 	}
 
-	public boolean isConnected() {
-		return connected;
-	}
-	
-	public void setConnected(boolean c) {
-		connected = c;
-		
-		if(c)
-			bnetConnected();
-		else
-			bnetDisconnected();
-	}
-
 	long lastTime = 0;
 	int lastChatLen = 0;
 	private int requiredDelay(int bytes) {
@@ -837,9 +828,29 @@ public class BNCSConnection extends Connection {
 		lastChatLen = bytes;
 		return delay;
 	}
+	
+	public void sendChat(BNetUser to, String text) {
+		if(text == null)
+			return;
+
+		//Remove all chars under 0x20
+		byte[] data = text.getBytes();
+		text = "";
+		for(int i = 0; i < data.length; i++) {
+			if(data[i] >= 0x20)
+				text += (char)data[i];
+		}
+		
+		if(myUser.equals(to))
+			recieveInfo(text);
+		else
+			sendChat("/w " + to.getShortLogonName() + " " + text);
+	}
 
 	public void sendChat(String text) {
 		if(text == null)
+			return;
+		if(text.length() == 0)
 			return;
 		if(!isConnected())
 			return;
