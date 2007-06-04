@@ -55,5 +55,20 @@ public class BNetUserTest extends TestCase {
 		assertEquals(u.getShortLogonName(), "testuser@Azeroth#2");
 		assertEquals(u.getFullLogonName(), "testuser@Azeroth#2");
 		assertEquals(u.getFullAccountName(), "testuser@Azeroth");
+		
+		u = new BNetUser("testuser@Azeroth#2", "someone@USEast#2");
+		assertEquals(u.getShortLogonName(), "testuser@Azeroth#2");
+		assertEquals(u.getFullLogonName(), "testuser@Azeroth#2");
+		assertEquals(u.getFullAccountName(), "testuser@Azeroth");
+		
+		u = new BNetUser("testuser@USEast#2", "someone@USEast#2");
+		assertEquals(u.getShortLogonName(), "testuser#2");
+		assertEquals(u.getFullLogonName(), "testuser@USEast#2");
+		assertEquals(u.getFullAccountName(), "testuser@USEast");
+		
+		u = new BNetUser("testuser@USEast", "someone@USEast#2");
+		assertEquals(u.getShortLogonName(), "testuser");
+		assertEquals(u.getFullLogonName(), "testuser@USEast");
+		assertEquals(u.getFullAccountName(), "testuser@USEast");
 	}
 }
