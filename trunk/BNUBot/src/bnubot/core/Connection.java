@@ -1,16 +1,17 @@
 package bnubot.core;
 
 import java.io.File;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 import bnubot.bot.EventHandler;
 import bnubot.core.bnftp.BNFTPConnection;
 
-
 public abstract class Connection extends Thread implements EventHandler {
 	protected ConnectionSettings cs;
-	protected Hashtable<String, EventHandler> eventHandlers = new Hashtable<String, EventHandler>();
+	protected LinkedList<EventHandler> eventHandlers = new LinkedList<EventHandler>();
+	protected BNetUser myUser = null;
+	protected boolean connected = false;
 	
 	public Connection(ConnectionSettings cs) {
 		this.cs = cs;
@@ -18,21 +19,29 @@ public abstract class Connection extends Thread implements EventHandler {
 	
 	public void addEventHandler(EventHandler e) {
 		System.out.println("Loading EventHandler: " + e.getClass().getName());
-		eventHandlers.put(e.toString(), e);
+		eventHandlers.add(e);
 		e.initialize(this);
 	}
 	
-	public void removeEventHandler(String key) {
-		eventHandlers.remove(key);
-	}
-	
-	public void removeEventHandler(EventHandler eh) {
-		eventHandlers.remove(eh);
+	public void removeEventHandler(EventHandler ee) {
+		eventHandlers.remove(ee);
 	}
 
-	public abstract boolean isConnected();
-	public abstract void setConnected(boolean c);
+	public boolean isConnected() {
+		return connected;
+	}
+	
+	public void setConnected(boolean c) {
+		connected = c;
+		
+		if(c)
+			bnetConnected();
+		else
+			bnetDisconnected();
+	}
+	
 	public abstract void sendChat(String text);
+	public abstract void sendChat(BNetUser to, String text);
 	public abstract void setClanRank(String string, int newRank) throws Exception;
 	public abstract void reconnect();
 	
@@ -44,6 +53,10 @@ public abstract class Connection extends Thread implements EventHandler {
 		return cs;
 	}
 
+	public BNetUser getMyUser() {
+		return myUser;
+	}
+	
 	/*
 	 * EventHandler methods follow
 	 * 
@@ -55,74 +68,74 @@ public abstract class Connection extends Thread implements EventHandler {
 	}
 	
 	public void bnetConnected() {
-		Enumeration<EventHandler> en = eventHandlers.elements();
-		while(en.hasMoreElements())
-			en.nextElement().bnetConnected();
+		Iterator<EventHandler> it = eventHandlers.iterator();
+		while(it.hasNext())
+			it.next().bnetConnected();
 	}
 	
 	public void bnetDisconnected() {
-		Enumeration<EventHandler> en = eventHandlers.elements();
-		while(en.hasMoreElements())
-			en.nextElement().bnetDisconnected();
+		Iterator<EventHandler> it = eventHandlers.iterator();
+		while(it.hasNext())
+			it.next().bnetDisconnected();
 	}
 	
 	public void joinedChannel(String channel) {
-		Enumeration<EventHandler> en = eventHandlers.elements();
-		while(en.hasMoreElements())
-			en.nextElement().joinedChannel(channel);
+		Iterator<EventHandler> it = eventHandlers.iterator();
+		while(it.hasNext())
+			it.next().joinedChannel(channel);
 	}
 	
 	public void channelUser(BNetUser user, int flags, int ping, String statstr) {
-		Enumeration<EventHandler> en = eventHandlers.elements();
-		while(en.hasMoreElements())
-			en.nextElement().channelUser(user, flags, ping, statstr);
+		Iterator<EventHandler> it = eventHandlers.iterator();
+		while(it.hasNext())
+			it.next().channelUser(user, flags, ping, statstr);
 	}
 	
 	public void channelJoin(BNetUser user, int flags, int ping, String statstr) {
-		Enumeration<EventHandler> en = eventHandlers.elements();
-		while(en.hasMoreElements())
-			en.nextElement().channelJoin(user, flags, ping, statstr);
+		Iterator<EventHandler> it = eventHandlers.iterator();
+		while(it.hasNext())
+			it.next().channelJoin(user, flags, ping, statstr);
 	}
 	
 	public void channelLeave(BNetUser user, int flags, int ping, String statstr) {
-		Enumeration<EventHandler> en = eventHandlers.elements();
-		while(en.hasMoreElements())
-			en.nextElement().channelLeave(user, flags, ping, statstr);
+		Iterator<EventHandler> it = eventHandlers.iterator();
+		while(it.hasNext())
+			it.next().channelLeave(user, flags, ping, statstr);
 	}
 
 	public void recieveChat(BNetUser user, int flags, int ping, String text) {
-		Enumeration<EventHandler> en = eventHandlers.elements();
-		while(en.hasMoreElements())
-			en.nextElement().recieveChat(user, flags, ping, text);
+		Iterator<EventHandler> it = eventHandlers.iterator();
+		while(it.hasNext())
+			it.next().recieveChat(user, flags, ping, text);
 	}
 
 	public void recieveEmote(BNetUser user, int flags, int ping, String text) {
-		Enumeration<EventHandler> en = eventHandlers.elements();
-		while(en.hasMoreElements())
-			en.nextElement().recieveEmote(user, flags, ping, text);
+		Iterator<EventHandler> it = eventHandlers.iterator();
+		while(it.hasNext())
+			it.next().recieveEmote(user, flags, ping, text);
 	}
 
 	public void recieveInfo(String text) {
-		Enumeration<EventHandler> en = eventHandlers.elements();
-		while(en.hasMoreElements())
-			en.nextElement().recieveInfo(text);
+		Iterator<EventHandler> it = eventHandlers.iterator();
+		while(it.hasNext())
+			it.next().recieveInfo(text);
 	}
 
 	public void recieveError(String text) {
-		Enumeration<EventHandler> en = eventHandlers.elements();
-		while(en.hasMoreElements())
-			en.nextElement().recieveError(text);
+		Iterator<EventHandler> it = eventHandlers.iterator();
+		while(it.hasNext())
+			it.next().recieveError(text);
 	}
 	
 	public void whisperSent(BNetUser user, int flags, int ping, String text) {
-		Enumeration<EventHandler> en = eventHandlers.elements();
-		while(en.hasMoreElements())
-			en.nextElement().whisperSent(user, flags, ping, text);
+		Iterator<EventHandler> it = eventHandlers.iterator();
+		while(it.hasNext())
+			it.next().whisperSent(user, flags, ping, text);
 	}
 	
 	public void whisperRecieved(BNetUser user, int flags, int ping, String text) {
-		Enumeration<EventHandler> en = eventHandlers.elements();
-		while(en.hasMoreElements())
-			en.nextElement().whisperRecieved(user, flags, ping, text);
+		Iterator<EventHandler> it = eventHandlers.iterator();
+		while(it.hasNext())
+			it.next().whisperRecieved(user, flags, ping, text);
 	}
 }
