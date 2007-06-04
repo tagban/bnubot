@@ -7,6 +7,7 @@ import javax.swing.*;
 
 import bnubot.bot.gui.ColorScheme.ColorScheme;
 import bnubot.bot.gui.ColorScheme.Diablo2ColorScheme;
+import bnubot.core.BNetUser;
 
 @SuppressWarnings("serial")
 public class TextWindow extends JScrollPane {
@@ -83,7 +84,7 @@ public class TextWindow extends JScrollPane {
 				cs.getErrorColor()));
 	}
 	
-	public void userChat(String user, int flags, String text) {
+	public void userChat(BNetUser user, int flags, String text) {
 		insert(new DoubleColorMessage(
 				"<" + user + "> ",
 				cs.getUserNameColor(flags),
@@ -91,7 +92,23 @@ public class TextWindow extends JScrollPane {
 				cs.getChatColor(flags)));
 	}
 	
-	public void userEmote(String user, int flags, String text) {
+	public void whisperSent(BNetUser user, int flags, String text) {
+		insert(new DoubleColorMessage(
+				"<To: " + user + "> ",
+				cs.getUserNameColor(flags),
+				text,
+				cs.getWhisperColor(flags)));
+	}
+	
+	public void whisperRecieved(BNetUser user, int flags, String text) {
+		insert(new DoubleColorMessage(
+				"<From: " + user + "> ",
+				cs.getUserNameColor(flags),
+				text,
+				cs.getWhisperColor(flags)));
+	}
+	
+	public void userEmote(BNetUser user, int flags, String text) {
 		insert(new SingleColorMessage(
 				"<" + user + " " + text + ">",
 				cs.getEmoteColor(flags)));
