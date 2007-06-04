@@ -6,6 +6,8 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import bnubot.bot.EventHandler;
+import bnubot.bot.gui.ColorScheme.ColorScheme;
+import bnubot.bot.gui.ColorScheme.Diablo2ColorScheme;
 import bnubot.bot.gui.textwindow.TextWindow;
 import bnubot.bot.gui.userlist.IconsDotBniReader;
 import bnubot.bot.gui.userlist.UserList;
@@ -22,15 +24,17 @@ public class GuiEventHandler implements EventHandler {
 	private UserList userList = null;
 	
 	public void initialize(Connection c) {
+		ColorScheme cs = ColorScheme.createColorScheme(c.getConnectionSettings().colorScheme);
+		
 		if(c != null) {
 			this.c = c;
-			initializeGui(c.toString());
+			initializeGui(c.toString(), cs);
 		} else {
-			initializeGui("BNU`Bot");
+			initializeGui("BNU`Bot", cs);
 		}
 	}
 
-	private void initializeGui(String title) {
+	private void initializeGui(String title, ColorScheme cs) {
 		//Create and set up the window
 		frame = new JFrame(title);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -104,12 +108,10 @@ public class GuiEventHandler implements EventHandler {
 		frame.setLayout(new BotLayoutManager());
 		
 		//Main text area
-		mainTextArea = new TextWindow();
-		mainTextArea.setBackground(Color.BLACK);
-		mainTextArea.setForeground(Color.LIGHT_GRAY);
+		mainTextArea = new TextWindow(cs);
 		//Send chat textbox
 		chatTextArea = new JTextArea();
-		chatTextArea.setBackground(Color.BLACK);
+		chatTextArea.setBackground(cs.getBackgroundColor());
 		chatTextArea.setForeground(Color.LIGHT_GRAY);
 		chatTextArea.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent e) {}
@@ -125,12 +127,10 @@ public class GuiEventHandler implements EventHandler {
 		channelTextArea = new JTextArea();
 		channelTextArea.setAlignmentX(SwingConstants.CENTER);
 		channelTextArea.setAlignmentY(SwingConstants.CENTER);
-		channelTextArea.setBackground(Color.BLACK);
+		channelTextArea.setBackground(cs.getBackgroundColor());
 		channelTextArea.setForeground(Color.LIGHT_GRAY);
 		//The userlist
-		userList = new UserList(IconsDotBniReader.readIconsDotBni(c.downloadFile("Icons.bni")));
-		userList.setBackground(Color.BLACK);
-		userList.setForeground(Color.LIGHT_GRAY);
+		userList = new UserList(IconsDotBniReader.readIconsDotBni(c.downloadFile("Icons.bni")), cs);
 		
 		//Add them to the frame
 		frame.add(mainTextArea);

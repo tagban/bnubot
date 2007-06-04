@@ -24,6 +24,7 @@ public class ConfigurationFrame extends JDialog {
 	JTextArea txtBNCSServer = null;
 	JTextArea txtBNLSServer = null;
 	JTextArea txtChannel = null;
+	JComboBox cmbColorScheme = null;
 	JCheckBox chkAutoConnect = null;
 	JCheckBox chkEnableGUI = null;
 	JCheckBox chkEnableCLI = null;
@@ -178,6 +179,17 @@ public class ConfigurationFrame extends JDialog {
 					boxLine.add(txtChannel);
 				}
 				boxSettings.add(boxLine);
+
+				boxLine = new Box(BoxLayout.X_AXIS);
+				{
+					JLabel jl = new JLabel("Color Scheme");
+					jl.setPreferredSize(maxSize);
+					boxLine.add(jl);
+					cmbColorScheme = new JComboBox(new String[] { "Starcraft", "Diablo 2" });
+					cmbColorScheme.setSelectedIndex(cs.colorScheme - 1);
+					boxLine.add(cmbColorScheme);
+				}
+				boxSettings.add(boxLine);
 				
 				boxLine = new Box(BoxLayout.X_AXIS);
 				{
@@ -270,6 +282,7 @@ public class ConfigurationFrame extends JDialog {
 		cs.bncsServer = txtBNCSServer.getText();
 		cs.bnlsServer = txtBNLSServer.getText();
 		cs.channel = txtChannel.getText();
+		cs.colorScheme = (byte)(cmbColorScheme.getSelectedIndex() + 1);
 		cs.autoconnect = chkAutoConnect.isSelected();
 		cs.enableGUI = chkEnableGUI.isSelected();
 		cs.enableCLI = chkEnableCLI.isSelected();
@@ -292,6 +305,7 @@ public class ConfigurationFrame extends JDialog {
 		txtBNCSServer.setText(cs.bncsServer);
 		txtBNLSServer.setText(cs.bnlsServer);
 		txtChannel.setText(cs.channel);
+		cmbColorScheme.setSelectedIndex(cs.colorScheme - 1);
 		chkAutoConnect.setSelected(cs.autoconnect);
 		chkEnableGUI.setSelected(cs.enableGUI);
 		chkEnableCLI.setSelected(cs.enableCLI);

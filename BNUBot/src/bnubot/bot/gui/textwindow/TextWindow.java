@@ -5,12 +5,12 @@ import java.util.GregorianCalendar;
 
 import javax.swing.*;
 
-import bnubot.bot.gui.ColorScheme.Diablo2ColorConstants;
+import bnubot.bot.gui.ColorScheme.ColorScheme;
+import bnubot.bot.gui.ColorScheme.Diablo2ColorScheme;
 
 @SuppressWarnings("serial")
 public class TextWindow extends JScrollPane {
-	private static final Color bgColor = Diablo2ColorConstants.D2Black;
-	
+	private ColorScheme cs = null;
 	private Box b = null;
 	
 	private class TimedMessage extends JPanel {
@@ -19,12 +19,12 @@ public class TextWindow extends JScrollPane {
 			FlowLayout layout = (FlowLayout)getLayout();
 			layout.setHgap(1);
 			layout.setVgap(1);
-			setBackground(bgColor);
+			setBackground(cs.getBackgroundColor());
 
 			JTextPane jtp = new JTextPane();
 			jtp.setText(String.format("[%1$tH:%1$tM:%1$tS] ", new GregorianCalendar()));
-			jtp.setBackground(bgColor);
-			jtp.setForeground(Color.LIGHT_GRAY);
+			jtp.setBackground(cs.getBackgroundColor());
+			jtp.setForeground(cs.getTimeStampColor());
 			jtp.setEditable(false);
 			add(jtp);
 		}
@@ -36,7 +36,7 @@ public class TextWindow extends JScrollPane {
 
 			JTextPane jtp = new JTextPane();
 			jtp.setText(text);
-			jtp.setBackground(bgColor);
+			jtp.setBackground(cs.getBackgroundColor());
 			jtp.setForeground(color);
 			jtp.setEditable(false);
 			add(jtp);
@@ -49,16 +49,17 @@ public class TextWindow extends JScrollPane {
 			
 			JTextPane jtp = new JTextPane();
 			jtp.setText(text2);
-			jtp.setBackground(bgColor);
+			jtp.setBackground(cs.getBackgroundColor());
 			jtp.setForeground(color2);
 			jtp.setEditable(false);
 			add(jtp);
 		}
 	}
 	
-	public TextWindow() {
+	public TextWindow(ColorScheme cs) {
 		super(new Box(BoxLayout.Y_AXIS));
-		setBackground(bgColor);
+		this.cs = cs;
+		setBackground(cs.getBackgroundColor());
 		setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		JViewport vp = (JViewport)getComponent(0);
 		b = (Box)vp.getComponent(0);
@@ -67,33 +68,33 @@ public class TextWindow extends JScrollPane {
 	public void channelInfo(String text) {
 		insert(new SingleColorMessage(
 				text,
-				Diablo2ColorConstants.D2Green));
+				cs.getChannelColor()));
 	}
 	
 	public void recieveInfo(String text) {
 		insert(new SingleColorMessage(
 				text,
-				Diablo2ColorConstants.D2Blue));
+				cs.getInfoColor()));
 	}
 	
 	public void recieveError(String text) {
 		insert(new SingleColorMessage(
 				text,
-				Diablo2ColorConstants.D2Red));
+				cs.getErrorColor()));
 	}
 	
 	public void userChat(String user, int flags, String text) {
 		insert(new DoubleColorMessage(
 				"<" + user + "> ",
-				Diablo2ColorConstants.getUserNameColor(flags),
+				cs.getUserNameColor(flags),
 				text,
-				Diablo2ColorConstants.getChatColor(flags)));
+				cs.getChatColor(flags)));
 	}
 	
 	public void userEmote(String user, int flags, String text) {
 		insert(new SingleColorMessage(
 				"<" + user + " " + text + ">",
-				Diablo2ColorConstants.getUserNameColor(flags)));
+				cs.getEmoteColor(flags)));
 	}
 	
 	public void insert(Component c) {

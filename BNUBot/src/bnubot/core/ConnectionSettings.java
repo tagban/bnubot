@@ -32,6 +32,7 @@ public class ConnectionSettings implements Serializable {
 	public String cdkeyLOD;
 	public String cdkeyTFT;
 	public byte product;
+	public byte colorScheme;
 	public String trigger;
 	public String antiIdle;
 	public boolean autoconnect;
@@ -164,6 +165,7 @@ public class ConnectionSettings implements Serializable {
 		Ini.WriteIni(file, header, "cdkeyTFT", cdkeyTFT);
 		if(product != 0)
 		Ini.WriteIni(file, header, "product", util.Constants.prods[product-1]);
+		Ini.WriteIni(file, header, "colorScheme", Byte.toString(colorScheme));
 		Ini.WriteIni(file, header, "trigger", trigger);
 		Ini.WriteIni(file, header, "antiidle", antiIdle);
 		Ini.WriteIni(file, header, "autoconnect", Boolean.toString(autoconnect));
@@ -195,6 +197,8 @@ public class ConnectionSettings implements Serializable {
 					product = (byte)(i+1);
 			}
 		}
+		colorScheme = Byte.parseByte(
+					Ini.ReadIni(file, header, "colorScheme", "1"));
 		trigger = 	Ini.ReadIni(file, header, "trigger", "!");
 		antiIdle = 	Ini.ReadIni(file, header, "antiidle", "/me is a BNU-Bot");
 		autoconnect = Boolean.parseBoolean(
