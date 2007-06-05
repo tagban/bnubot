@@ -20,6 +20,9 @@ public abstract class Connection extends Thread implements EventHandler {
 	protected String channelName = null;
 	protected long lastAntiIdle;
 	
+	public static final int MAX_CHAT_LENGTH = 250;
+	
+	
 	public Connection(ConnectionSettings cs, ChatQueue cq) {
 		this.cs = cs;
 		this.cq = cq;
@@ -29,6 +32,9 @@ public abstract class Connection extends Thread implements EventHandler {
 	}
 
 	public abstract void joinChannel(String channel) throws Exception;
+	public abstract void setClanRank(String string, int newRank) throws Exception;
+	public abstract void reconnect();
+	public abstract boolean isOp();
 	
 	public void addSlave(Connection c) {
 		slaves.add(c);
@@ -67,25 +73,25 @@ public abstract class Connection extends Thread implements EventHandler {
 		
 		if(lastChatTime == 0) {
 			lastChatTime = thisTime;
+			lastChatLen = bytes;
 			return 0;
 		}
 		
-		int delay = (lastChatLen * 15) + 2700;
-		delay -= (thisTime - lastChatTime);
-		if(delay < 0)
-			delay = 0;
-		
+		int delay = checkDelay();
 		lastChatTime = thisTime;
 		lastChatLen = bytes;
 		return delay;
 	}
-	
+
+	//I found that sending long strings results in flood at values as high as 20; 25 seems safe
+	private static final int BYTE_WEIGHT = 25; //15;
+	private static final int PACKET_WEIGHT = 2700;
 	private int checkDelay() {
 		if(lastChatTime == 0)
 			return 0;
 
 		long thisTime = new Date().getTime();
-		int delay = (lastChatLen * 15) + 2700;
+		int delay = (lastChatLen * BYTE_WEIGHT) + PACKET_WEIGHT;
 		delay -= (thisTime - lastChatTime);
 		if(delay < 0)
 			return 0;
@@ -116,6 +122,31 @@ public abstract class Connection extends Thread implements EventHandler {
 		for(int i = 0; i < data.length; i++) {
 			if(data[i] >= 0x20)
 				text += (char)data[i];
+		}
+		
+		if(text.indexOf('%') != -1) {
+			int i = text.indexOf("%uptime%");
+			if(i != -1) {
+				String first = text.substring(0, i);
+				String last = text.substring(i + 8);
+				
+				//long uptime = new Date().getTime();
+				long uptime = java.lang.management.ManagementFactory.getRuntimeMXBean().getUptime();
+				uptime /= 1000;
+				text = Long.toString(uptime % 60) + "s";
+				uptime /= 60;
+				if(uptime > 0) {
+					text = Long.toString(uptime % 60) + "m " + text;
+					uptime /= 60;
+					if(uptime > 0) {
+						text = Long.toString(uptime % 24) + "h " + text;
+						uptime /= 24;
+						if(uptime > 0)
+							text = Long.toString(uptime) + "d " + text;
+					}
+				}
+				text = first + text + last;
+			}
 		}
 		return text;
 	}
@@ -153,12 +184,18 @@ public abstract class Connection extends Thread implements EventHandler {
 		
 		if(myUser.equals(to))
 			recieveInfo(text);
-		else
-			sendChat("/w " + to.getFullLogonName() + " " + text);
+		else {
+			String prefix = "/w " + to.getFullLogonName() + " ";
+			//Split up the text in to appropriate sized pieces
+			int pieceSize = MAX_CHAT_LENGTH - prefix.length();
+			for(int i = 0; i < text.length(); i += pieceSize) {
+				String piece = prefix + text.substring(i);
+				if(piece.length() > MAX_CHAT_LENGTH)
+					piece = piece.substring(0, MAX_CHAT_LENGTH);
+				sendChat(piece);
+			}
+		}
 	}
-	
-	public abstract void setClanRank(String string, int newRank) throws Exception;
-	public abstract void reconnect();
 	
 	public File downloadFile(String filename) {
 		return BNFTPConnection.downloadFile(cs, filename);
