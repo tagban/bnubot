@@ -2,7 +2,7 @@ package bnubot.util;
 import java.io.*;
 
 /**
- * This file is borrowed from JavaOp.
+ * This file is borrowed from JavaOp, with a few modifications to fix bugs.
  */
 public class Ini{
 	public static String ReadIni(String FN,String Header,String Setting,String Default){
