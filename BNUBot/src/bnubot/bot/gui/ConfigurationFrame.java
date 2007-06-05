@@ -292,7 +292,7 @@ public class ConfigurationFrame extends JDialog {
 	}
 	
 	private void load() {
-		cs.load();
+		cs.load(cs.botNum);
 		txtUsername.setText(cs.username);
 		txtPassword.setText(cs.password);
 		txtEmail.setText(cs.email);

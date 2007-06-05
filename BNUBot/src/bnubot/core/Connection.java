@@ -1,26 +1,48 @@
 package bnubot.core;
 
 import java.io.File;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 
 import bnubot.bot.EventHandler;
+import bnubot.core.bncs.BNCSCommandIDs;
+import bnubot.core.bncs.BNCSPacket;
 import bnubot.core.bnftp.BNFTPConnection;
+import bnubot.core.queue.ChatQueue;
 
 public abstract class Connection extends Thread implements EventHandler {
 	protected ConnectionSettings cs;
+	protected ChatQueue cq;
 	protected LinkedList<EventHandler> eventHandlers = new LinkedList<EventHandler>();
+	protected LinkedList<EventHandler> eventHandlers2 = new LinkedList<EventHandler>();
 	protected BNetUser myUser = null;
 	protected boolean connected = false;
+	protected LinkedList<Connection> slaves = new LinkedList<Connection>();
 	
-	public Connection(ConnectionSettings cs) {
+	public Connection(ConnectionSettings cs, ChatQueue cq) {
 		this.cs = cs;
+		this.cq = cq;
+		
+		if(cq != null)
+			cq.add(this);
+	}
+
+	public abstract void joinChannel(String channel) throws Exception;
+	
+	public void addSlave(Connection c) {
+		slaves.add(c);
 	}
 	
 	public void addEventHandler(EventHandler e) {
 		System.out.println("Loading EventHandler: " + e.getClass().getName());
 		eventHandlers.add(e);
 		e.initialize(this);
+	}
+	
+	public void addSecondaryEventHandler(EventHandler e) {
+		System.out.println("Loading EventHandler2: " + e.getClass().getName());
+		eventHandlers2.add(e);
 	}
 	
 	public void removeEventHandler(EventHandler ee) {
@@ -40,8 +62,98 @@ public abstract class Connection extends Thread implements EventHandler {
 			bnetDisconnected();
 	}
 	
-	public abstract void sendChat(String text);
-	public abstract void sendChat(BNetUser to, String text);
+	protected long lastChatTime = 0;
+	protected int lastChatLen = 0;
+	private int increaseDelay(int bytes) {
+		long thisTime = new Date().getTime();
+		
+		if(lastChatTime == 0) {
+			lastChatTime = thisTime;
+			return 0;
+		}
+		
+		int delay = (lastChatLen * 15) + 2700;
+		delay -= (thisTime - lastChatTime);
+		if(delay < 0)
+			delay = 0;
+		
+		lastChatTime = thisTime;
+		lastChatLen = bytes;
+		return delay;
+	}
+	
+	private int checkDelay() {
+		if(lastChatTime == 0)
+			return 0;
+
+		long thisTime = new Date().getTime();
+		int delay = (lastChatLen * 15) + 2700;
+		delay -= (thisTime - lastChatTime);
+		if(delay < 0)
+			return 0;
+		return delay;
+	}
+
+	public boolean canSendChat() {
+		return (checkDelay() <= 0);
+	}
+	
+	public void sendChatNow(String text) {
+		if(canSendChat())
+			increaseDelay(text.length());
+		else
+			// Fake the bot in to thinking we sent chat in the future
+			lastChatTime = new Date().getTime() + increaseDelay(text.length());
+	}
+	
+	public String cleanText(String text) {
+		//Remove all chars under 0x20
+		byte[] data = text.getBytes();
+		text = "";
+		for(int i = 0; i < data.length; i++) {
+			if(data[i] >= 0x20)
+				text += (char)data[i];
+		}
+		return text;
+	}
+	
+	public void sendChat(String text) {
+		if(text == null)
+			return;
+		if(text.length() == 0)
+			return;
+		if(!isConnected())
+			return;
+		
+		text = cleanText(text);
+		
+		if(text.length() == 0)
+			return;
+
+		if(canSendChat()) {
+			sendChatNow(text);
+		} else {
+			if(cq == null) {
+				new Exception("cq == null").printStackTrace();
+				System.exit(1);
+			} else {
+				cq.enqueue(text);
+			}
+		}
+	}
+	
+	public void sendChat(BNetUser to, String text) {
+		if(text == null)
+			return;
+
+		text = cleanText(text);
+		
+		if(myUser.equals(to))
+			recieveInfo(text);
+		else
+			sendChat("/w " + to.getFullLogonName() + " " + text);
+	}
+	
 	public abstract void setClanRank(String string, int newRank) throws Exception;
 	public abstract void reconnect();
 	
@@ -83,6 +195,16 @@ public abstract class Connection extends Thread implements EventHandler {
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().joinedChannel(channel);
+		
+		Iterator<Connection> it2 = slaves.iterator();
+		while(it2.hasNext())
+			try {
+				Connection c = it2.next();
+				System.out.println("Telling [" + c.toString() + "] to join " + channel);
+				c.joinChannel(channel);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 	}
 	
 	public void channelUser(BNetUser user, int flags, int ping, String statstr) {
@@ -119,10 +241,18 @@ public abstract class Connection extends Thread implements EventHandler {
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().recieveInfo(text);
+		
+		it = eventHandlers2.iterator();
+		while(it.hasNext())
+			it.next().recieveInfo(text);
 	}
 
 	public void recieveError(String text) {
 		Iterator<EventHandler> it = eventHandlers.iterator();
+		while(it.hasNext())
+			it.next().recieveError(text);
+		
+		it = eventHandlers2.iterator();
 		while(it.hasNext())
 			it.next().recieveError(text);
 	}
@@ -131,10 +261,18 @@ public abstract class Connection extends Thread implements EventHandler {
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().whisperSent(user, flags, ping, text);
+		
+		it = eventHandlers2.iterator();
+		while(it.hasNext())
+			it.next().whisperSent(user, flags, ping, text);
 	}
 	
 	public void whisperRecieved(BNetUser user, int flags, int ping, String text) {
 		Iterator<EventHandler> it = eventHandlers.iterator();
+		while(it.hasNext())
+			it.next().whisperRecieved(user, flags, ping, text);
+		
+		it = eventHandlers2.iterator();
 		while(it.hasNext())
 			it.next().whisperRecieved(user, flags, ping, text);
 	}
