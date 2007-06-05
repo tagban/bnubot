@@ -8,8 +8,6 @@ import java.awt.event.ItemListener;
 
 import javax.swing.*;
 
-import sun.security.krb5.internal.rcache.ReplayCache;
-
 import bnubot.bot.gui.KeyManager.CDKey;
 import bnubot.core.ConnectionSettings;
 
