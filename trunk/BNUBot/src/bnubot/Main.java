@@ -119,16 +119,23 @@ public class Main {
 		}
 		
 		primary.start();
+		BNCSConnection c = primary;
 		
 		for(int i = 2; i <= numBots; i++) {
-			Thread.sleep(5000);
+			//Wait for the previous bot to connect
+			while(!c.canSendChat())
+				Thread.sleep(20);
 			
+			//Wait an additional 500ms
+			Thread.sleep(500);
+			
+			//Start up the next connection
 			cs = new ConnectionSettings();
 			cs.load(i);
 			if(cs.isValid() != null)
 				throw new Exception("blah");
 	
-			BNCSConnection c = new BNCSConnection(cs, cq);
+			c = new BNCSConnection(cs, cq);
 			if(gui != null)
 				c.addSecondaryEventHandler(gui);
 			if(cmd != null)
