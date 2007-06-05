@@ -132,8 +132,9 @@ public class Main {
 			//Start up the next connection
 			cs = new ConnectionSettings();
 			cs.load(i);
-			if(cs.isValid() != null)
-				throw new Exception("blah");
+			String valid = cs.isValid();
+			if(valid != null)
+				throw new Exception("Invalid configuration for bot " + i + ": " + valid);
 	
 			c = new BNCSConnection(cs, cq);
 			if(gui != null)
