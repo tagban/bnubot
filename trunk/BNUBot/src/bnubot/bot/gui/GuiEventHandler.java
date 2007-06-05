@@ -118,7 +118,11 @@ public class GuiEventHandler implements EventHandler {
 			public void keyReleased(KeyEvent e) {}
 			public void keyTyped(KeyEvent e) {
 				if(e.getKeyChar() == '\n') {
-					c.sendChat(chatTextArea.getText());
+					String text[] = chatTextArea.getText().split("\n");
+					for(int i = 0; i < text.length; i++) {
+						if(text[i].trim().length() > 0)
+							c.sendChat(text[i]);
+					}
 					chatTextArea.setText(null);
 				}
 			}
