@@ -25,18 +25,18 @@ public class HTMLOutputEventHandler implements EventHandler {
 	
 	Hashtable<String, UserInfo> users;
 
-	public void bnetConnected() {
+	public synchronized void bnetConnected() {
 		users = new Hashtable<String, UserInfo>();
 		File f = new File("html");
 		f.mkdir();
 	}
 	
-	public void bnetDisconnected() {
+	public synchronized void bnetDisconnected() {
 		users.clear();
 		writeUserList();
 	}
 
-	public void channelJoin(BNetUser user, int flags, int ping, String statstr) {
+	public synchronized void channelJoin(BNetUser user, int flags, int ping, String statstr) {
 		UserInfo ui = new UserInfo();
 		users.put(user.toString(), ui);
 		ui.user = user;
@@ -47,11 +47,11 @@ public class HTMLOutputEventHandler implements EventHandler {
 		writeUserList();
 	}
 	
-	public void channelLeave(BNetUser user, int flags, int ping, String statstr) {
+	public synchronized void channelLeave(BNetUser user, int flags, int ping, String statstr) {
 		users.remove(user.toString());
 	}
 	
-	public void channelUser(BNetUser user, int flags, int ping, String statstr) {
+	public synchronized void channelUser(BNetUser user, int flags, int ping, String statstr) {
 		UserInfo ui = users.get(user.toString());
 		if(ui == null) {
 			ui = new UserInfo();
@@ -65,17 +65,17 @@ public class HTMLOutputEventHandler implements EventHandler {
 		writeUserList();
 	}
 	
-	public void initialize(Connection c) {}
-	public void joinedChannel(String channel) {
+	public synchronized void initialize(Connection c) {}
+	public synchronized void joinedChannel(String channel) {
 		this.channel = channel;
 		users.clear();
 	}
-	public void recieveChat(BNetUser user, int flags, int ping, String text) {}
-	public void recieveEmote(BNetUser user, int flags, int ping, String text) {}
-	public void recieveError(String text) {}
-	public void recieveInfo(String text) {}
-	public void whisperRecieved(BNetUser user, int flags, int ping, String text) {}
-	public void whisperSent(BNetUser user, int flags, int ping, String text) {}
+	public synchronized void recieveChat(BNetUser user, int flags, int ping, String text) {}
+	public synchronized void recieveEmote(BNetUser user, int flags, int ping, String text) {}
+	public synchronized void recieveError(String text) {}
+	public synchronized void recieveInfo(String text) {}
+	public synchronized void whisperRecieved(BNetUser user, int flags, int ping, String text) {}
+	public synchronized void whisperSent(BNetUser user, int flags, int ping, String text) {}
 	
 	private String getIcon(String product, int flags) {
 		if((flags & 0x01) != 0)	return "blizrep";
@@ -99,7 +99,7 @@ public class HTMLOutputEventHandler implements EventHandler {
 	private void writeUserList() {
 		if(writeUserListRunnable == null)
 			writeUserListRunnable = new Runnable() {
-				public void run() {
+				public synchronized void run() {
 					try {
 						if(generationNeeded == false)
 							return;
