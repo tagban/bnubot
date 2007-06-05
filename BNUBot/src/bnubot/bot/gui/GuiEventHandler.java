@@ -8,13 +8,11 @@ import javax.swing.*;
 
 import bnubot.bot.EventHandler;
 import bnubot.bot.gui.ColorScheme.ColorScheme;
-import bnubot.bot.gui.ColorScheme.Diablo2ColorScheme;
 import bnubot.bot.gui.textwindow.TextWindow;
 import bnubot.bot.gui.userlist.IconsDotBniReader;
 import bnubot.bot.gui.userlist.UserList;
 import bnubot.core.BNetUser;
 import bnubot.core.Connection;
-
 
 public class GuiEventHandler implements EventHandler {
 	private JFrame frame = null;
