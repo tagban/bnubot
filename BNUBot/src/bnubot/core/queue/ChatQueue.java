@@ -14,14 +14,19 @@ public class ChatQueue extends Thread {
 	}
 	
 	public boolean add(Connection c) {
-		return cons.add(c);
+		synchronized(cons) {
+			return cons.add(c);
+		}
 	}
 	
 	public boolean enqueue(String text) {
-		return queue.add(text);
+		synchronized(queue) {
+			return queue.add(text);
+		}
 	}
 	
 	public void run() {
+		//TODO: flag condition for when there's a /kick or /ban but no ops are connected
 		while(true) {
 			// If there's text in the queue to send
 			if(queue.size() > 0) {
