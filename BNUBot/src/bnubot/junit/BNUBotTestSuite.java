@@ -8,6 +8,7 @@ public class BNUBotTestSuite {
 		TestSuite suite = new TestSuite("BNUBot");
 		
 		suite.addTestSuite(bnubot.junit.core.BNetUserTest.class);
+		suite.addTestSuite(bnubot.junit.core.CookieUtilityTest.class);
 		
 		return suite;
 	}
