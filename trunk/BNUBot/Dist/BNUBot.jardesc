@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jardesc>
+<jar path="BNUBot/Dist/BNUBot.jar"/>
+<options buildIfNeeded="true" compress="true" descriptionLocation="/BNUBot/BNUBot.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+<storedRefactorings deprecationInfo="true" structuralOnly="false"/>
+<selectedProjects/>
+<manifest generateManifest="false" mainClassHandleIdentifier="=BNUBot/src&lt;bnubot{Main.java[Main" manifestLocation="/BNUBot/MANIFEST.MF" manifestVersion="1.0" reuseManifest="true" saveManifest="true" usesManifest="true">
+<sealing sealJar="false">
+<packagesToSeal/>
+<packagesToUnSeal/>
+</sealing>
+</manifest>
+<selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
+<javaElement handleIdentifier="=JBLS/&lt;BNLSProtocol"/>
+<javaElement handleIdentifier="=JBLS/&lt;Hashing"/>
+<javaElement handleIdentifier="=JBLS/&lt;util"/>
+<javaElement handleIdentifier="=BNUBot/src"/>
+<file path="/BNUBot/.project"/>
+<file path="/BNUBot/.classpath"/>
+</selectedElements>
+</jardesc>
