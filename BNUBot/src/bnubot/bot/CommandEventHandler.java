@@ -30,7 +30,7 @@ public class CommandEventHandler implements EventHandler {
 		this.d = d;
 	}
 	
-	public void initialize(Connection c) {
+	public synchronized void initialize(Connection c) {
 		this.c = c;
 	}
 	
@@ -157,6 +157,23 @@ public class CommandEventHandler implements EventHandler {
 					break;
 				}
 				break;
+			case 't':
+				if(command.equals("test")) {
+					BNetUser to = new BNetUser("bnu-master", "Azeroth");
+					
+					String longText = "";
+					for(int i = 0; i < 300; i++) {
+						String line = "-=-=-=-=-" + Integer.toString(i*10);
+						line = line.substring(line.length() - 10);
+						if(line.length() != 10)
+							throw new Exception("oops");
+						longText += line;
+					}
+					
+					c.sendChat(to, longText);
+					break;
+				}
+				break;
 			case 'u':
 				if(command.equals("unban")) {
 					if(params.length != 1) {
@@ -204,12 +221,12 @@ public class CommandEventHandler implements EventHandler {
 		}
 	}
 
-	public void channelJoin(BNetUser user, int flags, int ping, String statstr) {}
-	public void channelLeave(BNetUser user, int flags, int ping, String statstr) {}
-	public void channelUser(BNetUser user, int flags, int ping, String statstr) {}
-	public void joinedChannel(String channel) {}
+	public synchronized void channelJoin(BNetUser user, int flags, int ping, String statstr) {}
+	public synchronized void channelLeave(BNetUser user, int flags, int ping, String statstr) {}
+	public synchronized void channelUser(BNetUser user, int flags, int ping, String statstr) {}
+	public synchronized void joinedChannel(String channel) {}
 
-	public void recieveChat(BNetUser user, int flags, int ping, String text) {
+	public synchronized void recieveChat(BNetUser user, int flags, int ping, String text) {
 		if(text == null)
 			return;
 		if(text.length() == 0)
@@ -234,7 +251,7 @@ public class CommandEventHandler implements EventHandler {
 		}
 	}
 
-	public void recieveEmote(BNetUser user, int flags, int ping, String text) {}
+	public synchronized void recieveEmote(BNetUser user, int flags, int ping, String text) {}
 	
 	private void recieveInfoError(String text) {
 		long timeElapsed = new Date().getTime() - lastCommandTime;
@@ -244,7 +261,7 @@ public class CommandEventHandler implements EventHandler {
 		}
 	}
 	
-	public void recieveError(String text) {
+	public synchronized void recieveError(String text) {
 		recieveInfoError(text);
 	}
 
@@ -262,7 +279,7 @@ public class CommandEventHandler implements EventHandler {
 		return name;
 	}
 	
-	public void recieveInfo(String text) {
+	public synchronized void recieveInfo(String text) {
 		if(sweepBanInProgress) {
 			boolean turnItOff = true;
 			
@@ -303,10 +320,10 @@ public class CommandEventHandler implements EventHandler {
 		recieveInfoError(text);
 	}
 
-	public void bnetConnected() {}
-	public void bnetDisconnected() {}
+	public synchronized void bnetConnected() {}
+	public synchronized void bnetDisconnected() {}
 
-	public void whisperRecieved(BNetUser user, int flags, int ping, String text) {
+	public synchronized void whisperRecieved(BNetUser user, int flags, int ping, String text) {
 		if(text == null)
 			return;
 		if(text.length() == 0)
@@ -318,6 +335,6 @@ public class CommandEventHandler implements EventHandler {
 		parseCommand(user, command[0], paramString);
 	}
 
-	public void whisperSent(BNetUser user, int flags, int ping, String text) {}
+	public synchronized void whisperSent(BNetUser user, int flags, int ping, String text) {}
 
 }

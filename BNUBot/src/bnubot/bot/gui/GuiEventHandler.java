@@ -2,6 +2,7 @@ package bnubot.bot.gui;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Date;
 
 import javax.swing.*;
 
@@ -34,7 +35,7 @@ public class GuiEventHandler implements EventHandler {
 		}
 	}
 
-	private void initializeGui(String title, ColorScheme cs) {
+	private synchronized void initializeGui(String title, ColorScheme cs) {
 		//Create and set up the window
 		frame = new JFrame(title);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -153,57 +154,69 @@ public class GuiEventHandler implements EventHandler {
 		frame.setVisible(true);
 	}
 
-	public void channelJoin(BNetUser user, int flags, int ping, String statstr) {
+	public synchronized void channelJoin(BNetUser user, int flags, int ping, String statstr) {
 		userList.showUser(user.toString(), flags, ping, statstr);
 		mainTextArea.channelInfo(user + " has joined.");
 	}
 
-	public void channelLeave(BNetUser user, int flags, int ping, String statstr) {
+	public synchronized void channelLeave(BNetUser user, int flags, int ping, String statstr) {
 		userList.removeUser(user.toString());
 		mainTextArea.channelInfo(user + " has left.");
 	}
 
-	public void channelUser(BNetUser user, int flags, int ping, String statstr) {
+	public synchronized void channelUser(BNetUser user, int flags, int ping, String statstr) {
 		userList.showUser(user.toString(), flags, ping, statstr);
 	}
 
-	public void joinedChannel(String channel) {
+	public synchronized void joinedChannel(String channel) {
 		userList.clear();
 		mainTextArea.channelInfo("Joining channel " + channel + ".");
 		channelTextArea.setText(channel);
 		frame.setTitle(c.toString());
 	}
 
-	public void recieveChat(BNetUser user, int flags, int ping, String text) {
+	public synchronized void recieveChat(BNetUser user, int flags, int ping, String text) {
 		mainTextArea.userChat(user, flags, text);
 	}
 
-	public void recieveEmote(BNetUser user, int flags, int ping, String text) {
+	public synchronized void recieveEmote(BNetUser user, int flags, int ping, String text) {
 		mainTextArea.userEmote(user, flags, text);
 	}
 
-	public void recieveInfo(String text) {
+	private static long lastInfoRecieved = 0;
+	private static String lastInfo = null;
+	public synchronized void recieveInfo(String text) {
+		long now = new Date().getTime();
+		// Do not allow duplicate info strings unless there's a 50ms delay
+		if((now - lastInfoRecieved < 50)
+		&& text.equals(lastInfo)) {
+			lastInfoRecieved = now;
+			return;
+		}
+		
+		lastInfo = text;
+		lastInfoRecieved = now;
 		mainTextArea.recieveInfo(text);
 	}
 
-	public void recieveError(String text) {
+	public synchronized void recieveError(String text) {
 		mainTextArea.recieveError(text);
 	}
 
-	public void whisperRecieved(BNetUser user, int flags, int ping, String text) {
+	public synchronized void whisperRecieved(BNetUser user, int flags, int ping, String text) {
 		mainTextArea.whisperRecieved(user, flags, text);
 	}
 
-	public void whisperSent(BNetUser user, int flags, int ping, String text) {
+	public synchronized void whisperSent(BNetUser user, int flags, int ping, String text) {
 		mainTextArea.whisperSent(user, flags, text);
 	}
 
-	public void bnetConnected() {
+	public synchronized void bnetConnected() {
 		userList.clear();
 		channelTextArea.setText(null);
 	}
 
-	public void bnetDisconnected() {
+	public synchronized void bnetDisconnected() {
 		userList.clear();
 		channelTextArea.setText(null);
 	}
