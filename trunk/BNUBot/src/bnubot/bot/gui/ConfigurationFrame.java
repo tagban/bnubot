@@ -10,9 +10,8 @@ import javax.swing.*;
 
 import sun.security.krb5.internal.rcache.ReplayCache;
 
+import bnubot.bot.gui.KeyManager.CDKey;
 import bnubot.core.ConnectionSettings;
-import bnubot.core.KeyManager;
-import bnubot.core.KeyManager.CDKey;
 
 @SuppressWarnings("serial")
 public class ConfigurationFrame extends JDialog {
