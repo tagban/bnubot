@@ -7,8 +7,8 @@ public class BNetUser {
 
 	/**
 	 * Constructor for a BNetUser
-	 * @param user		User[@Realm][#N]
-	 * @param myRealm	[User@]Realm
+	 * @param user		User[#N][@Realm]
+	 * @param myRealm	[User[#N]@]Realm
 	 */
 	public BNetUser(String user, String myRealm) {
 		String uAccount;
@@ -18,14 +18,20 @@ public class BNetUser {
 		int i = myRealm.indexOf('@');
 		if(i != -1)
 			myRealm = myRealm.substring(i + 1);
-		i = myRealm.indexOf('#');
-		if(i != -1)
-			myRealm = myRealm.substring(0, i);
 		
 		i = user.indexOf('#');
 		if(i != -1) {
-			uNumber = Integer.parseInt(user.substring(i + 1));
-			user = user.substring(0, i);
+			String num = user.substring(i + 1);
+			int j = num.indexOf('@');
+			if(j != -1) {
+				num = num.substring(0, j);
+				uRealm = user.substring(i + j + 2);
+				user = user.substring(0, i) + '@' + uRealm;
+			} else {
+				user = user.substring(0, i);
+			}
+			
+			uNumber = Integer.parseInt(num);
 		}
 		
 		String up[] = user.split("@", 2);
@@ -39,15 +45,16 @@ public class BNetUser {
 		
 		// ...
 		shortLogonName = uAccount;
-		if(!onMyRealm)
-			shortLogonName += "@" + uRealm;
 		if(uNumber != 0)
 			shortLogonName += "#" + uNumber;
+		if(!onMyRealm)
+			shortLogonName += "@" + uRealm;
 		
 		// ...
-		fullLogonName = uAccount + "@" + uRealm;
+		fullLogonName = uAccount;
 		if(uNumber != 0)
 			fullLogonName += "#" + uNumber;
+		fullLogonName += "@" + uRealm;
 		
 		// ...
 		fullAccountName = uAccount + "@" + uRealm;
