@@ -21,6 +21,7 @@ public class ConnectionSettings implements Serializable {
     public static final byte PRODUCT_DIABLOSHAREWARE   = (byte)0x0A; //Fully Supported
     public static final byte PRODUCT_STARCRAFTSHAREWARE= (byte)0x0B; //Fully Supported
 
+    public int botNum;
 	public String bncsServer;
 	public int port;
 	public String bnlsServer;
@@ -152,7 +153,7 @@ public class ConnectionSettings implements Serializable {
 	
 	public void save() {
 		String file = "settings.ini";
-		String header = "test";
+		String header = Integer.toString(botNum);
 		Ini.WriteIni(file, header, "server", bncsServer);
 		Ini.WriteIni(file, header, "port", Integer.toString(port));
 		Ini.WriteIni(file, header, "bnlsserver", bnlsServer);
@@ -174,10 +175,11 @@ public class ConnectionSettings implements Serializable {
 		Ini.WriteIni(file, header, "packetLog", Boolean.toString(packetLog));
 	}
 	
-	public void load() {
+	public void load(int botNum) {
 		String file = "settings.ini";
-		String header = "test";
-
+		String header = Integer.toString(botNum);
+		
+		this.botNum = botNum;
 		bncsServer =Ini.ReadIni(file, header, "server", "useast.battle.net");
 		port = Integer.parseInt(
 					Ini.ReadIni(file, header, "port", "6112"));

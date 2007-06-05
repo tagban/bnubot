@@ -2,6 +2,7 @@ package bnubot.core.bncs;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.Date;
@@ -11,6 +12,7 @@ import bnubot.core.BNetInputStream;
 import bnubot.core.BNetUser;
 import bnubot.core.Connection;
 import bnubot.core.ConnectionSettings;
+import bnubot.core.queue.ChatQueue;
 
 import Hashing.*;
 
@@ -32,8 +34,8 @@ public class BNCSConnection extends Connection {
 	int myPing = -1;
 	long lastAntiIdle;
 
-	public BNCSConnection(ConnectionSettings cs) {
-		super(cs);
+	public BNCSConnection(ConnectionSettings cs, ChatQueue cq) {
+		super(cs, cq);
 	}
 	
 	private void sendPassword() throws Exception {
@@ -663,10 +665,7 @@ public class BNCSConnection extends Connection {
 					p.writeDWord((int)(new java.util.Date().getTime() / 1000)); // timestamp
 					p.SendPacket(dos, cs.packetLog);
 					
-					p = new BNCSPacket(BNCSCommandIDs.SID_JOINCHANNEL);
-					p.writeDWord(0); // nocreate join
-					p.writeNTString(cs.channel);
-					p.SendPacket(dos, cs.packetLog);
+					joinChannel(cs.channel);
 					break;
 				}
 				
@@ -810,72 +809,34 @@ public class BNCSConnection extends Connection {
 		p.SendPacket(dos, cs.packetLog);
 	}
 
-	long lastTime = 0;
-	int lastChatLen = 0;
-	private int requiredDelay(int bytes) {
-		long thisTime = new Date().getTime();
-		
-		if(lastTime == 0) {
-			lastTime = thisTime;
-			return 0;
-		}
-		
-		int delay = (lastChatLen * 15) + 2700;
-		delay -= (thisTime - lastTime);
-		if(delay < 0)
-			delay = 0;
-		
-		lastTime = thisTime;
-		lastChatLen = bytes;
-		return delay;
+	public void joinChannel(String channel) throws Exception {
+		BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_JOINCHANNEL);
+		p.writeDWord(0); // nocreate join
+		p.writeNTString(channel);
+		p.SendPacket(dos, cs.packetLog);
 	}
 	
-	public void sendChat(BNetUser to, String text) {
-		if(text == null)
-			return;
-
-		//Remove all chars under 0x20
-		byte[] data = text.getBytes();
-		text = "";
-		for(int i = 0; i < data.length; i++) {
-			if(data[i] >= 0x20)
-				text += (char)data[i];
-		}
-		
-		if(myUser.equals(to))
-			recieveInfo(text);
-		else
-			sendChat("/w " + to.getShortLogonName() + " " + text);
-	}
-
 	public void sendChat(String text) {
-		if(text == null)
-			return;
-		if(text.length() == 0)
-			return;
-		if(!isConnected())
-			return;
+		text = cleanText(text);
 		
-		//Remove all chars under 0x20
-		byte[] data = text.getBytes();
-		text = "";
-		for(int i = 0; i < data.length; i++) {
-			if(data[i] >= 0x20)
-				text += (char)data[i];
-		}
-		
-		if(text.length() == 0)
-			return;
-		
-		int delay = requiredDelay(text.length());
-		if(delay > 0) {
-			try {
-				Thread.sleep(delay);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-				System.exit(1);
+		try {
+			if(text.substring(0, 3).equals("/j ")) {
+				System.out.println("Sending join packet");
+				joinChannel(text.substring(3));
+				return;
 			}
-		}
+			if(text.substring(0, 6).equals("/join ")) {
+				System.out.println("Sending join packet");
+				joinChannel(text.substring(6));
+				return;
+			}
+		} catch(Exception e) {}
+		
+		super.sendChat(text);
+	}
+	
+	public void sendChatNow(String text) {
+		super.sendChatNow(text);
 		
 		//Write the packet
 		try {
@@ -883,7 +844,7 @@ public class BNCSConnection extends Connection {
 			p.writeNTString(text);
 			p.SendPacket(dos, cs.packetLog);
 			
-			lastAntiIdle = new Date().getTime(); 
+			lastAntiIdle = new Date().getTime();
 			
 			if(text.charAt(0) != '/')
 				recieveChat(myUser, myFlags, myPing, text);

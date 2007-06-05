@@ -10,12 +10,22 @@ import bnubot.bot.gui.ConfigurationFrame;
 import bnubot.bot.gui.GuiEventHandler;
 import bnubot.core.*;
 import bnubot.core.bncs.BNCSConnection;
+import bnubot.core.queue.ChatQueue;
+import bnubot.util.Ini;
 
 public class Main {
 
 	public static void main(String[] args) throws Exception {
+		int numBots = 1;
+		try {
+			numBots = Integer.parseInt(
+				Ini.ReadIni("settings.ini", "bnubot", "numBots", "1"));
+		} catch(Exception e) {
+			Ini.WriteIni("settings.ini", "bnubot", "numBots", "1");
+		}
+		
 		ConnectionSettings cs = new ConnectionSettings();
-		cs.load();
+		cs.load(1);
 		
 		boolean forceConfig = false;
 		String plugins[] = null;
@@ -77,33 +87,56 @@ public class Main {
 				Thread.yield();
 		}
 		
-		BNCSConnection c = new BNCSConnection(cs);
+		ChatQueue cq = new ChatQueue();
+		cq.start();
+		
+		BNCSConnection primary = new BNCSConnection(cs, cq);
 		
 		//CLI
 		if(cs.enableCLI)
-			c.addEventHandler(new ConsoleEventHandler());
+			primary.addEventHandler(new ConsoleEventHandler());
 		
 		//GUI
-		if(cs.enableGUI)
-			c.addEventHandler(new GuiEventHandler());
+		EventHandler gui = null;
+		if(cs.enableGUI) {
+			gui = new GuiEventHandler();
+			primary.addEventHandler(gui);
+		}
 		
 		//Bot
 		Database d = Database.load(new File("database.bin"));
 		d.save();
-		c.addEventHandler(new CommandEventHandler(d));
+		EventHandler cmd = new CommandEventHandler(d);
+		primary.addEventHandler(cmd);
 		
 		//Other plugins
 		if(plugins != null) {
 			for(int i = 0; i < plugins.length; i++) {
 				Class plugin = Class.forName(plugins[i]);
 				EventHandler eh = (EventHandler)plugin.newInstance();
-				c.addEventHandler(eh);
+				primary.addEventHandler(eh);
 			}
 		}
 		
-		c.start();
+		primary.start();
+		
+		for(int i = 2; i <= numBots; i++) {
+			Thread.sleep(5000);
+			
+			cs = new ConnectionSettings();
+			cs.load(i);
+			if(cs.isValid() != null)
+				throw new Exception("blah");
 	
-		//IconsDotBniReader.readIconsDotBni(BNFTPConnection.downloadFile(cs, "icons_STAR.bni"));
+			BNCSConnection c = new BNCSConnection(cs, cq);
+			if(gui != null)
+				c.addSecondaryEventHandler(gui);
+			if(cmd != null)
+				c.addSecondaryEventHandler(cmd);
+			c.start();
+			
+			primary.addSlave(c);
+		}
 	}
 
 }

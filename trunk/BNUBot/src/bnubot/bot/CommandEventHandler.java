@@ -1,5 +1,6 @@
 package bnubot.bot;
 
+import java.util.Date;
 import java.util.Properties;
 
 import bnubot.bot.database.*;
@@ -11,6 +12,9 @@ public class CommandEventHandler implements EventHandler {
 	Database d = null;
 	Boolean sweepBanInProgress = false;
 	int sweepBannedUsers;
+	
+	long	lastCommandTime = 0;
+	BNetUser lastCommandUser = null;
 
 	private class InvalidUsageException extends Exception {
 		private static final long serialVersionUID = 3993849990858233332L;
@@ -48,6 +52,9 @@ public class CommandEventHandler implements EventHandler {
 				d.getUserDatabase().addUser(user.getFullAccountName(), u);
 			}
 		}
+		
+		lastCommandUser = user;
+		lastCommandTime = new Date().getTime();
 		
 		try {
 			switch(command.charAt(0)) {
@@ -196,15 +203,8 @@ public class CommandEventHandler implements EventHandler {
 			c.sendChat(user, "Error: " + e.getMessage());
 		}
 	}
-	
 
-	public void channelJoin(BNetUser user, int flags, int ping, String statstr) {
-		if((user.getFullAccountName().compareToIgnoreCase("BNU-Camel@Azeroth") == 0)
-		|| (user.getFullAccountName().compareToIgnoreCase("BNU-Camel@USEast") == 0)) {
-			c.sendChat("/me hails Camel");
-		}
-	}
-
+	public void channelJoin(BNetUser user, int flags, int ping, String statstr) {}
 	public void channelLeave(BNetUser user, int flags, int ping, String statstr) {}
 	public void channelUser(BNetUser user, int flags, int ping, String statstr) {}
 	public void joinedChannel(String channel) {}
@@ -213,6 +213,12 @@ public class CommandEventHandler implements EventHandler {
 		if(text == null)
 			return;
 		if(text.length() == 0)
+			return;
+		
+		User u = d.getUserDatabase().getUser(user.getFullAccountName());
+		if(u == null)
+			return;
+		if(u.getAccess() <= 0)
 			return;
 		
 		char trigger = c.getConnectionSettings().trigger.charAt(0);
@@ -229,9 +235,24 @@ public class CommandEventHandler implements EventHandler {
 	}
 
 	public void recieveEmote(BNetUser user, int flags, int ping, String text) {}
-	public void recieveError(String text) {}
+	
+	private void recieveInfoError(String text) {
+		long timeElapsed = new Date().getTime() - lastCommandTime;
+		// 200ms
+		if(timeElapsed < 200) {
+			c.sendChat(lastCommandUser, text);
+		}
+	}
+	
+	public void recieveError(String text) {
+		recieveInfoError(text);
+	}
 
-	// If the name is "[NAME]", return "NAME" otherwise pass name through
+	/**
+	 * If the name is "[NAME]", return "NAME" otherwise pass name through
+	 * @param name	The name from the /who response
+	 * @return		Name with [] removed
+	 */
 	private String removeOpUserBrackets(String name) {
 		if(name.charAt(0) == '[') {
 			if(name.charAt(name.length() - 1) == ']') {
@@ -276,6 +297,10 @@ public class CommandEventHandler implements EventHandler {
 				sweepBanInProgress = false;
 		}
 		
+		if(sweepBanInProgress)
+			return;
+		
+		recieveInfoError(text);
 	}
 
 	public void bnetConnected() {}
