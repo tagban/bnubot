@@ -5,12 +5,14 @@ import java.io.DataOutputStream;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.Random;
 
 import bnubot.core.BNetInputStream;
 import bnubot.core.BNetUser;
 import bnubot.core.Connection;
 import bnubot.core.ConnectionSettings;
+import bnubot.core.CookieUtility;
 import bnubot.core.queue.ChatQueue;
 
 import Hashing.*;
@@ -783,6 +785,26 @@ public class BNCSConnection extends Connection {
 					break;
 				}
 				
+				case BNCSCommandIDs.SID_CLANRANKCHANGE: {
+					int cookie = is.readDWord();
+					byte status = is.readByte();
+					
+					Object obj = CookieUtility.destroyCookie(cookie);
+					String statusCode = null;
+					switch(status) {
+					case 0x00:	statusCode = "Successfully changed rank";	break;
+					case 0x01:	statusCode = "Failed to change rank";	break;
+					case 0x02:	statusCode = "Cannot change user's rank yet";	break;
+					case 0x07:	statusCode = "Not authorized to change user rank*";	break;
+					case 0x08:	statusCode = "Not allowed to change user rank**";	break;
+					default:	statusCode = "Unknown code 0x" + Integer.toHexString(status);
+					}
+					
+					recieveInfo(statusCode + "\n" + obj.toString());
+					
+					break;
+				}
+				
 				default:
 					recieveError("Unknown SID 0x" + Integer.toHexString(pr.packetId) + "\n" + bnubot.util.HexDump.hexDump(pr.data));
 					break;
@@ -792,6 +814,10 @@ public class BNCSConnection extends Connection {
 			sleep(10);
 			yield();
 		}
+	}
+	
+	public boolean isOp() {
+		return (myFlags & 0x02) == 0x02;
 	}
 	
 	private void registerEmail() throws Exception {
@@ -849,8 +875,15 @@ public class BNCSConnection extends Connection {
 	}
 
 	public void setClanRank(String user, int newRank) throws Exception {
+		LinkedList<Object> obj = new LinkedList<Object>();
+		obj.add("This is the cookie for setRank:");
+		obj.add(user);
+		obj.add((Integer) newRank);
+		
+		int id = CookieUtility.createCookie(obj);
+		
 		BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_CLANRANKCHANGE);
-		p.writeDWord(0);		//Cookie
+		p.writeDWord(id);		//Cookie
 		p.writeNTString(user);	//Username
 		p.writeByte(newRank);	//New rank
 		p.SendPacket(dos, cs.packetLog);
