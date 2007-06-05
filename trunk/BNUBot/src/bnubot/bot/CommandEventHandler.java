@@ -50,7 +50,6 @@ public class CommandEventHandler implements EventHandler {
 		}
 		
 		try {
-		
 			switch(command.charAt(0)) {
 			case 'a':
 				if(command.equals("add")) {
@@ -76,7 +75,7 @@ public class CommandEventHandler implements EventHandler {
 					}
 					break;
 				}
-				
+				break;
 			case 'b':
 				if(command.equals("ban")) {
 					if(param.length() == 0) {
@@ -86,18 +85,20 @@ public class CommandEventHandler implements EventHandler {
 					c.sendChat("/ban " + param);
 					break;
 				}
+				break;
 			case 'd':
 				if(command.equals("disconnect")) {
 					c.setConnected(false);
 					break;
 				}
+				break;
 			case 'i':
 				if(command.equals("info")) {
 					Properties p = System.getProperties();
 					c.sendChat(user, "BNU-Bot v2.0 beta running on " + p.getProperty("os.name") + " (" + p.getProperty("os.arch") + ")");
 					break;
 				}
-				
+				break;
 			case 'k':
 				if(command.equals("kick")) {
 					if(params.length != 1) {
@@ -107,11 +108,18 @@ public class CommandEventHandler implements EventHandler {
 					c.sendChat("/kick " + params[0]);
 					break;
 				}
+				break;
+			case 'q':
+				if(command.equals("quit")) {
+					System.exit(0);
+				}
+				break;
 			case 'r':
 				if(command.equals("reconnect")) {
 					c.reconnect();
 					break;
 				}
+				break;
 			case 's':
 				if(command.equals("setrank")) {
 					int newRank;
@@ -141,6 +149,7 @@ public class CommandEventHandler implements EventHandler {
 					c.sendChat("/who " + param);
 					break;
 				}
+				break;
 			case 'u':
 				if(command.equals("unban")) {
 					if(params.length != 1) {
@@ -150,6 +159,7 @@ public class CommandEventHandler implements EventHandler {
 					c.sendChat("/unban " + params[0]);
 					break;
 				}
+				break;
 			case 'w':
 				if(command.equals("whoami")) {
 					parseCommand(user, "whois", user.toString());
@@ -176,6 +186,7 @@ public class CommandEventHandler implements EventHandler {
 					}
 					break;
 				}
+				break;
 			}
 		
 		} catch(InsufficientAccessException e) {
