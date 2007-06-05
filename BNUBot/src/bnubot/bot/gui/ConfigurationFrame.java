@@ -3,10 +3,16 @@ package bnubot.bot.gui;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 import javax.swing.*;
 
+import sun.security.krb5.internal.rcache.ReplayCache;
+
 import bnubot.core.ConnectionSettings;
+import bnubot.core.KeyManager;
+import bnubot.core.KeyManager.CDKey;
 
 @SuppressWarnings("serial")
 public class ConfigurationFrame extends JDialog {
@@ -18,9 +24,9 @@ public class ConfigurationFrame extends JDialog {
 	JComboBox cmbProduct = null;
 	JTextArea txtTrigger = null;
 	JTextArea txtAntiIdle = null;
-	JTextArea txtCDKey = null;
-	JTextArea txtCDKeyLOD = null;
-	JTextArea txtCDKeyTFT = null;
+	JComboBox cmbCDKey = null;
+	JComboBox cmbCDKeyLOD = null;
+	JComboBox cmbCDKeyTFT = null;
 	JTextArea txtBNCSServer = null;
 	JTextArea txtBNLSServer = null;
 	JTextArea txtChannel = null;
@@ -91,17 +97,6 @@ public class ConfigurationFrame extends JDialog {
 
 				boxLine = new Box(BoxLayout.X_AXIS);
 				{
-					JLabel jl = new JLabel("Product");
-					jl.setPreferredSize(maxSize);
-					boxLine.add(jl);
-					cmbProduct = new JComboBox(util.Constants.prods);
-					cmbProduct.setSelectedIndex(cs.product - 1);
-					boxLine.add(cmbProduct);
-				}
-				boxSettings.add(boxLine);
-
-				boxLine = new Box(BoxLayout.X_AXIS);
-				{
 					JLabel jl = new JLabel("Trigger");
 					jl.setPreferredSize(maxSize);
 					boxLine.add(jl);
@@ -122,31 +117,95 @@ public class ConfigurationFrame extends JDialog {
 
 				boxLine = new Box(BoxLayout.X_AXIS);
 				{
+					CDKey[] CDKeys = KeyManager.getKeys(KeyManager.PRODUCT_ALLNORMAL);
+					
 					JLabel jl = new JLabel("CD Key");
 					jl.setPreferredSize(maxSize);
 					boxLine.add(jl);
-					txtCDKey = new ConfigTextArea(cs.cdkey);
-					boxLine.add(txtCDKey);
+					cmbCDKey = new JComboBox(CDKeys);
+					boxLine.add(cmbCDKey);
+					
+					for(int i = 0; i < CDKeys.length; i++) {
+						if(CDKeys[i].getKey().equals(cs.cdkey))
+							cmbCDKey.setSelectedIndex(i);
+					}
 				}
 				boxSettings.add(boxLine);
 
 				boxLine = new Box(BoxLayout.X_AXIS);
 				{
+					CDKey[] CDKeys = KeyManager.getKeys(KeyManager.PRODUCT_D2XP);
+					
 					JLabel jl = new JLabel("LOD Key");
 					jl.setPreferredSize(maxSize);
 					boxLine.add(jl);
-					txtCDKeyLOD = new ConfigTextArea(cs.cdkeyLOD);
-					boxLine.add(txtCDKeyLOD);
+					cmbCDKeyLOD = new JComboBox(CDKeys);
+					boxLine.add(cmbCDKeyLOD);
+					
+					for(int i = 0; i < CDKeys.length; i++) {
+						if(CDKeys[i].getKey().equals(cs.cdkeyLOD))
+							cmbCDKeyLOD.setSelectedIndex(i);
+					}
 				}
 				boxSettings.add(boxLine);
 
 				boxLine = new Box(BoxLayout.X_AXIS);
 				{
+					CDKey[] CDKeys = KeyManager.getKeys(KeyManager.PRODUCT_W3XP);
+					
 					JLabel jl = new JLabel("TFT Key");
 					jl.setPreferredSize(maxSize);
 					boxLine.add(jl);
-					txtCDKeyTFT = new ConfigTextArea(cs.cdkeyTFT);
-					boxLine.add(txtCDKeyTFT);
+					cmbCDKeyTFT = new JComboBox(CDKeys);
+					boxLine.add(cmbCDKeyTFT);
+					
+					for(int i = 0; i < CDKeys.length; i++) {
+						if(CDKeys[i].getKey().equals(cs.cdkeyTFT))
+							cmbCDKeyTFT.setSelectedIndex(i);
+					}
+				}
+				boxSettings.add(boxLine);
+
+				boxLine = new Box(BoxLayout.X_AXIS);
+				{
+					JLabel jl = new JLabel("Product");
+					jl.setPreferredSize(maxSize);
+					boxLine.add(jl);
+					cmbProduct = new JComboBox(util.Constants.prods);
+					cmbProduct.addItemListener(new ItemListener() {
+						public void itemStateChanged(ItemEvent e) {
+							int prod = KeyManager.PRODUCT_ALLNORMAL;
+							switch(cmbProduct.getSelectedIndex() + 1) {
+							case ConnectionSettings.PRODUCT_STARCRAFT:
+							case ConnectionSettings.PRODUCT_BROODWAR:
+								prod = KeyManager.PRODUCT_STAR;
+								break;
+							case ConnectionSettings.PRODUCT_DIABLO2:
+							case ConnectionSettings.PRODUCT_LORDOFDESTRUCTION:
+								prod = KeyManager.PRODUCT_D2DV;
+								break;
+							case ConnectionSettings.PRODUCT_WARCRAFT3:
+							case ConnectionSettings.PRODUCT_THEFROZENTHRONE:
+								prod = KeyManager.PRODUCT_WAR3;
+								break;
+							}
+							if(prod != KeyManager.PRODUCT_ALLNORMAL) {
+								DefaultComboBoxModel model = (DefaultComboBoxModel)cmbCDKey.getModel();
+								model.removeAllElements();
+								
+								CDKey[] CDKeys = KeyManager.getKeys(prod);
+								for(int i = 0; i < CDKeys.length; i++) {
+									model.addElement(CDKeys[i]);
+									
+									if(CDKeys[i].getKey().equals(cs.cdkey))
+										cmbCDKey.setSelectedIndex(i);
+								}
+							}
+							
+						}
+					});
+					cmbProduct.setSelectedIndex(cs.product - 1);
+					boxLine.add(cmbProduct);
 				}
 				boxSettings.add(boxLine);
 
@@ -276,9 +335,14 @@ public class ConfigurationFrame extends JDialog {
 		cs.product = (byte)(cmbProduct.getSelectedIndex() + 1);
 		cs.trigger = txtTrigger.getText();
 		cs.antiIdle = txtAntiIdle.getText();
-		cs.cdkey = formatCDKey(txtCDKey.getText());
-		cs.cdkeyLOD = formatCDKey(txtCDKeyLOD.getText());
-		cs.cdkeyTFT = formatCDKey(txtCDKeyTFT.getText());
+		
+		CDKey k = (CDKey)cmbCDKey.getSelectedItem();
+		CDKey kLOD = (CDKey)cmbCDKeyLOD.getSelectedItem();
+		CDKey kTFT = (CDKey)cmbCDKeyTFT.getSelectedItem();
+		
+		cs.cdkey = formatCDKey(k.getKey());
+		cs.cdkeyLOD = formatCDKey(kLOD.getKey());
+		cs.cdkeyTFT = formatCDKey(kTFT.getKey());
 		cs.bncsServer = txtBNCSServer.getText();
 		cs.bnlsServer = txtBNLSServer.getText();
 		cs.channel = txtChannel.getText();
@@ -299,9 +363,9 @@ public class ConfigurationFrame extends JDialog {
 		cmbProduct.setSelectedIndex(cs.product - 1);
 		txtTrigger.setText(cs.trigger);
 		txtAntiIdle.setText(cs.antiIdle);
-		txtCDKey.setText(cs.cdkey);
-		txtCDKeyLOD.setText(cs.cdkeyLOD);
-		txtCDKeyTFT.setText(cs.cdkeyTFT);
+		cmbCDKey.setSelectedItem(cs.cdkey);
+		cmbCDKeyLOD.setSelectedItem(cs.cdkeyLOD);
+		cmbCDKeyTFT.setSelectedItem(cs.cdkeyTFT);
 		txtBNCSServer.setText(cs.bncsServer);
 		txtBNLSServer.setText(cs.bnlsServer);
 		txtChannel.setText(cs.channel);
