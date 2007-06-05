@@ -13,6 +13,16 @@ import bnubot.core.BNetUser;
 public class TextWindow extends JScrollPane {
 	private ColorScheme cs = null;
 	private Box b = null;
+	private Font font = new Font("Verdana", Font.PLAIN, 12);
+	
+	private class twTextPane extends JTextPane {
+		public twTextPane(Color foreground) {
+			setBackground(cs.getBackgroundColor());
+			setForeground(foreground);
+			setEditable(false);
+			setFont(font);
+		}
+	}
 	
 	private class TimedMessage extends JPanel {
 		public TimedMessage() {
@@ -22,11 +32,8 @@ public class TextWindow extends JScrollPane {
 			layout.setVgap(1);
 			setBackground(cs.getBackgroundColor());
 
-			JTextPane jtp = new JTextPane();
+			twTextPane jtp = new twTextPane(cs.getTimeStampColor());
 			jtp.setText(String.format("[%1$tH:%1$tM:%1$tS] ", new GregorianCalendar()));
-			jtp.setBackground(cs.getBackgroundColor());
-			jtp.setForeground(cs.getTimeStampColor());
-			jtp.setEditable(false);
 			add(jtp);
 		}
 	}
@@ -35,11 +42,8 @@ public class TextWindow extends JScrollPane {
 		public SingleColorMessage(String text, Color color) {
 			super();
 
-			JTextPane jtp = new JTextPane();
+			twTextPane jtp = new twTextPane(color);
 			jtp.setText(text);
-			jtp.setBackground(cs.getBackgroundColor());
-			jtp.setForeground(color);
-			jtp.setEditable(false);
 			add(jtp);
 		}
 	}
@@ -48,11 +52,8 @@ public class TextWindow extends JScrollPane {
 		public DoubleColorMessage(String text1, Color color1, String text2, Color color2) {
 			super(text1, color1);
 			
-			JTextPane jtp = new JTextPane();
+			twTextPane jtp = new twTextPane(color2);
 			jtp.setText(text2);
-			jtp.setBackground(cs.getBackgroundColor());
-			jtp.setForeground(color2);
-			jtp.setEditable(false);
 			add(jtp);
 		}
 	}
@@ -60,7 +61,6 @@ public class TextWindow extends JScrollPane {
 	public TextWindow(ColorScheme cs) {
 		super(new Box(BoxLayout.Y_AXIS));
 		this.cs = cs;
-		setBackground(cs.getBackgroundColor());
 		setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		JViewport vp = (JViewport)getComponent(0);
 		b = (Box)vp.getComponent(0);
@@ -116,6 +116,8 @@ public class TextWindow extends JScrollPane {
 	
 	public void insert(Component c) {
 		b.add(c);
+		while(b.getComponentCount() > 200)
+			b.remove(0);
 		
 		//Scroll to the bottom
 		SwingUtilities.invokeLater(new Runnable() {
