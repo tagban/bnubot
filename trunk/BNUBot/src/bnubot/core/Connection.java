@@ -6,8 +6,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 import bnubot.bot.EventHandler;
-import bnubot.core.bncs.BNCSCommandIDs;
-import bnubot.core.bncs.BNCSPacket;
 import bnubot.core.bnftp.BNFTPConnection;
 import bnubot.core.queue.ChatQueue;
 
@@ -19,6 +17,8 @@ public abstract class Connection extends Thread implements EventHandler {
 	protected BNetUser myUser = null;
 	protected boolean connected = false;
 	protected LinkedList<Connection> slaves = new LinkedList<Connection>();
+	protected String channelName = null;
+	protected long lastAntiIdle;
 	
 	public Connection(ConnectionSettings cs, ChatQueue cq) {
 		this.cs = cs;
@@ -35,13 +35,11 @@ public abstract class Connection extends Thread implements EventHandler {
 	}
 	
 	public void addEventHandler(EventHandler e) {
-		System.out.println("Loading EventHandler: " + e.getClass().getName());
 		eventHandlers.add(e);
 		e.initialize(this);
 	}
 	
 	public void addSecondaryEventHandler(EventHandler e) {
-		System.out.println("Loading EventHandler2: " + e.getClass().getName());
 		eventHandlers2.add(e);
 	}
 	
@@ -95,10 +93,15 @@ public abstract class Connection extends Thread implements EventHandler {
 	}
 
 	public boolean canSendChat() {
+		if(channelName == null)
+			return false;
+		
 		return (checkDelay() <= 0);
 	}
 	
 	public void sendChatNow(String text) {
+		lastAntiIdle = new Date().getTime();
+		
 		if(canSendChat())
 			increaseDelay(text.length());
 		else
@@ -186,12 +189,16 @@ public abstract class Connection extends Thread implements EventHandler {
 	}
 	
 	public void bnetDisconnected() {
+		channelName = null;
+		
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().bnetDisconnected();
 	}
 	
 	public void joinedChannel(String channel) {
+		channelName = channel;
+		
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().joinedChannel(channel);

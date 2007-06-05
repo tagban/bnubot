@@ -2,7 +2,6 @@ package bnubot.core.bncs;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.Date;
@@ -17,22 +16,20 @@ import bnubot.core.queue.ChatQueue;
 import Hashing.*;
 
 public class BNCSConnection extends Connection {
-	Socket s = null;
-	DataInputStream dis = null;
-	DataOutputStream dos = null;
-	String productID = null;
-	int verByte;
-	int nlsRevision = -1;
-	int serverToken = 0;
-	int clientToken = Math.abs(new Random().nextInt());
-	SRP srp = null;
-	byte proof_M2[] = null;
-	String statString = null;
-	String channelName = null;
-	boolean forceReconnect = false;
-	int myFlags = 0;
-	int myPing = -1;
-	long lastAntiIdle;
+	protected Socket s = null;
+	protected DataInputStream dis = null;
+	protected DataOutputStream dos = null;
+	private String productID = null;
+	private int verByte;
+	private int nlsRevision = -1;
+	private int serverToken = 0;
+	private int clientToken = Math.abs(new Random().nextInt());
+	private SRP srp = null;
+	private byte proof_M2[] = null;
+	protected String statString = null;
+	private boolean forceReconnect = false;
+	protected int myFlags = 0;
+	protected int myPing = -1;
 
 	public BNCSConnection(ConnectionSettings cs, ChatQueue cq) {
 		super(cs, cq);
@@ -190,7 +187,6 @@ public class BNCSConnection extends Connection {
 			}
 
 			setConnected(false);
-			channelName = null;
 			recieveError("Disconnected from battle.net.");
 			try { s.close(); } catch (Exception e) { }
 			s = null;
@@ -843,8 +839,6 @@ public class BNCSConnection extends Connection {
 			BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_CHATCOMMAND);
 			p.writeNTString(text);
 			p.SendPacket(dos, cs.packetLog);
-			
-			lastAntiIdle = new Date().getTime();
 			
 			if(text.charAt(0) != '/')
 				recieveChat(myUser, myFlags, myPing, text);
