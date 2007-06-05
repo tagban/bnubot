@@ -6,7 +6,6 @@ import java.util.GregorianCalendar;
 import javax.swing.*;
 
 import bnubot.bot.gui.ColorScheme.ColorScheme;
-import bnubot.bot.gui.ColorScheme.Diablo2ColorScheme;
 import bnubot.core.BNetUser;
 
 @SuppressWarnings("serial")
