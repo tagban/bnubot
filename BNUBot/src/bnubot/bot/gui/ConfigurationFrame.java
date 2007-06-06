@@ -249,6 +249,8 @@ public class ConfigurationFrame extends JDialog {
 				
 				boxLine = new Box(BoxLayout.X_AXIS);
 				{
+					boxLine.add(Box.createRigidArea(maxSize));
+					
 					Box boxCheckboxes = new Box(BoxLayout.Y_AXIS);
 					{
 						chkAutoConnect = new JCheckBox("Auto Connect", cs.autoconnect);
@@ -264,12 +266,15 @@ public class ConfigurationFrame extends JDialog {
 						boxCheckboxes.add(chkPacketLog);
 					}
 					boxLine.add(boxCheckboxes);
+					
+					boxLine.add(Box.createHorizontalGlue());
 				}
 				boxSettings.add(boxLine);
+				boxAll.add(Box.createVerticalGlue());
 			}
 			boxAll.add(boxSettings);
 
-			boxAll.add(Box.createVerticalGlue());
+			boxAll.add(Box.createVerticalStrut(10));
 
 			Box boxButtons = new Box(BoxLayout.X_AXIS);
 			{
@@ -278,6 +283,7 @@ public class ConfigurationFrame extends JDialog {
 				btnCancel = new JButton("Cancel");
 				boxButtons.add(Box.createHorizontalGlue());
 				boxButtons.add(btnLoad);
+				boxButtons.add(Box.createHorizontalStrut(50));
 				boxButtons.add(btnSave);
 				boxButtons.add(btnCancel);
 			}
