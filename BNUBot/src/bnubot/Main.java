@@ -74,6 +74,7 @@ public class Main {
 				cf = new ConfigurationFrame(cs);
 				cf.setVisible(true);
 			} catch(Exception e) {
+				e.printStackTrace();
 				String s = cs.isValid();
 				if(s == null) {
 					System.out.println("There was an error initializing the configuraiton window, but the configuration was valid.");
