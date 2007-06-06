@@ -22,8 +22,8 @@ public class BNCSPacketReader {
 			magic = is.readByte();
 		} while(magic != (byte)0xFF);
 		
-		packetId = is.readByte();
-		packetLength = is.readWord();
+		packetId = is.readByte() & 0x000000FF;
+		packetLength = is.readWord() & 0x0000FFFF;
 		assert(packetLength >= 4);
 		
 		data = new byte[packetLength-4];
