@@ -18,4 +18,24 @@ public class FriendEntry {
 	public String toString() {
 		return account + " (locationName=" + locationName + ")";
 	}
+
+	public String getAccount() {
+		return account;
+	}
+
+	public byte getLocation() {
+		return location;
+	}
+
+	public String getLocationName() {
+		return locationName;
+	}
+
+	public int getProduct() {
+		return product;
+	}
+
+	public byte getStatus() {
+		return status;
+	}
 }
