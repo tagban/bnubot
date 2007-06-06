@@ -11,8 +11,8 @@ import bnubot.core.BNetUser;
 @SuppressWarnings("serial")
 public class TextWindow extends JScrollPane {
 	private ColorScheme cs = null;
-	private Box b = null;
-	private Font font = new Font("Verdana", Font.PLAIN, 12);
+	private Container view;
+	private static final Font font = new Font("Verdana", Font.PLAIN, 12);
 	
 	private class twTextPane extends JTextPane {
 		public twTextPane(Color foreground) {
@@ -20,20 +20,27 @@ public class TextWindow extends JScrollPane {
 			setForeground(foreground);
 			setEditable(false);
 			setFont(font);
+			setBorder(null);
 		}
 	}
 	
 	private class TimedMessage extends JPanel {
+		protected Box b;
+		
 		public TimedMessage() {
 			super(new FlowLayout(FlowLayout.LEFT));
 			FlowLayout layout = (FlowLayout)getLayout();
 			layout.setHgap(1);
 			layout.setVgap(1);
 			setBackground(cs.getBackgroundColor());
+			
+			b = new Box(BoxLayout.X_AXIS);
+			add(b);
 
+			// Add the timestamp to the panel
 			twTextPane jtp = new twTextPane(cs.getTimeStampColor());
 			jtp.setText(String.format("[%1$tH:%1$tM:%1$tS] ", new GregorianCalendar()));
-			add(jtp);
+			b.add(jtp);
 		}
 	}
 	
@@ -43,7 +50,7 @@ public class TextWindow extends JScrollPane {
 
 			twTextPane jtp = new twTextPane(color);
 			jtp.setText(text);
-			add(jtp);
+			b.add(jtp);
 		}
 	}
 
@@ -53,16 +60,21 @@ public class TextWindow extends JScrollPane {
 			
 			twTextPane jtp = new twTextPane(color2);
 			jtp.setText(text2);
-			add(jtp);
+			b.add(jtp);
 		}
 	}
 	
 	public TextWindow(ColorScheme cs) {
 		super(new Box(BoxLayout.Y_AXIS));
 		this.cs = cs;
-		setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		JViewport vp = (JViewport)getComponent(0);
-		b = (Box)vp.getComponent(0);
+		
+		//setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		setBorder(null);
+		
+		JViewport vp = getViewport();
+		view = (Container) vp.getView();
+		vp.setBackground(cs.getBackgroundColor());
+		vp.setLayout(new TextWindowLayout());
 	}
 	
 	public void channelInfo(String text) {
@@ -109,14 +121,14 @@ public class TextWindow extends JScrollPane {
 	
 	public void userEmote(BNetUser user, int flags, String text) {
 		insert(new SingleColorMessage(
-				"<" + user + " " + text + ">",
+				"<" + user + " " + text + "> ",
 				cs.getEmoteColor(flags)));
 	}
 	
 	public void insert(Component c) {
-		b.add(c);
-		while(b.getComponentCount() > 200)
-			b.remove(0);
+		view.add(c);
+		while(view.getComponentCount() > 200)
+			view.remove(0);
 		
 		//Scroll to the bottom
 		SwingUtilities.invokeLater(new Runnable() {
