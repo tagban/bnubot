@@ -6,6 +6,8 @@ import java.util.Properties;
 import bnubot.bot.database.*;
 import bnubot.core.BNetUser;
 import bnubot.core.Connection;
+import bnubot.core.clan.ClanMember;
+import bnubot.core.friend.FriendEntry;
 
 public class CommandEventHandler implements EventHandler {
 	Connection c = null;
@@ -30,7 +32,7 @@ public class CommandEventHandler implements EventHandler {
 		this.d = d;
 	}
 	
-	public synchronized void initialize(Connection c) {
+	public void initialize(Connection c) {
 		this.c = c;
 	}
 	
@@ -221,12 +223,12 @@ public class CommandEventHandler implements EventHandler {
 		}
 	}
 
-	public synchronized void channelJoin(BNetUser user, int flags, int ping, String statstr) {}
-	public synchronized void channelLeave(BNetUser user, int flags, int ping, String statstr) {}
-	public synchronized void channelUser(BNetUser user, int flags, int ping, String statstr) {}
-	public synchronized void joinedChannel(String channel) {}
+	public void channelJoin(BNetUser user, int flags, int ping, String statstr) {}
+	public void channelLeave(BNetUser user, int flags, int ping, String statstr) {}
+	public void channelUser(BNetUser user, int flags, int ping, String statstr) {}
+	public void joinedChannel(String channel) {}
 
-	public synchronized void recieveChat(BNetUser user, int flags, int ping, String text) {
+	public void recieveChat(BNetUser user, int flags, int ping, String text) {
 		if(text == null)
 			return;
 		if(text.length() == 0)
@@ -251,7 +253,7 @@ public class CommandEventHandler implements EventHandler {
 		}
 	}
 
-	public synchronized void recieveEmote(BNetUser user, int flags, int ping, String text) {}
+	public void recieveEmote(BNetUser user, int flags, int ping, String text) {}
 	
 	private void recieveInfoError(String text) {
 		long timeElapsed = new Date().getTime() - lastCommandTime;
@@ -261,7 +263,7 @@ public class CommandEventHandler implements EventHandler {
 		}
 	}
 	
-	public synchronized void recieveError(String text) {
+	public void recieveError(String text) {
 		recieveInfoError(text);
 	}
 
@@ -279,7 +281,7 @@ public class CommandEventHandler implements EventHandler {
 		return name;
 	}
 	
-	public synchronized void recieveInfo(String text) {
+	public void recieveInfo(String text) {
 		if(sweepBanInProgress) {
 			boolean turnItOff = true;
 			
@@ -320,10 +322,10 @@ public class CommandEventHandler implements EventHandler {
 		recieveInfoError(text);
 	}
 
-	public synchronized void bnetConnected() {}
-	public synchronized void bnetDisconnected() {}
+	public void bnetConnected() {}
+	public void bnetDisconnected() {}
 
-	public synchronized void whisperRecieved(BNetUser user, int flags, int ping, String text) {
+	public void whisperRecieved(BNetUser user, int flags, int ping, String text) {
 		if(text == null)
 			return;
 		if(text.length() == 0)
@@ -335,6 +337,10 @@ public class CommandEventHandler implements EventHandler {
 		parseCommand(user, command[0], paramString);
 	}
 
-	public synchronized void whisperSent(BNetUser user, int flags, int ping, String text) {}
+	public void whisperSent(BNetUser user, int flags, int ping, String text) {}
 
+	public void friendsList(FriendEntry[] entries) {}
+	public void friendsUpdate(byte entry, byte location, byte status, int product, String locationName) {}
+	public void clanMemberRankChange(byte oldRank, byte newRank, String user) {}
+	public void clanMemberList(ClanMember[] members) {}
 }

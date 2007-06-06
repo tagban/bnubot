@@ -8,11 +8,15 @@ import javax.swing.*;
 
 import bnubot.bot.EventHandler;
 import bnubot.bot.gui.ColorScheme.ColorScheme;
-import bnubot.bot.gui.textwindow.TextWindow;
-import bnubot.bot.gui.userlist.IconsDotBniReader;
-import bnubot.bot.gui.userlist.UserList;
+import bnubot.bot.gui.components.FriendList;
+import bnubot.bot.gui.components.TextWindow;
+import bnubot.bot.gui.components.UserList;
+import bnubot.bot.gui.icons.BNetIcon;
+import bnubot.bot.gui.icons.IconsDotBniReader;
 import bnubot.core.BNetUser;
 import bnubot.core.Connection;
+import bnubot.core.clan.ClanMember;
+import bnubot.core.friend.FriendEntry;
 
 public class GuiEventHandler implements EventHandler {
 	private JFrame frame = null;
@@ -21,6 +25,7 @@ public class GuiEventHandler implements EventHandler {
 	private JTextArea chatTextArea = null;
 	private JTextArea channelTextArea = null;
 	private UserList userList = null;
+	private FriendList friendList = null;
 	
 	public void initialize(Connection c) {
 		ColorScheme cs = ColorScheme.createColorScheme(c.getConnectionSettings().colorScheme);
@@ -33,7 +38,7 @@ public class GuiEventHandler implements EventHandler {
 		}
 	}
 
-	private synchronized void initializeGui(String title, ColorScheme cs) {
+	private void initializeGui(String title, ColorScheme cs) {
 		//Create and set up the window
 		frame = new JFrame(title);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -100,6 +105,27 @@ public class GuiEventHandler implements EventHandler {
 				
 			}
 			menuBar.add(menu);
+			
+			menu = new JMenu("Friends");
+			{
+				menuItem = new JMenuItem("...");
+				menu.add(menuItem);
+			}
+			menuBar.add(menu);
+			
+			menu = new JMenu("Clan");
+			{
+				menuItem = new JMenuItem("...");
+				menu.add(menuItem);
+			}
+			menuBar.add(menu);
+			
+			menu = new JMenu("Help");
+			{
+				menuItem = new JMenuItem("Complain about scrollbars");
+				menu.add(menuItem);
+			}
+			menuBar.add(menu);
 		}
 		frame.setJMenuBar(menuBar);
 		
@@ -132,14 +158,25 @@ public class GuiEventHandler implements EventHandler {
 		channelTextArea.setAlignmentY(SwingConstants.CENTER);
 		channelTextArea.setBackground(cs.getBackgroundColor());
 		channelTextArea.setForeground(Color.LIGHT_GRAY);
+		
+		BNetIcon[] icons = IconsDotBniReader.readIconsDotBni(c.downloadFile("Icons.bni"));
+		
 		//The userlist
-		userList = new UserList(IconsDotBniReader.readIconsDotBni(c.downloadFile("Icons.bni")), cs);
+		userList = new UserList(icons, cs);
+		//Friends list
+		friendList = new FriendList(icons, cs);
+		
+		
+		JTabbedPane allLists = new JTabbedPane();
+		allLists.addTab("Channel", userList);
+		allLists.addTab("Friends", friendList);
+		allLists.addTab("Clan", null);
 		
 		//Add them to the frame
 		frame.add(mainTextArea);
 		frame.add(chatTextArea);
 		frame.add(channelTextArea);
-		frame.add(userList);
+		frame.add(allLists);
 		/*JSplitPane leftPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, mainTextScroll, chatTextArea);
 		leftPane.setResizeWeight(1);
 		JSplitPane rightPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, channelTextArea, userList);
@@ -152,38 +189,38 @@ public class GuiEventHandler implements EventHandler {
 		frame.setVisible(true);
 	}
 
-	public synchronized void channelJoin(BNetUser user, int flags, int ping, String statstr) {
+	public void channelJoin(BNetUser user, int flags, int ping, String statstr) {
 		userList.showUser(user.toString(), flags, ping, statstr);
 		mainTextArea.channelInfo(user + " has joined.");
 	}
 
-	public synchronized void channelLeave(BNetUser user, int flags, int ping, String statstr) {
+	public void channelLeave(BNetUser user, int flags, int ping, String statstr) {
 		userList.removeUser(user.toString());
 		mainTextArea.channelInfo(user + " has left.");
 	}
 
-	public synchronized void channelUser(BNetUser user, int flags, int ping, String statstr) {
+	public void channelUser(BNetUser user, int flags, int ping, String statstr) {
 		userList.showUser(user.toString(), flags, ping, statstr);
 	}
 
-	public synchronized void joinedChannel(String channel) {
+	public void joinedChannel(String channel) {
 		userList.clear();
 		mainTextArea.channelInfo("Joining channel " + channel + ".");
 		channelTextArea.setText(channel);
 		frame.setTitle(c.toString());
 	}
 
-	public synchronized void recieveChat(BNetUser user, int flags, int ping, String text) {
+	public void recieveChat(BNetUser user, int flags, int ping, String text) {
 		mainTextArea.userChat(user, flags, text);
 	}
 
-	public synchronized void recieveEmote(BNetUser user, int flags, int ping, String text) {
+	public void recieveEmote(BNetUser user, int flags, int ping, String text) {
 		mainTextArea.userEmote(user, flags, text);
 	}
 
 	private static long lastInfoRecieved = 0;
 	private static String lastInfo = null;
-	public synchronized void recieveInfo(String text) {
+	public void recieveInfo(String text) {
 		long now = new Date().getTime();
 		// Do not allow duplicate info strings unless there's a 50ms delay
 		if((now - lastInfoRecieved < 50)
@@ -197,25 +234,33 @@ public class GuiEventHandler implements EventHandler {
 		mainTextArea.recieveInfo(text);
 	}
 
-	public synchronized void recieveError(String text) {
+	public void recieveError(String text) {
 		mainTextArea.recieveError(text);
 	}
 
-	public synchronized void whisperRecieved(BNetUser user, int flags, int ping, String text) {
+	public void whisperRecieved(BNetUser user, int flags, int ping, String text) {
 		mainTextArea.whisperRecieved(user, flags, text);
 	}
 
-	public synchronized void whisperSent(BNetUser user, int flags, int ping, String text) {
+	public void whisperSent(BNetUser user, int flags, int ping, String text) {
 		mainTextArea.whisperSent(user, flags, text);
 	}
 
-	public synchronized void bnetConnected() {
+	public void bnetConnected() {
 		userList.clear();
 		channelTextArea.setText(null);
 	}
 
-	public synchronized void bnetDisconnected() {
+	public void bnetDisconnected() {
 		userList.clear();
 		channelTextArea.setText(null);
 	}
+
+	public void friendsList(FriendEntry[] entries) {
+		friendList.showFriends(entries);
+	}
+	
+	public void friendsUpdate(byte entry, byte location, byte status, int product, String locationName) {}
+	public void clanMemberRankChange(byte oldRank, byte newRank, String user) {}
+	public void clanMemberList(ClanMember[] members) {}
 }
