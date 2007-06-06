@@ -1,8 +1,10 @@
 package bnubot.bot.gui;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -56,8 +58,25 @@ public class KeyManager {
 		BufferedReader is = null;
 
 		try {
-			if(!keys.exists())
+			if(!keys.exists()) {
 				keys.createNewFile();
+				
+				FileWriter os = new FileWriter(keys);
+				os.write("# Enter CD keys in this file.\r\n");
+				os.write("# \r\n");
+				os.write("# Lines beginning with '#' are regarded as comments\r\n");
+				os.write("# \r\n");
+				os.write("# You may add a comment next to each cd key.\r\n");
+				os.write("# Example:\r\n");
+				os.write("# 0123-45678-9012 my first SC key\r\n");
+				os.write("# 5555-12321-5555 my second SC key\r\n");
+				os.write("# 0123-4567-89AB-CDEF  my first D2 key\r\n");
+				os.write("# \r\n");
+				os.write("# Products for each CD key will automatically be detected\r\n");
+				os.write("# \r\n");
+				os.write("\r\n");
+				os.close();
+			}
 			is = new BufferedReader(new FileReader(keys));
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -99,6 +118,8 @@ public class KeyManager {
 				System.out.print("Couldn't parse key line: " + key);
 			}
 		} while(true);
+		
+		try { is.close(); } catch (Exception e) {}
 	}
 	
 	public static CDKey[] getKeys(int product) {
