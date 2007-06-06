@@ -68,13 +68,11 @@ public class TextWindow extends JScrollPane {
 		super(new Box(BoxLayout.Y_AXIS));
 		this.cs = cs;
 		
-		//setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		setBorder(null);
 		
 		JViewport vp = getViewport();
 		view = (Container) vp.getView();
 		vp.setBackground(cs.getBackgroundColor());
-		vp.setLayout(new TextWindowLayout());
 	}
 	
 	public void channelInfo(String text) {
@@ -135,9 +133,12 @@ public class TextWindow extends JScrollPane {
 			public void run() {
 				validate();
 				JScrollBar vsb = getVerticalScrollBar();
+				System.out.println("vsb.max = " + vsb.getMaximum());
 				vsb.setValue(vsb.getMaximum());
 				JScrollBar hsb = getHorizontalScrollBar();
+				System.out.println("hsb.max = " + hsb.getMaximum());
 				hsb.setValue(0);
+				validate();
 			}
 		});
 	}
