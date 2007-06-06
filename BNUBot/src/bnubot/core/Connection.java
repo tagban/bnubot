@@ -7,6 +7,8 @@ import java.util.LinkedList;
 
 import bnubot.bot.EventHandler;
 import bnubot.core.bnftp.BNFTPConnection;
+import bnubot.core.clan.ClanMember;
+import bnubot.core.friend.FriendEntry;
 import bnubot.core.queue.ChatQueue;
 
 public abstract class Connection extends Thread implements EventHandler {
@@ -219,21 +221,22 @@ public abstract class Connection extends Thread implements EventHandler {
 		System.exit(1);
 	}
 	
-	public void bnetConnected() {
+	public synchronized void bnetConnected() {
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().bnetConnected();
 	}
 	
-	public void bnetDisconnected() {
+	public synchronized void bnetDisconnected() {
 		channelName = null;
+		myUser = null;
 		
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().bnetDisconnected();
 	}
 	
-	public void joinedChannel(String channel) {
+	public synchronized void joinedChannel(String channel) {
 		channelName = channel;
 		
 		Iterator<EventHandler> it = eventHandlers.iterator();
@@ -251,37 +254,37 @@ public abstract class Connection extends Thread implements EventHandler {
 			}
 	}
 	
-	public void channelUser(BNetUser user, int flags, int ping, String statstr) {
+	public synchronized void channelUser(BNetUser user, int flags, int ping, String statstr) {
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().channelUser(user, flags, ping, statstr);
 	}
 	
-	public void channelJoin(BNetUser user, int flags, int ping, String statstr) {
+	public synchronized void channelJoin(BNetUser user, int flags, int ping, String statstr) {
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().channelJoin(user, flags, ping, statstr);
 	}
 	
-	public void channelLeave(BNetUser user, int flags, int ping, String statstr) {
+	public synchronized void channelLeave(BNetUser user, int flags, int ping, String statstr) {
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().channelLeave(user, flags, ping, statstr);
 	}
 
-	public void recieveChat(BNetUser user, int flags, int ping, String text) {
+	public synchronized void recieveChat(BNetUser user, int flags, int ping, String text) {
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().recieveChat(user, flags, ping, text);
 	}
 
-	public void recieveEmote(BNetUser user, int flags, int ping, String text) {
+	public synchronized void recieveEmote(BNetUser user, int flags, int ping, String text) {
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().recieveEmote(user, flags, ping, text);
 	}
 
-	public void recieveInfo(String text) {
+	public synchronized void recieveInfo(String text) {
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().recieveInfo(text);
@@ -291,7 +294,7 @@ public abstract class Connection extends Thread implements EventHandler {
 			it.next().recieveInfo(text);
 	}
 
-	public void recieveError(String text) {
+	public synchronized void recieveError(String text) {
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().recieveError(text);
@@ -301,7 +304,7 @@ public abstract class Connection extends Thread implements EventHandler {
 			it.next().recieveError(text);
 	}
 	
-	public void whisperSent(BNetUser user, int flags, int ping, String text) {
+	public synchronized void whisperSent(BNetUser user, int flags, int ping, String text) {
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().whisperSent(user, flags, ping, text);
@@ -311,7 +314,7 @@ public abstract class Connection extends Thread implements EventHandler {
 			it.next().whisperSent(user, flags, ping, text);
 	}
 	
-	public void whisperRecieved(BNetUser user, int flags, int ping, String text) {
+	public synchronized void whisperRecieved(BNetUser user, int flags, int ping, String text) {
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().whisperRecieved(user, flags, ping, text);
@@ -319,5 +322,33 @@ public abstract class Connection extends Thread implements EventHandler {
 		it = eventHandlers2.iterator();
 		while(it.hasNext())
 			it.next().whisperRecieved(user, flags, ping, text);
+	}
+	
+	// Friends
+
+	public synchronized void friendsList(FriendEntry[] entries) {
+		Iterator<EventHandler> it = eventHandlers.iterator();
+		while(it.hasNext())
+			it.next().friendsList(entries);
+	}
+	
+	public synchronized void friendsUpdate(byte entry, byte location, byte status, int product, String locationName) {
+		Iterator<EventHandler> it = eventHandlers.iterator();
+		while(it.hasNext())
+			it.next().friendsUpdate(entry, location, status, product, locationName);
+	}
+	
+	// Clan
+
+	public synchronized void clanMemberList(ClanMember[] members) {
+		Iterator<EventHandler> it = eventHandlers.iterator();
+		while(it.hasNext())
+			it.next().clanMemberList(members);
+	}
+	
+	public synchronized void clanMemberRankChange(byte oldRank, byte newRank, String user) {
+		Iterator<EventHandler> it = eventHandlers.iterator();
+		while(it.hasNext())
+			it.next().clanMemberRankChange(oldRank, newRank, user);
 	}
 }

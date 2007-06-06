@@ -13,6 +13,10 @@ import bnubot.core.BNetUser;
 import bnubot.core.Connection;
 import bnubot.core.ConnectionSettings;
 import bnubot.core.CookieUtility;
+import bnubot.core.clan.ClanMember;
+import bnubot.core.clan.ClanRankIDs;
+import bnubot.core.clan.ClanStatusIDs;
+import bnubot.core.friend.FriendEntry;
 import bnubot.core.queue.ChatQueue;
 
 import Hashing.*;
@@ -21,7 +25,7 @@ public class BNCSConnection extends Connection {
 	protected Socket s = null;
 	protected DataInputStream dis = null;
 	protected DataOutputStream dos = null;
-	private String productID = null;
+	private int productID = 0;
 	private int verByte;
 	private int nlsRevision = -1;
 	private int serverToken = 0;
@@ -89,7 +93,7 @@ public class BNCSConnection extends Connection {
 				dis = new DataInputStream(s.getInputStream());
 				dos = new DataOutputStream(s.getOutputStream());
 				nlsRevision = -1;
-				productID = util.Constants.prods[cs.product-1];
+				productID = ProductIDs.ProductID[cs.product-1];
 				
 				//dos.write("GET / HTTP/1.0\n\n".getBytes());
 				
@@ -108,17 +112,17 @@ public class BNCSConnection extends Connection {
 				case ConnectionSettings.PRODUCT_WARCRAFT3:
 				case ConnectionSettings.PRODUCT_THEFROZENTHRONE:
 					p = new BNCSPacket(BNCSCommandIDs.SID_AUTH_INFO);
-					p.writeDWord(0);		// Protocol ID (0)
-					p.writeDWord("IX86");	// Platform ID (IX86)
-					p.writeDWord(productID);// Product ID
-					p.writeDWord(verByte);	// Version byte
-					p.writeDWord("enUS");	// Product language
-					p.writeDWord(0);		// Local IP
-					p.writeDWord(0xf0);		// TZ bias
-					p.writeDWord(0x409);	// Locale ID
-					p.writeDWord(0x409);	// Language ID
-					p.writeNTString("USA");	// Country abreviation
-					p.writeNTString("United States");	// Country
+					p.writeDWord(0);							// Protocol ID (0)
+					p.writeDWord(PlatformIDs.PLATFORM_IX86);	// Platform ID (IX86)
+					p.writeDWord(productID);					// Product ID
+					p.writeDWord(verByte);						// Version byte
+					p.writeDWord("enUS");						// Product language
+					p.writeDWord(0);							// Local IP
+					p.writeDWord(0xf0);							// TZ bias
+					p.writeDWord(0x409);						// Locale ID
+					p.writeDWord(0x409);						// Language ID
+					p.writeNTString("USA");						// Country abreviation
+					p.writeNTString("United States");			// Country
 					p.SendPacket(dos, cs.packetLog);
 					break;
 
@@ -134,10 +138,10 @@ public class BNCSConnection extends Connection {
 					p.SendPacket(dos, cs.packetLog);
 					
 					p = new BNCSPacket(BNCSCommandIDs.SID_STARTVERSIONING);
-					p.writeDWord("IX86");	// Platform ID (IX86)
-					p.writeDWord(productID);// Product ID
-					p.writeDWord(verByte);	// Version byte
-					p.writeDWord(0);		// Unknown (0)
+					p.writeDWord(PlatformIDs.PLATFORM_IX86);	// Platform ID (IX86)
+					p.writeDWord(productID);					// Product ID
+					p.writeDWord(verByte);						// Version byte
+					p.writeDWord(0);							// Unknown (0)
 					p.SendPacket(dos, cs.packetLog);
 					break;
 					
@@ -166,10 +170,10 @@ public class BNCSConnection extends Connection {
 					p.SendPacket(dos, cs.packetLog);
 					
 					p = new BNCSPacket(BNCSCommandIDs.SID_STARTVERSIONING);
-					p.writeDWord("IX86");	// Platform ID (IX86)
-					p.writeDWord(productID);// Product ID
-					p.writeDWord(verByte);	// Version byte
-					p.writeDWord(0);		// Unknown (0)
+					p.writeDWord(PlatformIDs.PLATFORM_IX86);	// Platform ID (IX86)
+					p.writeDWord(productID);					// Product ID
+					p.writeDWord(verByte);						// Version byte
+					p.writeDWord(0);							// Unknown (0)
 					p.SendPacket(dos, cs.packetLog);
 					break;
 					
@@ -337,7 +341,7 @@ public class BNCSConnection extends Connection {
                 		 * (STRING) 	 EXE Information
                 		 */
                 		p = new BNCSPacket(BNCSCommandIDs.SID_REPORTVERSION);
-                		p.writeDWord("IX86");
+                		p.writeDWord(PlatformIDs.PLATFORM_IX86);
                 		p.writeDWord(productID);
                 		p.writeDWord(verByte);
 						p.writeDWord(exeVersion);
@@ -658,16 +662,19 @@ public class BNCSConnection extends Connection {
 					myUser = new BNetUser(uniqueUserName, cs.myRealm);
 					recieveInfo("Logged in as " + myUser.getFullLogonName());
 					
-					// We are officially logged in; get MOTD and join a channel!
+					// We are officially logged in!
+					
+					// Get MOTD
 					p = new BNCSPacket(BNCSCommandIDs.SID_NEWS_INFO);
 					p.writeDWord((int)(new java.util.Date().getTime() / 1000)); // timestamp
 					p.SendPacket(dos, cs.packetLog);
 					
+					// Get friends list
+					p = new BNCSPacket(BNCSCommandIDs.SID_FRIENDSLIST);
+					p.SendPacket(dos, cs.packetLog);
+					
+					// Join home channel
 					joinChannel(cs.channel);
-					break;
-				}
-				
-				case BNCSCommandIDs.SID_CLANINFO: {
 					break;
 				}
 				
@@ -701,65 +708,65 @@ public class BNCSConnection extends Connection {
 
 					BNetUser user = null;
 					switch(eid) {
-					case BNCSCommandIDs.EID_SHOWUSER:
-					case BNCSCommandIDs.EID_USERFLAGS:
-					case BNCSCommandIDs.EID_JOIN:
-					case BNCSCommandIDs.EID_LEAVE:
-					case BNCSCommandIDs.EID_TALK:
-					case BNCSCommandIDs.EID_EMOTE:
-					case BNCSCommandIDs.EID_WHISPERSENT:
-					case BNCSCommandIDs.EID_WHISPER:
+					case BNCSChatEventIDs.EID_SHOWUSER:
+					case BNCSChatEventIDs.EID_USERFLAGS:
+					case BNCSChatEventIDs.EID_JOIN:
+					case BNCSChatEventIDs.EID_LEAVE:
+					case BNCSChatEventIDs.EID_TALK:
+					case BNCSChatEventIDs.EID_EMOTE:
+					case BNCSChatEventIDs.EID_WHISPERSENT:
+					case BNCSChatEventIDs.EID_WHISPER:
 						user = new BNetUser(username, cs.myRealm);
 						break;
 					}
 					
 					switch(eid) {
-					case BNCSCommandIDs.EID_SHOWUSER:
-					case BNCSCommandIDs.EID_USERFLAGS:
+					case BNCSChatEventIDs.EID_SHOWUSER:
+					case BNCSChatEventIDs.EID_USERFLAGS:
 						if(user.equals(myUser)) {
 							myFlags = flags;
 							myPing = ping;
 						}
 						channelUser(user, flags, ping, text);
 						break;
-					case BNCSCommandIDs.EID_JOIN:
+					case BNCSChatEventIDs.EID_JOIN:
 						channelJoin(user, flags, ping, text);
 						break;
-					case BNCSCommandIDs.EID_LEAVE:
+					case BNCSChatEventIDs.EID_LEAVE:
 						channelLeave(user, flags, ping, text);
 						break;
-					case BNCSCommandIDs.EID_TALK:
+					case BNCSChatEventIDs.EID_TALK:
 						recieveChat(user, flags, ping, text);
 						break;
-					case BNCSCommandIDs.EID_EMOTE:
+					case BNCSChatEventIDs.EID_EMOTE:
 						recieveEmote(user, flags, ping, text);
 						break;
-					case BNCSCommandIDs.EID_INFO:
+					case BNCSChatEventIDs.EID_INFO:
 						recieveInfo(text);
 						break;
-					case BNCSCommandIDs.EID_ERROR:
+					case BNCSChatEventIDs.EID_ERROR:
 						recieveError(text);
 						break;
-					case BNCSCommandIDs.EID_CHANNEL:
+					case BNCSChatEventIDs.EID_CHANNEL:
 						channelName = text;
 						joinedChannel(text);
 						break;
-					case BNCSCommandIDs.EID_WHISPERSENT:
+					case BNCSChatEventIDs.EID_WHISPERSENT:
 						whisperSent(user, flags, ping, text);
 						break;
-					case BNCSCommandIDs.EID_WHISPER:
+					case BNCSChatEventIDs.EID_WHISPER:
 						whisperRecieved(user, flags, ping, text);
 						break;
-					case BNCSCommandIDs.EID_CHANNELDOESNOTEXIST:
+					case BNCSChatEventIDs.EID_CHANNELDOESNOTEXIST:
 						p = new BNCSPacket(BNCSCommandIDs.SID_JOINCHANNEL);
 						p.writeDWord(2); // create join
 						p.writeNTString(text);
 						p.SendPacket(dos, cs.packetLog);
 						break;
-					case BNCSCommandIDs.EID_CHANNELRESTRICTED:
+					case BNCSChatEventIDs.EID_CHANNELRESTRICTED:
 						recieveError("Channel " + text + " is restricted");
 						break;
-					case BNCSCommandIDs.EID_CHANNELFULL:
+					case BNCSChatEventIDs.EID_CHANNELFULL:
 						recieveError("Channel " + text + " is full");
 						break;
 					default:
@@ -785,6 +792,104 @@ public class BNCSConnection extends Connection {
 					break;
 				}
 				
+				/*	.-----------.
+				 *	|  Friends  |
+				 *	'-----------'
+				 */
+				
+				case BNCSCommandIDs.SID_FRIENDSLIST: {
+					/* (BYTE)		 Number of Entries
+					 * 
+					 * For each member:
+					 * (STRING) 	 Account
+					 * (BYTE)		 Status
+					 * (BYTE)		 Location
+					 * (DWORD)		 ProductID
+					 * (STRING) 	 Location name
+					 */
+					byte numEntries = is.readByte();
+					FriendEntry[] entries = new FriendEntry[numEntries];
+					
+					for(int i = 0; i < numEntries; i++) {
+						String uAccount = is.readNTString();
+						byte uStatus = is.readByte();
+						byte uLocation = is.readByte();
+						int uProduct = is.readDWord();
+						String uLocationName = is.readNTString();
+						
+						entries[i] = new FriendEntry(uAccount, uStatus, uLocation, uProduct, uLocationName);
+					}
+					
+					friendsList(entries);
+					break;
+				}
+				
+				case BNCSCommandIDs.SID_FRIENDSUPDATE: {
+					/* (BYTE)		 Entry number
+					 * (BYTE)		 Friend Location
+					 * (BYTE)		 Friend Status
+					 * (DWORD)		 ProductID
+					 * (STRING) 	 Location
+					 */
+					byte fEntry = is.readByte();
+					byte fLocation = is.readByte();
+					byte fStatus = is.readByte();
+					int fProduct = is.readDWord();
+					String fLocationName = is.readNTString();
+					
+					friendsUpdate(fEntry, fLocation, fStatus, fProduct, fLocationName);
+					break;
+				}
+				
+				case BNCSCommandIDs.SID_FRIENDSADD: {
+					// TODO: friendsAdd(...);
+					break;
+				}
+				
+				case BNCSCommandIDs.SID_FRIENDSREMOVE: {
+					// TODO: friendsRemove(...);
+					break;
+				}
+				
+				case BNCSCommandIDs.SID_FRIENDSPOSITION: {
+					// TODO: friendsPosition(...);
+					break;
+				}
+				
+				/*	.--------.
+				 *	|  Clan  |
+				 *	'--------'
+				 */
+
+				// SID_CLANFINDCANDIDATES
+				// SID_CLANINVITEMULTIPLE
+				// SID_CLANCREATIONINVITATION
+				// SID_CLANDISBAND
+				// SID_CLANMAKECHIEFTAIN
+				
+				case BNCSCommandIDs.SID_CLANINFO: {
+					/* (BYTE)		 Unknown (0)
+					 * (DWORD)		 Clan tag
+					 * (BYTE)		 Rank
+					 */
+					is.readByte();
+					int myClan = is.readDWord();
+					byte myClanRank = is.readByte();
+					
+					// TODO: clanInfo(myClan, myClanRank);
+					
+					// Get clan list
+					p = new BNCSPacket(BNCSCommandIDs.SID_CLANMEMBERLIST);
+					p.writeDWord(0);	// Cookie
+					p.SendPacket(dos, cs.packetLog);
+					break;
+				}
+				
+				// SID_CLANQUITNOTIFY
+				// SID_CLANINVITATION
+				// SID_CLANREMOVEMEMBER
+				// SID_CLANINVITATIONRESPONSE
+				
 				case BNCSCommandIDs.SID_CLANRANKCHANGE: {
 					int cookie = is.readDWord();
 					byte status = is.readByte();
@@ -792,18 +897,76 @@ public class BNCSConnection extends Connection {
 					Object obj = CookieUtility.destroyCookie(cookie);
 					String statusCode = null;
 					switch(status) {
-					case 0x00:	statusCode = "Successfully changed rank";	break;
-					case 0x01:	statusCode = "Failed to change rank";	break;
-					case 0x02:	statusCode = "Cannot change user's rank yet";	break;
-					case 0x07:	statusCode = "Not authorized to change user rank*";	break;
-					case 0x08:	statusCode = "Not allowed to change user rank**";	break;
-					default:	statusCode = "Unknown code 0x" + Integer.toHexString(status);
+					case ClanStatusIDs.CLANSTATUS_SUCCESS:
+						statusCode = "Successfully changed rank";
+						break;
+					case 0x01:
+						statusCode = "Failed to change rank";
+						break;
+					case ClanStatusIDs.CLANSTATUS_TOO_SOON:
+						statusCode = "Cannot change user's rank yet";
+						break;
+					case ClanStatusIDs.CLANSTATUS_NOT_AUTHORIZED:
+						statusCode = "Not authorized to change user rank*";
+						break;
+					case 0x08:
+						statusCode = "Not allowed to change user rank**";
+						break;
+					default:	statusCode = "Unknown ClanStatusID 0x" + Integer.toHexString(status);
 					}
 					
 					recieveInfo(statusCode + "\n" + obj.toString());
+					// TODO: clanRankChange(obj, status)
 					
 					break;
 				}
+				
+				// TODO: SID_CLANMOTD
+				
+				case BNCSCommandIDs.SID_CLANMEMBERLIST: {
+					/* (DWORD)		 Cookie
+					 * (BYTE)		 Number of Members
+					 * 
+					 * For each member:
+					 * (STRING) 	 Username
+					 * (BYTE)		 Rank
+					 * (BYTE)		 Online Status
+					 * (STRING) 	 Location
+					 */
+					is.readDWord();
+					byte numMembers = is.readByte();
+					ClanMember[] members = new ClanMember[numMembers];
+					
+					for(int i = 0; i < numMembers; i++) {
+						String uName = is.readNTString();
+						byte uRank = is.readByte();
+						byte uOnline = is.readByte();
+						String uLocation = is.readNTString();
+						
+						members[i] = new ClanMember(uName, uRank, uOnline, uLocation);
+					}
+					
+					clanMemberList(members);
+					break;
+				}
+				
+				// TODO: SID_CLANMEMBERREMOVED
+				// TODO: SID_CLANMEMBERSTATUSCHANGE
+				
+				case BNCSCommandIDs.SID_CLANMEMBERRANKCHANGE: {
+					/* (BYTE)		 Old rank
+					 * (BYTE)		 New rank
+					 * (STRING) 	 Clan member who changed your rank
+					 */
+					byte oldRank = is.readByte();
+					byte newRank = is.readByte();
+					String user = is.readNTString();
+					recieveInfo("Rank changed from " + ClanRankIDs.ClanRank[oldRank] + " to " + ClanRankIDs.ClanRank[newRank] + " by " + user);
+					clanMemberRankChange(oldRank, newRank, user);
+					break;
+				}
+				
+				// TODO: SID_CLANMEMBERINFORMATION
 				
 				default:
 					recieveError("Unknown SID 0x" + Integer.toHexString(pr.packetId) + "\n" + bnubot.util.HexDump.hexDump(pr.data));
