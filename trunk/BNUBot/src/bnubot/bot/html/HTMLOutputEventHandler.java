@@ -150,4 +150,9 @@ public class HTMLOutputEventHandler implements EventHandler {
 	public void friendsUpdate(byte entry, byte location, byte status, int product, String locationName) {}
 	public void clanMemberRankChange(byte oldRank, byte newRank, String user) {}
 	public void clanMemberList(ClanMember[] members) {}
+
+	public void clanMOTD(Object cookie, String text) {
+		// TODO Auto-generated method stub
+		
+	}
 }

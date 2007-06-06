@@ -921,7 +921,19 @@ public class BNCSConnection extends Connection {
 					break;
 				}
 				
-				// TODO: SID_CLANMOTD
+				case BNCSCommandIDs.SID_CLANMOTD: {
+					/* (DWORD)		 Cookie
+					 * (DWORD)		 Unknown (0)
+					 * (STRING) 	 MOTD
+					 */
+					int cookieId = is.readDWord();
+					is.readDWord();
+					String text = is.readNTString();
+					
+					Object cookie = CookieUtility.destroyCookie(cookieId);
+					clanMOTD(cookie, text);
+					break;
+				}
 				
 				case BNCSCommandIDs.SID_CLANMEMBERLIST: {
 					/* (DWORD)		 Cookie
@@ -1037,7 +1049,7 @@ public class BNCSConnection extends Connection {
 		}
 	}
 
-	public void setClanRank(String user, int newRank) throws Exception {
+	public void sendClanRankChange(String user, int newRank) throws Exception {
 		LinkedList<Object> obj = new LinkedList<Object>();
 		obj.add("This is the cookie for setRank:");
 		obj.add(user);
@@ -1049,6 +1061,19 @@ public class BNCSConnection extends Connection {
 		p.writeDWord(id);		//Cookie
 		p.writeNTString(user);	//Username
 		p.writeByte(newRank);	//New rank
+		p.SendPacket(dos, cs.packetLog);
+	}
+
+	public void sendClanMOTD(Object cookie) throws Exception {
+		BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_CLANMOTD);
+		p.writeDWord(CookieUtility.createCookie(cookie));
+		p.SendPacket(dos, cs.packetLog);
+	}
+	
+	public void sendClanSetMOTD(String text) throws Exception {
+		BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_CLANSETMOTD);
+		p.writeDWord(0);	//Cookie
+		p.writeNTString(text);
 		p.SendPacket(dos, cs.packetLog);
 	}
 	

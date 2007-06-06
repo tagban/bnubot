@@ -15,6 +15,7 @@ import bnubot.bot.gui.icons.BNetIcon;
 import bnubot.bot.gui.icons.IconsDotBniReader;
 import bnubot.core.BNetUser;
 import bnubot.core.Connection;
+import bnubot.core.CookieUtility;
 import bnubot.core.clan.ClanMember;
 import bnubot.core.friend.FriendEntry;
 
@@ -115,7 +116,16 @@ public class GuiEventHandler implements EventHandler {
 			
 			menu = new JMenu("Clan");
 			{
-				menuItem = new JMenuItem("...");
+				menuItem = new JMenuItem("Edit MOTD");
+				menuItem.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent event) {
+						try {
+							c.sendClanMOTD(new ClanMOTDEditor(c));
+						} catch(Exception e) {
+							e.printStackTrace();
+							System.exit(1);
+						}
+					} });
 				menu.add(menuItem);
 			}
 			menuBar.add(menu);
@@ -263,4 +273,12 @@ public class GuiEventHandler implements EventHandler {
 	public void friendsUpdate(byte entry, byte location, byte status, int product, String locationName) {}
 	public void clanMemberRankChange(byte oldRank, byte newRank, String user) {}
 	public void clanMemberList(ClanMember[] members) {}
+
+	public void clanMOTD(Object cookie, String text) {
+		if(cookie instanceof ClanMOTDEditor) {
+			ClanMOTDEditor motd = (ClanMOTDEditor)cookie;
+			motd.setMOTD(text);
+			motd.setVisible(true);
+		}
+	}
 }

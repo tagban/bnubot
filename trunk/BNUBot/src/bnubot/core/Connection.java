@@ -34,7 +34,10 @@ public abstract class Connection extends Thread implements EventHandler {
 	}
 
 	public abstract void joinChannel(String channel) throws Exception;
-	public abstract void setClanRank(String string, int newRank) throws Exception;
+	public abstract void sendClanRankChange(String string, int newRank) throws Exception;
+	public abstract void sendClanMOTD(Object cookie) throws Exception;
+	public abstract void sendClanSetMOTD(String text) throws Exception;
+	
 	public abstract void reconnect();
 	public abstract boolean isOp();
 	
@@ -350,5 +353,11 @@ public abstract class Connection extends Thread implements EventHandler {
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().clanMemberRankChange(oldRank, newRank, user);
+	}
+	
+	public void clanMOTD(Object cookie, String text) {
+		Iterator<EventHandler> it = eventHandlers.iterator();
+		while(it.hasNext())
+			it.next().clanMOTD(cookie, text);
 	}
 }

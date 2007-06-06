@@ -32,4 +32,5 @@ public interface EventHandler {
 	//Clan
 	public void clanMemberList(ClanMember[] members);
 	public void clanMemberRankChange(byte oldRank, byte newRank, String user);
+	public void clanMOTD(Object cookie, String text);
 }
