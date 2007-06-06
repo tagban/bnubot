@@ -680,7 +680,7 @@ public class BNCSConnection extends Connection {
 					
 					for(int i = 0; i < numEntries; i++) {
 						int timeStamp = is.readDWord();
-						String news = is.readNTString();
+						String news = is.readNTString().trim();
 						if(timeStamp == 0)	// MOTD
 							recieveInfo(news);
 					}
