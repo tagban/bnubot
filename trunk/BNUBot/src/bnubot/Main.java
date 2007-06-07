@@ -149,12 +149,6 @@ public class Main {
 			
 			primary.addSlave(c);
 		}
-		
-		Thread.sleep(5000);
-		IconsDotBniReader.readIconsDotBni(BNFTPConnection.downloadFile(cs, "icons_STAR.bni"));
-		IconsDotBniReader.readIconsDotBni(BNFTPConnection.downloadFile(cs, "icons-war3.bni"));
-		IconsDotBniReader.readIconsDotBni(BNFTPConnection.downloadFile(cs, "icons-w3xp.bni"));
-		
 	}
 
 }
