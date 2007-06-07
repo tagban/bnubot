@@ -61,7 +61,7 @@ public class IconsDotBniReader {
 				} else
 					icon.products = null;
 				icons[i] = icon;
-				System.out.println(icon.toString());
+				//System.out.println(icon.toString());
 			}
 			
 			//Image in targa format
