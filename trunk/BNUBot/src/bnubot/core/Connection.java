@@ -355,7 +355,7 @@ public abstract class Connection extends Thread implements EventHandler {
 			it.next().clanMemberRankChange(oldRank, newRank, user);
 	}
 	
-	public void clanMOTD(Object cookie, String text) {
+	public synchronized void clanMOTD(Object cookie, String text) {
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().clanMOTD(cookie, text);
