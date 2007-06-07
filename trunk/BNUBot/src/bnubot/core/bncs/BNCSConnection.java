@@ -13,6 +13,7 @@ import bnubot.core.BNetUser;
 import bnubot.core.Connection;
 import bnubot.core.ConnectionSettings;
 import bnubot.core.CookieUtility;
+import bnubot.core.StatString;
 import bnubot.core.clan.ClanMember;
 import bnubot.core.clan.ClanRankIDs;
 import bnubot.core.clan.ClanStatusIDs;
@@ -731,13 +732,13 @@ public class BNCSConnection extends Connection {
 							myFlags = flags;
 							myPing = ping;
 						}
-						channelUser(user, flags, ping, text);
+						channelUser(user, flags, ping, new StatString(text));
 						break;
 					case BNCSChatEventIDs.EID_JOIN:
-						channelJoin(user, flags, ping, text);
+						channelJoin(user, flags, ping, new StatString(text));
 						break;
 					case BNCSChatEventIDs.EID_LEAVE:
-						channelLeave(user, flags, ping, text);
+						channelLeave(user, flags, ping, new StatString(text));
 						break;
 					case BNCSChatEventIDs.EID_TALK:
 						recieveChat(user, flags, ping, text);
