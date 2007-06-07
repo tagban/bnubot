@@ -9,7 +9,6 @@ import javax.swing.*;
 import bnubot.bot.gui.ColorScheme.ColorScheme;
 import bnubot.bot.gui.icons.BNetIcon;
 import bnubot.core.StatString;
-import bnubot.util.HexDump;
 
 @SuppressWarnings("serial")
 public class UserList extends JPanel {
