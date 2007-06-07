@@ -133,10 +133,8 @@ public class TextWindow extends JScrollPane {
 			public void run() {
 				validate();
 				JScrollBar vsb = getVerticalScrollBar();
-				System.out.println("vsb.max = " + vsb.getMaximum());
 				vsb.setValue(vsb.getMaximum());
 				JScrollBar hsb = getHorizontalScrollBar();
-				System.out.println("hsb.max = " + hsb.getMaximum());
 				hsb.setValue(0);
 				validate();
 			}
