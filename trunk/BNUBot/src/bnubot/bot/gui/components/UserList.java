@@ -8,6 +8,7 @@ import javax.swing.*;
 
 import bnubot.bot.gui.ColorScheme.ColorScheme;
 import bnubot.bot.gui.icons.BNetIcon;
+import bnubot.core.StatString;
 import bnubot.util.HexDump;
 
 @SuppressWarnings("serial")
@@ -16,7 +17,7 @@ public class UserList extends JPanel {
 		int flags;
 		int priority;
 		int ping;
-		String statstr;
+		StatString statstr;
 		JLabel label;
 	}
 	
@@ -73,7 +74,7 @@ public class UserList extends JPanel {
 		return b.getComponentCount();
 	}
 	
-	public void showUser(String user, int flags, int ping, String statstr) {
+	public void showUser(String user, int flags, int ping, StatString statstr) {
 		UserInfo ui = users.get(user);
 		if(ui == null) {
 			ui = new UserInfo();
@@ -107,13 +108,16 @@ public class UserList extends JPanel {
 		ui.statstr = statstr;
 				
 		Icon icon = null;
-		int product = 0;
-		if(statstr.length() >= 4)
-			product = HexDump.StringToDWord(statstr.substring(0, 4));
+		int product = ui.statstr.getProduct();
+		int specialIcon = ui.statstr.getIcon();
 		for(int i = 0; i < icons.length; i++) {
-			if(icons[i].useFor(flags, product)) {
+			//Look for 
+			if(icons[i].useFor(flags, specialIcon)) {
 				icon = icons[i].getIcon();
 				break;
+			}
+			if(icons[i].useFor(flags, product)) {
+				icon = icons[i].getIcon();
 			}
 		}
 		
