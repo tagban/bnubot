@@ -3,6 +3,7 @@ package bnubot.bot.console;
 import bnubot.bot.EventHandler;
 import bnubot.core.BNetUser;
 import bnubot.core.Connection;
+import bnubot.core.StatString;
 import bnubot.core.clan.ClanMember;
 import bnubot.core.friend.FriendEntry;
 
@@ -18,17 +19,15 @@ public class ConsoleEventHandler implements EventHandler {
 		System.out.println("Joining channel " + channel);
 	}
 
-	public void channelUser(BNetUser user, int flags, int ping, String statstr) {
-		if(statstr.length() > 4)
-			statstr = statstr.substring(0, 4);
-		System.out.println(user + " (" + ping + "ms) " + statstr);
+	public void channelUser(BNetUser user, int flags, int ping, StatString statstr) {
+		System.out.println(user + " (" + ping + "ms) " + statstr.toString());
 	}
 	
-	public void channelJoin(BNetUser user, int flags, int ping, String statstr) {
-		System.out.println(user + " has joined the channel.");
+	public void channelJoin(BNetUser user, int flags, int ping, StatString statstr) {
+		System.out.println(user + " has joined the channel " + statstr.toString());
 	}
-	public void channelLeave(BNetUser user, int flags, int ping, String statstr) {
-		System.out.println(user + " has left the channel.");
+	public void channelLeave(BNetUser user, int flags, int ping, StatString statstr) {
+		System.out.println(user + " has left the channel " + statstr.toString());
 	}
 
 	public void recieveChat(BNetUser user, int flags, int ping, String text) {
