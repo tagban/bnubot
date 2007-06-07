@@ -11,15 +11,17 @@ import javax.swing.SwingUtilities;
 import bnubot.bot.EventHandler;
 import bnubot.core.BNetUser;
 import bnubot.core.Connection;
+import bnubot.core.StatString;
 import bnubot.core.clan.ClanMember;
 import bnubot.core.friend.FriendEntry;
+import bnubot.util.HexDump;
 
 public class HTMLOutputEventHandler implements EventHandler {
 	private class UserInfo {
 		BNetUser user;
 		int flags;
 		int ping;
-		String statstr;
+		StatString statstr;
 	}
 	String channel;
 	boolean generationNeeded;
@@ -38,7 +40,7 @@ public class HTMLOutputEventHandler implements EventHandler {
 		writeUserList();
 	}
 
-	public void channelJoin(BNetUser user, int flags, int ping, String statstr) {
+	public void channelJoin(BNetUser user, int flags, int ping, StatString statstr) {
 		UserInfo ui = new UserInfo();
 		users.put(user.toString(), ui);
 		ui.user = user;
@@ -49,11 +51,11 @@ public class HTMLOutputEventHandler implements EventHandler {
 		writeUserList();
 	}
 	
-	public void channelLeave(BNetUser user, int flags, int ping, String statstr) {
+	public void channelLeave(BNetUser user, int flags, int ping, StatString statstr) {
 		users.remove(user.toString());
 	}
 	
-	public void channelUser(BNetUser user, int flags, int ping, String statstr) {
+	public void channelUser(BNetUser user, int flags, int ping, StatString statstr) {
 		UserInfo ui = users.get(user.toString());
 		if(ui == null) {
 			ui = new UserInfo();
@@ -79,7 +81,7 @@ public class HTMLOutputEventHandler implements EventHandler {
 	public void whisperRecieved(BNetUser user, int flags, int ping, String text) {}
 	public void whisperSent(BNetUser user, int flags, int ping, String text) {}
 	
-	private String getIcon(String product, int flags) {
+	private String getIcon(int product, int icon, int flags) {
 		if((flags & 0x01) != 0)	return "blizrep";
 		if((flags & 0x08) != 0)	return "bnetrep";
 		if((flags & 0x02) != 0)	return "op";
@@ -88,14 +90,7 @@ public class HTMLOutputEventHandler implements EventHandler {
 		
 		if((flags & 0x20) != 0)	return "squelch";
 		
-		return product;
-	}
-	
-	private String strReverse(String in) {
-		String out = "";
-		for(int i = in.length() - 1; i >= 0; i--)
-			out += in.charAt(i);
-		return out;
+		return HexDump.DWordToPretty((icon == 0) ? icon : product);
 	}
 	
 	private void writeUserList() {
@@ -119,12 +114,7 @@ public class HTMLOutputEventHandler implements EventHandler {
 						while(en.hasMoreElements()) {
 							UserInfo ui = en.nextElement();
 							
-							String product = ui.statstr;
-							if(product.length() >= 4)
-								product = strReverse(product.substring(0, 4));
-							else
-								product = "none";
-							product = getIcon(product, ui.flags);
+							String product = getIcon(ui.statstr.getProduct(), ui.statstr.getIcon(), ui.flags);
 							
 							out += "<tr>";
 							out += "<td><img src=\"images/" + product + ".jpg\"></td>";

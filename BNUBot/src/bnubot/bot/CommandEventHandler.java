@@ -6,6 +6,7 @@ import java.util.Properties;
 import bnubot.bot.database.*;
 import bnubot.core.BNetUser;
 import bnubot.core.Connection;
+import bnubot.core.StatString;
 import bnubot.core.clan.ClanMember;
 import bnubot.core.friend.FriendEntry;
 
@@ -223,9 +224,9 @@ public class CommandEventHandler implements EventHandler {
 		}
 	}
 
-	public void channelJoin(BNetUser user, int flags, int ping, String statstr) {}
-	public void channelLeave(BNetUser user, int flags, int ping, String statstr) {}
-	public void channelUser(BNetUser user, int flags, int ping, String statstr) {}
+	public void channelJoin(BNetUser user, int flags, int ping, StatString statstr) {}
+	public void channelLeave(BNetUser user, int flags, int ping, StatString statstr) {}
+	public void channelUser(BNetUser user, int flags, int ping, StatString statstr) {}
 	public void joinedChannel(String channel) {}
 
 	public void recieveChat(BNetUser user, int flags, int ping, String text) {
