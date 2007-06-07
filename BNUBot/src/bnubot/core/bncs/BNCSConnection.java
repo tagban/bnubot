@@ -33,10 +33,12 @@ public class BNCSConnection extends Connection {
 	private int clientToken = Math.abs(new Random().nextInt());
 	private SRP srp = null;
 	private byte proof_M2[] = null;
-	protected String statString = null;
 	private boolean forceReconnect = false;
+	protected StatString myStatString = null;
 	protected int myFlags = 0;
 	protected int myPing = -1;
+	protected int myClan = 0;
+	protected byte myClanRank = 0; 
 
 	public BNCSConnection(ConnectionSettings cs, ChatQueue cq) {
 		super(cs, cq);
@@ -186,7 +188,14 @@ public class BNCSConnection extends Connection {
 				
 				if(isConnected());
 					connectedLoop();
-			
+					
+
+				myStatString = null;
+				myFlags = 0;
+				myPing = -1;
+				myClan = 0;
+				myClanRank = 0;
+				
 			} catch(SocketException e) {
 			} catch(Exception e) {
 				recieveError("Unhandled exception: " + e.getMessage());
@@ -203,7 +212,8 @@ public class BNCSConnection extends Connection {
 	private void connectedLoop() throws Exception {
 		BNCSPacket p;
 		lastAntiIdle = new Date().getTime();
-		while(s.isConnected() && connected) {
+		
+		while(!s.isClosed() && connected) {
 			if(channelName != null) {
 				long timeSinceAntiIdle = new Date().getTime() - lastAntiIdle;
 				
@@ -661,7 +671,7 @@ public class BNCSConnection extends Connection {
 				
 				case BNCSCommandIDs.SID_ENTERCHAT: {
 					String uniqueUserName = is.readNTString();
-					statString = is.readNTString();
+					myStatString = new StatString(is.readNTString());
 					/*String accountName =*/ is.readNTString();
 					
 					myUser = new BNetUser(uniqueUserName, cs.myRealm);
@@ -878,8 +888,8 @@ public class BNCSConnection extends Connection {
 					 * (BYTE)		 Rank
 					 */
 					is.readByte();
-					int myClan = is.readDWord();
-					byte myClanRank = is.readByte();
+					myClan = is.readDWord();
+					myClanRank = is.readByte();
 					
 					// TODO: clanInfo(myClan, myClanRank);
 					
