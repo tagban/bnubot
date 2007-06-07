@@ -1,6 +1,31 @@
 package bnubot.util;
 
 public class HexDump {
+	public static String DWordToPretty(int dword) {
+		byte bytes[] = new byte[4];
+		bytes[3] = (byte)((dword & 0x000000FF) >> 0);
+		bytes[2] = (byte)((dword & 0x0000FF00) >> 8);
+		bytes[1] = (byte)((dword & 0x00FF0000) >> 16);
+		bytes[0] = (byte)((dword & 0xFF000000) >> 24);
+		return new String(bytes);
+	}
+	
+	public static int PrettyToDWord(String pretty) {
+		byte bytes[] = pretty.getBytes();
+        return	((bytes[3] << 0) & 0x000000FF) |
+				((bytes[2] << 8) & 0x0000FF00) |
+				((bytes[1] << 16) & 0x00FF0000) |
+				((bytes[0] << 24) & 0xFF000000);
+	}
+	
+	public static int StringToDWord(String str) {
+		byte bytes[] = str.getBytes();
+        return	((bytes[0] << 0) & 0x000000FF) |
+				((bytes[1] << 8) & 0x0000FF00) |
+				((bytes[2] << 16) & 0x00FF0000) |
+				((bytes[3] << 24) & 0xFF000000);
+	}
+	
 	private static String hexChr(int b) {
 		return Integer.toHexString(b & 0xF);
 	}

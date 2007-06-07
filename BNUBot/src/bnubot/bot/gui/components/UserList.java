@@ -8,6 +8,7 @@ import javax.swing.*;
 
 import bnubot.bot.gui.ColorScheme.ColorScheme;
 import bnubot.bot.gui.icons.BNetIcon;
+import bnubot.util.HexDump;
 
 @SuppressWarnings("serial")
 public class UserList extends JPanel {
@@ -106,9 +107,9 @@ public class UserList extends JPanel {
 		ui.statstr = statstr;
 				
 		Icon icon = null;
-		String product = null;
+		int product = 0;
 		if(statstr.length() >= 4)
-			product = statstr.substring(0, 4);
+			product = HexDump.StringToDWord(statstr.substring(0, 4));
 		for(int i = 0; i < icons.length; i++) {
 			if(icons[i].useFor(flags, product)) {
 				icon = icons[i].getIcon();

@@ -9,6 +9,8 @@ public class BNUBotTestSuite {
 		
 		suite.addTestSuite(bnubot.junit.core.BNetUserTest.class);
 		suite.addTestSuite(bnubot.junit.core.CookieUtilityTest.class);
+
+		suite.addTestSuite(bnubot.junit.util.HexDumpTest.class);
 		
 		return suite;
 	}

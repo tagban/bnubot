@@ -2,39 +2,37 @@ package bnubot.bot.gui.icons;
 
 import javax.swing.Icon;
 
+import bnubot.util.HexDump;
+
 public class BNetIcon {
 	int flags;
 	int xSize;
 	int ySize;
-	String products[];
+	int products[];
 	Icon icon;
 	int sortIndex;
 	
-	public boolean useFor(int flags, String product) {
+	public boolean useFor(int flags, int product) {
 		if((flags & this.flags) != 0)
 			return true;
 		
+		if(products == null)
+			return false;
+		
 		for(int i = 0; i < products.length; i++) {
-			if(product.compareTo(products[i]) == 0)
+			if(product == products[i])
 				return true;
 		}
 		
 		return false;
 	}
 	
-	private String strReverse(String s) {
-		String out = "";
-		for(int i = 0; i < s.length(); i++)
-			out = s.charAt(i) + out;
-		return out;
-	}
-	
 	public String toString() {
 		String out = "Icon[flags=0x" + Integer.toHexString(flags)  + ",xSize=" + xSize + ",ySize=" + ySize;
-		if(products.length > 0) {
+		if(products != null) {
 			out += ",products=[";
 			for(int i = 0; i < products.length; i++)
-				out += strReverse(products[i]) + ",";
+				out += HexDump.DWordToPretty(products[i]) + ",";
 			out = out.substring(0, out.length() - 1);
 			out += "]";
 		}

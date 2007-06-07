@@ -8,8 +8,11 @@ import bnubot.bot.console.ConsoleEventHandler;
 import bnubot.bot.database.*;
 import bnubot.bot.gui.ConfigurationFrame;
 import bnubot.bot.gui.GuiEventHandler;
+import bnubot.bot.gui.icons.IconsDotBniReader;
 import bnubot.core.*;
 import bnubot.core.bncs.BNCSConnection;
+import bnubot.core.bnftp.BNFTPConnection;
+import bnubot.core.chat.ChatConnection;
 import bnubot.core.queue.ChatQueue;
 import bnubot.util.Ini;
 
@@ -146,6 +149,12 @@ public class Main {
 			
 			primary.addSlave(c);
 		}
+		
+		Thread.sleep(5000);
+		IconsDotBniReader.readIconsDotBni(BNFTPConnection.downloadFile(cs, "icons_STAR.bni"));
+		IconsDotBniReader.readIconsDotBni(BNFTPConnection.downloadFile(cs, "icons-war3.bni"));
+		IconsDotBniReader.readIconsDotBni(BNFTPConnection.downloadFile(cs, "icons-w3xp.bni"));
+		
 	}
 
 }

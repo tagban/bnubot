@@ -267,9 +267,7 @@ public class BNCSConnection extends Connection {
 					}
 					
 					// Hash the game files
-				  	String tmp = MPQFileName.substring(MPQFileName.indexOf("IX86")+5);
-					tmp = tmp.substring(0,tmp.indexOf("."));
-                	String files[] = HashMain.getFiles(cs.product, HashMain.PLATFORM_INTEL);
+				  	String files[] = HashMain.getFiles(cs.product, HashMain.PLATFORM_INTEL);
 
 					int mpqNum = -1;
                 	int exeHash;
@@ -277,7 +275,13 @@ public class BNCSConnection extends Connection {
                 	String exeInfo;
                 	
                 	try {
-						mpqNum = Integer.parseInt(tmp);
+                		String tmp = MPQFileName;
+                		tmp = tmp.substring(tmp.indexOf("IX86")+4);
+                		while((tmp.charAt(0) < 0x30) || (tmp.charAt(0) > 0x39))
+                			tmp = tmp.substring(1);
+    					tmp = tmp.substring(0,tmp.indexOf("."));
+                    	mpqNum = Integer.parseInt(tmp);
+                    	
                     	exeHash = CheckRevision.checkRevision(ValueStr, files, mpqNum);
 				    	exeVersion = HashMain.getExeVer(cs.product);
 						exeInfo = HashMain.getExeInfo(cs.product);

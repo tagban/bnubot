@@ -19,6 +19,8 @@ public class IconsDotBniReader {
 
 	public static BNetIcon[] readIconsDotBni(File f) {
 		try {
+			System.out.println("Reading " + f.getName());
+			
 			BNetInputStream is = new BNetInputStream(new FileInputStream(f));
 			is.skip(4); //int headerSize = is.readDWord();
 			int bniVersion = is.readWord();
@@ -43,24 +45,23 @@ public class IconsDotBniReader {
 				else
 					icon.sortIndex = numIcons;
 				int numProducts;
-				String products[] = new String[32];
+				int products[] = new int[32];
+				
+				//Read in up to 32 products; stop if we see a null 
 				for(numProducts = 0; numProducts < 32; numProducts++) {
-					int p = is.readDWord();
-					if(p == 0)
+					products[numProducts] = is.readDWord();
+					if(products[numProducts] == 0)
 						break;
-					
-					byte[] b = new byte[4];
-					b[0] = (byte)((p & 0x000000FF) >> 0);
-					b[1] = (byte)((p & 0x0000FF00) >> 8);
-					b[2] = (byte)((p & 0x00FF0000) >> 16);
-					b[3] = (byte)((p & 0xFF000000) >> 24);
-					products[numProducts] = new String(b);
 				}
-				icon.products = new String[numProducts];
-				for(int j = 0; j < numProducts; j++)
-					icon.products[j] = products[j];
+				
+				if(numProducts > 0) {
+					icon.products = new int[numProducts];
+					for(int j = 0; j < numProducts; j++)
+						icon.products[j] = products[j];
+				} else
+					icon.products = null;
 				icons[i] = icon;
-				//System.out.println(icon.toString());
+				System.out.println(icon.toString());
 			}
 			
 			//Image in targa format
@@ -109,18 +110,18 @@ public class IconsDotBniReader {
 			
 			//Split up the big image in to individual images
 			currentPixel = 0;
-			JFrame util = new JFrame();
-			//util.setLayout(new FlowLayout(FlowLayout.CENTER));
+			JFrame util = new JFrame(f.getName());
+			util.setLayout(new FlowLayout(FlowLayout.CENTER));
 			for(int i = 0; i < numIcons; i++) {
 				BNetIcon bni = icons[i];
 				bni.icon = new ImageIcon(
 						util.createImage(
 								new MemoryImageSource(bni.xSize, bni.ySize, pixelData, currentPixel, bni.xSize)));
 				currentPixel += bni.xSize * bni.ySize;
-				//util.add(new JLabel(bni.icon));
+				util.add(new JLabel(bni.icon));
 			}
-			//util.pack();
-			//util.setVisible(true);
+			util.pack();
+			util.setVisible(true);
 			
 			return icons;
 		} catch (Exception e) {
