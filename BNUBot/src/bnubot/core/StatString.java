@@ -23,6 +23,76 @@ public class StatString {
 		return icon;
 	}
 	
+	public String getIconName(int product, int icon) {
+		// I am not sure that the strings are matched to the icons properly
+		switch(product) {
+		// http://www.battle.net/war3/ladder/war3-ladder-info-laddericons.aspx
+		case ProductIDs.PRODUCT_WAR3:
+			switch(icon) {
+			case ProductIDs.ICON_W3H1:
+			case ProductIDs.ICON_W3O1:
+			case ProductIDs.ICON_W3N1:
+			case ProductIDs.ICON_W3U1:
+			case ProductIDs.ICON_W3R1:	return "Orc Peon";
+			
+			case ProductIDs.ICON_W3H2:	return "Human Footman";
+			case ProductIDs.ICON_W3H3:	return "Human Knight";
+			case ProductIDs.ICON_W3H4:	return "Human Archmage";
+			case ProductIDs.ICON_W3H5:	return "Human Midvh";
+			case ProductIDs.ICON_W3O2:	return "Orc Grunt";
+			case ProductIDs.ICON_W3O3:	return "Orc Tauren";
+			case ProductIDs.ICON_W3O4:	return "Orc Far Seer";
+			case ProductIDs.ICON_W3O5:	return "Orc Thrall";
+			case ProductIDs.ICON_W3N2:	return "Night Elf Archer";
+			case ProductIDs.ICON_W3N3:	return "Night Elf Druid of the Claw";
+			case ProductIDs.ICON_W3N4:	return "Night Elf Priestess of the Moon";
+			case ProductIDs.ICON_W3N5:	return "Night Elf Furion Stormrage";
+			case ProductIDs.ICON_W3U2:	return "Undead Ghoul";
+			case ProductIDs.ICON_W3U3:	return "Undead Abomination";
+			case ProductIDs.ICON_W3U4:	return "Undead Lich";
+			case ProductIDs.ICON_W3U5:	return "Undead Tichondrius";
+			case ProductIDs.ICON_W3R2:	return "Random Green Dragon Whelp";
+			case ProductIDs.ICON_W3R3:	return "Random Blue Dragon";
+			case ProductIDs.ICON_W3R4:	return "Random Red Dragon";
+			case ProductIDs.ICON_W3R5:	return "Random Deathwing";
+			}
+			break;
+		// http://www.battle.net/war3/ladder/w3xp-ladder-info-laddericons.aspx
+		case ProductIDs.PRODUCT_W3XP:
+			switch(icon) {
+			case ProductIDs.ICON_W3H1:
+			case ProductIDs.ICON_W3O1:
+			case ProductIDs.ICON_W3N1:
+			case ProductIDs.ICON_W3U1:
+			case ProductIDs.ICON_W3R1:	return "Orc Peon";
+			
+			case ProductIDs.ICON_W3H2:	return "Human Rifleman";
+			case ProductIDs.ICON_W3H3:	return "Human Sorceress";
+			case ProductIDs.ICON_W3H4:	return "Human Spellbreaker";
+			case ProductIDs.ICON_W3H5:	return "Human Midvh";
+		/*	case ProductIDs.ICON_W3O2:	return "Orc Grunt";
+			case ProductIDs.ICON_W3O3:	return "Orc Tauren";
+			case ProductIDs.ICON_W3O4:	return "Orc Far Seer";
+			case ProductIDs.ICON_W3O5:	return "Orc Thrall";
+			case ProductIDs.ICON_W3N2:	return "Night Elf Archer";
+			case ProductIDs.ICON_W3N3:	return "Night Elf Druid of the Claw";
+			case ProductIDs.ICON_W3N4:	return "Night Elf Priestess of the Moon";
+			case ProductIDs.ICON_W3N5:	return "Night Elf Furion Stormrage";
+			case ProductIDs.ICON_W3U2:	return "Undead Ghoul";
+			case ProductIDs.ICON_W3U3:	return "Undead Abomination";
+			case ProductIDs.ICON_W3U4:	return "Undead Lich";
+			case ProductIDs.ICON_W3U5:	return "Undead Tichondrius";
+			case ProductIDs.ICON_W3R2:	return "Random Green Dragon Whelp";
+			case ProductIDs.ICON_W3R3:	return "Random Blue Dragon";
+			case ProductIDs.ICON_W3R4:	return "Random Red Dragon";
+			case ProductIDs.ICON_W3R5:	return "Random Deathwing";
+		*/	}
+			break;
+		}
+		
+		return "Unknown " + HexDump.DWordToPretty(icon);
+	}
+	
 	public void parse() {
 		if(parsed)
 			return;
@@ -98,23 +168,23 @@ public class StatString {
 			icon = HexDump.StringToDWord(statString[9]);
 
 			if(ladderRating != 0)
-				pretty += " ladderRating=" + ladderRating;
+				pretty += ", Ladder rating " + ladderRating;
 			if(ladderRank != 0)
-				pretty += " ladderRank=" + ladderRank;
+				pretty += ", Ladder rank " + ladderRank;
 			if(wins != 0)
-				pretty += " wins=" + wins;
+				pretty += ", " + wins + " wins";
 			if(spawn != 0)
-				pretty += " spawn=" + spawn;
+				pretty += ", Spawn";
 			if(unknown5 != 0)
-				pretty += " unknown5=" + unknown5;
-			if(highLadderRating != 0)
-				pretty += " highLadderRating=" + highLadderRating;
+				pretty += ", unknown5=" + unknown5;
+			if((highLadderRating != 0) && (highLadderRating != ladderRating))
+				pretty += ", Ladder highest ever rating " + highLadderRating;
 			if(unknown7 != 0)
-				pretty += " unknown7=" + unknown7;
+				pretty += ", unknown7=" + unknown7;
 			if(unknown8 != 0)
-				pretty += " unknown8=" + unknown8;
-			if(icon != 0)
-				pretty += " icon=" + HexDump.DWordToPretty(icon);
+				pretty += ", unknown8=" + unknown8;
+			if((icon != 0) && (icon != product))
+				pretty += ", " + HexDump.DWordToPretty(icon) + " icon";
 			
 			break;
 			
@@ -126,9 +196,9 @@ public class StatString {
 				int level = Integer.parseInt(statString[2]);
 
 				if(icon != 0)
-					pretty += " icon=" + HexDump.DWordToPretty(icon);
+					pretty += ", " + getIconName(product, icon) + " icon";
 				if(level != 0)
-					pretty += " level=" + level;
+					pretty += ", Level " + level;
 				
 				if(statString.length >= 4) {
 					byte[] bytes = statString[3].getBytes();
@@ -136,7 +206,7 @@ public class StatString {
 					for(int j = bytes.length-1; j >= 0; j--)
 						clan += (char)bytes[j];
 						
-					pretty += " clan=" + clan;
+					pretty += ", in Clan " + clan;
 				}
 				
 			} else {
