@@ -15,7 +15,7 @@ import bnubot.bot.gui.icons.BNetIcon;
 import bnubot.bot.gui.icons.IconsDotBniReader;
 import bnubot.core.BNetUser;
 import bnubot.core.Connection;
-import bnubot.core.CookieUtility;
+import bnubot.core.StatString;
 import bnubot.core.clan.ClanMember;
 import bnubot.core.friend.FriendEntry;
 
@@ -199,17 +199,18 @@ public class GuiEventHandler implements EventHandler {
 		frame.setVisible(true);
 	}
 
-	public void channelJoin(BNetUser user, int flags, int ping, String statstr) {
+	public void channelJoin(BNetUser user, int flags, int ping, StatString statstr) {
 		userList.showUser(user.toString(), flags, ping, statstr);
-		mainTextArea.channelInfo(user + " has joined.");
+		mainTextArea.channelInfo(user + " has joined " + statstr.toString());
 	}
 
-	public void channelLeave(BNetUser user, int flags, int ping, String statstr) {
+	public void channelLeave(BNetUser user, int flags, int ping, StatString statstr) {
 		userList.removeUser(user.toString());
-		mainTextArea.channelInfo(user + " has left.");
+		mainTextArea.channelInfo(user + " has left " + statstr.toString());
 	}
 
-	public void channelUser(BNetUser user, int flags, int ping, String statstr) {
+	public void channelUser(BNetUser user, int flags, int ping, StatString statstr) {
+		mainTextArea.channelInfo(user + " " + statstr.toString());
 		userList.showUser(user.toString(), flags, ping, statstr);
 	}
 
