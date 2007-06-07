@@ -48,7 +48,7 @@ public class BNFTPConnection {
 			os.writeNTString(fileName);
 			
 			while(is.available() == 0) {
-				if(!s.isConnected())
+				if(s.isClosed())
 					throw new Exception("Download failed");
 			}
 	
