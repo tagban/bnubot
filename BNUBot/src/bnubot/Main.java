@@ -8,11 +8,8 @@ import bnubot.bot.console.ConsoleEventHandler;
 import bnubot.bot.database.*;
 import bnubot.bot.gui.ConfigurationFrame;
 import bnubot.bot.gui.GuiEventHandler;
-import bnubot.bot.gui.icons.IconsDotBniReader;
 import bnubot.core.*;
 import bnubot.core.bncs.BNCSConnection;
-import bnubot.core.bnftp.BNFTPConnection;
-import bnubot.core.chat.ChatConnection;
 import bnubot.core.queue.ChatQueue;
 import bnubot.util.Ini;
 
