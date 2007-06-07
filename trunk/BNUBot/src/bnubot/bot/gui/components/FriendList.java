@@ -59,6 +59,14 @@ public class FriendList extends JPanel {
 			fi.label.setForeground(cs.getUserNameListColor(0));
 			b.add(fi.label);
 			
+			if(entry.getProduct() != 0) {
+				for(int j = 0; j < icons.length; j++) {
+					if(icons[j].useFor(0, entry.getProduct())) {
+						fi.label.setIcon(icons[j].getIcon());
+					}
+				}
+			}
+			
 			friends.put(entry.getAccount(), fi);
 		}
 	}
