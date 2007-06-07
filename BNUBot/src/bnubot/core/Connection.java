@@ -257,19 +257,19 @@ public abstract class Connection extends Thread implements EventHandler {
 			}
 	}
 	
-	public synchronized void channelUser(BNetUser user, int flags, int ping, String statstr) {
+	public synchronized void channelUser(BNetUser user, int flags, int ping, StatString statstr) {
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().channelUser(user, flags, ping, statstr);
 	}
 	
-	public synchronized void channelJoin(BNetUser user, int flags, int ping, String statstr) {
+	public synchronized void channelJoin(BNetUser user, int flags, int ping, StatString statstr) {
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().channelJoin(user, flags, ping, statstr);
 	}
 	
-	public synchronized void channelLeave(BNetUser user, int flags, int ping, String statstr) {
+	public synchronized void channelLeave(BNetUser user, int flags, int ping, StatString statstr) {
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().channelLeave(user, flags, ping, statstr);
