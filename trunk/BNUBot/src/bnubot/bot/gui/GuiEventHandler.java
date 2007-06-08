@@ -129,6 +129,17 @@ public class GuiEventHandler implements EventHandler {
 			}
 			menuBar.add(menu);
 			
+			menu = new JMenu("Debug");
+			{
+				menuItem = new JMenuItem("Show Icons");
+				menuItem.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent event) {
+						IconsDotBniReader.showWindow();
+					} });
+				menu.add(menuItem);
+			}
+			menuBar.add(menu);
+			
 			menu = new JMenu("Help");
 			{
 				menuItem = new JMenuItem("Complain about scrollbars");
