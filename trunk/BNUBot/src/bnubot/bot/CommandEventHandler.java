@@ -131,6 +131,10 @@ public class CommandEventHandler implements EventHandler {
 				}
 				break;
 			case 's':
+				if(command.equals("say")) {
+					c.sendChat(param);
+					break;
+				}
 				if(command.equals("setrank")) {
 					int newRank;
 					try {
@@ -235,32 +239,45 @@ public class CommandEventHandler implements EventHandler {
 		if(text.length() == 0)
 			return;
 		
+		BNetUser me = c.getMyUser();
 		User u = d.getUserDatabase().getUser(user.getFullAccountName());
-		if(u == null)
-			return;
-		if(u.getAccess() <= 0)
-			return;
+		
+		if(user.getFullAccountName().equals(user.getFullAccountName())) {
+			if(u == null) {
+				u = new User(100);
+				d.getUserDatabase().addUser(me.getFullAccountName(), u);
+			}
+		} else {
+			if(u == null)
+				return;
+			if(u.getAccess() <= 0)
+				return;
+		}
 		
 		char trigger = c.getConnectionSettings().trigger.charAt(0);
 		
 		if(text.equals("?trigger"))
 			c.sendChat(user, "The bot's trigger is: " + trigger);
-		
-		if(text.charAt(0) == trigger) {
-			String[] command = text.substring(1).split(" ");
-			String paramString = text.substring(text.indexOf(' ') + 1);
-		
-			parseCommand(user, command[0], paramString);
-		}
+		else
+			if(text.charAt(0) == trigger) {
+				String[] command = text.substring(1).split(" ");
+				String paramString = text.substring(text.indexOf(' ') + 1);
+			
+				parseCommand(user, command[0], paramString);
+			}
 	}
 
 	public void recieveEmote(BNetUser user, int flags, int ping, String text) {}
 	
+	private String lastInfo = null;
 	private void recieveInfoError(String text) {
 		long timeElapsed = new Date().getTime() - lastCommandTime;
 		// 200ms
 		if(timeElapsed < 200) {
-			c.sendChat(lastCommandUser, text);
+			if(!text.equals(lastInfo)) {
+				lastInfo = text;
+				c.sendChat(lastCommandUser, text);
+			}
 		}
 	}
 	
