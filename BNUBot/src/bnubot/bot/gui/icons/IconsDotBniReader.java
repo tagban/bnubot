@@ -14,6 +14,7 @@ import bnubot.core.bnftp.BNFTPConnection;
 @SuppressWarnings("serial")
 public class IconsDotBniReader {
 	private static boolean initialized = false;
+	private static boolean initializedWindow = false;
 	private static BNetIcon[] icons = null;
 	private static BNetIcon[] icons_STAR = null;
 	private static BNetIcon[] icons_WAR3 = null;
@@ -22,9 +23,32 @@ public class IconsDotBniReader {
 	
 	private static JFrame util = null;
 	
+	public static void showWindow() {
+		if(!initialized)
+			return;
+		if(!initializedWindow) {
+			initializedWindow = true;
+			util.setLayout(new FlowLayout(FlowLayout.CENTER));
+			
+			BNetIcon[][] iconss = {icons, icons_STAR, icons_WAR3, icons_W3XP, legacy_icons};
+			for(BNetIcon[] icons : iconss) {
+				Box b = new Box(BoxLayout.Y_AXIS);
+				for(int i = 0; i < icons.length; i++) {
+					BNetIcon bni = icons[i];
+					b.add(new JLabel(bni.icon));
+					b.add(Box.createVerticalStrut(1));
+				}
+				util.add(b);
+			}
+			util.pack();
+		}
+		util.setVisible(true);
+	}
+	
 	public static void initialize(ConnectionSettings cs) {
 		if(initialized)
 			return;
+		initialized = true;
 		
 		File f;
 		
@@ -180,8 +204,9 @@ public class IconsDotBniReader {
 			currentPixel = 0;
 			
 			if(util == null) {
-				util = new JFrame();
+				util = new JFrame("Icons");
 			//	util.setLayout(new FlowLayout(FlowLayout.CENTER));
+				util.setLayout(null);
 			}
 			
 			//Box b = new Box(BoxLayout.Y_AXIS);
