@@ -40,6 +40,7 @@ public abstract class Connection extends Thread implements EventHandler {
 	
 	public abstract void reconnect();
 	public abstract boolean isOp();
+	public abstract int getProductID();
 	
 	public void addSlave(Connection c) {
 		slaves.add(c);

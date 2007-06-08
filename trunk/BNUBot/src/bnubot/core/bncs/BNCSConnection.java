@@ -1111,4 +1111,8 @@ public class BNCSConnection extends Connection {
 		forceReconnect = true;
 		setConnected(false);
 	}
+
+	public int getProductID() {
+		return productID;
+	}
 }
