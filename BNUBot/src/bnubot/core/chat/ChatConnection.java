@@ -3,6 +3,7 @@ package bnubot.core.chat;
 import java.net.Socket;
 
 import bnubot.core.*;
+import bnubot.core.bncs.ProductIDs;
 import bnubot.core.queue.ChatQueue;
 
 public class ChatConnection extends Connection {
@@ -84,6 +85,12 @@ public class ChatConnection extends Connection {
 	public void sendClanSetMOTD(String text) throws Exception {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public int getProductID() {
+		// TODO Auto-generated method stub
+		return ProductIDs.PRODUCT_CHAT;
 	}
 
 }
