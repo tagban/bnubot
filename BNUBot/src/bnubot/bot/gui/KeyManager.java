@@ -19,6 +19,9 @@ public class KeyManager {
 	public static final int PRODUCT_WAR3 = 14;
 	public static final int PRODUCT_W3XP = 18;
 	
+	private static LinkedList<CDKey> cdkeys = new LinkedList<CDKey>();
+	private static boolean initialized = false;
+	
 	public static class CDKey {
 		String key;
 		int product;
@@ -46,12 +49,10 @@ public class KeyManager {
 		}
 	}
 	
-	private static LinkedList<CDKey> cdkeys = new LinkedList<CDKey>();
-	private static boolean initialized = false;
-	
 	private static void initialize() {
 		if(initialized)
 			return;
+		initialized = true;
 		
 		File keys = new File("cdkeys.txt");
 		BufferedReader is = null;
