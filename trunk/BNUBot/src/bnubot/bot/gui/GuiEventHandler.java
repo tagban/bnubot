@@ -11,7 +11,6 @@ import bnubot.bot.gui.ColorScheme.ColorScheme;
 import bnubot.bot.gui.components.FriendList;
 import bnubot.bot.gui.components.TextWindow;
 import bnubot.bot.gui.components.UserList;
-import bnubot.bot.gui.icons.BNetIcon;
 import bnubot.bot.gui.icons.IconsDotBniReader;
 import bnubot.core.BNetUser;
 import bnubot.core.Connection;
