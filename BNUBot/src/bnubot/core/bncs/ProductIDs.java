@@ -3,6 +3,7 @@ package bnubot.core.bncs;
 import util.Constants;
 
 public abstract class ProductIDs {
+	public static final int	PRODUCT_CHAT	= 0x43484154;
 	public static final int	PRODUCT_STAR	= 0x53544152;
 	public static final int	PRODUCT_SEXP	= 0x53455850;
 	public static final int	PRODUCT_W2BN	= 0x5732424E;
@@ -67,6 +68,7 @@ public abstract class ProductIDs {
 	
 	public String getProdStr(int prod) {
 		switch(prod) {
+		case PRODUCT_CHAT:	return "CHAT";
 		case PRODUCT_STAR:	return Constants.prods[Constants.PRODUCT_STARCRAFT - 1];
 		case PRODUCT_SEXP:	return Constants.prods[Constants.PRODUCT_BROODWAR - 1];
 		case PRODUCT_W2BN:	return Constants.prods[Constants.PRODUCT_WAR2BNE - 1];
