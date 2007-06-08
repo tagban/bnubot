@@ -114,6 +114,7 @@ public class BNCSConnection extends Connection {
 				case ConnectionSettings.PRODUCT_LORDOFDESTRUCTION:
 				case ConnectionSettings.PRODUCT_WARCRAFT3:
 				case ConnectionSettings.PRODUCT_THEFROZENTHRONE:
+				case ConnectionSettings.PRODUCT_WAR2BNE:
 					p = new BNCSPacket(BNCSCommandIDs.SID_AUTH_INFO);
 					p.writeDWord(0);							// Protocol ID (0)
 					p.writeDWord(PlatformIDs.PLATFORM_IX86);	// Platform ID (IX86)
@@ -148,7 +149,7 @@ public class BNCSConnection extends Connection {
 					p.SendPacket(dos, cs.packetLog);
 					break;
 					
-				case ConnectionSettings.PRODUCT_WAR2BNE:
+				/*case ConnectionSettings.PRODUCT_WAR2BNE:
 					p = new BNCSPacket(BNCSCommandIDs.SID_CLIENTID2);
 					p.writeDWord(1);	// Server version
 					p.writeDWord(0);	// Registration Version
@@ -178,7 +179,7 @@ public class BNCSConnection extends Connection {
 					p.writeDWord(verByte);						// Version byte
 					p.writeDWord(0);							// Unknown (0)
 					p.SendPacket(dos, cs.packetLog);
-					break;
+					break;*/
 					
 				default:
 					recieveError("Don't know how to connect with product " + productID);
@@ -210,7 +211,6 @@ public class BNCSConnection extends Connection {
 	}
 	
 	private void connectedLoop() throws Exception {
-		BNCSPacket p;
 		lastAntiIdle = new Date().getTime();
 		
 		while(!s.isClosed() && connected) {
@@ -220,7 +220,7 @@ public class BNCSConnection extends Connection {
 				//Wait 5 minutes
 				timeSinceAntiIdle /= 1000;
 				timeSinceAntiIdle /= 60;
-				if(timeSinceAntiIdle > 5) {
+				if(timeSinceAntiIdle >= 5) {
 					lastAntiIdle = new Date().getTime();
 					sendChat(cs.antiIdle);
 				}
@@ -236,13 +236,13 @@ public class BNCSConnection extends Connection {
 					break;
 					
 				case BNCSCommandIDs.SID_NULL: {
-					p = new BNCSPacket(BNCSCommandIDs.SID_NULL);
+					BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_NULL);
 					p.SendPacket(dos, cs.packetLog);
 					break;
 				}
 				
 				case BNCSCommandIDs.SID_PING: {
-					p = new BNCSPacket(BNCSCommandIDs.SID_PING);
+					BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_PING);
 					p.writeDWord(is.readDWord());
 					p.SendPacket(dos, cs.packetLog);
 					break;
@@ -313,6 +313,7 @@ public class BNCSConnection extends Connection {
 				    		System.err.println(bnubot.util.HexDump.hexDump(exeHashBuf.getBuffer()));
 				    		throw new Exception("BNLS failed to complete 0x1A sucessfully");
 				    	}
+			    		System.out.println(bnubot.util.HexDump.hexDump(exeHashBuf.getBuffer()));
 				    	exeVersion = exeStream.readDWord();
 				    	exeHash = exeStream.readDWord();
 				    	exeInfo = exeStream.readNTString();
@@ -323,7 +324,7 @@ public class BNCSConnection extends Connection {
 
 					// Respond
                 	if(nlsRevision != -1) {
-						p = new BNCSPacket(BNCSCommandIDs.SID_AUTH_CHECK);
+						BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_AUTH_CHECK);
 						p.writeDWord(clientToken);
 						p.writeDWord(exeVersion);
 						p.writeDWord(exeHash);
@@ -355,7 +356,7 @@ public class BNCSConnection extends Connection {
                 		 * (DWORD)		 EXE Hash
                 		 * (STRING) 	 EXE Information
                 		 */
-                		p = new BNCSPacket(BNCSCommandIDs.SID_REPORTVERSION);
+                		BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_REPORTVERSION);
                 		p.writeDWord(PlatformIDs.PLATFORM_IX86);
                 		p.writeDWord(productID);
                 		p.writeDWord(verByte);
@@ -450,7 +451,7 @@ public class BNCSConnection extends Connection {
 				        if(verifier.length != 32)
 				        	throw new Exception("Verifier length wasn't 32!");
 				        
-				        p = new BNCSPacket(BNCSCommandIDs.SID_AUTH_ACCOUNTCREATE);
+				        BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_AUTH_ACCOUNTCREATE);
 				        p.write(salt);
 				        p.write(verifier);
 				        p.writeNTString(cs.username);
@@ -486,7 +487,7 @@ public class BNCSConnection extends Connection {
 					if(M1.length != 20)
 						throw new Exception("Invalid M1 length");
 
-					p = new BNCSPacket(BNCSCommandIDs.SID_AUTH_ACCOUNTLOGONPROOF);
+					BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_AUTH_ACCOUNTLOGONPROOF);
 					p.write(M1);
 					p.SendPacket(dos, cs.packetLog);
 					break;
@@ -566,7 +567,7 @@ public class BNCSConnection extends Connection {
 
 					recieveInfo("Login successful; entering chat.");
 
-					p = new BNCSPacket(BNCSCommandIDs.SID_ENTERCHAT);
+					BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_ENTERCHAT);
 					p.writeNTString("");
 					p.writeNTString("");
 					p.SendPacket(dos, cs.packetLog);
@@ -579,7 +580,7 @@ public class BNCSConnection extends Connection {
 					case 0x00:	// Success
 						recieveInfo("Login successful; entering chat.");
 
-						p = new BNCSPacket(BNCSCommandIDs.SID_ENTERCHAT);
+						BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_ENTERCHAT);
 						p.writeNTString("");
 						p.writeNTString("");
 						p.SendPacket(dos, cs.packetLog);
@@ -680,7 +681,7 @@ public class BNCSConnection extends Connection {
 					// We are officially logged in!
 					
 					// Get MOTD
-					p = new BNCSPacket(BNCSCommandIDs.SID_NEWS_INFO);
+					BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_NEWS_INFO);
 					p.writeDWord((int)(new java.util.Date().getTime() / 1000)); // timestamp
 					p.SendPacket(dos, cs.packetLog);
 					
@@ -773,7 +774,7 @@ public class BNCSConnection extends Connection {
 						whisperRecieved(user, flags, ping, text);
 						break;
 					case BNCSChatEventIDs.EID_CHANNELDOESNOTEXIST:
-						p = new BNCSPacket(BNCSCommandIDs.SID_JOINCHANNEL);
+						BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_JOINCHANNEL);
 						p.writeDWord(2); // create join
 						p.writeNTString(text);
 						p.SendPacket(dos, cs.packetLog);
@@ -894,7 +895,7 @@ public class BNCSConnection extends Connection {
 					// TODO: clanInfo(myClan, myClanRank);
 					
 					// Get clan list
-					p = new BNCSPacket(BNCSCommandIDs.SID_CLANMEMBERLIST);
+					BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_CLANMEMBERLIST);
 					p.writeDWord(0);	// Cookie
 					p.SendPacket(dos, cs.packetLog);
 					break;
