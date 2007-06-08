@@ -112,6 +112,8 @@ public class UserList extends JPanel {
 		Icon icon = null;
 		int product = ui.statstr.getProduct();
 		int specialIcon = ui.statstr.getIcon();
+		if(specialIcon == product)
+			specialIcon = 0;
 		
 		BNetIcon[] icons = IconsDotBniReader.getIcons();
 		boolean keepThisIcon = false;
@@ -128,11 +130,12 @@ public class UserList extends JPanel {
 		}
 		
 		if(!keepThisIcon) {
-			if(product == c.getProductID()) {
+			if(true) { //(product == c.getProductID()) {
 				switch(product) {
 				case ProductIDs.PRODUCT_STAR:
 				case ProductIDs.PRODUCT_SEXP:
-					icons = IconsDotBniReader.getIconsSTAR();
+				case ProductIDs.PRODUCT_W2BN:
+					icons = IconsDotBniReader.getLegacyIcons();
 					break;
 				case ProductIDs.PRODUCT_WAR3:
 					icons = IconsDotBniReader.getIconsWAR3();
@@ -144,15 +147,47 @@ public class UserList extends JPanel {
 					icons = null;
 					break;
 				}
-
-				if(icons != null)
-					for(int i = 0; i < icons.length; i++) {
-						if(icons[i].useFor(flags, specialIcon)) {
-							keepThisIcon = true;
-							icon = icons[i].getIcon();
-							break;
+				
+				if(icons != null) {
+					switch(product) {
+					case ProductIDs.PRODUCT_STAR:
+					case ProductIDs.PRODUCT_SEXP:
+						int w = Math.max(Math.min(statstr.getWins(), 10), 0);
+						icon = icons[w].getIcon();
+						int r = statstr.getLadderRank();
+						if(r > 0) {
+							if(r == 1)
+								icon = icons[IconsDotBniReader.LEGACY_LADDERNUM1].getIcon();
+							else
+								icon = icons[IconsDotBniReader.LEGACY_LADDER].getIcon();
 						}
+						break;
+
+					case ProductIDs.PRODUCT_W2BN:
+						w = Math.max(Math.min(statstr.getWins(), 10), 0);
+						icon = icons[IconsDotBniReader.LEGACY_W2BNWIN + w].getIcon();
+						
+						r = statstr.getLadderRank();
+						if(r > 0) {
+							if(r == 1)
+								icon = icons[IconsDotBniReader.LEGACY_LADDERNUM1].getIcon();
+							else
+								icon = icons[IconsDotBniReader.LEGACY_LADDER].getIcon();
+						}
+						break;
+						
+					default:
+						if(icons != null)
+							for(int i = 0; i < icons.length; i++) {
+								if(icons[i].useFor(flags, specialIcon)) {
+									keepThisIcon = true;
+									icon = icons[i].getIcon();
+									break;
+								}
+							}
+						break;
 					}
+				}
 			}
 		}
 		
