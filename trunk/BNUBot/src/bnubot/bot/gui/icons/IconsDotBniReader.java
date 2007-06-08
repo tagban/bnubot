@@ -9,6 +9,7 @@ import javax.swing.*;
 import bnubot.core.BNetInputStream;
 import bnubot.core.ConnectionSettings;
 import bnubot.core.bnftp.BNFTPConnection;
+import bnubot.util.HexDump;
 
 
 @SuppressWarnings("serial")
@@ -20,6 +21,12 @@ public class IconsDotBniReader {
 	private static BNetIcon[] icons_WAR3 = null;
 	private static BNetIcon[] icons_W3XP = null;
 	private static BNetIcon[] legacy_icons = null;
+
+	public static final int LEGACY_STARWIN = 0;
+	public static final int LEGACY_LADDER = 11;
+	public static final int LEGACY_LADDER2 = 12;
+	public static final int LEGACY_LADDERNUM1 = 13;
+	public static final int LEGACY_W2BNWIN = 14;
 	
 	private static JFrame util = null;
 	
@@ -35,7 +42,14 @@ public class IconsDotBniReader {
 				Box b = new Box(BoxLayout.Y_AXIS);
 				for(int i = 0; i < icons.length; i++) {
 					BNetIcon bni = icons[i];
-					b.add(new JLabel(bni.icon));
+					JLabel jl = new JLabel(bni.icon);
+					String text = "";
+					if(bni.products != null)
+						text += " " + HexDump.DWordToPretty(bni.products[0]);
+					if(bni.flags != 0)
+						text += " 0x" + Integer.toHexString(bni.flags);
+					jl.setText(Integer.toString(i) + text);
+					b.add(jl);
 					b.add(Box.createVerticalStrut(1));
 				}
 				util.add(b);
