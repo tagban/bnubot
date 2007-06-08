@@ -9,6 +9,11 @@ public class StatString {
 	private String pretty = null;
 	private int product = 0;
 	private int icon = 0;
+	private int wins = 0;
+	private int level = 0;
+	private int ladderRating = 0;
+	private int ladderRank = 0;
+	private int spawn = 0;
 	
 	public StatString(String statString) {
 		this.statString = statString.split(" ");
@@ -157,10 +162,10 @@ public class StatString {
 				return;
 			}
 
-			int ladderRating = Integer.parseInt(statString[1]);
-			int ladderRank = Integer.parseInt(statString[2]);
-			int wins = Integer.parseInt(statString[3]);
-			int spawn = Integer.parseInt(statString[4]);
+			ladderRating = Integer.parseInt(statString[1]);
+			ladderRank = Integer.parseInt(statString[2]);
+			wins = Integer.parseInt(statString[3]);
+			spawn = Integer.parseInt(statString[4]);
 			int unknown5 = Integer.parseInt(statString[5]);
 			int highLadderRating = Integer.parseInt(statString[6]);
 			int unknown7 = Integer.parseInt(statString[7]);
@@ -193,7 +198,7 @@ public class StatString {
 			if(statString.length >= 3) {
 				//3RAW 1R3W 1 UNB
 				icon = HexDump.StringToDWord(statString[1]);
-				int level = Integer.parseInt(statString[2]);
+				level = Integer.parseInt(statString[2]);
 
 				if(icon != 0)
 					pretty += ", " + getIconName(product, icon) + " icon";
@@ -220,5 +225,25 @@ public class StatString {
 
 	public String toString() {
 		return pretty;
+	}
+	
+	public int getWins() {
+		return wins;
+	}
+	
+	public int getLevel() {
+		return level;
+	}
+
+	public int getLadderRank() {
+		return ladderRank;
+	}
+
+	public int getLadderRating() {
+		return ladderRating;
+	}
+
+	public int getSpawn() {
+		return spawn;
 	}
 }
