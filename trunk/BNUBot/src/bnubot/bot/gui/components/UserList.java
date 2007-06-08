@@ -8,7 +8,10 @@ import javax.swing.*;
 
 import bnubot.bot.gui.ColorScheme.ColorScheme;
 import bnubot.bot.gui.icons.BNetIcon;
+import bnubot.bot.gui.icons.IconsDotBniReader;
+import bnubot.core.Connection;
 import bnubot.core.StatString;
+import bnubot.core.bncs.ProductIDs;
 
 @SuppressWarnings("serial")
 public class UserList extends JPanel {
@@ -20,16 +23,16 @@ public class UserList extends JPanel {
 		JLabel label;
 	}
 	
-	private BNetIcon[] icons = null;
 	private Hashtable<String, UserInfo> users = null;
 	private Box b = null;
 	private ColorScheme cs = null;
+	Connection c = null;
 	
-	public UserList(BNetIcon[] icons, ColorScheme cs) {
+	public UserList(ColorScheme cs, Connection c) {
 		super(new FlowLayout(FlowLayout.LEFT));
-		this.icons = icons;
 		this.users = new Hashtable<String, UserInfo>();
 		this.cs = cs;
+		this.c = c;
 		setBackground(cs.getBackgroundColor());
 		b = new Box(BoxLayout.Y_AXIS);
 		add(b);
@@ -109,14 +112,47 @@ public class UserList extends JPanel {
 		Icon icon = null;
 		int product = ui.statstr.getProduct();
 		int specialIcon = ui.statstr.getIcon();
+		
+		BNetIcon[] icons = IconsDotBniReader.getIcons();
+		boolean keepThisIcon = false;
 		for(int i = 0; i < icons.length; i++) {
 			//Look for 
 			if(icons[i].useFor(flags, specialIcon)) {
+				keepThisIcon = true;
 				icon = icons[i].getIcon();
 				break;
 			}
 			if(icons[i].useFor(flags, product)) {
 				icon = icons[i].getIcon();
+			}
+		}
+		
+		if(!keepThisIcon) {
+			if(product == c.getProductID()) {
+				switch(product) {
+				case ProductIDs.PRODUCT_STAR:
+				case ProductIDs.PRODUCT_SEXP:
+					icons = IconsDotBniReader.getIconsSTAR();
+					break;
+				case ProductIDs.PRODUCT_WAR3:
+					icons = IconsDotBniReader.getIconsWAR3();
+					break;
+				case ProductIDs.PRODUCT_W3XP:
+					icons = IconsDotBniReader.getIconsW3XP();
+					break;
+				default:
+					icons = null;
+					break;
+				}
+
+				if(icons != null)
+					for(int i = 0; i < icons.length; i++) {
+						if(icons[i].useFor(flags, specialIcon)) {
+							keepThisIcon = true;
+							icon = icons[i].getIcon();
+							break;
+						}
+					}
 			}
 		}
 		

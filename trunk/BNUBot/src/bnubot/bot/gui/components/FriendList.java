@@ -11,6 +11,7 @@ import javax.swing.JPanel;
 
 import bnubot.bot.gui.ColorScheme.ColorScheme;
 import bnubot.bot.gui.icons.BNetIcon;
+import bnubot.bot.gui.icons.IconsDotBniReader;
 import bnubot.core.friend.FriendEntry;
 
 @SuppressWarnings("serial")
@@ -21,14 +22,12 @@ public class FriendList extends JPanel {
 		JLabel label;
 	}
 	
-	private BNetIcon[] icons = null;
 	private Hashtable<String, FriendInfo> friends = null;
 	private Box b = null;
 	private ColorScheme cs = null;
 	
-	public FriendList(BNetIcon[] icons, ColorScheme cs) {
+	public FriendList(ColorScheme cs) {
 		super(new FlowLayout(FlowLayout.LEFT));
-		this.icons = icons;
 		this.friends = new Hashtable<String, FriendInfo>();
 		this.cs = cs;
 		setBackground(cs.getBackgroundColor());
@@ -49,6 +48,7 @@ public class FriendList extends JPanel {
 	
 	public void showFriends(FriendEntry[] entries) {
 		clear();
+		BNetIcon icons[] = IconsDotBniReader.getIcons();
 		
 		for(int i = 0; i < entries.length; i++) {
 			FriendEntry entry = entries[i];

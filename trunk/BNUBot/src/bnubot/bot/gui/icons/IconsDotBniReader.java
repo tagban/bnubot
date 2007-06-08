@@ -7,17 +7,75 @@ import java.io.*;
 import javax.swing.*;
 
 import bnubot.core.BNetInputStream;
+import bnubot.core.ConnectionSettings;
+import bnubot.core.bnftp.BNFTPConnection;
 
 
 @SuppressWarnings("serial")
 public class IconsDotBniReader {
+	private static boolean initialized = false;
+	private static BNetIcon[] icons = null;
+	private static BNetIcon[] icons_STAR = null;
+	private static BNetIcon[] icons_WAR3 = null;
+	private static BNetIcon[] icons_W3XP = null;
+	private static BNetIcon[] legacy_icons = null;
+	
+	private static JFrame util = null;
+	
+	public static void initialize(ConnectionSettings cs) {
+		if(initialized)
+			return;
+		
+		File f;
+		
+		f = new File("legacy_icons.bni");
+		if(f.exists())
+			legacy_icons = readIconsDotBni(f);
+		
+		f = new File("war3_icons.bni");
+		if(f.exists())
+			icons_WAR3 = readIconsDotBni(f);
+		
+		f = new File("w3xp_icons.bni");
+		if(f.exists())
+			icons_W3XP = readIconsDotBni(f);
+		
+		f = BNFTPConnection.downloadFile(cs, "icons_STAR.bni");
+		if(f.exists())
+			icons_STAR = readIconsDotBni(f);
+		
+		f = BNFTPConnection.downloadFile(cs, "Icons.bni");
+		if(f.exists())
+			icons = readIconsDotBni(f);
+	}
+	
+	public static BNetIcon[] getIcons() {
+		return icons;
+	}
+	
+	public static BNetIcon[] getIconsSTAR() {
+		return icons_STAR;
+	}
+	
+	public static BNetIcon[] getIconsWAR3() {
+		return icons_WAR3;
+	}
+	
+	public static BNetIcon[] getIconsW3XP() {
+		return icons_W3XP;
+	}
+	
+	public static BNetIcon[] getLegacyIcons() {
+		return legacy_icons;
+	}
+	
 	private static int getRealPixelPosition(int i, int height, int width) {
 		int x = i % width;
 		int y = (i - x) / width;
 		return ((height - y - 1) * width) + x;
 	}
 
-	public static BNetIcon[] readIconsDotBni(File f) {
+	private static BNetIcon[] readIconsDotBni(File f) {
 		try {
 			System.out.println("Reading " + f.getName());
 			
@@ -34,7 +92,17 @@ public class IconsDotBniReader {
 			//System.out.println("Reading " + numIcons + " icons in format " + bniVersion + " from offset " + dataOffset);
 
 			//Image headers
+			/*if(icons == null)
+				icons = new BNetIcon[numIcons];
+			else {
+				BNetIcon[] newIcons = new BNetIcon[numIcons + icons.length];
+				for(int i = numIcons; i < numIcons + icons.length; i++) {
+					newIcons[i] = icons[i-numIcons];
+				}
+				icons = newIcons;
+			}*/
 			BNetIcon[] icons = new BNetIcon[numIcons];
+			
 			for(int i = 0; i < numIcons; i++) {
 				BNetIcon icon = new BNetIcon();
 				icon.flags = is.readDWord();
@@ -110,18 +178,26 @@ public class IconsDotBniReader {
 			
 			//Split up the big image in to individual images
 			currentPixel = 0;
-			JFrame util = new JFrame(f.getName());
-			util.setLayout(new FlowLayout(FlowLayout.CENTER));
+			
+			if(util == null) {
+				util = new JFrame();
+			//	util.setLayout(new FlowLayout(FlowLayout.CENTER));
+			}
+			
+			//Box b = new Box(BoxLayout.Y_AXIS);
+			//b.add(new JLabel(f.getName()));
 			for(int i = 0; i < numIcons; i++) {
 				BNetIcon bni = icons[i];
 				bni.icon = new ImageIcon(
 						util.createImage(
 								new MemoryImageSource(bni.xSize, bni.ySize, pixelData, currentPixel, bni.xSize)));
 				currentPixel += bni.xSize * bni.ySize;
-				util.add(new JLabel(bni.icon));
+			//	b.add(new JLabel(bni.icon));
+			//	b.add(Box.createVerticalStrut(1));
 			}
-			util.pack();
-			util.setVisible(true);
+			//util.add(b);
+			//util.pack();
+			//util.setVisible(true);
 			
 			return icons;
 		} catch (Exception e) {

@@ -169,12 +169,12 @@ public class GuiEventHandler implements EventHandler {
 		channelTextArea.setBackground(cs.getBackgroundColor());
 		channelTextArea.setForeground(Color.LIGHT_GRAY);
 		
-		BNetIcon[] icons = IconsDotBniReader.readIconsDotBni(c.downloadFile("Icons.bni"));
+		IconsDotBniReader.initialize(c.getConnectionSettings());
 		
 		//The userlist
-		userList = new UserList(icons, cs);
+		userList = new UserList(cs, c);
 		//Friends list
-		friendList = new FriendList(icons, cs);
+		friendList = new FriendList(cs);
 		
 		
 		JTabbedPane allLists = new JTabbedPane();
