@@ -26,6 +26,7 @@ import Hashing.HashException;
 import Hashing.HashMain;
 import Hashing.SRP;
 
+@SuppressWarnings("unused")
 public class BNLSParse
 {
 
