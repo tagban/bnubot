@@ -58,7 +58,7 @@ public class Controller {
 
 		Out.println("Control","Restarting JBLS Server Thread");
 		if(jServer!=null){
-            jServer.destroyAllConnections();
+            BNLSServer.destroyAllConnections();
 			jServer.closeSocket();
 	    }
 		jServer=null;
@@ -79,7 +79,7 @@ public class Controller {
 		Out.println("Control","Stoping JBLS Server Thread");
 
 		if(jServer!=null){
-            jServer.destroyAllConnections();
+            BNLSServer.destroyAllConnections();
 			jServer.closeSocket();
 		}
 		jServer=null;
@@ -120,13 +120,13 @@ public class Controller {
 		if(aServer!=null)//shut down sockets to exit the blocking threads
 			aServer.closeSocket();
 		if(jServer!=null){
-            jServer.destroyAllConnections();
+            BNLSServer.destroyAllConnections();
 			jServer.closeSocket();
 		}
 		aServer=null;
 		jServer=null;
 
-		jServer.destroyAllConnections();
+		BNLSServer.destroyAllConnections();
 
 		//Wait a second
 		try{
