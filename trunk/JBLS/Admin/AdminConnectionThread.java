@@ -77,9 +77,9 @@ public class AdminConnectionThread extends Thread{
 	    Out.debug("AdminThread(ID: "+threadID+")","Streams Created");
 	    out.println("Welcome to Hdx's JBLS Admin server.");
 	    out.println("Username:");
-	    parse.bAuthed=false;
-	    parse.sName=null;
-	    parse.sPass=null;
+	    AdminParse.bAuthed=false;
+	    AdminParse.sName=null;
+	    AdminParse.sPass=null;
 	    
 	    while (parsing) {//as long as we are parsing, loop through inputs
 	    	try{
