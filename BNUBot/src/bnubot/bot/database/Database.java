@@ -59,7 +59,7 @@ public class Database implements Serializable {
 		session.close();
 	}
 
-	public Session getSession() {
+	public Session openSession() {
 		return sessionFactory.openSession();
 	}
 	
@@ -101,7 +101,7 @@ public class Database implements Serializable {
 		//Create them in the database.
 		u = new User(user.getFullAccountName(), null);
 		session.save(u);
-		System.out.println("Created User " + u.toString());
+		System.out.println("Created " + u.toString());
 		
 		tx.commit();
 		session.close();
@@ -200,11 +200,11 @@ public class Database implements Serializable {
 				"created INTEGER NOT NULL DEFAULT CURRENT_TIMESTAMP " +
 			");");
 		
-		PreparedStatement ps = conn.prepareStatement("INSERT INTO account (access, name) VALUES (?, ?);");
+		/*PreparedStatement ps = conn.prepareStatement("INSERT INTO account (access, name) VALUES (?, ?);");
 		ps.setInt(1, 100);
 		ps.setString(2, "Camel");
 		ps.execute();
-		ps.close();
+		ps.close();*/
 		
 		stmt.execute(
 			"CREATE TABLE user ( " +
@@ -215,10 +215,10 @@ public class Database implements Serializable {
 				"lastSeen INTEGER NOT NULL DEFAULT CURRENT_TIMESTAMP " +
 			");");
 		
-		ps = conn.prepareStatement("INSERT INTO user (login, account) VALUES (?, ?);");
+		/*ps = conn.prepareStatement("INSERT INTO user (login, account) VALUES (?, ?);");
 		ps.setString(1, "bnu-camel@useast");
 		ps.setString(2, "Camel");
-		ps.execute();
+		ps.execute();*/
 		
 		stmt.execute(
 			"CREATE TABLE rank ( " +
@@ -226,11 +226,11 @@ public class Database implements Serializable {
 				"name TEXT UNIQUE NOT NULL " +
 			");");
 		
-		ps = conn.prepareStatement("INSERT INTO rank (id, name) VALUES (?, ?);");
+		/*ps = conn.prepareStatement("INSERT INTO rank (id, name) VALUES (?, ?);");
 		ps.setInt(1, 100);
 		ps.setString(2, "Master");
 		ps.execute();
-		ps.close();
+		ps.close();*/
 		
 		stmt.close();
 	}
