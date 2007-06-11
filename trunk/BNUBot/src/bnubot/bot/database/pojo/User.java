@@ -30,7 +30,7 @@ public class User implements Serializable {
 	}
 
 	public String toString() {
-		return "Users[id=" + id + ",login=\"" + login + "\",created=\"" + created + "\",lastSeen=\"" + lastSeen + "\"]"; 
+		return "User[id=" + id + ",login=\"" + login + "\",created=\"" + created + "\",lastSeen=\"" + lastSeen + "\"]"; 
 	}
 
 	public Account getAccount() {
