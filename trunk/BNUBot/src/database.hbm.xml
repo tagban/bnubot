@@ -48,7 +48,6 @@
 		<many-to-one
 			column="account"
 			name="account"
-			not-null="true"
 			class="bnubot.bot.database.pojo.Account"
 			/>
 		<property column="created" name="created" not-null="true" type="java.lang.String"/>

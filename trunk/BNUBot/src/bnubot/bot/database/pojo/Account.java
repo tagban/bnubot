@@ -1,7 +1,11 @@
 package bnubot.bot.database.pojo;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
+
+import bnubot.core.BNetUser;
 
 public class Account {
 	private Long id;
@@ -16,6 +20,7 @@ public class Account {
 		this.access = access;
 		this.name = name;
 		this.created = new Date().toString();
+		this.users = new HashSet<User>();
 	}
 	
 	public Account() {
@@ -30,7 +35,7 @@ public class Account {
 		this.access = access;
 	}
 	
-	private Root getRoot() {
+	public Root getRoot() {
 		return root;
 	}
 	
@@ -79,5 +84,14 @@ public class Account {
 		}
 		
 		return out;
+	}
+	
+	public boolean belongsTo(BNetUser u) {
+		Iterator<User> it = users.iterator();
+		while(it.hasNext()) {
+			if(u.equals(it.next().getLogin()))
+				return true;
+		}
+		return false;
 	}
 }
