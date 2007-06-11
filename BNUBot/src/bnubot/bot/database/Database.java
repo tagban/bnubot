@@ -7,9 +7,9 @@ import java.util.List;
 
 import org.hibernate.*;
 import org.hibernate.cfg.*;
-import org.hibernate.dialect.MySQLDialect;
 
 import bnubot.bot.database.pojo.*;
+import bnubot.core.BNetUser;
 
 public class Database implements Serializable {
 	private static final long serialVersionUID = 9064719758285921969L;
@@ -61,6 +61,89 @@ public class Database implements Serializable {
 
 	public Session getSession() {
 		return sessionFactory.openSession();
+	}
+	
+	public Account getAccount(BNetUser user) {
+		Iterator<Account> it = root.getAccounts().iterator();
+		while(it.hasNext()) {
+			Account a = it.next();
+			if(a.belongsTo(user))
+				return a;
+		}
+		return null;
+	}
+	
+	public User getUser(BNetUser user) {
+		Session session = sessionFactory.openSession();
+		
+		Iterator<User> users = session.createQuery("SELECT u FROM " + User.class.getName() + " AS u").list().iterator();
+		User u = null;
+		//Search for the user
+		while(users.hasNext()) {
+			u = users.next();
+			if(user.equals(u.getLogin()))
+				break;	// Found them!
+			u = null;
+		}
+		
+		session.close();
+		return u;
+	}
+	
+	public User getCreateUser(BNetUser user) {
+		User u = getUser(user);
+		if(u != null)
+			return u;
+
+		Session session = sessionFactory.openSession();
+		Transaction tx = session.beginTransaction();
+		
+		//Create them in the database.
+		u = new User(user.getFullAccountName(), null);
+		session.save(u);
+		System.out.println("Created User " + u.toString());
+		
+		tx.commit();
+		session.close();
+		
+		return u;
+	}
+	
+	public Account getAccount(String account) {
+		Session session = sessionFactory.openSession();
+		
+		Iterator<Account> accounts = session.createQuery("SELECT a FROM " + Account.class.getName() + " AS a").list().iterator();
+		Account a = null;
+		//Search for the user
+		while(accounts.hasNext()) {
+			a = accounts.next();
+			if(account.compareToIgnoreCase(a.getName()) == 0)
+				break;	// Found them!
+			a = null;
+		}
+		
+		session.close();
+		return a;
+	}
+	
+	public Account getCreateAccount(String account, Long access) {
+		Account a = getAccount(account);
+		if(a != null)
+			return a;
+
+		Session session = sessionFactory.openSession();
+		Transaction tx = session.beginTransaction();
+		
+		//Create them in the database.
+		a = new Account(access, account);
+		a.setRoot(root);
+		session.save(a);
+		System.out.println("Created Account " + a.toString());
+		
+		tx.commit();
+		session.close();
+		
+		return a;
 	}
 	
 	/**

@@ -12,12 +12,12 @@ public class User implements Serializable {
 	private String lastSeen;
 
 	/** full constructor */
-	public User(String login, Account account, String created, String lastSeen) {
+	public User(String login, Account account) {
 		this.id = null;
-		this.login = login;
+		this.login = login.toLowerCase();
 		this.account = account;
-		this.created = created;
-		this.lastSeen = lastSeen;
+		this.created = new Date().toString();
+		this.lastSeen = new Date().toString();
 	}
 
 	/** default constructor */
@@ -25,10 +25,10 @@ public class User implements Serializable {
 		id = null;
 		login = null;
 		account = null;
-		created = null; //new Date();
-		lastSeen = null; //new Date();
+		created = new Date().toString();
+		lastSeen = new Date().toString();
 	}
-	
+
 	public String toString() {
 		return "Users[id=" + id + ",login=\"" + login + "\",created=\"" + created + "\",lastSeen=\"" + lastSeen + "\"]"; 
 	}
