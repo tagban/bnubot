@@ -155,6 +155,13 @@ public abstract class Connection extends Thread implements EventHandler {
 				}
 				text = first + text + last;
 			}
+			
+			i = text.indexOf("%trigger%");
+			if(i != -1) {
+				String first = text.substring(0, i);
+				String last = text.substring(i + 9);
+				text = first + cs.trigger + last;
+			}
 		}
 		return text;
 	}
@@ -290,6 +297,11 @@ public abstract class Connection extends Thread implements EventHandler {
 	}
 
 	public synchronized void recieveInfo(String text) {
+		if(text == null)
+			return;
+		if(text.length() == 0)
+			return;
+		
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().recieveInfo(text);
@@ -300,6 +312,11 @@ public abstract class Connection extends Thread implements EventHandler {
 	}
 
 	public synchronized void recieveError(String text) {
+		if(text == null)
+			return;
+		if(text.length() == 0)
+			return;
+		
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().recieveError(text);
