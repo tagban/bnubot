@@ -7,8 +7,9 @@ import bnubot.core.bncs.ProductIDs;
 import bnubot.core.queue.ChatQueue;
 
 public class ChatConnection extends Connection {
-	BNetInputStream is;
-	BNetOutputStream os;
+	protected Socket s;
+	protected BNetInputStream is;
+	protected BNetOutputStream os;
 	
 	public ChatConnection(ConnectionSettings cs, ChatQueue cq) {
 		super(cs, cq);
@@ -16,7 +17,7 @@ public class ChatConnection extends Connection {
 	
 	public void run() {
 		try {
-			Socket s = new Socket(cs.bncsServer, cs.port);
+			s = new Socket(cs.bncsServer, cs.port);
 			is = new BNetInputStream(s.getInputStream());
 			os = new BNetOutputStream(s.getOutputStream());
 			
@@ -71,26 +72,33 @@ public class ChatConnection extends Connection {
 
 	@Override
 	public void sendClanMOTD(Object cookie) throws Exception {
-		// TODO Auto-generated method stub
-
+		throw new UnsupportedFeatureException("Chat clients can not use clans");
 	}
 
 	@Override
 	public void sendClanRankChange(String string, int newRank) throws Exception {
-		// TODO Auto-generated method stub
-
+		throw new UnsupportedFeatureException("Chat clients can not use clans");
 	}
 
 	@Override
 	public void sendClanSetMOTD(String text) throws Exception {
-		// TODO Auto-generated method stub
-
+		throw new UnsupportedFeatureException("Chat clients can not use clans");
 	}
 
 	@Override
 	public int getProductID() {
 		// TODO Auto-generated method stub
 		return ProductIDs.PRODUCT_CHAT;
+	}
+
+	@Override
+	public void sendLogonRealmEx(String realmTitle) throws Exception {
+		throw new UnsupportedFeatureException("Chat clients can not use realms");
+	}
+
+	@Override
+	public void sendQueryRealms() throws Exception {
+		throw new UnsupportedFeatureException("Chat clients can not use realms");
 	}
 
 }
