@@ -2,11 +2,7 @@ package bnubot.core.mcp;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.net.Inet4Address;
-import java.net.InetAddress;
 import java.net.Socket;
-import java.security.InvalidParameterException;
-import java.util.Date;
 
 import bnubot.core.BNetInputStream;
 import bnubot.core.RealmConnection;

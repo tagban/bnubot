@@ -847,7 +847,7 @@ public class BNCSConnection extends Connection {
 					if(pr.packetLength < 12)
 						throw new Exception("pr.packetLength < 12");
 					else if(pr.packetLength == 12) {
-						int cookie = is.readDWord();
+						/*int cookie =*/ is.readDWord();
 						int status = is.readDWord();
 						switch(status) {
 						case 0x80000001:
