@@ -366,4 +366,14 @@ public class CommandEventHandler implements EventHandler {
 		// TODO Auto-generated method stub
 		
 	}
+
+	public void queryRealms2(String[] realms) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void logonRealmEx(int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName) {
+		// TODO Auto-generated method stub
+		
+	}
 }

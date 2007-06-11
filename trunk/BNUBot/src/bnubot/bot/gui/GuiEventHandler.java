@@ -26,6 +26,7 @@ public class GuiEventHandler implements EventHandler {
 	private JTextArea channelTextArea = null;
 	private UserList userList = null;
 	private FriendList friendList = null;
+	private RealmWindow w = null;
 	
 	public void initialize(Connection c) {
 		ColorScheme cs = ColorScheme.createColorScheme(c.getConnectionSettings().colorScheme);
@@ -84,6 +85,22 @@ public class GuiEventHandler implements EventHandler {
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						System.exit(0);
+					} });
+				menu.add(menuItem);
+			}
+			menuBar.add(menu);	
+			
+			menu = new JMenu("Realm");
+			{
+				menuItem = new JMenuItem("Show Realms Window");
+				menuItem.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent evt) {
+						try {
+							c.sendQueryRealms();
+						} catch (Exception e) {
+							e.printStackTrace();
+							System.exit(1);
+						}
 					} });
 				menu.add(menuItem);
 			}
@@ -292,4 +309,17 @@ public class GuiEventHandler implements EventHandler {
 			motd.setVisible(true);
 		}
 	}
+
+	public void queryRealms2(String[] realms) {
+		if(w == null)
+			w = new RealmWindow(realms);
+		w.setVisible(true);
+		
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				c.addEventHandler(w);
+			} });
+	}
+
+	public void logonRealmEx(int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName) {}
 }

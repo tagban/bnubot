@@ -34,6 +34,8 @@ public abstract class Connection extends Thread implements EventHandler {
 	}
 
 	public abstract void joinChannel(String channel) throws Exception;
+	public abstract void sendQueryRealms() throws Exception;
+	public abstract void sendLogonRealmEx(String realmTitle) throws Exception;
 	public abstract void sendClanRankChange(String string, int newRank) throws Exception;
 	public abstract void sendClanMOTD(Object cookie) throws Exception;
 	public abstract void sendClanSetMOTD(String text) throws Exception;
@@ -221,8 +223,7 @@ public abstract class Connection extends Thread implements EventHandler {
 	 */
 
 	public void initialize(Connection c) {
-		new Exception("Invalid use of EventHandler.initialize()").printStackTrace();
-		System.exit(1);
+		new UnsupportedOperationException();
 	}
 	
 	public synchronized void bnetConnected() {
@@ -326,6 +327,20 @@ public abstract class Connection extends Thread implements EventHandler {
 		it = eventHandlers2.iterator();
 		while(it.hasNext())
 			it.next().whisperRecieved(user, flags, ping, text);
+	}
+	
+	// Realms
+	
+	public synchronized void queryRealms2(String[] realms) {
+		Iterator<EventHandler> it = eventHandlers.iterator();
+		while(it.hasNext())
+			it.next().queryRealms2(realms);
+	}
+	
+	public synchronized void logonRealmEx(int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName) {
+		Iterator<EventHandler> it = eventHandlers.iterator();
+		while(it.hasNext())
+			it.next().logonRealmEx(MCPChunk1, ip, port, MCPChunk2, uniqueName);
 	}
 	
 	// Friends

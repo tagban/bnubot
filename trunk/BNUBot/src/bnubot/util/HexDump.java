@@ -1,6 +1,19 @@
 package bnubot.util;
 
 public class HexDump {
+	public static String DWordToIP(int dword) {
+		int bytes[] = new int[4];
+		bytes[0] = 0xFF & ((dword & 0x000000FF) >> 0);
+		bytes[1] = 0xFF & ((dword & 0x0000FF00) >> 8);
+		bytes[2] = 0xFF & ((dword & 0x00FF0000) >> 16);
+		bytes[3] = 0xFF & ((dword & 0xFF000000) >> 24);
+		
+		return	Integer.toString(bytes[0]) + "." +
+				Integer.toString(bytes[1]) + "." +
+				Integer.toString(bytes[2]) + "." +
+				Integer.toString(bytes[3]);
+	}
+	
 	public static String DWordToPretty(int dword) {
 		byte bytes[] = new byte[4];
 		bytes[3] = (byte)((dword & 0x000000FF) >> 0);
