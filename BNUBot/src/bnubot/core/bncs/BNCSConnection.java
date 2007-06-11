@@ -14,6 +14,7 @@ import bnubot.core.Connection;
 import bnubot.core.ConnectionSettings;
 import bnubot.core.CookieUtility;
 import bnubot.core.StatString;
+import bnubot.core.UnsupportedFeatureException;
 import bnubot.core.clan.ClanMember;
 import bnubot.core.clan.ClanRankIDs;
 import bnubot.core.clan.ClanStatusIDs;
@@ -808,6 +809,86 @@ public class BNCSConnection extends Connection {
 					break;
 				}
 				
+				/*	.----------.
+				 *	|  Realms  |
+				 *	'----------'
+				 */
+				case BNCSCommandIDs.SID_QUERYREALMS2: {
+					/* (DWORD)		 Unknown0
+					 * (DWORD)		 Number of Realms
+					 * 
+					 * For each realm:
+					 * (DWORD)		 UnknownR0
+					 * (STRING) 	 Realm Name
+					 * (STRING) 	 Realm Description
+					 */
+					is.readDWord();
+					int numRealms = is.readDWord();
+					String realms[] = new String[numRealms];
+					for(int i = 0; i < numRealms; i++) {
+						is.readDWord();
+						realms[i] = is.readNTString();
+						is.readNTString();
+					}
+					queryRealms2(realms);
+					break;
+				}
+				
+				case  BNCSCommandIDs.SID_LOGONREALMEX: {
+					/* (DWORD)		 Cookie
+					 * (DWORD)		 Status
+					 * (DWORD[2])	 MCP Chunk 1
+					 * (DWORD)		 IP
+					 * (DWORD)		 Port
+					 * (DWORD[12])	 MCP Chunk 2
+					 * (STRING) 	 BNCS unique name
+					 * (WORD)		 Unknown
+					 */
+					if(pr.packetLength < 12)
+						throw new Exception("pr.packetLength < 12");
+					else if(pr.packetLength == 12) {
+						int cookie = is.readDWord();
+						int status = is.readDWord();
+						switch(status) {
+						case 0x80000001:
+							recieveError("Realm is unavailable.");
+							break;
+						case 0x80000002:
+							recieveError("Realm logon failed");
+							break;
+						default:
+							throw new Exception("Unknown status code 0x" + Integer.toHexString(status));
+						}
+					} else {
+						int MCPChunk1[] = new int[4];
+						MCPChunk1[0] = is.readDWord();
+						MCPChunk1[1] = is.readDWord();
+						MCPChunk1[2] = is.readDWord();
+						MCPChunk1[3] = is.readDWord();
+						int ip = is.readDWord();
+						int port = is.readDWord();
+						port = ((port & 0xFF00) >> 8) | ((port & 0x00FF) << 8);
+						int MCPChunk2[] = new int[12];
+						MCPChunk2[0] = is.readDWord();
+						MCPChunk2[1] = is.readDWord();
+						MCPChunk2[2] = is.readDWord();
+						MCPChunk2[3] = is.readDWord();
+						MCPChunk2[4] = is.readDWord();
+						MCPChunk2[5] = is.readDWord();
+						MCPChunk2[6] = is.readDWord();
+						MCPChunk2[7] = is.readDWord();
+						MCPChunk2[8] = is.readDWord();
+						MCPChunk2[9] = is.readDWord();
+						MCPChunk2[10] = is.readDWord();
+						MCPChunk2[11] = is.readDWord();
+						String uniqueName = is.readNTString();
+						/*int unknown =*/ is.readWord();
+						logonRealmEx(MCPChunk1, ip, port, MCPChunk2, uniqueName);
+					}
+					
+					break;
+				}
+				
 				/*	.-----------.
 				 *	|  Friends  |
 				 *	'-----------'
@@ -1000,10 +1081,10 @@ public class BNCSConnection extends Connection {
 					recieveError("Unknown SID 0x" + Integer.toHexString(pr.packetId) + "\n" + bnubot.util.HexDump.hexDump(pr.data));
 					break;
 				}
+			} else {
+				sleep(10);
+				yield();
 			}
-			
-			sleep(10);
-			yield();
 		}
 	}
 	
@@ -1090,6 +1171,41 @@ public class BNCSConnection extends Connection {
 		BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_CLANSETMOTD);
 		p.writeDWord(0);	//Cookie
 		p.writeNTString(text);
+		p.SendPacket(dos, cs.packetLog);
+	}
+	
+	public void sendQueryRealms() throws Exception {
+		/* (DWORD)		 Unused (0)
+		 * (DWORD)		 Unused (0)
+		 * (STRING) 	 Unknown (empty)
+		 */
+		BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_QUERYREALMS2);
+		p.SendPacket(dos, cs.packetLog);
+	}
+	
+	public void sendLogonRealmEx(String realmTitle) throws Exception {
+		switch(productID) {
+		case ProductIDs.PRODUCT_D2DV:
+		case ProductIDs.PRODUCT_D2XP:
+			break;
+		default:
+			throw new UnsupportedFeatureException("Only D2DV/D2XP support realms");
+		}
+		
+		/* (DWORD)		 Client key
+		 * (DWORD[5])	 Hashed realm password
+		 * (STRING) 	 Realm title
+		 */
+		int[] hash = DoubleHash.doubleHash("password", clientToken, serverToken);
+		
+		BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_LOGONREALMEX);
+		p.writeDWord(clientToken);
+		p.writeDWord(hash[0]);
+		p.writeDWord(hash[1]);
+		p.writeDWord(hash[2]);
+		p.writeDWord(hash[3]);
+		p.writeDWord(hash[4]);
+		p.writeNTString(realmTitle);
 		p.SendPacket(dos, cs.packetLog);
 	}
 	

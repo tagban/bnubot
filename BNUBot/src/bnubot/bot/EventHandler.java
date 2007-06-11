@@ -26,6 +26,10 @@ public interface EventHandler {
 	public void whisperSent(BNetUser user, int flags, int ping, String text);
 	public void whisperRecieved(BNetUser user, int flags, int ping, String text);
 	
+	//Realms
+	public void queryRealms2(String[] realms);
+	public void logonRealmEx(int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName);
+	
 	//Friends
 	public void friendsList(FriendEntry[] entries);
 	public void friendsUpdate(byte entry, byte location, byte status, int product, String locationName);

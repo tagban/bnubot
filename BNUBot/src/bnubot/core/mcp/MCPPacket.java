@@ -21,8 +21,8 @@ public class MCPPacket extends BNetOutputStream {
 		BNetOutputStream sckout = new BNetOutputStream(baos);
 		
 		try {
-			sckout.writeByte(packetId);
 			sckout.writeWord(data.length + 3);
+			sckout.writeByte(packetId);
 			sckout.write(data);
 		} catch(IOException e) {
 			e.printStackTrace();
