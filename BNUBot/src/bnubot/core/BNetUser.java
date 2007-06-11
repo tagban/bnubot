@@ -97,6 +97,12 @@ public class BNetUser {
 			BNetUser u = (BNetUser)o;
 			if(u.getFullLogonName().compareToIgnoreCase(fullLogonName) == 0)
 				return true;
+		} else if(o instanceof String) {
+			String s = (String)o;
+			if(s.compareToIgnoreCase(fullLogonName) == 0)
+				return true;
+		} else {
+			throw new IllegalArgumentException("Unknown type " + o.getClass().getName());
 		}
 		
 		return false;

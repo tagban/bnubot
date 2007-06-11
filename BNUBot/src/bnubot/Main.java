@@ -105,8 +105,7 @@ public class Main {
 		}
 		
 		//Bot
-		Database d = Database.load(new File("database.bin"));
-		d.save();
+		Database d = new Database(new File("database.db"));
 		EventHandler cmd = new CommandEventHandler(d);
 		primary.addEventHandler(cmd);
 		
