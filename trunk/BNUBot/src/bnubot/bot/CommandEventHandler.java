@@ -7,6 +7,7 @@ import javax.resource.spi.IllegalStateException;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.exception.GenericJDBCException;
 
 import bnubot.bot.database.*;
 import bnubot.bot.database.pojo.*;
@@ -360,7 +361,7 @@ public class CommandEventHandler implements EventHandler {
 	public void channelJoin(BNetUser user, int flags, int ping, StatString statstr) {
 		try {
 			d.getCreateUser(user);
-		} catch(SQLException e) {
+		} catch(GenericJDBCException e) {
 			//TODO: Handle this error
 		}
 	}
@@ -368,7 +369,7 @@ public class CommandEventHandler implements EventHandler {
 	public void channelLeave(BNetUser user, int flags, int ping, StatString statstr) {
 		try {
 			d.getCreateUser(user);
-		} catch(SQLException e) {
+		} catch(GenericJDBCException e) {
 			//TODO: Handle this error
 		}
 	}
@@ -380,7 +381,7 @@ public class CommandEventHandler implements EventHandler {
 			u.setLastSeen(new Date().toString());
 			s.save(u);
 			s.close();
-		} catch(SQLException e) {
+		} catch(GenericJDBCException e) {
 			//TODO: Handle this error
 		}
 	}

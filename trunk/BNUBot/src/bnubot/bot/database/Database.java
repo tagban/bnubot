@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.hibernate.*;
 import org.hibernate.cfg.*;
+import org.hibernate.exception.GenericJDBCException;
 
 import bnubot.bot.database.pojo.*;
 import bnubot.core.BNetUser;
@@ -90,7 +91,7 @@ public class Database implements Serializable {
 		return u;
 	}
 	
-	public User getCreateUser(BNetUser user) throws SQLException {
+	public User getCreateUser(BNetUser user) throws GenericJDBCException {
 		User u = getUser(user);
 		if(u != null)
 			return u;
