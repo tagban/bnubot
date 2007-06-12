@@ -1,5 +1,6 @@
 package bnubot.bot;
 
+import java.sql.SQLException;
 import java.util.*;
 
 import javax.resource.spi.IllegalStateException;
@@ -357,19 +358,31 @@ public class CommandEventHandler implements EventHandler {
 	}
 
 	public void channelJoin(BNetUser user, int flags, int ping, StatString statstr) {
-		d.getCreateUser(user);
+		try {
+			d.getCreateUser(user);
+		} catch(SQLException e) {
+			//TODO: Handle this error
+		}
 	}
 	
 	public void channelLeave(BNetUser user, int flags, int ping, StatString statstr) {
-		d.getCreateUser(user);
+		try {
+			d.getCreateUser(user);
+		} catch(SQLException e) {
+			//TODO: Handle this error
+		}
 	}
 	
 	public void channelUser(BNetUser user, int flags, int ping, StatString statstr) {
-		User u = d.getCreateUser(user);
-		Session s = d.openSession();
-		u.setLastSeen(new Date().toString());
-		s.save(u);
-		s.close();
+		try {
+			User u = d.getCreateUser(user);
+			Session s = d.openSession();
+			u.setLastSeen(new Date().toString());
+			s.save(u);
+			s.close();
+		} catch(SQLException e) {
+			//TODO: Handle this error
+		}
 	}
 	
 	public void joinedChannel(String channel) {}

@@ -90,7 +90,7 @@ public class Database implements Serializable {
 		return u;
 	}
 	
-	public User getCreateUser(BNetUser user) {
+	public User getCreateUser(BNetUser user) throws SQLException {
 		User u = getUser(user);
 		if(u != null)
 			return u;
