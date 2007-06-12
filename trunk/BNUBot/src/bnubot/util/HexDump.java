@@ -20,7 +20,7 @@ public class HexDump {
 		bytes[2] = (byte)((dword & 0x0000FF00) >> 8);
 		bytes[1] = (byte)((dword & 0x00FF0000) >> 16);
 		bytes[0] = (byte)((dword & 0xFF000000) >> 24);
-		return new String(bytes);
+		return new String(bytes).replaceAll("\0", "");
 	}
 	
 	public static int PrettyToDWord(String pretty) {
