@@ -732,6 +732,15 @@ public class BNCSConnection extends Connection {
 					case BNCSChatEventIDs.EID_EMOTE:
 					case BNCSChatEventIDs.EID_WHISPERSENT:
 					case BNCSChatEventIDs.EID_WHISPER:
+						switch(productID) {
+						case ProductIDs.PRODUCT_D2DV:
+						case ProductIDs.PRODUCT_D2XP:
+							int asterisk = username.indexOf('*');
+							if(asterisk >= 0)
+								username = username.substring(asterisk+1);
+							break;
+						}
+						
 						user = new BNetUser(username, cs.myRealm);
 						break;
 					}
@@ -1130,6 +1139,21 @@ public class BNCSConnection extends Connection {
 	
 	public void sendChatNow(String text) {
 		super.sendChatNow(text);
+		
+
+		switch(productID) {
+		case ProductIDs.PRODUCT_D2DV:
+		case ProductIDs.PRODUCT_D2XP:
+			if(text.length() > 4) {
+				if(text.substring(0, 3).equals("/w ")
+				|| text.substring(0, 3).equals("/m ")) {
+					if(text.charAt(3) != '*') {
+						text = text.substring(0, 3) + '*' + text.substring(3);
+					}
+				}
+			}
+			break;
+		}
 		
 		//Write the packet
 		try {
