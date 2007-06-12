@@ -91,17 +91,13 @@ public class TextWindow2 extends JScrollPane {
 		return color.substring(color.length() - 6);
 	}
 	
-	public void makeFont(Color c, String width) {
-		//html += "<font color=\"#" + makeColor(c) + "\">";
-		html += "<td style=\"color: #" + makeColor(c) + "\" width=\"" + width + "\">";
+	public void makeFont(Color c) {
+		html += "<font color=\"#" + makeColor(c) + "\">";
 	}
 	
 	public void appendDate() {
-		//html += "<div class=\"timestamp\">";
-		html += "<table border=\"0\" width=\"100%\">";
-		html += "<tr><td class=\"timestamp\">";
+		html += "<div class=\"timestamp\">";
 		html += String.format("[%1$tH:%1$tM:%1$tS] ", new GregorianCalendar());
-		html += "</td>";
 	}
 	
 	public String safeHtml(String in) {
@@ -114,33 +110,27 @@ public class TextWindow2 extends JScrollPane {
 	
 	public void append(String text, Color col) {
 		appendDate();
-		makeFont(col, "100%");
-		html += safeHtml(text);
-		html += "</td></tr></table>";
-		//html += "</font></div>";
+		makeFont(col);
+		html += "</font></div>";
 		setText();
 	}
 	
 	public void append(String text, String clazz) {
 		appendDate();
-		//html += "<font class=\"" + clazz + "\">";
-		html += "<td colspan=\"2\" class=\"" + clazz + "\" width=\"100%\">";
+		html += "<font class=\"" + clazz + "\">";
 		html += safeHtml(text);
-		//html += "</font></div>";
-		html += "</td></tr></table>";
+		html += "</font></div>";
 		setText();
 	}
 	
 	public void append2(String text, Color col, String text2, Color col2) {
 		appendDate();
-		makeFont(col, "1");
+		makeFont(col);
 		html += safeHtml(text);
-		//html += "</font>";
-		html += "</td>";
-		makeFont(col2, "100%");
+		html += "</font>";
+		makeFont(col2);
 		html += safeHtml(text2);
-		//html += "</font></div>";
-		html += "</td></tr></table>";
+		html += "</font></div>";
 		setText();
 	}
 	
