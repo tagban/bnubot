@@ -292,6 +292,10 @@ public class GuiEventHandler implements EventHandler {
 		channelTextArea.setText(null);
 	}
 
+	public void titleChanged() {
+		frame.setTitle(c.toString());
+	}
+
 	public void friendsList(FriendEntry[] entries) {
 		friendList.showFriends(entries);
 	}
