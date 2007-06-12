@@ -8,9 +8,7 @@ import javax.swing.*;
 
 import bnubot.bot.EventHandler;
 import bnubot.bot.gui.ColorScheme.ColorScheme;
-import bnubot.bot.gui.components.FriendList;
-import bnubot.bot.gui.components.TextWindow;
-import bnubot.bot.gui.components.UserList;
+import bnubot.bot.gui.components.*;
 import bnubot.bot.gui.icons.IconsDotBniReader;
 import bnubot.core.BNetUser;
 import bnubot.core.Connection;
@@ -21,7 +19,7 @@ import bnubot.core.friend.FriendEntry;
 public class GuiEventHandler implements EventHandler {
 	private JFrame frame = null;
 	private Connection c = null;
-	private TextWindow mainTextArea = null;
+	private TextWindow2 mainTextArea = null;
 	private JTextArea chatTextArea = null;
 	private JTextArea channelTextArea = null;
 	private UserList userList = null;
@@ -170,7 +168,7 @@ public class GuiEventHandler implements EventHandler {
 		frame.setLayout(new BotLayoutManager());
 		
 		//Main text area
-		mainTextArea = new TextWindow(cs);
+		mainTextArea = new TextWindow2(cs);
 		//Send chat textbox
 		chatTextArea = new JTextArea();
 		chatTextArea.setBackground(cs.getBackgroundColor());
@@ -199,7 +197,7 @@ public class GuiEventHandler implements EventHandler {
 		IconsDotBniReader.initialize(c.getConnectionSettings());
 		
 		//The userlist
-		userList = new UserList(cs, c);
+		userList = new UserList(cs, c, this);
 		//Friends list
 		friendList = new FriendList(cs);
 		
@@ -322,4 +320,10 @@ public class GuiEventHandler implements EventHandler {
 	}
 
 	public void logonRealmEx(int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName) {}
+
+	public void setChatText(String chatText) {
+		chatTextArea.setText(chatText);
+		chatTextArea.setSelectionStart(chatText.length());
+		chatTextArea.requestFocus();
+	}
 }

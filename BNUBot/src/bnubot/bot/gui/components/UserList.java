@@ -1,11 +1,16 @@
 package bnubot.bot.gui.components;
 
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
 import javax.swing.*;
 
+import bnubot.bot.gui.GuiEventHandler;
 import bnubot.bot.gui.ColorScheme.ColorScheme;
 import bnubot.bot.gui.icons.BNetIcon;
 import bnubot.bot.gui.icons.IconsDotBniReader;
@@ -16,23 +21,27 @@ import bnubot.core.bncs.ProductIDs;
 @SuppressWarnings("serial")
 public class UserList extends JPanel {
 	private class UserInfo {
+		String user;
 		int flags;
 		int priority;
 		int ping;
 		StatString statstr;
 		JLabel label;
+		JPopupMenu menu;
 	}
 	
 	private Hashtable<String, UserInfo> users = null;
 	private Box b = null;
 	private ColorScheme cs = null;
-	Connection c = null;
+	private Connection c = null;
+	private GuiEventHandler geh = null;
 	
-	public UserList(ColorScheme cs, Connection c) {
+	public UserList(ColorScheme cs, Connection c, GuiEventHandler geh) {
 		super(new FlowLayout(FlowLayout.LEFT));
 		this.users = new Hashtable<String, UserInfo>();
 		this.cs = cs;
 		this.c = c;
+		this.geh = geh;
 		setBackground(cs.getBackgroundColor());
 		b = new Box(BoxLayout.Y_AXIS);
 		add(b);
@@ -76,19 +85,83 @@ public class UserList extends JPanel {
 		return b.getComponentCount();
 	}
 	
+	private UserInfo getUserInfo(ActionEvent arg0) {
+		JMenuItem jmi = (JMenuItem) arg0.getSource();
+		JPopupMenu jp = (JPopupMenu) jmi.getParent();
+		
+		Enumeration<UserInfo> en = users.elements();
+		while(en.hasMoreElements()) {
+			UserInfo ui = en.nextElement();
+			if(ui.menu == jp) {
+				//Found them
+				return ui;
+			}
+		}
+		return null;
+	}
+	
 	public void showUser(String user, int flags, int ping, StatString statstr) {
 		UserInfo ui = users.get(user);
 		if(ui == null) {
 			ui = new UserInfo();
+			ui.user = user;
 			ui.flags = flags;
 			ui.ping = ping;
 			ui.statstr = statstr;
 			ui.priority = getPrioByFlags(flags);
+			
+			ui.menu = new JPopupMenu();
+			ui.menu.add(new JLabel(user + ": " + statstr.toString()));
+			JMenuItem menuItem = new JMenuItem("Whisper");
+			menuItem.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					UserInfo ui = getUserInfo(arg0);
+					if(ui != null)
+						geh.setChatText("/w " + ui.user + " ");
+				}});
+			ui.menu.add(menuItem);
+			menuItem = new JMenuItem("Whois");
+			menuItem.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					UserInfo ui = getUserInfo(arg0);
+					if(ui != null)
+						c.sendChat("/whois " + ui.user);
+				}});
+			ui.menu.add(menuItem);
+			ui.menu.add(Box.createHorizontalGlue());
 		}
 		if(ui.label == null) {
 			ui.label = new JLabel(user);
 			ui.label.setForeground(cs.getUserNameListColor(flags));
 			b.add(ui.label, getInsertPosition(ui.priority));
+			
+			ui.label.addMouseListener(new MouseListener() {
+				public void mouseClicked(MouseEvent arg0) {
+					JLabel jl = (JLabel) arg0.getSource();
+					Enumeration<UserInfo> en = users.elements();
+					while(en.hasMoreElements()) {
+						UserInfo ui = en.nextElement();
+						if(ui.label == jl) {
+							switch(arg0.getButton()) {
+							case MouseEvent.BUTTON1:
+								System.out.println("Left clicked on " + ui.label.getText());
+								break;
+							case MouseEvent.BUTTON2:
+								System.out.println("Middle clicked on " + ui.label.getText());
+								break;
+							case MouseEvent.BUTTON3:
+								ui.menu.show(arg0.getComponent(), arg0.getX(), arg0.getY());
+								break;
+							}
+							break;
+						}
+					}
+				}
+				public void mouseEntered(MouseEvent arg0) {}
+				public void mouseExited(MouseEvent arg0) {}
+				public void mousePressed(MouseEvent arg0) {}
+				public void mouseReleased(MouseEvent arg0) {}
+			});
 		}
 		
 		//Check if the user's flags updated
