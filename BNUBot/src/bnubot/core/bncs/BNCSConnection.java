@@ -314,8 +314,7 @@ public class BNCSConnection extends Connection {
 				    		System.err.println(bnubot.util.HexDump.hexDump(exeHashBuf.getBuffer()));
 				    		throw new Exception("BNLS failed to complete 0x1A sucessfully");
 				    	}
-			    		System.out.println(bnubot.util.HexDump.hexDump(exeHashBuf.getBuffer()));
-				    	exeVersion = exeStream.readDWord();
+			    		exeVersion = exeStream.readDWord();
 				    	exeHash = exeStream.readDWord();
 				    	exeInfo = exeStream.readNTString();
 				    	exeStream.readDWord(); // cookie
