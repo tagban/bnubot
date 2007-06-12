@@ -247,6 +247,12 @@ public abstract class Connection extends Thread implements EventHandler {
 		while(it.hasNext())
 			it.next().bnetDisconnected();
 	}
+
+	public synchronized void titleChanged() {
+		Iterator<EventHandler> it = eventHandlers.iterator();
+		while(it.hasNext())
+			it.next().titleChanged();
+	}
 	
 	public synchronized void joinedChannel(String channel) {
 		channelName = channel;
