@@ -468,6 +468,7 @@ public class CommandEventHandler implements EventHandler {
 
 	public void bnetConnected() {}
 	public void bnetDisconnected() {}
+	public void titleChanged() {}
 
 	public void whisperRecieved(BNetUser user, int flags, int ping, String text) {
 		if(text == null)

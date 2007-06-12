@@ -40,6 +40,8 @@ public class HTMLOutputEventHandler implements EventHandler {
 		writeUserList();
 	}
 
+	public void titleChanged() {}
+
 	public void channelJoin(BNetUser user, int flags, int ping, StatString statstr) {
 		UserInfo ui = new UserInfo();
 		users.put(user.toString(), ui);

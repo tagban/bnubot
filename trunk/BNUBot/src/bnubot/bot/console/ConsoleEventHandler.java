@@ -56,6 +56,7 @@ public class ConsoleEventHandler implements EventHandler {
 
 	public void bnetConnected() {}
 	public void bnetDisconnected() {}
+	public void titleChanged() {}
 
 	public void friendsList(FriendEntry[] entries) {}
 	public void friendsUpdate(byte entry, byte location, byte status, int product, String locationName) {}

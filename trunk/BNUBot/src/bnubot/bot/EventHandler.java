@@ -13,6 +13,7 @@ public interface EventHandler {
 	//Connection
 	public void bnetConnected();
 	public void bnetDisconnected();
+	public void titleChanged();
 
 	//Channel events
 	public void joinedChannel(String channel);
