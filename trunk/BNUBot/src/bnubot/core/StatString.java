@@ -253,6 +253,7 @@ public class StatString {
 			    
 			    byte charFlags = data[26];
 			    boolean hardcore = (charFlags & 0x04) != 0;
+			    boolean dead = (charFlags & 0x08) != 0;
 			    boolean expansion = (charFlags & 0x20) != 0;
 			    boolean ladder = (charFlags & 0x40) != 0;
 			    
@@ -289,7 +290,7 @@ public class StatString {
 			    
 			    pretty += ", a ";
 			    
-			    if((data[26] & 0x08) != 0)
+			    if(dead)
 			    	pretty += "dead ";
 			    if(hardcore)
 			    	pretty += "hardcore ";
