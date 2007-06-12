@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.Random;
 
+import bnubot.Version;
 import bnubot.core.BNetInputStream;
 import bnubot.core.BNetUser;
 import bnubot.core.Connection;
@@ -20,10 +21,13 @@ import bnubot.core.clan.ClanRankIDs;
 import bnubot.core.clan.ClanStatusIDs;
 import bnubot.core.friend.FriendEntry;
 import bnubot.core.queue.ChatQueue;
+import bnubot.util.HexDump;
 
 import Hashing.*;
 
 public class BNCSConnection extends Connection {
+	public static final String[] clanRanks = {"Peon", "Grunt", "Shaman", "Chieftain"};
+	
 	protected Socket s = null;
 	protected DataInputStream dis = null;
 	protected DataOutputStream dos = null;
@@ -197,6 +201,7 @@ public class BNCSConnection extends Connection {
 				myPing = -1;
 				myClan = 0;
 				myClanRank = 0;
+				titleChanged();
 				
 			} catch(SocketException e) {
 			} catch(Exception e) {
@@ -677,6 +682,7 @@ public class BNCSConnection extends Connection {
 					
 					myUser = new BNetUser(uniqueUserName, cs.myRealm);
 					recieveInfo("Logged in as " + myUser.getFullLogonName());
+					titleChanged();
 					
 					// We are officially logged in!
 					
@@ -775,6 +781,7 @@ public class BNCSConnection extends Connection {
 					case BNCSChatEventIDs.EID_CHANNEL:
 						channelName = text;
 						joinedChannel(text);
+						titleChanged();
 						break;
 					case BNCSChatEventIDs.EID_WHISPERSENT:
 						whisperSent(user, flags, ping, text);
@@ -980,6 +987,7 @@ public class BNCSConnection extends Connection {
 					is.readByte();
 					myClan = is.readDWord();
 					myClanRank = is.readByte();
+					titleChanged();
 					
 					// TODO: clanInfo(myClan, myClanRank);
 					
@@ -1233,17 +1241,24 @@ public class BNCSConnection extends Connection {
 	}
 	
 	public String toString() {
-		if(myUser == null) {
-			if(channelName != null)
-				return channelName;
-		} else {
-			String out = myUser.getShortLogonName();
-			if(channelName != null)
-				out += " - " + channelName;
-			return out;
+		String out = "BNU-Bot " + Version.version();
+		
+		if(channelName != null)
+			out += " - [ #" + channelName + " ]";
+		
+		if(myUser != null) {
+			out += " - [ ";
+			
+			if(myClanRank > 0) {
+				out += "Clan ";
+				out += HexDump.DWordToPretty(myClan);
+				out += " ";
+				out += clanRanks[myClanRank-1];
+			}
+			out += myUser.getShortLogonName() + " ]";
 		}
 		
-		return "BNU-Bot";
+		return out;
 	}
 	
 	public void reconnect() {
