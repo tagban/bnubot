@@ -24,11 +24,11 @@ public class TextWindow2 extends JScrollPane {
 	
 	private ColorScheme cs = null;
 	private JEditorPane jep = null;
-	private static String head = null;
-	private static String foot = null;
-	private static String html = null;
-	private Runnable scrollDown = null;
-	private Runnable enableDraw = null;
+	private String head = null;
+	private String foot = null;
+	private String html = null;
+	private static Runnable scrollDown = null;
+	private static Runnable enableDraw = null;
 	private boolean disableRedraw = false;
 
 	public TextWindow2(ColorScheme cs) {
@@ -111,6 +111,7 @@ public class TextWindow2 extends JScrollPane {
 	public void append(String text, Color col) {
 		appendDate();
 		makeFont(col);
+		html += safeHtml(text);
 		html += "</font></div>";
 		setText();
 	}
