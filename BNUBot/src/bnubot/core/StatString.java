@@ -1,9 +1,5 @@
 package bnubot.core;
 
-import java.util.UnknownFormatConversionException;
-
-import javax.resource.spi.IllegalStateException;
-
 import bnubot.core.bncs.ProductIDs;
 import bnubot.util.HexDump;
 
