@@ -28,7 +28,7 @@ public class BNFTPConnection {
 	
 	public static File downloadFile(Socket s, String fileName) {
 		try {
-			System.out.println("Downloading " + fileName + "...");
+			System.out.print("Downloading " + fileName + "...");
 			
 			BNetInputStream is = new BNetInputStream(s.getInputStream());
 			BNetOutputStream os = new BNetOutputStream(s.getOutputStream());

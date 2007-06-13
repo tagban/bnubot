@@ -115,7 +115,7 @@ public class IconsDotBniReader {
 
 	private static BNetIcon[] readIconsDotBni(File f) {
 		try {
-			System.out.println("Reading " + f.getName());
+			//System.out.println("Reading " + f.getName());
 			
 			BNetInputStream is = new BNetInputStream(new FileInputStream(f));
 			is.skip(4); //int headerSize = is.readDWord();
