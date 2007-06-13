@@ -4,6 +4,20 @@ import bnubot.core.BNetUser;
 import junit.framework.TestCase;
 
 public class BNetUserTest extends TestCase {
+	
+	public void testSimpleConstructor() {
+		BNetUser u = null;
+		try {
+			u = new BNetUser("test");
+			fail("This should throw an IllegalStateException");
+		} catch(IllegalStateException e) {}
+		assertEquals(null, u);
+		
+		u = new BNetUser("testuser@Azeroth");
+		assertEquals(u.getShortLogonName(), "testuser@Azeroth");
+		assertEquals(u.getFullLogonName(), "testuser@Azeroth");
+		assertEquals(u.getFullAccountName(), "testuser@Azeroth");
+	}
 
 	public void testSameRealm() {
 		BNetUser u = new BNetUser("testuser@Azeroth", "Azeroth");
