@@ -10,6 +10,7 @@ import bnubot.core.bnftp.BNFTPConnection;
 import bnubot.core.clan.ClanMember;
 import bnubot.core.friend.FriendEntry;
 import bnubot.core.queue.ChatQueue;
+import bnubot.util.TimeFormatter;
 
 public abstract class Connection extends Thread implements EventHandler {
 	protected ConnectionSettings cs;
@@ -132,32 +133,28 @@ public abstract class Connection extends Thread implements EventHandler {
 				text += (char)data[i];
 		}
 		
-		if(text.indexOf('%') != -1) {
+		boolean somethingDone = true;
+		while(somethingDone) {
+			somethingDone = false;
+			
+			if(text.indexOf('%') == -1)
+				break;
+			
 			int i = text.indexOf("%uptime%");
 			if(i != -1) {
+				somethingDone = true;
+				
 				String first = text.substring(0, i);
 				String last = text.substring(i + 8);
 				
-				//long uptime = new Date().getTime();
 				long uptime = java.lang.management.ManagementFactory.getRuntimeMXBean().getUptime();
-				uptime /= 1000;
-				text = Long.toString(uptime % 60) + "s";
-				uptime /= 60;
-				if(uptime > 0) {
-					text = Long.toString(uptime % 60) + "m " + text;
-					uptime /= 60;
-					if(uptime > 0) {
-						text = Long.toString(uptime % 24) + "h " + text;
-						uptime /= 24;
-						if(uptime > 0)
-							text = Long.toString(uptime) + "d " + text;
-					}
-				}
-				text = first + text + last;
+				text = first + TimeFormatter.formatTime(uptime) + last;
 			}
 			
 			i = text.indexOf("%trigger%");
 			if(i != -1) {
+				somethingDone = true;
+				
 				String first = text.substring(0, i);
 				String last = text.substring(i + 9);
 				text = first + cs.trigger + last;
