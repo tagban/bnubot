@@ -110,8 +110,9 @@ public class Main {
 			String db_url = Ini.ReadIni("settings.ini", "bnubot", "db_url", "jdbc:sqlite:database.db");
 			String db_username = Ini.ReadIni("settings.ini", "bnubot", "db_username", "");
 			String db_password = Ini.ReadIni("settings.ini", "bnubot", "db_password", "");
+			String db_schema = Ini.ReadIni("settings.ini", "bnubot", "db_schema", "schema.sqlite.sql");
 			
-			d = new Database(db_driver, db_url, db_username, db_password);
+			d = new Database(db_driver, db_url, db_username, db_password, db_schema);
 			cmd = new CommandEventHandler(d);
 			primary.addEventHandler(cmd);
 		} catch(Exception e) {
