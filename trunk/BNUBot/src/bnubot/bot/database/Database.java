@@ -1,19 +1,31 @@
 package bnubot.bot.database;
 
-import java.io.*;
 import java.sql.*;
-import java.util.GregorianCalendar;
-import java.util.Iterator;
 
 import bnubot.core.BNetUser;
 
-public class Database implements Serializable {
-	private static final long serialVersionUID = 9064719758285921969L;
-	private static final long databaseVersion = 0;
-	private static final long compatibleVersion = 0;
+public class Database {
+	private static final long databaseVersion = 0;		// Current schema version
+	private static final long compatibleVersion = 1;	// Minimum version compatible
 	private Connection conn;
 	
-	public Database(File f) throws SQLException {
+	public Database(String driver, String url, String username, String password) throws SQLException {
+		try {
+			Class.forName(driver);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
+		System.out.println("Connecting to " + url);
+		conn = DriverManager.getConnection(url, username, password);
+		System.out.println("Connected!");
+		
+		if(!checkSchema())
+			createSchema();
+	}
+	
+	/*public Database(File f) throws SQLException {
 	    try {
 			Class.forName("org.sqlite.JDBC");
 		} catch (ClassNotFoundException e) {
@@ -45,7 +57,7 @@ public class Database implements Serializable {
 		}
 		else
 			createSchema();
-	}
+	}*/
 
 	public Statement createStatement() throws SQLException {
 		return conn.createStatement(); //ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
@@ -176,7 +188,10 @@ public class Database implements Serializable {
 				rs.close();
 				return true;
 			}
+			
+			System.err.println("Database version is " + version + ", we require " + compatibleVersion);
 		} catch(SQLException e) {
+			System.err.println(e.getMessage());
 		}
 		
 		if(rs != null)
@@ -197,39 +212,74 @@ public class Database implements Serializable {
 		stmt.execute("CREATE TABLE dbVersion (version INTEGER NOT NULL);");
 		stmt.execute("INSERT INTO dbVersion (version) VALUES (" + databaseVersion + ");");
 		
-		stmt.execute(
-			"CREATE TABLE account ( " +
-				"id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL ON CONFLICT ROLLBACK, " +
-				"access INTEGER NOT NULL, " +
-				"name TEXT UNIQUE NOT NULL, " +
-				"created INTEGER NOT NULL DEFAULT CURRENT_TIMESTAMP " +
-			");");
+		try {
+			// SQLite
+			stmt.execute(
+				"CREATE TABLE account ( " +
+					"id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL ON CONFLICT ROLLBACK, " +
+					"access INTEGER NOT NULL, " +
+					"name TEXT UNIQUE NOT NULL, " +
+					"created INTEGER NOT NULL DEFAULT CURRENT_TIMESTAMP " +
+				");");
+		} catch(SQLException e) {
+			// MySQL
+			stmt.execute(
+				"CREATE TABLE account ( " +
+					"id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL, " +
+					"access INTEGER NOT NULL, " +
+					"name VARCHAR(32) UNIQUE NOT NULL, " +
+					"created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP " +
+				");");
+		}
 		
 		/*PreparedStatement ps = conn.prepareStatement("INSERT INTO account (access, name) VALUES (?, ?);");
 		ps.setInt(1, 100);
 		ps.setString(2, "Camel");
 		ps.execute();
 		ps.close();*/
-		
-		stmt.execute(
-			"CREATE TABLE user ( " +
-				"id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL ON CONFLICT ROLLBACK, " +
-				"login TEXT UNIQUE NOT NULL, " +
-				"account INTEGER DEFAULT NULL, " +
-				"created INTEGER NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
-				"lastSeen INTEGER NOT NULL DEFAULT CURRENT_TIMESTAMP " +
-			");");
+
+		try {
+			// SQLite
+			stmt.execute(
+				"CREATE TABLE user ( " +
+					"id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL ON CONFLICT ROLLBACK, " +
+					"login TEXT UNIQUE NOT NULL, " +
+					"account TEXT DEFAULT NULL, " +
+					"created INTEGER NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
+					"lastSeen INTEGER NOT NULL DEFAULT CURRENT_TIMESTAMP " +
+				");");
+		} catch(SQLException e) {
+			// MySQL
+			stmt.execute(
+				"CREATE TABLE user ( " +
+					"id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL, " +
+					"login VARCHAR(32) UNIQUE NOT NULL, " +
+					"account VARCHAR(32) DEFAULT NULL, " +
+					"created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
+					"lastSeen TIMESTAMP NOT NULL " +
+				");");
+		}
 		
 		/*ps = conn.prepareStatement("INSERT INTO user (login, account) VALUES (?, ?);");
 		ps.setString(1, "bnu-camel@useast");
 		ps.setString(2, "Camel");
 		ps.execute();*/
-		
-		stmt.execute(
-			"CREATE TABLE rank ( " +
-				"id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL ON CONFLICT ROLLBACK, " +
-				"name TEXT UNIQUE NOT NULL " +
-			");");
+
+		try {
+			// SQLite
+			stmt.execute(
+				"CREATE TABLE rank ( " +
+					"id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL ON CONFLICT ROLLBACK, " +
+					"name TEXT UNIQUE NOT NULL " +
+				");");
+		} catch(SQLException e) {
+			// MySQL
+			stmt.execute(
+					"CREATE TABLE rank ( " +
+						"id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL, " +
+						"name VARCHAR(32) UNIQUE NOT NULL " +
+					");");
+		}
 		
 		/*ps = conn.prepareStatement("INSERT INTO rank (id, name) VALUES (?, ?);");
 		ps.setInt(1, 100);
