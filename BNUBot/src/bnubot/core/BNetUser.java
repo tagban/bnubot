@@ -72,7 +72,7 @@ public class BNetUser {
 	 * Constructor for a BNetUser
 	 * @param user		User[#N]@Realm
 	 */
-	private BNetUser(String user) {
+	public BNetUser(String user) {
 		String uAccount;
 		String uRealm;
 		int uNumber = 0;
@@ -121,7 +121,7 @@ public class BNetUser {
 	 * @param user		User[#N][@Realm]
 	 * @param myRealm	[User[#N]@]Realm
 	 */
-	private BNetUser(String user, String myRealm) {
+	public BNetUser(String user, String myRealm) {
 		String uAccount;
 		String uRealm;
 		int uNumber = 0;
