@@ -2,14 +2,9 @@ package bnubot.bot.database;
 
 import java.io.*;
 import java.sql.*;
+import java.util.GregorianCalendar;
 import java.util.Iterator;
-import java.util.List;
 
-import org.hibernate.*;
-import org.hibernate.cfg.*;
-import org.hibernate.exception.GenericJDBCException;
-
-import bnubot.bot.database.pojo.*;
 import bnubot.core.BNetUser;
 
 public class Database implements Serializable {
@@ -17,8 +12,6 @@ public class Database implements Serializable {
 	private static final long databaseVersion = 0;
 	private static final long compatibleVersion = 0;
 	private Connection conn;
-	private SessionFactory sessionFactory;
-	private Root root;
 	
 	public Database(File f) throws SQLException {
 	    try {
@@ -31,8 +24,20 @@ public class Database implements Serializable {
 		boolean fileExists = f.exists();
 		conn = DriverManager.getConnection("jdbc:sqlite:" + f.getName());
 		Statement stmt = conn.createStatement();
-		stmt.execute("PRAGMA synchronous = FULL;");
-		stmt.close();
+		try {
+			stmt.execute("PRAGMA synchronous = FULL;");
+			stmt.close();
+		} catch(SQLException e) {
+			File newName = new File("database-corrupt-" + String.format("%1$tY-%1$tm-%1$te %1$tH-%1$tM-%1$tS", new GregorianCalendar()) + ".db");
+			System.out.println("Database is damaged; renaming to " + newName.getName());
+			conn.close();
+			f.renameTo(newName);
+			
+			conn = DriverManager.getConnection("jdbc:sqlite:" + f.getName());
+			stmt = conn.createStatement();
+			stmt.execute("PRAGMA synchronous = FULL;");
+			stmt.close();
+		}
 	    
 		if(fileExists) {
 			if(!checkSchema())
@@ -40,111 +45,115 @@ public class Database implements Serializable {
 		}
 		else
 			createSchema();
-		
-		sessionFactory = new Configuration().configure().buildSessionFactory();
-		
-		Session session = sessionFactory.openSession();
-		
-		Transaction tx = session.beginTransaction();
-		List roots = session.createQuery("SELECT r FROM " + Root.class.getName() + " AS r").list();
-		if(roots.size() > 0) {
-			root = (Root) roots.get(0);
-			System.out.println(root.toString());
-		} else {
-			System.out.println("Generating a new root.");
-			root = new Root();
-			session.saveOrUpdate(root);
-		}
-		tx.commit();
-		
-		session.close();
 	}
 
-	public Session openSession() {
-		return sessionFactory.openSession();
+	public Statement createStatement() throws SQLException {
+		return conn.createStatement(); //ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 	}
 	
-	public Account getAccount(BNetUser user) {
-		Iterator<Account> it = root.getAccounts().iterator();
-		while(it.hasNext()) {
-			Account a = it.next();
-			if(a.belongsTo(user))
-				return a;
-		}
-		return null;
+	public PreparedStatement prepareStatement(String sql) throws SQLException {
+		return conn.prepareStatement(sql); //, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 	}
 	
-	public User getUser(BNetUser user) {
-		Session session = sessionFactory.openSession();
+	public ResultSet getUser(BNetUser user) throws SQLException {
+		PreparedStatement ps = prepareStatement("SELECT * FROM user WHERE login=?");
+		ps.setString(1, user.getFullAccountName().toLowerCase());
+		return ps.executeQuery();
+	}
+	
+	public ResultSet getCreateUser(BNetUser user) throws SQLException {
+		ResultSet rsUser = getUser(user);
+		if(rsUser.next())
+			return getUser(user);
 		
-		Iterator<User> users = session.createQuery("SELECT u FROM " + User.class.getName() + " AS u").list().iterator();
-		User u = null;
-		//Search for the user
-		while(users.hasNext()) {
-			u = users.next();
-			if(user.equals(u.getLogin()))
-				break;	// Found them!
-			u = null;
-		}
+		PreparedStatement ps = prepareStatement("INSERT INTO user (login) VALUES(?)");
+		ps.setString(1, user.getFullAccountName().toLowerCase());
+		ps.execute();
+		ps.close();
 		
-		session.close();
-		return u;
+		rsUser = getUser(user);
+		if(rsUser.next())
+			return getUser(user);
+		
+		throw new SQLException("The user was created but not found");
 	}
 	
-	public User getCreateUser(BNetUser user) throws GenericJDBCException {
-		User u = getUser(user);
-		if(u != null)
-			return u;
+	public ResultSet getAccount(String account) throws SQLException {
+		PreparedStatement ps = prepareStatement("SELECT * FROM account WHERE name=?");
+		ps.setString(1, account.toLowerCase());
+		return ps.executeQuery();
+	}
+	
+	public ResultSet getAccount(BNetUser user) throws SQLException {
+		ResultSet rsUser = getUser(user);
+		if(!rsUser.next())
+			return null;
+		
+		String account = rsUser.getString("account");
+		if(account == null)
+			return null;
+		return getAccount(account);
+	}
+	
+	public ResultSet getAccountUsers(String account) throws SQLException {
+		PreparedStatement ps = prepareStatement("SELECT * FROM user WHERE account=?");
+		ps.setString(1, account.toLowerCase());
+		return ps.executeQuery();
+	}
 
-		Session session = sessionFactory.openSession();
-		Transaction tx = session.beginTransaction();
+	public ResultSet createAccount(String account, Long access) throws SQLException {
+		PreparedStatement ps = prepareStatement("INSERT INTO account (name, access) VALUES(?, ?)");
+		ps.setString(1, account.toLowerCase());
+		ps.setLong(2, access);
+		ps.execute();
+		ps.close();
 		
-		//Create them in the database.
-		u = new User(user.getFullAccountName(), null);
-		session.save(u);
-		System.out.println("Created " + u.toString());
+		ResultSet rsAccount = getAccount(account);
+		if(rsAccount == null)
+			throw new SQLException("The account was created but not found");
 		
-		tx.commit();
-		session.close();
-		
-		return u;
+		return rsAccount;
 	}
 	
-	public Account getAccount(String account) {
-		Session session = sessionFactory.openSession();
+	public ResultSet getCreateAccount(String account, Long access) throws SQLException {
+		ResultSet rsAccount = getAccount(account);
+		if(rsAccount != null)
+			return rsAccount;
 		
-		Iterator<Account> accounts = session.createQuery("SELECT a FROM " + Account.class.getName() + " AS a").list().iterator();
-		Account a = null;
-		//Search for the user
-		while(accounts.hasNext()) {
-			a = accounts.next();
-			if(account.compareToIgnoreCase(a.getName()) == 0)
-				break;	// Found them!
-			a = null;
-		}
-		
-		session.close();
-		return a;
+		return createAccount(account, access);
 	}
 	
-	public Account getCreateAccount(String account, Long access) {
-		Account a = getAccount(account);
-		if(a != null)
-			return a;
+	public void setAccountAccess(String account, long access) throws SQLException {
+		PreparedStatement ps = prepareStatement("UPDATE account SET access=? WHERE name=?");
+		ps.setLong(1, access);
+		ps.setString(2, account.toLowerCase());
+		ps.execute();
+		int uc = ps.getUpdateCount();
+		ps.close();
+		
+		if(uc != 1)
+			throw new SQLException("Affected rows was " + uc);
+	}
+	
 
-		Session session = sessionFactory.openSession();
-		Transaction tx = session.beginTransaction();
+	public void setUserAccount(BNetUser user, String account) throws SQLException {
+		ResultSet rsAccount = getAccount(account);
+		if(!rsAccount.next())
+			throw new SQLException("The account [" + account + "] does not exist");
 		
-		//Create them in the database.
-		a = new Account(access, account);
-		a.setRoot(root);
-		session.save(a);
-		System.out.println("Created Account " + a.toString());
 		
-		tx.commit();
-		session.close();
+		PreparedStatement ps = prepareStatement("UPDATE user SET account=? WHERE login=?");
+		ps.setString(1, account.toLowerCase());
+		ps.setString(2, user.getFullAccountName().toLowerCase());
+		ps.execute();
+		int uc = ps.getUpdateCount();
+		ps.close();
 		
-		return a;
+		if(uc == 0)
+			throw new SQLException("The user [" + user.getFullAccountName() + "] does not exist");
+		
+		if(uc != 1)
+			throw new SQLException("Affected rows was " + uc);
 	}
 	
 	/**
@@ -155,7 +164,7 @@ public class Database implements Serializable {
 	private boolean checkSchema() {
 		ResultSet rs = null;
 		try {
-			rs = conn.createStatement().executeQuery("SELECT version FROM dbVersion;");
+			rs = createStatement().executeQuery("SELECT version FROM dbVersion;");
 			if(!rs.next()) {
 				rs.close();
 				return false;
@@ -178,10 +187,9 @@ public class Database implements Serializable {
 	private void createSchema() throws SQLException {
 		System.out.println("The database requires rebuilding.");
 		
-		Statement stmt = conn.createStatement();
+		Statement stmt = createStatement();
 
 		stmt.execute("DROP TABLE IF EXISTS dbVersion;");
-		stmt.execute("DROP TABLE IF EXISTS root;");
 		stmt.execute("DROP TABLE IF EXISTS account;");
 		stmt.execute("DROP TABLE IF EXISTS user;");
 		stmt.execute("DROP TABLE IF EXISTS rank;");
@@ -189,13 +197,9 @@ public class Database implements Serializable {
 		stmt.execute("CREATE TABLE dbVersion (version INTEGER NOT NULL);");
 		stmt.execute("INSERT INTO dbVersion (version) VALUES (" + databaseVersion + ");");
 		
-		stmt.execute("CREATE TABLE root (id INTEGER INTEGER NOT NULL);");
-		stmt.execute("INSERT INTO root (id) VALUES (1);");
-		
 		stmt.execute(
 			"CREATE TABLE account ( " +
 				"id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL ON CONFLICT ROLLBACK, " +
-				"root INTEGER NOT NULL DEFAULT 1, " +
 				"access INTEGER NOT NULL, " +
 				"name TEXT UNIQUE NOT NULL, " +
 				"created INTEGER NOT NULL DEFAULT CURRENT_TIMESTAMP " +

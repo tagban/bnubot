@@ -5,6 +5,55 @@ public class BNetUser {
 	String fullLogonName;	// #=yes, realm=yes
 	String fullAccountName;	// #=no, realm=yes
 
+
+	public BNetUser(String user) {
+		String uAccount;
+		String uRealm;
+		int uNumber = 0;
+		
+		int i = user.indexOf('#');
+		if(i != -1) {
+			String num = user.substring(i + 1);
+			int j = num.indexOf('@');
+			if(j != -1) {
+				num = num.substring(0, j);
+				uRealm = user.substring(i + j + 2);
+				user = user.substring(0, i) + '@' + uRealm;
+			} else {
+				throw new IllegalStateException("User [" + user + "] is not a valid bnet user; no realm");
+			}
+			
+			uNumber = Integer.parseInt(num);
+		}
+		
+		String up[] = user.split("@", 2);
+		uAccount = up[0];
+		if(up.length == 2)
+			uRealm = up[1];
+		else
+			throw new IllegalStateException("User [" + user + "] is not a valid bnet user; no realm");
+		
+		
+		// ...
+		shortLogonName = uAccount;
+		if(uNumber != 0)
+			shortLogonName += "#" + uNumber;
+		shortLogonName += "@" + uRealm;
+		
+		// ...
+		fullLogonName = uAccount;
+		if(uNumber != 0)
+			fullLogonName += "#" + uNumber;
+		fullLogonName += "@" + uRealm;
+		
+		// ...
+		fullAccountName = uAccount + "@" + uRealm;
+	}
+	
+	public BNetUser(String user, BNetUser model) {
+		this(user, model.getFullAccountName());
+	}
+	
 	/**
 	 * Constructor for a BNetUser
 	 * @param user		User[#N][@Realm]
