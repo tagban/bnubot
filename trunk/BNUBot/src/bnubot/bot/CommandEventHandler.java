@@ -5,10 +5,12 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.*;
 
+import bnubot.Version;
 import bnubot.bot.database.*;
 import bnubot.core.*;
 import bnubot.core.clan.ClanMember;
 import bnubot.core.friend.FriendEntry;
+import bnubot.util.TimeFormatter;
 
 public class CommandEventHandler implements EventHandler {
 	Connection c = null;
@@ -37,11 +39,24 @@ public class CommandEventHandler implements EventHandler {
 		this.c = c;
 	}
 	
-	@SuppressWarnings("deprecation")
+	public void touchUser(BNetUser user, String action) {
+		try {
+			ResultSet rsUser = d.getCreateUser(user);
+			if(rsUser.next()) {
+				rsUser.updateTimestamp("lastSeen", new Timestamp(new Date().getTime()));
+				rsUser.updateString("lastAction", action);
+				rsUser.updateRow();
+			}
+		} catch(SQLException e) {
+			c.recieveError(e.getClass().getName() + ": " + e.getMessage());
+		}
+	}
+	
 	private void parseCommand(BNetUser user, String command, String param) {
 		try {
-			String[] params = param.split(" ");
-			command = command.toLowerCase();
+			String[] params = null;
+			if(param != null)
+				params = param.split(" ");
 			
 			Long commanderAccess = null; 
 			String commanderAccount = null;
@@ -59,6 +74,22 @@ public class CommandEventHandler implements EventHandler {
 					return;
 			} else {
 				d.getCreateUser(user);
+			}
+			
+
+			
+			ResultSet rsCommand = d.getCommand(command);
+			if(!rsCommand.next()) {
+				c.recieveError("Command not found in database");
+				return;
+			}
+			command = rsCommand.getString("name");
+			if(!superUser) {
+				long requiredAccess = rsCommand.getLong("access");
+				if(commanderAccess < requiredAccess) {
+					c.recieveError("Insufficient access");
+					return;
+				}
 			}
 			
 			lastCommandUser = user;
@@ -86,7 +117,8 @@ public class CommandEventHandler implements EventHandler {
 								throw new InsufficientAccessException("to add users beyond " + (commanderAccess - 1));
 						}
 						
-						d.setAccountAccess(subjectAccount, targetAccess);
+						rsSubjectAccount.updateLong("access", targetAccess);
+						rsSubjectAccount.updateRow();
 						c.sendChat(user, "Added user [" + subjectAccount + "] sucessfully with access " + targetAccess);
 					} catch(InvalidUsageException e) {
 						c.sendChat(user, "Usage: %trigger%add <account> <access>");
@@ -137,7 +169,7 @@ public class CommandEventHandler implements EventHandler {
 			case 'i':
 				if(command.equals("info")) {
 					Properties p = System.getProperties();
-					c.sendChat(user, "BNU-Bot v2.0 beta running on " + p.getProperty("os.name") + " (" + p.getProperty("os.arch") + ")");
+					c.sendChat(user, "BNU-Bot " + Version.version() + " running on " + p.getProperty("os.name") + " (" + p.getProperty("os.arch") + ")");
 					break;
 				}
 				break;
@@ -177,22 +209,22 @@ public class CommandEventHandler implements EventHandler {
 					ResultSet rsSubjectUsers = d.getAccountUsers(params[0]);
 					if((rsSubjectUsers == null) | (!rsSubjectUsers.next())) {
 						//They don't have an account by that name, check if it's a user
-						BNetUser bnuser = new BNetUser(params[0], user);
-						ResultSet rsSubject = d.getUser(bnuser);
-						if((rsSubject == null) | (!rsSubject.next())) {
-							c.sendChat(user, "I have never seen [" + params[0] + "]");
+						BNetUser bnSubject = BNetUser.getBNetUser(params[0], user);
+						ResultSet rsSubject = d.getUser(bnSubject);
+						if(!rsSubject.next()) {
+							c.sendChat(user, "I have never seen [" + bnSubject.getFullAccountName() + "]");
 							break;
 						} else {
-							mostRecent = Timestamp.valueOf(rsSubject.getString("lastSeen"));
+							mostRecent = rsSubject.getTimestamp("lastSeen");
 						}
 					} else {
 						//Check the user's accounts						
 						do {
-							Timestamp nt = Timestamp.valueOf(rsSubjectUsers.getString("lastSeen"));
+							Timestamp nt = rsSubjectUsers.getTimestamp("lastSeen");
 							if(mostRecent == null)
 								mostRecent = nt;
 							else {
-								if(nt.compareTo(mostRecent) > 0)
+								if((nt != null) && (nt.compareTo(mostRecent) > 0))
 									mostRecent = nt;
 							}
 						} while(rsSubjectUsers.next());
@@ -203,7 +235,8 @@ public class CommandEventHandler implements EventHandler {
 						break;
 					}
 					
-					c.sendChat(user, "User [" + params[0] + "] was last seen " + mostRecent.toString());
+					String diff = TimeFormatter.formatTime(new Date().getTime() - mostRecent.getTime());
+					c.sendChat(user, "User [" + params[0] + "] was last seen " + diff + " ago");
 					break;
 				}
 				if(command.equals("setaccount")) {
@@ -212,21 +245,24 @@ public class CommandEventHandler implements EventHandler {
 						break;
 					}
 
-					BNetUser subject = new BNetUser(params[0], user.getFullAccountName());
-					ResultSet rsSubject = d.getUser(subject);
+					BNetUser bnSubject = BNetUser.getBNetUser(params[0], user.getFullAccountName());
+					ResultSet rsSubject = d.getUser(bnSubject);
 					if(!rsSubject.next()) {
-						c.sendChat(user, "The user [" + subject.getFullAccountName() + "] does not exist");
+						c.sendChat(user, "The user [" + bnSubject.getFullAccountName() + "] does not exist");
 						break;
 					}
+					String subject = rsSubject.getString("login");
 					
 					ResultSet rsSubjectAccount = d.getAccount(params[1]);
 					if(!rsSubjectAccount.next()) {
 						c.sendChat(user, "The account [" + params[1] + "] does not exist");
 						break;
 					}
+					params[1] = rsSubjectAccount.getString("name");
 					
-					d.setUserAccount(subject, params[1]);
-					c.sendChat(user, "The account [" + params[1] + "] has been assigned to user [" + subject.getFullAccountName() + "]");
+					rsSubject.updateString("account", params[1]);
+					rsSubject.updateRow();
+					c.sendChat(user, "User [" + subject + "] was added to account [" + params[1] + "] successfully.");
 					break;
 				}
 				if(command.equals("setrank")) {
@@ -259,19 +295,12 @@ public class CommandEventHandler implements EventHandler {
 				}
 				break;
 			case 't':
-				if(command.equals("test")) {
-					BNetUser to = new BNetUser("bnu-master", "Azeroth");
-					
-					String longText = "";
-					for(int i = 0; i < 300; i++) {
-						String line = "-=-=-=-=-" + Integer.toString(i*10);
-						line = line.substring(line.length() - 10);
-						if(line.length() != 10)
-							throw new Exception("oops");
-						longText += line;
-					}
-					
-					c.sendChat(to, longText);
+				if(command.equals("trigger")) {
+					char trigger = c.getConnectionSettings().trigger.charAt(0);
+					String output = "0000" + Integer.toString(trigger);
+					output = output.substring(output.length() - 4);
+					output = "Current trigger: " + trigger + " (alt+" + output + ")";
+					c.sendChat(user, output);
 					break;
 				}
 				break;
@@ -295,7 +324,8 @@ public class CommandEventHandler implements EventHandler {
 						if(params.length != 1)
 							throw new InvalidUsageException();
 						
-						ResultSet rsSubject = d.getUser(new BNetUser(params[0], user));
+						BNetUser bnSubject = BNetUser.getBNetUser(params[0], user);
+						ResultSet rsSubject = d.getUser(bnSubject);
 						ResultSet rsSubjectAccount = null;
 						if(!rsSubject.next()) {
 							rsSubject.close();
@@ -308,7 +338,7 @@ public class CommandEventHandler implements EventHandler {
 								break;
 							}
 						} else {
-							BNetUser subject = new BNetUser(rsSubject.getString("login"));
+							BNetUser subject = BNetUser.getBNetUser(rsSubject.getString("login"));
 							rsSubjectAccount = d.getAccount(subject);
 							
 							if((rsSubjectAccount == null) || (!rsSubjectAccount.next())) {
@@ -317,20 +347,54 @@ public class CommandEventHandler implements EventHandler {
 							}
 						}
 						
-						
-						String account = rsSubjectAccount.getString("name");
-						Long access =  rsSubjectAccount.getLong("access");
-						
-						String result = "User [" + account + "] has access " + access;
+						String result = bnSubject.getPrettyName(d);
+
+						String subjectAccount = rsSubjectAccount.getString("name");
+						long subjectAccess = rsSubjectAccount.getLong("access");
+						ResultSet rsSubjectRank = d.getRank(subjectAccess);
+						if(rsSubjectRank.next()) {
+							result += " " + rsSubjectRank.getString("verbstr");
+							result += " (" + subjectAccess + ")";
+						} else {
+							result += " has access " + subjectAccess;
+						}
 						
 						// Append aliases
-						rsSubject = d.getAccountUsers(account);
-						if(rsSubject.next()) {
-							result += " and aliases ";
-							result += rsSubject.getString("login");
-						}
+						ArrayList<String> aliases = new ArrayList<String>();
+						Timestamp lastSeen = null;
+						rsSubject = d.getAccountUsers(subjectAccount);
 						while(rsSubject.next()) {
-							result += ", " + rsSubject.getString("login");
+							if(lastSeen == null)
+								lastSeen = rsSubject.getTimestamp("lastSeen");
+							else {
+								Timestamp nt = rsSubject.getTimestamp("lastSeen");
+								if((nt != null) && (nt.compareTo(lastSeen) > 0))
+									lastSeen = nt;
+							}
+							aliases.add(rsSubject.getString("login"));
+						}
+
+						if(lastSeen != null) {
+							result += " who was last seen [ ";
+							result += TimeFormatter.formatTime(new Date().getTime() - lastSeen.getTime());
+							result += " ] ago";
+						}
+						
+						boolean andHasAliases = false;
+						for(int i = 0; i < aliases.size(); i++) {
+							String l = aliases.get(i);
+							
+							if(bnSubject.equals(l))
+								continue;
+							
+							if(!andHasAliases) {
+								andHasAliases = true;
+								result += " and has aliases ";
+							} else {
+								result += ", ";
+							}
+							
+							result += l;
 						}
 						
 						c.sendChat(user, result);
@@ -352,34 +416,36 @@ public class CommandEventHandler implements EventHandler {
 	}
 
 	public void channelJoin(BNetUser user, int flags, int ping, StatString statstr) {
+		touchUser(user, "Joining channel");
+		
 		try {
-			d.getCreateUser(user);
-		} catch(SQLException e) {
-			//TODO: Handle this error
-			c.recieveError(e.getClass().getName() + ": " + e.getMessage());
+			ResultSet rsAccount = d.getAccount(user);
+			if((rsAccount != null) && rsAccount.next()) {
+				long rank = rsAccount.getLong("access");
+				ResultSet rsRank = d.getRank(rank);
+				if(rsRank.next()) {
+					String greeting = rsRank.getString("greeting");
+					if(greeting != null) {
+						greeting = String.format(greeting, user.getPrettyName(d), ping);
+						c.sendChat(greeting);
+					}
+				}
+				rsRank.close();
+			}
+			if(rsAccount != null)
+				rsAccount.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	
 	public void channelLeave(BNetUser user, int flags, int ping, StatString statstr) {
-		try {
-			d.getCreateUser(user);
-		} catch(SQLException e) {
-			//TODO: Handle this error
-			c.recieveError(e.getClass().getName() + ": " + e.getMessage());
-		}
+		touchUser(user, "Leaving channel");
 	}
 	
 	public void channelUser(BNetUser user, int flags, int ping, StatString statstr) {
-		try {
-			ResultSet rsUser = d.getCreateUser(user);
-			if(rsUser.next()) {
-				rsUser.updateTimestamp("lastSeen", new Timestamp(new Date().getTime()));
-				rsUser.updateRow();
-			}
-		} catch(SQLException e) {
-			//TODO: Handle this error
-			c.recieveError(e.getClass().getName() + ": " + e.getMessage());
-		}
+		touchUser(user, "In channel");
 	}
 	
 	public void joinedChannel(String channel) {}
@@ -390,10 +456,12 @@ public class CommandEventHandler implements EventHandler {
 		if(text.length() == 0)
 			return;
 		
+		touchUser(user, "In channel");
+		
 		char trigger = c.getConnectionSettings().trigger.charAt(0);
 		
 		if(text.equals("?trigger"))
-			c.sendChat(user, "The bot's trigger is: " + trigger);
+			parseCommand(user, "trigger", null); //c.sendChat(user, "The bot's trigger is: " + trigger);
 		else
 			if(text.charAt(0) == trigger) {
 				String[] command = text.substring(1).split(" ");
@@ -490,10 +558,19 @@ public class CommandEventHandler implements EventHandler {
 		if(text.length() == 0)
 			return;
 		
-		String[] command = text.substring(1).split(" ");
-		String paramString = text.substring(text.indexOf(' ') + 1);
+		char trigger = c.getConnectionSettings().trigger.charAt(0);
+		if(text.charAt(0) == trigger)
+			text = text.substring(1);
 		
-		parseCommand(user, command[0], paramString);
+		int i = text.indexOf(' ');
+		if(i == -1) {
+			parseCommand(user, text, null);
+		} else {
+			String command = text.substring(0, i);
+			String paramString = text.substring(i + 1);
+			
+			parseCommand(user, command, paramString);
+		}
 	}
 
 	public void whisperSent(BNetUser user, int flags, int ping, String text) {}

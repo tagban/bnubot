@@ -1,12 +1,78 @@
 package bnubot.core;
 
+import java.sql.*;
+import java.util.Hashtable;
+
+import bnubot.bot.database.Database;
+
 public class BNetUser {
-	String shortLogonName;	// #=yes, realm=only if different from "myRealm"
-	String fullLogonName;	// #=yes, realm=yes
-	String fullAccountName;	// #=no, realm=yes
+	private static Hashtable<String, BNetUser> bnCache = new Hashtable<String, BNetUser>(); 
+	
+	private String shortLogonName;	// #=yes, realm=only if different from "myRealm"
+	private String fullLogonName;	// #=yes, realm=yes
+	private String fullAccountName;	// #=no, realm=yes
+	private String prettyName = null;
+	
+	/**
+	 * Clear the BNetUser cache
+	 */
+	public static void clearCache() {
+		bnCache.clear();
+	}
 
+	/**
+	 * Cacheing constructor for a BNetUser
+	 * @param user		User[#N]@Realm
+	 */
+	public static BNetUser getBNetUser(String user) {
+		String key = user;
+		
+		BNetUser bnc = bnCache.get(key);
+		if(bnc == null) {
+			bnc = new BNetUser(user);
+			bnCache.put(key, bnc);
+		}
+		return bnc;
+	}
 
-	public BNetUser(String user) {
+	/**
+	 * Cacheing constructor for a BNetUser
+	 * @param user		User[#N][@Realm]
+	 * @param myRealm	[User[#N]@]Realm
+	 */
+	public static BNetUser getBNetUser(String user, String myRealm) {
+		// Drop the @ from realm
+		int i = myRealm.indexOf('@');
+		if(i != -1)
+			myRealm = myRealm.substring(i + 1);
+		
+		//Generate a unique key
+		String key = user + ';' + myRealm;
+		
+		//Look for the key in cache
+		BNetUser bnc = bnCache.get(key);
+		if(bnc == null) {
+			//No cache hit; create and add it
+			bnc = new BNetUser(user, myRealm);
+			bnCache.put(key, bnc);
+		}
+		return bnc;
+	}
+
+	/**
+	 * Cacheing constructor for a BNetUser
+	 * @param user		User[#N][@Realm]
+	 * @param myRealm	<BNetUser>
+	 */
+	public static BNetUser getBNetUser(String user, BNetUser model) {
+		return getBNetUser(user, model.getFullAccountName());
+	}
+
+	/**
+	 * Constructor for a BNetUser
+	 * @param user		User[#N]@Realm
+	 */
+	private BNetUser(String user) {
 		String uAccount;
 		String uRealm;
 		int uNumber = 0;
@@ -50,16 +116,12 @@ public class BNetUser {
 		fullAccountName = uAccount + "@" + uRealm;
 	}
 	
-	public BNetUser(String user, BNetUser model) {
-		this(user, model.getFullAccountName());
-	}
-	
 	/**
 	 * Constructor for a BNetUser
 	 * @param user		User[#N][@Realm]
 	 * @param myRealm	[User[#N]@]Realm
 	 */
-	public BNetUser(String user, String myRealm) {
+	private BNetUser(String user, String myRealm) {
 		String uAccount;
 		String uRealm;
 		int uNumber = 0;
@@ -131,6 +193,42 @@ public class BNetUser {
 	 */
 	public String getFullAccountName() {
 		return fullAccountName;
+	}
+	
+	/**
+	 * Get the pretty name of a BNetUser
+	 * @param d The database to work out of
+	 * @return "[<prefix> ][<account> ]([<alias>,<alias>..])"
+	 */
+	public String getPrettyName(Database d) {
+		if(prettyName == null) {
+			try {
+				ResultSet rsAccount = d.getAccount(this);
+				if((rsAccount != null) && rsAccount.next()) {
+					String account = rsAccount.getString("name");
+					
+					if(account != null)
+						prettyName = account + " (" + fullLogonName + ")";
+					else
+						prettyName = fullLogonName;
+
+					long access = rsAccount.getLong("access");
+					ResultSet rsRank = d.getRank(access);
+					if(rsRank.next()) {
+						String prefix = rsRank.getString("prefix");
+						if(prefix != null)
+							prettyName = prefix + " " + prettyName;
+					}
+					rsRank.close();
+				} else {
+					prettyName = "[NOACCOUNT:" + fullAccountName + "]";
+				}
+			} catch(SQLException e) {
+				e.printStackTrace();
+				prettyName = "[SQLException:" + fullAccountName + "]";
+			}
+		}
+		return prettyName;
 	}
 	
 	/**

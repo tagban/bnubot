@@ -680,7 +680,7 @@ public class BNCSConnection extends Connection {
 					myStatString = new StatString(is.readNTString());
 					/*String accountName =*/ is.readNTString();
 					
-					myUser = new BNetUser(uniqueUserName, cs.myRealm);
+					myUser = BNetUser.getBNetUser(uniqueUserName, cs.myRealm);
 					recieveInfo("Logged in as " + myUser.getFullLogonName());
 					titleChanged();
 					
@@ -747,7 +747,7 @@ public class BNCSConnection extends Connection {
 							break;
 						}
 						
-						user = new BNetUser(username, cs.myRealm);
+						user = BNetUser.getBNetUser(username, cs.myRealm);
 						break;
 					}
 					
