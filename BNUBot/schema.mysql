@@ -1,0 +1,51 @@
+# Schema for MySQL
+# vim:ts=4 ai
+
+DROP TABLE IF EXISTS rank;
+DROP TABLE IF EXISTS account;
+DROP TABLE IF EXISTS user;
+
+CREATE TABLE `rank` (
+	id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
+	name VARCHAR(32) UNIQUE NOT NULL
+);
+
+CREATE TABLE `account` (
+	`id` INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
+	`access` INTEGER NOT NULL,
+	`name` VARCHAR(32) UNIQUE NOT NULL,
+	`created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+) TYPE=InnoDB;
+
+CREATE TABLE `user` (
+	`id` INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
+	`login` VARCHAR(32) UNIQUE NOT NULL,
+	`account` VARCHAR(32) DEFAULT NULL,
+	`created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	`lastSeen` TIMESTAMP DEFAULT 0
+);
+
+ALTER TABLE `user`
+	ADD CONSTRAINT `user_ibfk_1`
+		FOREIGN KEY (`account`)
+		REFERENCES `account` (`name`)
+		ON UPDATE CASCADE
+		ON DELETE SET NULL;
+
+
+#ALTER TABLE `account`
+#	ADD CONSTRAINT `account_ibfk_1`
+#		FOREIGN KEY (`access`)
+#		REFERENCES `rank` (`id`)
+#		ON UPDATE CASCADE
+#		ON DELETE CASCADE;
+
+INSERT INTO `rank` (id, name) VALUES (0, 'Guest');
+INSERT INTO `rank` (id, name) VALUES (100, 'Master');
+
+
+INSERT INTO `account` (access, name) VALUES (100, 'Camel');
+
+INSERT INTO `user` (login, account) VALUES('BNU-Camel@USEast', 'Camel');
+INSERT INTO `user` (login, account) VALUES('BNU-Camel@Azeroth', 'Camel');
+
