@@ -4,25 +4,44 @@
 DROP TABLE IF EXISTS rank;
 DROP TABLE IF EXISTS account;
 DROP TABLE IF EXISTS user;
+DROP TABLE IF EXISTS command;
+DROP TABLE IF EXISTS command_alias;
 
 CREATE TABLE `rank` (
-	id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
-	name VARCHAR(32) UNIQUE NOT NULL
+	`id` INTEGER PRIMARY KEY NOT NULL,
+	`name` VARCHAR(32) UNIQUE NOT NULL,
+	`prefix` VARCHAR(32),
+	`verbstr` VARCHAR(64),
+	`greeting` VARCHAR(255)
 );
 
 CREATE TABLE `account` (
 	`id` INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
 	`access` INTEGER NOT NULL,
 	`name` VARCHAR(32) UNIQUE NOT NULL,
-	`created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+	`created` TIMESTAMP NOT NULL default CURRENT_TIMESTAMP
 ) TYPE=InnoDB;
 
 CREATE TABLE `user` (
 	`id` INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
 	`login` VARCHAR(32) UNIQUE NOT NULL,
-	`account` VARCHAR(32) DEFAULT NULL,
-	`created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	`lastSeen` TIMESTAMP DEFAULT 0
+	`account` VARCHAR(32),
+	`created` TIMESTAMP NOT NULL default CURRENT_TIMESTAMP,
+	`lastSeen` TIMESTAMP default 0,
+	`lastAction` VARCHAR(32)
+);
+
+CREATE TABLE `command` (
+	`id` INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
+	`access` INTEGER NOT NULL,
+	`name` VARCHAR(32) UNIQUE NOT NULL,
+	`description` VARCHAR(255),
+	`cmdgroup`	VARCHAR(32) default 'other'
+);
+
+CREATE TABLE `command_alias` (
+	`alias` VARCHAR(32) UNIQUE NOT NULL,
+	`name` VARCHAR(32) NOT NULL
 );
 
 ALTER TABLE `user`
@@ -32,6 +51,13 @@ ALTER TABLE `user`
 		ON UPDATE CASCADE
 		ON DELETE SET NULL;
 
+ALTER TABLE `command_alias`
+	ADD CONSTRAINT
+		FOREIGN KEY (`name`)
+			REFERENCES `command` (`name`)
+			ON UPDATE CASCADE
+			ON DELETE CASCADE;
+
 
 #ALTER TABLE `account`
 #	ADD CONSTRAINT `account_ibfk_1`
@@ -40,12 +66,47 @@ ALTER TABLE `user`
 #		ON UPDATE CASCADE
 #		ON DELETE CASCADE;
 
-INSERT INTO `rank` (id, name) VALUES (0, 'Guest');
-INSERT INTO `rank` (id, name) VALUES (100, 'Master');
+INSERT INTO `rank` (id, name, prefix, verbstr, greeting) VALUES (36,	'Master',				'Master',				'is a nazi',	'/me hails %1$s with ping %2$d');
+INSERT INTO `rank` (id, name, prefix, verbstr, greeting) VALUES (35,	'General',				'General',				'is a general',	'Hello, %1$s. Your ping is %2$d.');
+INSERT INTO `rank` (id, name, prefix, verbstr, greeting) VALUES (34,	'Lieutenant General',	'Lieutenant General',	'is a general',	'Hello, %1$s. Your ping is %2$d.');
+INSERT INTO `rank` (id, name, prefix, verbstr, greeting) VALUES (10,	'Private',				'Private',				'is a private',	'Hello, %1$s. Your ping is %2$d.');
+INSERT INTO `rank` (id, name) VALUES (0,		'Guest');
 
-
-INSERT INTO `account` (access, name) VALUES (100, 'Camel');
+INSERT INTO `account` (access, name) VALUES (36,	'Camel');
+INSERT INTO `account` (access, name) VALUES (35,	'John');
+INSERT INTO `account` (access, name) VALUES (34,	'Sorceress');
 
 INSERT INTO `user` (login, account) VALUES('BNU-Camel@USEast', 'Camel');
 INSERT INTO `user` (login, account) VALUES('BNU-Camel@Azeroth', 'Camel');
+INSERT INTO `user` (login, account) VALUES('BNU-MaStEr@USEast', 'John');
+INSERT INTO `user` (login, account) VALUES('BNU-MaStEr@Azeroth', 'John');
+INSERT INTO `user` (login, account) VALUES('Tagban@USEast', 'John');
+INSERT INTO `user` (login, account) VALUES('Tagban@Azeroth', 'John');
+INSERT INTO `user` (login, account) VALUES('BNU-Sorceress@Azeroth', 'Sorceress');
+INSERT INTO `user` (login, account) VALUES('BNU-Loyalty@Azeroth', 'Sorceress');
+INSERT INTO `user` (login, account) VALUES('SoRcOwNeD@USEast', 'Sorceress');
+
+INSERT INTO `command` (access, name, description, cmdgroup) VALUES (34,	'add', 'Set access', 'accounts');
+INSERT INTO `command` (access, name, description, cmdgroup) VALUES (35,	'ban', NULL, 'moderation');
+INSERT INTO `command` (access, name, description, cmdgroup) VALUES (34,	'createaccount', NULL, 'accounts');
+INSERT INTO `command` (access, name, description, cmdgroup) VALUES (36,	'disconnect', NULL, 'administration');
+INSERT INTO `command` (access, name, description, cmdgroup) VALUES (1,	'info', 'Bot version', 'info');
+INSERT INTO `command` (access, name, description, cmdgroup) VALUES (34,	'kick', NULL, 'moderation');
+INSERT INTO `command` (access, name, description, cmdgroup) VALUES (36,	'quit', 'Close program', 'administration');
+INSERT INTO `command` (access, name, description, cmdgroup) VALUES (36,	'reconnect', NULL, 'administration');
+INSERT INTO `command` (access, name, description, cmdgroup) VALUES (36,	'say', NULL, 'administration');
+INSERT INTO `command` (access, name, description, cmdgroup) VALUES (1,	'seen', NULL, 'accounts');
+INSERT INTO `command` (access, name, description, cmdgroup) VALUES (34,	'setaccount', NULL, 'accounts');
+INSERT INTO `command` (access, name, description, cmdgroup) VALUES (35,	'setrank', NULL, 'clan');
+INSERT INTO `command` (access, name, description, cmdgroup) VALUES (34,	'sweepban', NULL, 'moderation');
+INSERT INTO `command` (access, name, description, cmdgroup) VALUES (1,	'trigger', 'Current trigger', 'useful');
+INSERT INTO `command` (access, name, description, cmdgroup) VALUES (34,	'unban', NULL, 'moderation');
+INSERT INTO `command` (access, name, description, cmdgroup) VALUES (1,	'whoami', NULL, 'accounts');
+INSERT INTO `command` (access, name, description, cmdgroup) VALUES (1,	'whois', NULL, 'accounts');
+
+INSERT INTO `command_alias` (alias, name) VALUES ('ver', 'info');
+INSERT INTO `command_alias` (alias, name) VALUES ('version', 'info');
+INSERT INTO `command_alias` (alias, name) VALUES ('sweep', 'sweepban');
+INSERT INTO `command_alias` (alias, name) VALUES ('ca', 'createaccount');
+INSERT INTO `command_alias` (alias, name) VALUES ('sa', 'setaccount');
 
