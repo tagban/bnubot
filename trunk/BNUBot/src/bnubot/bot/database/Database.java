@@ -6,7 +6,7 @@ import bnubot.core.BNetUser;
 
 public class Database {
 	private static final long databaseVersion = 0;		// Current schema version
-	private static final long compatibleVersion = 1;	// Minimum version compatible
+	private static final long compatibleVersion = 0;	// Minimum version compatible
 	private Connection conn;
 	
 	public Database(String driver, String url, String username, String password) throws SQLException {
@@ -60,11 +60,11 @@ public class Database {
 	}*/
 
 	public Statement createStatement() throws SQLException {
-		return conn.createStatement(); //ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+		return conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
 	}
 	
 	public PreparedStatement prepareStatement(String sql) throws SQLException {
-		return conn.prepareStatement(sql); //, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+		return conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
 	}
 	
 	public ResultSet getUser(BNetUser user) throws SQLException {
