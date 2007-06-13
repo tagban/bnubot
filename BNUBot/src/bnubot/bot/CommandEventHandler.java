@@ -3,10 +3,7 @@ package bnubot.bot;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.text.DateFormat;
 import java.util.*;
-
-import javax.swing.text.DateFormatter;
 
 import bnubot.bot.database.*;
 import bnubot.core.*;
@@ -359,7 +356,7 @@ public class CommandEventHandler implements EventHandler {
 			d.getCreateUser(user);
 		} catch(SQLException e) {
 			//TODO: Handle this error
-			recieveError(e.getClass().getName() + ": " + e.getMessage());
+			c.recieveError(e.getClass().getName() + ": " + e.getMessage());
 		}
 	}
 	
@@ -368,21 +365,20 @@ public class CommandEventHandler implements EventHandler {
 			d.getCreateUser(user);
 		} catch(SQLException e) {
 			//TODO: Handle this error
-			recieveError(e.getClass().getName() + ": " + e.getMessage());
+			c.recieveError(e.getClass().getName() + ": " + e.getMessage());
 		}
 	}
 	
 	public void channelUser(BNetUser user, int flags, int ping, StatString statstr) {
 		try {
 			ResultSet rsUser = d.getCreateUser(user);
-			//TODO: set last seen
-			/*Session s = d.openSession();
-			u.setLastSeen(new Date().toString());
-			s.save(u);
-			s.close();*/
+			if(rsUser.next()) {
+				rsUser.updateTimestamp("lastSeen", new Timestamp(new Date().getTime()));
+				rsUser.updateRow();
+			}
 		} catch(SQLException e) {
 			//TODO: Handle this error
-			recieveError(e.getClass().getName() + ": " + e.getMessage());
+			c.recieveError(e.getClass().getName() + ": " + e.getMessage());
 		}
 	}
 	
