@@ -1,15 +1,17 @@
 package bnubot.bot.database;
 
+import java.io.*;
 import java.sql.*;
+import java.util.Hashtable;
 
 import bnubot.core.BNetUser;
 
 public class Database {
 	private static final long databaseVersion = 0;		// Current schema version
-	private static final long compatibleVersion = 0;	// Minimum version compatible
+	private static final long compatibleVersion = 1;	// Minimum version compatible
 	private Connection conn;
 	
-	public Database(String driver, String url, String username, String password) throws SQLException {
+	public Database(String driver, String url, String username, String password, String schemaFile) throws SQLException {
 		try {
 			Class.forName(driver);
 		} catch (ClassNotFoundException e) {
@@ -22,42 +24,8 @@ public class Database {
 		System.out.println("Connected!");
 		
 		if(!checkSchema())
-			createSchema();
+			createSchema(schemaFile);
 	}
-	
-	/*public Database(File f) throws SQLException {
-	    try {
-			Class.forName("org.sqlite.JDBC");
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-		
-		boolean fileExists = f.exists();
-		conn = DriverManager.getConnection("jdbc:sqlite:" + f.getName());
-		Statement stmt = conn.createStatement();
-		try {
-			stmt.execute("PRAGMA synchronous = FULL;");
-			stmt.close();
-		} catch(SQLException e) {
-			File newName = new File("database-corrupt-" + String.format("%1$tY-%1$tm-%1$te %1$tH-%1$tM-%1$tS", new GregorianCalendar()) + ".db");
-			System.out.println("Database is damaged; renaming to " + newName.getName());
-			conn.close();
-			f.renameTo(newName);
-			
-			conn = DriverManager.getConnection("jdbc:sqlite:" + f.getName());
-			stmt = conn.createStatement();
-			stmt.execute("PRAGMA synchronous = FULL;");
-			stmt.close();
-		}
-	    
-		if(fileExists) {
-			if(!checkSchema())
-				createSchema();
-		}
-		else
-			createSchema();
-	}*/
 
 	public Statement createStatement() throws SQLException {
 		return conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
@@ -68,8 +36,8 @@ public class Database {
 	}
 	
 	public ResultSet getUser(BNetUser user) throws SQLException {
-		PreparedStatement ps = prepareStatement("SELECT * FROM user WHERE login=?");
-		ps.setString(1, user.getFullAccountName().toLowerCase());
+		PreparedStatement ps = prepareStatement("SELECT * FROM user WHERE login=? LIMIT 1");
+		ps.setString(1, user.getFullAccountName());
 		return ps.executeQuery();
 	}
 	
@@ -79,7 +47,7 @@ public class Database {
 			return getUser(user);
 		
 		PreparedStatement ps = prepareStatement("INSERT INTO user (login) VALUES(?)");
-		ps.setString(1, user.getFullAccountName().toLowerCase());
+		ps.setString(1, user.getFullAccountName());
 		ps.execute();
 		ps.close();
 		
@@ -91,8 +59,8 @@ public class Database {
 	}
 	
 	public ResultSet getAccount(String account) throws SQLException {
-		PreparedStatement ps = prepareStatement("SELECT * FROM account WHERE name=?");
-		ps.setString(1, account.toLowerCase());
+		PreparedStatement ps = prepareStatement("SELECT * FROM account WHERE name=? LIMIT 1");
+		ps.setString(1, account);
 		return ps.executeQuery();
 	}
 	
@@ -109,13 +77,13 @@ public class Database {
 	
 	public ResultSet getAccountUsers(String account) throws SQLException {
 		PreparedStatement ps = prepareStatement("SELECT * FROM user WHERE account=?");
-		ps.setString(1, account.toLowerCase());
+		ps.setString(1, account);
 		return ps.executeQuery();
 	}
 
-	public ResultSet createAccount(String account, Long access) throws SQLException {
+	public ResultSet createAccount(String account, long access) throws SQLException {
 		PreparedStatement ps = prepareStatement("INSERT INTO account (name, access) VALUES(?, ?)");
-		ps.setString(1, account.toLowerCase());
+		ps.setString(1, account);
 		ps.setLong(2, access);
 		ps.execute();
 		ps.close();
@@ -135,37 +103,40 @@ public class Database {
 		return createAccount(account, access);
 	}
 	
-	public void setAccountAccess(String account, long access) throws SQLException {
-		PreparedStatement ps = prepareStatement("UPDATE account SET access=? WHERE name=?");
+	public ResultSet getRank(long access) throws SQLException {
+		PreparedStatement ps = prepareStatement("SELECT * FROM rank WHERE id=?");
 		ps.setLong(1, access);
-		ps.setString(2, account.toLowerCase());
-		ps.execute();
-		int uc = ps.getUpdateCount();
-		ps.close();
-		
-		if(uc != 1)
-			throw new SQLException("Affected rows was " + uc);
+		return ps.executeQuery();
 	}
 	
+	//Cache command alias mappings to improve performance
+	private static Hashtable<String, String> aliases = new Hashtable<String, String>();
+	public String resolveCommandAlias(String command) throws SQLException {
+		String tmp = aliases.get(command);
+		if(tmp != null)
+			return tmp;
+		
+		PreparedStatement ps = prepareStatement("SELECT name FROM command_alias WHERE alias=? LIMIT 1");
+		ps.setString(1, command);
+		ResultSet rs = ps.executeQuery();
+		if(rs.next()) {
+			String name = rs.getString(1);
+			rs.close();
+			//System.out.println("Alias " + command + " resolves to " + name + "; caching");
+			aliases.put(command, name);
+			return name;
+		}
+		rs.close();
+		//System.out.println("Command " + command + " is not an alias; caching");
+		aliases.put(command, command);
+		return command;
+	}
 
-	public void setUserAccount(BNetUser user, String account) throws SQLException {
-		ResultSet rsAccount = getAccount(account);
-		if(!rsAccount.next())
-			throw new SQLException("The account [" + account + "] does not exist");
-		
-		
-		PreparedStatement ps = prepareStatement("UPDATE user SET account=? WHERE login=?");
-		ps.setString(1, account.toLowerCase());
-		ps.setString(2, user.getFullAccountName().toLowerCase());
-		ps.execute();
-		int uc = ps.getUpdateCount();
-		ps.close();
-		
-		if(uc == 0)
-			throw new SQLException("The user [" + user.getFullAccountName() + "] does not exist");
-		
-		if(uc != 1)
-			throw new SQLException("Affected rows was " + uc);
+	public ResultSet getCommand(String command) throws SQLException {
+		command = resolveCommandAlias(command);
+		PreparedStatement ps = prepareStatement("SELECT * FROM command WHERE name=? LIMIT 1");
+		ps.setString(1, command);
+		return ps.executeQuery();
 	}
 	
 	/**
@@ -176,7 +147,7 @@ public class Database {
 	private boolean checkSchema() {
 		ResultSet rs = null;
 		try {
-			rs = createStatement().executeQuery("SELECT version FROM dbVersion;");
+			rs = createStatement().executeQuery("SELECT version FROM dbVersion LIMIT 1");
 			if(!rs.next()) {
 				rs.close();
 				return false;
@@ -199,94 +170,45 @@ public class Database {
 		return false;
 	}
 	
-	private void createSchema() throws SQLException {
+	private void createSchema(String schemaFile) throws SQLException {
 		System.out.println("The database requires rebuilding.");
 		
 		Statement stmt = createStatement();
-
-		stmt.execute("DROP TABLE IF EXISTS dbVersion;");
-		stmt.execute("DROP TABLE IF EXISTS account;");
-		stmt.execute("DROP TABLE IF EXISTS user;");
-		stmt.execute("DROP TABLE IF EXISTS rank;");
 		
+		BufferedReader fr;
+		try {
+			fr = new BufferedReader(new FileReader(new File(schemaFile)));
+		} catch (FileNotFoundException e) {
+			throw new SQLException("File not found: " +schemaFile);
+		}
+		
+		String query = "";
+		try {
+			while(fr.ready()) {
+				if(query.length() == 0)
+					query = fr.readLine();
+				else
+					query += '\n' + fr.readLine(); 
+						
+				if(query.length() == 0)
+					continue;
+				
+				if(query.charAt(query.length()-1) == ';') {
+					stmt.execute(query);
+					query = "";
+				}
+			}
+		} catch(IOException e) {
+			e.printStackTrace();
+			System.exit(1);
+		} catch(SQLException e) {
+			System.err.println("QUERY:" + query);
+			throw e;
+		}
+		
+		stmt.execute("DROP TABLE IF EXISTS dbVersion;");
 		stmt.execute("CREATE TABLE dbVersion (version INTEGER NOT NULL);");
 		stmt.execute("INSERT INTO dbVersion (version) VALUES (" + databaseVersion + ");");
-		
-		try {
-			// SQLite
-			stmt.execute(
-				"CREATE TABLE account ( " +
-					"id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL ON CONFLICT ROLLBACK, " +
-					"access INTEGER NOT NULL, " +
-					"name TEXT UNIQUE NOT NULL, " +
-					"created INTEGER NOT NULL DEFAULT CURRENT_TIMESTAMP " +
-				");");
-		} catch(SQLException e) {
-			// MySQL
-			stmt.execute(
-				"CREATE TABLE account ( " +
-					"id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL, " +
-					"access INTEGER NOT NULL, " +
-					"name VARCHAR(32) UNIQUE NOT NULL, " +
-					"created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP " +
-				");");
-		}
-		
-		/*PreparedStatement ps = conn.prepareStatement("INSERT INTO account (access, name) VALUES (?, ?);");
-		ps.setInt(1, 100);
-		ps.setString(2, "Camel");
-		ps.execute();
-		ps.close();*/
-
-		try {
-			// SQLite
-			stmt.execute(
-				"CREATE TABLE user ( " +
-					"id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL ON CONFLICT ROLLBACK, " +
-					"login TEXT UNIQUE NOT NULL, " +
-					"account TEXT DEFAULT NULL, " +
-					"created INTEGER NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
-					"lastSeen INTEGER NOT NULL DEFAULT CURRENT_TIMESTAMP " +
-				");");
-		} catch(SQLException e) {
-			// MySQL
-			stmt.execute(
-				"CREATE TABLE user ( " +
-					"id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL, " +
-					"login VARCHAR(32) UNIQUE NOT NULL, " +
-					"account VARCHAR(32) DEFAULT NULL, " +
-					"created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, " +
-					"lastSeen TIMESTAMP NOT NULL " +
-				");");
-		}
-		
-		/*ps = conn.prepareStatement("INSERT INTO user (login, account) VALUES (?, ?);");
-		ps.setString(1, "bnu-camel@useast");
-		ps.setString(2, "Camel");
-		ps.execute();*/
-
-		try {
-			// SQLite
-			stmt.execute(
-				"CREATE TABLE rank ( " +
-					"id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL ON CONFLICT ROLLBACK, " +
-					"name TEXT UNIQUE NOT NULL " +
-				");");
-		} catch(SQLException e) {
-			// MySQL
-			stmt.execute(
-					"CREATE TABLE rank ( " +
-						"id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL, " +
-						"name VARCHAR(32) UNIQUE NOT NULL " +
-					");");
-		}
-		
-		/*ps = conn.prepareStatement("INSERT INTO rank (id, name) VALUES (?, ?);");
-		ps.setInt(1, 100);
-		ps.setString(2, "Master");
-		ps.execute();
-		ps.close();*/
-		
 		stmt.close();
 	}
 }
