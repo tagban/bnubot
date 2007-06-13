@@ -1,7 +1,5 @@
 package bnubot;
 
-import java.io.File;
-
 import bnubot.bot.CommandEventHandler;
 import bnubot.bot.EventHandler;
 import bnubot.bot.console.ConsoleEventHandler;
@@ -105,9 +103,21 @@ public class Main {
 		}
 		
 		//Bot
-		Database d = new Database(new File("database.db"));
-		EventHandler cmd = new CommandEventHandler(d);
-		primary.addEventHandler(cmd);
+		Database d = null;
+		EventHandler cmd = null;
+		try {
+			String db_driver = Ini.ReadIni("settings.ini", "bnubot", "db_driver", "org.sqlite.JDBC");
+			String db_url = Ini.ReadIni("settings.ini", "bnubot", "db_url", "jdbc:sqlite:database.db");
+			String db_username = Ini.ReadIni("settings.ini", "bnubot", "db_username", "");
+			String db_password = Ini.ReadIni("settings.ini", "bnubot", "db_password", "");
+			
+			d = new Database(db_driver, db_url, db_username, db_password);
+			cmd = new CommandEventHandler(d);
+			primary.addEventHandler(cmd);
+		} catch(Exception e) {
+			System.err.println("Failed to initialize database (" + e.getMessage() + "); CommandEventHandler will not be enabled.");
+			d = null;
+		}
 		
 		//Other plugins
 		if(plugins != null) {
