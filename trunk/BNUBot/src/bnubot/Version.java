@@ -1,7 +1,7 @@
 package bnubot;
 
 public final class Version {
-	public static final Integer VER_MAJOR = 2;
+	public static final Integer VER_MAJOR = 3;
 	public static final Integer VER_MINOR = 0;
 	public static final Integer VER_REVISION = 0;
 	public static final Integer VER_ALPHA = null;
