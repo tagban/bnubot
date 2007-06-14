@@ -123,6 +123,7 @@ public class Main {
 					d = new Database(db_driver, db_url, db_username, db_password, db_schema);
 					cmd = new CommandEventHandler(d);
 					primary.addEventHandler(cmd);
+					BNetUser.setDatabase(d);
 				} catch(Exception e) {
 					if(gui != null)
 						primary.recieveError("Failed to initialize database:\n" + e.getMessage() + "\n\nCommands will be disabled.");
