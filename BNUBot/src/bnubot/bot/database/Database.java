@@ -11,13 +11,8 @@ public class Database {
 	private static final long compatibleVersion = 0;	// Minimum version compatible
 	private Connection conn;
 	
-	public Database(String driver, String url, String username, String password, String schemaFile) throws SQLException {
-		try {
-			Class.forName(driver);
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
+	public Database(String driver, String url, String username, String password, String schemaFile) throws SQLException, ClassNotFoundException {
+		Class.forName(driver);
 		
 		System.out.println("Connecting to " + url);
 		conn = DriverManager.getConnection(url, username, password);
