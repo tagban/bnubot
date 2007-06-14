@@ -8,7 +8,7 @@ import bnubot.core.BNetUser;
 
 public class Database {
 	private static final long databaseVersion = 0;		// Current schema version
-	private static final long compatibleVersion = 1;	// Minimum version compatible
+	private static final long compatibleVersion = 0;	// Minimum version compatible
 	private Connection conn;
 	
 	public Database(String driver, String url, String username, String password, String schemaFile) throws SQLException {
