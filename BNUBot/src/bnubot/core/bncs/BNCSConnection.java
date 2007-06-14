@@ -1152,12 +1152,20 @@ public class BNCSConnection extends Connection {
 		switch(productID) {
 		case ProductIDs.PRODUCT_D2DV:
 		case ProductIDs.PRODUCT_D2XP:
-			if(text.length() > 4) {
-				if(text.substring(0, 3).equals("/w ")
-				|| text.substring(0, 3).equals("/m ")) {
-					if(text.charAt(3) != '*') {
-						text = text.substring(0, 3) + '*' + text.substring(3);
+			if((text.length() > 1) && (text.charAt(0) == '/')) {
+				String cmd = text.substring(1);
+				int i = cmd.indexOf(' ');
+				if(i != -1) {
+					String theRest = cmd.substring(i+1);
+					cmd = cmd.substring(0, i);
+				
+					if(cmd.equals("w")
+					|| cmd.equals("m")
+					|| cmd.equals("whois")) {
+						if(theRest.charAt(0) != '*')
+							text = '/' + cmd + " *" + theRest;
 					}
+					
 				}
 			}
 			break;
