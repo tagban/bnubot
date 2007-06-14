@@ -5,6 +5,11 @@ import java.util.Hashtable;
 
 import bnubot.bot.database.Database;
 
+/**
+ * A class responsible for formatting Battle.net usernames.
+ * Now it includes support for the database, which will make toString() quite pretty.
+ * @author Scott Anderson
+ */
 public class BNetUser {
 	private static Hashtable<String, BNetUser> bnCache = new Hashtable<String, BNetUser>(); 
 	
@@ -12,6 +17,12 @@ public class BNetUser {
 	private String fullLogonName;	// #=yes, realm=yes
 	private String fullAccountName;	// #=no, realm=yes
 	private String prettyName = null;
+
+	private static Database d = null;
+	
+	public static void setDatabase(Database d) {
+		BNetUser.d = d;
+	}
 	
 	/**
 	 * Clear the BNetUser cache
@@ -25,8 +36,7 @@ public class BNetUser {
 	 * @param user		User[#N]@Realm
 	 */
 	public static BNetUser getBNetUser(String user) {
-		String key = user;
-		
+		String key = user.toLowerCase();
 		BNetUser bnc = bnCache.get(key);
 		if(bnc == null) {
 			bnc = new BNetUser(user);
@@ -47,7 +57,12 @@ public class BNetUser {
 			myRealm = myRealm.substring(i + 1);
 		
 		//Generate a unique key
-		String key = user + ';' + myRealm;
+		String key = user;
+		i = key.indexOf('@');
+		if(i == -1)
+			key += '@' + myRealm;
+		
+		key = key.toLowerCase();
 		
 		//Look for the key in cache
 		BNetUser bnc = bnCache.get(key);
@@ -173,7 +188,7 @@ public class BNetUser {
 	
 	/**
 	 * Gets the shortest possible logon name
-	 * @return User[@Realm][#N]
+	 * @return User[#N][@Realm]
 	 */
 	public String getShortLogonName() {
 		return shortLogonName;
@@ -181,7 +196,7 @@ public class BNetUser {
 	
 	/**
 	 * Gets the full logon name
-	 * @return User@Realm[#N]
+	 * @return User[#N]@Realm
 	 */
 	public String getFullLogonName() {
 		return fullLogonName;
@@ -196,11 +211,20 @@ public class BNetUser {
 	}
 	
 	/**
-	 * Get the pretty name of a BNetUser
-	 * @param d The database to work out of
-	 * @return "[<prefix> ][<account> ]([<alias>,<alias>..])"
+	 * Resets the pretty name back to null, so it will be re-evaluated next time toString() is called
 	 */
-	public String getPrettyName(Database d) {
+	public void resetPrettyName() {
+		prettyName = null;
+	}
+	
+	/**
+	 * Equivalent to getShortLogonName if there is no database or if the user isn't in it;
+	 * @return User[#N][@Realm] or [Prefix ][Account (]FullLogonName[)]
+	 */
+	public String toString() {
+		if(d == null)
+			return shortLogonName;
+
 		if(prettyName == null) {
 			try {
 				ResultSet rsAccount = d.getAccount(this);
@@ -221,22 +245,14 @@ public class BNetUser {
 					}
 					rsRank.close();
 				} else {
-					prettyName = "[NOACCOUNT:" + fullAccountName + "]";
+					prettyName = shortLogonName;
 				}
 			} catch(SQLException e) {
 				e.printStackTrace();
-				prettyName = "[SQLException:" + fullAccountName + "]";
+				prettyName = "[SQLException:" + shortLogonName + "]";
 			}
 		}
 		return prettyName;
-	}
-	
-	/**
-	 * Equivalent to getShortLogonName
-	 * @return User[@Realm][#N]
-	 */
-	public String toString() {
-		return shortLogonName;
 	}
 	
 	public boolean equals(Object o) {
