@@ -216,7 +216,6 @@ public class StatString {
 	
 			case ProductIDs.PRODUCT_D2DV:
 			case ProductIDs.PRODUCT_D2XP:
-				System.out.println(statString[0]);
 				statString2 = statString[0].substring(4).split(",", 3);
 				//PX2DUSEast,EsO-SILenTNiGhT,„€ÿ'ÿÿÿÿÿÿÿÿÿÿÿÿÿÿSèšÿÿÿÿ
 				//PX2DUSEast,getoutof_myway ,„€ÿ++ÿÿÿÿÿÿÿÿÿÿÿÿÿTèžÿÿÿÿ
