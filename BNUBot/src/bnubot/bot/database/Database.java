@@ -150,7 +150,6 @@ public class Database {
 			
 			long version = rs.getLong(1);
 			if(version >= compatibleVersion) {
-				System.out.println("The database is up to date.");
 				rs.close();
 				return true;
 			}
