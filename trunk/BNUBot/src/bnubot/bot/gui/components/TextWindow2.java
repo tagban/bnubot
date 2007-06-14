@@ -32,7 +32,7 @@ public class TextWindow2 extends JScrollPane {
 	private boolean disableRedraw = false;
 
 	public TextWindow2(ColorScheme cs) {
-		super();
+		super(VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_NEVER);
 		this.cs = cs;
 		jep = new myJEP();
 		jep.setEditable(false);
