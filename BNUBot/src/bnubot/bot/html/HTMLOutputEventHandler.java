@@ -3,8 +3,7 @@ package bnubot.bot.html;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.ArrayList;
 
 import javax.swing.SwingUtilities;
 
@@ -27,10 +26,18 @@ public class HTMLOutputEventHandler implements EventHandler {
 	boolean generationNeeded;
 	Runnable writeUserListRunnable = null;
 	
-	Hashtable<String, UserInfo> users;
+	ArrayList<UserInfo> users;
+	
+	private UserInfo get(BNetUser u) {
+		for(UserInfo ui : users.toArray(new UserInfo[users.size()])) {
+			if(u.equals(ui.user))
+				return ui;
+		}
+		return null;
+	}
 
 	public void bnetConnected() {
-		users = new Hashtable<String, UserInfo>();
+		users = new ArrayList<UserInfo>();
 		File f = new File("html");
 		f.mkdir();
 	}
@@ -44,7 +51,7 @@ public class HTMLOutputEventHandler implements EventHandler {
 
 	public void channelJoin(BNetUser user, int flags, int ping, StatString statstr) {
 		UserInfo ui = new UserInfo();
-		users.put(user.toString(), ui);
+		users.add(ui);
 		ui.user = user;
 		ui.flags = flags;
 		ui.ping = ping;
@@ -54,14 +61,17 @@ public class HTMLOutputEventHandler implements EventHandler {
 	}
 	
 	public void channelLeave(BNetUser user, int flags, int ping, StatString statstr) {
-		users.remove(user.toString());
+		if(!users.remove(get(user)))
+			System.err.println("Tried to remove a user that was not in the list: " + user.toString());
+		
+		writeUserList();
 	}
 	
 	public void channelUser(BNetUser user, int flags, int ping, StatString statstr) {
-		UserInfo ui = users.get(user.toString());
+		UserInfo ui = get(user);
 		if(ui == null) {
 			ui = new UserInfo();
-			users.put(user.toString(), ui);
+			users.add(ui);
 		}
 		ui.user = user;
 		ui.flags = flags;
@@ -100,22 +110,19 @@ public class HTMLOutputEventHandler implements EventHandler {
 			writeUserListRunnable = new Runnable() {
 				public void run() {
 					try {
-						if(generationNeeded == false)
+						if(!generationNeeded)
 							return;
+						generationNeeded = false;
 						
 						File f = new File("html/userlist.html");
-						if(f.exists())
-							f.delete();
-						f.createNewFile();
 					
-						String out = "<table>";
-						
-						out += "<tr><td colspan=\"4\"><b>" + channel + "</b> (" + users.values().size() + ")</td></tr>";
-						
-						Enumeration<UserInfo> en = users.elements();
-						while(en.hasMoreElements()) {
-							UserInfo ui = en.nextElement();
-							
+						String out = "<table><tr><td colspan=\"4\"><b>";
+						out += channel;
+						out += "</b> (";
+						out += users.size();
+						out += ")</td></tr>";
+
+						for(UserInfo ui : users.toArray(new UserInfo[users.size()])) {
 							String product = getIcon(ui.statstr.getProduct(), ui.statstr.getIcon(), ui.flags);
 							
 							out += "<tr>";
