@@ -240,8 +240,8 @@ public class CommandEventHandler implements EventHandler {
 					break;
 				}
 				if(command.equals("setaccount")) {
-					if(params.length != 2) {
-						c.sendChat(user, "Usage: %trigger%setaccount <user>[@<realm>] <account>");
+					if((params.length < 1) || (params.length > 2)) {
+						c.sendChat(user, "Usage: %trigger%setaccount <user>[@<realm>] [<account>]");
 						break;
 					}
 
@@ -253,16 +253,20 @@ public class CommandEventHandler implements EventHandler {
 					}
 					String subject = rsSubject.getString("login");
 					
-					ResultSet rsSubjectAccount = d.getAccount(params[1]);
-					if(!rsSubjectAccount.next()) {
-						c.sendChat(user, "The account [" + params[1] + "] does not exist");
-						break;
+					String newAccount = null;
+					if(params.length == 2) {
+						ResultSet rsSubjectAccount = d.getAccount(params[1]);
+						if(!rsSubjectAccount.next()) {
+							c.sendChat(user, "The account [" + params[1] + "] does not exist");
+							break;
+						}
+						newAccount = rsSubjectAccount.getString("name");
 					}
-					params[1] = rsSubjectAccount.getString("name");
 					
-					rsSubject.updateString("account", params[1]);
+					rsSubject.updateString("account", newAccount);
 					rsSubject.updateRow();
-					c.sendChat(user, "User [" + subject + "] was added to account [" + params[1] + "] successfully.");
+					bnSubject.resetPrettyName();
+					c.sendChat(user, "User [" + subject + "] was added to account [" + newAccount + "] successfully.");
 					break;
 				}
 				if(command.equals("setrank")) {
@@ -347,7 +351,7 @@ public class CommandEventHandler implements EventHandler {
 							}
 						}
 						
-						String result = bnSubject.getPrettyName(d);
+						String result = bnSubject.toString();
 
 						String subjectAccount = rsSubjectAccount.getString("name");
 						long subjectAccess = rsSubjectAccount.getLong("access");
@@ -426,7 +430,7 @@ public class CommandEventHandler implements EventHandler {
 				if(rsRank.next()) {
 					String greeting = rsRank.getString("greeting");
 					if(greeting != null) {
-						greeting = String.format(greeting, user.getPrettyName(d), ping);
+						greeting = String.format(greeting, user.toString(), ping);
 						c.sendChat(greeting);
 					}
 				}
