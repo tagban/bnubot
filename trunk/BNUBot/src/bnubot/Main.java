@@ -91,6 +91,17 @@ public class Main {
 		
 		BNCSConnection primary = new BNCSConnection(cs, cq);
 		
+		//CLI
+		if(cs.enableCLI)
+			primary.addEventHandler(new ConsoleEventHandler());
+		
+		//GUI
+		EventHandler gui = null;
+		if(cs.enableGUI) {
+			gui = new GuiEventHandler();
+			primary.addEventHandler(gui);
+		}
+		
 		//Bot
 		Database d = null;
 		EventHandler cmd = null;
@@ -103,28 +114,23 @@ public class Main {
 			
 			if((db_driver == null)
 			|| (db_url == null)) {
-				System.out.println("Database is not configured; disabling commands.");
+				if(gui != null)
+					primary.recieveInfo("Database is not configured; disabling commands.");
+				else
+					System.out.println("Database is not configured; disabling commands.");
 			} else {
 				try {
 					d = new Database(db_driver, db_url, db_username, db_password, db_schema);
 					cmd = new CommandEventHandler(d);
 					primary.addEventHandler(cmd);
 				} catch(Exception e) {
-					System.err.println("Failed to initialize database:\n" + e.getMessage() + "\n\nCommands will be disabled.");
+					if(gui != null)
+						primary.recieveError("Failed to initialize database:\n" + e.getMessage() + "\n\nCommands will be disabled.");
+					else
+						System.err.println("Failed to initialize database:\n" + e.getMessage() + "\n\nCommands will be disabled.");
 					d = null;
 				}
 			}
-		}
-		
-		//CLI
-		if(cs.enableCLI)
-			primary.addEventHandler(new ConsoleEventHandler());
-		
-		//GUI
-		EventHandler gui = null;
-		if(cs.enableGUI) {
-			gui = new GuiEventHandler();
-			primary.addEventHandler(gui);
 		}
 			
 		//Other plugins
