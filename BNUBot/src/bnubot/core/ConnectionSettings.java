@@ -39,6 +39,7 @@ public class ConnectionSettings implements Serializable {
 	public boolean autoconnect;
 	public boolean enableCLI;
 	public boolean enableGUI;
+	public boolean enableCommands;
 	public boolean packetLog;
 	
 	public String myRealm;
@@ -175,6 +176,7 @@ public class ConnectionSettings implements Serializable {
 		Ini.WriteIni(file, header, "autoconnect", Boolean.toString(autoconnect));
 		Ini.WriteIni(file, header, "enableCLI", Boolean.toString(enableCLI));
 		Ini.WriteIni(file, header, "enableGUI", Boolean.toString(enableGUI));
+		Ini.WriteIni(file, header, "enableCommands", Boolean.toString(enableCommands));
 		Ini.WriteIni(file, header, "packetLog", Boolean.toString(packetLog));
 	}
 	
@@ -212,6 +214,8 @@ public class ConnectionSettings implements Serializable {
 					Ini.ReadIni(file, header, "enableCLI", "false"));
 		enableGUI = Boolean.parseBoolean(
 					Ini.ReadIni(file, header, "enableGUI", "true"));
+		enableCommands = Boolean.parseBoolean(
+					Ini.ReadIni(file, header, "enableGUI", "false"));
 		packetLog = Boolean.parseBoolean(
 					Ini.ReadIni(file, header, "packetLog", "false"));
 	}
