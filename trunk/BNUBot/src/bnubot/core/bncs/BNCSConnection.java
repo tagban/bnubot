@@ -1254,6 +1254,7 @@ public class BNCSConnection extends Connection {
 				out += HexDump.DWordToPretty(myClan);
 				out += " ";
 				out += clanRanks[myClanRank-1];
+				out += " ";
 			}
 			out += myUser.getShortLogonName() + " ]";
 		}
