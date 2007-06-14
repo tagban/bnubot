@@ -288,7 +288,7 @@ public class UserList extends JPanel {
 	}
 	
 	public void removeUser(BNetUser user) {
-		UserInfo ui = users.get(user.getFullLogonName());
+		UserInfo ui = users.get(user);
 		if(ui != null) {
 			b.remove(ui.label);
 			ui.label = null;
