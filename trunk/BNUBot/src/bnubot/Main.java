@@ -91,6 +91,31 @@ public class Main {
 		
 		BNCSConnection primary = new BNCSConnection(cs, cq);
 		
+		//Bot
+		Database d = null;
+		EventHandler cmd = null;
+		if(cs.enableCommands) {
+			String db_driver = Ini.ReadIni("settings.ini", "database", "driver", null);
+			String db_url = Ini.ReadIni("settings.ini", "database", "url", null);
+			String db_username = Ini.ReadIni("settings.ini", "database", "username", null);
+			String db_password = Ini.ReadIni("settings.ini", "database", "password", null);
+			String db_schema = Ini.ReadIni("settings.ini", "database", "schema", null);
+			
+			if((db_driver == null)
+			|| (db_url == null)) {
+				System.out.println("Database is not configured; disabling commands.");
+			} else {
+				try {
+					d = new Database(db_driver, db_url, db_username, db_password, db_schema);
+					cmd = new CommandEventHandler(d);
+					primary.addEventHandler(cmd);
+				} catch(Exception e) {
+					System.err.println("Failed to initialize database:\n" + e.getMessage() + "\n\nCommands will be disabled.");
+					d = null;
+				}
+			}
+		}
+		
 		//CLI
 		if(cs.enableCLI)
 			primary.addEventHandler(new ConsoleEventHandler());
@@ -101,25 +126,7 @@ public class Main {
 			gui = new GuiEventHandler();
 			primary.addEventHandler(gui);
 		}
-		
-		//Bot
-		Database d = null;
-		EventHandler cmd = null;
-		try {
-			String db_driver = Ini.ReadIni("settings.ini", "bnubot", "db_driver", "org.sqlite.JDBC");
-			String db_url = Ini.ReadIni("settings.ini", "bnubot", "db_url", "jdbc:sqlite:database.db");
-			String db_username = Ini.ReadIni("settings.ini", "bnubot", "db_username", "");
-			String db_password = Ini.ReadIni("settings.ini", "bnubot", "db_password", "");
-			String db_schema = Ini.ReadIni("settings.ini", "bnubot", "db_schema", "schema.sqlite.sql");
 			
-			d = new Database(db_driver, db_url, db_username, db_password, db_schema);
-			cmd = new CommandEventHandler(d);
-			primary.addEventHandler(cmd);
-		} catch(Exception e) {
-			System.err.println("Failed to initialize database (" + e.getMessage() + "); CommandEventHandler will not be enabled.");
-			d = null;
-		}
-		
 		//Other plugins
 		if(plugins != null) {
 			for(int i = 0; i < plugins.length; i++) {
