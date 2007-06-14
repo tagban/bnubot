@@ -14,6 +14,7 @@ import bnubot.bot.gui.GuiEventHandler;
 import bnubot.bot.gui.ColorScheme.ColorScheme;
 import bnubot.bot.gui.icons.BNetIcon;
 import bnubot.bot.gui.icons.IconsDotBniReader;
+import bnubot.core.BNetUser;
 import bnubot.core.Connection;
 import bnubot.core.StatString;
 import bnubot.core.bncs.ProductIDs;
@@ -21,7 +22,7 @@ import bnubot.core.bncs.ProductIDs;
 @SuppressWarnings("serial")
 public class UserList extends JPanel {
 	private class UserInfo {
-		String user;
+		BNetUser user;
 		int flags;
 		int priority;
 		int ping;
@@ -30,15 +31,30 @@ public class UserList extends JPanel {
 		JPopupMenu menu;
 	}
 	
-	private Hashtable<String, UserInfo> users = null;
+	private Hashtable<BNetUser, UserInfo> users = null;
 	private Box b = null;
 	private ColorScheme cs = null;
 	private Connection c = null;
 	private GuiEventHandler geh = null;
 	
+	/**
+	 * Get UserInfo from JLabel
+	 * @param lbl The JLabel to look fo
+	 * @return The UserInfo, or null if not found
+	 */
+	private UserInfo getUI(JLabel lbl) {
+		Enumeration<UserInfo> en = users.elements();
+		while(en.hasMoreElements()) {
+			UserInfo ui = en.nextElement();
+			if(ui.label == lbl)
+				return ui;
+		}
+		return null;
+	}
+	
 	public UserList(ColorScheme cs, Connection c, GuiEventHandler geh) {
 		super(new FlowLayout(FlowLayout.LEFT));
-		this.users = new Hashtable<String, UserInfo>();
+		this.users = new Hashtable<BNetUser, UserInfo>();
 		this.cs = cs;
 		this.c = c;
 		this.geh = geh;
@@ -76,7 +92,7 @@ public class UserList extends JPanel {
 	private int getInsertPosition(int priority) {
 		for(int i = 0; i < b.getComponentCount(); i++) {
 			JLabel lbl = (JLabel)b.getComponent(i);
-			UserInfo ui = users.get(lbl.getText());
+			UserInfo ui = getUI(lbl);
 			int pCurrent = getPrioByFlags(ui.flags);
 			
 			if(priority > pCurrent)
@@ -100,7 +116,7 @@ public class UserList extends JPanel {
 		return null;
 	}
 	
-	public void showUser(String user, int flags, int ping, StatString statstr) {
+	public void showUser(BNetUser user, int flags, int ping, StatString statstr) {
 		UserInfo ui = users.get(user);
 		if(ui == null) {
 			ui = new UserInfo();
@@ -117,7 +133,7 @@ public class UserList extends JPanel {
 				public void actionPerformed(ActionEvent arg0) {
 					UserInfo ui = getUserInfo(arg0);
 					if(ui != null)
-						geh.setChatText("/w " + ui.user + " ");
+						geh.setChatText("/w " + ui.user.getShortLogonName() + " ");
 				}});
 			ui.menu.add(menuItem);
 			menuItem = new JMenuItem("Whois");
@@ -125,13 +141,13 @@ public class UserList extends JPanel {
 				public void actionPerformed(ActionEvent arg0) {
 					UserInfo ui = getUserInfo(arg0);
 					if(ui != null)
-						c.sendChat("/whois " + ui.user);
+						c.sendChat("/whois " + ui.user.getShortLogonName());
 				}});
 			ui.menu.add(menuItem);
 			ui.menu.add(Box.createHorizontalGlue());
 		}
 		if(ui.label == null) {
-			ui.label = new JLabel(user);
+			ui.label = new JLabel(user.toString());
 			ui.label.setForeground(cs.getUserNameListColor(flags));
 			b.add(ui.label, getInsertPosition(ui.priority));
 			
@@ -271,8 +287,8 @@ public class UserList extends JPanel {
 		validate();
 	}
 	
-	public void removeUser(String user) {
-		UserInfo ui = users.get(user);
+	public void removeUser(BNetUser user) {
+		UserInfo ui = users.get(user.getFullLogonName());
 		if(ui != null) {
 			b.remove(ui.label);
 			ui.label = null;
