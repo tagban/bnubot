@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import bnubot.Version;
 import bnubot.bot.EventHandler;
 import bnubot.core.bnftp.BNFTPConnection;
 import bnubot.core.clan.ClanMember;
@@ -197,7 +198,16 @@ public abstract class Connection extends Thread implements EventHandler {
 		if(myUser.equals(to))
 			recieveInfo(text);
 		else {
-			String prefix = "/w " + to.getFullLogonName() + " ";
+			String prefix = "[BNU";
+			if(Version.VER_ALPHA != null)
+				prefix += " alpha";
+			if(Version.VER_BETA != null)
+				prefix += " beta";
+			prefix += "] ";
+			
+			if(cs.whisperBack)
+				prefix = "/w " + to.getFullLogonName() + " " + prefix;
+			
 			//Split up the text in to appropriate sized pieces
 			int pieceSize = MAX_CHAT_LENGTH - prefix.length();
 			for(int i = 0; i < text.length(); i += pieceSize) {

@@ -32,6 +32,7 @@ public class ConfigurationFrame extends JDialog {
 	JCheckBox chkEnableGUI = null;
 	JCheckBox chkEnableCLI = null;
 	JCheckBox chkPacketLog = null;
+	JCheckBox chkWhisperBack = null;
 	JButton btnLoad = null;
 	JButton btnSave = null;
 	JButton btnCancel = null;
@@ -264,6 +265,9 @@ public class ConfigurationFrame extends JDialog {
 	
 						chkPacketLog = new JCheckBox("Packet Log", cs.packetLog);
 						boxCheckboxes.add(chkPacketLog);
+	
+						chkWhisperBack = new JCheckBox("Whisper Commands", cs.whisperBack);
+						boxCheckboxes.add(chkWhisperBack);
 					}
 					boxLine.add(boxCheckboxes);
 					
@@ -354,6 +358,7 @@ public class ConfigurationFrame extends JDialog {
 		cs.enableGUI = chkEnableGUI.isSelected();
 		cs.enableCLI = chkEnableCLI.isSelected();
 		cs.packetLog = chkPacketLog.isSelected();
+		cs.whisperBack = chkWhisperBack.isSelected();
 		
 		cs.save();
 	}
@@ -377,6 +382,7 @@ public class ConfigurationFrame extends JDialog {
 		chkEnableGUI.setSelected(cs.enableGUI);
 		chkEnableCLI.setSelected(cs.enableCLI);
 		chkPacketLog.setSelected(cs.packetLog);
+		chkWhisperBack.setSelected(cs.whisperBack);
 	}
 	
 	private void cancel() {
