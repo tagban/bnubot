@@ -10,12 +10,12 @@
 <packagesToUnSeal/>
 </sealing>
 </manifest>
-<selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
-<javaElement handleIdentifier="=JBLS/&lt;BNLSProtocol"/>
+<selectedElements exportClassFiles="true" exportJavaFiles="true" exportOutputFolder="false">
 <javaElement handleIdentifier="=JBLS/&lt;Hashing"/>
 <javaElement handleIdentifier="=JBLS/&lt;util"/>
 <javaElement handleIdentifier="=BNUBot/src"/>
 <file path="/BNUBot/.project"/>
+<javaElement handleIdentifier="=JBLS/&lt;BNLSProtocol"/>
 <file path="/BNUBot/.classpath"/>
 </selectedElements>
 </jardesc>
