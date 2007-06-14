@@ -1,0 +1,12 @@
+How do I enable the commands?
+This requires a database. Currently, only MySQL is tested and known to work, although other databases probably work as well.
+1) Download the MySQLConnector/J package: http://www.mysql.com/products/connector/j/
+2) Create a folder named 'lib'
+3) Add mysql-connector-java-X.X.X-ga-bin.jar to the lib folder
+4) Edit settings.ini; set enableCommands=true, and add the following (edit accordingly)
+[database]
+schema=schema.mysql
+driver=com.mysql.jdbc.Driver
+url=jdbc:mysql://[host]:3306/[database]
+username=[username]
+password=[password]
