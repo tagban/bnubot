@@ -320,7 +320,7 @@ public class CommandEventHandler implements EventHandler {
 				break;
 			case 'w':
 				if(command.equals("whoami")) {
-					parseCommand(user, "whois", user.toString());
+					parseCommand(user, "whois", user.getShortLogonName());
 					break;
 				}
 				if(command.equals("whois")) {
