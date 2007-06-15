@@ -186,6 +186,9 @@ public class ConfigurationFrame extends JDialog {
 							case ConnectionSettings.PRODUCT_THEFROZENTHRONE:
 								prod = KeyManager.PRODUCT_WAR3;
 								break;
+							case ConnectionSettings.PRODUCT_WAR2BNE:
+								prod = KeyManager.PRODUCT_W2BN;
+								break;
 							}
 							if(prod != KeyManager.PRODUCT_ALLNORMAL) {
 								DefaultComboBoxModel model = (DefaultComboBoxModel)cmbCDKey.getModel();
