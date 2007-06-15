@@ -226,15 +226,14 @@ public class BNetUser {
 			return shortLogonName;
 
 		if(prettyName == null) {
+			prettyName = shortLogonName;
 			try {
 				ResultSet rsAccount = d.getAccount(this);
 				if((rsAccount != null) && rsAccount.next()) {
 					String account = rsAccount.getString("name");
 					
 					if(account != null)
-						prettyName = account + " (" + fullLogonName + ")";
-					else
-						prettyName = fullLogonName;
+						prettyName = account + " (" + prettyName + ")";
 
 					long access = rsAccount.getLong("access");
 					ResultSet rsRank = d.getRank(access);
@@ -244,18 +243,18 @@ public class BNetUser {
 							prettyName = prefix + " " + prettyName;
 					}
 					rsRank.close();
-				} else {
-					prettyName = shortLogonName;
 				}
 			} catch(SQLException e) {
 				e.printStackTrace();
-				prettyName = "[SQLException:" + shortLogonName + "]";
 			}
 		}
 		return prettyName;
 	}
 	
 	public boolean equals(Object o) {
+		if(o == this)
+			return true;
+		
 		if(o instanceof BNetUser) {
 			BNetUser u = (BNetUser)o;
 			if(u.getFullLogonName().compareToIgnoreCase(fullLogonName) == 0)
