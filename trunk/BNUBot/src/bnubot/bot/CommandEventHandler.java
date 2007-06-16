@@ -119,7 +119,7 @@ public class CommandEventHandler implements EventHandler {
 						
 						rsSubjectAccount.updateLong("access", targetAccess);
 						rsSubjectAccount.updateRow();
-						c.sendChat(user, "Added user [" + subjectAccount + "] sucessfully with access " + targetAccess);
+						c.sendChat(user, "Added user [" + subjectAccount + "] successfully with access " + targetAccess);
 					} catch(InvalidUsageException e) {
 						c.sendChat(user, "Usage: %trigger%add <account> <access>");
 						break;
