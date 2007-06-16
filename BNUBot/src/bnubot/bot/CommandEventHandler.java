@@ -21,7 +21,7 @@ public class CommandEventHandler implements EventHandler {
 	long	lastCommandTime = 0;
 	BNetUser lastCommandUser = null;
 
-	private class InvalidUsageException extends Exception {
+	private class InvalidUseException extends Exception {
 		private static final long serialVersionUID = 3993849990858233332L;
 	}
 	private class InsufficientAccessException extends Exception {
@@ -52,7 +52,7 @@ public class CommandEventHandler implements EventHandler {
 		}
 	}
 	
-	private void parseCommand(BNetUser user, String command, String param) {
+	public void parseCommand(BNetUser user, String command, String param) {
 		try {
 			String[] params = null;
 			if(param != null)
@@ -60,19 +60,24 @@ public class CommandEventHandler implements EventHandler {
 			
 			Long commanderAccess = null; 
 			String commanderAccount = null;
+			Long commanderAccountID = null; 
 	
 			//Don't ask questions if they are a super-user
 			boolean superUser = user.equals(c.getMyUser());
-			if(!superUser) {
+			try {
 				ResultSet rsAccount = d.getAccount(user);
-				if(rsAccount == null) return;
-				if(!rsAccount.next()) return;
-				
+				if((rsAccount == null) || !rsAccount.next())
+					if(superUser)
+						throw new Exception();
+					else
+						return;
+					
 				commanderAccess = rsAccount.getLong("access");
 				commanderAccount = rsAccount.getString("name");
+				commanderAccountID = rsAccount.getLong("id");
 				if(commanderAccess <= 0)
 					return;
-			} else {
+			} catch(Exception e) {
 				d.getCreateUser(user);
 			}
 			
@@ -95,12 +100,12 @@ public class CommandEventHandler implements EventHandler {
 			lastCommandUser = user;
 			lastCommandTime = new Date().getTime();
 		
-			switch(command.charAt(0)) {
+			COMMAND: switch(command.charAt(0)) {
 			case 'a':
 				if(command.equals("add")) {
 					try {
 						if(params.length != 2)
-							throw new InvalidUsageException();
+							throw new InvalidUseException();
 						
 						ResultSet rsSubjectAccount = d.getAccount(params[0]);
 						if(!rsSubjectAccount.next()) {
@@ -120,8 +125,8 @@ public class CommandEventHandler implements EventHandler {
 						rsSubjectAccount.updateLong("access", targetAccess);
 						rsSubjectAccount.updateRow();
 						c.sendChat(user, "Added user [" + subjectAccount + "] successfully with access " + targetAccess);
-					} catch(InvalidUsageException e) {
-						c.sendChat(user, "Usage: %trigger%add <account> <access>");
+					} catch(InvalidUseException e) {
+						c.sendChat(user, "Use: %trigger%add <account> <access>");
 						break;
 					}
 					break;
@@ -130,7 +135,7 @@ public class CommandEventHandler implements EventHandler {
 			case 'b':
 				if(command.equals("ban")) {
 					if(param.length() == 0) {
-						c.sendChat(user, "Usage: %trigger%ban <user>[@<realm>] [reason]");
+						c.sendChat(user, "Use: %trigger%ban <user>[@<realm>] [reason]");
 						break;
 					}
 					c.sendChat("/ban " + param);
@@ -140,7 +145,7 @@ public class CommandEventHandler implements EventHandler {
 			case 'c':
 				if(command.equals("createaccount")) {
 					if(params.length != 1) {
-						c.sendChat(user, "Usage: %trigger%createaccount <account>");
+						c.sendChat(user, "Use: %trigger%createaccount <account>");
 						break;
 					}
 					
@@ -176,10 +181,131 @@ public class CommandEventHandler implements EventHandler {
 			case 'k':
 				if(command.equals("kick")) {
 					if(params.length != 1) {
-						c.sendChat(user, "Usage: %trigger%kick <user>[@<realm>]");
+						c.sendChat(user, "Use: %trigger%kick <user>[@<realm>]");
 						break;
 					}
 					c.sendChat("/kick " + params[0]);
+					break;
+				}
+				break;
+			case 'm':
+				if(command.equals("mail")) {
+					if(commanderAccountID == null) {
+						c.sendChat(user, "You must have an account to use mail.");
+						break;
+					}
+					
+					try {
+						if((params == null) || (params.length < 1))
+							throw new InvalidUseException();
+						if(params[0].equals("send")) {
+							//send <account> <message>
+							params = param.split(" ", 3);
+							if(params.length < 3)
+								throw new InvalidUseException();
+							
+							ResultSet rsTargetAccount = d.getAccount(params[1]);
+							if(!rsTargetAccount.next()) {
+								c.sendChat(user, "The account [" + params[1] + "] does not exist");
+								break;
+							}
+							params[1] = rsTargetAccount.getString("name");
+							Long targetAccountID = rsTargetAccount.getLong("id");
+							
+							d.sendMail(commanderAccountID, targetAccountID, params[2]);
+							c.sendChat(user, "Mail queued for delivery to " +  params[1]);
+						} else if(params[0].equals("read")
+								||params[0].equals("get")) {
+							//read [number]
+							if((params.length < 1) || (params.length > 2))
+								throw new InvalidUseException();
+							
+							Long id = null;
+							if(params.length == 2) {
+								try {
+									id = Long.parseLong(params[1]);
+								} catch(Exception e) {
+									throw new InvalidUseException();
+								}
+							}
+							
+							ResultSet rsMail = d.getMail(commanderAccountID);
+							if(id == null) {
+								while(rsMail.next()) {
+									boolean read = rsMail.getBoolean("read");
+									if(read)
+										continue;
+
+									String message = "";
+									if(true)
+										message = "#" + rsMail.getRow() + " of ?: ";
+									
+									message += "From ";
+									message += rsMail.getString("name");
+									message += " [";
+									message += rsMail.getString("sent");
+									message += "]: ";
+									message += rsMail.getString("message");
+									
+									d.setMailRead(rsMail.getLong("id"));
+									rsMail.close();
+									
+									c.sendChat(user, message);
+									break COMMAND;
+								}
+								
+								String message = "You have no unread mail!";
+								long mailCount = d.getMailCount(commanderAccountID);
+								if(mailCount > 0)
+									message += " To read your " + mailCount + " messages, type [ %trigger%mail read <number> ]";
+								c.sendChat(user, message);
+							} else {
+								long mailNumber = 0;
+								while(rsMail.next()) {
+									mailNumber++;
+									if(mailNumber != id)
+										continue;
+
+									String message = "";
+									if(true)
+										message = "#" + rsMail.getRow() + " of ?: ";
+									
+									message += "From ";
+									message += rsMail.getString("name");
+									message += " [";
+									message += rsMail.getString("sent");
+									message += "]: ";
+									message += rsMail.getString("message");
+									
+									d.setMailRead(rsMail.getLong("id"));
+									rsMail.close();
+									
+									c.sendChat(user, message);
+									break COMMAND;
+								}
+								
+								c.sendChat(user, "You only have " + mailNumber + " messages!");
+							}
+							rsMail.close();
+							break;
+						} else if(params[0].equals("empty")
+								||params[0].equals("delete")
+								||params[0].equals("clear")) {
+							//empty
+							if(params.length != 1)
+								throw new InvalidUseException();
+							
+							if(d.unreadMail(commanderAccountID)) {
+								c.sendChat(user, "You have unread mail!");
+								break;
+							}
+							
+							d.clearMail(commanderAccountID);
+							c.sendChat(user, "Mailbox cleaned!");
+						}
+					} catch(InvalidUseException e) {
+						c.sendChat(user, "Use: %trigger%mail (read [number] | empty | send <account> <message>)");
+					}
 					break;
 				}
 				break;
@@ -201,7 +327,7 @@ public class CommandEventHandler implements EventHandler {
 				}
 				if(command.equals("seen")) {
 					if(params.length != 1) {
-						c.sendChat(user, "Usage: %trigger%seen <account>");
+						c.sendChat(user, "Use: %trigger%seen <account>");
 					}
 					
 					Timestamp mostRecent = null;
@@ -241,7 +367,7 @@ public class CommandEventHandler implements EventHandler {
 				}
 				if(command.equals("setaccount")) {
 					if((params.length < 1) || (params.length > 2)) {
-						c.sendChat(user, "Usage: %trigger%setaccount <user>[@<realm>] [<account>]");
+						c.sendChat(user, "Use: %trigger%setaccount <user>[@<realm>] [<account>]");
 						break;
 					}
 
@@ -273,12 +399,12 @@ public class CommandEventHandler implements EventHandler {
 					int newRank;
 					try {
 						if(params.length != 2)
-							throw new InvalidUsageException();
+							throw new InvalidUseException();
 						newRank = Integer.valueOf(params[1]);
 						if((newRank < 1) || (newRank > 3))
-							throw new InvalidUsageException();
-					} catch(InvalidUsageException e) {
-						c.sendChat(user, "Usage: %trigger%setrank <user> <rank:1-3>");
+							throw new InvalidUseException();
+					} catch(InvalidUseException e) {
+						c.sendChat(user, "Use: %trigger%setrank <user> <rank:1-3>");
 						break;
 					}
 					
@@ -289,7 +415,7 @@ public class CommandEventHandler implements EventHandler {
 				}
 				if(command.equals("sweepban")) {
 					if(params.length < 1) {
-						c.sendChat(user, "Usage: %trigger%sweepban <channel>");
+						c.sendChat(user, "Use: %trigger%sweepban <channel>");
 						break;
 					}
 					sweepBanInProgress = true;
@@ -311,7 +437,7 @@ public class CommandEventHandler implements EventHandler {
 			case 'u':
 				if(command.equals("unban")) {
 					if(params.length != 1) {
-						c.sendChat(user, "Usage: %trigger%unban <user>[@<realm>]");
+						c.sendChat(user, "Use: %trigger%unban <user>[@<realm>]");
 						break;
 					}
 					c.sendChat("/unban " + params[0]);
@@ -326,7 +452,7 @@ public class CommandEventHandler implements EventHandler {
 				if(command.equals("whois")) {
 					try {
 						if(params.length != 1)
-							throw new InvalidUsageException();
+							throw new InvalidUseException();
 						
 						BNetUser bnSubject = BNetUser.getBNetUser(params[0], user);
 						ResultSet rsSubject = d.getUser(bnSubject);
@@ -402,8 +528,8 @@ public class CommandEventHandler implements EventHandler {
 						}
 						
 						c.sendChat(user, result);
-					} catch(InvalidUsageException e) {
-						c.sendChat(user, "Usage: %trigger%whois <user>[@realm]");
+					} catch(InvalidUseException e) {
+						c.sendChat(user, "Use: %trigger%whois <user>[@realm]");
 						break;
 					}
 					break;
@@ -468,10 +594,12 @@ public class CommandEventHandler implements EventHandler {
 			parseCommand(user, "trigger", null); //c.sendChat(user, "The bot's trigger is: " + trigger);
 		else
 			if(text.charAt(0) == trigger) {
-				String[] command = text.substring(1).split(" ");
-				String paramString = text.substring(text.indexOf(' ') + 1);
+				String[] command = text.substring(1).split(" ", 2);
+				String params = null;
+				if(command.length > 1)
+					params = command[1];
 			
-				parseCommand(user, command[0], paramString);
+				parseCommand(user, command[0], params);
 			}
 	}
 
