@@ -330,4 +330,8 @@ public class GuiEventHandler implements EventHandler {
 		chatTextArea.setSelectionStart(chatText.length());
 		chatTextArea.requestFocus();
 	}
+
+	public void parseCommand(BNetUser user, String command, String param) {
+		mainTextArea.recieveInfo(String.format("parseCommand(\"%1$s\", \"%2$s\", \"%3$s\")", user.getShortLogonName(), command, param));
+	}
 }

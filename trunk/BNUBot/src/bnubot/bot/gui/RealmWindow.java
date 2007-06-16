@@ -84,6 +84,8 @@ public class RealmWindow extends JFrame implements EventHandler, RealmEventHandl
 	public void bnetConnected() {}
 	public void bnetDisconnected() {}
 	public void titleChanged() {}
+
+	public void parseCommand(BNetUser user, String command, String param) {}
 	
 	public void realmConnected() {}
 	public void realmDisconnected() {}
