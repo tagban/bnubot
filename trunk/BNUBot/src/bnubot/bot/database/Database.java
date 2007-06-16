@@ -7,8 +7,8 @@ import java.util.Hashtable;
 import bnubot.core.BNetUser;
 
 public class Database {
-	private static final long databaseVersion = 0;		// Current schema version
-	private static final long compatibleVersion = 0;	// Minimum version compatible
+	private static final long databaseVersion = 1;		// Current schema version
+	private static final long compatibleVersion = 1;	// Minimum version compatible
 	private Connection conn;
 	
 	public Database(String driver, String url, String username, String password, String schemaFile) throws SQLException, ClassNotFoundException {
@@ -31,7 +31,7 @@ public class Database {
 	}
 	
 	public ResultSet getUser(BNetUser user) throws SQLException {
-		PreparedStatement ps = prepareStatement("SELECT * FROM user WHERE login=? LIMIT 1");
+		PreparedStatement ps = prepareStatement("SELECT * FROM `user` WHERE `login`=? LIMIT 1");
 		ps.setString(1, user.getFullAccountName());
 		return ps.executeQuery();
 	}
@@ -41,7 +41,7 @@ public class Database {
 		if(rsUser.next())
 			return getUser(user);
 		
-		PreparedStatement ps = prepareStatement("INSERT INTO user (login) VALUES(?)");
+		PreparedStatement ps = prepareStatement("INSERT INTO `user` (`login`) VALUES(?)");
 		ps.setString(1, user.getFullAccountName());
 		ps.execute();
 		ps.close();
@@ -54,7 +54,7 @@ public class Database {
 	}
 	
 	public ResultSet getAccount(String account) throws SQLException {
-		PreparedStatement ps = prepareStatement("SELECT * FROM account WHERE name=? LIMIT 1");
+		PreparedStatement ps = prepareStatement("SELECT * FROM `account` WHERE `name`=? LIMIT 1");
 		ps.setString(1, account);
 		return ps.executeQuery();
 	}
@@ -71,13 +71,13 @@ public class Database {
 	}
 	
 	public ResultSet getAccountUsers(String account) throws SQLException {
-		PreparedStatement ps = prepareStatement("SELECT * FROM user WHERE account=?");
+		PreparedStatement ps = prepareStatement("SELECT * FROM `user` WHERE `account`=?");
 		ps.setString(1, account);
 		return ps.executeQuery();
 	}
 
 	public ResultSet createAccount(String account, long access) throws SQLException {
-		PreparedStatement ps = prepareStatement("INSERT INTO account (name, access) VALUES(?, ?)");
+		PreparedStatement ps = prepareStatement("INSERT INTO `account` (`name`, `access`) VALUES(?, ?)");
 		ps.setString(1, account);
 		ps.setLong(2, access);
 		ps.execute();
@@ -99,7 +99,7 @@ public class Database {
 	}
 	
 	public ResultSet getRank(long access) throws SQLException {
-		PreparedStatement ps = prepareStatement("SELECT * FROM rank WHERE id=?");
+		PreparedStatement ps = prepareStatement("SELECT * FROM `rank` WHERE `id`=?");
 		ps.setLong(1, access);
 		return ps.executeQuery();
 	}
@@ -111,7 +111,7 @@ public class Database {
 		if(tmp != null)
 			return tmp;
 		
-		PreparedStatement ps = prepareStatement("SELECT name FROM command_alias WHERE alias=? LIMIT 1");
+		PreparedStatement ps = prepareStatement("SELECT `name` FROM `command_alias` WHERE `alias`=? LIMIT 1");
 		ps.setString(1, command);
 		ResultSet rs = ps.executeQuery();
 		if(rs.next()) {
@@ -129,9 +129,63 @@ public class Database {
 
 	public ResultSet getCommand(String command) throws SQLException {
 		command = resolveCommandAlias(command);
-		PreparedStatement ps = prepareStatement("SELECT * FROM command WHERE name=? LIMIT 1");
+		PreparedStatement ps = prepareStatement("SELECT * FROM `command` WHERE `name`=? LIMIT 1");
 		ps.setString(1, command);
 		return ps.executeQuery();
+	}
+	
+	public void sendMail(long senderID, long targetID, String message) throws SQLException {
+		PreparedStatement ps = prepareStatement("INSERT INTO `mail` (`from`, `to`, `message`) VALUES (?, ?, ?)");
+		ps.setLong(1, senderID);
+		ps.setLong(2, targetID);
+		ps.setString(3, message);
+		ps.execute();
+	}
+	
+	public boolean unreadMail(long accountID) throws SQLException {
+		PreparedStatement ps = prepareStatement("SELECT COUNT(*) FROM `mail` WHERE `to`=? AND `read`=FALSE");
+		ps.setLong(1, accountID);
+		ResultSet rs = ps.executeQuery();
+		if(rs.next()) {
+			long c = rs.getLong(1);
+			rs.close();
+			return (c != 0);
+		}
+		rs.close();
+		throw new SQLException("COUNT(*) returned 0 rows");
+	}
+	
+	public void clearMail(long accountID) throws SQLException {
+		PreparedStatement ps = prepareStatement("DELETE FROM `mail` WHERE `to`=? AND `read`=TRUE");
+		ps.setLong(1, accountID);
+		ps.execute();
+		ps.close();
+	}
+	
+	public ResultSet getMail(long accountID) throws SQLException {
+		PreparedStatement ps = prepareStatement("SELECT M.`id`, M.`sent`, A.`name`, M.`read`, M.`message` FROM `mail` AS M JOIN `account` AS A ON (A.`id` = M.`from`) WHERE M.`to`=? ORDER BY M.`id` ASC");
+		ps.setLong(1, accountID);
+		return ps.executeQuery();
+	}
+	
+	public long getMailCount(long accountID) throws SQLException {
+		PreparedStatement ps = prepareStatement("SELECT COUNT(*) FROM `mail` WHERE `to`=?");
+		ps.setLong(1, accountID);
+		ResultSet rs = ps.executeQuery();
+		if(rs.next()) {
+			long c = rs.getLong(1);
+			rs.close();
+			return c;
+		}
+		rs.close();
+		throw new SQLException("COUNT(*) returned 0 rows");
+	}
+	
+	public void setMailRead(long mailID) throws SQLException {
+		PreparedStatement ps = prepareStatement("UPDATE `mail` SET `read`=TRUE WHERE `id`=? LIMIT 1");
+		ps.setLong(1, mailID);
+		ps.execute();
+		ps.close();
 	}
 	
 	/**
@@ -142,7 +196,7 @@ public class Database {
 	private boolean checkSchema() {
 		ResultSet rs = null;
 		try {
-			rs = createStatement().executeQuery("SELECT version FROM dbVersion LIMIT 1");
+			rs = createStatement().executeQuery("SELECT `version` FROM `dbVersion` LIMIT 1");
 			if(!rs.next()) {
 				rs.close();
 				return false;

@@ -6,6 +6,7 @@ DROP TABLE IF EXISTS account;
 DROP TABLE IF EXISTS user;
 DROP TABLE IF EXISTS command;
 DROP TABLE IF EXISTS command_alias;
+DROP TABLE IF EXISTS mail;
 
 CREATE TABLE `rank` (
 	`id` INTEGER PRIMARY KEY NOT NULL,
@@ -44,6 +45,17 @@ CREATE TABLE `command_alias` (
 	`name` VARCHAR(32) NOT NULL
 );
 
+CREATE TABLE `mail` (
+	`id` INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
+	`read` BOOLEAN NOT NULL DEFAULT FALSE,
+	`from` INTEGER NOT NULL,
+	`to` INTEGER NOT NULL,
+	`message` VARCHAR(255),
+	`sent` TIMESTAMP NOT NULL default CURRENT_TIMESTAMP
+);
+
+#Foreign keys
+
 ALTER TABLE `user`
 	ADD CONSTRAINT `user_ibfk_1`
 		FOREIGN KEY (`account`)
@@ -66,6 +78,18 @@ ALTER TABLE `command_alias`
 #		ON UPDATE CASCADE
 #		ON DELETE CASCADE;
 
+ALTER TABLE `mail`
+	ADD CONSTRAINT
+		FOREIGN KEY (`from`)
+			REFERENCES `account` (`id`)
+			ON UPDATE CASCADE
+			ON DELETE SET NULL,
+	ADD CONSTRAINT
+		FOREIGN KEY (`to`)
+			REFERENCES `account` (`id`)
+			ON UPDATE CASCADE
+			ON DELETE CASCADE;
+
 INSERT INTO `rank` (id, name, prefix, verbstr, greeting) VALUES (36,	'Master',				'Master',				'is a nazi',	'/me hails %1$s with ping %2$d');
 INSERT INTO `rank` (id, name, prefix, verbstr, greeting) VALUES (35,	'General',				'General',				'is a general',	'Hello, %1$s. Your ping is %2$d.');
 INSERT INTO `rank` (id, name, prefix, verbstr, greeting) VALUES (34,	'Lieutenant General',	'Lieutenant General',	'is a general',	'Hello, %1$s. Your ping is %2$d.');
@@ -77,6 +101,7 @@ INSERT INTO `account` (access, name) VALUES (35,	'John');
 INSERT INTO `account` (access, name) VALUES (34,	'Sorceress');
 
 INSERT INTO `user` (login, account) VALUES('BNU-Camel@USEast', 'Camel');
+INSERT INTO `user` (login, account) VALUES('BNU-Camel2@USEast', 'Camel');
 INSERT INTO `user` (login, account) VALUES('BNU-Camel@Azeroth', 'Camel');
 INSERT INTO `user` (login, account) VALUES('BNU-MaStEr@USEast', 'John');
 INSERT INTO `user` (login, account) VALUES('BNU-MaStEr@Azeroth', 'John');
@@ -92,6 +117,7 @@ INSERT INTO `command` (access, name, description, cmdgroup) VALUES (34,	'createa
 INSERT INTO `command` (access, name, description, cmdgroup) VALUES (36,	'disconnect', NULL, 'administration');
 INSERT INTO `command` (access, name, description, cmdgroup) VALUES (1,	'info', 'Bot version', 'info');
 INSERT INTO `command` (access, name, description, cmdgroup) VALUES (34,	'kick', NULL, 'moderation');
+INSERT INTO `command` (access, name, description, cmdgroup) VALUES (10,	'mail', NULL, 'accounts');
 INSERT INTO `command` (access, name, description, cmdgroup) VALUES (36,	'quit', 'Close program', 'administration');
 INSERT INTO `command` (access, name, description, cmdgroup) VALUES (36,	'reconnect', NULL, 'administration');
 INSERT INTO `command` (access, name, description, cmdgroup) VALUES (36,	'say', NULL, 'administration');
