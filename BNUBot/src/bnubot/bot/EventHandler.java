@@ -14,6 +14,9 @@ public interface EventHandler {
 	public void bnetConnected();
 	public void bnetDisconnected();
 	public void titleChanged();
+	
+	//Workarounds
+	public void parseCommand(BNetUser user, String command, String param);
 
 	//Channel events
 	public void joinedChannel(String channel);
