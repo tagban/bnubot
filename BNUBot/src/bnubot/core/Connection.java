@@ -172,6 +172,24 @@ public abstract class Connection extends Thread implements EventHandler {
 		if(!isConnected())
 			return;
 		
+		if(text.charAt(0) == '/') {
+			String[] command = text.substring(1).split(" ", 3);
+			if(command.length > 1) {
+				if(command[0].equals("cmd")) {
+					String params = null;
+					if(command.length > 2)
+						params = command[2];
+
+
+					Iterator<EventHandler> it = eventHandlers.iterator();
+					while(it.hasNext())
+						it.next().parseCommand(myUser, command[1], params);
+					
+					return;
+				}
+			}
+		}
+		
 		text = cleanText(text);
 		
 		if(text.length() == 0)
@@ -253,6 +271,12 @@ public abstract class Connection extends Thread implements EventHandler {
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().bnetDisconnected();
+	}
+
+	public void parseCommand(BNetUser user, String command, String param) {
+		Iterator<EventHandler> it = eventHandlers.iterator();
+		while(it.hasNext())
+			it.next().parseCommand(user, command, param);
 	}
 
 	public synchronized void titleChanged() {
