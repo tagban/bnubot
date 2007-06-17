@@ -85,7 +85,7 @@ public class CommandEventHandler implements EventHandler {
 			
 			ResultSet rsCommand = d.getCommand(command);
 			if(!rsCommand.next()) {
-				c.recieveError("Command not found in database");
+				System.out.println("Command " + command + " not found in database");
 				return;
 			}
 			command = rsCommand.getString("name");
