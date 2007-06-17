@@ -1254,13 +1254,19 @@ public class BNCSConnection extends Connection {
 			BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_CHATCOMMAND);
 			p.writeNTString(text);
 			p.SendPacket(dos, cs.packetLog);
-			
-			if(text.charAt(0) != '/')
-				recieveChat(myUser, myFlags, myPing, text);
-		} catch(Exception e) {
+		} catch(SocketException e) {
+			if(cs.autoconnect)
+				reconnect();
+			else
+				setConnected(false);
+			return;
+		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);
 		}
+
+		if(text.charAt(0) != '/')
+			recieveChat(myUser, myFlags, myPing, text);
 	}
 
 	public void sendClanRankChange(String user, int newRank) throws Exception {
