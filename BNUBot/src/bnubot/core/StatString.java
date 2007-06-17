@@ -108,6 +108,9 @@ public class StatString {
 			return;
 		parsed = true;
 		
+		if(statString.length == 0)
+			return;
+		
 		pretty = "using ";
 		
 		try {
