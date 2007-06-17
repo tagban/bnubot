@@ -84,7 +84,7 @@ public class Database {
 		ps.close();
 		
 		ResultSet rsAccount = getAccount(account);
-		if(rsAccount == null)
+		if((rsAccount == null) || (!rsAccount.next()))
 			throw new SQLException("The account was created but not found");
 		
 		return rsAccount;
