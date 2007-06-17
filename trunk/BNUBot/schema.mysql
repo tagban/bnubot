@@ -10,7 +10,7 @@ DROP TABLE IF EXISTS mail;
 
 CREATE TABLE `rank` (
 	`id` INTEGER PRIMARY KEY NOT NULL,
-	`name` VARCHAR(32) UNIQUE NOT NULL,
+	`shortPrefix` VARCHAR(32) UNIQUE NOT NULL,
 	`prefix` VARCHAR(32),
 	`verbstr` VARCHAR(64),
 	`greeting` VARCHAR(255)
@@ -90,11 +90,12 @@ ALTER TABLE `mail`
 			ON UPDATE CASCADE
 			ON DELETE CASCADE;
 
-INSERT INTO `rank` (id, name, prefix, verbstr, greeting) VALUES (36,	'Master',				'Master',				'is a nazi',	'/me hails %1$s with ping %2$d');
-INSERT INTO `rank` (id, name, prefix, verbstr, greeting) VALUES (35,	'General',				'General',				'is a general',	'Hello, %1$s. Your ping is %2$d.');
-INSERT INTO `rank` (id, name, prefix, verbstr, greeting) VALUES (34,	'Lieutenant General',	'Lieutenant General',	'is a general',	'Hello, %1$s. Your ping is %2$d.');
-INSERT INTO `rank` (id, name, prefix, verbstr, greeting) VALUES (10,	'Private',				'Private',				'is a private',	'Hello, %1$s. Your ping is %2$d.');
-INSERT INTO `rank` (id, name) VALUES (0,		'Guest');
+INSERT INTO `rank` (id, shortPrefix, prefix, verbstr, greeting) VALUES (36,	'Master',	'Master',				'is a nazi',				'/me hails %1$s with ping %2$d');
+INSERT INTO `rank` (id, shortPrefix, prefix, verbstr, greeting) VALUES (35,	'Ancient',	'Legendary Ancient',	'is a Legendary Ancient',	'Hello, %1$s. Your ping is %2$d.');
+INSERT INTO `rank` (id, shortPrefix, prefix, verbstr, greeting) VALUES (34,	'Ancient',	'Ancient',				'is an Ancient',			'Hello, %1$s. Your ping is %2$d.');
+INSERT INTO `rank` (id, shortPrefix, prefix, verbstr, greeting) VALUES (11,	'Private',	'Private First Class',	'is a private',				'Hello, %1$s. Your ping is %2$d.');
+INSERT INTO `rank` (id, shortPrefix, prefix, verbstr, greeting) VALUES (10,	'Private',	'Private',				'is a private',				'Hello, %1$s. Your ping is %2$d.');
+INSERT INTO `rank` (id, shortPrefix, prefix, verbstr, greeting) VALUES (0,	NULL,		'Guest',				NULL,						'/m %3$s Welcome to Clan BNU! If you're a clan member, get a leader to add your account. For more information, you can visit our website at http://www.clanbnu.ws/');
 
 INSERT INTO `account` (access, name) VALUES (36,	'Camel');
 INSERT INTO `account` (access, name) VALUES (35,	'John');
@@ -117,7 +118,7 @@ INSERT INTO `command` (access, name, description, cmdgroup) VALUES (34,	'createa
 INSERT INTO `command` (access, name, description, cmdgroup) VALUES (36,	'disconnect', NULL, 'administration');
 INSERT INTO `command` (access, name, description, cmdgroup) VALUES (1,	'info', 'Bot version', 'info');
 INSERT INTO `command` (access, name, description, cmdgroup) VALUES (34,	'kick', NULL, 'moderation');
-INSERT INTO `command` (access, name, description, cmdgroup) VALUES (10,	'mail', NULL, 'accounts');
+INSERT INTO `command` (access, name, description, cmdgroup) VALUES (1,	'mail', NULL, 'accounts');
 INSERT INTO `command` (access, name, description, cmdgroup) VALUES (36,	'quit', 'Close program', 'administration');
 INSERT INTO `command` (access, name, description, cmdgroup) VALUES (36,	'reconnect', NULL, 'administration');
 INSERT INTO `command` (access, name, description, cmdgroup) VALUES (36,	'say', NULL, 'administration');
