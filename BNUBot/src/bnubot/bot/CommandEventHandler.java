@@ -295,7 +295,7 @@ public class CommandEventHandler implements EventHandler {
 							if(params.length != 1)
 								throw new InvalidUseException();
 							
-							if(d.unreadMail(commanderAccountID)) {
+							if(d.getUnreadMailCount(commanderAccountID) > 0) {
 								c.sendChat(user, "You have unread mail!");
 								break;
 							}
@@ -552,6 +552,7 @@ public class CommandEventHandler implements EventHandler {
 			ResultSet rsAccount = d.getAccount(user);
 			if((rsAccount != null) && rsAccount.next()) {
 				long rank = rsAccount.getLong("access");
+				long id = rsAccount.getLong("id");
 				ResultSet rsRank = d.getRank(rank);
 				if(rsRank.next()) {
 					String greeting = rsRank.getString("greeting");
@@ -561,6 +562,10 @@ public class CommandEventHandler implements EventHandler {
 					}
 				}
 				rsRank.close();
+
+				long umc = d.getUnreadMailCount(id);
+				if(umc > 0)
+					c.sendChat(user, "You have " + umc + " unread messages; type [ %trigger%mail read ] to retrieve them");
 			}
 			if(rsAccount != null)
 				rsAccount.close();

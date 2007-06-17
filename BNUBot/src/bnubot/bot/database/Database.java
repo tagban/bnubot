@@ -142,14 +142,27 @@ public class Database {
 		ps.execute();
 	}
 	
-	public boolean unreadMail(long accountID) throws SQLException {
+	public long getUnreadMailCount(long accountID) throws SQLException {
 		PreparedStatement ps = prepareStatement("SELECT COUNT(*) FROM `mail` WHERE `to`=? AND `read`=FALSE");
 		ps.setLong(1, accountID);
 		ResultSet rs = ps.executeQuery();
 		if(rs.next()) {
 			long c = rs.getLong(1);
 			rs.close();
-			return (c != 0);
+			return c;
+		}
+		rs.close();
+		throw new SQLException("COUNT(*) returned 0 rows");
+	}
+	
+	public long getMailCount(long accountID) throws SQLException {
+		PreparedStatement ps = prepareStatement("SELECT COUNT(*) FROM `mail` WHERE `to`=?");
+		ps.setLong(1, accountID);
+		ResultSet rs = ps.executeQuery();
+		if(rs.next()) {
+			long c = rs.getLong(1);
+			rs.close();
+			return c;
 		}
 		rs.close();
 		throw new SQLException("COUNT(*) returned 0 rows");
@@ -166,19 +179,6 @@ public class Database {
 		PreparedStatement ps = prepareStatement("SELECT M.`id`, M.`sent`, A.`name`, M.`read`, M.`message` FROM `mail` AS M JOIN `account` AS A ON (A.`id` = M.`from`) WHERE M.`to`=? ORDER BY M.`id` ASC");
 		ps.setLong(1, accountID);
 		return ps.executeQuery();
-	}
-	
-	public long getMailCount(long accountID) throws SQLException {
-		PreparedStatement ps = prepareStatement("SELECT COUNT(*) FROM `mail` WHERE `to`=?");
-		ps.setLong(1, accountID);
-		ResultSet rs = ps.executeQuery();
-		if(rs.next()) {
-			long c = rs.getLong(1);
-			rs.close();
-			return c;
-		}
-		rs.close();
-		throw new SQLException("COUNT(*) returned 0 rows");
 	}
 	
 	public void setMailRead(long mailID) throws SQLException {
