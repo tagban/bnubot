@@ -1,9 +1,15 @@
 package bnubot.core.bncs;
 
+import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.Random;
@@ -44,6 +50,7 @@ public class BNCSConnection extends Connection {
 	protected int myPing = -1;
 	protected int myClan = 0;
 	protected byte myClanRank = 0; 
+	protected long lastNullPacket;
 
 	public BNCSConnection(ConnectionSettings cs, ChatQueue cq) {
 		super(cs, cq);
@@ -216,19 +223,89 @@ public class BNCSConnection extends Connection {
 		}
 	}
 	
+	private static ArrayList<String> antiIdles = null;
+	private String getAntiIdle() {
+		if(antiIdles == null) {
+			antiIdles = new ArrayList<String>();
+			BufferedReader is = null;
+			try {
+				File f = new File("anti-idle.txt");
+				if(!f.exists()) {
+					f.createNewFile();
+					
+					FileWriter os = new FileWriter(f);
+					os.write("# Enter anti-idle messages in this file.\r\n");
+					os.write("# \r\n");
+					os.write("# Lines beginning with '#' are regarded as comments\r\n");
+					os.write("# \r\n");
+					os.write("\r\n");
+					os.close();
+				}
+				is = new BufferedReader(new FileReader(f));
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.exit(1);
+			}
+			
+			do {
+				String line = null;
+				try {
+					line = is.readLine();
+				} catch (IOException e) {
+					e.printStackTrace();
+					System.exit(1);
+				}
+				if(line == null)
+					break;
+				
+				line = line.trim();
+				if(line.length() == 0)
+					continue;
+				
+				if(line.charAt(0) != '#')
+					antiIdles.add(line);
+			} while(true);
+			
+			try { is.close(); } catch (Exception e) {}
+		}
+		
+		//grab one
+		int i = antiIdles.size();
+		if(i == 0)
+			return "No anti-idle messages found!";
+		i = (int)Math.floor(Math.random() * (double)i);
+		return antiIdles.get(i);
+	}
+	
 	private void connectedLoop() throws Exception {
 		lastAntiIdle = new Date().getTime();
+		lastNullPacket = new Date().getTime();
 		
 		while(!s.isClosed() && connected) {
+			long timeNow = new Date().getTime();
+			
+			//Send null packets every 30 seconds
+			if(true) {
+				long timeSinceNullPacket = timeNow - lastNullPacket;
+				//Wait 30 seconds
+				timeSinceNullPacket /= 1000;
+				if(timeSinceNullPacket > 30) {
+					lastNullPacket = timeNow;
+					BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_NULL);
+					p.SendPacket(dos, cs.packetLog);
+				}
+			}
+			
+			//Send anti-idles every 5 minutes
 			if(channelName != null) {
-				long timeSinceAntiIdle = new Date().getTime() - lastAntiIdle;
+				long timeSinceAntiIdle = timeNow - lastAntiIdle;
 				
 				//Wait 5 minutes
 				timeSinceAntiIdle /= 1000;
 				timeSinceAntiIdle /= 60;
 				if(timeSinceAntiIdle >= 5) {
 					lastAntiIdle = new Date().getTime();
-					sendChat(cs.antiIdle);
+					sendChat(getAntiIdle());
 				}
 			}
 			
@@ -242,6 +319,7 @@ public class BNCSConnection extends Connection {
 					break;
 					
 				case BNCSCommandIDs.SID_NULL: {
+					lastNullPacket = timeNow;
 					BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_NULL);
 					p.SendPacket(dos, cs.packetLog);
 					break;
