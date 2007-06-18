@@ -13,13 +13,13 @@ public final class Version {
 		if(VER_STRING != null)
 			return VER_STRING;
 		
-		VER_STRING = VER_MAJOR.toString() + '.' + VER_MINOR + '.' + VER_REVISION;
+		VER_STRING = VER_MAJOR.toString() + '.' + VER_MINOR.toString() + '.' + VER_REVISION.toString();
 		if(VER_ALPHA != null)
-			VER_STRING += " alpha " + VER_ALPHA;
+			VER_STRING += " alpha " + VER_ALPHA.toString();
 		else if(VER_BETA != null)
-			VER_STRING += " beta " + VER_BETA;
+			VER_STRING += " beta " + VER_BETA.toString();
 		else if(VER_RELEASE_CANDIDATE != null)
-			VER_STRING += " RC " + VER_RELEASE_CANDIDATE;
+			VER_STRING += " RC " + VER_RELEASE_CANDIDATE.toString();
 		
 		return VER_STRING;
 	}
