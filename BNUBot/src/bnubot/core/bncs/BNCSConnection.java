@@ -269,7 +269,7 @@ public class BNCSConnection extends Connection {
 		//grab one
 		int i = antiIdles.size();
 		if(i == 0)
-			return "No anti-idle messages found!";
+			return cs.antiIdle;
 		i = (int)Math.floor(Math.random() * (double)i);
 		return antiIdles.get(i);
 	}
