@@ -361,8 +361,7 @@ public class BNCSConnection extends Connection {
 					// Hash the game files
 				  	String files[] = HashMain.getFiles(cs.product, HashMain.PLATFORM_INTEL);
 
-					int mpqNum = -1;
-                	int exeHash;
+					int exeHash;
                 	int exeVersion;
                 	String exeInfo;
                 	
@@ -372,7 +371,7 @@ public class BNCSConnection extends Connection {
                 		while((tmp.charAt(0) < 0x30) || (tmp.charAt(0) > 0x39))
                 			tmp = tmp.substring(1);
     					tmp = tmp.substring(0,tmp.indexOf("."));
-                    	mpqNum = Integer.parseInt(tmp);
+                    	int mpqNum = Integer.parseInt(tmp);
                     	
                     	exeHash = CheckRevision.checkRevision(ValueStr, files, mpqNum);
 				    	exeVersion = HashMain.getExeVer(cs.product);
@@ -400,6 +399,12 @@ public class BNCSConnection extends Connection {
 				    	exeStream.readDWord(); // cookie
 				    	/*int exeVerbyte =*/ exeStream.readDWord();
 				    	assert(exeStream.available() == 0);
+                	}
+                	
+                	if((exeVersion == 0) || (exeHash == 0) || (exeInfo == null) || (exeInfo.length() == 0)) {
+                		recieveError("Checkrevision failed!");
+                		setConnected(false);
+                		break;
                 	}
 
 					// Respond
