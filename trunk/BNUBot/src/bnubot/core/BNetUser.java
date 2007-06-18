@@ -240,7 +240,9 @@ public class BNetUser {
 					long access = rsAccount.getLong("access");
 					ResultSet rsRank = d.getRank(access);
 					if(rsRank.next()) {
-						String prefix = rsRank.getString("prefix");
+						String prefix = rsRank.getString("shortPrefix");
+						if(prefix == null)
+							prefix = rsRank.getString("prefix");
 						if(prefix != null)
 							prettyName = prefix + " " + prettyName;
 					}
