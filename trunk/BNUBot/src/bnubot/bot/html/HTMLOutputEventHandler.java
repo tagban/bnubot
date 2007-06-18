@@ -18,8 +18,6 @@ import bnubot.util.HexDump;
 public class HTMLOutputEventHandler implements EventHandler {
 	private class UserInfo {
 		BNetUser user;
-		int flags;
-		int ping;
 		StatString statstr;
 	}
 	String channel;
@@ -49,33 +47,29 @@ public class HTMLOutputEventHandler implements EventHandler {
 
 	public void titleChanged() {}
 
-	public void channelJoin(BNetUser user, int flags, int ping, StatString statstr) {
+	public void channelJoin(BNetUser user, StatString statstr) {
 		UserInfo ui = new UserInfo();
 		users.add(ui);
 		ui.user = user;
-		ui.flags = flags;
-		ui.ping = ping;
 		ui.statstr = statstr;
 		
 		writeUserList();
 	}
 	
-	public void channelLeave(BNetUser user, int flags, int ping, StatString statstr) {
+	public void channelLeave(BNetUser user, StatString statstr) {
 		if(!users.remove(get(user)))
 			System.err.println("Tried to remove a user that was not in the list: " + user.toString());
 		
 		writeUserList();
 	}
 	
-	public void channelUser(BNetUser user, int flags, int ping, StatString statstr) {
+	public void channelUser(BNetUser user, StatString statstr) {
 		UserInfo ui = get(user);
 		if(ui == null) {
 			ui = new UserInfo();
 			users.add(ui);
 		}
 		ui.user = user;
-		ui.flags = flags;
-		ui.ping = ping;
 		ui.statstr = statstr;
 		
 		writeUserList();
@@ -86,12 +80,12 @@ public class HTMLOutputEventHandler implements EventHandler {
 		this.channel = channel;
 		users.clear();
 	}
-	public void recieveChat(BNetUser user, int flags, int ping, String text) {}
-	public void recieveEmote(BNetUser user, int flags, int ping, String text) {}
+	public void recieveChat(BNetUser user, String text) {}
+	public void recieveEmote(BNetUser user, String text) {}
 	public void recieveError(String text) {}
 	public void recieveInfo(String text) {}
-	public void whisperRecieved(BNetUser user, int flags, int ping, String text) {}
-	public void whisperSent(BNetUser user, int flags, int ping, String text) {}
+	public void whisperRecieved(BNetUser user, String text) {}
+	public void whisperSent(BNetUser user, String text) {}
 	
 	private String getIcon(int product, int icon, int flags) {
 		if((flags & 0x01) != 0)	return "blizrep";
@@ -123,12 +117,12 @@ public class HTMLOutputEventHandler implements EventHandler {
 						out += ")</td></tr>";
 
 						for(UserInfo ui : users.toArray(new UserInfo[users.size()])) {
-							String product = getIcon(ui.statstr.getProduct(), ui.statstr.getIcon(), ui.flags);
+							String product = getIcon(ui.statstr.getProduct(), ui.statstr.getIcon(), ui.user.getFlags());
 							
 							out += "<tr>";
 							out += "<td><img src=\"images/" + product + ".jpg\"></td>";
 							out += "<td>" + ui.user + "</td>";
-							out += "<td>" + ui.ping + "ms</td>";
+							out += "<td>" + ui.user.getPing() + "ms</td>";
 							out += "</tr>";
 						}
 			

@@ -224,19 +224,19 @@ public class GuiEventHandler implements EventHandler {
 		frame.setVisible(true);
 	}
 
-	public void channelJoin(BNetUser user, int flags, int ping, StatString statstr) {
-		userList.showUser(user, flags, ping, statstr);
+	public void channelJoin(BNetUser user, StatString statstr) {
+		userList.showUser(user, statstr);
 		mainTextArea.channelInfo(user + " has joined " + statstr.toString());
 	}
 
-	public void channelLeave(BNetUser user, int flags, int ping, StatString statstr) {
+	public void channelLeave(BNetUser user, StatString statstr) {
 		userList.removeUser(user);
 		mainTextArea.channelInfo(user + " has left " + statstr.toString());
 	}
 
-	public void channelUser(BNetUser user, int flags, int ping, StatString statstr) {
+	public void channelUser(BNetUser user, StatString statstr) {
 		mainTextArea.channelInfo(user + " " + statstr.toString());
-		userList.showUser(user, flags, ping, statstr);
+		userList.showUser(user, statstr);
 	}
 
 	public void joinedChannel(String channel) {
@@ -246,12 +246,12 @@ public class GuiEventHandler implements EventHandler {
 		frame.setTitle(c.toString());
 	}
 
-	public void recieveChat(BNetUser user, int flags, int ping, String text) {
-		mainTextArea.userChat(user, flags, text);
+	public void recieveChat(BNetUser user, String text) {
+		mainTextArea.userChat(user, text);
 	}
 
-	public void recieveEmote(BNetUser user, int flags, int ping, String text) {
-		mainTextArea.userEmote(user, flags, text);
+	public void recieveEmote(BNetUser user, String text) {
+		mainTextArea.userEmote(user, text);
 	}
 
 	private static long lastInfoRecieved = 0;
@@ -274,12 +274,12 @@ public class GuiEventHandler implements EventHandler {
 		mainTextArea.recieveError(text);
 	}
 
-	public void whisperRecieved(BNetUser user, int flags, int ping, String text) {
-		mainTextArea.whisperRecieved(user, flags, text);
+	public void whisperRecieved(BNetUser user, String text) {
+		mainTextArea.whisperRecieved(user, text);
 	}
 
-	public void whisperSent(BNetUser user, int flags, int ping, String text) {
-		mainTextArea.whisperSent(user, flags, text);
+	public void whisperSent(BNetUser user, String text) {
+		mainTextArea.whisperSent(user, text);
 	}
 
 	public void bnetConnected() {

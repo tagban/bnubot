@@ -20,15 +20,15 @@ public interface EventHandler {
 
 	//Channel events
 	public void joinedChannel(String channel);
-	public void channelUser(BNetUser user, int flags, int ping, StatString statstr);
-	public void channelJoin(BNetUser user, int flags, int ping, StatString statstr);
-	public void channelLeave(BNetUser user, int flags, int ping, StatString statstr);
-	public void recieveChat(BNetUser user, int flags, int ping, String text);
-	public void recieveEmote(BNetUser user, int flags, int ping, String text);
+	public void channelUser(BNetUser user, StatString statstr);
+	public void channelJoin(BNetUser user, StatString statstr);
+	public void channelLeave(BNetUser user, StatString statstr);
+	public void recieveChat(BNetUser user, String text);
+	public void recieveEmote(BNetUser user, String text);
 	public void recieveInfo(String text);
 	public void recieveError(String text);
-	public void whisperSent(BNetUser user, int flags, int ping, String text);
-	public void whisperRecieved(BNetUser user, int flags, int ping, String text);
+	public void whisperSent(BNetUser user, String text);
+	public void whisperRecieved(BNetUser user, String text);
 	
 	//Realms
 	public void queryRealms2(String[] realms);

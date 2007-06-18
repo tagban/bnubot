@@ -90,9 +90,9 @@ public class RealmWindow extends JFrame implements EventHandler, RealmEventHandl
 	public void realmConnected() {}
 	public void realmDisconnected() {}
 
-	public void channelJoin(BNetUser user, int flags, int ping, StatString statstr) {}
-	public void channelLeave(BNetUser user, int flags, int ping, StatString statstr) {}
-	public void channelUser(BNetUser user, int flags, int ping, StatString statstr) {}
+	public void channelJoin(BNetUser user, StatString statstr) {}
+	public void channelLeave(BNetUser user, StatString statstr) {}
+	public void channelUser(BNetUser user, StatString statstr) {}
 	public void clanMOTD(Object cookie, String text) {}
 	public void clanMemberList(ClanMember[] members) {}
 	public void clanMemberRankChange(byte oldRank, byte newRank, String user) {}
@@ -100,12 +100,12 @@ public class RealmWindow extends JFrame implements EventHandler, RealmEventHandl
 	public void friendsUpdate(byte entry, byte location, byte status, int product, String locationName) {}
 
 	public void joinedChannel(String channel) {}
-	public void recieveChat(BNetUser user, int flags, int ping, String text) {}
-	public void recieveEmote(BNetUser user, int flags, int ping, String text) {}
+	public void recieveChat(BNetUser user, String text) {}
+	public void recieveEmote(BNetUser user, String text) {}
 	public void recieveError(String text) {}
 	public void recieveInfo(String text) {}
-	public void whisperRecieved(BNetUser user, int flags, int ping, String text) {}
-	public void whisperSent(BNetUser user, int flags, int ping, String text) {}
+	public void whisperRecieved(BNetUser user, String text) {}
+	public void whisperSent(BNetUser user, String text) {}
 
 	public void queryRealms2(String[] realms) {}
 

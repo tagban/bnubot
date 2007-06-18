@@ -48,22 +48,10 @@ public class MCPConnection extends RealmConnection {
 			dos.writeByte(1);
 			
 			MCPPacket p = new MCPPacket(MCPCommandIDs.MCP_STARTUP);
-			p.writeDWord(MCPChunk1[0]);
-			p.writeDWord(MCPChunk1[1]);
-			p.writeDWord(MCPChunk1[2]);
-			p.writeDWord(MCPChunk1[3]);
-			p.writeDWord(MCPChunk2[0]);
-			p.writeDWord(MCPChunk2[1]);
-			p.writeDWord(MCPChunk2[2]);
-			p.writeDWord(MCPChunk2[3]);
-			p.writeDWord(MCPChunk2[4]);
-			p.writeDWord(MCPChunk2[5]);
-			p.writeDWord(MCPChunk2[6]);
-			p.writeDWord(MCPChunk2[7]);
-			p.writeDWord(MCPChunk2[8]);
-			p.writeDWord(MCPChunk2[9]);
-			p.writeDWord(MCPChunk2[10]);
-			p.writeDWord(MCPChunk2[11]);
+			for(int i = 0; i < 4; i++)
+				p.writeDWord(MCPChunk1[i]);
+			for(int i = 0; i < 12; i++)
+				p.writeDWord(MCPChunk2[i]);
 			p.writeNTString(uniqueName);
 		    p.SendPacket(dos, true);
 		    

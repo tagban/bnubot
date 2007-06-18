@@ -19,30 +19,30 @@ public class ConsoleEventHandler implements EventHandler {
 		System.out.println("Joining channel " + channel);
 	}
 
-	public void channelUser(BNetUser user, int flags, int ping, StatString statstr) {
-		System.out.println(user + " (" + ping + "ms) " + statstr.toString());
+	public void channelUser(BNetUser user, StatString statstr) {
+		System.out.println(user + " (" + user.getPing() + "ms) " + statstr.toString());
 	}
 	
-	public void channelJoin(BNetUser user, int flags, int ping, StatString statstr) {
+	public void channelJoin(BNetUser user, StatString statstr) {
 		System.out.println(user + " has joined the channel " + statstr.toString());
 	}
-	public void channelLeave(BNetUser user, int flags, int ping, StatString statstr) {
+	public void channelLeave(BNetUser user, StatString statstr) {
 		System.out.println(user + " has left the channel " + statstr.toString());
 	}
 
-	public void recieveChat(BNetUser user, int flags, int ping, String text) {
+	public void recieveChat(BNetUser user, String text) {
 		System.out.println("<" + user + "> " + text);
 	}
 
-	public void recieveEmote(BNetUser user, int flags, int ping, String text) {
+	public void recieveEmote(BNetUser user, String text) {
 		System.out.println("<" + user + " " + text + ">");
 	}
 
-	public void whisperRecieved(BNetUser user, int flags, int ping, String text) {
+	public void whisperRecieved(BNetUser user, String text) {
 		System.out.println("<From: " + user + "> " + text);
 	}
 
-	public void whisperSent(BNetUser user, int flags, int ping, String text) {
+	public void whisperSent(BNetUser user, String text) {
 		System.out.println("<To: " + user + "> " + text);
 	}
 

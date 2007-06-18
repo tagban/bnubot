@@ -147,33 +147,33 @@ public class TextWindow2 extends JScrollPane {
 		append(text, "error");
 	}
 	
-	public void userChat(BNetUser user, int flags, String text) {
+	public void userChat(BNetUser user, String text) {
 		append2(
 			"<" + user + "> ",
-			cs.getUserNameColor(flags),
+			cs.getUserNameColor(user.getFlags()),
 			text,
-			cs.getChatColor(flags));
+			cs.getChatColor(user.getFlags()));
 	}
 	
-	public void whisperSent(BNetUser user, int flags, String text) {
+	public void whisperSent(BNetUser user, String text) {
 		append2(
 			"<To: " + user + "> ",
-			cs.getUserNameColor(flags),
+			cs.getUserNameColor(user.getFlags()),
 			text,
-			cs.getWhisperColor(flags));
+			cs.getWhisperColor(user.getFlags()));
 	}
 	
-	public void whisperRecieved(BNetUser user, int flags, String text) {
+	public void whisperRecieved(BNetUser user, String text) {
 		append2(
 			"<From: " + user + "> ",
-			cs.getUserNameColor(flags),
+			cs.getUserNameColor(user.getFlags()),
 			text,
-			cs.getWhisperColor(flags));
+			cs.getWhisperColor(user.getFlags()));
 	}
 	
-	public void userEmote(BNetUser user, int flags, String text) {
+	public void userEmote(BNetUser user, String text) {
 		append(
 			"<" + user + " " + text + "> ",
-			cs.getEmoteColor(flags));
+			cs.getEmoteColor(user.getFlags()));
 	}
 }
