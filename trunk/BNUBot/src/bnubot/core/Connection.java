@@ -219,8 +219,10 @@ public abstract class Connection extends Thread implements EventHandler {
 			String prefix = "[BNU";
 			if(Version.VER_ALPHA != null)
 				prefix += " alpha";
-			if(Version.VER_BETA != null)
+			else if(Version.VER_BETA != null)
 				prefix += " beta";
+			else if(Version.VER_RELEASE_CANDIDATE != null)
+				prefix += " RC";
 			prefix += "] ";
 			
 			if(cs.whisperBack)
