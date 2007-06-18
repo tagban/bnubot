@@ -17,8 +17,8 @@ public class MCPPacketReader {
 	public MCPPacketReader(InputStream rawis, boolean packetLog) throws IOException {
 		BNetInputStream is = new BNetInputStream(rawis);
 		
-		packetId = is.readByte() & 0x000000FF;
 		packetLength = is.readWord() & 0x0000FFFF;
+		packetId = is.readByte() & 0x000000FF;
 		assert(packetLength >= 3);
 		
 		data = new byte[packetLength-3];
