@@ -322,13 +322,16 @@ public class CommandEventHandler implements EventHandler {
 							throw new InvalidUseException();
 						}
 						
-						String message = "[sent to " + rank + "+] " + params[1];
+						String message = "[Sent to ranks " + rank + "+] " + params[1];
 						
+						int numAccounts = 0;
 						ResultSet rsAccounts = d.getRankedAccounts(rank);
 						while(rsAccounts.next()) {
 							long targetAccountID = rsAccounts.getLong("id");
 							d.sendMail(commanderAccountID, targetAccountID, message);
+							numAccounts++;
 						}
+						c.sendChat(user, "Mail queued for delivery to " + numAccounts + " accounts");
 					} catch(InvalidUseException e) {
 						c.sendChat(user, "Use: %trigger%mailall <minimum rank> <message>");
 					}
