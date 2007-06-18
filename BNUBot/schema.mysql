@@ -1,20 +1,20 @@
 # Schema for MySQL
 # vim:ts=4 ai
 
-DROP TABLE IF EXISTS rank;
-DROP TABLE IF EXISTS account;
-DROP TABLE IF EXISTS user;
-DROP TABLE IF EXISTS command;
-DROP TABLE IF EXISTS command_alias;
 DROP TABLE IF EXISTS mail;
+DROP TABLE IF EXISTS command_alias;
+DROP TABLE IF EXISTS command;
+DROP TABLE IF EXISTS user;
+DROP TABLE IF EXISTS account;
+DROP TABLE IF EXISTS rank;
 
 CREATE TABLE `rank` (
 	`id` INTEGER PRIMARY KEY NOT NULL,
-	`shortPrefix` VARCHAR(32) UNIQUE NOT NULL,
+	`shortPrefix` VARCHAR(32),
 	`prefix` VARCHAR(32),
-	`verbstr` VARCHAR(64),
+	`verbstr` VARCHAR(64) NOT NULL,
 	`greeting` VARCHAR(255)
-);
+) TYPE=InnoDB;
 
 CREATE TABLE `account` (
 	`id` INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
@@ -29,8 +29,13 @@ CREATE TABLE `user` (
 	`account` VARCHAR(32),
 	`created` TIMESTAMP NOT NULL default CURRENT_TIMESTAMP,
 	`lastSeen` TIMESTAMP default 0,
-	`lastAction` VARCHAR(32)
-);
+	`lastAction` VARCHAR(32),
+	CONSTRAINT `user_ibfk1`
+		FOREIGN KEY (`account`)
+		REFERENCES `account` (`name`)
+		ON UPDATE CASCADE
+		ON DELETE SET NULL
+) TYPE=InnoDB;
 
 CREATE TABLE `command` (
 	`id` INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
@@ -38,12 +43,17 @@ CREATE TABLE `command` (
 	`name` VARCHAR(32) UNIQUE NOT NULL,
 	`description` VARCHAR(255),
 	`cmdgroup`	VARCHAR(32) default 'other'
-);
+) TYPE=InnoDB;
 
 CREATE TABLE `command_alias` (
 	`alias` VARCHAR(32) UNIQUE NOT NULL,
-	`name` VARCHAR(32) NOT NULL
-);
+	`name` VARCHAR(32) NOT NULL,
+	CONSTRAINT `command_alias_ibfk1`
+		FOREIGN KEY (`name`)
+			REFERENCES `command` (`name`)
+			ON UPDATE CASCADE
+			ON DELETE CASCADE
+) TYPE=InnoDB;
 
 CREATE TABLE `mail` (
 	`id` INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
@@ -51,51 +61,26 @@ CREATE TABLE `mail` (
 	`from` INTEGER NOT NULL,
 	`to` INTEGER NOT NULL,
 	`message` VARCHAR(255),
-	`sent` TIMESTAMP NOT NULL default CURRENT_TIMESTAMP
-);
-
-#Foreign keys
-
-ALTER TABLE `user`
-	ADD CONSTRAINT `user_ibfk_1`
-		FOREIGN KEY (`account`)
-		REFERENCES `account` (`name`)
-		ON UPDATE CASCADE
-		ON DELETE SET NULL;
-
-ALTER TABLE `command_alias`
-	ADD CONSTRAINT
-		FOREIGN KEY (`name`)
-			REFERENCES `command` (`name`)
-			ON UPDATE CASCADE
-			ON DELETE CASCADE;
-
-
-#ALTER TABLE `account`
-#	ADD CONSTRAINT `account_ibfk_1`
-#		FOREIGN KEY (`access`)
-#		REFERENCES `rank` (`id`)
-#		ON UPDATE CASCADE
-#		ON DELETE CASCADE;
-
-ALTER TABLE `mail`
-	ADD CONSTRAINT
+	`sent` TIMESTAMP NOT NULL default CURRENT_TIMESTAMP,
+	CONSTRAINT `mail_ibfk1`
 		FOREIGN KEY (`from`)
 			REFERENCES `account` (`id`)
 			ON UPDATE CASCADE
 			ON DELETE SET NULL,
-	ADD CONSTRAINT
+	CONSTRAINT `mail_ibfk2`
 		FOREIGN KEY (`to`)
 			REFERENCES `account` (`id`)
 			ON UPDATE CASCADE
-			ON DELETE CASCADE;
+			ON DELETE CASCADE
+);
 
 INSERT INTO `rank` (id, shortPrefix, prefix, verbstr, greeting) VALUES (36,	'Master',	'Master',				'is a nazi',				'/me hails %1$s with ping %2$d');
 INSERT INTO `rank` (id, shortPrefix, prefix, verbstr, greeting) VALUES (35,	'Ancient',	'Legendary Ancient',	'is a Legendary Ancient',	'Hello, %1$s. Your ping is %2$d.');
-INSERT INTO `rank` (id, shortPrefix, prefix, verbstr, greeting) VALUES (34,	'Ancient',	'Ancient',				'is an Ancient',			'Hello, %1$s. Your ping is %2$d.');
+INSERT INTO `rank` (id, shortPrefix, prefix, verbstr, greeting) VALUES (34,	NULL,		'Ancient',				'is an Ancient',			'Hello, %1$s. Your ping is %2$d.');
 INSERT INTO `rank` (id, shortPrefix, prefix, verbstr, greeting) VALUES (11,	'Private',	'Private First Class',	'is a private',				'Hello, %1$s. Your ping is %2$d.');
-INSERT INTO `rank` (id, shortPrefix, prefix, verbstr, greeting) VALUES (10,	'Private',	'Private',				'is a private',				'Hello, %1$s. Your ping is %2$d.');
-INSERT INTO `rank` (id, shortPrefix, prefix, verbstr, greeting) VALUES (0,	NULL,		'Guest',				NULL,						'/m %3$s Welcome to Clan BNU! If you're a clan member, get a leader to add your account. For more information, you can visit our website at http://www.clanbnu.ws/');
+INSERT INTO `rank` (id, shortPrefix, prefix, verbstr, greeting) VALUES (10,	NULL,		'Private',				'is a private',				'Hello, %1$s. Your ping is %2$d.');
+INSERT INTO `rank` (id, shortPrefix, prefix, verbstr, greeting) VALUES (1,	NULL,		'Guest',				'is not a bot',				NULL);
+INSERT INTO `rank` (id, shortPrefix, prefix, verbstr, greeting) VALUES (0,	NULL,		'Guest',				'is a guest',				'/m %3$s Welcome to Clan BNU! If you''re a clan member, get a leader to add your account. For more information, you can visit our website at http://www.clanbnu.ws/');
 
 INSERT INTO `account` (access, name) VALUES (36,	'Camel');
 INSERT INTO `account` (access, name) VALUES (35,	'John');
@@ -119,6 +104,7 @@ INSERT INTO `command` (access, name, description, cmdgroup) VALUES (36,	'disconn
 INSERT INTO `command` (access, name, description, cmdgroup) VALUES (1,	'info', 'Bot version', 'info');
 INSERT INTO `command` (access, name, description, cmdgroup) VALUES (34,	'kick', NULL, 'moderation');
 INSERT INTO `command` (access, name, description, cmdgroup) VALUES (1,	'mail', NULL, 'accounts');
+INSERT INTO `command` (access, name, description, cmdgroup) VALUES (30,	'mailall', NULL, 'accounts');
 INSERT INTO `command` (access, name, description, cmdgroup) VALUES (36,	'quit', 'Close program', 'administration');
 INSERT INTO `command` (access, name, description, cmdgroup) VALUES (36,	'reconnect', NULL, 'administration');
 INSERT INTO `command` (access, name, description, cmdgroup) VALUES (36,	'say', NULL, 'administration');
