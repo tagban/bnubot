@@ -98,6 +98,12 @@ public class Database {
 		return createAccount(account, access);
 	}
 	
+	public ResultSet getRankedAccounts(long minRank) throws SQLException {
+		PreparedStatement ps = prepareStatement("SELECT * FROM `accounts` WHERE `rank`>=?");
+		ps.setLong(1, minRank);
+		return ps.executeQuery();
+	}
+	
 	public ResultSet getRank(long access) throws SQLException {
 		PreparedStatement ps = prepareStatement("SELECT * FROM `rank` WHERE `id`=?");
 		ps.setLong(1, access);
