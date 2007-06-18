@@ -308,26 +308,32 @@ public class CommandEventHandler implements EventHandler {
 					}
 					break;
 				}
-			/*	if(command.equals("mailall")) {
+				if(command.equals("mailall")) {
 					try {
 						//<rank> <message>
 						params = param.split(" ", 2);
 						if((params.length < 2) || (params[1].length() == 0))
 							throw new InvalidUseException();
 						
-						long rank;
+						long rank = 0;
 						try {
 							rank = Long.parseLong(params[0]);
 						} catch(Exception e) {
 							throw new InvalidUseException();
 						}
 						
-						ResultSet rsAccounts = d.get
+						String message = "[sent to " + rank + "+] " + params[1];
+						
+						ResultSet rsAccounts = d.getRankedAccounts(rank);
+						while(rsAccounts.next()) {
+							long targetAccountID = rsAccounts.getLong("id");
+							d.sendMail(commanderAccountID, targetAccountID, message);
+						}
 					} catch(InvalidUseException e) {
 						c.sendChat(user, "Use: %trigger%mailall <minimum rank> <message>");
 					}
 				}
-			*/	break;
+				break;
 			case 'q':
 				if(command.equals("quit")) {
 					System.exit(0);
