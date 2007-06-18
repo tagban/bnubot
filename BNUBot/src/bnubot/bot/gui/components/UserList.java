@@ -23,9 +23,8 @@ import bnubot.core.bncs.ProductIDs;
 public class UserList extends JPanel {
 	private class UserInfo {
 		BNetUser user;
-		int flags;
+		int lastFlags;
 		int priority;
-		int ping;
 		StatString statstr;
 		JLabel label;
 		JPopupMenu menu;
@@ -93,7 +92,7 @@ public class UserList extends JPanel {
 		for(int i = 0; i < b.getComponentCount(); i++) {
 			JLabel lbl = (JLabel)b.getComponent(i);
 			UserInfo ui = getUI(lbl);
-			int pCurrent = getPrioByFlags(ui.flags);
+			int pCurrent = getPrioByFlags(ui.user.getFlags());
 			
 			if(priority > pCurrent)
 				return i;
@@ -116,15 +115,13 @@ public class UserList extends JPanel {
 		return null;
 	}
 	
-	public void showUser(BNetUser user, int flags, int ping, StatString statstr) {
+	public void showUser(BNetUser user, StatString statstr) {
 		UserInfo ui = users.get(user);
 		if(ui == null) {
 			ui = new UserInfo();
 			ui.user = user;
-			ui.flags = flags;
-			ui.ping = ping;
 			ui.statstr = statstr;
-			ui.priority = getPrioByFlags(flags);
+			ui.priority = getPrioByFlags(user.getFlags());
 			
 			ui.menu = new JPopupMenu();
 			ui.menu.add(new JLabel(user + ": " + statstr.toString()));
@@ -148,7 +145,7 @@ public class UserList extends JPanel {
 		}
 		if(ui.label == null) {
 			ui.label = new JLabel(user.toString());
-			ui.label.setForeground(cs.getUserNameListColor(flags));
+			ui.label.setForeground(cs.getUserNameListColor(user.getFlags()));
 			b.add(ui.label, getInsertPosition(ui.priority));
 			
 			ui.label.addMouseListener(new MouseListener() {
@@ -181,21 +178,19 @@ public class UserList extends JPanel {
 		}
 		
 		//Check if the user's flags updated
-		if(ui.flags != flags) {
+		if(ui.lastFlags != ui.user.getFlags()) {
 			//They did; order the list appropriately
+			ui.lastFlags = ui.user.getFlags();
 
-			int newPriority = getPrioByFlags(flags);
+			int newPriority = getPrioByFlags(ui.lastFlags);
 			if(ui.priority != newPriority) {
 				ui.priority = newPriority;
 				b.remove(ui.label);
 				b.add(ui.label, getInsertPosition(newPriority));
 			}
 			
-			ui.flags = flags;
-			
-			ui.label.setForeground(cs.getUserNameListColor(flags));
+			ui.label.setForeground(cs.getUserNameListColor(ui.lastFlags));
 		}
-		ui.ping = ping;
 		ui.statstr = statstr;
 				
 		Icon icon = null;
@@ -208,12 +203,12 @@ public class UserList extends JPanel {
 		boolean keepThisIcon = false;
 		for(int i = 0; i < icons.length; i++) {
 			//Look for 
-			if(icons[i].useFor(flags, specialIcon)) {
+			if(icons[i].useFor(ui.user.getFlags(), specialIcon)) {
 				keepThisIcon = true;
 				icon = icons[i].getIcon();
 				break;
 			}
-			if(icons[i].useFor(flags, product)) {
+			if(icons[i].useFor(ui.user.getFlags(), product)) {
 				icon = icons[i].getIcon();
 			}
 		}
@@ -268,7 +263,7 @@ public class UserList extends JPanel {
 					default:
 						if(icons != null)
 							for(int i = 0; i < icons.length; i++) {
-								if(icons[i].useFor(flags, specialIcon)) {
+								if(icons[i].useFor(ui.user.getFlags(), specialIcon)) {
 									keepThisIcon = true;
 									icon = icons[i].getIcon();
 									break;

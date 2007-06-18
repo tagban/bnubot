@@ -303,34 +303,34 @@ public abstract class Connection extends Thread implements EventHandler {
 			}
 	}
 	
-	public synchronized void channelUser(BNetUser user, int flags, int ping, StatString statstr) {
+	public synchronized void channelUser(BNetUser user, StatString statstr) {
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
-			it.next().channelUser(user, flags, ping, statstr);
+			it.next().channelUser(user, statstr);
 	}
 	
-	public synchronized void channelJoin(BNetUser user, int flags, int ping, StatString statstr) {
+	public synchronized void channelJoin(BNetUser user, StatString statstr) {
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
-			it.next().channelJoin(user, flags, ping, statstr);
+			it.next().channelJoin(user, statstr);
 	}
 	
-	public synchronized void channelLeave(BNetUser user, int flags, int ping, StatString statstr) {
+	public synchronized void channelLeave(BNetUser user, StatString statstr) {
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
-			it.next().channelLeave(user, flags, ping, statstr);
+			it.next().channelLeave(user, statstr);
 	}
 
-	public synchronized void recieveChat(BNetUser user, int flags, int ping, String text) {
+	public synchronized void recieveChat(BNetUser user, String text) {
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
-			it.next().recieveChat(user, flags, ping, text);
+			it.next().recieveChat(user, text);
 	}
 
-	public synchronized void recieveEmote(BNetUser user, int flags, int ping, String text) {
+	public synchronized void recieveEmote(BNetUser user, String text) {
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
-			it.next().recieveEmote(user, flags, ping, text);
+			it.next().recieveEmote(user, text);
 	}
 
 	public synchronized void recieveInfo(String text) {
@@ -363,24 +363,24 @@ public abstract class Connection extends Thread implements EventHandler {
 			it.next().recieveError(text);
 	}
 	
-	public synchronized void whisperSent(BNetUser user, int flags, int ping, String text) {
+	public synchronized void whisperSent(BNetUser user, String text) {
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
-			it.next().whisperSent(user, flags, ping, text);
+			it.next().whisperSent(user, text);
 		
 		it = eventHandlers2.iterator();
 		while(it.hasNext())
-			it.next().whisperSent(user, flags, ping, text);
+			it.next().whisperSent(user, text);
 	}
 	
-	public synchronized void whisperRecieved(BNetUser user, int flags, int ping, String text) {
+	public synchronized void whisperRecieved(BNetUser user, String text) {
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
-			it.next().whisperRecieved(user, flags, ping, text);
+			it.next().whisperRecieved(user, text);
 		
 		it = eventHandlers2.iterator();
 		while(it.hasNext())
-			it.next().whisperRecieved(user, flags, ping, text);
+			it.next().whisperRecieved(user, text);
 	}
 	
 	// Realms

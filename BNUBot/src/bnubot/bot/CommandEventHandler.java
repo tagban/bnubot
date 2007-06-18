@@ -308,7 +308,26 @@ public class CommandEventHandler implements EventHandler {
 					}
 					break;
 				}
-				break;
+			/*	if(command.equals("mailall")) {
+					try {
+						//<rank> <message>
+						params = param.split(" ", 2);
+						if((params.length < 2) || (params[1].length() == 0))
+							throw new InvalidUseException();
+						
+						long rank;
+						try {
+							rank = Long.parseLong(params[0]);
+						} catch(Exception e) {
+							throw new InvalidUseException();
+						}
+						
+						ResultSet rsAccounts = d.get
+					} catch(InvalidUseException e) {
+						c.sendChat(user, "Use: %trigger%mailall <minimum rank> <message>");
+					}
+				}
+			*/	break;
 			case 'q':
 				if(command.equals("quit")) {
 					System.exit(0);
@@ -545,7 +564,7 @@ public class CommandEventHandler implements EventHandler {
 		}
 	}
 
-	public void channelJoin(BNetUser user, int flags, int ping, StatString statstr) {
+	public void channelJoin(BNetUser user, StatString statstr) {
 		touchUser(user, "Joining channel");
 		
 		try {
@@ -557,7 +576,7 @@ public class CommandEventHandler implements EventHandler {
 				if(rsRank.next()) {
 					String greeting = rsRank.getString("greeting");
 					if(greeting != null) {
-						greeting = String.format(greeting, user.toString(), ping);
+						greeting = String.format(greeting, user.toString(), user.getPing());
 						c.sendChat(greeting);
 					}
 				}
@@ -575,17 +594,17 @@ public class CommandEventHandler implements EventHandler {
 		}
 	}
 	
-	public void channelLeave(BNetUser user, int flags, int ping, StatString statstr) {
+	public void channelLeave(BNetUser user, StatString statstr) {
 		touchUser(user, "Leaving channel");
 	}
 	
-	public void channelUser(BNetUser user, int flags, int ping, StatString statstr) {
+	public void channelUser(BNetUser user, StatString statstr) {
 		touchUser(user, "In channel");
 	}
 	
 	public void joinedChannel(String channel) {}
 
-	public void recieveChat(BNetUser user, int flags, int ping, String text) {
+	public void recieveChat(BNetUser user, String text) {
 		if(text == null)
 			return;
 		if(text.length() == 0)
@@ -608,7 +627,7 @@ public class CommandEventHandler implements EventHandler {
 			}
 	}
 
-	public void recieveEmote(BNetUser user, int flags, int ping, String text) {}
+	public void recieveEmote(BNetUser user, String text) {}
 	
 	private boolean enableSendInfoErrorBack = false;
 	private String lastInfo = null;
@@ -689,7 +708,7 @@ public class CommandEventHandler implements EventHandler {
 	public void bnetDisconnected() {}
 	public void titleChanged() {}
 
-	public void whisperRecieved(BNetUser user, int flags, int ping, String text) {
+	public void whisperRecieved(BNetUser user, String text) {
 		if(text == null)
 			return;
 		if(text.length() == 0)
@@ -710,7 +729,7 @@ public class CommandEventHandler implements EventHandler {
 		}
 	}
 
-	public void whisperSent(BNetUser user, int flags, int ping, String text) {}
+	public void whisperSent(BNetUser user, String text) {}
 
 	public void friendsList(FriendEntry[] entries) {}
 	public void friendsUpdate(byte entry, byte location, byte status, int product, String locationName) {}

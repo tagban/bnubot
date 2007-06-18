@@ -46,8 +46,6 @@ public class BNCSConnection extends Connection {
 	private byte proof_M2[] = null;
 	private boolean forceReconnect = false;
 	protected StatString myStatString = null;
-	protected int myFlags = 0;
-	protected int myPing = -1;
 	protected int myClan = 0;
 	protected byte myClanRank = 0; 
 	protected long lastNullPacket;
@@ -202,10 +200,9 @@ public class BNCSConnection extends Connection {
 				if(isConnected());
 					connectedLoop();
 					
-
+				BNetUser.clearCache();
 				myStatString = null;
-				myFlags = 0;
-				myPing = -1;
+				myUser = null;
 				myClan = 0;
 				myClanRank = 0;
 				titleChanged();
@@ -826,29 +823,27 @@ public class BNCSConnection extends Connection {
 						}
 						
 						user = BNetUser.getBNetUser(username, cs.myRealm);
+						user.setFlags(flags);
+						user.setPing(ping);
 						break;
 					}
 					
 					switch(eid) {
 					case BNCSChatEventIDs.EID_SHOWUSER:
 					case BNCSChatEventIDs.EID_USERFLAGS:
-						if(user.equals(myUser)) {
-							myFlags = flags;
-							myPing = ping;
-						}
-						channelUser(user, flags, ping, new StatString(text));
+						channelUser(user, new StatString(text));
 						break;
 					case BNCSChatEventIDs.EID_JOIN:
-						channelJoin(user, flags, ping, new StatString(text));
+						channelJoin(user, new StatString(text));
 						break;
 					case BNCSChatEventIDs.EID_LEAVE:
-						channelLeave(user, flags, ping, new StatString(text));
+						channelLeave(user, new StatString(text));
 						break;
 					case BNCSChatEventIDs.EID_TALK:
-						recieveChat(user, flags, ping, text);
+						recieveChat(user, text);
 						break;
 					case BNCSChatEventIDs.EID_EMOTE:
-						recieveEmote(user, flags, ping, text);
+						recieveEmote(user, text);
 						break;
 					case BNCSChatEventIDs.EID_INFO:
 						recieveInfo(text);
@@ -862,10 +857,10 @@ public class BNCSConnection extends Connection {
 						titleChanged();
 						break;
 					case BNCSChatEventIDs.EID_WHISPERSENT:
-						whisperSent(user, flags, ping, text);
+						whisperSent(user, text);
 						break;
 					case BNCSChatEventIDs.EID_WHISPER:
-						whisperRecieved(user, flags, ping, text);
+						whisperRecieved(user, text);
 						break;
 					case BNCSChatEventIDs.EID_CHANNELDOESNOTEXIST:
 						BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_JOINCHANNEL);
@@ -1183,6 +1178,9 @@ public class BNCSConnection extends Connection {
 	}
 	
 	public boolean isOp() {
+		Integer myFlags = myUser.getFlags();
+		if(myFlags == null)
+			return false;
 		return (myFlags & 0x02) == 0x02;
 	}
 	
@@ -1266,7 +1264,7 @@ public class BNCSConnection extends Connection {
 		}
 
 		if(text.charAt(0) != '/')
-			recieveChat(myUser, myFlags, myPing, text);
+			recieveChat(myUser, text);
 	}
 
 	public void sendClanRankChange(String user, int newRank) throws Exception {

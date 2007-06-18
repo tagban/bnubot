@@ -17,6 +17,8 @@ public class BNetUser {
 	private String fullLogonName;	// #=yes, realm=yes
 	private String fullAccountName;	// #=no, realm=yes
 	private String prettyName = null;
+	private Integer flags = null;
+	private Integer ping = null;
 
 	private static Database d = null;
 	
@@ -268,5 +270,21 @@ public class BNetUser {
 		}
 		
 		return false;
+	}
+
+	public Integer getFlags() {
+		return flags;
+	}
+
+	public void setFlags(Integer flags) {
+		this.flags = flags;
+	}
+
+	public Integer getPing() {
+		return ping;
+	}
+
+	public void setPing(Integer ping) {
+		this.ping = ping;
 	}
 }
