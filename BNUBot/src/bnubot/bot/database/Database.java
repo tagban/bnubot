@@ -8,7 +8,7 @@ import bnubot.core.BNetUser;
 
 public class Database {
 	private static final long databaseVersion = 1;		// Current schema version
-	private static final long compatibleVersion = 1;	// Minimum version compatible
+	private static final long compatibleVersion = 2;	// Minimum version compatible
 	private Connection conn;
 	
 	public Database(String driver, String url, String username, String password, String schemaFile) throws SQLException, ClassNotFoundException {
@@ -60,14 +60,24 @@ public class Database {
 	}
 	
 	public ResultSet getAccount(BNetUser user) throws SQLException {
-		ResultSet rsUser = getUser(user);
+		/*ResultSet rsUser = getUser(user);
 		if(!rsUser.next())
 			return null;
 		
 		String account = rsUser.getString("account");
 		if(account == null)
 			return null;
-		return getAccount(account);
+		return getAccount(account);*/
+
+		PreparedStatement ps = prepareStatement(
+				"SELECT A.* " +
+				"FROM `account` AS A " +
+				"JOIN `user` AS U " +
+					"ON A.`name`=U.`account` " +
+				"WHERE U.`login`=? " +
+				"LIMIT 1");
+		ps.setString(1, user.getFullAccountName());
+		return ps.executeQuery();
 	}
 	
 	public ResultSet getAccountUsers(String account) throws SQLException {
@@ -99,7 +109,7 @@ public class Database {
 	}
 	
 	public ResultSet getRankedAccounts(long minRank) throws SQLException {
-		PreparedStatement ps = prepareStatement("SELECT * FROM `accounts` WHERE `rank`>=?");
+		PreparedStatement ps = prepareStatement("SELECT * FROM `account` WHERE `access`>=?");
 		ps.setLong(1, minRank);
 		return ps.executeQuery();
 	}
@@ -256,7 +266,7 @@ public class Database {
 			e.printStackTrace();
 			System.exit(1);
 		} catch(SQLException e) {
-			System.err.println("QUERY:" + query);
+			System.err.println("Failed to create schema\n" + query + "\n\n" + e.getMessage());
 			throw e;
 		}
 		
