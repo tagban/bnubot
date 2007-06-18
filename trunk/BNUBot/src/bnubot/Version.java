@@ -7,16 +7,20 @@ public final class Version {
 	public static final Integer VER_RELEASE_CANDIDATE = null;
 	public static final Integer VER_ALPHA = null;
 	public static final Integer VER_BETA = 3;
+	private static String VER_STRING = null;
 	
 	public static final String version() {
-		String out = VER_MAJOR.toString() + '.' + VER_MINOR + '.' + VER_REVISION;
-		if(VER_ALPHA != null)
-			out += " alpha " + VER_ALPHA;
-		else if(VER_BETA != null)
-			out += " beta " + VER_BETA;
-		else if(VER_RELEASE_CANDIDATE != null)
-			out += " RC " + VER_RELEASE_CANDIDATE;
+		if(VER_STRING != null)
+			return VER_STRING;
 		
-		return out;
+		VER_STRING = VER_MAJOR.toString() + '.' + VER_MINOR + '.' + VER_REVISION;
+		if(VER_ALPHA != null)
+			VER_STRING += " alpha " + VER_ALPHA;
+		else if(VER_BETA != null)
+			VER_STRING += " beta " + VER_BETA;
+		else if(VER_RELEASE_CANDIDATE != null)
+			VER_STRING += " RC " + VER_RELEASE_CANDIDATE;
+		
+		return VER_STRING;
 	}
 }
