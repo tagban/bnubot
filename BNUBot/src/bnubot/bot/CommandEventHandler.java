@@ -485,9 +485,11 @@ public class CommandEventHandler implements EventHandler {
 						BNetUser bnSubject = BNetUser.getBNetUser(params[0], user);
 						ResultSet rsSubject = d.getUser(bnSubject);
 						ResultSet rsSubjectAccount = null;
+						String result = null;
 						if(!rsSubject.next()) {
 							rsSubject.close();
 							rsSubject = null;
+							bnSubject = null;
 							
 							rsSubjectAccount = d.getAccount(params[0]);
 							
@@ -495,6 +497,8 @@ public class CommandEventHandler implements EventHandler {
 								c.sendChat(user, "User [" + params[0] + "] not found in database");
 								break;
 							}
+							
+							result = rsSubjectAccount.getString("name");
 						} else {
 							BNetUser subject = BNetUser.getBNetUser(rsSubject.getString("login"));
 							rsSubjectAccount = d.getAccount(subject);
@@ -503,14 +507,28 @@ public class CommandEventHandler implements EventHandler {
 								c.sendChat(user, "User [" + params[0] + "] has no account");
 								break;
 							}
+							
+							result = bnSubject.toString();
 						}
-						
-						String result = bnSubject.toString();
 
 						String subjectAccount = rsSubjectAccount.getString("name");
 						long subjectAccess = rsSubjectAccount.getLong("access");
 						ResultSet rsSubjectRank = d.getRank(subjectAccess);
+						
 						if(rsSubjectRank.next()) {
+							if(bnSubject == null) {
+								String prefix = rsSubjectRank.getString("shortPrefix");
+								if(prefix == null)
+									prefix = rsSubjectRank.getString("prefix");
+								
+								if(prefix == null)
+									prefix = "";
+								else
+									prefix += " ";
+								
+								result = prefix + rsSubjectAccount.getString("name");
+							}
+							
 							result += " " + rsSubjectRank.getString("verbstr");
 							result += " (" + subjectAccess + ")";
 						} else {
@@ -542,7 +560,7 @@ public class CommandEventHandler implements EventHandler {
 						for(int i = 0; i < aliases.size(); i++) {
 							String l = aliases.get(i);
 							
-							if(bnSubject.equals(l))
+							if((bnSubject != null) && (bnSubject.equals(l)))
 								continue;
 							
 							if(!andHasAliases) {
