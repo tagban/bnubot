@@ -317,10 +317,10 @@ public abstract class Connection extends Thread implements EventHandler {
 			it.next().channelJoin(user, statstr);
 	}
 	
-	public synchronized void channelLeave(BNetUser user, StatString statstr) {
+	public synchronized void channelLeave(BNetUser user) {
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
-			it.next().channelLeave(user, statstr);
+			it.next().channelLeave(user);
 	}
 
 	public synchronized void recieveChat(BNetUser user, String text) {

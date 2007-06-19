@@ -603,7 +603,7 @@ public class CommandEventHandler implements EventHandler {
 		}
 	}
 	
-	public void channelLeave(BNetUser user, StatString statstr) {
+	public void channelLeave(BNetUser user) {
 		touchUser(user, "Leaving channel");
 	}
 	

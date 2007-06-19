@@ -91,8 +91,8 @@ public class RealmWindow extends JFrame implements EventHandler, RealmEventHandl
 	public void realmDisconnected() {}
 
 	public void channelJoin(BNetUser user, StatString statstr) {}
-	public void channelLeave(BNetUser user, StatString statstr) {}
 	public void channelUser(BNetUser user, StatString statstr) {}
+	public void channelLeave(BNetUser user) {}
 	public void clanMOTD(Object cookie, String text) {}
 	public void clanMemberList(ClanMember[] members) {}
 	public void clanMemberRankChange(byte oldRank, byte newRank, String user) {}
