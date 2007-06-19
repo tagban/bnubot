@@ -111,7 +111,7 @@ public class StatString {
 		if(statString.length == 0)
 			return;
 		
-		pretty = "using ";
+		pretty = " using ";
 		
 		try {
 			product = HexDump.StringToDWord(statString[0]);
