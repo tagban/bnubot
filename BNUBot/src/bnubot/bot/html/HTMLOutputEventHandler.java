@@ -56,7 +56,7 @@ public class HTMLOutputEventHandler implements EventHandler {
 		writeUserList();
 	}
 	
-	public void channelLeave(BNetUser user, StatString statstr) {
+	public void channelLeave(BNetUser user) {
 		if(!users.remove(get(user)))
 			System.err.println("Tried to remove a user that was not in the list: " + user.toString());
 		

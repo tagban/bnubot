@@ -350,9 +350,12 @@ public class ConfigurationFrame extends JDialog {
 		CDKey kLOD = (CDKey)cmbCDKeyLOD.getSelectedItem();
 		CDKey kTFT = (CDKey)cmbCDKeyTFT.getSelectedItem();
 		
-		cs.cdkey = formatCDKey(k.getKey());
-		cs.cdkeyLOD = formatCDKey(kLOD.getKey());
-		cs.cdkeyTFT = formatCDKey(kTFT.getKey());
+		if(k != null)
+			cs.cdkey = formatCDKey(k.getKey());
+		if(kLOD != null)
+			cs.cdkeyLOD = formatCDKey(kLOD.getKey());
+		if(kTFT != null)
+			cs.cdkeyTFT = formatCDKey(kTFT.getKey());
 		cs.bncsServer = txtBNCSServer.getText();
 		cs.bnlsServer = txtBNLSServer.getText();
 		cs.channel = txtChannel.getText();

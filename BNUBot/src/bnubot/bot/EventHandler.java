@@ -22,7 +22,7 @@ public interface EventHandler {
 	public void joinedChannel(String channel);
 	public void channelUser(BNetUser user, StatString statstr);
 	public void channelJoin(BNetUser user, StatString statstr);
-	public void channelLeave(BNetUser user, StatString statstr);
+	public void channelLeave(BNetUser user);
 	public void recieveChat(BNetUser user, String text);
 	public void recieveEmote(BNetUser user, String text);
 	public void recieveInfo(String text);

@@ -842,7 +842,7 @@ public class BNCSConnection extends Connection {
 						channelJoin(user, new StatString(text));
 						break;
 					case BNCSChatEventIDs.EID_LEAVE:
-						channelLeave(user, new StatString(text));
+						channelLeave(user);
 						break;
 					case BNCSChatEventIDs.EID_TALK:
 						recieveChat(user, text);
@@ -1273,6 +1273,14 @@ public class BNCSConnection extends Connection {
 	}
 
 	public void sendClanRankChange(String user, int newRank) throws Exception {
+		switch(productID) {
+		case ProductIDs.PRODUCT_WAR3:
+		case ProductIDs.PRODUCT_W3XP:
+			break;
+		default:
+			throw new UnsupportedFeatureException("Only WAR3/W3XP support clans.");
+		}
+		
 		LinkedList<Object> obj = new LinkedList<Object>();
 		obj.add("This is the cookie for setRank:");
 		obj.add(user);
@@ -1288,12 +1296,28 @@ public class BNCSConnection extends Connection {
 	}
 
 	public void sendClanMOTD(Object cookie) throws Exception {
+		switch(productID) {
+		case ProductIDs.PRODUCT_WAR3:
+		case ProductIDs.PRODUCT_W3XP:
+			break;
+		default:
+			throw new UnsupportedFeatureException("Only WAR3/W3XP support MOTD.");
+		}
+		
 		BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_CLANMOTD);
 		p.writeDWord(CookieUtility.createCookie(cookie));
 		p.SendPacket(dos, cs.packetLog);
 	}
 	
 	public void sendClanSetMOTD(String text) throws Exception {
+		switch(productID) {
+		case ProductIDs.PRODUCT_WAR3:
+		case ProductIDs.PRODUCT_W3XP:
+			break;
+		default:
+			throw new UnsupportedFeatureException("Only WAR3/W3XP support MOTD.");
+		}
+		
 		BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_CLANSETMOTD);
 		p.writeDWord(0);	//Cookie
 		p.writeNTString(text);
