@@ -61,10 +61,10 @@ public class StatString {
 			case ProductIDs.ICON_W3U3:	return "Undead Abomination";
 			case ProductIDs.ICON_W3U4:	return "Undead Lich";
 			case ProductIDs.ICON_W3U5:	return "Undead Tichondrius";
-			case ProductIDs.ICON_W3R2:	return "Random Green Dragon Whelp";
-			case ProductIDs.ICON_W3R3:	return "Random Blue Dragon";
-			case ProductIDs.ICON_W3R4:	return "Random Red Dragon";
-			case ProductIDs.ICON_W3R5:	return "Random Deathwing";
+			case ProductIDs.ICON_W3R2:	return "Green Dragon Whelp";
+			case ProductIDs.ICON_W3R3:	return "Blue Dragon";
+			case ProductIDs.ICON_W3R4:	return "Red Dragon";
+			case ProductIDs.ICON_W3R5:	return "Deathwing";
 			}
 			break;
 		// http://www.battle.net/war3/ladder/w3xp-ladder-info-laddericons.aspx
@@ -74,29 +74,40 @@ public class StatString {
 			case ProductIDs.ICON_W3O1:
 			case ProductIDs.ICON_W3N1:
 			case ProductIDs.ICON_W3U1:
-			case ProductIDs.ICON_W3R1:	return "Orc Peon";
+			case ProductIDs.ICON_W3R1:
+			case ProductIDs.ICON_W3D1:	return "Orc Peon";
 			
 			case ProductIDs.ICON_W3H2:	return "Human Rifleman";
 			case ProductIDs.ICON_W3H3:	return "Human Sorceress";
 			case ProductIDs.ICON_W3H4:	return "Human Spellbreaker";
-			case ProductIDs.ICON_W3H5:	return "Human Midvh";
-		/*	case ProductIDs.ICON_W3O2:	return "Orc Grunt";
-			case ProductIDs.ICON_W3O3:	return "Orc Tauren";
-			case ProductIDs.ICON_W3O4:	return "Orc Far Seer";
-			case ProductIDs.ICON_W3O5:	return "Orc Thrall";
-			case ProductIDs.ICON_W3N2:	return "Night Elf Archer";
-			case ProductIDs.ICON_W3N3:	return "Night Elf Druid of the Claw";
-			case ProductIDs.ICON_W3N4:	return "Night Elf Priestess of the Moon";
-			case ProductIDs.ICON_W3N5:	return "Night Elf Furion Stormrage";
-			case ProductIDs.ICON_W3U2:	return "Undead Ghoul";
-			case ProductIDs.ICON_W3U3:	return "Undead Abomination";
-			case ProductIDs.ICON_W3U4:	return "Undead Lich";
-			case ProductIDs.ICON_W3U5:	return "Undead Tichondrius";
-			case ProductIDs.ICON_W3R2:	return "Random Green Dragon Whelp";
-			case ProductIDs.ICON_W3R3:	return "Random Blue Dragon";
-			case ProductIDs.ICON_W3R4:	return "Random Red Dragon";
-			case ProductIDs.ICON_W3R5:	return "Random Deathwing";
-		*/	}
+			case ProductIDs.ICON_W3H5:	return "Human Blood Mage";
+			case ProductIDs.ICON_W3H6:	return "Human Jaina";
+			case ProductIDs.ICON_W3O2:	return "Orc Troll Headhunter";
+			case ProductIDs.ICON_W3O3:	return "Orc Shaman";
+			case ProductIDs.ICON_W3O4:	return "Orc Spirit Walker";
+			case ProductIDs.ICON_W3O5:	return "Orc Shadow Hunter";
+			case ProductIDs.ICON_W3O6:	return "Orc Rexxar";
+			case ProductIDs.ICON_W3N2:	return "Night Elf Huntress";
+			case ProductIDs.ICON_W3N3:	return "Night Elf Druid of the Talon";
+			case ProductIDs.ICON_W3N4:	return "Night Elf Dryad";
+			case ProductIDs.ICON_W3N5:	return "Night Elf Keeper of the Grove";
+			case ProductIDs.ICON_W3N6:	return "Night Elf Maiev";
+			case ProductIDs.ICON_W3U2:	return "Undead Crypt Fiend";
+			case ProductIDs.ICON_W3U3:	return "Undead Banshee";
+			case ProductIDs.ICON_W3U4:	return "Undead Destroyer";
+			case ProductIDs.ICON_W3U5:	return "Undead Crypt Lord";
+			case ProductIDs.ICON_W3U6:	return "Undead Sylvanas";
+			case ProductIDs.ICON_W3R2:	return "Myrmidon";
+			case ProductIDs.ICON_W3R3:	return "Siren";
+			case ProductIDs.ICON_W3R4:	return "Dragon Turtle";
+			case ProductIDs.ICON_W3R5:	return "Sea Witch";
+			case ProductIDs.ICON_W3R6:	return "Illidan";
+			case ProductIDs.ICON_W3D2:	return "Felguard";
+			case ProductIDs.ICON_W3D3:	return "Infernal";
+			case ProductIDs.ICON_W3D4:	return "Doomguard";
+			case ProductIDs.ICON_W3D5:	return "Pit Lord";
+			case ProductIDs.ICON_W3D6:	return "Archimonde";
+			}
 			break;
 		}
 		
