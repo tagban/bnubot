@@ -7,7 +7,7 @@ import java.util.Hashtable;
 import bnubot.core.BNetUser;
 
 public class Database {
-	private static final long databaseVersion = 1;		// Current schema version
+	private static final long databaseVersion = 2;		// Current schema version
 	private static final long compatibleVersion = 2;	// Minimum version compatible
 	private Connection conn;
 	
@@ -79,16 +79,30 @@ public class Database {
 				"SELECT A.* " +
 				"FROM `account` AS A " +
 				"JOIN `user` AS U " +
-					"ON A.`name`=U.`account` " +
+					"ON A.`id`=U.`account` " +
 				"WHERE U.`login`=? " +
 				"LIMIT 1");
 		ps.setString(1, user.getFullAccountName());
 		return ps.executeQuery();
 	}
 	
-	public ResultSet getAccountUsers(String account) throws SQLException {
+	public long[] getAccountWinsLevels(long accountID) throws SQLException {
+		PreparedStatement ps = prepareStatement("SELECT SUM(winsSTAR), SUM(winsSEXP), SUM(winsW2BN), MAX(levelD2), MAX(levelW3) FROM `user` WHERE `account`=? LIMIT 1");
+		ps.setLong(1, accountID);
+		ResultSet rs = ps.executeQuery();
+		if(!rs.next())
+			throw new SQLException("getAccountWinsLevels query failed");
+		long w[] = new long[3];
+		w[0] = rs.getLong(1) + rs.getLong(2) + rs.getLong(3);
+		w[1] = rs.getLong(4);
+		w[2] = rs.getLong(5);
+		rs.close();
+		return w;
+	}
+	
+	public ResultSet getAccountUsers(long accountID) throws SQLException {
 		PreparedStatement ps = prepareStatement("SELECT * FROM `user` WHERE `account`=?");
-		ps.setString(1, account);
+		ps.setLong(1, accountID);
 		return ps.executeQuery();
 	}
 
