@@ -13,7 +13,11 @@ CREATE TABLE `rank` (
 	`shortPrefix` VARCHAR(32),
 	`prefix` VARCHAR(32),
 	`verbstr` VARCHAR(64) NOT NULL,
-	`greeting` VARCHAR(255)
+	`greeting` VARCHAR(255),
+	`apDays` INTEGER DEFAULT NULL,
+	`apWins` INTEGER DEFAULT NULL,
+	`apD2Level` INTEGER DEFAULT NULL,
+	`apW3Level` INTEGER DEFAULT NULL
 ) TYPE=InnoDB;
 
 CREATE TABLE `account` (
@@ -21,6 +25,7 @@ CREATE TABLE `account` (
 	`access` INTEGER NOT NULL,
 	`name` VARCHAR(32) UNIQUE NOT NULL,
 	`created` TIMESTAMP NOT NULL default CURRENT_TIMESTAMP,
+	`lastRankChange` TIMESTAMP DEFAULT 0,
 	`createdby` INTEGER default NULL,
 	CONSTRAINT `account_ibfk1`
 		FOREIGN KEY (`createdby`)
@@ -32,13 +37,18 @@ CREATE TABLE `account` (
 CREATE TABLE `user` (
 	`id` INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
 	`login` VARCHAR(32) UNIQUE NOT NULL,
-	`account` VARCHAR(32),
+	`account` INTEGER DEFAULT NULL,
 	`created` TIMESTAMP NOT NULL default CURRENT_TIMESTAMP,
 	`lastSeen` TIMESTAMP default 0,
 	`lastAction` VARCHAR(32),
+	`winsSTAR` INTEGER DEFAULT NULL,
+	`winsSEXP` INTEGER DEFAULT NULL,
+	`winsW2BN` INTEGER DEFAULT NULL,
+	`levelD2` INTEGER DEFAULT NULL,
+	`levelW3` INTEGER DEFAULT NULL,
 	CONSTRAINT `user_ibfk1`
 		FOREIGN KEY (`account`)
-		REFERENCES `account` (`name`)
+		REFERENCES `account` (`id`)
 		ON UPDATE CASCADE
 		ON DELETE SET NULL
 ) TYPE=InnoDB;
@@ -92,16 +102,16 @@ INSERT INTO `account` (access, name) VALUES (36,	'Camel');
 INSERT INTO `account` (access, name, createdby) VALUES (35,	'John', 1);
 INSERT INTO `account` (access, name, createdby) VALUES (34,	'Sorceress', 1);
 
-INSERT INTO `user` (login, account) VALUES('BNU-Camel@USEast', 'Camel');
-INSERT INTO `user` (login, account) VALUES('BNU-Camel2@USEast', 'Camel');
-INSERT INTO `user` (login, account) VALUES('BNU-Camel@Azeroth', 'Camel');
-INSERT INTO `user` (login, account) VALUES('BNU-MaStEr@USEast', 'John');
-INSERT INTO `user` (login, account) VALUES('BNU-MaStEr@Azeroth', 'John');
-INSERT INTO `user` (login, account) VALUES('Tagban@USEast', 'John');
-INSERT INTO `user` (login, account) VALUES('Tagban@Azeroth', 'John');
-INSERT INTO `user` (login, account) VALUES('BNU-Sorceress@Azeroth', 'Sorceress');
-INSERT INTO `user` (login, account) VALUES('BNU-Loyalty@Azeroth', 'Sorceress');
-INSERT INTO `user` (login, account) VALUES('SoRcOwNeD@USEast', 'Sorceress');
+INSERT INTO `user` (login, account) VALUES('BNU-Camel@USEast', 1);
+INSERT INTO `user` (login, account) VALUES('BNU-Camel2@USEast', 1);
+INSERT INTO `user` (login, account) VALUES('BNU-Camel@Azeroth', 1);
+INSERT INTO `user` (login, account) VALUES('BNU-MaStEr@USEast', 2);
+INSERT INTO `user` (login, account) VALUES('BNU-MaStEr@Azeroth', 2);
+INSERT INTO `user` (login, account) VALUES('Tagban@USEast', 2);
+INSERT INTO `user` (login, account) VALUES('Tagban@Azeroth', 2);
+INSERT INTO `user` (login, account) VALUES('BNU-Sorceress@Azeroth', 3);
+INSERT INTO `user` (login, account) VALUES('BNU-Loyalty@Azeroth', 3);
+INSERT INTO `user` (login, account) VALUES('SoRcOwNeD@USEast', 3);
 
 INSERT INTO `command` (access, name, description, cmdgroup) VALUES (34,	'add', 'Set access', 'accounts');
 INSERT INTO `command` (access, name, description, cmdgroup) VALUES (35,	'ban', NULL, 'moderation');
