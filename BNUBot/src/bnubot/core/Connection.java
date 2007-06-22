@@ -183,7 +183,7 @@ public abstract class Connection extends Thread implements EventHandler {
 
 					Iterator<EventHandler> it = eventHandlers.iterator();
 					while(it.hasNext())
-						it.next().parseCommand(myUser, command[1], params);
+						it.next().parseCommand(myUser, command[1], params, true);
 					
 					return;
 				}
@@ -207,7 +207,7 @@ public abstract class Connection extends Thread implements EventHandler {
 		}
 	}
 	
-	public void sendChat(BNetUser to, String text) {
+	public void sendChat(BNetUser to, String text, boolean forceWhisper) {
 		if(text == null)
 			return;
 
@@ -225,8 +225,10 @@ public abstract class Connection extends Thread implements EventHandler {
 				prefix += " RC";
 			prefix += "] ";
 			
-			if(cs.whisperBack)
+			if(cs.whisperBack || forceWhisper)
 				prefix = "/w " + to.getFullLogonName() + " " + prefix;
+			else
+				prefix = prefix + to.toString() + " ";
 			
 			//Split up the text in to appropriate sized pieces
 			int pieceSize = MAX_CHAT_LENGTH - prefix.length();
@@ -275,10 +277,10 @@ public abstract class Connection extends Thread implements EventHandler {
 			it.next().bnetDisconnected();
 	}
 
-	public void parseCommand(BNetUser user, String command, String param) {
+	public void parseCommand(BNetUser user, String command, String param, boolean wasWhispered) {
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
-			it.next().parseCommand(user, command, param);
+			it.next().parseCommand(user, command, param, wasWhispered);
 	}
 
 	public synchronized void titleChanged() {

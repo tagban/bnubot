@@ -331,7 +331,7 @@ public class GuiEventHandler implements EventHandler {
 		chatTextArea.requestFocus();
 	}
 
-	public void parseCommand(BNetUser user, String command, String param) {
+	public void parseCommand(BNetUser user, String command, String param, boolean wasWhispered) {
 		mainTextArea.recieveInfo(String.format("parseCommand(\"%1$s\", \"%2$s\", \"%3$s\")", user.getShortLogonName(), command, param));
 	}
 }
