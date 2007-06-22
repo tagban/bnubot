@@ -68,7 +68,7 @@ public class CommandEventHandler implements EventHandler {
 				ResultSet rsAccount = d.getAccount(user);
 				if((rsAccount == null) || !rsAccount.next())
 					if(superUser)
-						throw new Exception();
+						throw new InvalidUseException();
 					else
 						return;
 					
@@ -77,7 +77,7 @@ public class CommandEventHandler implements EventHandler {
 				commanderAccountID = rsAccount.getLong("id");
 				if(commanderAccess <= 0)
 					return;
-			} catch(Exception e) {
+			} catch(InvalidUseException e) {
 				d.getCreateUser(user);
 			}
 			
@@ -155,7 +155,7 @@ public class CommandEventHandler implements EventHandler {
 						break;
 					}
 					
-					rsAccount = d.createAccount(params[0], 0L);
+					rsAccount = d.createAccount(params[0], 0L, commanderAccountID);
 					if(!rsAccount.next()) {
 						c.sendChat(user, "Failed to create account [" + params[0] + "] for an unknown reason");
 						break;

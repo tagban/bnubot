@@ -20,7 +20,13 @@ CREATE TABLE `account` (
 	`id` INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
 	`access` INTEGER NOT NULL,
 	`name` VARCHAR(32) UNIQUE NOT NULL,
-	`created` TIMESTAMP NOT NULL default CURRENT_TIMESTAMP
+	`created` TIMESTAMP NOT NULL default CURRENT_TIMESTAMP,
+	`createdby` INTEGER default NULL,
+	CONSTRAINT `account_ibfk1`
+		FOREIGN KEY (`createdby`)
+			REFERENCES `account` (`id`)
+			ON UPDATE CASCADE
+			ON DELETE SET NULL,
 ) TYPE=InnoDB;
 
 CREATE TABLE `user` (
@@ -83,8 +89,8 @@ INSERT INTO `rank` (id, shortPrefix, prefix, verbstr, greeting) VALUES (1,	NULL,
 INSERT INTO `rank` (id, shortPrefix, prefix, verbstr, greeting) VALUES (0,	NULL,		'Guest',				'is a guest',				'/m %3$s Welcome to Clan BNU! If you''re a clan member, get a leader to add your account. For more information, you can visit our website at http://www.clanbnu.ws/');
 
 INSERT INTO `account` (access, name) VALUES (36,	'Camel');
-INSERT INTO `account` (access, name) VALUES (35,	'John');
-INSERT INTO `account` (access, name) VALUES (34,	'Sorceress');
+INSERT INTO `account` (access, name, createdby) VALUES (35,	'John', 1);
+INSERT INTO `account` (access, name, createdby) VALUES (34,	'Sorceress', 1);
 
 INSERT INTO `user` (login, account) VALUES('BNU-Camel@USEast', 'Camel');
 INSERT INTO `user` (login, account) VALUES('BNU-Camel2@USEast', 'Camel');
