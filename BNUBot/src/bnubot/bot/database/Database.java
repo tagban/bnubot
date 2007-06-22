@@ -59,6 +59,12 @@ public class Database {
 		return ps.executeQuery();
 	}
 	
+	public ResultSet getAccount(Long accountID) throws SQLException {
+		PreparedStatement ps = prepareStatement("SELECT * FROM `account` WHERE `id`=? LIMIT 1");
+		ps.setLong(1, accountID);
+		return ps.executeQuery();
+	}
+	
 	public ResultSet getAccount(BNetUser user) throws SQLException {
 		/*ResultSet rsUser = getUser(user);
 		if(!rsUser.next())

@@ -485,6 +485,7 @@ public class CommandEventHandler implements EventHandler {
 						BNetUser bnSubject = BNetUser.getBNetUser(params[0], user);
 						ResultSet rsSubject = d.getUser(bnSubject);
 						ResultSet rsSubjectAccount = null;
+						ResultSet rsCreatorAccount = null;
 						String result = null;
 						if(!rsSubject.next()) {
 							rsSubject.close();
@@ -499,6 +500,8 @@ public class CommandEventHandler implements EventHandler {
 							}
 							
 							result = rsSubjectAccount.getString("name");
+							
+							rsCreatorAccount = d.getAccount(rsSubjectAccount.getLong("createdby"));
 						} else {
 							BNetUser subject = BNetUser.getBNetUser(rsSubject.getString("login"));
 							rsSubjectAccount = d.getAccount(subject);
@@ -556,6 +559,12 @@ public class CommandEventHandler implements EventHandler {
 							result += " ] ago";
 						}
 						
+						if((rsCreatorAccount != null) && rsCreatorAccount.next()) {
+							result += ", was recruited by ";
+							result += rsCreatorAccount.getString("name");
+							
+						}
+						
 						boolean andHasAliases = false;
 						for(int i = 0; i < aliases.size(); i++) {
 							String l = aliases.get(i);
@@ -565,7 +574,7 @@ public class CommandEventHandler implements EventHandler {
 							
 							if(!andHasAliases) {
 								andHasAliases = true;
-								result += " and has aliases ";
+								result += ", and has aliases ";
 							} else {
 								result += ", ";
 							}
