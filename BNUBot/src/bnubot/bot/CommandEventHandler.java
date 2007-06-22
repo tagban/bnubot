@@ -416,17 +416,20 @@ public class CommandEventHandler implements EventHandler {
 					}
 					String subject = rsSubject.getString("login");
 					
-					String newAccount = null;
+					Long newAccount = null;
 					if(params.length == 2) {
 						ResultSet rsSubjectAccount = d.getAccount(params[1]);
 						if(!rsSubjectAccount.next()) {
 							c.sendChat(user, "The account [" + params[1] + "] does not exist", wasWhispered);
 							break;
 						}
-						newAccount = rsSubjectAccount.getString("name");
+						newAccount = rsSubjectAccount.getLong("id");
 					}
 					
-					rsSubject.updateString("account", newAccount);
+					if(newAccount == null)
+						rsSubject.updateNull("account");
+					else
+						rsSubject.updateLong("account", newAccount);
 					rsSubject.updateRow();
 					bnSubject.resetPrettyName();
 					c.sendChat(user, "User [" + subject + "] was added to account [" + newAccount + "] successfully.", wasWhispered);
