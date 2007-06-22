@@ -118,6 +118,7 @@ public class Database {
 		if((rsAccount == null) || (!rsAccount.next()))
 			throw new SQLException("The account was created but not found");
 		
+		rsAccount.beforeFirst();
 		return rsAccount;
 	}
 	
