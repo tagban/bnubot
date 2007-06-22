@@ -86,10 +86,11 @@ public class Database {
 		return ps.executeQuery();
 	}
 
-	public ResultSet createAccount(String account, long access) throws SQLException {
-		PreparedStatement ps = prepareStatement("INSERT INTO `account` (`name`, `access`) VALUES(?, ?)");
+	public ResultSet createAccount(String account, long access, Long creator) throws SQLException {
+		PreparedStatement ps = prepareStatement("INSERT INTO `account` (`name`, `access`, `createdby`) VALUES(?, ?, ?)");
 		ps.setString(1, account);
 		ps.setLong(2, access);
+		ps.setLong(2, creator);
 		ps.execute();
 		ps.close();
 		
@@ -100,12 +101,12 @@ public class Database {
 		return rsAccount;
 	}
 	
-	public ResultSet getCreateAccount(String account, Long access) throws SQLException {
+	public ResultSet getCreateAccount(String account, Long access, Long creator) throws SQLException {
 		ResultSet rsAccount = getAccount(account);
 		if(rsAccount != null)
 			return rsAccount;
 		
-		return createAccount(account, access);
+		return createAccount(account, access, creator);
 	}
 	
 	public ResultSet getRankedAccounts(long minRank) throws SQLException {
