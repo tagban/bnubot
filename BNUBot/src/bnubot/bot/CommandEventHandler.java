@@ -432,7 +432,12 @@ public class CommandEventHandler implements EventHandler {
 						rsSubject.updateLong("account", newAccount);
 					rsSubject.updateRow();
 					bnSubject.resetPrettyName();
-					c.sendChat(user, "User [" + subject + "] was added to account [" + newAccount + "] successfully.", wasWhispered);
+					
+					String newAccountName = "NULL";
+					ResultSet rsSubjectAccount = d.getAccount(newAccount);
+					if((rsSubjectAccount != null) && rsSubjectAccount.next())
+						newAccountName = rsSubjectAccount.getString("name");
+					c.sendChat(user, "User [" + subject + "] was added to account [" + newAccountName + "] successfully.", wasWhispered);
 					break;
 				}
 				if(command.equals("setrank")) {
