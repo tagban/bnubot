@@ -305,7 +305,8 @@ public class CommandEventHandler implements EventHandler {
 							
 							d.clearMail(commanderAccountID);
 							c.sendChat(user, "Mailbox cleaned!", wasWhispered);
-						}
+						} else
+							throw new InvalidUseException();
 					} catch(InvalidUseException e) {
 						c.sendChat(user, "Use: %trigger%mail (read [number] | empty | send <account> <message>)", wasWhispered);
 					}
