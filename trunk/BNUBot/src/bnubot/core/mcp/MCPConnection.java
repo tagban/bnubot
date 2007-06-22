@@ -85,6 +85,9 @@ public class MCPConnection extends RealmConnection {
 						}
 						break;
 					}
+					default:
+						recieveError("Unknown MCP packet 0x" + Integer.toHexString(pr.packetId) + "\n" + bnubot.util.HexDump.hexDump(pr.data));
+						break;
 					}
 				} else {
 					sleep(10);
