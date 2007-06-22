@@ -32,6 +32,16 @@ public class BNetUser {
 	public static void clearCache() {
 		bnCache.clear();
 	}
+	
+	/**
+	 * Touch the cache for key
+	 */
+	public static void touchCache(String key, BNetUser user) {
+		if(bnCache.size() > 40) {
+			clearCache();
+			bnCache.put(key, user);
+		}
+	}
 
 	/**
 	 * Cacheing constructor for a BNetUser
@@ -44,6 +54,7 @@ public class BNetUser {
 			bnc = new BNetUser(user);
 			bnCache.put(key, bnc);
 		}
+		touchCache(key, bnc);
 		return bnc;
 	}
 
@@ -73,6 +84,7 @@ public class BNetUser {
 			bnc = new BNetUser(user, myRealm);
 			bnCache.put(key, bnc);
 		}
+		touchCache(key, bnc);
 		return bnc;
 	}
 
