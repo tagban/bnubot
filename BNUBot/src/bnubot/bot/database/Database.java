@@ -257,6 +257,11 @@ public class Database {
 				if(query.length() == 0)
 					continue;
 				
+				if(query.charAt(0) == '#') {
+					query = "";
+					continue;
+				}
+				
 				if(query.charAt(query.length()-1) == ';') {
 					stmt.execute(query);
 					query = "";
@@ -270,9 +275,9 @@ public class Database {
 			throw e;
 		}
 		
-		stmt.execute("DROP TABLE IF EXISTS dbVersion;");
-		stmt.execute("CREATE TABLE dbVersion (version INTEGER NOT NULL);");
-		stmt.execute("INSERT INTO dbVersion (version) VALUES (" + databaseVersion + ");");
+		stmt.execute("DROP TABLE `dbVersion`;");
+		stmt.execute("CREATE TABLE `dbVersion` (`version` INTEGER NOT NULL);");
+		stmt.execute("INSERT INTO `dbVersion` (`version`) VALUES (" + databaseVersion + ");");
 		stmt.close();
 	}
 }
