@@ -685,7 +685,7 @@ public class CommandEventHandler implements EventHandler {
 			if(rsRank.next()) {
 				String greeting = rsRank.getString("greeting");
 				if(greeting != null) {
-					greeting = String.format(greeting, user.toString(), user.getPing());
+					greeting = String.format(greeting, user.toString(), user.getPing(), user.getFullAccountName());
 					c.sendChat(greeting);
 				}
 
@@ -747,7 +747,7 @@ public class CommandEventHandler implements EventHandler {
 			
 			rsUser.close();
 			rsAccount.close();
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
