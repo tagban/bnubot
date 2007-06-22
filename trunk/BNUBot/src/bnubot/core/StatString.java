@@ -12,8 +12,9 @@ public class StatString {
 	private String pretty = null;
 	private int product = 0;
 	private int icon = 0;
-	private int wins = 0;
-	private int level = 0;
+	private Integer wins = null;
+	private Integer level = null;
+	private Integer charLevel = null;
 	private int ladderRating = 0;
 	private int highLadderRating = 0;
 	private int ladderRank = 0;
@@ -258,7 +259,7 @@ public class StatString {
 				if((charClass < 0) || (charClass > 6))
 					charClass = 7;
 				boolean female = ((charClass == 0) || (charClass == 1) || (charClass == 6));
-			    byte charlevel = data[25];
+			    charLevel = (int)data[25];
 			    
 			    byte charFlags = data[26];
 			    boolean hardcore = (charFlags & 0x04) != 0;
@@ -306,7 +307,7 @@ public class StatString {
 			    if(ladder)
 			    	pretty += "ladder ";
 			    
-			    pretty += "level " + charlevel + " " + D2Classes[charClass] + " (" + (expansion ? "Expansion" : "Classic") + ")";
+			    pretty += "level " + charLevel + " " + D2Classes[charClass] + " (" + (expansion ? "Expansion" : "Classic") + ")";
 			    
 			    if(difficulty < 3) {
 			    	pretty += " currently in ";
@@ -361,12 +362,16 @@ public class StatString {
 		return pretty;
 	}
 	
-	public int getWins() {
+	public Integer getWins() {
 		return wins;
 	}
 	
-	public int getLevel() {
+	public Integer getLevel() {
 		return level;
+	}
+	
+	public Integer getCharLevel() {
+		return charLevel;
 	}
 
 	public int getLadderRank() {
