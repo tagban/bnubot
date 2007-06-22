@@ -110,7 +110,7 @@ public class Database {
 		PreparedStatement ps = prepareStatement("INSERT INTO `account` (`name`, `access`, `createdby`) VALUES(?, ?, ?)");
 		ps.setString(1, account);
 		ps.setLong(2, access);
-		ps.setLong(2, creator);
+		ps.setLong(3, creator);
 		ps.execute();
 		ps.close();
 		
