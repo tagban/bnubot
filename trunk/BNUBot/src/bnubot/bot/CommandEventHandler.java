@@ -703,7 +703,8 @@ public class CommandEventHandler implements EventHandler {
 						long wins[] = d.getAccountWinsLevels(id);
 						if(((apWins > 0) && (wins[0] > apWins))
 						|| ((apD2Level > 0) && (wins[1] > apD2Level))
-						|| ((apW3Level > 0) && (wins[2] > apW3Level))) {
+						|| ((apW3Level > 0) && (wins[2] > apW3Level))
+						|| ((apWins == 0) && (apD2Level == 0) && (apW3Level == 0))) {
 							// Give them a promotion
 							rank++;
 							rsAccount.updateLong("access", rank);
