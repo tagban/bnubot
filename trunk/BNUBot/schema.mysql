@@ -26,7 +26,7 @@ CREATE TABLE `account` (
 		FOREIGN KEY (`createdby`)
 			REFERENCES `account` (`id`)
 			ON UPDATE CASCADE
-			ON DELETE SET NULL,
+			ON DELETE SET NULL
 ) TYPE=InnoDB;
 
 CREATE TABLE `user` (
