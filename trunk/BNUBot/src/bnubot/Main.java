@@ -1,5 +1,7 @@
 package bnubot;
 
+import java.io.File;
+
 import bnubot.bot.CommandEventHandler;
 import bnubot.bot.EventHandler;
 import bnubot.bot.console.ConsoleEventHandler;
@@ -12,8 +14,16 @@ import bnubot.core.queue.ChatQueue;
 import bnubot.util.Ini;
 
 public class Main {
+	
+	private static void pidFile() {
+		File f = new File("bnubot.pid");
+		if(f.exists())
+			f.deleteOnExit();
+	}
 
 	public static void main(String[] args) throws Exception {
+		pidFile();
+		
 		int numBots = 1;
 		try {
 			numBots = Integer.parseInt(
