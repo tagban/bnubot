@@ -171,6 +171,23 @@ public class Database {
 		ps.setString(1, command);
 		return ps.executeQuery();
 	}
+
+	public ResultSet getCommands() throws SQLException {
+		return createStatement().executeQuery("SELECT * FROM `command`");
+	}
+	
+	public ResultSet getCommandCategory(String category, long access) throws SQLException {
+		PreparedStatement ps = prepareStatement("SELECT * FROM `command` WHERE `cmdgroup`=? AND `access`>=?");
+		ps.setString(1, category);
+		ps.setLong(2, access);
+		return ps.executeQuery();
+	}
+
+	public ResultSet getCommandCategories(long access) throws SQLException {
+		PreparedStatement ps = prepareStatement("SELECT `cmdgroup` FROM `command` WHERE `access`<=? GROUP BY `cmdgroup`");
+		ps.setLong(1, access);
+		return ps.executeQuery();
+	}
 	
 	public void sendMail(long senderID, long targetID, String message) throws SQLException {
 		PreparedStatement ps = prepareStatement("INSERT INTO `mail` (`from`, `to`, `message`) VALUES (?, ?, ?)");
