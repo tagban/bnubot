@@ -98,7 +98,9 @@ INSERT INTO `rank` (id, shortPrefix, prefix, verbstr, greeting) VALUES (10,	NULL
 INSERT INTO `rank` (id, shortPrefix, prefix, verbstr, greeting) VALUES (1,	NULL,		'Guest',				'is not a bot',				NULL);
 INSERT INTO `rank` (id, shortPrefix, prefix, verbstr, greeting) VALUES (0,	NULL,		'Guest',				'is a guest',				'/m %3$s Welcome to Clan BNU! If you''re a clan member, get a leader to add your account. For more information, you can visit our website at http://www.clanbnu.ws/');
 
-INSERT INTO `account` (access, name) VALUES (36,	'Camel');
+UPDATE `rank` SET apDays=1, apWins=1, apD2Level=1, apW3Level=1 WHERE id=10;
+
+INSERT INTO `account` (access, name, createdby) VALUES (36,	'Camel', NULL);
 INSERT INTO `account` (access, name, createdby) VALUES (35,	'John', 1);
 INSERT INTO `account` (access, name, createdby) VALUES (34,	'Sorceress', 1);
 
