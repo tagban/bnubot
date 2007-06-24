@@ -115,7 +115,9 @@ INSERT INTO `user` (login, account) VALUES('BNU-Sorceress@Azeroth', 3);
 INSERT INTO `user` (login, account) VALUES('BNU-Loyalty@Azeroth', 3);
 INSERT INTO `user` (login, account) VALUES('SoRcOwNeD@USEast', 3);
 
+INSERT INTO `command` (access, name, description, cmdgroup) VALUES (1,	'access', 'Get the commands avalible to the user', 'commands');
 INSERT INTO `command` (access, name, description, cmdgroup) VALUES (34,	'add', 'Set access', 'accounts');
+INSERT INTO `command` (access, name, description, cmdgroup) VALUES (1,	'auth', 'Get the authorization required to use a command', 'commands');
 INSERT INTO `command` (access, name, description, cmdgroup) VALUES (35,	'ban', NULL, 'moderation');
 INSERT INTO `command` (access, name, description, cmdgroup) VALUES (34,	'createaccount', NULL, 'accounts');
 INSERT INTO `command` (access, name, description, cmdgroup) VALUES (36,	'disconnect', NULL, 'administration');
