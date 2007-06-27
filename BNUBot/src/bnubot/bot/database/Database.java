@@ -307,7 +307,7 @@ public class Database {
 				}
 			}
 
-			query = "DROP TABLE `dbVersion`;";
+			query = "DROP TABLE IF EXISTS `dbVersion`;";
 			stmt.execute(query);
 			query = "CREATE TABLE `dbVersion` (`version` INTEGER NOT NULL);";
 			stmt.execute(query);
