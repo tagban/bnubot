@@ -306,6 +306,14 @@ public class Database {
 					query = "";
 				}
 			}
+
+			query = "DROP TABLE `dbVersion`;";
+			stmt.execute(query);
+			query = "CREATE TABLE `dbVersion` (`version` INTEGER NOT NULL);";
+			stmt.execute(query);
+			query = "INSERT INTO `dbVersion` (`version`) VALUES (" + databaseVersion + ");";
+			stmt.execute(query);
+			stmt.close();
 		} catch(IOException e) {
 			e.printStackTrace();
 			System.exit(1);
@@ -313,10 +321,5 @@ public class Database {
 			System.err.println("Failed to create schema\n" + query + "\n\n" + e.getMessage());
 			throw e;
 		}
-		
-		stmt.execute("DROP TABLE `dbVersion`;");
-		stmt.execute("CREATE TABLE `dbVersion` (`version` INTEGER NOT NULL);");
-		stmt.execute("INSERT INTO `dbVersion` (`version`) VALUES (" + databaseVersion + ");");
-		stmt.close();
 	}
 }
