@@ -377,7 +377,7 @@ public class BNCSConnection extends Connection {
 				    	exeVersion = HashMain.getExeVer(cs.product);
 						exeInfo = HashMain.getExeInfo(cs.product);
                 	} catch(Exception e) {
-                		recieveError("Local hashing failed (" + e.getMessage() + "). Trying BNLS server.");
+                		recieveError("Local hashing failed. Trying BNLS server.\n" + e.getClass().getName() + ": " + e.getMessage());
                 		
                 		BNLSProtocol.OutPacketBuffer exeHashBuf;
                 		if((cs.bnlsServer == null)
