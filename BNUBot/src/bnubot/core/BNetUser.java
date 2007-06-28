@@ -16,6 +16,7 @@ public class BNetUser {
 	private String shortLogonName;	// #=yes, realm=only if different from "myRealm"
 	private String fullLogonName;	// #=yes, realm=yes
 	private String fullAccountName;	// #=no, realm=yes
+	private String shortPrettyName = null;
 	private String prettyName = null;
 	private Integer flags = null;
 	private Integer ping = null;
@@ -228,7 +229,40 @@ public class BNetUser {
 	 * Resets the pretty name back to null, so it will be re-evaluated next time toString() is called
 	 */
 	public void resetPrettyName() {
+		shortPrettyName = null;
 		prettyName = null;
+	}
+	
+	public String getShortPrettyName() {
+		if(d == null)
+			return shortLogonName;
+		
+		if(shortPrettyName == null) {
+			shortPrettyName = shortLogonName;
+			try {
+				ResultSet rsAccount = d.getAccount(this);
+				if((rsAccount != null) && rsAccount.next()) {
+					String account = rsAccount.getString("name");
+					
+					if(account != null)
+						shortPrettyName = account;
+
+					long access = rsAccount.getLong("access");
+					ResultSet rsRank = d.getRank(access);
+					if(rsRank.next()) {
+						String prefix = rsRank.getString("shortPrefix");
+						if(prefix == null)
+							prefix = rsRank.getString("prefix");
+						if(prefix != null)
+							shortPrettyName = prefix + " " + shortPrettyName;
+					}
+					rsRank.close();
+				}
+			} catch(SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return shortPrettyName;
 	}
 	
 	/**
