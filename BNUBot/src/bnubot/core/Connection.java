@@ -216,19 +216,18 @@ public abstract class Connection extends Thread implements EventHandler {
 		if(myUser.equals(to))
 			recieveInfo(text);
 		else {
-			String prefix = "[BNU";
-			if(Version.VER_ALPHA != null)
-				prefix += " alpha";
-			else if(Version.VER_BETA != null)
-				prefix += " beta";
-			else if(Version.VER_RELEASE_CANDIDATE != null)
-				prefix += " RC";
-			prefix += "] ";
-			
-			if(cs.whisperBack || forceWhisper)
-				prefix = "/w " + to.getFullLogonName() + " " + prefix;
-			else
-				prefix = prefix + to.toString() + " ";
+			String prefix;
+			if(cs.whisperBack) {
+				prefix = "/w " + to.getFullLogonName() + " [BNU";
+				if(Version.VER_ALPHA != null)
+					prefix += " alpha";
+				else if(Version.VER_BETA != null)
+					prefix += " beta";
+				else if(Version.VER_RELEASE_CANDIDATE != null)
+					prefix += " RC";
+				prefix += "] ";
+			} else
+				prefix = to.getShortPrettyName() + ": ";
 			
 			//Split up the text in to appropriate sized pieces
 			int pieceSize = MAX_CHAT_LENGTH - prefix.length();
