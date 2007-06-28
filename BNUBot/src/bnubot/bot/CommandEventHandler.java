@@ -568,29 +568,24 @@ public class CommandEventHandler implements EventHandler {
 						if((params == null) || (params.length != 1))
 							throw new InvalidUseException();
 						
-						BNetUser bnSubject = BNetUser.getBNetUser(params[0], user);
-						ResultSet rsSubject = d.getUser(bnSubject);
-						ResultSet rsSubjectAccount = null;
+
+						BNetUser bnSubject = null;
+						ResultSet rsSubjectAccount = d.getAccount(params[0]);
 						ResultSet rsCreatorAccount = null;
 						String result = null;
-						if(!rsSubject.next()) {
-							rsSubject.close();
-							rsSubject = null;
-							bnSubject = null;
+						if(rsSubjectAccount.next()) {
+							result = rsSubjectAccount.getString("name");
+						} else {
+							bnSubject = BNetUser.getBNetUser(params[0], user);
+							ResultSet rsSubject = d.getUser(bnSubject);
 							
-							rsSubjectAccount = d.getAccount(params[0]);
-							
-							if(!rsSubjectAccount.next()) {
-								c.sendChat(user, "User [" + params[0] + "] not found in database", wasWhispered);
+							if((rsSubject == null) || (!rsSubject.next())) {
+								c.sendChat(user, "User [" + params[0] + "] is unknown", wasWhispered);
 								break;
 							}
 							
-							result = rsSubjectAccount.getString("name");
-							
-							rsCreatorAccount = d.getAccount(rsSubjectAccount.getLong("createdby"));
-						} else {
-							BNetUser subject = BNetUser.getBNetUser(rsSubject.getString("login"));
-							rsSubjectAccount = d.getAccount(subject);
+							bnSubject = BNetUser.getBNetUser(rsSubject.getString("login"));
+							rsSubjectAccount = d.getAccount(bnSubject);
 							
 							if((rsSubjectAccount == null) || (!rsSubjectAccount.next())) {
 								c.sendChat(user, "User [" + params[0] + "] has no account", wasWhispered);
@@ -599,6 +594,8 @@ public class CommandEventHandler implements EventHandler {
 							
 							result = bnSubject.toString();
 						}
+						
+						rsCreatorAccount = d.getAccount(rsSubjectAccount.getLong("createdby"));
 
 						long subjectAccountID = rsSubjectAccount.getLong("id");
 						long subjectAccess = rsSubjectAccount.getLong("access");
@@ -627,7 +624,7 @@ public class CommandEventHandler implements EventHandler {
 						// Append aliases
 						ArrayList<String> aliases = new ArrayList<String>();
 						Timestamp lastSeen = null;
-						rsSubject = d.getAccountUsers(subjectAccountID);
+						ResultSet rsSubject = d.getAccountUsers(subjectAccountID);
 						while(rsSubject.next()) {
 							if(lastSeen == null)
 								lastSeen = rsSubject.getTimestamp("lastSeen");
