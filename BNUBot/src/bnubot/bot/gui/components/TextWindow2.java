@@ -28,7 +28,6 @@ public class TextWindow2 extends JScrollPane {
 	private String foot = null;
 	private String html = null;
 	private static Runnable scrollDown = null;
-	private static Runnable enableDraw = null;
 	private boolean disableRedraw = false;
 
 	public TextWindow2(ColorScheme cs) {
@@ -52,38 +51,30 @@ public class TextWindow2 extends JScrollPane {
 		foot = "</body></html>";
 	}
 	
-	public void scrollDown() {
-		if(scrollDown == null)
-			scrollDown = new Runnable() {
-				public void run() {
-					JScrollBar vsb = getVerticalScrollBar();
-					vsb.setValue(vsb.getMaximum());
-					validate();
-				}
-			};
-		
-		//Scroll to the bottom
-		SwingUtilities.invokeLater(scrollDown);
-	}
-	
 	public void setText() {
-		disableRedraw = true;
-		jep.setText(head + html + foot);
-		scrollDown();
-		
-		if(enableDraw == null)
-			enableDraw = new Runnable() {
-				public void run() {
-					disableRedraw = false;
-					validate();
-				} };
-		SwingUtilities.invokeLater(enableDraw);
-		
 		if(html.length() > 0x8000) {
 			int i = html.indexOf("</div>", 0);
 			if(i > 0)
 				html = html.substring(i + 6);
 		}
+		
+		if(scrollDown == null)
+			scrollDown = new Runnable() {
+				public void run() {
+					disableRedraw = true;
+					jep.setText(head + html + foot);
+					validate();
+					
+					JScrollBar vsb = getVerticalScrollBar();
+					vsb.setValue(vsb.getMaximum());
+					
+					disableRedraw = false;
+					validate();
+				}
+			};
+				
+		//Scroll to the bottom
+		SwingUtilities.invokeLater(scrollDown);
 	}
 	
 	public String makeColor(Color c) {
