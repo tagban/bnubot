@@ -15,13 +15,13 @@ import bnubot.util.HexDump;
 import bnubot.util.TimeFormatter;
 
 public class CommandEventHandler implements EventHandler {
-	Connection c = null;
-	Database d = null;
-	Boolean sweepBanInProgress = false;
-	int sweepBannedUsers;
+	private Connection c = null;
+	private Database d = null;
+	private Boolean sweepBanInProgress = false;
+	private int sweepBannedUsers;
 	
-	long	lastCommandTime = 0;
-	BNetUser lastCommandUser = null;
+	private long	lastCommandTime = 0;
+	private BNetUser lastCommandUser = null;
 
 	private class InvalidUseException extends Exception {
 		private static final long serialVersionUID = 3993849990858233332L;
@@ -165,7 +165,7 @@ public class CommandEventHandler implements EventHandler {
 						}
 
 						rsSubjectAccount.updateLong("access", targetAccess);
-						rsSubjectAccount.updateString("lastRankChange", "CURRENT_TIMESTAMP");
+						rsSubjectAccount.updateTimestamp("lastRankChange", new Timestamp(new Date().getTime()));
 						rsSubjectAccount.updateRow();
 						c.sendChat(user, "Added user [" + subjectAccount + "] successfully with access " + targetAccess, wasWhispered);
 					} catch(InvalidUseException e) {
@@ -414,6 +414,60 @@ public class CommandEventHandler implements EventHandler {
 			case 'r':
 				if(command.equals("reconnect")) {
 					c.reconnect();
+					break;
+				}
+				if(command.equals("recruit")) {
+					if((params == null) || (params.length != 2)) {
+						c.sendChat(user, "Use: %trigger%recruit <user>[@<realm>] <account>", wasWhispered);
+					}
+					
+					BNetUser bnSubject = BNetUser.getBNetUser(params[0], user);
+					ResultSet rsSubject = d.getUser(bnSubject);
+					if((rsSubject == null) || !rsSubject.next()) {
+						c.sendChat(user, "That user does not exist!", wasWhispered);
+						break;
+					}
+					
+					long subjectAccountId = rsSubject.getLong("account");
+					if(!rsSubject.wasNull()) {
+						c.sendChat(user, "That user already has an account!", wasWhispered);
+						break;
+					}
+					
+					String requiredTag = "BNU-";
+					
+					if(requiredTag != null) {
+						if(bnSubject.getFullAccountName().substring(0, requiredTag.length()).compareToIgnoreCase(requiredTag) != 0) {
+							c.sendChat(user, "That user must have the " + requiredTag + " tag!", wasWhispered);
+							break;
+						}
+					}
+					
+					ResultSet rsSubjectAccount = d.getAccount(params[1]);
+					if((rsSubjectAccount != null) && rsSubjectAccount.next()) {
+						c.sendChat(user, "That account already exists!", wasWhispered);
+						break;
+					}
+					
+					if(commanderAccountID == null) {
+						c.sendChat(user, "You must have an account to use recruit.", wasWhispered);
+						break;
+					}
+					
+					rsSubjectAccount = d.createAccount(params[1], 0, commanderAccountID);
+					if(!rsSubjectAccount.next()) {
+						c.sendChat(user, "Failed to create account [" + params[1] + "] for an unknown reason", wasWhispered);
+						break;
+					}
+					
+					subjectAccountId = rsSubjectAccount.getLong("id");
+					rsSubject.updateLong("account", subjectAccountId);
+					rsSubject.updateRow();
+					rsSubjectAccount.updateLong("access", c.getConnectionSettings().recruitAccess);
+					rsSubjectAccount.updateRow();
+
+					bnSubject.resetPrettyName();
+					c.sendChat("Welcome to the clan, " + bnSubject.toString() + "!");
 					break;
 				}
 				break;
