@@ -1,6 +1,8 @@
 package bnubot;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 import bnubot.bot.CommandEventHandler;
 import bnubot.bot.EventHandler;
@@ -135,10 +137,14 @@ public class Main {
 					primary.addEventHandler(cmd);
 					BNetUser.setDatabase(d);
 				} catch(Exception e) {
+					String msg = "Failed to initialize database:\n" + e.getMessage() + "\n\nCommands will be disabled.";
+					StringWriter sw = new StringWriter();
+					e.printStackTrace(new PrintWriter(sw));
+					msg += "\n\n" + sw.toString();
 					if(gui != null)
-						primary.recieveError("Failed to initialize database:\n" + e.getMessage() + "\n\nCommands will be disabled.");
+						primary.recieveError(msg);
 					else
-						System.err.println("Failed to initialize database:\n" + e.getMessage() + "\n\nCommands will be disabled.");
+						System.err.println(msg);
 					d = null;
 				}
 			}
