@@ -24,7 +24,14 @@ public class StatString {
 		this.statString = statString.split(" ", 2);
 		if(this.statString.length == 2)
 			this.statString2 = this.statString[1].split(" ");
-		parse();
+		
+		try {
+			parse();
+		} catch(Exception e) {
+			System.err.println("Error parsing statstring: " + statString);
+			System.err.println(HexDump.hexDump(statString.getBytes()));
+			e.printStackTrace();
+		}
 	}
 	
 	public int getProduct() {
