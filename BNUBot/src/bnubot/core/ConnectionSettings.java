@@ -42,6 +42,7 @@ public class ConnectionSettings implements Serializable {
 	public boolean enableCommands;
 	public boolean packetLog;
 	public boolean whisperBack;
+	public long recruitAccess;
 	
 	public String myRealm;
 	
@@ -180,6 +181,7 @@ public class ConnectionSettings implements Serializable {
 		Ini.WriteIni(file, header, "enableCommands", Boolean.toString(enableCommands));
 		Ini.WriteIni(file, header, "packetLog", Boolean.toString(packetLog));
 		Ini.WriteIni(file, header, "whisperBack", Boolean.toString(whisperBack));
+		Ini.WriteIni(file, header, "recruitAccess", Long.toString(recruitAccess));
 	}
 	
 	public void load(int botNum) {
@@ -222,5 +224,7 @@ public class ConnectionSettings implements Serializable {
 					Ini.ReadIni(file, header, "packetLog", "false"));
 		whisperBack = Boolean.parseBoolean(
 					Ini.ReadIni(file, header, "whisperBack", "true"));
+		recruitAccess = Long.parseLong(
+				Ini.ReadIni(file, header, "recruitAccess", "10"));
 	}
 }
