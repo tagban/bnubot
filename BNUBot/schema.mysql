@@ -127,6 +127,8 @@ INSERT INTO `command` (access, name, description, cmdgroup) VALUES (1,	'mail', N
 INSERT INTO `command` (access, name, description, cmdgroup) VALUES (30,	'mailall', NULL, 'accounts');
 INSERT INTO `command` (access, name, description, cmdgroup) VALUES (36,	'quit', 'Close program', 'administration');
 INSERT INTO `command` (access, name, description, cmdgroup) VALUES (36,	'reconnect', NULL, 'administration');
+INSERT INTO `command` (access, name, description, cmdgroup) VALUES (15,	'recruit', NULL, 'accounts');
+INSERT INTO `command` (access, name, description, cmdgroup) VALUES (34,	'renameaccount', NULL, 'accounts');
 INSERT INTO `command` (access, name, description, cmdgroup) VALUES (36,	'say', NULL, 'administration');
 INSERT INTO `command` (access, name, description, cmdgroup) VALUES (1,	'seen', NULL, 'accounts');
 INSERT INTO `command` (access, name, description, cmdgroup) VALUES (34,	'setaccount', NULL, 'accounts');
@@ -142,4 +144,4 @@ INSERT INTO `command_alias` (alias, name) VALUES ('version', 'info');
 INSERT INTO `command_alias` (alias, name) VALUES ('sweep', 'sweepban');
 INSERT INTO `command_alias` (alias, name) VALUES ('ca', 'createaccount');
 INSERT INTO `command_alias` (alias, name) VALUES ('sa', 'setaccount');
-
+INSERT INTO `command_alias` (alias, name) VALUES ('ra', 'renameaccount');
