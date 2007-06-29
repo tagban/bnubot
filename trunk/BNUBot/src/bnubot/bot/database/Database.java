@@ -86,9 +86,23 @@ public class Database {
 		return ps.executeQuery();
 	}
 	
-	public long[] getAccountWinsLevels(long accountID) throws SQLException {
-		PreparedStatement ps = prepareStatement("SELECT SUM(winsSTAR), SUM(winsSEXP), SUM(winsW2BN), MAX(levelD2), MAX(levelW3) FROM `user` WHERE `account`=? LIMIT 1");
-		ps.setLong(1, accountID);
+	public long[] getAccountWinsLevels(long accountID, String prefix, String suffix) throws SQLException {
+		int questionMark = 1;
+		String SQL = "SELECT SUM(winsSTAR), SUM(winsSEXP), SUM(winsW2BN), MAX(levelD2), MAX(levelW3) FROM `user` WHERE ";
+		if(prefix != null)
+			SQL += "LEFT(login," + prefix.length() + ")=? AND ";
+		
+		//TODO: Fix this so it actually works; PREFIX-USER-SUFFIX@REALM will break it!
+		if(suffix != null)
+			SQL += "RIGHT(login," + suffix.length() + ")=? AND ";
+		
+		SQL += "`account`=? LIMIT 1";
+		PreparedStatement ps = prepareStatement(SQL);
+		if(prefix != null)
+			ps.setString(questionMark++, prefix);
+		if(suffix != null)
+			ps.setString(questionMark++, suffix);
+		ps.setLong(questionMark++, accountID);
 		ResultSet rs = ps.executeQuery();
 		if(!rs.next())
 			throw new SQLException("getAccountWinsLevels query failed");
