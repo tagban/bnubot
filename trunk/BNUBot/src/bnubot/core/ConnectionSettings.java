@@ -43,6 +43,8 @@ public class ConnectionSettings implements Serializable {
 	public boolean packetLog;
 	public boolean whisperBack;
 	public long recruitAccess;
+	public String recruitTagPrefix;
+	public String recruitTagSuffix;
 	
 	public String myRealm;
 	
@@ -182,6 +184,8 @@ public class ConnectionSettings implements Serializable {
 		Ini.WriteIni(file, header, "packetLog", Boolean.toString(packetLog));
 		Ini.WriteIni(file, header, "whisperBack", Boolean.toString(whisperBack));
 		Ini.WriteIni(file, header, "recruitAccess", Long.toString(recruitAccess));
+		Ini.WriteIni(file, header, "recruitTagPrefix", recruitTagPrefix);
+		Ini.WriteIni(file, header, "recruitTagSuffix", recruitTagSuffix);
 	}
 	
 	public void load(int botNum) {
@@ -226,5 +230,7 @@ public class ConnectionSettings implements Serializable {
 					Ini.ReadIni(file, header, "whisperBack", "true"));
 		recruitAccess = Long.parseLong(
 				Ini.ReadIni(file, header, "recruitAccess", "10"));
+		recruitTagPrefix =	Ini.ReadIni(file, header, "recruitTagPrefix", "BNU-");
+		recruitTagSuffix =	Ini.ReadIni(file, header, "recruitTagSuffix", null);
 	}
 }
