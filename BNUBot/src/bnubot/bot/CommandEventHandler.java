@@ -851,25 +851,28 @@ public class CommandEventHandler implements EventHandler {
 				long apDays = rsRank.getLong("apDays");
 				Timestamp ts = rsAccount.getTimestamp("lastRankChange");
 				//Check that the 
-				apBlock: if((apDays != 0) && (ts != null)) {
-					double timeElapsed = (double)(new Date().getTime() - ts.getTime());
-					timeElapsed /= 1000 * 60 * 60 * 24;
-					if(timeElapsed > apDays) {
+				apBlock: if(apDays != 0) {
+					double timeElapsed = 0;
+					if(ts != null) {
+						timeElapsed = (double)(new Date().getTime() - ts.getTime());
+						timeElapsed /= 1000 * 60 * 60 * 24;
+					}
+					if((timeElapsed > apDays) || (ts == null)) {
 						long apWins = rsRank.getLong("apWins");
 						long apD2Level = rsRank.getLong("apD2Level");
 						long apW3Level = rsRank.getLong("apW3Level");
-						long wins[] = d.getAccountWinsLevels(id);
-						if(((apWins > 0) && (wins[0] > apWins))
-						|| ((apD2Level > 0) && (wins[1] > apD2Level))
-						|| ((apW3Level > 0) && (wins[2] > apW3Level))
+						long wins[] = d.getAccountWinsLevels(id, c.getConnectionSettings().recruitTagPrefix, c.getConnectionSettings().recruitTagSuffix);
+						if(((apWins > 0) && (wins[0] >= apWins))
+						|| ((apD2Level > 0) && (wins[1] >= apD2Level))
+						|| ((apW3Level > 0) && (wins[2] >= apW3Level))
 						|| ((apWins == 0) && (apD2Level == 0) && (apW3Level == 0))) {
 							// Give them a promotion
 							rank++;
 							rsAccount.updateLong("access", rank);
-							rsAccount.updateString("lastRankChange", "CURRENT_TIMESTAMP");
+							rsAccount.updateTimestamp("lastRankChange", new Timestamp(new Date().getTime()));
 							rsAccount.updateRow();
 							user.resetPrettyName();	//Reset the presentable name
-							c.sendChat("Congratulations " + user.toString() + ", you just recieved a promotion!");
+							c.sendChat("Congratulations " + user.toString() + ", you just recieved a promotion! Your rank is now " + rank + ".");
 						} else {
 							//TODO: Tell the user they need x more wins
 							String msg = "You need ";
@@ -877,20 +880,22 @@ public class CommandEventHandler implements EventHandler {
 							case ProductIDs.PRODUCT_STAR:
 							case ProductIDs.PRODUCT_SEXP:
 							case ProductIDs.PRODUCT_W2BN:
-								msg += Long.toString(apWins - wins[0]) + " more wins";
+								msg += Long.toString(apWins - wins[0]) + " more win";
+								if(apWins - wins[0] > 1)
+									msg += "s";
 								break;
 							case ProductIDs.PRODUCT_D2DV:
 							case ProductIDs.PRODUCT_D2XP:
-								msg += Long.toString(apD2Level - wins[1]) + " more levels";
+								msg += "to reach Diablo 2 level " + apD2Level;
 								break;
 							case ProductIDs.PRODUCT_WAR3:
 							case ProductIDs.PRODUCT_W3XP:
-								msg += Long.toString(apW3Level -wins[2]) + " more levels";
+								msg += "to reach Warcraft 3 level " + apW3Level;
 								break;
 							default:
 								break apBlock;
 							}
-							msg += " to get a promotion!";
+							msg += " to recieve a promotion!";
 							c.sendChat(user, msg, false);
 						}
 						
