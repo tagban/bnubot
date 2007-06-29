@@ -18,8 +18,12 @@ public class Ini{
 					fndHdr=true;
 				else if (fndHdr==true && var.substring(0, 1).equals("[")==true) 
 					break; 
-				else if( var.length() >= Setting.length()+1 && fndHdr==true && var.toLowerCase().substring(0, Setting.length() + 1).equals(Setting.toLowerCase() + "="))
-					return (var.length() == Setting.length()+1) ? Default : var.substring(Setting.length()+1,var.length()); 
+				else if( var.length() >= Setting.length()+1 && fndHdr==true && var.toLowerCase().substring(0, Setting.length() + 1).equals(Setting.toLowerCase() + "=")) {
+					String ret = (var.length() == Setting.length()+1) ? Default : var.substring(Setting.length()+1,var.length());
+					if((ret == null) || (ret.length() == 0))
+						return null;
+					return ret; 
+				}
 			}
 		}catch(FileNotFoundException e){
 		}catch(IOException ex){}
