@@ -44,7 +44,10 @@ public class Ini{
 				if (var.toLowerCase().equals("[" + Header.toLowerCase() + "]")){
 					doneIt=true; 
 					fndHdr=true; 
-					StringB.append(Setting + "=" + Value + "\n");
+					if(Value == null)
+						StringB.append(Setting + "=\n");
+					else
+						StringB.append(Setting + "=" + Value + "\n");
 				}
 			}
 			inputStream.close();
