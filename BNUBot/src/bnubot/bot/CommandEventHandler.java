@@ -433,12 +433,25 @@ public class CommandEventHandler implements EventHandler {
 						c.sendChat(user, "That user already has an account!", wasWhispered);
 						break;
 					}
+
+					String requiredTagPrefix =  c.getConnectionSettings().recruitTagPrefix;
+					String requiredTagSuffix =  c.getConnectionSettings().recruitTagSuffix;
 					
-					String requiredTag = "BNU-";
+					if(requiredTagPrefix != null) {
+						if(bnSubject.getFullAccountName().substring(0, requiredTagPrefix.length()).compareToIgnoreCase(requiredTagPrefix) != 0) {
+							c.sendChat(user, "That user must have the " + requiredTagPrefix + " tag!", wasWhispered);
+							break;
+						}
+					}
 					
-					if(requiredTag != null) {
-						if(bnSubject.getFullAccountName().substring(0, requiredTag.length()).compareToIgnoreCase(requiredTag) != 0) {
-							c.sendChat(user, "That user must have the " + requiredTag + " tag!", wasWhispered);
+					if(requiredTagSuffix != null) {
+						String s = bnSubject.getFullAccountName();
+						int i = s.indexOf("@");
+						if(i != -1)
+							s = s.substring(0, i);
+						s = s.substring(s.length() - requiredTagSuffix.length());
+						if(s.compareToIgnoreCase(requiredTagSuffix) != 0) {
+							c.sendChat(user, "That user must have the " + requiredTagSuffix + " tag!", wasWhispered);
 							break;
 						}
 					}
@@ -470,6 +483,31 @@ public class CommandEventHandler implements EventHandler {
 					c.sendChat("Welcome to the clan, " + bnSubject.toString() + "!");
 					break;
 				}
+				if(command.equals("renameaccount")) {
+					if((params == null) || (params.length != 2)) {
+						c.sendChat(user, "Use: %trigger%renameaccount <old account> <new account>", wasWhispered);
+						break;
+					}
+					
+					ResultSet rsSubjectAccount = d.getAccount(params[0]);
+					if((rsSubjectAccount == null) || !rsSubjectAccount.next()) {
+						c.sendChat(user, "The account [" + params[0] + "] does not exist!", wasWhispered);
+						break;
+					}
+					
+					try {
+						rsSubjectAccount.updateString("name", params[1]);
+						rsSubjectAccount.updateRow();
+					} catch(SQLException e) {
+						//TODO: Verify that the exception was actually caused by the UNIQUE restriction
+						c.sendChat(user, "The account [" + params[1] + "] already exists!", wasWhispered);
+						break;
+					}
+					
+					c.sendChat(user, "The account [" + params[0] + "] was successfully renamed to [" + params[1] + "]", wasWhispered);
+					
+					break;
+				}
 				break;
 			case 's':
 				if(command.equals("say")) {
@@ -479,6 +517,7 @@ public class CommandEventHandler implements EventHandler {
 				if(command.equals("seen")) {
 					if((params == null) || (params.length != 1)) {
 						c.sendChat(user, "Use: %trigger%seen <account>", wasWhispered);
+						break;
 					}
 					
 					Timestamp mostRecent = null;
