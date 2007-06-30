@@ -419,6 +419,7 @@ public class CommandEventHandler implements EventHandler {
 				if(command.equals("recruit")) {
 					if((params == null) || (params.length != 2)) {
 						c.sendChat(user, "Use: %trigger%recruit <user>[@<realm>] <account>", wasWhispered);
+						break;
 					}
 					
 					BNetUser bnSubject = BNetUser.getBNetUser(params[0], user);
