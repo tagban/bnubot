@@ -38,10 +38,9 @@ public class BNetUser {
 	 * Touch the cache for key
 	 */
 	public static void touchCache(String key, BNetUser user) {
-		if(bnCache.size() > 40) {
+		if(bnCache.size() > 40)
 			clearCache();
-			bnCache.put(key, user);
-		}
+		bnCache.put(key, user);
 	}
 
 	/**
