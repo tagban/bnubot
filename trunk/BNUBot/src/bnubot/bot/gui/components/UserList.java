@@ -284,6 +284,17 @@ public class UserList extends JPanel {
 	
 	public void removeUser(BNetUser user) {
 		UserInfo ui = users.get(user);
+		if(ui == null) {
+			Enumeration<UserInfo> en = users.elements();
+			while(en.hasMoreElements()) {
+				UserInfo ui2 = en.nextElement();
+				if(ui2.user.equals(user)) {
+					ui = ui2;
+					break;
+				}
+			}
+		}
+		
 		if(ui != null) {
 			b.remove(ui.label);
 			ui.label = null;
