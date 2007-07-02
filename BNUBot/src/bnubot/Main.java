@@ -10,6 +10,7 @@ import bnubot.bot.console.ConsoleEventHandler;
 import bnubot.bot.database.*;
 import bnubot.bot.gui.ConfigurationFrame;
 import bnubot.bot.gui.GuiEventHandler;
+import bnubot.bot.trivia.TriviaEventHandler;
 import bnubot.core.*;
 import bnubot.core.bncs.BNCSConnection;
 import bnubot.core.queue.ChatQueue;
@@ -148,6 +149,12 @@ public class Main {
 					d = null;
 				}
 			}
+		}
+		
+		//Trivia
+		if(true) { 
+			EventHandler trivia = new TriviaEventHandler(d);
+			primary.addEventHandler(trivia);
 		}
 			
 		//Other plugins

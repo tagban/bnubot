@@ -257,6 +257,10 @@ public class Database {
 		ps.close();
 	}
 	
+	public ResultSet getTriviaLeaders() throws SQLException {
+		return createStatement().executeQuery("SELECT * FROM `account` WHERE `trivia_correct` > 0 ORDER BY `trivia_correct` DESC LIMIT 10");
+	}
+	
 	/**
 	 * Check whether or not the database schema is valid
 	 * @return boolean indicating if database is up to date
