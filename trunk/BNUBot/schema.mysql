@@ -27,6 +27,7 @@ CREATE TABLE `account` (
 	`created` TIMESTAMP NOT NULL default CURRENT_TIMESTAMP,
 	`lastRankChange` TIMESTAMP DEFAULT 0,
 	`createdby` INTEGER default NULL,
+	`trivia_correct` INT NOT NULL DEFAULT '0',
 	CONSTRAINT `account_ibfk1`
 		FOREIGN KEY (`createdby`)
 			REFERENCES `account` (`id`)
