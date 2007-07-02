@@ -51,6 +51,21 @@ public class UserList extends JPanel {
 		return null;
 	}
 	
+	private UserInfo getUI(BNetUser user) {
+		UserInfo ui = users.get(user);
+		if(ui != null)
+			return ui;
+		
+		Enumeration<UserInfo> en = users.elements();
+		while(en.hasMoreElements()) {
+			ui = en.nextElement();
+			if(ui.user.equals(user))
+				return ui;
+		}
+		
+		return null;
+	}
+	
 	public UserList(ColorScheme cs, Connection c, GuiEventHandler geh) {
 		super(new FlowLayout(FlowLayout.LEFT));
 		this.users = new Hashtable<BNetUser, UserInfo>();
@@ -116,7 +131,7 @@ public class UserList extends JPanel {
 	}
 	
 	public void showUser(BNetUser user, StatString statstr) {
-		UserInfo ui = users.get(user);
+		UserInfo ui = getUI(user);
 		if(ui == null) {
 			ui = new UserInfo();
 			ui.user = user;
@@ -124,7 +139,7 @@ public class UserList extends JPanel {
 			ui.priority = getPrioByFlags(user.getFlags());
 			
 			ui.menu = new JPopupMenu();
-			ui.menu.add(new JLabel(user + ": " + statstr.toString()));
+			ui.menu.add(new JLabel(user.getShortPrettyName() + ": " + statstr.toString()));
 			JMenuItem menuItem = new JMenuItem("Whisper");
 			menuItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
@@ -144,7 +159,7 @@ public class UserList extends JPanel {
 			ui.menu.add(Box.createHorizontalGlue());
 		}
 		if(ui.label == null) {
-			ui.label = new JLabel(user.toString());
+			ui.label = new JLabel(user.getFullLogonName());
 			ui.label.setForeground(cs.getUserNameListColor(user.getFlags()));
 			b.add(ui.label, getInsertPosition(ui.priority));
 			
@@ -283,17 +298,7 @@ public class UserList extends JPanel {
 	}
 	
 	public void removeUser(BNetUser user) {
-		UserInfo ui = users.get(user);
-		if(ui == null) {
-			Enumeration<UserInfo> en = users.elements();
-			while(en.hasMoreElements()) {
-				UserInfo ui2 = en.nextElement();
-				if(ui2.user.equals(user)) {
-					ui = ui2;
-					break;
-				}
-			}
-		}
+		UserInfo ui = getUI(user);
 		
 		if(ui != null) {
 			b.remove(ui.label);
