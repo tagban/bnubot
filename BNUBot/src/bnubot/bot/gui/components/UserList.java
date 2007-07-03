@@ -156,6 +156,14 @@ public class UserList extends JPanel {
 						c.sendChat("/whois " + ui.user.getShortLogonName());
 				}});
 			ui.menu.add(menuItem);
+			menuItem = new JMenuItem("Profile");
+			menuItem.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					UserInfo ui = getUserInfo(arg0);
+					if(ui != null)
+						try { c.sendProfile(ui.user); } catch(Exception e) { e.printStackTrace(); }
+				}});
+			ui.menu.add(menuItem);
 			ui.menu.add(Box.createHorizontalGlue());
 		}
 		if(ui.label == null) {
@@ -175,7 +183,7 @@ public class UserList extends JPanel {
 								System.out.println("Left clicked on " + ui.label.getText());
 								break;
 							case MouseEvent.BUTTON2:
-								System.out.println("Middle clicked on " + ui.label.getText());
+								try { c.sendProfile(ui.user); } catch(Exception e) { e.printStackTrace(); }
 								break;
 							case MouseEvent.BUTTON3:
 								ui.menu.show(arg0.getComponent(), arg0.getX(), arg0.getY());
