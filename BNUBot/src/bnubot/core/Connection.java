@@ -217,7 +217,7 @@ public abstract class Connection extends Thread implements EventHandler {
 			recieveInfo(text);
 		else {
 			String prefix;
-			if(cs.whisperBack) {
+			if(cs.whisperBack || forceWhisper) {
 				prefix = "/w " + to.getFullLogonName() + " [BNU";
 				if(Version.VER_ALPHA != null)
 					prefix += " alpha";
