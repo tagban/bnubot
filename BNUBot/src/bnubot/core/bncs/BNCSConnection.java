@@ -1359,6 +1359,13 @@ public class BNCSConnection extends Connection {
 		p.SendPacket(dos, cs.packetLog);
 	}
 	
+	public void sendProfile(String user) throws Exception {
+		BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_PROFILE);
+		p.writeDWord(CookieUtility.createCookie(user));
+		p.writeNTString(user);
+		p.SendPacket(dos, cs.packetLog);
+	}
+	
 	public String toString() {
 		String out = "BNU-Bot " + Version.version();
 		
