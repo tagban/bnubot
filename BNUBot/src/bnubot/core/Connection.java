@@ -41,6 +41,11 @@ public abstract class Connection extends Thread implements EventHandler {
 	public abstract void sendClanRankChange(String string, int newRank) throws Exception;
 	public abstract void sendClanMOTD(Object cookie) throws Exception;
 	public abstract void sendClanSetMOTD(String text) throws Exception;
+	public abstract void sendProfile(String user) throws Exception;
+	
+	public void sendProfile(BNetUser user) throws Exception {
+		sendProfile(user.getShortLogonName());
+	}
 	
 	public abstract void reconnect();
 	public abstract boolean isOp();
@@ -175,17 +180,31 @@ public abstract class Connection extends Thread implements EventHandler {
 		if(text.charAt(0) == '/') {
 			String[] command = text.substring(1).split(" ", 3);
 			if(command.length > 1) {
-				if(command[0].equals("cmd")) {
-					String params = null;
-					if(command.length > 2)
-						params = command[2];
-
-
-					Iterator<EventHandler> it = eventHandlers.iterator();
-					while(it.hasNext())
-						it.next().parseCommand(myUser, command[1], params, true);
-					
-					return;
+				switch(command[0].charAt(0)) {
+				case 'c':
+					if(command[0].equals("cmd")) {
+						String params = null;
+						if(command.length > 2)
+							params = command[2];
+	
+	
+						Iterator<EventHandler> it = eventHandlers.iterator();
+						while(it.hasNext())
+							it.next().parseCommand(myUser, command[1], params, true);
+						
+						return;
+					}
+					break;
+				case 'p':
+					if(command[0].equals("profile")) {
+						try {
+							sendProfile(command[1]);
+						} catch(Exception e) {
+							e.printStackTrace();
+						}
+						return;
+					}
+					break;
 				}
 			}
 		}
