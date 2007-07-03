@@ -121,7 +121,7 @@ public class Database {
 	}
 
 	public ResultSet createAccount(String account, long access, Long creator) throws SQLException {
-		PreparedStatement ps = prepareStatement("INSERT INTO `account` (`name`, `access`, `createdby`) VALUES(?, ?, ?)");
+		PreparedStatement ps = prepareStatement("INSERT INTO `account` (`name`, `access`, `createdby`, `lastRankChange`) VALUES(?, ?, ?, NULL)");
 		ps.setString(1, account);
 		ps.setLong(2, access);
 		ps.setLong(3, creator);
@@ -204,7 +204,7 @@ public class Database {
 	}
 	
 	public void sendMail(long senderID, long targetID, String message) throws SQLException {
-		PreparedStatement ps = prepareStatement("INSERT INTO `mail` (`from`, `to`, `message`) VALUES (?, ?, ?)");
+		PreparedStatement ps = prepareStatement("INSERT INTO `mail` (`from`, `to`, `message`, `sent`) VALUES (?, ?, ?, CURRENT_TIMESTAMP)");
 		ps.setLong(1, senderID);
 		ps.setLong(2, targetID);
 		ps.setString(3, message);
