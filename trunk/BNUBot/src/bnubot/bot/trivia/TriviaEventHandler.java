@@ -116,8 +116,8 @@ public class TriviaEventHandler implements EventHandler {
 			try {
 				if(triviaEnabled && c.canSendChat()) {
 					if(trivia.size() == 0) {
-						c.sendChat("There are no trivia questions left; reloading from file.");
-						reloadTrivia();
+						c.sendChat("There are no trivia questions left; game over.");
+						triviaEnabled = false;
 						continue;
 					}
 					
@@ -228,6 +228,9 @@ public class TriviaEventHandler implements EventHandler {
 	}
 	
 	public void triviaOn() {
+		if(trivia.size() == 0)
+			reloadTrivia();
+			
 		unanswered = 0;
 		triviaEnabled = true;
 	}
