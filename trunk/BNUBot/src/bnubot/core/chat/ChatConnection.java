@@ -87,7 +87,6 @@ public class ChatConnection extends Connection {
 
 	@Override
 	public int getProductID() {
-		// TODO Auto-generated method stub
 		return ProductIDs.PRODUCT_CHAT;
 	}
 
@@ -99,6 +98,11 @@ public class ChatConnection extends Connection {
 	@Override
 	public void sendQueryRealms() throws Exception {
 		throw new UnsupportedFeatureException("Chat clients can not use realms");
+	}
+
+	@Override
+	public void sendProfile(String user) throws Exception {
+		throw new UnsupportedFeatureException("Chat clients can not request profiles");
 	}
 
 }
