@@ -31,6 +31,7 @@ public class ConfigurationFrame extends JDialog {
 	JCheckBox chkAutoConnect = null;
 	JCheckBox chkEnableGUI = null;
 	JCheckBox chkEnableCLI = null;
+	JCheckBox chkEnableTrivia = null;
 	JCheckBox chkPacketLog = null;
 	JCheckBox chkWhisperBack = null;
 	JButton btnLoad = null;
@@ -264,7 +265,10 @@ public class ConfigurationFrame extends JDialog {
 						boxCheckboxes.add(chkEnableGUI);
 	
 						chkEnableCLI = new JCheckBox("Enable CLI", cs.enableCLI);
-						boxCheckboxes.add(chkEnableCLI);
+						boxCheckboxes.add(chkEnableCLI);;
+	
+						chkEnableTrivia = new JCheckBox("Enable Trivia", cs.enableTrivia);
+						boxCheckboxes.add(chkEnableTrivia);
 	
 						chkPacketLog = new JCheckBox("Packet Log", cs.packetLog);
 						boxCheckboxes.add(chkPacketLog);
@@ -363,6 +367,7 @@ public class ConfigurationFrame extends JDialog {
 		cs.autoconnect = chkAutoConnect.isSelected();
 		cs.enableGUI = chkEnableGUI.isSelected();
 		cs.enableCLI = chkEnableCLI.isSelected();
+		cs.enableTrivia = chkEnableTrivia.isSelected();
 		cs.packetLog = chkPacketLog.isSelected();
 		cs.whisperBack = chkWhisperBack.isSelected();
 		
@@ -387,6 +392,7 @@ public class ConfigurationFrame extends JDialog {
 		chkAutoConnect.setSelected(cs.autoconnect);
 		chkEnableGUI.setSelected(cs.enableGUI);
 		chkEnableCLI.setSelected(cs.enableCLI);
+		chkEnableTrivia.setSelected(cs.enableTrivia);
 		chkPacketLog.setSelected(cs.packetLog);
 		chkWhisperBack.setSelected(cs.whisperBack);
 	}
