@@ -152,7 +152,7 @@ public class Main {
 		}
 		
 		//Trivia
-		if(true) { 
+		if(cs.enableTrivia) { 
 			EventHandler trivia = new TriviaEventHandler(d);
 			primary.addEventHandler(trivia);
 		}

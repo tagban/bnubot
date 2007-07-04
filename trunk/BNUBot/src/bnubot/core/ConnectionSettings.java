@@ -40,6 +40,7 @@ public class ConnectionSettings implements Serializable {
 	public boolean enableCLI;
 	public boolean enableGUI;
 	public boolean enableCommands;
+	public boolean enableTrivia;
 	public boolean packetLog;
 	public boolean whisperBack;
 	public long recruitAccess;
@@ -181,6 +182,7 @@ public class ConnectionSettings implements Serializable {
 		Ini.WriteIni(file, header, "enableCLI", Boolean.toString(enableCLI));
 		Ini.WriteIni(file, header, "enableGUI", Boolean.toString(enableGUI));
 		Ini.WriteIni(file, header, "enableCommands", Boolean.toString(enableCommands));
+		Ini.WriteIni(file, header, "enableTrivia", Boolean.toString(enableTrivia));
 		Ini.WriteIni(file, header, "packetLog", Boolean.toString(packetLog));
 		Ini.WriteIni(file, header, "whisperBack", Boolean.toString(whisperBack));
 		Ini.WriteIni(file, header, "recruitAccess", Long.toString(recruitAccess));
@@ -224,6 +226,8 @@ public class ConnectionSettings implements Serializable {
 					Ini.ReadIni(file, header, "enableGUI", "true"));
 		enableCommands = Boolean.parseBoolean(
 					Ini.ReadIni(file, header, "enableCommands", "false"));
+		enableTrivia = Boolean.parseBoolean(
+				Ini.ReadIni(file, header, "enableTrivia", "false"));
 		packetLog = Boolean.parseBoolean(
 					Ini.ReadIni(file, header, "packetLog", "false"));
 		whisperBack = Boolean.parseBoolean(
