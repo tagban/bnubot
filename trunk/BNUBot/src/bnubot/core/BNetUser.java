@@ -312,6 +312,8 @@ public class BNetUser {
 			String s = (String)o;
 			if(s.compareToIgnoreCase(fullLogonName) == 0)
 				return true;
+			if(s.compareToIgnoreCase(shortLogonName) == 0)
+				return true;
 		} else {
 			throw new IllegalArgumentException("Unknown type " + o.getClass().getName());
 		}
