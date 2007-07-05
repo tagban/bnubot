@@ -85,19 +85,17 @@ public class BNCSConnection extends Connection {
 	}
 
 	public void run() {
-		boolean allowAutoConnect = true;
 		while(true) {
 			try {
 				if(forceReconnect)
 					forceReconnect = false;
 				else {
-					if(!cs.autoconnect || !allowAutoConnect) {
+					if(!cs.autoconnect) {
 						while(!isConnected()) {
 							yield();
 							sleep(10);
 						}
 					}
-					allowAutoConnect = false;
 				}
 				
 				setConnected(true);
@@ -197,16 +195,20 @@ public class BNCSConnection extends Connection {
 					break;
 				}
 				
-				if(isConnected());
-					connectedLoop();
+				//The connection loop
+				connectedLoop();
 					
+				//Connection closed; do cleanup
 				BNetUser.clearCache();
 				myStatString = null;
 				myUser = null;
 				myClan = 0;
 				myClanRank = 0;
 				titleChanged();
-				
+
+				//Wait a short time before allowing a reconnect
+				yield();
+				sleep(5000);
 			} catch(SocketException e) {
 			} catch(Exception e) {
 				recieveError("Unhandled exception: " + e.getMessage());
@@ -983,6 +985,36 @@ public class BNCSConnection extends Connection {
 				}
 				
 				/*	.-----------.
+				 *	|  Profile  |
+				 *	'-----------'
+				 */
+				
+				case BNCSCommandIDs.SID_READUSERDATA: {
+					/* (DWORD)		 Number of accounts
+					 * (DWORD)		 Number of keys
+					 * (DWORD)		 Request ID
+					 * (STRING[])	 Requested Key Values
+					 */
+					int numAccounts = is.readDWord();
+					int numKeys = is.readDWord();
+					@SuppressWarnings("unchecked")
+					ArrayList<String> keys = (ArrayList<String>)CookieUtility.destroyCookie(is.readDWord());
+					
+					if(numAccounts != 1)
+						throw new IllegalStateException("SID_READUSERDATA with numAccounts != 1");
+					
+					recieveInfo("Profile for " + keys.remove(0));
+					for(int i = 0; i < numKeys; i++) {
+						String key = keys.get(i);
+						String value = is.readNTString();
+						if((key == null) || (key.length() == 0) || (value.length() == 0))
+							continue;
+						recieveInfo(key + " = " + value);
+					}
+					break;
+				}
+				
+				/*	.-----------.
 				 *	|  Friends  |
 				 *	'-----------'
 				 */
@@ -1242,7 +1274,9 @@ public class BNCSConnection extends Connection {
 				
 					if(cmd.equals("w")
 					|| cmd.equals("m")
-					|| cmd.equals("whois")) {
+					|| cmd.equals("whois")
+					|| cmd.equals("ignre")
+					|| cmd.equals("squelch")) {
 						if(theRest.charAt(0) != '*')
 							text = '/' + cmd + " *" + theRest;
 					}
@@ -1360,10 +1394,41 @@ public class BNCSConnection extends Connection {
 	}
 	
 	public void sendProfile(String user) throws Exception {
-		BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_PROFILE);
+		/*BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_PROFILE);
 		p.writeDWord(CookieUtility.createCookie(user));
 		p.writeNTString(user);
+		p.SendPacket(dos, cs.packetLog);*/
+		/* (DWORD)		 Number of Accounts
+		 * (DWORD)		 Number of Keys
+		 * (DWORD)		 Request ID
+		 * (STRING[])	 Requested Accounts
+		 * (STRING[])	 Requested Keys
+		 */
+		ArrayList<String> keys = new ArrayList<String>();
+		keys.add(user);
+		keys.add("profile\\sex");
+		keys.add("profile\\age");
+		keys.add("profile\\location");
+		keys.add("profile\\description");
+		keys.add("profile\\dbkey1");
+		keys.add("profile\\dbkey2");
+		if(myUser.equals(user)) {
+			keys.add("System\\Account Created");
+			keys.add("System\\Last Logon");
+			keys.add("System\\Last Logoff");
+			keys.add("System\\Time Logged");
+			keys.add("System\\Username");
+		}
+		
+		BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_READUSERDATA);
+		p.writeDWord(1);
+		p.writeDWord(keys.size() - 1);
+		p.writeDWord(CookieUtility.createCookie(keys));
+		p.writeNTString(user);
+		for(int i = 1; i < keys.size(); i++)
+			p.writeNTString(keys.get(i));
 		p.SendPacket(dos, cs.packetLog);
+	 	
 	}
 	
 	public String toString() {
