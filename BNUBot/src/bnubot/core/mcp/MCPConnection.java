@@ -73,6 +73,10 @@ public class MCPConnection extends RealmConnection {
 						switch(result) {
 						case 0:
 							recieveInfo("Realm logon success");
+							
+							p = new MCPPacket(MCPCommandIDs.MCP_CHARLIST2);
+							p.writeDWord(8);	//Nubmer of chars to list
+							p.SendPacket(dos, true);
 							break;
 						case 0x0C:
 							recieveError("Realm server did not detect a Battle.net connection");
