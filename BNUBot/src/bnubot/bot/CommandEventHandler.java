@@ -594,7 +594,9 @@ public class CommandEventHandler implements EventHandler {
 					bnSubject.resetPrettyName();
 					
 					String newAccountName = "NULL";
-					ResultSet rsSubjectAccount = d.getAccount(newAccount);
+					ResultSet rsSubjectAccount = null;
+					if(newAccount != null)
+						rsSubjectAccount = d.getAccount(newAccount);
 					if((rsSubjectAccount != null) && rsSubjectAccount.next())
 						newAccountName = rsSubjectAccount.getString("name");
 					c.sendChat(user, "User [" + subject + "] was added to account [" + newAccountName + "] successfully.", wasWhispered);
