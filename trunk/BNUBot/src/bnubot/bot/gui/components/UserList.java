@@ -78,12 +78,7 @@ public class UserList extends JPanel {
 	}
 	
 	public void clear() {
-		Enumeration<UserInfo> e = users.elements();
-		while(e.hasMoreElements()) {
-			UserInfo ui = e.nextElement();
-			b.remove(ui.label);
-			ui.label = null;
-		}
+		b.removeAll();
 		users.clear();
 		validate();
 	}
