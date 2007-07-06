@@ -7,8 +7,10 @@ import java.util.Date;
 import javax.swing.*;
 
 import bnubot.bot.EventHandler;
+import bnubot.bot.database.Database;
 import bnubot.bot.gui.ColorScheme.ColorScheme;
 import bnubot.bot.gui.components.*;
+import bnubot.bot.gui.database.DatabaseRankEditor;
 import bnubot.bot.gui.icons.IconsDotBniReader;
 import bnubot.core.BNetUser;
 import bnubot.core.Connection;
@@ -139,6 +141,19 @@ public class GuiEventHandler implements EventHandler {
 							e.printStackTrace();
 							System.exit(1);
 						}
+					} });
+				menu.add(menuItem);
+			}
+			menuBar.add(menu);
+			
+			menu = new JMenu("Database");
+			{
+				menuItem = new JMenuItem("Rank editor");
+				menuItem.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent event) {
+						Database d = BNetUser.getDatabase();
+						if(d != null)
+							new DatabaseRankEditor(d);
 					} });
 				menu.add(menuItem);
 			}
