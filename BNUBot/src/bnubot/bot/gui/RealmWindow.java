@@ -114,9 +114,17 @@ public class RealmWindow extends JFrame implements EventHandler, RealmEventHandl
 		mcpc.addRealmEventHandler(this);
 		mcpc.start();
 		
-		remove(lstRealms);
-		add(b);
-		validate();
+		//remove(lstRealms);
+		//add(b);
+		//validate();
+	}
+
+	public void recieveRealmError(String text) {
+		System.err.println(text);
+	}
+
+	public void recieveRealmInfo(String text) {
+		System.out.println(text);
 	}
 
 }
