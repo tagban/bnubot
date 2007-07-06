@@ -9,6 +9,7 @@ import bnubot.core.BNetInputStream;
 import bnubot.core.RealmConnection;
 import bnubot.core.StatString;
 import bnubot.util.HexDump;
+import bnubot.util.TimeFormatter;
 
 public class MCPConnection extends RealmConnection {
 	protected int[] MCPChunk1;
@@ -107,15 +108,29 @@ public class MCPConnection extends RealmConnection {
 						is.readDWord();
 						int numChars = is.readWord();
 						
+						int maxLevel = 0;
+						String maxCharname = null;
+						
 						for(int i = 0; i < numChars; i++) {
 							int secs = is.readDWord();
 							String charname = is.readNTString();
-							int flags = is.readWord();
 							StatString statstr = new StatString("PX2D[Realm]," + charname + "," + is.readNTString());
 							
-							recieveRealmInfo(new Date(secs).toString());
-							recieveRealmInfo(charname + " (0x" + Integer.toHexString(flags) + ")");
-							recieveRealmInfo(statstr.toString());
+							long time = new Date().getTime();
+							time = (((long)secs) * 1000) - time;
+							
+							recieveRealmInfo(TimeFormatter.formatTime(time) + " - " + charname + " - " + statstr.toString());
+							
+							if(maxLevel < statstr.getCharLevel()) {
+								maxLevel = statstr.getCharLevel();
+								maxCharname = charname;
+							}
+						}
+						
+						if(maxCharname != null) {
+							p = new MCPPacket(MCPCommandIDs.MCP_CHARLOGON);
+							p.writeNTString(maxCharname);
+							p.SendPacket(dos, true);
 						}
 						
 						break;
