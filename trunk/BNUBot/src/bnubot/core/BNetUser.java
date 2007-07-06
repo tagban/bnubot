@@ -27,6 +27,10 @@ public class BNetUser {
 		BNetUser.d = d;
 	}
 	
+	public static Database getDatabase() {
+		return d;
+	}
+	
 	/**
 	 * Clear the BNetUser cache
 	 */
