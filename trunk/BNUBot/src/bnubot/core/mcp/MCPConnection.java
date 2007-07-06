@@ -3,9 +3,11 @@ package bnubot.core.mcp;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
+import java.util.Date;
 
 import bnubot.core.BNetInputStream;
 import bnubot.core.RealmConnection;
+import bnubot.core.StatString;
 import bnubot.util.HexDump;
 
 public class MCPConnection extends RealmConnection {
@@ -72,25 +74,54 @@ public class MCPConnection extends RealmConnection {
 						int result = is.readDWord();
 						switch(result) {
 						case 0:
-							recieveInfo("Realm logon success");
+							recieveRealmInfo("Realm logon success");
 							
 							p = new MCPPacket(MCPCommandIDs.MCP_CHARLIST2);
 							p.writeDWord(8);	//Nubmer of chars to list
 							p.SendPacket(dos, true);
 							break;
 						case 0x0C:
-							recieveError("Realm server did not detect a Battle.net connection");
+							recieveRealmError("Realm server did not detect a Battle.net connection");
 							setConnected(false);
 							break;
 						case 0x7F:
-							recieveError("You are temporarily banned from the realm");
+							recieveRealmError("You are temporarily banned from the realm");
 							setConnected(false);
 							break;
 						}
 						break;
 					}
+					case MCPCommandIDs.MCP_CHARLIST2: {
+						recieveRealmError(bnubot.util.HexDump.hexDump(pr.data));
+						/* (WORD)		 Number of characters requested
+						 * (DWORD)		 Number of characters that exist on this account
+						 * (WORD)		 Number of characters returned
+						 * 
+						 * For each character:
+						 * (DWORD)		 Seconds since January 1 00:00:00 UTC 1970
+						 * (STRING) 	 Name
+						 * (WORD)		 Flags
+						 * (STRING) 	 Character statstring
+						 */
+						is.readWord();
+						is.readDWord();
+						int numChars = is.readWord();
+						
+						for(int i = 0; i < numChars; i++) {
+							int secs = is.readDWord();
+							String charname = is.readNTString();
+							int flags = is.readWord();
+							StatString statstr = new StatString("PX2D[Realm]," + charname + "," + is.readNTString());
+							
+							recieveRealmInfo(new Date(secs).toString());
+							recieveRealmInfo(charname + " (0x" + Integer.toHexString(flags) + ")");
+							recieveRealmInfo(statstr.toString());
+						}
+						
+						break;
+					}
 					default:
-						recieveError("Unknown MCP packet 0x" + Integer.toHexString(pr.packetId) + "\n" + bnubot.util.HexDump.hexDump(pr.data));
+						recieveRealmError("Unknown MCP packet 0x" + Integer.toHexString(pr.packetId) + "\n" + bnubot.util.HexDump.hexDump(pr.data));
 						break;
 					}
 				} else {
