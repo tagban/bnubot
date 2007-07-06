@@ -28,6 +28,7 @@ import bnubot.core.clan.ClanStatusIDs;
 import bnubot.core.friend.FriendEntry;
 import bnubot.core.queue.ChatQueue;
 import bnubot.util.HexDump;
+import bnubot.util.TimeFormatter;
 
 import Hashing.*;
 
@@ -1009,6 +1010,7 @@ public class BNCSConnection extends Connection {
 						String value = is.readNTString();
 						if((key == null) || (key.length() == 0) || (value.length() == 0))
 							continue;
+						value = prettyProfileValue(key, value);
 						recieveInfo(key + " = " + value);
 					}
 					break;
@@ -1393,6 +1395,42 @@ public class BNCSConnection extends Connection {
 		p.SendPacket(dos, cs.packetLog);
 	}
 	
+	
+	private String prettyProfileValue(String key, String value) {
+		if("System\\Account Created".equals(key)
+		|| "System\\Last Logon".equals(key)
+		|| "System\\Last Logoff".equals(key)) {
+			String parts[] = value.split(" ", 2);
+			double time = Long.parseLong(parts[1]);
+			time *= 2^32;
+			time += Long.parseLong(parts[0]);
+			
+			//Converts a Windows FILETIME into a Date.
+			//The Windows FILETIME structure holds a date
+			// and time associated with a file. The structure
+			// identifies a 64-bit integer specifying the number
+			// of 100-nanosecond intervals which have passed 
+			// since January 1, 1601.
+			time /= 10;
+
+		    //Const DateDiff = -109205 '"Win32 day 0;" CDbl(#1/1/1601#)
+		    //final long ticksPerDay = 86400000; //60 * 60 * 24 * 1000
+		    final long dateDiff = Date.parse("1/1/1601");
+		    
+			//?CDbl(#1/1/1970#) - CDbl(#1/1/1601#)
+			// 134774 
+			time -= dateDiff;
+			
+			return new Date((long)time).toString();
+		} else
+		if("System\\Time Logged".equals(key)) {
+			long time = Long.parseLong(value);
+			time *= 1000;
+			return TimeFormatter.formatTime(time);
+		}
+		
+		return value;
+	}
 	public void sendProfile(String user) throws Exception {
 		/*BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_PROFILE);
 		p.writeDWord(CookieUtility.createCookie(user));
