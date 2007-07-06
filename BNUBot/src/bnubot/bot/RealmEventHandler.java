@@ -9,6 +9,6 @@ public interface RealmEventHandler {
 	//Realm events
 	public void realmConnected();
 	public void realmDisconnected();
-	public void recieveInfo(String text);
-	public void recieveError(String text);
+	public void recieveRealmInfo(String text);
+	public void recieveRealmError(String text);
 }
