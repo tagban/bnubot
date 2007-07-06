@@ -39,16 +39,16 @@ public abstract class RealmConnection extends Thread implements RealmEventHandle
 			it.next().realmDisconnected();
 	}
 	
-	public void recieveError(String text) {
+	public void recieveRealmError(String text) {
 		Iterator<RealmEventHandler> it = realmEventHandlers.iterator();
 		while(it.hasNext())
-			it.next().recieveError(text);
+			it.next().recieveRealmError(text);
 	}
 
-	public void recieveInfo(String text) {
+	public void recieveRealmInfo(String text) {
 		Iterator<RealmEventHandler> it = realmEventHandlers.iterator();
 		while(it.hasNext())
-			it.next().recieveInfo(text);
+			it.next().recieveRealmInfo(text);
 	}
 
 }
