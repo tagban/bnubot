@@ -315,11 +315,11 @@ public class GuiEventHandler implements EventHandler {
 	public void queryRealms2(String[] realms) {
 		if(w == null)
 			w = new RealmWindow(realms);
-		w.setVisible(true);
 		
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				c.addEventHandler(w);
+				w.setVisible(true);
 			} });
 	}
 
