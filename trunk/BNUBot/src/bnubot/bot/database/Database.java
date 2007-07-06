@@ -150,6 +150,10 @@ public class Database {
 		return ps.executeQuery();
 	}
 	
+	public ResultSet getRanks() throws SQLException {
+		return createStatement().executeQuery("SELECT * FROM `rank` ORDER BY `id` ASC");
+	}
+	
 	public ResultSet getRank(long access) throws SQLException {
 		PreparedStatement ps = prepareStatement("SELECT * FROM `rank` WHERE `id`=?");
 		ps.setLong(1, access);
