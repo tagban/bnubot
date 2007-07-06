@@ -1401,25 +1401,12 @@ public class BNCSConnection extends Connection {
 		|| "System\\Last Logon".equals(key)
 		|| "System\\Last Logoff".equals(key)) {
 			String parts[] = value.split(" ", 2);
-			double time = Long.parseLong(parts[1]);
-			time *= 2^32;
-			time += Long.parseLong(parts[0]);
+			long time = Long.parseLong(parts[0]);
+			time <<= 32;
+			time += Long.parseLong(parts[1]);
 			
-			//Converts a Windows FILETIME into a Date.
-			//The Windows FILETIME structure holds a date
-			// and time associated with a file. The structure
-			// identifies a 64-bit integer specifying the number
-			// of 100-nanosecond intervals which have passed 
-			// since January 1, 1601.
-			time /= 10;
-
-		    //Const DateDiff = -109205 '"Win32 day 0;" CDbl(#1/1/1601#)
-		    //final long ticksPerDay = 86400000; //60 * 60 * 24 * 1000
-		    final long dateDiff = Date.parse("1/1/1601");
-		    
-			//?CDbl(#1/1/1970#) - CDbl(#1/1/1601#)
-			// 134774 
-			time -= dateDiff;
+			time /= 10000;
+			time -= 11644455600000L; //Date.parse("1/1/1601");
 			
 			return new Date((long)time).toString();
 		} else
