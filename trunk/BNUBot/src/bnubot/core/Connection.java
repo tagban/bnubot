@@ -315,7 +315,6 @@ public abstract class Connection extends Thread implements EventHandler {
 		channelName = null;
 		myUser = null;
 		
-		waitForEHSemaphor();
 		eh_semaphor++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
@@ -324,7 +323,6 @@ public abstract class Connection extends Thread implements EventHandler {
 	}
 
 	public void parseCommand(BNetUser user, String command, String param, boolean wasWhispered) {
-		waitForEHSemaphor();
 		eh_semaphor++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
@@ -333,7 +331,6 @@ public abstract class Connection extends Thread implements EventHandler {
 	}
 
 	public synchronized void titleChanged() {
-		waitForEHSemaphor();
 		eh_semaphor++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
@@ -344,14 +341,12 @@ public abstract class Connection extends Thread implements EventHandler {
 	public synchronized void joinedChannel(String channel) {
 		channelName = channel;
 
-		waitForEHSemaphor();
 		eh_semaphor++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().joinedChannel(channel);
 		eh_semaphor--;
 
-		waitForEH2Semaphor();
 		eh2_semaphor++;
 		Iterator<Connection> it2 = slaves.iterator();
 		while(it2.hasNext())
@@ -366,7 +361,6 @@ public abstract class Connection extends Thread implements EventHandler {
 	}
 	
 	public synchronized void channelUser(BNetUser user, StatString statstr) {
-		waitForEHSemaphor();
 		eh_semaphor++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
@@ -375,7 +369,6 @@ public abstract class Connection extends Thread implements EventHandler {
 	}
 	
 	public synchronized void channelJoin(BNetUser user, StatString statstr) {
-		waitForEHSemaphor();
 		eh_semaphor++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
@@ -384,7 +377,6 @@ public abstract class Connection extends Thread implements EventHandler {
 	}
 	
 	public synchronized void channelLeave(BNetUser user) {
-		waitForEHSemaphor();
 		eh_semaphor++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
@@ -393,7 +385,6 @@ public abstract class Connection extends Thread implements EventHandler {
 	}
 
 	public synchronized void recieveChat(BNetUser user, String text) {
-		waitForEHSemaphor();
 		eh_semaphor++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
@@ -402,7 +393,6 @@ public abstract class Connection extends Thread implements EventHandler {
 	}
 
 	public synchronized void recieveEmote(BNetUser user, String text) {
-		waitForEHSemaphor();
 		eh_semaphor++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
@@ -416,14 +406,12 @@ public abstract class Connection extends Thread implements EventHandler {
 		if(text.length() == 0)
 			return;
 
-		waitForEHSemaphor();
 		eh_semaphor++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().recieveInfo(text);
 		eh_semaphor--;
 
-		waitForEH2Semaphor();
 		eh2_semaphor++;
 		it = eventHandlers2.iterator();
 		while(it.hasNext())
@@ -437,14 +425,12 @@ public abstract class Connection extends Thread implements EventHandler {
 		if(text.length() == 0)
 			return;
 
-		waitForEHSemaphor();
 		eh_semaphor++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().recieveError(text);
 		eh_semaphor--;
 
-		waitForEH2Semaphor();
 		eh2_semaphor++;
 		it = eventHandlers2.iterator();
 		while(it.hasNext())
@@ -453,14 +439,12 @@ public abstract class Connection extends Thread implements EventHandler {
 	}
 	
 	public synchronized void whisperSent(BNetUser user, String text) {
-		waitForEHSemaphor();
 		eh_semaphor++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().whisperSent(user, text);
 		eh_semaphor--;
 
-		waitForEH2Semaphor();
 		eh2_semaphor++;
 		it = eventHandlers2.iterator();
 		while(it.hasNext())
@@ -469,14 +453,12 @@ public abstract class Connection extends Thread implements EventHandler {
 	}
 	
 	public synchronized void whisperRecieved(BNetUser user, String text) {
-		waitForEHSemaphor();
 		eh_semaphor++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().whisperRecieved(user, text);
 		eh_semaphor--;
 
-		waitForEH2Semaphor();
 		eh2_semaphor++;
 		it = eventHandlers2.iterator();
 		while(it.hasNext())
@@ -487,7 +469,6 @@ public abstract class Connection extends Thread implements EventHandler {
 	// Realms
 	
 	public synchronized void queryRealms2(String[] realms) {
-		waitForEHSemaphor();
 		eh_semaphor++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
@@ -496,7 +477,6 @@ public abstract class Connection extends Thread implements EventHandler {
 	}
 	
 	public synchronized void logonRealmEx(int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName) {
-		waitForEHSemaphor();
 		eh_semaphor++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
@@ -507,7 +487,6 @@ public abstract class Connection extends Thread implements EventHandler {
 	// Friends
 
 	public synchronized void friendsList(FriendEntry[] entries) {
-		waitForEHSemaphor();
 		eh_semaphor++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
@@ -516,7 +495,6 @@ public abstract class Connection extends Thread implements EventHandler {
 	}
 	
 	public synchronized void friendsUpdate(byte entry, byte location, byte status, int product, String locationName) {
-		waitForEHSemaphor();
 		eh_semaphor++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
@@ -527,7 +505,6 @@ public abstract class Connection extends Thread implements EventHandler {
 	// Clan
 
 	public synchronized void clanMemberList(ClanMember[] members) {
-		waitForEHSemaphor();
 		eh_semaphor++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
@@ -536,7 +513,6 @@ public abstract class Connection extends Thread implements EventHandler {
 	}
 	
 	public synchronized void clanMemberRankChange(byte oldRank, byte newRank, String user) {
-		waitForEHSemaphor();
 		eh_semaphor++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
@@ -545,7 +521,6 @@ public abstract class Connection extends Thread implements EventHandler {
 	}
 	
 	public synchronized void clanMOTD(Object cookie, String text) {
-		waitForEHSemaphor();
 		eh_semaphor++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
