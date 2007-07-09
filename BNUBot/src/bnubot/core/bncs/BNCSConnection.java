@@ -1405,10 +1405,7 @@ public class BNCSConnection extends Connection {
 			time <<= 32;
 			time += Long.parseLong(parts[1]);
 			
-			time /= 10000;
-			time -= 11644455600000L; //Date.parse("1/1/1601");
-			
-			return new Date((long)time).toString();
+			return TimeFormatter.fileTime(time).toString();
 		} else
 		if("System\\Time Logged".equals(key)) {
 			long time = Long.parseLong(value);
