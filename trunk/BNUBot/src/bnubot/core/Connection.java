@@ -139,6 +139,9 @@ public abstract class Connection extends Thread implements EventHandler {
 		if(channelName == null)
 			return false;
 		
+		if(myUser == null)
+			return false;
+		
 		return (checkDelay() <= 0);
 	}
 	
