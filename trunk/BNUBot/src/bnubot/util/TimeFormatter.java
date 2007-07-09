@@ -1,5 +1,7 @@
 package bnubot.util;
 
+import java.util.Date;
+
 public class TimeFormatter {
 
 	public static String formatTime(long time) {
@@ -18,5 +20,11 @@ public class TimeFormatter {
 		}
 		
 		return text;
+	}
+	
+	public static Date fileTime(long ft) {
+		//time /= 10000;
+		//time -= 11644455600000L; //Date.parse("1/1/1601");
+		return new Date(ft / 10000 - 11644455600000L);
 	}
 }
