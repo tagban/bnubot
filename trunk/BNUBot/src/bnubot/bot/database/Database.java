@@ -2,6 +2,7 @@ package bnubot.bot.database;
 
 import java.io.*;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Hashtable;
 
 import bnubot.core.BNetUser;
@@ -10,6 +11,8 @@ public class Database {
 	private static final long databaseVersion = 2;		// Current schema version
 	private static final long compatibleVersion = 2;	// Minimum version compatible
 	private Connection conn;
+	
+	private ArrayList<Statement> openStatements = new ArrayList<Statement>();
 	
 	public Database(String driver, String url, String username, String password, String schemaFile) throws SQLException, ClassNotFoundException {
 		Class.forName(driver);
@@ -21,13 +24,53 @@ public class Database {
 		if(!checkSchema())
 			createSchema(schemaFile);
 	}
+	
+	private Statement pushStatement(Statement stmt) {
+		if(openStatements.size() >= 250) {
+			int original = openStatements.size();
+			
+			//Purge the statements that are already closed
+			for(int i = 0; i < openStatements.size(); i++) {
+				Statement s = openStatements.get(i);
+				
+				Integer row = null;
+				try {
+					ResultSet rs = s.getResultSet();
+					if(rs != null)
+						row = rs.getRow();
+					else
+						s.close();
+				} catch (SQLException e) {}
+				if(row == null)
+					openStatements.remove(s);
+			}
+			
+			final int cushion = 20;
+			if(openStatements.size() > cushion) {
+				System.out.println("Out of " + original + " cached statements, " + openStatements.size() + " were left open (cushion=" + cushion + ")");
+				
+				//Close all but the last cushion statements
+				for(int i = 0; i < openStatements.size() - cushion; i++) {
+					Statement s = openStatements.get(i);
+					try {
+						s.close();
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		
+		openStatements.add(stmt);
+		return stmt;
+	}
 
 	public Statement createStatement() throws SQLException {
-		return conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+		return pushStatement(conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE));
 	}
 	
 	public PreparedStatement prepareStatement(String sql) throws SQLException {
-		return conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+		return (PreparedStatement)pushStatement(conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE));
 	}
 	
 	public ResultSet getUser(BNetUser user) throws SQLException {
