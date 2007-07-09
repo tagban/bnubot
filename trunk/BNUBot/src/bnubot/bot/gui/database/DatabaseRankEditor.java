@@ -1,5 +1,7 @@
 package bnubot.bot.gui.database;
 
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.sql.*;
@@ -21,6 +23,10 @@ public class DatabaseRankEditor extends JFrame {
 	private JTextArea txtAPWins;
 	private JTextArea txtAPD2Level;
 	private JTextArea txtAPW3Level;
+	private JButton cmdApply;
+	private JButton cmdRevert;
+	
+	private ResultSet rsRank = null;
 	
 	public DatabaseRankEditor(Database d) {
 		this.d = d;
@@ -79,9 +85,43 @@ public class DatabaseRankEditor extends JFrame {
 			b2 = new Box(BoxLayout.Y_AXIS);
 			{
 				txtShortPrefix = new JTextArea();
+				txtShortPrefix.addFocusListener(new FocusListener() {
+					public void focusGained(FocusEvent arg0) {}
+					public void focusLost(FocusEvent arg0) {
+						if(rsRank != null) {
+							String txt = txtShortPrefix.getText();
+							try {
+								if((txt == null) || (txt.length() == 0))
+									rsRank.updateNull("shortPrefix");
+								else
+									rsRank.updateString("shortPrefix", txtShortPrefix.getText());
+							} catch (SQLException e) {
+								e.printStackTrace();
+							}
+						}
+					}
+					
+				});
 				b2.add(txtShortPrefix);
 				
 				txtPrefix = new JTextArea();
+				txtPrefix.addFocusListener(new FocusListener() {
+					public void focusGained(FocusEvent arg0) {}
+					public void focusLost(FocusEvent arg0) {
+						if(rsRank != null) {
+							String txt = txtPrefix.getText();
+							try {
+								if((txt == null) || (txt.length() == 0))
+									rsRank.updateNull("prefix");
+								else
+									rsRank.updateString("prefix", txtPrefix.getText());
+							} catch (SQLException e) {
+								e.printStackTrace();
+							}
+						}
+					}
+					
+				});
 				b2.add(txtPrefix);
 				
 				txtVerbstr = new JTextArea();
@@ -102,6 +142,15 @@ public class DatabaseRankEditor extends JFrame {
 				txtAPW3Level = new JTextArea();
 				b2.add(txtAPW3Level);
 				
+				Box b3 = new Box(BoxLayout.X_AXIS);
+				{
+					cmdApply = new JButton("Apply");
+					b3.add(cmdApply);
+					
+					cmdRevert = new JButton("Revert");
+					b3.add(cmdRevert);
+				}
+				b2.add(b3);
 			}
 			b.add(b2);
 		}
@@ -121,7 +170,10 @@ public class DatabaseRankEditor extends JFrame {
 		 */
 		
 		try {
-			ResultSet rsRank = d.getRank(id);
+			if(rsRank != null)
+				d.close(rsRank);
+			
+			rsRank = d.getRank(id);
 			rsRank.next();
 			txtShortPrefix.setText(rsRank.getString("shortPrefix"));
 			txtPrefix.setText(rsRank.getString("prefix"));
