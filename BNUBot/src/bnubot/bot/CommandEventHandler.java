@@ -206,6 +206,73 @@ public class CommandEventHandler implements EventHandler {
 					}
 					break;
 				}
+				if(command.equals("autopromotion")) {
+					try {
+						if((params != null) && (params.length != 1))
+							throw new InvalidUseException();
+						
+						Long subjectAccountId = null;
+						Long subjectRank = null;
+						if(params == null) {
+							subjectAccountId = commanderAccountID;
+							subjectRank = commanderAccess;
+						} else {
+							ResultSet rsSubjectAccount = d.getAccount(params[0]);
+							if(rsSubjectAccount.next()) {
+								subjectAccountId = rsSubjectAccount.getLong("id");
+								subjectRank = rsSubjectAccount.getLong("access");
+							}
+							d.close(rsSubjectAccount);
+						}
+						
+						if((subjectAccountId == null) || (subjectRank == null))
+							throw new InvalidUseException();
+						
+						ResultSet rsSubjectAccount = d.getAccount(subjectAccountId);
+						if(!rsSubjectAccount.next()) {
+							d.close(rsSubjectAccount);
+							//This isn't actually invalid use, but it's a state we should never encounter
+							throw new InvalidUseException();
+						}
+						
+						ResultSet rsRank = d.getRank(subjectRank);
+						if(rsRank.next()) {
+							long apDays = rsRank.getLong("apDays");
+							if(rsRank.wasNull()) {
+								c.sendChat(user, "Autopromotions are not enabled for rank " + subjectRank, wasWhispered);
+							} else {
+								long wins[] = d.getAccountWinsLevels(subjectAccountId, c.getConnectionSettings().recruitTagPrefix, c.getConnectionSettings().recruitTagSuffix);
+								long apWins = rsRank.getLong("apWins");
+								long apD2Level = rsRank.getLong("apD2Level");
+								long apW3Level = rsRank.getLong("apW3Level");
+								Timestamp ts = rsSubjectAccount.getTimestamp("lastRankChange");
+								double timeElapsed = 0;
+								if(ts != null) {
+									timeElapsed = (double)(new Date().getTime() - ts.getTime());
+									timeElapsed /= 1000 * 60 * 60 * 24;
+								}
+								//Round to 2 decimal places
+								timeElapsed = Math.round(timeElapsed * 100) * 0.01;
+								
+								String result = "AutoPromotion Info for [" + rsSubjectAccount.getString("name") + "]: ";
+								
+								result += timeElapsed + "/" + apDays + " days, ";
+								result += wins[0] + "/" + apWins + " wins, ";
+								result += wins[1] + "/" + apD2Level + " D2 level, ";
+								result += wins[2] + "/" + apW3Level + " W3 level";
+								
+								c.sendChat(user, result, wasWhispered);
+							}
+						} else {
+							c.sendChat(user, "Failed to fetch row for rank id " + subjectRank, wasWhispered);
+						}
+						d.close(rsRank);
+						d.close(rsSubjectAccount);
+					} catch(InvalidUseException e) {
+						c.sendChat(user, "Use: %trigger%automaticpromotion [account]", wasWhispered);
+					}
+					break;
+				}
 				break;
 			case 'b':
 				if(command.equals("ban")) {
@@ -855,6 +922,7 @@ public class CommandEventHandler implements EventHandler {
 				break;
 			}
 			}
+			d.close(rsUser);
 			
 			//check for autopromotions
 		
@@ -940,7 +1008,6 @@ public class CommandEventHandler implements EventHandler {
 			if(umc > 0)
 				c.sendChat(user, "You have " + umc + " unread messages; type [ %trigger%mail read ] to retrieve them", false);
 			
-			d.close(rsUser);
 			d.close(rsAccount);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
