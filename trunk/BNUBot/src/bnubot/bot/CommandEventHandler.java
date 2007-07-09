@@ -49,7 +49,7 @@ public class CommandEventHandler implements EventHandler {
 				rsUser.updateString("lastAction", action);
 				rsUser.updateRow();
 			}
-			rsUser.close();
+			d.close(rsUser);
 		} catch(SQLException e) {
 			c.recieveError(e.getClass().getName() + ": " + e.getMessage());
 		}
@@ -78,11 +78,11 @@ public class CommandEventHandler implements EventHandler {
 				commanderAccess = rsAccount.getLong("access");
 				commanderAccount = rsAccount.getString("name");
 				commanderAccountID = rsAccount.getLong("id");
-				rsAccount.close();
+				d.close(rsAccount);
 				if(commanderAccess <= 0)
 					return;
 			} catch(InvalidUseException e) {
-				d.getCreateUser(user).close();
+				d.close(d.getCreateUser(user));
 			}
 			
 
@@ -91,7 +91,7 @@ public class CommandEventHandler implements EventHandler {
 				ResultSet rsCommand = d.getCommand(command);
 				if(!rsCommand.next()) {
 					System.out.println("Command " + command + " not found in database");
-					rsCommand.close();
+					d.close(rsCommand);
 					return;
 				}
 				command = rsCommand.getString("name");
@@ -99,11 +99,11 @@ public class CommandEventHandler implements EventHandler {
 					long requiredAccess = rsCommand.getLong("access");
 					if(commanderAccess < requiredAccess) {
 						c.recieveError("Insufficient access");
-						rsCommand.close();
+						d.close(rsCommand);
 						return;
 					}
 				}
-				rsCommand.close();
+				d.close(rsCommand);
 			}
 			
 			lastCommandUser = user;
@@ -127,7 +127,7 @@ public class CommandEventHandler implements EventHandler {
 						if((rsSubjectCategory == null) || !rsSubjectCategory.next()) {
 							c.sendChat(user, "The category [" + params[0] + "] does not exist", wasWhispered);
 							if(rsSubjectCategory != null)
-								rsSubjectCategory.close();							
+								d.close(rsSubjectCategory);							
 							break;
 						}
 						
@@ -136,7 +136,7 @@ public class CommandEventHandler implements EventHandler {
 						while(rsSubjectCategory.next())
 							result += ", " + rsSubjectCategory.getString("name") + " (" + rsSubjectCategory.getLong("access") + ")";
 						
-						rsSubjectCategory.close();
+						d.close(rsSubjectCategory);
 						
 						//Available commands for rank 36 in cagegory war3: invite (32), setrank (35)
 						c.sendChat(user, result, wasWhispered);
@@ -145,7 +145,7 @@ public class CommandEventHandler implements EventHandler {
 						ResultSet rsCategories = d.getCommandCategories(commanderAccess);
 						while(rsCategories.next())
 							use += ", " + rsCategories.getString("cmdgroup");
-						rsCategories.close();
+						d.close(rsCategories);
 						c.sendChat(user, use, wasWhispered);
 						break;
 					}
@@ -323,7 +323,7 @@ public class CommandEventHandler implements EventHandler {
 									message += rsMail.getString("message");
 									
 									d.setMailRead(rsMail.getLong("id"));
-									rsMail.close();
+									d.close(rsMail);
 									
 									c.sendChat(user, message, true);
 									break COMMAND;
@@ -353,7 +353,7 @@ public class CommandEventHandler implements EventHandler {
 									message += rsMail.getString("message");
 									
 									d.setMailRead(rsMail.getLong("id"));
-									rsMail.close();
+									d.close(rsMail);
 									
 									c.sendChat(user, message, true);
 									break COMMAND;
@@ -361,7 +361,7 @@ public class CommandEventHandler implements EventHandler {
 								
 								c.sendChat(user, "You only have " + mailNumber + " messages!", wasWhispered);
 							}
-							rsMail.close();
+							d.close(rsMail);
 							break;
 						} else if(params[0].equals("empty")
 								||params[0].equals("delete")
@@ -486,10 +486,10 @@ public class CommandEventHandler implements EventHandler {
 					subjectAccountId = rsSubjectAccount.getLong("id");
 					rsSubject.updateLong("account", subjectAccountId);
 					rsSubject.updateRow();
-					rsSubject.close();
+					d.close(rsSubject);
 					rsSubjectAccount.updateLong("access", c.getConnectionSettings().recruitAccess);
 					rsSubjectAccount.updateRow();
-					rsSubjectAccount.close();
+					d.close(rsSubjectAccount);
 
 					bnSubject.resetPrettyName();
 					c.sendChat("Welcome to the clan, " + bnSubject.toString() + "!");
@@ -692,10 +692,14 @@ public class CommandEventHandler implements EventHandler {
 							}
 							
 							bnSubject = BNetUser.getBNetUser(rsSubject.getString("login"));
+							d.close(rsSubject);
+							d.close(rsSubjectAccount);
 							rsSubjectAccount = d.getAccount(bnSubject);
 							
 							if((rsSubjectAccount == null) || (!rsSubjectAccount.next())) {
 								c.sendChat(user, "User [" + params[0] + "] has no account", wasWhispered);
+								if(rsSubjectAccount != null)
+									d.close(rsSubjectAccount);
 								break;
 							}
 							
@@ -727,6 +731,7 @@ public class CommandEventHandler implements EventHandler {
 						} else {
 							result += " has access " + subjectAccess;
 						}
+						d.close(rsSubjectRank);
 						
 						// Append aliases
 						ArrayList<String> aliases = new ArrayList<String>();
@@ -742,6 +747,7 @@ public class CommandEventHandler implements EventHandler {
 							}
 							aliases.add(rsSubject.getString("login"));
 						}
+						d.close(rsSubject);
 
 						if(lastSeen != null) {
 							result += " who was last seen [ ";
@@ -771,7 +777,9 @@ public class CommandEventHandler implements EventHandler {
 							
 							result += l;
 						}
-						
+
+						d.close(rsCreatorAccount);
+						d.close(rsSubjectAccount);
 						c.sendChat(user, result, wasWhispered);
 					} catch(InvalidUseException e) {
 						c.sendChat(user, "Use: %trigger%whois <user>[@realm]", wasWhispered);
@@ -795,8 +803,12 @@ public class CommandEventHandler implements EventHandler {
 		
 		try {
 			ResultSet rsUser = d.getUser(user);
-			if((rsUser == null) || !rsUser.next())
+			if(rsUser == null)
 				return;
+			if(!rsUser.next()) {
+				d.close(rsUser);
+				return;
+			}
 			
 			switch(statstr.getProduct()) {
 			case ProductIDs.PRODUCT_STAR:
@@ -848,8 +860,13 @@ public class CommandEventHandler implements EventHandler {
 		
 			
 			ResultSet rsAccount = d.getAccount(user);
-			if((rsAccount == null) || !rsAccount.next())
+			if(rsAccount == null)
 				return;
+			
+			if(!rsAccount.next()) {
+				d.close(rsAccount);
+				return;
+			}
 			
 			long rank = rsAccount.getLong("access");
 			long id = rsAccount.getLong("id");
@@ -916,15 +933,15 @@ public class CommandEventHandler implements EventHandler {
 					}
 				}
 			}
-			rsRank.close();
+			d.close(rsRank);
 
 			//Mail
 			long umc = d.getUnreadMailCount(id);
 			if(umc > 0)
 				c.sendChat(user, "You have " + umc + " unread messages; type [ %trigger%mail read ] to retrieve them", false);
 			
-			rsUser.close();
-			rsAccount.close();
+			d.close(rsUser);
+			d.close(rsAccount);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
