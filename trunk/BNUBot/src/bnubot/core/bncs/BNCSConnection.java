@@ -208,8 +208,6 @@ public class BNCSConnection extends Connection {
 				titleChanged();
 
 				//Wait a short time before allowing a reconnect
-				yield();
-				sleep(5000);
 			} catch(SocketException e) {
 			} catch(Exception e) {
 				recieveError("Unhandled exception: " + e.getMessage());
@@ -217,9 +215,11 @@ public class BNCSConnection extends Connection {
 			}
 
 			setConnected(false);
-			recieveError("Disconnected from battle.net.");
 			try { s.close(); } catch (Exception e) { }
 			s = null;
+			recieveError("Disconnected from battle.net.");
+			yield();
+			try { sleep(15000); } catch (InterruptedException e1) { }
 		}
 	}
 	
@@ -342,6 +342,8 @@ public class BNCSConnection extends Connection {
 					long MPQFileTime = is.readQWord();
 					String MPQFileName = is.readNTString();
 					String ValueStr = is.readNTString();
+					
+					recieveInfo("MPQ: " + MPQFileName);
 				
 					byte extraData[] = null;
 					if(is.available() == 0x80) {
@@ -380,7 +382,7 @@ public class BNCSConnection extends Connection {
 				    	exeVersion = HashMain.getExeVer(cs.product);
 						exeInfo = HashMain.getExeInfo(cs.product);
                 	} catch(Exception e) {
-                		recieveError("Local hashing failed. Trying BNLS server.\n" + e.getClass().getName() + ": " + e.getMessage());
+                		recieveError("Local hashing failed. Trying BNLS server.");
                 		
                 		BNLSProtocol.OutPacketBuffer exeHashBuf;
                 		if((cs.bnlsServer == null)
