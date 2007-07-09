@@ -11,8 +11,9 @@ public class Database {
 	private static final long databaseVersion = 2;		// Current schema version
 	private static final long compatibleVersion = 2;	// Minimum version compatible
 	private Connection conn;
-	
+
 	private ArrayList<Statement> openStatements = new ArrayList<Statement>();
+	private ArrayList<Exception> openStmtExcept = new ArrayList<Exception>();
 	
 	public Database(String driver, String url, String username, String password, String schemaFile) throws SQLException, ClassNotFoundException {
 		Class.forName(driver);
@@ -25,8 +26,31 @@ public class Database {
 			createSchema(schemaFile);
 	}
 	
+	public void close(ResultSet rs) {
+		try {
+			close(rs.getStatement());
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void close(Statement stmt) {
+		try {
+			stmt.close();
+			
+			int i = openStatements.indexOf(stmt);
+			if(i == -1)
+				throw new IllegalStateException("Statement not found in cache");
+			
+			openStatements.remove(i);
+			openStmtExcept.remove(i);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	private Statement pushStatement(Statement stmt) {
-		if(openStatements.size() >= 250) {
+		if(openStatements.size() >= 10) {
 			int original = openStatements.size();
 			
 			//Purge the statements that are already closed
@@ -41,11 +65,13 @@ public class Database {
 					else
 						s.close();
 				} catch (SQLException e) {}
-				if(row == null)
-					openStatements.remove(s);
+				if(row == null) {
+					openStatements.remove(i);
+					openStmtExcept.remove(i);
+				}
 			}
 			
-			final int cushion = 20;
+			final int cushion = 3;
 			if(openStatements.size() > cushion) {
 				System.out.println("Out of " + original + " cached statements, " + openStatements.size() + " were left open (cushion=" + cushion + ")");
 				
@@ -57,10 +83,12 @@ public class Database {
 					} catch (SQLException e) {
 						e.printStackTrace();
 					}
+					openStmtExcept.get(i).printStackTrace();
 				}
 			}
 		}
-		
+
+		openStmtExcept.add(new Exception());
 		openStatements.add(stmt);
 		return stmt;
 	}
@@ -81,17 +109,23 @@ public class Database {
 	
 	public ResultSet getCreateUser(BNetUser user) throws SQLException {
 		ResultSet rsUser = getUser(user);
-		if(rsUser.next())
-			return getUser(user);
+		if(rsUser.next()) {
+			rsUser.beforeFirst();
+			return rsUser;
+		}
+		close(rsUser);
 		
 		PreparedStatement ps = prepareStatement("INSERT INTO `user` (`login`) VALUES(?)");
 		ps.setString(1, user.getFullAccountName());
 		ps.execute();
-		ps.close();
+		close(ps);
 		
 		rsUser = getUser(user);
-		if(rsUser.next())
-			return getUser(user);
+		if(rsUser.next()) {
+			rsUser.beforeFirst();
+			return rsUser;
+		}
+		close(rsUser);
 		
 		throw new SQLException("The user was created but not found");
 	}
@@ -215,12 +249,12 @@ public class Database {
 		ResultSet rs = ps.executeQuery();
 		if(rs.next()) {
 			String name = rs.getString(1);
-			rs.close();
+			close(rs);
 			//System.out.println("Alias " + command + " resolves to " + name + "; caching");
 			aliases.put(command, name);
 			return name;
 		}
-		rs.close();
+		close(rs);
 		//System.out.println("Command " + command + " is not an alias; caching");
 		aliases.put(command, command);
 		return command;
