@@ -49,7 +49,6 @@ public class CommandEventHandler implements EventHandler {
 				rsUser.updateString("lastAction", action);
 				rsUser.updateRow();
 			}
-			rsUser.close();
 		} catch(SQLException e) {
 			c.recieveError(e.getClass().getName() + ": " + e.getMessage());
 		}
@@ -78,7 +77,6 @@ public class CommandEventHandler implements EventHandler {
 				commanderAccess = rsAccount.getLong("access");
 				commanderAccount = rsAccount.getString("name");
 				commanderAccountID = rsAccount.getLong("id");
-				rsAccount.close();
 				if(commanderAccess <= 0)
 					return;
 			} catch(InvalidUseException e) {
@@ -91,7 +89,6 @@ public class CommandEventHandler implements EventHandler {
 				ResultSet rsCommand = d.getCommand(command);
 				if(!rsCommand.next()) {
 					System.out.println("Command " + command + " not found in database");
-					rsCommand.close();
 					return;
 				}
 				command = rsCommand.getString("name");
@@ -99,7 +96,6 @@ public class CommandEventHandler implements EventHandler {
 					long requiredAccess = rsCommand.getLong("access");
 					if(commanderAccess < requiredAccess) {
 						c.recieveError("Insufficient access");
-						rsCommand.close();
 						return;
 					}
 				}
@@ -126,8 +122,6 @@ public class CommandEventHandler implements EventHandler {
 						
 						if((rsSubjectCategory == null) || !rsSubjectCategory.next()) {
 							c.sendChat(user, "The category [" + params[0] + "] does not exist", wasWhispered);
-							if(rsSubjectCategory != null)
-								rsSubjectCategory.close();							
 							break;
 						}
 						
@@ -136,8 +130,6 @@ public class CommandEventHandler implements EventHandler {
 						while(rsSubjectCategory.next())
 							result += ", " + rsSubjectCategory.getString("name") + " (" + rsSubjectCategory.getLong("access") + ")";
 						
-						rsSubjectCategory.close();
-						
 						//Available commands for rank 36 in cagegory war3: invite (32), setrank (35)
 						c.sendChat(user, result, wasWhispered);
 					} catch(InvalidUseException e) {
@@ -145,7 +137,6 @@ public class CommandEventHandler implements EventHandler {
 						ResultSet rsCategories = d.getCommandCategories(commanderAccess);
 						while(rsCategories.next())
 							use += ", " + rsCategories.getString("cmdgroup");
-						rsCategories.close();
 						c.sendChat(user, use, wasWhispered);
 						break;
 					}
@@ -486,10 +477,8 @@ public class CommandEventHandler implements EventHandler {
 					subjectAccountId = rsSubjectAccount.getLong("id");
 					rsSubject.updateLong("account", subjectAccountId);
 					rsSubject.updateRow();
-					rsSubject.close();
 					rsSubjectAccount.updateLong("access", c.getConnectionSettings().recruitAccess);
 					rsSubjectAccount.updateRow();
-					rsSubjectAccount.close();
 
 					bnSubject.resetPrettyName();
 					c.sendChat("Welcome to the clan, " + bnSubject.toString() + "!");
