@@ -181,13 +181,15 @@ public class Database {
 			ps.setString(questionMark++, suffix);
 		ps.setLong(questionMark++, accountID);
 		ResultSet rs = ps.executeQuery();
-		if(!rs.next())
+		if(!rs.next()) {
+			close(rs);
 			throw new SQLException("getAccountWinsLevels query failed");
+		}
 		long w[] = new long[3];
 		w[0] = rs.getLong(1) + rs.getLong(2) + rs.getLong(3);
 		w[1] = rs.getLong(4);
 		w[2] = rs.getLong(5);
-		rs.close();
+		close(rs);
 		return w;
 	}
 	
@@ -203,7 +205,7 @@ public class Database {
 		ps.setLong(2, access);
 		ps.setLong(3, creator);
 		ps.execute();
-		ps.close();
+		close(ps);
 		
 		ResultSet rsAccount = getAccount(account);
 		if((rsAccount == null) || (!rsAccount.next()))
@@ -298,10 +300,10 @@ public class Database {
 		ResultSet rs = ps.executeQuery();
 		if(rs.next()) {
 			long c = rs.getLong(1);
-			rs.close();
+			close(rs);
 			return c;
 		}
-		rs.close();
+		close(rs);
 		throw new SQLException("COUNT(*) returned 0 rows");
 	}
 	
@@ -311,10 +313,10 @@ public class Database {
 		ResultSet rs = ps.executeQuery();
 		if(rs.next()) {
 			long c = rs.getLong(1);
-			rs.close();
+			close(rs);
 			return c;
 		}
-		rs.close();
+		close(rs);
 		throw new SQLException("COUNT(*) returned 0 rows");
 	}
 	
@@ -322,7 +324,7 @@ public class Database {
 		PreparedStatement ps = prepareStatement("DELETE FROM `mail` WHERE `to`=? AND `read`=TRUE");
 		ps.setLong(1, accountID);
 		ps.execute();
-		ps.close();
+		close(ps);
 	}
 	
 	public ResultSet getMail(long accountID) throws SQLException {
@@ -335,7 +337,7 @@ public class Database {
 		PreparedStatement ps = prepareStatement("UPDATE `mail` SET `read`=TRUE WHERE `id`=? LIMIT 1");
 		ps.setLong(1, mailID);
 		ps.execute();
-		ps.close();
+		close(ps);
 	}
 	
 	public ResultSet getTriviaLeaders() throws SQLException {
@@ -352,13 +354,13 @@ public class Database {
 		try {
 			rs = createStatement().executeQuery("SELECT `version` FROM `dbVersion` LIMIT 1");
 			if(!rs.next()) {
-				rs.close();
+				close(rs);
 				return false;
 			}
 			
 			long version = rs.getLong(1);
 			if(version >= compatibleVersion) {
-				rs.close();
+				close(rs);
 				return true;
 			}
 			
@@ -368,7 +370,7 @@ public class Database {
 		}
 		
 		if(rs != null)
-			try { rs.close(); } catch(SQLException e) {}
+			close(rs);
 		return false;
 	}
 	
@@ -412,7 +414,7 @@ public class Database {
 			stmt.execute(query);
 			query = "INSERT INTO `dbVersion` (`version`) VALUES (" + databaseVersion + ");";
 			stmt.execute(query);
-			stmt.close();
+			close(stmt);
 		} catch(IOException e) {
 			e.printStackTrace();
 			System.exit(1);
