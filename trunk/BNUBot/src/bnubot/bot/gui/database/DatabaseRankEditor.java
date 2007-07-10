@@ -1,5 +1,8 @@
 package bnubot.bot.gui.database;
 
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
@@ -13,8 +16,10 @@ import bnubot.bot.database.Database;
 @SuppressWarnings("serial")
 public class DatabaseRankEditor extends JFrame {
 	private Database d = null;
-	
+
+	private DefaultListModel lm;
 	private JList lstRanks;
+	private JTextArea txtID;
 	private JTextArea txtShortPrefix;
 	private JTextArea txtPrefix;
 	private JTextArea txtVerbstr;
@@ -36,22 +41,14 @@ public class DatabaseRankEditor extends JFrame {
 	}
 	
 	private void initializeGui() {
-		Box b = new Box(BoxLayout.X_AXIS);
+		Box majorColumns = new Box(BoxLayout.X_AXIS);
 		{
-			Box b2 = new Box(BoxLayout.Y_AXIS);
+			Box majorRows = new Box(BoxLayout.Y_AXIS);
 			{
-				b2.add(new JLabel("Ranks:"));
+				majorRows.add(new JLabel("Ranks:"));
 				
-				DefaultListModel lm = new DefaultListModel();
-				
-				try {
-					ResultSet rsRanks = d.getRanks();
-					while(rsRanks.next()) {
-						lm.addElement(rsRanks.getLong("id"));
-					}
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
+				lm = new DefaultListModel();
+				rebuildRanks();
 				
 				lstRanks = new JList(lm);
 				lstRanks.addMouseListener(new MouseListener() {
@@ -64,99 +61,294 @@ public class DatabaseRankEditor extends JFrame {
 					public void mouseReleased(MouseEvent arg0) {}
 					
 				});
-				b2.add(lstRanks);
+				lstRanks.setMinimumSize(new Dimension(50, 300));
+				majorRows.add(lstRanks);
 			}
-			b.add(b2);
+			majorColumns.add(majorRows);
 			
-			b2 = new Box(BoxLayout.Y_AXIS);
+			majorRows = new Box(BoxLayout.Y_AXIS);
 			{
-				b2.add(new JLabel("shortPrefix"));
-				b2.add(new JLabel("prefix"));
-				b2.add(new JLabel("verbstr"));
-				b2.add(new JLabel("greeting"));
-				b2.add(new JLabel("apDays"));
-				b2.add(new JLabel("apWins"));
-				b2.add(new JLabel("apWins"));
-				b2.add(new JLabel("apD2Level"));
-				b2.add(new JLabel("apW3Level"));
-			}
-			b.add(b2);
-			
-			b2 = new Box(BoxLayout.Y_AXIS);
-			{
-				txtShortPrefix = new JTextArea();
-				txtShortPrefix.addFocusListener(new FocusListener() {
-					public void focusGained(FocusEvent arg0) {}
-					public void focusLost(FocusEvent arg0) {
-						if(rsRank != null) {
-							String txt = txtShortPrefix.getText();
-							try {
-								if((txt == null) || (txt.length() == 0))
-									rsRank.updateNull("shortPrefix");
-								else
-									rsRank.updateString("shortPrefix", txtShortPrefix.getText());
-							} catch (SQLException e) {
-								e.printStackTrace();
+				Box boxLine = new Box(BoxLayout.X_AXIS);
+				{
+					boxLine.add(new JLabel("ID"));
+					
+					txtID = new JTextArea();
+					txtID.addFocusListener(new FocusListener() {
+						public void focusGained(FocusEvent arg0) {}
+						public void focusLost(FocusEvent arg0) {
+							if(rsRank != null) {
+								String txt = txtID.getText();
+								Long value = null;
+								try {value = Long.parseLong(txt);} catch(Exception e) {}
+								try {
+									if(value != null)
+										rsRank.updateLong("id", value);
+								} catch (SQLException e) {
+									e.printStackTrace();
+								}
 							}
 						}
-					}
-					
-				});
-				b2.add(txtShortPrefix);
+					});
+					boxLine.add(txtID);
+				}
+				majorRows.add(boxLine);
 				
-				txtPrefix = new JTextArea();
-				txtPrefix.addFocusListener(new FocusListener() {
-					public void focusGained(FocusEvent arg0) {}
-					public void focusLost(FocusEvent arg0) {
-						if(rsRank != null) {
-							String txt = txtPrefix.getText();
-							try {
-								if((txt == null) || (txt.length() == 0))
-									rsRank.updateNull("prefix");
-								else
-									rsRank.updateString("prefix", txtPrefix.getText());
-							} catch (SQLException e) {
-								e.printStackTrace();
+				boxLine = new Box(BoxLayout.X_AXIS);
+				{
+					boxLine.add(new JLabel("shortPrefix"));
+					
+					txtShortPrefix = new JTextArea();
+					txtShortPrefix.addFocusListener(new FocusListener() {
+						public void focusGained(FocusEvent arg0) {}
+						public void focusLost(FocusEvent arg0) {
+							if(rsRank != null) {
+								String txt = txtShortPrefix.getText();
+								try {
+									if((txt == null) || (txt.length() == 0))
+										rsRank.updateNull("shortPrefix");
+									else
+										rsRank.updateString("shortPrefix", txt);
+								} catch (SQLException e) {
+									e.printStackTrace();
+								}
 							}
 						}
-					}
+					});
+					boxLine.add(txtShortPrefix);
+				}
+				majorRows.add(boxLine);
+				
+				boxLine = new Box(BoxLayout.X_AXIS);
+				{
+					boxLine.add(new JLabel("prefix"));
 					
-				});
-				b2.add(txtPrefix);
-				
-				txtVerbstr = new JTextArea();
-				b2.add(txtVerbstr);
-				
-				txtGreeting = new JTextArea();
-				b2.add(txtGreeting);
-				
-				txtAPDays = new JTextArea();
-				b2.add(txtAPDays);
-				
-				txtAPWins = new JTextArea();
-				b2.add(txtAPWins);
-				
-				txtAPD2Level = new JTextArea();
-				b2.add(txtAPD2Level);
-				
-				txtAPW3Level = new JTextArea();
-				b2.add(txtAPW3Level);
-				
-				Box b3 = new Box(BoxLayout.X_AXIS);
+					txtPrefix = new JTextArea();
+					txtPrefix.addFocusListener(new FocusListener() {
+						public void focusGained(FocusEvent arg0) {}
+						public void focusLost(FocusEvent arg0) {
+							if(rsRank != null) {
+								String txt = txtPrefix.getText();
+								try {
+									if((txt == null) || (txt.length() == 0))
+										rsRank.updateNull("prefix");
+									else
+										rsRank.updateString("prefix", txt);
+								} catch (SQLException e) {
+									e.printStackTrace();
+								}
+							}
+						}
+					});
+					boxLine.add(txtPrefix);
+				}
+				majorRows.add(boxLine);
+
+				boxLine = new Box(BoxLayout.X_AXIS);
+				{
+					boxLine.add(new JLabel("verbstr"));
+					
+					txtVerbstr = new JTextArea();
+					txtVerbstr.addFocusListener(new FocusListener() {
+						public void focusGained(FocusEvent arg0) {}
+						public void focusLost(FocusEvent arg0) {
+							if(rsRank != null) {
+								String txt = txtVerbstr.getText();
+								try {
+									if((txt == null) || (txt.length() == 0))
+										rsRank.updateNull("verbstr");
+									else
+										rsRank.updateString("verbstr", txt);
+								} catch (SQLException e) {
+									e.printStackTrace();
+								}
+							}
+						}
+					});
+					boxLine.add(txtVerbstr);
+				}
+				majorRows.add(boxLine);
+
+				boxLine = new Box(BoxLayout.X_AXIS);
+				{
+					boxLine.add(new JLabel("greeting"));
+					
+					txtGreeting = new JTextArea();
+					txtGreeting.addFocusListener(new FocusListener() {
+						public void focusGained(FocusEvent arg0) {}
+						public void focusLost(FocusEvent arg0) {
+							if(rsRank != null) {
+								String txt = txtGreeting.getText();
+								try {
+									if((txt == null) || (txt.length() == 0))
+										rsRank.updateNull("greeting");
+									else
+										rsRank.updateString("greeting", txt);
+								} catch (SQLException e) {
+									e.printStackTrace();
+								}
+							}
+						}
+					});
+					boxLine.add(txtGreeting);
+				}
+				majorRows.add(boxLine);
+
+				boxLine = new Box(BoxLayout.X_AXIS);
+				{
+					boxLine.add(new JLabel("apDays"));
+					
+					txtAPDays = new JTextArea();
+					txtAPDays.addFocusListener(new FocusListener() {
+						public void focusGained(FocusEvent arg0) {}
+						public void focusLost(FocusEvent arg0) {
+							if(rsRank != null) {
+								String txt = txtAPDays.getText();
+								Long value = null;
+								try {value = Long.parseLong(txt);} catch(Exception e) {}
+								try {
+									if(value == null)
+										rsRank.updateNull("apDays");
+									else
+										rsRank.updateLong("apDays", value);
+								} catch (SQLException e) {
+									e.printStackTrace();
+								}
+							}
+						}
+					});
+					boxLine.add(txtAPDays);
+				}
+				majorRows.add(boxLine);
+
+				boxLine = new Box(BoxLayout.X_AXIS);
+				{
+					boxLine.add(new JLabel("apWins"));
+					
+					txtAPWins = new JTextArea();
+					txtAPWins.addFocusListener(new FocusListener() {
+						public void focusGained(FocusEvent arg0) {}
+						public void focusLost(FocusEvent arg0) {
+							if(rsRank != null) {
+								String txt = txtAPWins.getText();
+								Long value = null;
+								try {value = Long.parseLong(txt);} catch(Exception e) {}
+								try {
+									if(value == null)
+										rsRank.updateNull("apWins");
+									else
+										rsRank.updateLong("apWins", value);
+								} catch (SQLException e) {
+									e.printStackTrace();
+								}
+							}
+						}
+					});
+					boxLine.add(txtAPWins);
+				}
+				majorRows.add(boxLine);
+
+				boxLine = new Box(BoxLayout.X_AXIS);
+				{
+					boxLine.add(new JLabel("apD2Level"));
+					
+					txtAPD2Level = new JTextArea();
+					txtAPD2Level.addFocusListener(new FocusListener() {
+						public void focusGained(FocusEvent arg0) {}
+						public void focusLost(FocusEvent arg0) {
+							if(rsRank != null) {
+								String txt = txtAPD2Level.getText();
+								Long value = null;
+								try {value = Long.parseLong(txt);} catch(Exception e) {}
+								try {
+									if(value == null)
+										rsRank.updateNull("apD2Level");
+									else
+										rsRank.updateLong("apD2Level", value);
+								} catch (SQLException e) {
+									e.printStackTrace();
+								}
+							}
+						}
+					});
+					boxLine.add(txtAPD2Level);
+				}
+				majorRows.add(boxLine);
+
+				boxLine = new Box(BoxLayout.X_AXIS);
+				{
+					boxLine.add(new JLabel("apW3Level"));
+					
+					txtAPW3Level = new JTextArea();
+					txtAPW3Level.addFocusListener(new FocusListener() {
+						public void focusGained(FocusEvent arg0) {}
+						public void focusLost(FocusEvent arg0) {
+							if(rsRank != null) {
+								String txt = txtAPW3Level.getText();
+								Long value = null;
+								try {value = Long.parseLong(txt);} catch(Exception e) {}
+								try {
+									if(value == null)
+										rsRank.updateNull("apW3Level");
+									else
+										rsRank.updateLong("apW3Level", value);
+								} catch (SQLException e) {
+									e.printStackTrace();
+								}
+							}
+						}
+					});
+					boxLine.add(txtAPW3Level);
+				}
+				majorRows.add(boxLine);
+
+				boxLine = new Box(BoxLayout.X_AXIS);
 				{
 					cmdApply = new JButton("Apply");
-					b3.add(cmdApply);
+					cmdApply.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent arg0) {
+							if(rsRank != null) {
+								try {
+									rsRank.updateRow();
+									rebuildRanks();
+									displayEditor(rsRank.getLong("id"));
+								} catch (SQLException e) {
+									e.printStackTrace();
+								}
+							}
+						}
+					});
+					boxLine.add(cmdApply);
 					
 					cmdRevert = new JButton("Revert");
-					b3.add(cmdRevert);
+					cmdRevert.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent arg0) {
+							displayEditor((Long)lstRanks.getSelectedValue());
+						}
+					});
+					boxLine.add(cmdRevert);
 				}
-				b2.add(b3);
+				majorRows.add(boxLine);
 			}
-			b.add(b2);
+			majorColumns.add(majorRows);
 		}
-		add(b);
+		add(majorColumns);
 	}
 
+	private void rebuildRanks() {
+		try {
+			lm.clear();
+			ResultSet rsRanks = d.getRanks();
+			while(rsRanks.next())
+				lm.addElement(rsRanks.getLong("id"));
+			d.close(rsRanks);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		if(lstRanks != null)
+			lstRanks.validate();
+	}
+	
 	private void displayEditor(long id) {
 		/* `id` INTEGER PRIMARY KEY NOT NULL,
 		 * `shortPrefix` VARCHAR(32),
@@ -175,6 +367,7 @@ public class DatabaseRankEditor extends JFrame {
 			
 			rsRank = d.getRank(id);
 			rsRank.next();
+			txtID.setText(rsRank.getString("id"));
 			txtShortPrefix.setText(rsRank.getString("shortPrefix"));
 			txtPrefix.setText(rsRank.getString("prefix"));
 			txtVerbstr.setText(rsRank.getString("verbstr"));
