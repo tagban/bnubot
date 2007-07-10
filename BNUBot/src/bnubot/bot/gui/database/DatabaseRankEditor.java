@@ -5,11 +5,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.sql.*;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import bnubot.bot.database.Database;
 
@@ -51,16 +51,10 @@ public class DatabaseRankEditor extends JFrame {
 				rebuildRanks();
 				
 				lstRanks = new JList(lm);
-				lstRanks.addMouseListener(new MouseListener() {
-					public void mouseClicked(MouseEvent arg0) {
+				lstRanks.addListSelectionListener(new ListSelectionListener() {
+					public void valueChanged(ListSelectionEvent e) {
 						displayEditor((Long)lstRanks.getSelectedValue());
-					}
-					public void mouseEntered(MouseEvent arg0) {}
-					public void mouseExited(MouseEvent arg0) {}
-					public void mousePressed(MouseEvent arg0) {}
-					public void mouseReleased(MouseEvent arg0) {}
-					
-				});
+					}});
 				lstRanks.setMinimumSize(new Dimension(50, 300));
 				majorRows.add(lstRanks);
 			}
@@ -322,7 +316,12 @@ public class DatabaseRankEditor extends JFrame {
 					cmdRevert = new JButton("Revert");
 					cmdRevert.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent arg0) {
-							displayEditor((Long)lstRanks.getSelectedValue());
+							if(rsRank != null)
+								try {
+									displayEditor(rsRank.getLong("id"));
+								} catch (SQLException e) {
+									e.printStackTrace();
+								}
 						}
 					});
 					boxLine.add(cmdRevert);
