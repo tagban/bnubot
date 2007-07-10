@@ -244,8 +244,6 @@ public class TriviaEventHandler implements EventHandler {
 	public void triviaOn() {
 		if(trivia.size() == 0)
 			reloadTrivia();
-		
-		showLeaderBoard();
 			
 		unanswered = 0;
 		triviaEnabled = true;

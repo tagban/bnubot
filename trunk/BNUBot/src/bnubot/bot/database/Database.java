@@ -359,17 +359,20 @@ public class Database {
 	 */
 	public String resetTrivia() throws SQLException {
 		String out = null;
-		ResultSet rs = createStatement().executeQuery("SELECT `name`, `trivia_win` FROM `account` WHERE `trivia_correct` > 0 ORDER BY `trivia_correct` DESC LIMIT 1");
+		ResultSet rs = createStatement().executeQuery("SELECT `id`, `name`, `trivia_win` FROM `account` WHERE `trivia_correct` > 0 ORDER BY `trivia_correct` DESC LIMIT 1");
 		if(rs.next()) {
 			//Get the account it
-			out = rs.getString(1);
+			out = rs.getString(2);
 			//trivia_wins++
-			rs.updateLong(2, rs.getLong(2)+1);
+			rs.updateLong(3, rs.getLong(3)+1);
 			//Commit
 			rs.updateRow();
 		}
 		close(rs);
-		close(createStatement().executeQuery("UPDATE `account` SET `trivia_correct`=0"));
+		
+		Statement stmt = createStatement();
+		stmt.execute("UPDATE `account` SET `trivia_correct`=0");
+		close(stmt);
 		return out;
 	}
 	
