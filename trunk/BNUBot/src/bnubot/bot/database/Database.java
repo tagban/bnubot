@@ -344,6 +344,35 @@ public class Database {
 		return createStatement().executeQuery("SELECT * FROM `account` WHERE `trivia_correct` > 0 ORDER BY `trivia_correct` DESC LIMIT 10");
 	}
 	
+	public long getTriviaSum() throws SQLException {
+		ResultSet rs = createStatement().executeQuery("SELECT SUM(`trivia_correct`) FROM `account`");
+		rs.next();
+		long sum = rs.getLong(1);
+		close(rs);
+		return sum;
+	}
+	
+	/**
+	 * Resets the trivia leader board, gives the winner a trivia_win, and returns the winner
+	 * @return The `account`.`name` of the winner
+	 * @throws SQLException
+	 */
+	public String resetTrivia() throws SQLException {
+		String out = null;
+		ResultSet rs = createStatement().executeQuery("SELECT `name`, `trivia_win` FROM `account` WHERE `trivia_correct` > 0 ORDER BY `trivia_correct` DESC LIMIT 1");
+		if(rs.next()) {
+			//Get the account it
+			out = rs.getString(1);
+			//trivia_wins++
+			rs.updateLong(2, rs.getLong(2)+1);
+			//Commit
+			rs.updateRow();
+		}
+		close(rs);
+		close(createStatement().executeQuery("UPDATE `account` SET `trivia_correct`=0"));
+		return out;
+	}
+	
 	/**
 	 * Check whether or not the database schema is valid
 	 * @return boolean indicating if database is up to date

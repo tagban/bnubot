@@ -98,14 +98,15 @@ public class TriviaEventHandler implements EventHandler {
 			if(rsLeaders == null)
 				return;
 			
+			long total = d.getTriviaSum();
 			String out = "Trivia Leader Board: ";
 			while(rsLeaders.next()) {
+				long score = rsLeaders.getLong("trivia_correct");
 				out += rsLeaders.getString("name");
-				out += "(";
-				out += rsLeaders.getLong("trivia_correct");
-				out += ") ";
+				out += "(" + score + ") ";
 			}
-			c.sendChat(out.trim());
+			out += "Total=" + total;
+			c.sendChat(out);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -189,6 +190,19 @@ public class TriviaEventHandler implements EventHandler {
 						c.sendChat("/me - \"" + answerUsed + "\" is correct, " + answerUser.getShortPrettyName() + extra);
 						
 						showLeaderBoard();
+						
+						try {
+							long total = d.getTriviaSum();
+							if(total > 500) {
+								String out = "The trivia round is over! Congratulations to ";
+								out += d.resetTrivia();
+								out += " for winning the round!";
+								c.sendChat(out);
+							}
+						} catch (SQLException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
 					} else {
 						String correct = " The correct answer was \"" + triviaAnswers[0] + "\"";
 						for(int i = 1; i < triviaAnswers.length; i++)
@@ -230,6 +244,8 @@ public class TriviaEventHandler implements EventHandler {
 	public void triviaOn() {
 		if(trivia.size() == 0)
 			reloadTrivia();
+		
+		showLeaderBoard();
 			
 		unanswered = 0;
 		triviaEnabled = true;
