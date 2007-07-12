@@ -237,13 +237,15 @@ public class CommandEventHandler implements EventHandler {
 						
 						long wins[] = d.getAccountWinsLevels(subjectAccountId, c.getConnectionSettings().recruitTagPrefix, c.getConnectionSettings().recruitTagSuffix);
 						Timestamp ts = rsSubjectAccount.getTimestamp("lastRankChange");
-						double timeElapsed = 0;
+						double te = 0;
 						if(ts != null) {
-							timeElapsed = (double)(new Date().getTime() - ts.getTime());
-							timeElapsed /= 1000 * 60 * 60 * 24;
+							te = (double)(new Date().getTime() - ts.getTime());
+							te /= 1000 * 60 * 60 * 24;
 						}
 						//Round to 2 decimal places
-						timeElapsed = Math.round(timeElapsed * 100) * 0.01;
+						String timeElapsed = ("00" + ((long)Math.floor(te * 100) % 100));
+						timeElapsed = timeElapsed.substring(timeElapsed.length()-2);
+						timeElapsed = (long)Math.floor(te) + "." + timeElapsed;
 						
 						ResultSet rsRank = d.getRank(subjectRank);
 						if(rsRank.next()) {
