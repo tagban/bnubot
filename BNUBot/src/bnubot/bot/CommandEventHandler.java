@@ -235,24 +235,26 @@ public class CommandEventHandler implements EventHandler {
 							throw new InvalidUseException();
 						}
 						
+						long wins[] = d.getAccountWinsLevels(subjectAccountId, c.getConnectionSettings().recruitTagPrefix, c.getConnectionSettings().recruitTagSuffix);
+						Timestamp ts = rsSubjectAccount.getTimestamp("lastRankChange");
+						double timeElapsed = 0;
+						if(ts != null) {
+							timeElapsed = (double)(new Date().getTime() - ts.getTime());
+							timeElapsed /= 1000 * 60 * 60 * 24;
+						}
+						//Round to 2 decimal places
+						timeElapsed = Math.round(timeElapsed * 100) * 0.01;
+						
 						ResultSet rsRank = d.getRank(subjectRank);
 						if(rsRank.next()) {
 							long apDays = rsRank.getLong("apDays");
+							long apWins = rsRank.getLong("apWins");
+							long apD2Level = rsRank.getLong("apD2Level");
+							long apW3Level = rsRank.getLong("apW3Level");
+							
 							if(rsRank.wasNull()) {
 								c.sendChat(user, "Autopromotions are not enabled for rank " + subjectRank, wasWhispered);
 							} else {
-								long wins[] = d.getAccountWinsLevels(subjectAccountId, c.getConnectionSettings().recruitTagPrefix, c.getConnectionSettings().recruitTagSuffix);
-								long apWins = rsRank.getLong("apWins");
-								long apD2Level = rsRank.getLong("apD2Level");
-								long apW3Level = rsRank.getLong("apW3Level");
-								Timestamp ts = rsSubjectAccount.getTimestamp("lastRankChange");
-								double timeElapsed = 0;
-								if(ts != null) {
-									timeElapsed = (double)(new Date().getTime() - ts.getTime());
-									timeElapsed /= 1000 * 60 * 60 * 24;
-								}
-								//Round to 2 decimal places
-								timeElapsed = Math.round(timeElapsed * 100) * 0.01;
 								
 								String result = "AutoPromotion Info for [" + rsSubjectAccount.getString("name") + "]: ";
 								
@@ -264,7 +266,13 @@ public class CommandEventHandler implements EventHandler {
 								c.sendChat(user, result, wasWhispered);
 							}
 						} else {
-							c.sendChat(user, "Failed to fetch row for rank id " + subjectRank, wasWhispered);
+							String result = "The account [" + rsSubjectAccount.getString("name") + "] is rank " + subjectRank + ", but that rank was not found in the database. Please contact the bot master and report this error. Your current status is: ";
+							
+							result += timeElapsed + " days, ";
+							result += wins[0] + " wins, ";
+							result += wins[1] + " D2 level, ";
+							result += wins[2] + " W3 level";
+							c.sendChat(user, result, wasWhispered);
 						}
 						d.close(rsRank);
 						d.close(rsSubjectAccount);
