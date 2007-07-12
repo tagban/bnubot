@@ -389,11 +389,11 @@ public class CommandEventHandler implements EventHandler {
 									if(read)
 										continue;
 
-									String message = "";
-									if(true)
-										message = "#" + rsMail.getRow() + " of ?: ";
-									
-									message += "From ";
+									String message = "#";
+									message += rsMail.getRow();
+									message += " of ";
+									message += d.getMailCount(commanderAccountID);
+									message += ": From ";
 									message += rsMail.getString("name");
 									message += " [";
 									message += rsMail.getString("sent");
@@ -419,11 +419,11 @@ public class CommandEventHandler implements EventHandler {
 									if(mailNumber != id)
 										continue;
 
-									String message = "";
-									if(true)
-										message = "#" + rsMail.getRow() + " of ?: ";
-									
-									message += "From ";
+									String message = "#";
+									message += rsMail.getRow();
+									message += " of ";
+									message += d.getMailCount(commanderAccountID);
+									message += ": From ";
 									message += rsMail.getString("name");
 									message += " [";
 									message += rsMail.getString("sent");
