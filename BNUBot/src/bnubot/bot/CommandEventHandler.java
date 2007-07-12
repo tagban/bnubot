@@ -266,7 +266,8 @@ public class CommandEventHandler implements EventHandler {
 								c.sendChat(user, result, wasWhispered);
 							}
 						} else {
-							String result = "The account [" + rsSubjectAccount.getString("name") + "] is rank " + subjectRank + ", but that rank was not found in the database. Please contact the bot master and report this error. Your current status is: ";
+							String result = "Rank " + subjectRank + " was not found in the database; please contact the bot master and report this error. ";
+							result += rsSubjectAccount.getString("name") + "'s current status is: ";
 							
 							result += timeElapsed + " days, ";
 							result += wins[0] + " wins, ";
