@@ -128,7 +128,7 @@ public class CommandEventHandler implements EventHandler {
 							rsSubjectCategory = d.getCommandCategory(params[0], commanderAccess);
 						
 						if((rsSubjectCategory == null) || !rsSubjectCategory.next()) {
-							c.sendChat(user, "The category [" + params[0] + "] does not exist", wasWhispered);
+							c.sendChat(user, "The category [" + params[0] + "] does not exist!", wasWhispered);
 							if(rsSubjectCategory != null)
 								d.close(rsSubjectCategory);							
 							break;
@@ -195,7 +195,7 @@ public class CommandEventHandler implements EventHandler {
 						
 						ResultSet rsSubectCommand = d.getCommand(params[0]);
 						if((rsSubectCommand == null) || !rsSubectCommand.next()) {
-							c.sendChat(user, "The command [" + params[0] + "] does not exist", wasWhispered);
+							c.sendChat(user, "The command [" + params[0] + "] does not exist!", wasWhispered);
 							break;
 						}
 						
@@ -228,8 +228,10 @@ public class CommandEventHandler implements EventHandler {
 							d.close(rsSubjectAccount);
 						}
 						
-						if((subjectAccountId == null) || (subjectRank == null))
-							throw new InvalidUseException();
+						if((subjectAccountId == null) || (subjectRank == null)) {
+							c.sendChat(user, "The account [" + params[0] + "] does not exist!", wasWhispered);
+							break;
+						}
 						
 						ResultSet rsSubjectAccount = d.getAccount(subjectAccountId);
 						if(!rsSubjectAccount.next()) {
@@ -240,15 +242,17 @@ public class CommandEventHandler implements EventHandler {
 						
 						long wins[] = d.getAccountWinsLevels(subjectAccountId, c.getConnectionSettings().recruitTagPrefix, c.getConnectionSettings().recruitTagSuffix);
 						Timestamp ts = rsSubjectAccount.getTimestamp("lastRankChange");
-						double te = 0;
+						String timeElapsed;
 						if(ts != null) {
-							te = (double)(new Date().getTime() - ts.getTime());
+							double te = (double)(new Date().getTime() - ts.getTime());
 							te /= 1000 * 60 * 60 * 24;
+							//Round to 2 decimal places
+							timeElapsed = ("00" + ((long)Math.floor(te * 100) % 100));
+							timeElapsed = timeElapsed.substring(timeElapsed.length()-2);
+							timeElapsed = (long)Math.floor(te) + "." + timeElapsed;
+						} else {
+							timeElapsed = "?";
 						}
-						//Round to 2 decimal places
-						String timeElapsed = ("00" + ((long)Math.floor(te * 100) % 100));
-						timeElapsed = timeElapsed.substring(timeElapsed.length()-2);
-						timeElapsed = (long)Math.floor(te) + "." + timeElapsed;
 						
 						ResultSet rsRank = d.getRank(subjectRank);
 						if(rsRank.next()) {
@@ -258,11 +262,16 @@ public class CommandEventHandler implements EventHandler {
 							long apW3Level = rsRank.getLong("apW3Level");
 							
 							if(rsRank.wasNull()) {
-								c.sendChat(user, "Autopromotions are not enabled for rank " + subjectRank, wasWhispered);
+								String result = "Autopromotions are not enabled for rank " + subjectRank + ". ";
+								result += rsSubjectAccount.getString("name") + "'s current status is: ";
+								result += timeElapsed + " days, ";
+								result += wins[0] + " wins, ";
+								result += wins[1] + " D2 level, ";
+								result += wins[2] + " W3 level";
+								
+								c.sendChat(user, result, wasWhispered);
 							} else {
-								
 								String result = "AutoPromotion Info for [" + rsSubjectAccount.getString("name") + "]: ";
-								
 								result += timeElapsed + "/" + apDays + " days, ";
 								result += wins[0] + "/" + apWins + " wins, ";
 								result += wins[1] + "/" + apD2Level + " D2 level, ";
@@ -273,11 +282,11 @@ public class CommandEventHandler implements EventHandler {
 						} else {
 							String result = "Rank " + subjectRank + " was not found in the database; please contact the bot master and report this error. ";
 							result += rsSubjectAccount.getString("name") + "'s current status is: ";
-							
 							result += timeElapsed + " days, ";
 							result += wins[0] + " wins, ";
 							result += wins[1] + " D2 level, ";
 							result += wins[2] + " W3 level";
+							
 							c.sendChat(user, result, wasWhispered);
 						}
 						d.close(rsRank);
@@ -362,7 +371,7 @@ public class CommandEventHandler implements EventHandler {
 							
 							ResultSet rsTargetAccount = d.getAccount(params[1]);
 							if(!rsTargetAccount.next()) {
-								c.sendChat(user, "The account [" + params[1] + "] does not exist", wasWhispered);
+								c.sendChat(user, "The account [" + params[1] + "] does not exist!", wasWhispered);
 								break;
 							}
 							params[1] = rsTargetAccount.getString("name");
@@ -704,7 +713,7 @@ public class CommandEventHandler implements EventHandler {
 					BNetUser bnSubject = BNetUser.getBNetUser(params[0], user.getFullAccountName());
 					ResultSet rsSubject = d.getUser(bnSubject);
 					if(!rsSubject.next()) {
-						c.sendChat(user, "The user [" + bnSubject.getFullAccountName() + "] does not exist", wasWhispered);
+						c.sendChat(user, "The user [" + bnSubject.getFullAccountName() + "] does not exist!", wasWhispered);
 						break;
 					}
 					String subject = rsSubject.getString("login");
@@ -713,7 +722,7 @@ public class CommandEventHandler implements EventHandler {
 					if(params.length == 2) {
 						ResultSet rsSubjectAccount = d.getAccount(params[1]);
 						if(!rsSubjectAccount.next()) {
-							c.sendChat(user, "The account [" + params[1] + "] does not exist", wasWhispered);
+							c.sendChat(user, "The account [" + params[1] + "] does not exist!", wasWhispered);
 							break;
 						}
 						newAccount = rsSubjectAccount.getLong("id");
