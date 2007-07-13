@@ -198,6 +198,12 @@ public class Database {
 		ps.setLong(1, accountID);
 		return ps.executeQuery();
 	}
+	
+	public ResultSet getAccountRecruits(long accountID) throws SQLException {
+		PreparedStatement ps = prepareStatement("SELECT * FROM `account` WHERE `createdby`=?");
+		ps.setLong(1, accountID);
+		return ps.executeQuery();
+	}
 
 	public ResultSet createAccount(String account, long access, Long creator) throws SQLException {
 		PreparedStatement ps = prepareStatement("INSERT INTO `account` (`name`, `access`, `createdby`, `lastRankChange`) VALUES(?, ?, ?, NULL)");
