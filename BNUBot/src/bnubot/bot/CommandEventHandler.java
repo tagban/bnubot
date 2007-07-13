@@ -5,6 +5,8 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.*;
 
+import com.sun.java_cup.internal.internal_error;
+
 import bnubot.Version;
 import bnubot.bot.database.*;
 import bnubot.core.*;
@@ -574,6 +576,47 @@ public class CommandEventHandler implements EventHandler {
 
 					bnSubject.resetPrettyName();
 					c.sendChat("Welcome to the clan, " + bnSubject.toString() + "!");
+					break;
+				}
+				if(command.equals("recruits")) {
+					try {
+						if((params != null) && (params.length != 1))
+							throw new InvalidUseException();
+						
+						
+						Long subjectAccountId = null;
+						String output = null;
+						if(params == null) {
+							subjectAccountId = commanderAccountID;
+							output = "You have recruited: ";
+						} else {
+							ResultSet rsSubject = d.getAccount(params[0]);
+							if(!rsSubject.next()) {
+								d.close(rsSubject);
+								c.sendChat(user, "The account [" + params[0] + "] does not exist!", wasWhispered);
+								break;
+							}
+							subjectAccountId = rsSubject.getLong("id");
+							output = rsSubject.getString("name");
+							output += " has recruited: ";
+							d.close(rsSubject);
+						}
+												
+						ResultSet rsRecruits = d.getAccountRecruits(subjectAccountId);
+						if(rsRecruits.next()) {
+							do {
+								output += rsRecruits.getString("name") + "(" + rsRecruits.getString("access") + ") ";
+							} while(rsRecruits.next());
+						} else {
+							output += "no one";
+						}
+						d.close(rsRecruits);
+						
+						output = output.trim();
+						c.sendChat(user, output, wasWhispered);
+					} catch(InvalidUseException e) {
+						c.sendChat(user, "Use: %trigger%recruits [account]", wasWhispered);
+					}
 					break;
 				}
 				if(command.equals("renameaccount")) {

@@ -131,6 +131,7 @@ INSERT INTO `command` (access, name, description, cmdgroup) VALUES (30,	'mailall
 INSERT INTO `command` (access, name, description, cmdgroup) VALUES (36,	'quit', 'Close program', 'administration');
 INSERT INTO `command` (access, name, description, cmdgroup) VALUES (36,	'reconnect', NULL, 'administration');
 INSERT INTO `command` (access, name, description, cmdgroup) VALUES (15,	'recruit', NULL, 'accounts');
+INSERT INTO `command` (access, name, description, cmdgroup) VALUES (10,	'recruits', NULL, 'accounts');
 INSERT INTO `command` (access, name, description, cmdgroup) VALUES (34,	'renameaccount', NULL, 'accounts');
 INSERT INTO `command` (access, name, description, cmdgroup) VALUES (36,	'say', NULL, 'administration');
 INSERT INTO `command` (access, name, description, cmdgroup) VALUES (1,	'seen', NULL, 'accounts');
