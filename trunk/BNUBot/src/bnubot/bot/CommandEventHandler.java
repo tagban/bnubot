@@ -69,11 +69,14 @@ public class CommandEventHandler implements EventHandler {
 			boolean superUser = user.equals(c.getMyUser());
 			try {
 				ResultSet rsAccount = d.getAccount(user);
-				if((rsAccount == null) || !rsAccount.next())
+				if((rsAccount == null) || !rsAccount.next()) {
+					if(rsAccount != null)
+						d.close(rsAccount);
 					if(superUser)
 						throw new InvalidUseException();
 					else
 						return;
+				}
 					
 				commanderAccess = rsAccount.getLong("access");
 				commanderAccount = rsAccount.getString("name");
