@@ -5,8 +5,6 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.*;
 
-import com.sun.java_cup.internal.internal_error;
-
 import bnubot.Version;
 import bnubot.bot.database.*;
 import bnubot.core.*;
