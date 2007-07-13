@@ -602,7 +602,7 @@ public class CommandEventHandler implements EventHandler {
 							d.close(rsSubject);
 						}
 												
-						ResultSet rsRecruits = d.getAccountRecruits(subjectAccountId);
+						ResultSet rsRecruits = d.getAccountRecruits(subjectAccountId, c.getConnectionSettings().recruitAccess);
 						if(rsRecruits.next()) {
 							do {
 								output += rsRecruits.getString("name") + "(" + rsRecruits.getString("access") + ") ";

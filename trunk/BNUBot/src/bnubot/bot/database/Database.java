@@ -199,9 +199,10 @@ public class Database {
 		return ps.executeQuery();
 	}
 	
-	public ResultSet getAccountRecruits(long accountID) throws SQLException {
-		PreparedStatement ps = prepareStatement("SELECT * FROM `account` WHERE `createdby`=?");
+	public ResultSet getAccountRecruits(long accountID, long withAccess) throws SQLException {
+		PreparedStatement ps = prepareStatement("SELECT * FROM `account` WHERE `createdby`=? AND `access`>=?");
 		ps.setLong(1, accountID);
+		ps.setLong(2, withAccess);
 		return ps.executeQuery();
 	}
 
