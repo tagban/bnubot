@@ -1,13 +1,18 @@
 package bnubot.bot.html;
 
+import java.awt.Color;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 import javax.swing.SwingUtilities;
 
 import bnubot.bot.EventHandler;
+import bnubot.bot.gui.ColorScheme.ColorScheme;
 import bnubot.core.BNetUser;
 import bnubot.core.Connection;
 import bnubot.core.StatString;
@@ -20,11 +25,12 @@ public class HTMLOutputEventHandler implements EventHandler {
 		BNetUser user;
 		StatString statstr;
 	}
-	String channel;
-	boolean generationNeeded;
-	Runnable writeUserListRunnable = null;
+	private String channel = null;
+	private boolean generationNeeded = false;
+	private Runnable writeUserListRunnable = null;
+	private ColorScheme cs = null;
 	
-	ArrayList<UserInfo> users;
+	private ArrayList<UserInfo> users;
 	
 	private UserInfo get(BNetUser u) {
 		for(UserInfo ui : users.toArray(new UserInfo[users.size()])) {
@@ -75,17 +81,24 @@ public class HTMLOutputEventHandler implements EventHandler {
 		writeUserList();
 	}
 	
-	public void initialize(Connection c) {}
+	public void initialize(Connection c) {
+		File f = new File("Logs");
+		if(!f.exists())
+			f.mkdir();
+		if(!f.isDirectory()) {
+			new Exception("Logs is not a directory!").printStackTrace();
+			System.exit(1);
+		}
+		
+		cs = ColorScheme.createColorScheme(c.getConnectionSettings().colorScheme);
+	}
+	
 	public void joinedChannel(String channel) {
 		this.channel = channel;
 		users.clear();
 	}
-	public void recieveChat(BNetUser user, String text) {}
-	public void recieveEmote(BNetUser user, String text) {}
 	public void recieveError(String text) {}
 	public void recieveInfo(String text) {}
-	public void whisperRecieved(BNetUser user, String text) {}
-	public void whisperSent(BNetUser user, String text) {}
 	
 	private String getIcon(int product, int icon, int flags) {
 		if((flags & 0x01) != 0)	return "blizrep";
@@ -148,4 +161,84 @@ public class HTMLOutputEventHandler implements EventHandler {
 	public void queryRealms2(String[] realms) {}
 
 	public void parseCommand(BNetUser user, String command, String param, boolean wasWhispered) {}
+	
+
+	private void logChat(String text) {
+		String fName = "Logs/";
+		fName += new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+		fName += ".log";
+		File f = new File(fName);
+		try {
+			if(!f.exists())
+				f.createNewFile();
+			// Create a new FOS for appending
+			FileOutputStream fos = new FileOutputStream(f, true);
+			fos.write(text.getBytes());
+			fos.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+	}
+	
+	private String getDate() {
+		return String.format("[%1$tH:%1$tM:%1$tS] ", new GregorianCalendar());
+	}
+	
+	private String getColor(Color col) {
+		String out = "000000";
+		out += Integer.toHexString(col.getRGB());
+		out = out.substring(out.length() - 6);
+		out = "[COLOR:#" + out + "]";
+		return out;
+	}
+	
+	private void append(String text, Color col) {
+		String out = "\n";
+		out += getDate();
+		out += getColor(col);
+		out += text;
+		logChat(out);
+	}
+	
+	private void append2(String text, Color col, String text2, Color col2) {
+		String out = "\n";
+		out += getDate();
+		out += getColor(col);
+		out += text;
+		if(!col.equals(col2))
+			out += getColor(col2);
+		out += text2;
+		logChat(out);
+	}
+	
+	public void recieveChat(BNetUser user, String text) {
+		append2(
+				"<" + user + "> ",
+				cs.getUserNameColor(user.getFlags()),
+				text,
+				cs.getChatColor(user.getFlags()));
+	}
+	
+	public void recieveEmote(BNetUser user, String text) {
+		append(
+				"<" + user + " " + text + "> ",
+				cs.getEmoteColor(user.getFlags()));
+	}
+	
+	public void whisperSent(BNetUser user, String text) {
+		append2(
+			"<To: " + user + "> ",
+			cs.getUserNameColor(user.getFlags()),
+			text,
+			cs.getWhisperColor(user.getFlags()));
+	}
+	
+	public void whisperRecieved(BNetUser user, String text) {
+		append2(
+			"<From: " + user + "> ",
+			cs.getUserNameColor(user.getFlags()),
+			text,
+			cs.getWhisperColor(user.getFlags()));
+	}
 }
