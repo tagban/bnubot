@@ -31,9 +31,8 @@ public class Main {
 		try {
 			numBots = Integer.parseInt(
 				Ini.ReadIni("settings.ini", "bnubot", "numBots", "1"));
-		} catch(Exception e) {
-			Ini.WriteIni("settings.ini", "bnubot", "numBots", "1");
-		}
+		} catch(Exception e) {}
+		Ini.WriteIni("settings.ini", "bnubot", "numBots", Integer.toString(numBots));
 		
 		ConnectionSettings cs = new ConnectionSettings();
 		cs.load(1);
@@ -160,8 +159,7 @@ public class Main {
 		//Other plugins
 		if(plugins != null) {
 			for(int i = 0; i < plugins.length; i++) {
-				Class plugin = Class.forName(plugins[i]);
-				EventHandler eh = (EventHandler)plugin.newInstance();
+				EventHandler eh = (EventHandler)Class.forName(plugins[i]).newInstance();
 				primary.addEventHandler(eh);
 			}
 		}
