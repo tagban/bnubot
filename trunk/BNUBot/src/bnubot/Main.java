@@ -102,6 +102,14 @@ public class Main {
 		cq.start();
 		
 		BNCSConnection primary = new BNCSConnection(cs, cq);
+			
+		//Other plugins
+		if(plugins != null) {
+			for(int i = 0; i < plugins.length; i++) {
+				EventHandler eh = (EventHandler)Class.forName(plugins[i]).newInstance();
+				primary.addEventHandler(eh);
+			}
+		}
 		
 		//CLI
 		if(cs.enableCLI)
@@ -154,14 +162,6 @@ public class Main {
 		if(cs.enableTrivia) { 
 			EventHandler trivia = new TriviaEventHandler(d);
 			primary.addEventHandler(trivia);
-		}
-			
-		//Other plugins
-		if(plugins != null) {
-			for(int i = 0; i < plugins.length; i++) {
-				EventHandler eh = (EventHandler)Class.forName(plugins[i]).newInstance();
-				primary.addEventHandler(eh);
-			}
 		}
 		
 		primary.start();
