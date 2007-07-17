@@ -60,7 +60,7 @@ public abstract class Connection extends Thread implements EventHandler {
 	public abstract void sendProfile(String user) throws Exception;
 	
 	public void sendProfile(BNetUser user) throws Exception {
-		sendProfile(user.getShortLogonName());
+		sendProfile(user.getFullAccountName());
 	}
 	
 	public abstract void reconnect();
