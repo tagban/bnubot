@@ -24,7 +24,7 @@ public abstract class Connection extends Thread implements EventHandler {
 	protected String channelName = null;
 	protected long lastAntiIdle;
 	
-	public static final int MAX_CHAT_LENGTH = 250;
+	public static final int MAX_CHAT_LENGTH = 242;
 
 	private int eh_semaphor = 0;
 	private int eh2_semaphor = 0;
