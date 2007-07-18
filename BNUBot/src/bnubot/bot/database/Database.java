@@ -281,7 +281,7 @@ public class Database {
 	}
 	
 	public ResultSet getCommandCategory(String category, long access) throws SQLException {
-		PreparedStatement ps = prepareStatement("SELECT * FROM `command` WHERE `cmdgroup`=? AND `access`>=?");
+		PreparedStatement ps = prepareStatement("SELECT * FROM `command` WHERE `cmdgroup`=? AND `access`<=?");
 		ps.setString(1, category);
 		ps.setLong(2, access);
 		return ps.executeQuery();
