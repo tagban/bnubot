@@ -123,7 +123,7 @@ public class CommandEventHandler implements EventHandler {
 
 						ResultSet rsSubjectCategory;
 						if(params[0].equals("all"))
-							rsSubjectCategory = d.getCommands();
+							rsSubjectCategory = d.getCommands(commanderAccess);
 						else
 							rsSubjectCategory = d.getCommandCategory(params[0], commanderAccess);
 						
