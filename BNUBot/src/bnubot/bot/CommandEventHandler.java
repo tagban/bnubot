@@ -765,6 +765,69 @@ public class CommandEventHandler implements EventHandler {
 					c.sendChat(user, "Success", wasWhispered);
 					break;
 				}
+				if(command.equals("setrecruiter")) {
+					if((params == null) || (params.length != 2)) {
+						c.sendChat(user, "Use: %trigger%setrecruiter <account> <account>", wasWhispered);
+						break;
+					}
+					
+					ResultSet rsSubject = d.getAccount(params[0]);
+					if(!rsSubject.next()) {
+						d.close(rsSubject);
+						c.sendChat(user, "The account [" + params[0] + "] does not exist!", wasWhispered);
+						break;
+					}
+					params[0] = rsSubject.getString("name");
+					
+					ResultSet rsTarget = d.getAccount(params[1]);
+					if(!rsTarget.next()) {
+						d.close(rsSubject);
+						d.close(rsTarget);
+						c.sendChat(user, "The account [" + params[1] + "] does not exist!", wasWhispered);
+						break;
+					}
+					params[1] = rsTarget.getString("name");
+
+					
+					long subjectID = rsSubject.getLong("id");
+					long targetID = rsTarget.getLong("id");
+					
+					String recursive = params[0];
+					
+					do {
+						long id = rsTarget.getLong("id");
+						Long cb = rsTarget.getLong("createdby");
+						if(rsTarget.wasNull())
+							cb = null;
+						
+						recursive += " -> " + rsTarget.getString("name");
+						if(id == subjectID) {
+							c.sendChat(user, "Recursion detected: " + recursive, wasWhispered);
+							break;
+						}
+
+						if(cb != null) {
+							d.close(rsTarget);
+							rsTarget = d.getAccount(cb);
+							if(!rsTarget.next())
+								cb = null;
+						}
+						
+						if(cb == null) {
+							rsSubject.updateLong("createdby", targetID);
+							rsSubject.updateRow();
+							c.sendChat(user, "Successfully updated recruiter for [ " + params[0] + " ] to [ " + params[1] + " ]" , wasWhispered);
+							break;
+						}
+						
+					} while(true);
+					
+					recursive = null;
+					d.close(rsTarget);
+					d.close(rsSubject);
+					
+					break;
+				}
 				if(command.equals("sweepban")) {
 					if((params == null) || (params.length < 1)) {
 						c.sendChat(user, "Use: %trigger%sweepban <channel>", wasWhispered);
