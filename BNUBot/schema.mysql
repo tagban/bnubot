@@ -137,17 +137,19 @@ INSERT INTO `command` (access, name, description, cmdgroup) VALUES (36,	'say', N
 INSERT INTO `command` (access, name, description, cmdgroup) VALUES (1,	'seen', NULL, 'accounts');
 INSERT INTO `command` (access, name, description, cmdgroup) VALUES (34,	'setaccount', NULL, 'accounts');
 INSERT INTO `command` (access, name, description, cmdgroup) VALUES (35,	'setrank', NULL, 'clan');
+INSERT INTO `command` (access, name, description, cmdgroup) VALUES (35,	'setrecruiter', NULL, 'accounts');
 INSERT INTO `command` (access, name, description, cmdgroup) VALUES (34,	'sweepban', NULL, 'moderation');
 INSERT INTO `command` (access, name, description, cmdgroup) VALUES (1,	'trigger', 'Current trigger', 'useful');
 INSERT INTO `command` (access, name, description, cmdgroup) VALUES (34,	'unban', NULL, 'moderation');
 INSERT INTO `command` (access, name, description, cmdgroup) VALUES (1,	'whoami', NULL, 'accounts');
 INSERT INTO `command` (access, name, description, cmdgroup) VALUES (1,	'whois', NULL, 'accounts');
 
-INSERT INTO `command_alias` (alias, name) VALUES ('ver', 'info');
-INSERT INTO `command_alias` (alias, name) VALUES ('version', 'info');
-INSERT INTO `command_alias` (alias, name) VALUES ('sweep', 'sweepban');
-INSERT INTO `command_alias` (alias, name) VALUES ('ca', 'createaccount');
-INSERT INTO `command_alias` (alias, name) VALUES ('sa', 'setaccount');
-INSERT INTO `command_alias` (alias, name) VALUES ('ra', 'renameaccount');
 INSERT INTO `command_alias` (alias, name) VALUES ('ap', 'autopromotion');
 INSERT INTO `command_alias` (alias, name) VALUES ('apinfo', 'autopromotion');
+INSERT INTO `command_alias` (alias, name) VALUES ('ca', 'createaccount');
+INSERT INTO `command_alias` (alias, name) VALUES ('ver', 'info');
+INSERT INTO `command_alias` (alias, name) VALUES ('version', 'info');
+INSERT INTO `command_alias` (alias, name) VALUES ('ra', 'renameaccount');
+INSERT INTO `command_alias` (alias, name) VALUES ('sa', 'setaccount');
+INSERT INTO `command_alias` (alias, name) VALUES ('sr', 'setrecruiter');
+INSERT INTO `command_alias` (alias, name) VALUES ('sweep', 'sweepban');
