@@ -276,8 +276,10 @@ public class Database {
 		return ps.executeQuery();
 	}
 
-	public ResultSet getCommands() throws SQLException {
-		return createStatement().executeQuery("SELECT * FROM `command`");
+	public ResultSet getCommands(long access) throws SQLException {
+		PreparedStatement ps = prepareStatement("SELECT * FROM `command` WHERE `access`<=?");
+		ps.setLong(1, access);
+		return ps.executeQuery();
 	}
 	
 	public ResultSet getCommandCategory(String category, long access) throws SQLException {
