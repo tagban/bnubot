@@ -190,6 +190,15 @@ public abstract class Connection extends Thread implements EventHandler {
 				String last = text.substring(i + 9);
 				text = first + cs.trigger + last;
 			}
+			
+			i = text.indexOf("%version%");
+			if(i != -1) {
+				somethingDone = true;
+				
+				String first = text.substring(0, i);
+				String last = text.substring(i + 9);
+				text = first + Version.version() + last;
+			}
 		}
 		return text;
 	}
