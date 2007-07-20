@@ -297,14 +297,14 @@ public class BNCSConnection extends Connection {
 			}
 			
 			//Send anti-idles every 5 minutes
-			if(channelName != null) {
+			if((channelName != null) && cs.enableAntiIdle) {
 				long timeSinceAntiIdle = timeNow - lastAntiIdle;
 				
 				//Wait 5 minutes
 				timeSinceAntiIdle /= 1000;
 				timeSinceAntiIdle /= 60;
 				if(timeSinceAntiIdle >= 5) {
-					lastAntiIdle = new Date().getTime();
+					lastAntiIdle = timeNow;
 					sendChat(getAntiIdle());
 				}
 			}

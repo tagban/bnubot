@@ -35,6 +35,7 @@ public class ConnectionSettings implements Serializable {
 	public byte product;
 	public byte colorScheme;
 	public String trigger;
+	public boolean enableAntiIdle;
 	public String antiIdle;
 	public boolean autoconnect;
 	public boolean enableCLI;
@@ -178,6 +179,7 @@ public class ConnectionSettings implements Serializable {
 		Ini.WriteIni(file, header, "colorScheme", Byte.toString(colorScheme));
 		Ini.WriteIni(file, header, "trigger", trigger);
 		Ini.WriteIni(file, header, "antiidle", antiIdle);
+		Ini.WriteIni(file, header, "enableAntiidle", Boolean.toString(enableAntiIdle));
 		Ini.WriteIni(file, header, "autoconnect", Boolean.toString(autoconnect));
 		Ini.WriteIni(file, header, "enableCLI", Boolean.toString(enableCLI));
 		Ini.WriteIni(file, header, "enableGUI", Boolean.toString(enableGUI));
@@ -218,6 +220,8 @@ public class ConnectionSettings implements Serializable {
 					Ini.ReadIni(file, header, "colorScheme", "1"));
 		trigger = 	Ini.ReadIni(file, header, "trigger", "!");
 		antiIdle = 	Ini.ReadIni(file, header, "antiidle", "/me is a BNU-Bot");
+		enableAntiIdle = Boolean.parseBoolean(
+				Ini.ReadIni(file, header, "enableAntiidle", "true"));
 		autoconnect = Boolean.parseBoolean(
 					Ini.ReadIni(file, header, "autoconnect", "false"));
 		enableCLI = Boolean.parseBoolean(
