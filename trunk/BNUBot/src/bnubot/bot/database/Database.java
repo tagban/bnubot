@@ -143,15 +143,6 @@ public class Database {
 	}
 	
 	public ResultSet getAccount(BNetUser user) throws SQLException {
-		/*ResultSet rsUser = getUser(user);
-		if(!rsUser.next())
-			return null;
-		
-		String account = rsUser.getString("account");
-		if(account == null)
-			return null;
-		return getAccount(account);*/
-
 		PreparedStatement ps = prepareStatement(
 				"SELECT A.* " +
 				"FROM `account` AS A " +
