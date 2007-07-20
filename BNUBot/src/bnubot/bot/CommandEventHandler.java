@@ -376,6 +376,7 @@ public class CommandEventHandler implements EventHandler {
 							}
 							params[1] = rsTargetAccount.getString("name");
 							Long targetAccountID = rsTargetAccount.getLong("id");
+							d.close(rsTargetAccount);
 							
 							d.sendMail(commanderAccountID, targetAccountID, params[2]);
 							c.sendChat(user, "Mail queued for delivery to " +  params[1], wasWhispered);
@@ -727,21 +728,26 @@ public class CommandEventHandler implements EventHandler {
 						}
 						newAccount = rsSubjectAccount.getLong("id");
 					}
-					
-					if(newAccount == null)
+
+					if(newAccount == null) {
 						rsSubject.updateNull("account");
-					else
+						
+						params[1] = "NULL";
+					} else {
 						rsSubject.updateLong("account", newAccount);
+						
+						ResultSet rsSubjectAccount = d.getAccount(newAccount);
+						if(rsSubjectAccount.next())
+							params[1] = rsSubjectAccount.getString("name");
+						d.close(rsSubjectAccount);
+					}
+					
 					rsSubject.updateRow();
+					d.close(rsSubject);
+					
 					bnSubject.resetPrettyName();
 					
-					String newAccountName = "NULL";
-					ResultSet rsSubjectAccount = null;
-					if(newAccount != null)
-						rsSubjectAccount = d.getAccount(newAccount);
-					if((rsSubjectAccount != null) && rsSubjectAccount.next())
-						newAccountName = rsSubjectAccount.getString("name");
-					c.sendChat(user, "User [" + subject + "] was added to account [" + newAccountName + "] successfully.", wasWhispered);
+					c.sendChat(user, "User [" + subject + "] was added to account [" + params[1] + "] successfully.", wasWhispered);
 					break;
 				}
 				if(command.equals("setrank")) {
