@@ -20,6 +20,7 @@ public class ConfigurationFrame extends JDialog {
 	JTextArea txtEmail = null;
 	JComboBox cmbProduct = null;
 	JTextArea txtTrigger = null;
+	JCheckBox chkAntiIdle = null;
 	JTextArea txtAntiIdle = null;
 	JComboBox cmbCDKey = null;
 	JComboBox cmbCDKeyLOD = null;
@@ -109,6 +110,10 @@ public class ConfigurationFrame extends JDialog {
 					JLabel jl = new JLabel("Anti-Idle");
 					jl.setPreferredSize(maxSize);
 					boxLine.add(jl);
+					
+					chkAntiIdle = new JCheckBox("Enable", cs.enableAntiIdle);
+					boxLine.add(chkAntiIdle);
+					
 					txtAntiIdle = new ConfigTextArea(cs.antiIdle);
 					boxLine.add(txtAntiIdle);
 				}
@@ -349,6 +354,7 @@ public class ConfigurationFrame extends JDialog {
 		cs.product = (byte)(cmbProduct.getSelectedIndex() + 1);
 		cs.trigger = txtTrigger.getText();
 		cs.antiIdle = txtAntiIdle.getText();
+		cs.enableAntiIdle = chkAntiIdle.isSelected();
 		
 		CDKey k = (CDKey)cmbCDKey.getSelectedItem();
 		CDKey kLOD = (CDKey)cmbCDKeyLOD.getSelectedItem();
@@ -382,6 +388,7 @@ public class ConfigurationFrame extends JDialog {
 		cmbProduct.setSelectedIndex(cs.product - 1);
 		txtTrigger.setText(cs.trigger);
 		txtAntiIdle.setText(cs.antiIdle);
+		chkAntiIdle.setSelected(cs.enableAntiIdle);
 		cmbCDKey.setSelectedItem(cs.cdkey);
 		cmbCDKeyLOD.setSelectedItem(cs.cdkeyLOD);
 		cmbCDKeyTFT.setSelectedItem(cs.cdkeyTFT);
