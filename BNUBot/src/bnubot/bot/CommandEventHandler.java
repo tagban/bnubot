@@ -1003,8 +1003,6 @@ public class CommandEventHandler implements EventHandler {
 		
 		try {
 			ResultSet rsUser = d.getUser(user);
-			if(rsUser == null)
-				return;
 			if(!rsUser.next()) {
 				d.close(rsUser);
 				return;
@@ -1019,7 +1017,6 @@ public class CommandEventHandler implements EventHandler {
 					String col = "wins" + HexDump.DWordToPretty(statstr.getProduct());
 					Integer oldWins = rsUser.getInt(col);
 					if(newWins > oldWins) {
-						System.out.println("Setting " + user.toString() + "." + col + "=" + newWins);
 						rsUser.updateInt(col, newWins);
 						rsUser.updateRow();
 					}
@@ -1033,7 +1030,6 @@ public class CommandEventHandler implements EventHandler {
 				if(newLevel != null) {
 					Integer oldLevel = rsUser.getInt("levelD2");
 					if(newLevel > oldLevel) {
-						System.out.println("Setting " + user.toString() + ".levelD2=" + newLevel);
 						rsUser.updateInt("levelD2", newLevel);
 						rsUser.updateRow();
 					}
@@ -1047,7 +1043,6 @@ public class CommandEventHandler implements EventHandler {
 				if(newLevel != null) {
 					Integer oldLevel = rsUser.getInt("levelW3");
 					if(newLevel > oldLevel) {
-						System.out.println("Setting " + user.toString() + ".levelW3=" + newLevel);
 						rsUser.updateInt("levelW3", newLevel);
 						rsUser.updateRow();
 					}
@@ -1058,12 +1053,7 @@ public class CommandEventHandler implements EventHandler {
 			d.close(rsUser);
 			
 			//check for autopromotions
-		
-			
 			ResultSet rsAccount = d.getAccount(user);
-			if(rsAccount == null)
-				return;
-			
 			if(!rsAccount.next()) {
 				d.close(rsAccount);
 				return;
@@ -1135,15 +1125,13 @@ public class CommandEventHandler implements EventHandler {
 				}
 			}
 			d.close(rsRank);
+			d.close(rsAccount);
 
 			//Mail
 			long umc = d.getUnreadMailCount(id);
 			if(umc > 0)
 				c.sendChat(user, "You have " + umc + " unread messages; type [ %trigger%mail read ] to retrieve them", false);
-			
-			d.close(rsAccount);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
