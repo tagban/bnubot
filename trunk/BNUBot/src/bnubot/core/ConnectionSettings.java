@@ -219,7 +219,7 @@ public class ConnectionSettings implements Serializable {
 		colorScheme = Byte.parseByte(
 					Ini.ReadIni(file, header, "colorScheme", "1"));
 		trigger = 	Ini.ReadIni(file, header, "trigger", "!");
-		antiIdle = 	Ini.ReadIni(file, header, "antiidle", "/me is a BNU-Bot");
+		antiIdle = 	Ini.ReadIni(file, header, "antiidle", "/me is a BNU-Bot %version%");
 		enableAntiIdle = Boolean.parseBoolean(
 				Ini.ReadIni(file, header, "enableAntiidle", "false"));
 		autoconnect = Boolean.parseBoolean(
