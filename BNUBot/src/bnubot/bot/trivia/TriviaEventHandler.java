@@ -255,11 +255,14 @@ public class TriviaEventHandler implements EventHandler {
 	
 	public void joinedChannel(String channel) {}
 	public void recieveChat(BNetUser user, String text) {
-		if("trivia on".equals(text))
+		if("trivia on".equals(text)) {
 			triviaOn();
-		else if("trivia off".equals(text))
+		} else if("trivia off".equals(text)) {
 			triviaOff();
-		else {
+		} else if("trivia score".equals(text)) {
+			if(!triviaEnabled)
+				showLeaderBoard();
+		} else {
 			if(triviaAnswers != null) {
 				for(String triviaAnswer : triviaAnswers) {
 					if(triviaAnswer.compareToIgnoreCase(text) == 0) {
