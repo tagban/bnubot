@@ -14,7 +14,7 @@ import bnubot.bot.trivia.TriviaEventHandler;
 import bnubot.core.*;
 import bnubot.core.bncs.BNCSConnection;
 import bnubot.core.queue.ChatQueue;
-import bnubot.util.Ini;
+import bnubot.util.Settings;
 
 public class Main {
 	
@@ -30,9 +30,9 @@ public class Main {
 		int numBots = 1;
 		try {
 			numBots = Integer.parseInt(
-				Ini.ReadIni("settings.ini", "bnubot", "numBots", "1"));
+				Settings.read("bnubot", "numBots", "1"));
 		} catch(Exception e) {}
-		Ini.WriteIni("settings.ini", "bnubot", "numBots", Integer.toString(numBots));
+		Settings.write("bnubot", "numBots", Integer.toString(numBots));
 		
 		ConnectionSettings cs = new ConnectionSettings();
 		cs.load(1);
@@ -126,11 +126,11 @@ public class Main {
 		Database d = null;
 		EventHandler cmd = null;
 		if(cs.enableCommands) {
-			String db_driver = Ini.ReadIni("settings.ini", "database", "driver", null);
-			String db_url = Ini.ReadIni("settings.ini", "database", "url", null);
-			String db_username = Ini.ReadIni("settings.ini", "database", "username", null);
-			String db_password = Ini.ReadIni("settings.ini", "database", "password", null);
-			String db_schema = Ini.ReadIni("settings.ini", "database", "schema", null);
+			String db_driver = Settings.read("database", "driver", null);
+			String db_url = Settings.read("database", "url", null);
+			String db_username = Settings.read("database", "username", null);
+			String db_password = Settings.read("database", "password", null);
+			String db_schema = Settings.read("database", "schema", null);
 			
 			if((db_driver == null)
 			|| (db_url == null)) {
