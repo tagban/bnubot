@@ -24,6 +24,8 @@ public class Database {
 		
 		if(!checkSchema())
 			createSchema(schemaFile);
+		
+		deleteOldUsers();
 	}
 	
 	public void close(ResultSet rs) {
@@ -105,6 +107,82 @@ public class Database {
 		PreparedStatement ps = prepareStatement("SELECT * FROM `user` WHERE `login`=? LIMIT 1");
 		ps.setString(1, user.getFullAccountName());
 		return ps.executeQuery();
+	}
+	
+	public void deleteOldUsers() throws SQLException {
+		ResultSet rsOld = createStatement().executeQuery(
+			"SELECT `login`, DATEDIFF(NOW(), `lastSeen`) as dss, `rank`.`id` AS rank, `rank`.`expireDays` " +
+				"FROM `user` " +
+				"JOIN `account` ON (`user`.`account`=`account`.`id`) " +
+				"JOIN `rank` ON (`account`.`access`=`rank`.`id`) " +
+			"UNION " +
+			"SELECT `login`, DATEDIFF(NOW(), `lastSeen`) as dss, NULL AS rank, 90 AS expireDays " +
+				"FROM `user` " +
+				"WHERE `account` IS NULL " +
+			"ORDER BY dss DESC");
+		while(rsOld.next()) {
+			long dss = rsOld.getLong("dss");
+			long expireDays = rsOld.getLong("expireDays");
+			if(dss > expireDays) {
+				String login = rsOld.getString("login");
+
+				ResultSet rsUser = getUser(new BNetUser(login));
+				if(rsUser.next()) {
+					Long rank = rsOld.getLong("rank");
+					if(rsOld.wasNull())
+						rank = null;
+					
+					String out = "Removing user ";
+					out += login;
+					out += " (rank=";
+					if(rank != null)
+						out += rank;
+					out += ", dss=";
+					out += dss;
+					out += "/";
+					out += expireDays;
+					out += ")";
+					System.out.println(out);
+
+					//Delete them!
+					rsUser.deleteRow();
+				}
+				close(rsUser);
+			}
+		}
+		close(rsOld);
+		
+		//Find accounts that are not instrumental to the recruitment tree, and have no accounts
+		rsOld = createStatement().executeQuery(
+				"SELECT `account`.`id`, `account`.`name`, `account`.`access`, `account`.`createdby` " +
+				"FROM `account` " +
+				"LEFT JOIN `user` ON `user`.`account`=`account`.`id` " +
+				"LEFT JOIN `account` AS recruits ON recruits.createdby=`account`.`id` " +
+				"WHERE `user`.`login` IS NULL " +
+					"AND recruits.`name` IS NULL");
+		while(rsOld.next()) {
+			String name = rsOld.getString("name");
+			Long cb = rsOld.getLong("createdby");
+			if(rsOld.wasNull())
+				cb = null;
+			
+			String out = "Removing account ";
+			out += name;
+			out += " (rank=";
+			out += rsOld.getLong("access");
+			if(cb != null) {
+				out += ", createdby=";
+				out += cb;
+			}
+			out += ")";
+			System.out.println(out);
+			
+			if(cb != null)
+				sendMail(cb, cb, "Your recruit " + name + " has been removed due to inactivity");
+			
+			rsOld.deleteRow();
+		}
+		close(rsOld);
 	}
 	
 	public ResultSet getCreateUser(BNetUser user) throws SQLException {
