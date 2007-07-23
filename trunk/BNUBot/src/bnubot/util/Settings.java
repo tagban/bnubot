@@ -17,7 +17,7 @@ public class Settings {
 			return;
 		
 		props = new Properties();
-		propsFile = new File("settings.xml");
+		propsFile = new File("settings.ini");
 		
 		if(propsFile.exists()) try {
 			props.load(new FileInputStream(propsFile));
@@ -48,7 +48,9 @@ public class Settings {
 		props.setProperty(key, Value);
 		
 		try {
-			props.store(new FileOutputStream(propsFile), comments);
+			FileOutputStream fos = new FileOutputStream(propsFile);
+			props.store(fos, comments);
+			fos.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.exit(1);
