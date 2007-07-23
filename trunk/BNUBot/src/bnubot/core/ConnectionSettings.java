@@ -2,7 +2,7 @@ package bnubot.core;
 
 import java.io.Serializable;
 
-import bnubot.util.Ini;
+import bnubot.util.Settings;
 
 
 public class ConnectionSettings implements Serializable {
@@ -162,53 +162,51 @@ public class ConnectionSettings implements Serializable {
 	}
 	
 	public void save() {
-		String file = "settings.ini";
 		String header = Integer.toString(botNum);
-		Ini.WriteIni(file, header, "server", bncsServer);
-		Ini.WriteIni(file, header, "port", Integer.toString(port));
-		Ini.WriteIni(file, header, "bnlsserver", bnlsServer);
-		Ini.WriteIni(file, header, "username", username);
-		Ini.WriteIni(file, header, "password", password);
-		Ini.WriteIni(file, header, "email", email);
-		Ini.WriteIni(file, header, "channel", channel);
-		Ini.WriteIni(file, header, "cdkey", cdkey);
-		Ini.WriteIni(file, header, "cdkeyLOD", cdkeyLOD);
-		Ini.WriteIni(file, header, "cdkeyTFT", cdkeyTFT);
+		Settings.write(header, "server", bncsServer);
+		Settings.write(header, "port", Integer.toString(port));
+		Settings.write(header, "bnlsserver", bnlsServer);
+		Settings.write(header, "username", username);
+		Settings.write(header, "password", password);
+		Settings.write(header, "email", email);
+		Settings.write(header, "channel", channel);
+		Settings.write(header, "cdkey", cdkey);
+		Settings.write(header, "cdkeyLOD", cdkeyLOD);
+		Settings.write(header, "cdkeyTFT", cdkeyTFT);
 		if(product != 0)
-		Ini.WriteIni(file, header, "product", util.Constants.prods[product-1]);
-		Ini.WriteIni(file, header, "colorScheme", Byte.toString(colorScheme));
-		Ini.WriteIni(file, header, "trigger", trigger);
-		Ini.WriteIni(file, header, "antiidle", antiIdle);
-		Ini.WriteIni(file, header, "enableAntiidle", Boolean.toString(enableAntiIdle));
-		Ini.WriteIni(file, header, "autoconnect", Boolean.toString(autoconnect));
-		Ini.WriteIni(file, header, "enableCLI", Boolean.toString(enableCLI));
-		Ini.WriteIni(file, header, "enableGUI", Boolean.toString(enableGUI));
-		Ini.WriteIni(file, header, "enableCommands", Boolean.toString(enableCommands));
-		Ini.WriteIni(file, header, "enableTrivia", Boolean.toString(enableTrivia));
-		Ini.WriteIni(file, header, "packetLog", Boolean.toString(packetLog));
-		Ini.WriteIni(file, header, "whisperBack", Boolean.toString(whisperBack));
-		Ini.WriteIni(file, header, "recruitAccess", Long.toString(recruitAccess));
-		Ini.WriteIni(file, header, "recruitTagPrefix", recruitTagPrefix);
-		Ini.WriteIni(file, header, "recruitTagSuffix", recruitTagSuffix);
+		Settings.write(header, "product", util.Constants.prods[product-1]);
+		Settings.write(header, "colorScheme", Byte.toString(colorScheme));
+		Settings.write(header, "trigger", trigger);
+		Settings.write(header, "antiidle", antiIdle);
+		Settings.write(header, "enableAntiidle", Boolean.toString(enableAntiIdle));
+		Settings.write(header, "autoconnect", Boolean.toString(autoconnect));
+		Settings.write(header, "enableCLI", Boolean.toString(enableCLI));
+		Settings.write(header, "enableGUI", Boolean.toString(enableGUI));
+		Settings.write(header, "enableCommands", Boolean.toString(enableCommands));
+		Settings.write(header, "enableTrivia", Boolean.toString(enableTrivia));
+		Settings.write(header, "packetLog", Boolean.toString(packetLog));
+		Settings.write(header, "whisperBack", Boolean.toString(whisperBack));
+		Settings.write(header, "recruitAccess", Long.toString(recruitAccess));
+		Settings.write(header, "recruitTagPrefix", recruitTagPrefix);
+		Settings.write(header, "recruitTagSuffix", recruitTagSuffix);
 	}
 	
 	public void load(int botNum) {
-		String file = "settings.ini";
 		String header = Integer.toString(botNum);
 		
 		this.botNum = botNum;
-		bncsServer =Ini.ReadIni(file, header, "server", "useast.battle.net");
+		bncsServer =Settings.read(header, "server", "useast.battle.net");
 		port = Integer.parseInt(
-					Ini.ReadIni(file, header, "port", "6112"));
-		bnlsServer =Ini.ReadIni(file, header, "bnlsserver", "logon.berzerkerjbls.com");
-		username =	Ini.ReadIni(file, header, "username", null);
-		password =	Ini.ReadIni(file, header, "password", null);
-		email =		Ini.ReadIni(file, header, "email", null);
-		channel =	Ini.ReadIni(file, header, "channel", "Clan BNU");
-		cdkey =		Ini.ReadIni(file, header, "cdkey", null);
-		cdkeyLOD =	Ini.ReadIni(file, header, "cdkeyLOD", null);
-		cdkeyTFT =	Ini.ReadIni(file, header, "cdkeyTFT", null);
-		String prod = Ini.ReadIni(file, header, "product", null);
+					Settings.read(header, "port", "6112"));
+		bnlsServer =Settings.read(header, "bnlsserver", "logon.berzerkerjbls.com");
+		username =	Settings.read(header, "username", null);
+		password =	Settings.read(header, "password", null);
+		email =		Settings.read(header, "email", null);
+		channel =	Settings.read(header, "channel", "Clan BNU");
+		cdkey =		Settings.read(header, "cdkey", null);
+		cdkeyLOD =	Settings.read(header, "cdkeyLOD", null);
+		cdkeyTFT =	Settings.read(header, "cdkeyTFT", null);
+		String prod = Settings.read(header, "product", null);
 		product = 0;
 		if(prod != null) {
 			for(int i = 0; i < util.Constants.prods.length; i++) {
@@ -217,28 +215,28 @@ public class ConnectionSettings implements Serializable {
 			}
 		}
 		colorScheme = Byte.parseByte(
-					Ini.ReadIni(file, header, "colorScheme", "1"));
-		trigger = 	Ini.ReadIni(file, header, "trigger", "!");
-		antiIdle = 	Ini.ReadIni(file, header, "antiidle", "/me is a BNU-Bot %version%");
+					Settings.read(header, "colorScheme", "1"));
+		trigger = 	Settings.read(header, "trigger", "!");
+		antiIdle = 	Settings.read(header, "antiidle", "/me is a BNU-Bot %version%");
 		enableAntiIdle = Boolean.parseBoolean(
-				Ini.ReadIni(file, header, "enableAntiidle", "false"));
+				Settings.read(header, "enableAntiidle", "false"));
 		autoconnect = Boolean.parseBoolean(
-					Ini.ReadIni(file, header, "autoconnect", "false"));
+					Settings.read(header, "autoconnect", "false"));
 		enableCLI = Boolean.parseBoolean(
-					Ini.ReadIni(file, header, "enableCLI", "false"));
+					Settings.read(header, "enableCLI", "false"));
 		enableGUI = Boolean.parseBoolean(
-					Ini.ReadIni(file, header, "enableGUI", "true"));
+					Settings.read(header, "enableGUI", "true"));
 		enableCommands = Boolean.parseBoolean(
-					Ini.ReadIni(file, header, "enableCommands", "false"));
+					Settings.read(header, "enableCommands", "false"));
 		enableTrivia = Boolean.parseBoolean(
-				Ini.ReadIni(file, header, "enableTrivia", "false"));
+				Settings.read(header, "enableTrivia", "false"));
 		packetLog = Boolean.parseBoolean(
-					Ini.ReadIni(file, header, "packetLog", "false"));
+					Settings.read(header, "packetLog", "false"));
 		whisperBack = Boolean.parseBoolean(
-					Ini.ReadIni(file, header, "whisperBack", "true"));
+					Settings.read(header, "whisperBack", "true"));
 		recruitAccess = Long.parseLong(
-				Ini.ReadIni(file, header, "recruitAccess", "10"));
-		recruitTagPrefix =	Ini.ReadIni(file, header, "recruitTagPrefix", "BNU-");
-		recruitTagSuffix =	Ini.ReadIni(file, header, "recruitTagSuffix", null);
+				Settings.read(header, "recruitAccess", "10"));
+		recruitTagPrefix =	Settings.read(header, "recruitTagPrefix", "BNU-");
+		recruitTagSuffix =	Settings.read(header, "recruitTagSuffix", null);
 	}
 }
