@@ -371,6 +371,7 @@ public class CommandEventHandler implements EventHandler {
 							
 							ResultSet rsTargetAccount = d.getAccount(params[1]);
 							if(!rsTargetAccount.next()) {
+								d.close(rsTargetAccount);
 								c.sendChat(user, "The account [" + params[1] + "] does not exist!", wasWhispered);
 								break;
 							}
@@ -667,22 +668,26 @@ public class CommandEventHandler implements EventHandler {
 					Timestamp mostRecent = null;
 					
 					ResultSet rsSubjectAccount = d.getAccount(params[0]);
-					if((rsSubjectAccount == null) || !rsSubjectAccount.next()) {
+					if(!rsSubjectAccount.next()) {
+						d.close(rsSubjectAccount);
 						c.sendChat(user, "The account [" + params[0] + "] does not exist!", wasWhispered);
 						break;
 					}
 					
 					ResultSet rsSubjectUsers = d.getAccountUsers(rsSubjectAccount.getLong("id"));
+					d.close(rsSubjectAccount);
 					if((rsSubjectUsers == null) || !rsSubjectUsers.next()) {
 						//They don't have an account by that name, check if it's a user
 						BNetUser bnSubject = BNetUser.getBNetUser(params[0], user);
 						ResultSet rsSubject = d.getUser(bnSubject);
 						if(!rsSubject.next()) {
+							d.close(rsSubject);
 							c.sendChat(user, "I have never seen [" + bnSubject.getFullAccountName() + "]", wasWhispered);
 							break;
 						} else {
 							mostRecent = rsSubject.getTimestamp("lastSeen");
 						}
+						d.close(rsSubject);
 					} else {
 						//Check the user's accounts						
 						do {
@@ -714,6 +719,7 @@ public class CommandEventHandler implements EventHandler {
 					BNetUser bnSubject = BNetUser.getBNetUser(params[0], user.getFullAccountName());
 					ResultSet rsSubject = d.getUser(bnSubject);
 					if(!rsSubject.next()) {
+						d.close(rsSubject);
 						c.sendChat(user, "The user [" + bnSubject.getFullAccountName() + "] does not exist!", wasWhispered);
 						break;
 					}

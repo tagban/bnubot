@@ -105,6 +105,7 @@ public class TriviaEventHandler implements EventHandler {
 				out += rsLeaders.getString("name");
 				out += "(" + score + ") ";
 			}
+			d.close(rsLeaders);
 			out += "Total=" + total;
 			c.sendChat(out);
 		} catch (SQLException e) {

@@ -150,7 +150,11 @@ public class Database {
 					"ON A.`id`=U.`account` " +
 				"WHERE U.`login`=? " +
 				"LIMIT 1");
-		ps.setString(1, user.getFullAccountName());
+		String login = user.getFullAccountName();
+		if(login == null)
+			ps.setNull(1, java.sql.Types.VARCHAR);
+		else
+			ps.setString(1, login);
 		return ps.executeQuery();
 	}
 	
@@ -292,6 +296,7 @@ public class Database {
 		ps.setLong(2, targetID);
 		ps.setString(3, message);
 		ps.execute();
+		close(ps);
 	}
 	
 	public long getUnreadMailCount(long accountID) throws SQLException {
