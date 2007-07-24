@@ -93,8 +93,13 @@ public class RealmWindow extends JFrame implements EventHandler, RealmEventHandl
 	public void channelJoin(BNetUser user, StatString statstr) {}
 	public void channelUser(BNetUser user, StatString statstr) {}
 	public void channelLeave(BNetUser user) {}
+	
 	public void friendsList(FriendEntry[] entries) {}
-	public void friendsUpdate(byte entry, byte location, byte status, int product, String locationName) {}
+	public void friendsUpdate(FriendEntry friend) {}
+	public void friendsAdd(FriendEntry friend) {}
+	public void friendsPosition(byte oldPosition, byte newPosition) {}
+	public void friendsRemove(byte entry) {}
+	
 	public void clanMOTD(Object cookie, String text) {}
 	public void clanMemberList(ClanMember[] members) {}
 	public void clanMemberRemoved(String username) {}

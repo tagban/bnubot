@@ -282,7 +282,11 @@ public class TriviaEventHandler implements EventHandler {
 	public void whisperSent(BNetUser user, String text) {}
 
 	public void friendsList(FriendEntry[] entries) {}
-	public void friendsUpdate(byte entry, byte location, byte status, int product, String locationName) {}
+	public void friendsUpdate(FriendEntry friend) {}
+	public void friendsAdd(FriendEntry friend) {}
+	public void friendsPosition(byte oldPosition, byte newPosition) {}
+	public void friendsRemove(byte entry) {}
+	
 	public void logonRealmEx(int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName) {}
 	public void queryRealms2(String[] realms) {}
 

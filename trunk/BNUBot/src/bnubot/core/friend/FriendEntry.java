@@ -1,7 +1,8 @@
 package bnubot.core.friend;
 
 public class FriendEntry {
-	String account;
+	String account = null;
+	Long entry = null;
 	byte status;
 	byte location;
 	int product;
@@ -15,12 +16,24 @@ public class FriendEntry {
 		this.locationName = locationName;
 	}
 	
+	public FriendEntry(long entry, byte status, byte location, int product, String locationName) {
+		this.entry = entry;
+		this.status = status;
+		this.location = location;
+		this.product = product;
+		this.locationName = locationName;
+	}
+	
 	public String toString() {
 		return account + " (locationName=" + locationName + ")";
 	}
 
 	public String getAccount() {
 		return account;
+	}
+
+	public Long getEntry() {
+		return entry;
 	}
 
 	public byte getLocation() {

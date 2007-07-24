@@ -1063,22 +1063,44 @@ public class BNCSConnection extends Connection {
 					int fProduct = is.readDWord();
 					String fLocationName = is.readNTString();
 					
-					friendsUpdate(fEntry, fLocation, fStatus, fProduct, fLocationName);
+					friendsUpdate(new FriendEntry(fEntry, fStatus, fLocation, fProduct, fLocationName));
 					break;
 				}
 				
 				case BNCSCommandIDs.SID_FRIENDSADD: {
-					// TODO: friendsAdd(...);
+					/* (STRING) 	 Account
+					 * (BYTE)		 Friend Type
+					 * (BYTE)		 Friend Status
+					 * (DWORD)		 ProductID
+					 * (STRING) 	 Location
+					 */
+					String fAccount = is.readNTString();
+					byte fLocation = is.readByte();
+					byte fStatus = is.readByte();
+					int fProduct = is.readDWord();
+					String fLocationName = is.readNTString();
+
+					friendsAdd(new FriendEntry(fAccount, fStatus, fLocation, fProduct, fLocationName));
 					break;
 				}
 				
 				case BNCSCommandIDs.SID_FRIENDSREMOVE: {
-					// TODO: friendsRemove(...);
+					/* (BYTE)		 Entry Number
+					 */
+					byte entry = is.readByte();
+					
+					friendsRemove(entry);
 					break;
 				}
 				
 				case BNCSCommandIDs.SID_FRIENDSPOSITION: {
-					// TODO: friendsPosition(...);
+					/* (BYTE)		 Old Position
+					 * (BYTE)		 New Position
+					 */
+					byte oldPosition = is.readByte();
+					byte newPosition = is.readByte();
+					
+					friendsPosition(oldPosition, newPosition);
 					break;
 				}
 				

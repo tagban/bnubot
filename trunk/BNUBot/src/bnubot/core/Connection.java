@@ -506,11 +506,35 @@ public abstract class Connection extends Thread implements EventHandler {
 		eh_semaphor--;
 	}
 	
-	public synchronized void friendsUpdate(byte entry, byte location, byte status, int product, String locationName) {
+	public synchronized void friendsUpdate(FriendEntry friend) {
 		eh_semaphor++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
-			it.next().friendsUpdate(entry, location, status, product, locationName);
+			it.next().friendsUpdate(friend);
+		eh_semaphor--;
+	}
+	
+	public synchronized void friendsAdd(FriendEntry friend) {
+		eh_semaphor++;
+		Iterator<EventHandler> it = eventHandlers.iterator();
+		while(it.hasNext())
+			it.next().friendsAdd(friend);
+		eh_semaphor--;
+	}
+	
+	public void friendsRemove(byte entry) {
+		eh_semaphor++;
+		Iterator<EventHandler> it = eventHandlers.iterator();
+		while(it.hasNext())
+			it.next().friendsRemove(entry);
+		eh_semaphor--;
+	}
+	
+	public void friendsPosition(byte oldPosition, byte newPosition) {
+		eh_semaphor++;
+		Iterator<EventHandler> it = eventHandlers.iterator();
+		while(it.hasNext())
+			it.next().friendsPosition(oldPosition, newPosition);
 		eh_semaphor--;
 	}
 	
