@@ -70,4 +70,24 @@ public class FriendList extends JPanel {
 			friends.put(entry.getAccount(), fi);
 		}
 	}
+	
+	public void update(FriendEntry friend) {
+		//TODO: implement
+		System.out.println("TODO: Implement FriendList.update(" + friend + ")");
+	}
+	
+	public void add(FriendEntry friend) {
+		//TODO: implement
+		System.out.println("TODO: Implement FriendList.add(" + friend + ")");
+	}
+	
+	public void position(byte oldPosition, byte newPosition) {
+		//TODO: implement
+		System.out.println("TODO: Implement FriendList.position(" + oldPosition + "," + newPosition + ")");
+	}
+	
+	public void remove(byte entry) {
+		//TODO: implement
+		System.out.println("TODO: Implement FriendList.remove(" + entry + ")");
+	}
 }

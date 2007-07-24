@@ -317,7 +317,21 @@ public class GuiEventHandler implements EventHandler {
 		friendList.showFriends(entries);
 	}
 	
-	public void friendsUpdate(byte entry, byte location, byte status, int product, String locationName) {}
+	public void friendsUpdate(FriendEntry friend) {
+		friendList.update(friend);
+	}
+	
+	public void friendsAdd(FriendEntry friend) {
+		friendList.add(friend);
+	}
+	
+	public void friendsPosition(byte oldPosition, byte newPosition) {
+		friendList.position(oldPosition, newPosition);
+	}
+	
+	public void friendsRemove(byte entry) {
+		friendList.remove(entry);
+	}
 
 	public void clanMOTD(Object cookie, String text) {
 		if(cookie instanceof ClanMOTDEditor) {
@@ -332,15 +346,15 @@ public class GuiEventHandler implements EventHandler {
 	}
 	
 	public void clanMemberRemoved(String username) {
-		//TODO: implement
+		clanList.remove(username);
 	}
 	
 	public void clanMemberStatusChange(ClanMember member) {
-		//TODO: implement
+		clanList.statusChange(member);
 	}
 	
 	public void clanMemberRankChange(byte oldRank, byte newRank, String user) {
-		//TODO: implement
+		clanList.rankChange(oldRank, newRank, user);
 	}
 	
 	public void queryRealms2(String[] realms) {
