@@ -36,7 +36,10 @@ public interface EventHandler {
 	
 	//Friends
 	public void friendsList(FriendEntry[] entries);
-	public void friendsUpdate(byte entry, byte location, byte status, int product, String locationName);
+	public void friendsUpdate(FriendEntry friend);
+	public void friendsAdd(FriendEntry friend);
+	public void friendsRemove(byte entry);
+	public void friendsPosition(byte oldPosition, byte newPosition);
 	
 	//Clan
 	public void clanMOTD(Object cookie, String text);
