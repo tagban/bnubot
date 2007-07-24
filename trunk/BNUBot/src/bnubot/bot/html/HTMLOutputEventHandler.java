@@ -116,31 +116,31 @@ public class HTMLOutputEventHandler implements EventHandler {
 		if(writeUserListRunnable == null)
 			writeUserListRunnable = new Runnable() {
 				public void run() {
-					try {
-						if(!generationNeeded)
-							return;
-						generationNeeded = false;
-						
-						File f = new File("html/userlist.html");
+					if(!generationNeeded)
+						return;
+					generationNeeded = false;
 					
-						String out = "<table><tr><td colspan=\"4\"><b>";
-						out += channel;
-						out += "</b> (";
-						out += users.size();
-						out += ")</td></tr>";
+					try {
+						File f = new File("html/userlist.html");
+						DataOutputStream fos = new DataOutputStream(new FileOutputStream(f));
+						
+						fos.write("<table><tr><td colspan=\"4\"><b>".getBytes());
+						fos.write(channel.getBytes());
+						fos.write("</b> (".getBytes());
+						fos.write(Integer.toString(users.size()).getBytes());
+						fos.write(")</td></tr>".getBytes());
 
 						for(UserInfo ui : users.toArray(new UserInfo[users.size()])) {
 							String product = getIcon(ui.statstr.getProduct(), ui.statstr.getIcon(), ui.user.getFlags());
 							
-							out += "<tr>";
-							out += "<td><img src=\"images/" + product + ".jpg\"></td>";
-							out += "<td>" + ui.user.getFullLogonName() + "</td>";
-							out += "<td>" + ui.user.getPing() + "ms</td>";
-							out += "</tr>";
+							fos.write("<tr>".getBytes());
+							fos.write(("<td><img src=\"images/" + product + ".jpg\"></td>").getBytes());
+							fos.write(("<td>" + ui.user.getFullLogonName() + "</td>").getBytes());
+							fos.write(("<td>" + ui.user.getPing() + "ms</td>").getBytes());
+							fos.write("</tr>".getBytes());
 						}
 			
-						DataOutputStream fos = new DataOutputStream(new FileOutputStream(f));
-						fos.write(out.getBytes());
+						fos.close();
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
