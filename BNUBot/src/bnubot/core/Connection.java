@@ -515,12 +515,28 @@ public abstract class Connection extends Thread implements EventHandler {
 	}
 	
 	// Clan
+	
+	public synchronized void clanMOTD(Object cookie, String text) {
+		eh_semaphor++;
+		Iterator<EventHandler> it = eventHandlers.iterator();
+		while(it.hasNext())
+			it.next().clanMOTD(cookie, text);
+		eh_semaphor--;
+	}
 
 	public synchronized void clanMemberList(ClanMember[] members) {
 		eh_semaphor++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().clanMemberList(members);
+		eh_semaphor--;
+	}
+	
+	public synchronized void clanMemberRemoved(String username) {
+		eh_semaphor++;
+		Iterator<EventHandler> it = eventHandlers.iterator();
+		while(it.hasNext())
+			it.next().clanMemberRemoved(username);
 		eh_semaphor--;
 	}
 	
@@ -532,11 +548,11 @@ public abstract class Connection extends Thread implements EventHandler {
 		eh_semaphor--;
 	}
 	
-	public synchronized void clanMOTD(Object cookie, String text) {
+	public synchronized void clanMemberStatusChange(ClanMember member) {
 		eh_semaphor++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
-			it.next().clanMOTD(cookie, text);
+			it.next().clanMemberStatusChange(member);
 		eh_semaphor--;
 	}
 }

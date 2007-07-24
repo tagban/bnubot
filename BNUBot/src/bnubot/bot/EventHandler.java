@@ -39,7 +39,10 @@ public interface EventHandler {
 	public void friendsUpdate(byte entry, byte location, byte status, int product, String locationName);
 	
 	//Clan
-	public void clanMemberList(ClanMember[] members);
-	public void clanMemberRankChange(byte oldRank, byte newRank, String user);
 	public void clanMOTD(Object cookie, String text);
+	public void clanMemberList(ClanMember[] members);
+	public void clanMemberRemoved(String username);
+	public void clanMemberStatusChange(ClanMember member);
+	public void clanMemberRankChange(byte oldRank, byte newRank, String user);
+	//CLANMEMBERINFORMATION
 }

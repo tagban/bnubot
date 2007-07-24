@@ -1103,7 +1103,7 @@ public class BNCSConnection extends Connection {
 					myClanRank = is.readByte();
 					titleChanged();
 					
-					// TODO: clanInfo(myClan, myClanRank);
+					//TODO: clanInfo(myClan, myClanRank);
 					
 					// Get clan list
 					BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_CLANMEMBERLIST);
@@ -1189,8 +1189,28 @@ public class BNCSConnection extends Connection {
 					break;
 				}
 				
-				// TODO: SID_CLANMEMBERREMOVED
-				// TODO: SID_CLANMEMBERSTATUSCHANGE
+				case BNCSCommandIDs.SID_CLANMEMBERREMOVED: {
+					/* (STRING) 	 Username
+					 */
+					String username = is.readNTString();
+					clanMemberRemoved(username);
+					break;
+				}
+
+				case BNCSCommandIDs.SID_CLANMEMBERSTATUSCHANGE: {
+					/* (STRING) 	 Username
+					 * (BYTE)		 Rank
+					 * (BYTE)		 Status
+					 * (STRING) 	 Location
+					 */
+					String username = is.readNTString();
+					byte rank = is.readByte();
+					byte status = is.readByte();
+					String location = is.readNTString();
+					
+					clanMemberStatusChange(new ClanMember(username, rank, status, location));
+					break;
+				}
 				
 				case BNCSCommandIDs.SID_CLANMEMBERRANKCHANGE: {
 					/* (BYTE)		 Old rank
