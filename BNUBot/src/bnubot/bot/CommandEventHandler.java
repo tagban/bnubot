@@ -163,7 +163,9 @@ public class CommandEventHandler implements EventHandler {
 						
 						ResultSet rsSubjectAccount = d.getAccount(params[0]);
 						if(!rsSubjectAccount.next()) {
+							d.close(rsSubjectAccount);
 							c.sendChat(user, "That user does not have an account. See %trigger%createaccount and %trigger%setaccount.", wasWhispered);
+							break;
 						}
 
 						long targetAccess = Long.parseLong(params[1]);
@@ -179,6 +181,7 @@ public class CommandEventHandler implements EventHandler {
 						rsSubjectAccount.updateLong("access", targetAccess);
 						rsSubjectAccount.updateTimestamp("lastRankChange", new Timestamp(new Date().getTime()));
 						rsSubjectAccount.updateRow();
+						d.close(rsSubjectAccount);
 						c.sendChat(user, "Added user [" + subjectAccount + "] successfully with access " + targetAccess, wasWhispered);
 					} catch(InvalidUseException e) {
 						c.sendChat(user, "Use: %trigger%add <account> <access>", wasWhispered);
@@ -316,15 +319,19 @@ public class CommandEventHandler implements EventHandler {
 					
 					ResultSet rsAccount = d.getAccount(params[0]);
 					if(rsAccount.next()) {
+						d.close(rsAccount);
 						c.sendChat(user, "The account [" + params[0] + "] already exists", wasWhispered);
 						break;
 					}
+					d.close(rsAccount);
 					
 					rsAccount = d.createAccount(params[0], 0L, commanderAccountID);
 					if(!rsAccount.next()) {
+						d.close(rsAccount);
 						c.sendChat(user, "Failed to create account [" + params[0] + "] for an unknown reason", wasWhispered);
 						break;
 					}
+					d.close(rsAccount);
 					
 					c.sendChat(user, "The account [" + params[0] + "] has been created", wasWhispered);
 					break;
@@ -559,7 +566,8 @@ public class CommandEventHandler implements EventHandler {
 					}
 					
 					ResultSet rsSubjectAccount = d.getAccount(params[1]);
-					if((rsSubjectAccount != null) && rsSubjectAccount.next()) {
+					if(rsSubjectAccount.next()) {
+						d.close(rsSubjectAccount);
 						c.sendChat(user, "That account already exists!", wasWhispered);
 						break;
 					}
@@ -729,10 +737,12 @@ public class CommandEventHandler implements EventHandler {
 					if(params.length == 2) {
 						ResultSet rsSubjectAccount = d.getAccount(params[1]);
 						if(!rsSubjectAccount.next()) {
+							d.close(rsSubjectAccount);
 							c.sendChat(user, "The account [" + params[1] + "] does not exist!", wasWhispered);
 							break;
 						}
 						newAccount = rsSubjectAccount.getLong("id");
+						d.close(rsSubjectAccount);
 					}
 
 					if(newAccount == null) {
