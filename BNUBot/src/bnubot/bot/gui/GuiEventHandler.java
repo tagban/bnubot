@@ -26,6 +26,7 @@ public class GuiEventHandler implements EventHandler {
 	private JTextArea channelTextArea = null;
 	private UserList userList = null;
 	private FriendList friendList = null;
+	private ClanList clanList = null;
 	private RealmWindow w = null;
 	
 	public void initialize(Connection c) {
@@ -215,12 +216,13 @@ public class GuiEventHandler implements EventHandler {
 		userList = new UserList(cs, c, this);
 		//Friends list
 		friendList = new FriendList(cs);
-		
+		//Clan list
+		clanList = new ClanList(cs);
 		
 		JTabbedPane allLists = new JTabbedPane();
 		allLists.addTab("Channel", userList);
 		allLists.addTab("Friends", friendList);
-		allLists.addTab("Clan", null);
+		allLists.addTab("Clan", clanList);
 		
 		//Add them to the frame
 		frame.add(mainTextArea);
@@ -316,8 +318,6 @@ public class GuiEventHandler implements EventHandler {
 	}
 	
 	public void friendsUpdate(byte entry, byte location, byte status, int product, String locationName) {}
-	public void clanMemberRankChange(byte oldRank, byte newRank, String user) {}
-	public void clanMemberList(ClanMember[] members) {}
 
 	public void clanMOTD(Object cookie, String text) {
 		if(cookie instanceof ClanMOTDEditor) {
@@ -327,6 +327,22 @@ public class GuiEventHandler implements EventHandler {
 		}
 	}
 
+	public void clanMemberList(ClanMember[] members) {
+		clanList.showMembers(members);
+	}
+	
+	public void clanMemberRemoved(String username) {
+		//TODO: implement
+	}
+	
+	public void clanMemberStatusChange(ClanMember member) {
+		//TODO: implement
+	}
+	
+	public void clanMemberRankChange(byte oldRank, byte newRank, String user) {
+		//TODO: implement
+	}
+	
 	public void queryRealms2(String[] realms) {
 		if(w == null)
 			w = new RealmWindow(realms);

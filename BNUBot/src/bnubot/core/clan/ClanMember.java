@@ -1,19 +1,23 @@
 package bnubot.core.clan;
 
 public class ClanMember {
-	String name;
+	String username;
 	byte rank;
 	byte online;
 	String location;
 	
-	public ClanMember(String name, byte rank, byte online, String location) {
-		this.name = name;
+	public ClanMember(String username, byte rank, byte online, String location) {
+		this.username = username;
 		this.rank = rank;
 		this.online = online;
 		this.location = location;
 	}
 	
+	public String getUsername() {
+		return username;
+	}
+	
 	public String toString() {
-		return name + " (" + ClanRankIDs.ClanRank[rank] + ", online=" + online + ", location=" + location + ")";
+		return username + " (" + ClanRankIDs.ClanRank[rank] + ", online=" + online + ", location=" + location + ")";
 	}
 }
