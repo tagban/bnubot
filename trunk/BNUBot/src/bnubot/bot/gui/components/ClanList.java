@@ -68,5 +68,20 @@ public class ClanList extends JPanel {
 			this.members.put(member.getUsername(), cmi);
 		}
 	}
+	
+	public void remove(String username) {
+		//TODO: implement
+		System.out.println("TODO: Implement ClanList.remove(" + username + ")");
+	}
+	
+	public void statusChange(ClanMember member) {
+		//TODO: implement
+		System.out.println("TODO: Implement ClanList.statusChange(" + member + ")");
+	}
+	
+	public void rankChange(byte oldRank, byte newRank, String user) {
+		//TODO: implement
+		System.out.println("TODO: Implement ClanList.rankChange(" + oldRank + "," + newRank + "," + user + ")");
+	}
 
 }
