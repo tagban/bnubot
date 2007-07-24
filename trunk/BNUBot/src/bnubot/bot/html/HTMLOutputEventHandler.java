@@ -154,14 +154,16 @@ public class HTMLOutputEventHandler implements EventHandler {
 
 	public void friendsList(FriendEntry[] entries) {}
 	public void friendsUpdate(byte entry, byte location, byte status, int product, String locationName) {}
-	public void clanMemberRankChange(byte oldRank, byte newRank, String user) {}
-	public void clanMemberList(ClanMember[] members) {}
-	public void clanMOTD(Object cookie, String text) {}
 	public void logonRealmEx(int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName) {}
 	public void queryRealms2(String[] realms) {}
 
 	public void parseCommand(BNetUser user, String command, String param, boolean wasWhispered) {}
-	
+
+	public void clanMOTD(Object cookie, String text) {}
+	public void clanMemberList(ClanMember[] members) {}
+	public void clanMemberRemoved(String username) {}
+	public void clanMemberStatusChange(ClanMember member) {}
+	public void clanMemberRankChange(byte oldRank, byte newRank, String user) {}
 
 	private void logChat(String text) {
 		String fName = "Logs/";
