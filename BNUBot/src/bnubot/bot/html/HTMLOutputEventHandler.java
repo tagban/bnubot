@@ -134,7 +134,7 @@ public class HTMLOutputEventHandler implements EventHandler {
 							
 							out += "<tr>";
 							out += "<td><img src=\"images/" + product + ".jpg\"></td>";
-							out += "<td>" + ui.user + "</td>";
+							out += "<td>" + ui.user.getFullLogonName() + "</td>";
 							out += "<td>" + ui.user.getPing() + "ms</td>";
 							out += "</tr>";
 						}
@@ -143,7 +143,6 @@ public class HTMLOutputEventHandler implements EventHandler {
 						fos.write(out.getBytes());
 					} catch (Exception e) {
 						e.printStackTrace();
-						System.exit(1);
 					}
 				}
 			};
