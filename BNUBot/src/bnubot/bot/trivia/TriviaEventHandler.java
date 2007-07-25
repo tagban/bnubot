@@ -10,6 +10,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 
+import com.mysql.jdbc.PacketTooBigException;
+
 import bnubot.bot.EventHandler;
 import bnubot.bot.database.Database;
 import bnubot.core.BNetUser;
@@ -17,6 +19,7 @@ import bnubot.core.Connection;
 import bnubot.core.StatString;
 import bnubot.core.clan.ClanMember;
 import bnubot.core.friend.FriendEntry;
+import bnubot.util.HexDump;
 
 public class TriviaEventHandler implements EventHandler {
 	private boolean triviaEnabled = false;
@@ -53,8 +56,10 @@ public class TriviaEventHandler implements EventHandler {
 		while(defaultCategory.indexOf('\\') != -1)
 			defaultCategory = defaultCategory.split("\\\\", 2)[1];
 		
+		long linenumber = 0;
 		do {
 			String line = null;
+			linenumber++;
 			try {
 				line = is.readLine();
 			} catch (IOException e) {
@@ -70,8 +75,8 @@ public class TriviaEventHandler implements EventHandler {
 			
 			try {
 				trivia.add(new TriviaItem(line, defaultCategory));
-			} catch(Exception e) {
-				System.err.println("Failed to read line from " + fileName + ":\n\t" + line);
+			} catch(IllegalArgumentException e) {
+				System.err.println("Failed to parse line #" + linenumber + " from " + fileName + ": " + line);
 			}
 		} while(true);
 		
