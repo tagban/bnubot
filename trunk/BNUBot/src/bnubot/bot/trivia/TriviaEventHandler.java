@@ -45,6 +45,14 @@ public class TriviaEventHandler implements EventHandler {
 			System.exit(1);
 		}
 		
+		String defaultCategory = fileName;
+		if(defaultCategory.indexOf('.') != -1)
+			defaultCategory = defaultCategory.split("\\.", 2)[0];
+		while(defaultCategory.indexOf('/') != -1)
+			defaultCategory = defaultCategory.split("\\/", 2)[1];
+		while(defaultCategory.indexOf('\\') != -1)
+			defaultCategory = defaultCategory.split("\\\\", 2)[1];
+		
 		do {
 			String line = null;
 			try {
@@ -60,12 +68,10 @@ public class TriviaEventHandler implements EventHandler {
 			if(line.length() == 0)
 				continue;
 			
-			String qa[] = line.split("\\*", 2);
-			if(qa.length == 2) {
-				if("Scramble".equals(qa[0]))
-					trivia.add(new TriviaItem(qa[1]));
-				else
-					trivia.add(new TriviaItem(qa[0], qa[1]));
+			try {
+				trivia.add(new TriviaItem(line, defaultCategory));
+			} catch(Exception e) {
+				System.err.println("Failed to read line from " + fileName + ":\n\t" + line);
 			}
 		} while(true);
 		
@@ -124,8 +130,16 @@ public class TriviaEventHandler implements EventHandler {
 					}
 					
 					TriviaItem ti = trivia.remove((int)(Math.random() * trivia.size()));
-					c.sendChat("/me - Question: " + ti.getQuestion() + " - Hint: " + ti.getHint0());
-					//c.recieveInfo("Answer: " + ti.getAnswer());
+					
+					if(true) {
+						String q = "/me";
+						if(ti.getCategory() != null)
+							q += " - Category: " + ti.getCategory();
+						q += " - Question: " + ti.getQuestion();
+						q += " - Hint: " + ti.getHint0();
+						c.sendChat(q);
+						//c.recieveInfo("Answer: " + ti.getAnswer());
+					}
 					
 					triviaAnswers = ti.getAnswers();
 					gotAnswer = false;
@@ -266,6 +280,7 @@ public class TriviaEventHandler implements EventHandler {
 				showLeaderBoard();
 		} else {
 			if(triviaAnswers != null) {
+				text = text.trim();
 				for(String triviaAnswer : triviaAnswers) {
 					if(triviaAnswer.compareToIgnoreCase(text) == 0) {
 						gotAnswer = true;
