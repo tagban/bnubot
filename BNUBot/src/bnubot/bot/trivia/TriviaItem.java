@@ -3,6 +3,7 @@ package bnubot.bot.trivia;
 import java.util.ArrayList;
 
 public class TriviaItem {
+	private String category;
 	private String question;
 	private String[] answers;
 	private String hint0;
@@ -21,6 +22,17 @@ public class TriviaItem {
 		return out;
 	}
 	
+	private boolean isAlphaNumeric(byte b) {
+		if((b >= 'a') && (b <= 'z'))
+			return true;
+		if((b >= 'A') && (b <= 'Z'))
+			return true;
+		if((b >= '0') && (b <= '9'))
+			return true;
+		
+		return false;
+	}
+	
 	private void makeHints() {
 		byte[] a = answers[0].getBytes();
 		hint0 = "";
@@ -28,24 +40,7 @@ public class TriviaItem {
 		hint2 = "";
 		int numHidden = 0;
 		for(int i = 0; i < a.length; i++) {
-			switch(a[i]) {
-			case ' ':
-			case '.':
-			case '!':
-			case '@':
-			case '#':
-			case '$':
-			case '%':
-			case '^':
-			case '&':
-			case '*':
-			case '(':
-			case ')':
-				hint0 += (char)a[i];
-				hint1 += (char)a[i];
-				hint2 += (char)a[i];
-				break;
-			default:
+			if(isAlphaNumeric(a[i])) {
 				numHidden++;
 				if(numHidden % 3 < 2) { //(Math.random() * 3 < 2) {
 					hint0 += '?';
@@ -59,21 +54,53 @@ public class TriviaItem {
 					hint1 += (char)a[i];
 					hint2 += (char)a[i];
 				}
+			} else {
+				hint0 += (char)a[i];
+				hint1 += (char)a[i];
+				hint2 += (char)a[i];
 			}
 		}
 	}
+
+	public TriviaItem(String line) {
+		this(line, null);
+	}
 	
-	public TriviaItem(String scramble) {
-		this.question = "Scramble: " + scrambleWord(scramble);
-		this.answers = new String[1];
-		this.answers[0] = scramble;
+	public TriviaItem(String line, String defaultCategory) {
+		if(line.charAt(0) == '/') {
+			// "/category/answer1/answer2//question"
+			String qa[] = line.split("//", 2);
+			String ca[] = qa[0].split("/");
+			this.category = ca[1];
+			this.question = qa[1];
+			this.answers = new String[ca.length - 2];
+			for(int i = 2; i < ca.length; i++)
+				this.answers[i-2] = ca[i];
+		} else {
+			// "Question*answer*answer2*..."
+			// "Scramble*word"
+			this.category = defaultCategory;
+			String qa[] = line.split("\\*", 2);
+			if(qa.length == 2) {
+				if("Scramble".equals(qa[0])) {
+					this.question = "Scramble: " + scrambleWord(qa[1]);
+					this.answers = new String[1];
+					this.answers[0] = qa[1];
+				} else {
+					this.question = qa[0];
+					this.answers = qa[1].split("\\*");
+				}
+			}
+		}
+		
+		for(int i = 0; i < this.answers.length; i++)
+			this.answers[i] = this.answers[i].trim();
+		
 		makeHints();
 	}
 	
-	public TriviaItem(String question, String answer) {
-		this.question = question;
-		this.answers = answer.split("\\*");
-		makeHints();
+	public String getCategory() {
+		return category;
 	}
 	
 	public String getQuestion() {
