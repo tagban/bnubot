@@ -10,8 +10,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 
-import com.mysql.jdbc.PacketTooBigException;
-
 import bnubot.bot.EventHandler;
 import bnubot.bot.database.Database;
 import bnubot.core.BNetUser;
@@ -19,7 +17,6 @@ import bnubot.core.Connection;
 import bnubot.core.StatString;
 import bnubot.core.clan.ClanMember;
 import bnubot.core.friend.FriendEntry;
-import bnubot.util.HexDump;
 
 public class TriviaEventHandler implements EventHandler {
 	private boolean triviaEnabled = false;
