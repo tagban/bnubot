@@ -61,10 +61,6 @@ public class TriviaItem {
 			}
 		}
 	}
-
-	public TriviaItem(String line) {
-		this(line, null);
-	}
 	
 	public TriviaItem(String line, String defaultCategory) {
 		if(line.charAt(0) == '/') {
@@ -80,7 +76,15 @@ public class TriviaItem {
 			// "Question*answer*answer2*..."
 			// "Scramble*word"
 			this.category = defaultCategory;
-			String qa[] = line.split("\\*", 2);
+			
+			String splitRegex = "\\*";
+			
+			String qa[] = line.split(splitRegex, 2);
+			if(qa.length != 2) {
+				splitRegex = "\\|";
+				qa = line.split(splitRegex, 2);
+			}
+			
 			if(qa.length == 2) {
 				if("Scramble".equals(qa[0])) {
 					this.question = "Scramble: " + scrambleWord(qa[1]);
@@ -88,9 +92,10 @@ public class TriviaItem {
 					this.answers[0] = qa[1];
 				} else {
 					this.question = qa[0];
-					this.answers = qa[1].split("\\*");
+					this.answers = qa[1].split(splitRegex);
 				}
-			}
+			} else
+				throw new IllegalArgumentException(line);
 		}
 		
 		for(int i = 0; i < this.answers.length; i++)
