@@ -25,7 +25,9 @@ public class FriendEntry {
 	}
 	
 	public String toString() {
-		return account + " (locationName=" + locationName + ")";
+		if(account != null)
+			return account + " (locationName=" + locationName + ")";
+		return entry + " (locationName=" + locationName + ")";
 	}
 
 	public String getAccount() {
