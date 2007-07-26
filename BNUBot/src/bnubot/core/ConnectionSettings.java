@@ -60,32 +60,22 @@ public class ConnectionSettings implements Serializable {
 	}
 	
 	public String isValid() {
-		if(bncsServer == null)
-			return "Server not set";
-		if(bncsServer.length() == 0)
+		if((bncsServer == null) || (bncsServer.length() == 0))
 			return "Server not set";
 		
 		if(port <= 0)
 			return "Port invalid";
 		
-		if(username == null)
-			return "Username not set";
-		if(username.length() == 0)
+		if((username == null) || (username.length() == 0))
 			return "Username not set";
 		
-		if(password == null)
-			return "Password not set";
-		if(password.length() == 0)
+		if((password == null) || (password.length() == 0))
 			return "Password not set";
 		
-		if(channel == null)
-			return "Channel unset";
-		if(channel.length() == 0)
+		if((channel == null) || (channel.length() == 0))
 			return "Channel unset";
 		
-		if(trigger == null)
-			return "Trigger not set";
-		if(trigger.length() != 1)
+		if((trigger == null) || (trigger.length() != 1))
 			return "Trigger invalid";
 
 		switch(product) {
@@ -106,31 +96,24 @@ public class ConnectionSettings implements Serializable {
 		case PRODUCT_STARCRAFTSHAREWARE:
 			break;
 		default:
-			if(cdkey == null)
-				return "CD key not set";
-			if(cdkey.length() == 0)
+			if((cdkey == null) || (cdkey.length() == 0))
 				return "CD key not set";
 				break;
 		}
 		
 		if(product == PRODUCT_LORDOFDESTRUCTION) {
-			if(cdkeyLOD == null)
-				return "LOD CD key not set";
-			if(cdkeyLOD.length() == 0)
+			if((cdkeyLOD == null) || (cdkeyLOD.length() == 0))
 				return "LOD CD key not set";
 		}
 		
 		if(product == PRODUCT_THEFROZENTHRONE) {
-			if(cdkeyTFT == null)
-				return "TFT CD key not set";
-			if(cdkeyTFT.length() == 0)
+			if((cdkeyTFT == null) || (cdkeyTFT.length() == 0))
 				return "TFT CD key not set";
 		}
 		
 		myRealm = getMyRealm();
-		if(myRealm == null) {
+		if(myRealm == null)
 			return "I don't know what realm I will be on";
-		}
 		
 		return null;
 	}

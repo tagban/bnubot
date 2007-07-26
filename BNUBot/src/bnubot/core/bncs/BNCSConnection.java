@@ -93,10 +93,10 @@ public class BNCSConnection extends Connection {
 	public void run() {
 		while(true) {
 			try {
-				if(forceReconnect)
+				if(forceReconnect && (cs.isValid() == null))
 					forceReconnect = false;
 				else {
-					if(!cs.autoconnect) {
+					if(!(cs.autoconnect && (cs.isValid() == null))) {
 						while(!isConnected()) {
 							yield();
 							sleep(10);
