@@ -29,10 +29,13 @@ public class DatabaseRankEditor extends JFrame {
 	private JTextArea txtPrefix;
 	private JTextArea txtVerbstr;
 	private JTextArea txtGreeting;
+	private JTextArea txtExpireDays;
 	private JTextArea txtAPDays;
 	private JTextArea txtAPWins;
 	private JTextArea txtAPD2Level;
 	private JTextArea txtAPW3Level;
+	private JButton cmdNew;
+	private JButton cmdDelete;
 	private JButton cmdApply;
 	private JButton cmdRevert;
 	
@@ -42,6 +45,9 @@ public class DatabaseRankEditor extends JFrame {
 		this.d = d;
 		
 		initializeGui();
+		pack();
+		setTitle("Database Rank Editor");
+		setAlwaysOnTop(true);
 		setVisible(true);
 	}
 	
@@ -194,6 +200,33 @@ public class DatabaseRankEditor extends JFrame {
 
 				boxLine = new Box(BoxLayout.X_AXIS);
 				{
+					boxLine.add(new JLabel("expireDays"));
+					
+					txtExpireDays = new JTextArea();
+					txtExpireDays.addFocusListener(new FocusListener() {
+						public void focusGained(FocusEvent arg0) {}
+						public void focusLost(FocusEvent arg0) {
+							if(rsRank != null) {
+								String txt = txtExpireDays.getText();
+								Long value = null;
+								try {value = Long.parseLong(txt);} catch(Exception e) {}
+								try {
+									if(value == null)
+										rsRank.updateNull("expireDays");
+									else
+										rsRank.updateLong("expireDays", value);
+								} catch (SQLException e) {
+									e.printStackTrace();
+								}
+							}
+						}
+					});
+					boxLine.add(txtExpireDays);
+				}
+				majorRows.add(boxLine);
+
+				boxLine = new Box(BoxLayout.X_AXIS);
+				{
 					boxLine.add(new JLabel("apDays"));
 					
 					txtAPDays = new JTextArea();
@@ -302,6 +335,41 @@ public class DatabaseRankEditor extends JFrame {
 
 				boxLine = new Box(BoxLayout.X_AXIS);
 				{
+					cmdNew = new JButton("New");
+					cmdNew.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent arg0) {
+							if(rsRank != null) {
+								d.close(rsRank);
+								rsRank = null;
+							}
+							try {
+								long rankid = d.createRank();
+								rebuildRanks();
+								displayEditor(rankid);
+							} catch (SQLException e) {
+								e.printStackTrace();
+							}
+						}
+					});
+					boxLine.add(cmdNew);
+					
+					cmdDelete = new JButton("Delete");
+					cmdDelete.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent arg0) {
+							try {
+								if(rsRank != null) {
+									rsRank.deleteRow();
+									d.close(rsRank);
+									rsRank = null;
+									rebuildRanks();
+								}
+							} catch (SQLException e) {
+								e.printStackTrace();
+							}
+						}
+					});
+					boxLine.add(cmdDelete);
+					
 					cmdApply = new JButton("Apply");
 					cmdApply.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent arg0) {
@@ -353,21 +421,34 @@ public class DatabaseRankEditor extends JFrame {
 			lstRanks.validate();
 	}
 	
-	private void displayEditor(long id) {
-		/* `id` INTEGER PRIMARY KEY NOT NULL,
+	private void displayEditor(Long id) {
+		/* `id` INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
 		 * `shortPrefix` VARCHAR(32),
 		 * `prefix` VARCHAR(32),
 		 * `verbstr` VARCHAR(64) NOT NULL,
 		 * `greeting` VARCHAR(255),
+		 * `expireDays` TINYINT NOT NULL DEFAULT '90',
 		 * `apDays` INTEGER DEFAULT NULL,
 		 * `apWins` INTEGER DEFAULT NULL,
 		 * `apD2Level` INTEGER DEFAULT NULL,
 		 * `apW3Level` INTEGER DEFAULT NULL
 		 */
-		
-		try {
-			if(rsRank != null)
+		if(id == null) {
+			txtID.setText(null);
+			txtShortPrefix.setText(null);
+			txtPrefix.setText(null);
+			txtVerbstr.setText(null);
+			txtGreeting.setText(null);
+			txtExpireDays.setText(null);
+			txtAPDays.setText(null);
+			txtAPWins.setText(null);
+			txtAPD2Level.setText(null);
+			txtAPW3Level.setText(null);
+		} else try {
+			if(rsRank != null) {
 				d.close(rsRank);
+				rsRank = null;
+			}
 			
 			rsRank = d.getRank(id);
 			rsRank.next();
@@ -376,6 +457,7 @@ public class DatabaseRankEditor extends JFrame {
 			txtPrefix.setText(rsRank.getString("prefix"));
 			txtVerbstr.setText(rsRank.getString("verbstr"));
 			txtGreeting.setText(rsRank.getString("greeting"));
+			txtExpireDays.setText(rsRank.getString("expireDays"));
 			txtAPDays.setText(rsRank.getString("apDays"));
 			txtAPWins.setText(rsRank.getString("apWins"));
 			txtAPD2Level.setText(rsRank.getString("apD2Level"));
@@ -383,5 +465,7 @@ public class DatabaseRankEditor extends JFrame {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		
+		pack();
 	}
 }
