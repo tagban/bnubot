@@ -100,6 +100,14 @@ public abstract class Connection extends Thread implements EventHandler {
 	}
 	
 	public void setConnected(boolean c) {
+		if(c) {
+			String v = cs.isValid();
+			if(v != null) {
+				recieveError(v);
+				return;
+			}
+		}
+		
 		connected = c;
 		
 		if(c)
