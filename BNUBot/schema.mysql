@@ -14,6 +14,7 @@ CREATE TABLE `rank` (
 	`prefix` VARCHAR(32),
 	`verbstr` VARCHAR(64) NOT NULL,
 	`greeting` VARCHAR(255),
+	`expireDays` TINYINT NOT NULL DEFAULT '90',
 	`apDays` INTEGER DEFAULT NULL,
 	`apWins` INTEGER DEFAULT NULL,
 	`apD2Level` INTEGER DEFAULT NULL,
