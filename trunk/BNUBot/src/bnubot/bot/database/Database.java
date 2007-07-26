@@ -314,6 +314,19 @@ public class Database {
 		return ps.executeQuery();
 	}
 	
+	public Long createRank() throws SQLException {
+		Statement stmt = createStatement();
+		stmt.executeUpdate("INSERT INTO `rank` (`id`) VALUES (NULL)");
+		ResultSet rs = stmt.getGeneratedKeys();
+		if(rs.next()) {
+			long id = rs.getLong(1);
+			close(stmt);
+			return id;
+		}
+		close(stmt);
+		return null;
+	}
+	
 	public ResultSet getRanks() throws SQLException {
 		return createStatement().executeQuery("SELECT * FROM `rank` ORDER BY `id` ASC");
 	}

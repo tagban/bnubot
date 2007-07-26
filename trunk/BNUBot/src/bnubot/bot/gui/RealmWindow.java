@@ -36,7 +36,8 @@ public class RealmWindow extends JFrame implements EventHandler, RealmEventHandl
 		
 		initializeGUI();
 		
-		setBounds(0, 0, 300, 150);
+		pack();
+		setAlwaysOnTop(true);
 	}
 	
 	public void initializeGUI() {
