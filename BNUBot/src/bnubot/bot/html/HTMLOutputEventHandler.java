@@ -130,7 +130,8 @@ public class HTMLOutputEventHandler implements EventHandler {
 						DataOutputStream fos = new DataOutputStream(new FileOutputStream(f));
 						
 						fos.write("<table><tr><td colspan=\"4\"><b>".getBytes());
-						fos.write(channel.getBytes());
+						if(channel != null)
+							fos.write(channel.getBytes());
 						fos.write("</b> (".getBytes());
 						fos.write(Integer.toString(users.size()).getBytes());
 						fos.write(")</td></tr>".getBytes());
