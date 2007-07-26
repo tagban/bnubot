@@ -1,6 +1,6 @@
 /**
  * This file is distributed under the GPL 
- * $Id: $
+ * $Id$
  */
 
 package bnubot.util;
