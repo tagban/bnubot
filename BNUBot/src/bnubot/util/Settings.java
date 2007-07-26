@@ -16,7 +16,7 @@ public class Settings {
 		if(props != null)
 			return;
 		
-		props = new Properties();
+		props = new SortedProperties();
 		propsFile = new File("settings.ini");
 		
 		if(propsFile.exists()) try {
