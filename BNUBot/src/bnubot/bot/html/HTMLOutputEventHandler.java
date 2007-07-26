@@ -193,7 +193,7 @@ public class HTMLOutputEventHandler implements EventHandler {
 	}
 	
 	private String getDate() {
-		return String.format("[%1$tH:%1$tM:%1$tS] ", new GregorianCalendar());
+		return getColor(cs.getTimeStampColor()) + String.format("[%1$tH:%1$tM:%1$tS] ", new GregorianCalendar());
 	}
 	
 	private String getColor(Color col) {
