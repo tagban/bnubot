@@ -216,15 +216,14 @@ public class TriviaEventHandler implements EventHandler {
 						
 						try {
 							long total = d.getTriviaSum();
-							if(total > 500) {
+							if(total > 100) {
 								String out = "The trivia round is over! Congratulations to ";
 								out += d.resetTrivia();
 								out += " for winning the round!";
 								c.sendChat(out);
 							}
-						} catch (SQLException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
+						} catch (SQLException e) {
+							e.printStackTrace();
 						}
 					} else {
 						String correct = " The correct answer was \"" + triviaAnswers[0] + "\"";
