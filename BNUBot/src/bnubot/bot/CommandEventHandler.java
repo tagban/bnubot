@@ -1126,9 +1126,13 @@ public class CommandEventHandler implements EventHandler {
 			//check for birthdays
 			Date birthday = rsAccount.getDate("birthday");
 			if(!rsAccount.wasNull()) {
+				SimpleDateFormat sdf = new SimpleDateFormat("M-d");
+
 				Date today = new Date();
-				if( (today.getMonth() == birthday.getMonth())
-				&& (today.getDay() == birthday.getDay())) {
+				String s1 = sdf.format(today);
+				String s2 = sdf.format(new Date(birthday.getTime()));
+				
+				if(s1.equals(s2)) {
 					int age = today.getYear() - birthday.getYear();
 					c.sendChat("Happy birthday, " + user + "! Today, you are " + age + " years old!");
 				}
