@@ -175,20 +175,25 @@ public class ConnectionSettings implements Serializable {
 		Settings.write(header, "cdkeyTFT", cdkeyTFT);
 		if(product != 0)
 		Settings.write(header, "product", util.Constants.prods[product-1]);
-		Settings.write(header, "colorScheme", Byte.toString(colorScheme));
-		Settings.write(header, "trigger", trigger);
 		Settings.write(header, "antiidle", antiIdle);
 		Settings.write(header, "enableAntiidle", Boolean.toString(enableAntiIdle));
 		Settings.write(header, "autoconnect", Boolean.toString(autoconnect));
-		Settings.write(header, "enableCLI", Boolean.toString(enableCLI));
-		Settings.write(header, "enableGUI", Boolean.toString(enableGUI));
-		Settings.write(header, "enableCommands", Boolean.toString(enableCommands));
-		Settings.write(header, "enableTrivia", Boolean.toString(enableTrivia));
-		Settings.write(header, "packetLog", Boolean.toString(packetLog));
-		Settings.write(header, "whisperBack", Boolean.toString(whisperBack));
-		Settings.write(header, "recruitAccess", Long.toString(recruitAccess));
-		Settings.write(header, "recruitTagPrefix", recruitTagPrefix);
-		Settings.write(header, "recruitTagSuffix", recruitTagSuffix);
+		
+		if(botNum == 1) {
+			Settings.write(header, "colorScheme", Byte.toString(colorScheme));
+			Settings.write(header, "trigger", trigger);
+			Settings.write(header, "enableCLI", Boolean.toString(enableCLI));
+			Settings.write(header, "enableGUI", Boolean.toString(enableGUI));
+			Settings.write(header, "enableCommands", Boolean.toString(enableCommands));
+			Settings.write(header, "enableTrivia", Boolean.toString(enableTrivia));
+			Settings.write(header, "packetLog", Boolean.toString(packetLog));
+			Settings.write(header, "whisperBack", Boolean.toString(whisperBack));
+			Settings.write(header, "recruitAccess", Long.toString(recruitAccess));
+			Settings.write(header, "recruitTagPrefix", recruitTagPrefix);
+			Settings.write(header, "recruitTagSuffix", recruitTagSuffix);
+		}
+		
+		Settings.store();
 	}
 	
 	public void load(int botNum) {
@@ -221,7 +226,7 @@ public class ConnectionSettings implements Serializable {
 		enableAntiIdle = Boolean.parseBoolean(
 				Settings.read(header, "enableAntiidle", "false"));
 		autoconnect = Boolean.parseBoolean(
-					Settings.read(header, "autoconnect", "false"));
+					Settings.read(header, "autoconnect", "true"));
 		enableCLI = Boolean.parseBoolean(
 					Settings.read(header, "enableCLI", "false"));
 		enableGUI = Boolean.parseBoolean(

@@ -32,6 +32,7 @@ public class Settings {
 	
 	public static String read(String Header, String Setting, String Default) {
 		init();
+		
 		String s = props.getProperty(getKey(Header, Setting));
 		if(s != null)
 			return s;
@@ -46,6 +47,10 @@ public class Settings {
 			Value = new String();
 		
 		props.setProperty(key, Value);
+	}
+
+	public static void store() {
+		init();
 		
 		try {
 			FileOutputStream fos = new FileOutputStream(propsFile);
