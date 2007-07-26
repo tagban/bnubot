@@ -1,3 +1,8 @@
+/**
+ * This file is distributed under the GPL 
+ * $Id$
+ */
+
 package bnubot.core.bnftp;
 
 import java.io.*;

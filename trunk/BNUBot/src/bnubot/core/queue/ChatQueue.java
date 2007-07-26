@@ -1,3 +1,8 @@
+/**
+ * This file is distributed under the GPL 
+ * $Id$
+ */
+
 package bnubot.core.queue;
 
 import java.util.Iterator;

@@ -1,3 +1,8 @@
+/**
+ * This file is distributed under the GPL 
+ * $Id$
+ */
+
 package bnubot.bot.trivia;
 
 import java.io.BufferedReader;

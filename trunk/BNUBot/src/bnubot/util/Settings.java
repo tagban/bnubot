@@ -1,3 +1,8 @@
+/**
+ * This file is distributed under the GPL 
+ * $Id: Version.java 433 2007-07-26 15:13:53Z scotta $
+ */
+
 package bnubot.util;
 
 import java.io.File;
