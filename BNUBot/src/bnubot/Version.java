@@ -16,11 +16,8 @@ public final class Version {
 	
 	public static final Long revision() {
 		String rev = "$Revision$";
-		char c = rev.charAt(0);
-		while(((c < '0') || (c > '9')) && (rev.length() > 0)) {
-			rev = rev.substring(1);
-			c = rev.charAt(0);
-		}
+		rev = rev.substring(rev.indexOf(' ') + 1);
+		rev = rev.substring(0, rev.indexOf(' '));
 		return Long.parseLong(rev);
 	}
 	
