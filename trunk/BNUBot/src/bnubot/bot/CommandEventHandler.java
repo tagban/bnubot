@@ -8,6 +8,7 @@ package bnubot.bot;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import bnubot.Version;
@@ -771,6 +772,39 @@ public class CommandEventHandler implements EventHandler {
 					c.sendChat(user, "User [" + subject + "] was added to account [" + params[1] + "] successfully.", wasWhispered);
 					break;
 				}
+				if(command.equals("setbirthday")) {
+					if(commanderAccountID == null) {
+						c.sendChat(user, "You must have an account to use setbirthday.", wasWhispered);
+						break;
+					}
+					
+					try {
+						if(params == null)
+							throw new InvalidUseException();
+						
+						Date bd = null;
+						try {
+							SimpleDateFormat sdf = new SimpleDateFormat("M/d/y");
+							bd = sdf.parse(param);
+						} catch(Exception e) {
+							e.printStackTrace();
+						}
+						if(bd == null)
+							throw new InvalidUseException();
+						
+						ResultSet rsAccount = d.getAccount(commanderAccountID);
+						if(!rsAccount.next())
+							throw new SQLException();
+						rsAccount.updateDate("birthday", new java.sql.Date(bd.getTime()));
+						rsAccount.updateRow();
+						d.close(rsAccount);
+						
+						c.sendChat(user, "Your birthday has been set to [ " + new SimpleDateFormat("M/d/y").format(bd) + " ]", wasWhispered);
+					} catch(InvalidUseException e) {
+						c.sendChat(user, "Use: %trigger%setbirthday <date:MM/DD/YY>", wasWhispered);
+					}
+					break;
+				}
 				if(command.equals("setrank")) {
 					int newRank;
 					try {
@@ -933,6 +967,10 @@ public class CommandEventHandler implements EventHandler {
 						long subjectAccess = rsSubjectAccount.getLong("access");
 						ResultSet rsSubjectRank = d.getRank(subjectAccess);
 						
+						Date subjectBirthday = rsSubjectAccount.getDate("birthday");
+						if(rsSubjectAccount.wasNull())
+							subjectBirthday = null;
+						
 						if(rsSubjectRank.next()) {
 							if(bnSubject == null) {
 								String prefix = rsSubjectRank.getString("shortPrefix");
@@ -954,6 +992,13 @@ public class CommandEventHandler implements EventHandler {
 						}
 						d.close(rsSubjectRank);
 						
+						if(subjectBirthday != null) {
+							double age = (double)(new Date().getTime() - subjectBirthday.getTime());
+							age /= 1000 * 60 * 60 * 24 * 365.24;
+							age = Math.floor(age * 100) / 100;
+							result += ", who is " + Double.toString(age) + " years old";
+						}
+						
 						// Append aliases
 						ArrayList<String> aliases = new ArrayList<String>();
 						Timestamp lastSeen = null;
@@ -971,7 +1016,7 @@ public class CommandEventHandler implements EventHandler {
 						d.close(rsSubject);
 
 						if(lastSeen != null) {
-							result += " who was last seen [ ";
+							result += ", who was last seen [ ";
 							result += TimeFormatter.formatTime(new Date().getTime() - lastSeen.getTime());
 							result += " ] ago";
 						}
@@ -979,7 +1024,6 @@ public class CommandEventHandler implements EventHandler {
 						if((rsCreatorAccount != null) && rsCreatorAccount.next()) {
 							result += ", was recruited by ";
 							result += rsCreatorAccount.getString("name");
-							
 						}
 						
 						boolean andHasAliases = false;
@@ -1073,13 +1117,24 @@ public class CommandEventHandler implements EventHandler {
 			}
 			d.close(rsUser);
 			
-			//check for autopromotions
 			ResultSet rsAccount = d.getAccount(user);
 			if(!rsAccount.next()) {
 				d.close(rsAccount);
 				return;
 			}
 			
+			//check for birthdays
+			Date birthday = rsAccount.getDate("birthday");
+			if(!rsAccount.wasNull()) {
+				Date today = new Date();
+				if( (today.getMonth() == birthday.getMonth())
+				&& (today.getDay() == birthday.getDay())) {
+					int age = today.getYear() - birthday.getYear();
+					c.sendChat("Happy birthday, " + user + "! Today, you are " + age + " years old!");
+				}
+			}
+
+			//check for autopromotions
 			long rank = rsAccount.getLong("access");
 			long id = rsAccount.getLong("id");
 			ResultSet rsRank = d.getRank(rank);
