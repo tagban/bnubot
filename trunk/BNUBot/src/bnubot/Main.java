@@ -33,6 +33,7 @@ public class Main {
 				Settings.read("bnubot", "numBots", "1"));
 		} catch(Exception e) {}
 		Settings.write("bnubot", "numBots", Integer.toString(numBots));
+		Settings.store();
 		
 		ConnectionSettings cs = new ConnectionSettings();
 		cs.load(1);
