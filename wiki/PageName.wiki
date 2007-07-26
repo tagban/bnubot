@@ -1,0 +1,11 @@
+#summary One-sentence summary of this page.
+
+= About =
+
+BNU-Bot 2.0 is a complete remake of the original BNU`Bot with the goal of total convergence.
+
+
+== Following SVN ==
+
+Stay up to date with the latest changes with [Eclipse]
+
