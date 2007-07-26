@@ -1,3 +1,8 @@
+/**
+ * This file is distributed under the GPL 
+ * $Id$
+ */
+
 package bnubot.junit.util;
 
 import bnubot.core.bncs.ProductIDs;

@@ -1,3 +1,13 @@
+/**
+ * This file is distributed under the GPL 
+ * $Id$
+ */
+
+/**
+ * This file is distributed under the GPL 
+ * $Id$
+ */
+
 package bnubot.bot.gui;
 
 import java.awt.*;
