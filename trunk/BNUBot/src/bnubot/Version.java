@@ -1,3 +1,8 @@
+/**
+ * This file is distributed under the GPL 
+ * $Id$
+ */
+
 package bnubot;
 
 public final class Version {
@@ -8,6 +13,16 @@ public final class Version {
 	public static final Integer VER_ALPHA = null;
 	public static final Integer VER_BETA = 3;
 	private static String VER_STRING = null;
+	
+	public static final Long revision() {
+		String rev = "$Revision$";
+		char c = rev.charAt(0);
+		while(((c < '0') || (c > '9')) && (rev.length() > 0)) {
+			rev = rev.substring(1);
+			c = rev.charAt(0);
+		}
+		return Long.parseLong(rev);
+	}
 	
 	public static final String version() {
 		if(VER_STRING != null)
@@ -20,9 +35,8 @@ public final class Version {
 			VER_STRING += " beta " + VER_BETA.toString();
 		else if(VER_RELEASE_CANDIDATE != null)
 			VER_STRING += " RC " + VER_RELEASE_CANDIDATE.toString();
-	
-		VER_STRING += "$Revision$";
-		VER_STRING += "Version: $Id$";
+		
+		VER_STRING += " r" + revision().toString();
 		
 		return VER_STRING;
 	}
