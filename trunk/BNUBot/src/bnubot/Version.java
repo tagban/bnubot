@@ -20,6 +20,9 @@ public final class Version {
 			VER_STRING += " beta " + VER_BETA.toString();
 		else if(VER_RELEASE_CANDIDATE != null)
 			VER_STRING += " RC " + VER_RELEASE_CANDIDATE.toString();
+	
+		VER_STRING += "$Revision$";
+		VER_STRING += "Version: $Id$";
 		
 		return VER_STRING;
 	}
