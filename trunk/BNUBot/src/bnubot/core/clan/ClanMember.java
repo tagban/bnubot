@@ -22,7 +22,34 @@ public class ClanMember {
 		return username;
 	}
 	
+	public byte getRank() {
+		return rank;
+	}
+	
+	public void setRank(byte r) {
+		rank = r;
+	}
+	
 	public String toString() {
-		return username + " (" + ClanRankIDs.ClanRank[rank] + ", online=" + online + ", location=" + location + ")";
+		String out = username;
+		out += " (";
+		//out += ClanRankIDs.ClanRank[rank];
+		//out += ", ";
+		out += (online==0 ? "off" : "on") + "line";
+		if(location.length() > 0)
+			out += ", " + location;
+		out += ")";
+		return out;
+	}
+	
+	public boolean equals(Object o) {
+		if(o instanceof String) {
+			if(username.compareToIgnoreCase((String)o) == 0)
+				return true;
+			return false;
+		}
+		
+		System.err.println("o.class: " + o.getClass().getName());
+		return super.equals(o);
 	}
 }
