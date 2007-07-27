@@ -99,7 +99,8 @@ public class CommandEventHandler implements EventHandler {
 			{
 				ResultSet rsCommand = d.getCommand(command);
 				if(!rsCommand.next()) {
-					System.out.println("Command " + command + " not found in database");
+					if(!wasWhispered)
+						c.recieveError("Command " + command + " not found in database");
 					d.close(rsCommand);
 					return;
 				}
@@ -107,7 +108,7 @@ public class CommandEventHandler implements EventHandler {
 				if(!superUser) {
 					long requiredAccess = rsCommand.getLong("access");
 					if(commanderAccess < requiredAccess) {
-						c.recieveError("Insufficient access");
+						c.recieveError("Insufficient access (" + commanderAccess + "/" + requiredAccess + ")");
 						d.close(rsCommand);
 						return;
 					}
