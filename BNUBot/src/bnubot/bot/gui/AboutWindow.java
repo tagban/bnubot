@@ -39,6 +39,7 @@ public class AboutWindow extends JDialog {
 			b.add(new JLabel("Distributed under the GPL"));
 			b.add(Box.createVerticalStrut(20));
 			b.add(new JLabel("Special thanks to:"));
+			b.add(new JLabel("HDX, the JBLS project"));
 			b.add(new JLabel("Google: project hosting"));
 			b.add(new JLabel("BNU-Fantasma: beta testing"));
 			b.add(Box.createVerticalStrut(20));
