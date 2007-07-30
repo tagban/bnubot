@@ -7,6 +7,7 @@ package bnubot.bot.gui.components;
 
 import java.awt.Color;
 import java.awt.Container;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.util.GregorianCalendar;
 
@@ -46,7 +47,7 @@ public class TextWindow2 extends JScrollPane {
 		c.add(jep);
 		
 		head = "<html><head><style type=\"text/css\">";
-		head += " body {font-family: verdana, courier, sans-serif}";
+		head += " body {font-family: verdana, courier, sans-serif; font-size: 10px;}";
 		head += " .timestamp {color: #" + makeColor(cs.getTimeStampColor()) + "}";
 		head += " .channel {color: #" + makeColor(cs.getChannelColor()) + "}";
 		head += " .info {color: #" + makeColor(cs.getInfoColor()) + "}";

@@ -64,7 +64,14 @@ public class DatabaseRankEditor extends JFrame {
 				lstRanks = new JList(lm);
 				lstRanks.addListSelectionListener(new ListSelectionListener() {
 					public void valueChanged(ListSelectionEvent e) {
-						displayEditor((Long)lstRanks.getSelectedValue());
+						String s = (String)lstRanks.getSelectedValue();
+						if(s == null)
+							return;
+						
+						if(s.indexOf(' ') != -1)
+							s = s.substring(0, s.indexOf(' '));
+						
+						displayEditor(Long.parseLong(s));
 					}});
 				lstRanks.setMinimumSize(new Dimension(50, 300));
 				majorRows.add(lstRanks);
@@ -410,8 +417,15 @@ public class DatabaseRankEditor extends JFrame {
 		try {
 			lm.clear();
 			ResultSet rsRanks = d.getRanks();
-			while(rsRanks.next())
-				lm.addElement(rsRanks.getLong("id"));
+			while(rsRanks.next()) {
+				String title = rsRanks.getString("prefix");
+				if(!rsRanks.wasNull())
+					title = rsRanks.getLong("id") + " (" + title + ")";
+				else
+					title = Long.toString(rsRanks.getLong("id"));
+				
+				lm.addElement(title);
+			}
 			d.close(rsRanks);
 		} catch (SQLException e) {
 			e.printStackTrace();
