@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.IOException;
 
 import javax.swing.*;
 
@@ -127,6 +128,25 @@ public class ConfigurationFrame extends JDialog {
 				boxLine = new Box(BoxLayout.X_AXIS);
 				{
 					CDKey[] CDKeys = KeyManager.getKeys(KeyManager.PRODUCT_ALLNORMAL);
+					if(CDKeys.length == 0) {
+						JOptionPane.showMessageDialog(this,
+								"You have no CD keys in cdkeys.txt.",
+								"Error",
+								JOptionPane.ERROR_MESSAGE);
+						try {
+							String os = System.getProperty("os.name");
+							if(os != null) {
+								String[] cmdline = { null, "cdkeys.txt" };
+								if(os.startsWith("Windows"))
+									cmdline[0] = "notepad";
+								if(cmdline[0] != null)
+									Runtime.getRuntime().exec(cmdline);
+							}
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						System.exit(1);
+					}
 					
 					JLabel jl = new JLabel("CD Key");
 					jl.setPreferredSize(maxSize);
