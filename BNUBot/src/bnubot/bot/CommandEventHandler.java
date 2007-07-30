@@ -686,13 +686,7 @@ public class CommandEventHandler implements EventHandler {
 					ResultSet rsSubjectAccount = d.getAccount(params[0]);
 					if(!rsSubjectAccount.next()) {
 						d.close(rsSubjectAccount);
-						c.sendChat(user, "The account [" + params[0] + "] does not exist!", wasWhispered);
-						break;
-					}
-					
-					ResultSet rsSubjectUsers = d.getAccountUsers(rsSubjectAccount.getLong("id"));
-					d.close(rsSubjectAccount);
-					if(!rsSubjectUsers.next()) {
+						
 						//They don't have an account by that name, check if it's a user
 						BNetUser bnSubject = BNetUser.getBNetUser(params[0], user);
 						ResultSet rsSubject = d.getUser(bnSubject);
@@ -703,30 +697,37 @@ public class CommandEventHandler implements EventHandler {
 						} else {
 							mostRecent = rsSubject.getTimestamp("lastSeen");
 							mostRecentAction = rsSubject.getString("lastAction");
+							params[0] = rsSubject.getString("login");
 							if(rsSubject.wasNull())
 								mostRecentAction = null;
 						}
 						d.close(rsSubject);
 					} else {
-						//Check the user's accounts						
-						do {
-							Timestamp nt = rsSubjectUsers.getTimestamp("lastSeen");
-							if(mostRecent == null) {
-								mostRecent = nt;
-								mostRecentAction = rsSubjectUsers.getString("lastAction");
-								if(rsSubjectUsers.wasNull())
-									mostRecentAction = null;
-							} else {
-								if((nt != null) && (nt.compareTo(mostRecent) > 0)) {
+						ResultSet rsSubjectUsers = d.getAccountUsers(rsSubjectAccount.getLong("id"));
+						params[0] = rsSubjectAccount.getString("name");
+						d.close(rsSubjectAccount);
+						if(!rsSubjectUsers.next()) {
+						} else {
+							//Check the user's accounts						
+							do {
+								Timestamp nt = rsSubjectUsers.getTimestamp("lastSeen");
+								if(mostRecent == null) {
 									mostRecent = nt;
 									mostRecentAction = rsSubjectUsers.getString("lastAction");
 									if(rsSubjectUsers.wasNull())
 										mostRecentAction = null;
+								} else {
+									if((nt != null) && (nt.compareTo(mostRecent) > 0)) {
+										mostRecent = nt;
+										mostRecentAction = rsSubjectUsers.getString("lastAction");
+										if(rsSubjectUsers.wasNull())
+											mostRecentAction = null;
+									}
 								}
-							}
-						} while(rsSubjectUsers.next());
+							} while(rsSubjectUsers.next());
+						}
+						d.close(rsSubjectUsers);
 					}
-					d.close(rsSubjectUsers);
 					
 					if(mostRecent == null) {
 						c.sendChat(user, "I have never seen [" + params[0] + "]", wasWhispered);
