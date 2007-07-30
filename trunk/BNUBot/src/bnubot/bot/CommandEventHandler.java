@@ -11,7 +11,6 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import bnubot.Version;
 import bnubot.bot.database.*;
 import bnubot.core.*;
 import bnubot.core.bncs.ProductIDs;
@@ -19,6 +18,7 @@ import bnubot.core.clan.ClanMember;
 import bnubot.core.friend.FriendEntry;
 import bnubot.util.HexDump;
 import bnubot.util.TimeFormatter;
+import bnubot.vercheck.CurrentVersion;
 
 public class CommandEventHandler implements EventHandler {
 	private Connection c = null;
@@ -353,7 +353,7 @@ public class CommandEventHandler implements EventHandler {
 			case 'i':
 				if(command.equals("info")) {
 					Properties p = System.getProperties();
-					c.sendChat(user, "BNU-Bot " + Version.version() + " running on " + p.getProperty("os.name") + " (" + p.getProperty("os.arch") + ")", wasWhispered);
+					c.sendChat(user, "BNU-Bot " + CurrentVersion.version() + " running on " + p.getProperty("os.name") + " (" + p.getProperty("os.arch") + ")", wasWhispered);
 					break;
 				}
 				break;

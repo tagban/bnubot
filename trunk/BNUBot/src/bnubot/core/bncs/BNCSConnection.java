@@ -19,7 +19,6 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.Random;
 
-import bnubot.Version;
 import bnubot.core.BNetInputStream;
 import bnubot.core.BNetUser;
 import bnubot.core.Connection;
@@ -34,6 +33,7 @@ import bnubot.core.friend.FriendEntry;
 import bnubot.core.queue.ChatQueue;
 import bnubot.util.HexDump;
 import bnubot.util.TimeFormatter;
+import bnubot.vercheck.CurrentVersion;
 
 import Hashing.*;
 
@@ -1503,7 +1503,7 @@ public class BNCSConnection extends Connection {
 	}
 	
 	public String toString() {
-		String out = "BNU-Bot " + Version.version();
+		String out = "BNU-Bot " + CurrentVersion.version();
 		
 		if(channelName != null)
 			out += " - [ #" + channelName + " ]";

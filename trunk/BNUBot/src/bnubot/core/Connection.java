@@ -10,13 +10,13 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import bnubot.Version;
 import bnubot.bot.EventHandler;
 import bnubot.core.bnftp.BNFTPConnection;
 import bnubot.core.clan.ClanMember;
 import bnubot.core.friend.FriendEntry;
 import bnubot.core.queue.ChatQueue;
 import bnubot.util.TimeFormatter;
+import bnubot.vercheck.CurrentVersion;
 
 public abstract class Connection extends Thread implements EventHandler {
 	protected ConnectionSettings cs;
@@ -210,7 +210,7 @@ public abstract class Connection extends Thread implements EventHandler {
 				
 				String first = text.substring(0, i);
 				String last = text.substring(i + 9);
-				text = first + Version.version() + last;
+				text = first + CurrentVersion.version() + last;
 			}
 		}
 		return text;
@@ -283,11 +283,11 @@ public abstract class Connection extends Thread implements EventHandler {
 			String prefix;
 			if(cs.whisperBack || forceWhisper) {
 				prefix = "/w " + to.getFullLogonName() + " [BNU";
-				if(Version.VER_ALPHA != null)
+				if(CurrentVersion.VER_ALPHA != null)
 					prefix += " alpha";
-				else if(Version.VER_BETA != null)
+				else if(CurrentVersion.VER_BETA != null)
 					prefix += " beta";
-				else if(Version.VER_RELEASE_CANDIDATE != null)
+				else if(CurrentVersion.VER_RELEASE_CANDIDATE != null)
 					prefix += " RC";
 				prefix += "] ";
 			} else
