@@ -10,12 +10,12 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.Properties;
 
-import bnubot.Version;
+import bnubot.vercheck.CurrentVersion;
 
 public class Settings {
 	private static File propsFile = null;
 	private static Properties props = null;
-	private static final String comments = "BNUBot " + Version.version();
+	private static final String comments = "BNUBot " + CurrentVersion.version();
 	
 	private static void init() {
 		if(props != null)

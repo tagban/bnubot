@@ -12,7 +12,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 
-import bnubot.Version;
+import bnubot.vercheck.CurrentVersion;
 
 @SuppressWarnings("serial")
 public class AboutWindow extends JDialog {
@@ -31,7 +31,7 @@ public class AboutWindow extends JDialog {
 
 		Box b = new Box(BoxLayout.Y_AXIS);
 		{
-			b.add(new JLabel("BNU-Bot v" + Version.version()));
+			b.add(new JLabel("BNU-Bot v" + CurrentVersion.version()));
 			b.add(Box.createVerticalStrut(15));
 			b.add(new JLabel("Created by:"));
 			b.add(new JLabel("BNU-Camel"));
