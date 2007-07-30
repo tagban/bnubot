@@ -30,6 +30,7 @@ CREATE TABLE `account` (
 	`createdby` INTEGER default NULL,
 	`trivia_correct` INT NOT NULL DEFAULT '0',
 	`trivia_win` INT NOT NULL DEFAULT '0',
+	`birthday` DATE NULL,
 	CONSTRAINT `account_ibfk1`
 		FOREIGN KEY (`createdby`)
 			REFERENCES `account` (`id`)
@@ -163,6 +164,7 @@ INSERT INTO `command` (access, name, description, cmdgroup) VALUES
 (36,	'say', NULL, 'administration'),
 (1,		'seen', NULL, 'accounts'),
 (34,	'setaccount', NULL, 'accounts'),
+(1,		'setbirthday', NULL, 'accounts'),
 (35,	'setrank', NULL, 'clan'),
 (35,	'setrecruiter', NULL, 'accounts'),
 (34,	'sweepban', NULL, 'moderation'),
