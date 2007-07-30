@@ -681,6 +681,7 @@ public class CommandEventHandler implements EventHandler {
 					}
 					
 					Timestamp mostRecent = null;
+					String mostRecentAction = null;
 					
 					ResultSet rsSubjectAccount = d.getAccount(params[0]);
 					if(!rsSubjectAccount.next()) {
@@ -691,7 +692,7 @@ public class CommandEventHandler implements EventHandler {
 					
 					ResultSet rsSubjectUsers = d.getAccountUsers(rsSubjectAccount.getLong("id"));
 					d.close(rsSubjectAccount);
-					if((rsSubjectUsers == null) || !rsSubjectUsers.next()) {
+					if(!rsSubjectUsers.next()) {
 						//They don't have an account by that name, check if it's a user
 						BNetUser bnSubject = BNetUser.getBNetUser(params[0], user);
 						ResultSet rsSubject = d.getUser(bnSubject);
@@ -701,20 +702,31 @@ public class CommandEventHandler implements EventHandler {
 							break;
 						} else {
 							mostRecent = rsSubject.getTimestamp("lastSeen");
+							mostRecentAction = rsSubject.getString("lastAction");
+							if(rsSubject.wasNull())
+								mostRecentAction = null;
 						}
 						d.close(rsSubject);
 					} else {
 						//Check the user's accounts						
 						do {
 							Timestamp nt = rsSubjectUsers.getTimestamp("lastSeen");
-							if(mostRecent == null)
+							if(mostRecent == null) {
 								mostRecent = nt;
-							else {
-								if((nt != null) && (nt.compareTo(mostRecent) > 0))
+								mostRecentAction = rsSubjectUsers.getString("lastAction");
+								if(rsSubjectUsers.wasNull())
+									mostRecentAction = null;
+							} else {
+								if((nt != null) && (nt.compareTo(mostRecent) > 0)) {
 									mostRecent = nt;
+									mostRecentAction = rsSubjectUsers.getString("lastAction");
+									if(rsSubjectUsers.wasNull())
+										mostRecentAction = null;
+								}
 							}
 						} while(rsSubjectUsers.next());
 					}
+					d.close(rsSubjectUsers);
 					
 					if(mostRecent == null) {
 						c.sendChat(user, "I have never seen [" + params[0] + "]", wasWhispered);
@@ -722,7 +734,10 @@ public class CommandEventHandler implements EventHandler {
 					}
 					
 					String diff = TimeFormatter.formatTime(new Date().getTime() - mostRecent.getTime());
-					c.sendChat(user, "User [" + params[0] + "] was last seen " + diff + " ago", wasWhispered);
+					diff = "User [" + params[0] + "] was last seen " + diff + " ago";
+					if(mostRecentAction != null)
+						diff += " " + mostRecentAction;
+					c.sendChat(user, diff, wasWhispered);
 					break;
 				}
 				if(command.equals("setaccount")) {
@@ -1065,7 +1080,7 @@ public class CommandEventHandler implements EventHandler {
 	}
 
 	public void channelJoin(BNetUser user, StatString statstr) {
-		touchUser(user, "Joining channel");
+		touchUser(user, "joining the channel");
 		
 		try {
 			ResultSet rsUser = d.getUser(user);
@@ -1218,13 +1233,10 @@ public class CommandEventHandler implements EventHandler {
 	}
 	
 	public void channelLeave(BNetUser user) {
-		touchUser(user, "Leaving channel");
+		touchUser(user, "leaving the channel");
 	}
 	
-	public void channelUser(BNetUser user, StatString statstr) {
-		touchUser(user, "In channel");
-	}
-	
+	public void channelUser(BNetUser user, StatString statstr) {}
 	public void joinedChannel(String channel) {}
 
 	public void recieveChat(BNetUser user, String text) {
@@ -1233,7 +1245,7 @@ public class CommandEventHandler implements EventHandler {
 		if(text.length() == 0)
 			return;
 		
-		touchUser(user, "In channel");
+		touchUser(user, "chatting in the channel");
 		
 		char trigger = c.getConnectionSettings().trigger.charAt(0);
 		

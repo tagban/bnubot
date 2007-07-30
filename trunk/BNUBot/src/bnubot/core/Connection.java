@@ -267,12 +267,7 @@ public abstract class Connection extends Thread implements EventHandler {
 		if(canSendChat()) {
 			sendChatNow(text);
 		} else {
-			if(cq == null) {
-				new Exception("cq == null").printStackTrace();
-				System.exit(1);
-			} else {
-				cq.enqueue(text);
-			}
+			cq.enqueue(text);
 		}
 	}
 	
