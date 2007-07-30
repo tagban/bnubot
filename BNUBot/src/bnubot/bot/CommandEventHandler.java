@@ -1144,12 +1144,16 @@ public class CommandEventHandler implements EventHandler {
 			if(!rsAccount.wasNull()) {
 				SimpleDateFormat sdf = new SimpleDateFormat("M-d");
 
-				Date today = new Date();
+				Calendar cal = Calendar.getInstance();
+				Date today = cal.getTime();
 				String s1 = sdf.format(today);
-				String s2 = sdf.format(new Date(birthday.getTime()));
+				String s2 = sdf.format(birthday);
 				
 				if(s1.equals(s2)) {
-					int age = today.getYear() - birthday.getYear();
+					cal.setTime(birthday);
+					int age = cal.get(Calendar.YEAR);
+					cal.setTime(today);
+					age = cal.get(Calendar.YEAR) - age;
 					c.sendChat("Happy birthday, " + user + "! Today, you are " + age + " years old!");
 				}
 			}
