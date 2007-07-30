@@ -20,6 +20,7 @@ import bnubot.core.*;
 import bnubot.core.bncs.BNCSConnection;
 import bnubot.core.queue.ChatQueue;
 import bnubot.util.Settings;
+import bnubot.vercheck.VersionCheck;
 
 public class Main {
 	
@@ -170,6 +171,15 @@ public class Main {
 			primary.addEventHandler(trivia);
 		}
 		
+		try {
+			if(VersionCheck.checkVersion()) {
+				primary.recieveError("There is an update available!");
+				primary.recieveError("Latest version: " + VersionCheck.getLatestVersion().toString());
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
 		primary.start();
 		BNCSConnection c = primary;
 		
@@ -198,5 +208,4 @@ public class Main {
 			primary.addSlave(c);
 		}
 	}
-
 }
