@@ -13,7 +13,7 @@
   <stayAlive>false</stayAlive>
   <icon>BNUBot.ico</icon>
   <classPath>
-    <mainClass>bnubot.Main</mainClass>
+    <mainClass>net.bnubot.Main</mainClass>
     <cp>lib\*.jar</cp>
   </classPath>
   <jre>
