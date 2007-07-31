@@ -23,7 +23,7 @@ public class XMLElementDecorator {
 	private String contents;
 	private static XMLElementDecorator elem = null; 
 	
-	public static XMLElementDecorator parse(String url) throws Exception {
+	public synchronized static XMLElementDecorator parse(String url) throws Exception {
 		elem = new XMLElementDecorator("root", null);
 		
 		XMLReader xr = XMLReaderFactory.createXMLReader();
