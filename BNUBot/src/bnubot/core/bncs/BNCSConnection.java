@@ -308,7 +308,7 @@ public class BNCSConnection extends Connection {
 				//Wait 5 minutes
 				timeSinceAntiIdle /= 1000;
 				timeSinceAntiIdle /= 60;
-				if(timeSinceAntiIdle >= 5) {
+				if(timeSinceAntiIdle >= cs.antiIdleTimer) {
 					lastAntiIdle = timeNow;
 					sendChat(getAntiIdle());
 				}
