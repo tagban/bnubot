@@ -12,10 +12,10 @@ public class BNUBotTestSuite {
 	public static Test suite() {
 		TestSuite suite = new TestSuite("BNUBot");
 		
-		suite.addTestSuite(bnubot.junit.core.BNetUserTest.class);
-		suite.addTestSuite(bnubot.junit.core.CookieUtilityTest.class);
+		suite.addTestSuite(net.bnubot.junit.core.BNetUserTest.class);
+		suite.addTestSuite(net.bnubot.junit.core.CookieUtilityTest.class);
 
-		suite.addTestSuite(bnubot.junit.util.HexDumpTest.class);
+		suite.addTestSuite(net.bnubot.junit.util.HexDumpTest.class);
 		
 		return suite;
 	}
