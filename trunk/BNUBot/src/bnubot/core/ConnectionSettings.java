@@ -40,6 +40,7 @@ public class ConnectionSettings implements Serializable {
 	public byte product;
 	public byte colorScheme;
 	public String trigger;
+	public int antiIdleTimer;
 	public boolean enableAntiIdle;
 	public String antiIdle;
 	public boolean autoconnect;
@@ -165,6 +166,7 @@ public class ConnectionSettings implements Serializable {
 		Settings.write(header, "product", util.Constants.prods[product-1]);
 		Settings.write(header, "antiidle", antiIdle);
 		Settings.write(header, "enableAntiidle", Boolean.toString(enableAntiIdle));
+		Settings.write(header, "antiIdleTimer", Integer.toString(antiIdleTimer));
 		Settings.write(header, "autoconnect", Boolean.toString(autoconnect));
 		
 		if(botNum == 1) {
@@ -213,6 +215,8 @@ public class ConnectionSettings implements Serializable {
 		antiIdle = 	Settings.read(header, "antiidle", "/me is a BNU-Bot %version%");
 		enableAntiIdle = Boolean.parseBoolean(
 				Settings.read(header, "enableAntiidle", "false"));
+		antiIdleTimer = Integer.parseInt(
+				Settings.read(header, "antiIdleTimer", "5"));
 		autoconnect = Boolean.parseBoolean(
 					Settings.read(header, "autoconnect", "true"));
 		enableCLI = Boolean.parseBoolean(

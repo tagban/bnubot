@@ -28,6 +28,7 @@ public class ConfigurationFrame extends JDialog {
 	JTextArea txtTrigger = null;
 	JCheckBox chkAntiIdle = null;
 	JTextArea txtAntiIdle = null;
+	JTextArea txtAntiIdleTimer = null;
 	JComboBox cmbCDKey = null;
 	JComboBox cmbCDKeyLOD = null;
 	JComboBox cmbCDKeyTFT = null;
@@ -42,7 +43,7 @@ public class ConfigurationFrame extends JDialog {
 	JCheckBox chkPacketLog = null;
 	JCheckBox chkWhisperBack = null;
 	JButton btnLoad = null;
-	JButton btnSave = null;
+	JButton btnOK = null;
 	JButton btnCancel = null;
 	
 	private class ConfigTextArea extends JTextArea {
@@ -122,6 +123,17 @@ public class ConfigurationFrame extends JDialog {
 					
 					txtAntiIdle = new ConfigTextArea(cs.antiIdle);
 					boxLine.add(txtAntiIdle);
+				}
+				boxSettings.add(boxLine);
+
+				boxLine = new Box(BoxLayout.X_AXIS);
+				{
+					JLabel jl = new JLabel("Anti-Idle Timer");
+					jl.setPreferredSize(maxSize);
+					boxLine.add(jl);
+					
+					txtAntiIdleTimer = new ConfigTextArea(Integer.toString(cs.antiIdleTimer));
+					boxLine.add(txtAntiIdleTimer);
 				}
 				boxSettings.add(boxLine);
 
@@ -320,12 +332,12 @@ public class ConfigurationFrame extends JDialog {
 			Box boxButtons = new Box(BoxLayout.X_AXIS);
 			{
 				btnLoad = new JButton("Load");
-				btnSave = new JButton("OK");
+				btnOK = new JButton("OK");
 				btnCancel = new JButton("Cancel");
 				boxButtons.add(Box.createHorizontalGlue());
 				boxButtons.add(btnLoad);
 				boxButtons.add(Box.createHorizontalStrut(50));
-				boxButtons.add(btnSave);
+				boxButtons.add(btnOK);
 				boxButtons.add(btnCancel);
 			}
 			boxAll.add(boxButtons);
@@ -343,12 +355,20 @@ public class ConfigurationFrame extends JDialog {
 				});
 			}
 		});
-		btnSave.addActionListener(new ActionListener() {
+		btnOK.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent act) {
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
-						save();
-						close();
+						try {
+							save();
+							close();
+						} catch(Exception e) {
+							JOptionPane.showMessageDialog(
+									null,
+									e.getClass().getName() + "\n" + e.getMessage(),
+									"The configuration is invalid",
+									JOptionPane.ERROR_MESSAGE);
+						}
 					}
 				});
 			}
@@ -379,6 +399,7 @@ public class ConfigurationFrame extends JDialog {
 		cs.product = (byte)(cmbProduct.getSelectedIndex() + 1);
 		cs.trigger = txtTrigger.getText();
 		cs.antiIdle = txtAntiIdle.getText();
+		cs.antiIdleTimer = Integer.parseInt(txtAntiIdleTimer.getText());
 		cs.enableAntiIdle = chkAntiIdle.isSelected();
 		
 		CDKey k = (CDKey)cmbCDKey.getSelectedItem();
@@ -439,7 +460,11 @@ public class ConfigurationFrame extends JDialog {
 		if(v == null) {
 			dispose();
 		} else {
-			JOptionPane.showMessageDialog(this, "The configuration is invalid:\n" + v);
+			JOptionPane.showMessageDialog(
+					null,
+					v,
+					"The configuration is invalid",
+					JOptionPane.ERROR_MESSAGE);
 		}
 	}
 }
