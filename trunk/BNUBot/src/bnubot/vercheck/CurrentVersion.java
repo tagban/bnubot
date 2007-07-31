@@ -14,10 +14,14 @@ public final class CurrentVersion {
 	public static final Integer VER_RELEASE_CANDIDATE = null;
 	public static final Integer VER_ALPHA = null;
 	public static final Integer VER_BETA = 3;
+	private static boolean VER_SVN_SET = false;
 	private static Integer VER_SVN_REVISION = null;
 	private static VersionNumber VER = null;
 	
 	private static final Integer revision(File f) {
+		if(VER_SVN_SET)
+			return VER_SVN_REVISION;
+		
 		Integer r = null;
 		for(File sf : f.listFiles()) {
 			if(sf.isDirectory()) {
@@ -85,8 +89,10 @@ public final class CurrentVersion {
 	}
 	
 	public static final Integer revision() {
-		if(VER_SVN_REVISION == null)
+		if(!VER_SVN_SET) {
 			VER_SVN_REVISION = revision(new File("."));
+			VER_SVN_SET = true;
+		}
 		
 		return VER_SVN_REVISION;
 	}
