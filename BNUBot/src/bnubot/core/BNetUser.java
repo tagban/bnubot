@@ -28,12 +28,8 @@ public class BNetUser {
 
 	private static Database d = null;
 	
-	public static void setDatabase(Database d) {
-		BNetUser.d = d;
-	}
-	
-	public static Database getDatabase() {
-		return d;
+	public static void setDatabase() {
+		d = Database.getInstance();
 	}
 	
 	/**

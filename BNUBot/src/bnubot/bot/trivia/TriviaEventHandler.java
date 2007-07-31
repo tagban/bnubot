@@ -34,8 +34,8 @@ public class TriviaEventHandler implements EventHandler {
 	private Database d = null;
 	private int unanswered = 0;
 	
-	public TriviaEventHandler(Database d) {
-		this.d = d;
+	public TriviaEventHandler() {
+		this.d = Database.getInstance();
 	}
 	
 	private void readFile(String fileName) {

@@ -39,8 +39,10 @@ public class CommandEventHandler implements EventHandler {
 		}
 	}
 	
-	public CommandEventHandler(Database d) {
-		this.d = d;
+	public CommandEventHandler() {
+		this.d = Database.getInstance();
+		if(this.d == null)
+			throw new NullPointerException("There was no Database");
 	}
 	
 	public void initialize(Connection c) {
