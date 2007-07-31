@@ -82,6 +82,10 @@ public class VersionNumber {
 			if(VER_ALPHA < vn.VER_ALPHA) return false;
 		}
 		
+		if((VER_SVN_REVISION != null) && (vn.VER_SVN_REVISION != null)) {
+			if(VER_SVN_REVISION > vn.VER_SVN_REVISION) return true;
+		}
+		
 		return false;
 	}
 }

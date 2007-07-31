@@ -7,11 +7,69 @@ package bnubot.vercheck;
 
 import java.util.ArrayList;
 
+import org.xml.sax.Attributes;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.Locator;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
+
 public class XMLElementDecorator {
 	private String name;
 	private XMLElementDecorator parent = null;
 	private ArrayList<XMLElementDecorator> children = new ArrayList<XMLElementDecorator>();
 	private String contents;
+	private static XMLElementDecorator elem = null; 
+	
+	public static XMLElementDecorator parse(String url) throws Exception {
+		elem = new XMLElementDecorator("root", null);
+		
+		XMLReader xr = XMLReaderFactory.createXMLReader();
+		xr.setContentHandler(new ContentHandler() {
+			public void startDocument() throws SAXException {}
+			public void endDocument() throws SAXException {}
+
+			public void startElement(String uri, String localName, String name, Attributes atts) throws SAXException {
+				XMLElementDecorator child = new XMLElementDecorator(name, elem);
+				elem.addChild(child);
+				elem = child;
+			}
+
+			public void endElement(String uri, String localName, String name) throws SAXException {
+				elem = elem.getParent();
+			}
+			
+			public void characters(char[] ch, int start, int length) throws SAXException {
+				elem.setContents(new String(ch, start, length));
+			}
+
+			public void startPrefixMapping(String prefix, String uri) throws SAXException {}
+			public void endPrefixMapping(String prefix) throws SAXException {}
+			public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {}
+			public void processingInstruction(String target, String data) throws SAXException { }
+			public void setDocumentLocator(Locator locator) {}
+			public void skippedEntity(String name) throws SAXException {}
+		});
+		xr.setErrorHandler(new ErrorHandler() {
+			public void error(SAXParseException arg0) throws SAXException {
+				arg0.printStackTrace();
+			}
+			
+			public void fatalError(SAXParseException arg0) throws SAXException {
+				arg0.printStackTrace();
+			}
+			
+			public void warning(SAXParseException arg0) throws SAXException {
+				arg0.printStackTrace();
+			}
+		});
+		
+		xr.parse(url);
+		
+		return elem;
+	}
 	
 	public XMLElementDecorator(String name, XMLElementDecorator parent) {
 		this.name = name;
@@ -49,6 +107,10 @@ public class XMLElementDecorator {
 	
 	public void setContents(String contents) {
 		this.contents = contents;
+	}
+	
+	public String getString() {
+		return contents;
 	}
 	
 	public Integer getInt() {

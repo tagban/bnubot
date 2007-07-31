@@ -170,10 +170,7 @@ public class Main {
 		}
 		
 		try {
-			if(VersionCheck.checkVersion()) {
-				primary.recieveError("There is an update available!");
-				primary.recieveError("Latest version: " + VersionCheck.getLatestVersion().toString());
-			}
+			VersionCheck.checkVersion(primary);
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
