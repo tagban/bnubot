@@ -7,7 +7,7 @@
 	<key>CFBundleIconFile</key>
 	<string>Icon.icns</string>
 	<key>CFBundleIdentifier</key>
-	<string>bnubot</string>
+	<string>net.bnubot</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -23,7 +23,7 @@
 		<key>JVMVersion</key>
 		<string>1.5+</string>
 		<key>MainClass</key>
-		<string>bnubot.Main</string>
+		<string>net.bnubot.Main</string>
 	</dict>
 </dict>
 </plist>
