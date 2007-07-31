@@ -5,66 +5,20 @@
 
 package bnubot.vercheck;
 
-import org.xml.sax.Attributes;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.Locator;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
-
-
+import bnubot.core.Connection;
 import util.Constants;
 
 public class VersionCheck {
 	protected static XMLElementDecorator elem = null;
 	protected static VersionNumber vnLatest = null;
 	
-	public static boolean checkVersion() throws Exception {
-		elem = new XMLElementDecorator("root", null);
-		
-		XMLReader xr = XMLReaderFactory.createXMLReader();
-		
-		xr.setContentHandler(new ContentHandler() {
-			public void startDocument() throws SAXException {}
-			public void endDocument() throws SAXException {}
-
-			public void startElement(String uri, String localName, String name, Attributes atts) throws SAXException {
-				XMLElementDecorator child = new XMLElementDecorator(name, elem);
-				elem.addChild(child);
-				elem = child;
-			}
-
-			public void endElement(String uri, String localName, String name) throws SAXException {
-				elem = elem.getParent();
-			}
-			
-			public void characters(char[] ch, int start, int length) throws SAXException {
-				elem.setContents(new String(ch, start, length));
-			}
-
-			public void startPrefixMapping(String prefix, String uri) throws SAXException {}
-			public void endPrefixMapping(String prefix) throws SAXException {}
-			public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {}
-			public void processingInstruction(String target, String data) throws SAXException { }
-			public void setDocumentLocator(Locator locator) {}
-			public void skippedEntity(String name) throws SAXException {}
-		});
-		xr.setErrorHandler(new ErrorHandler() {
-			public void error(SAXParseException arg0) throws SAXException {
-				arg0.printStackTrace();
-			}
-			
-			public void fatalError(SAXParseException arg0) throws SAXException {
-				arg0.printStackTrace();
-			}
-			
-			public void warning(SAXParseException arg0) throws SAXException {
-				arg0.printStackTrace();
-			}
-		});
-		xr.parse("http://www.clanbnu.ws/bnubot/version.php");
+	public static boolean checkVersion(Connection reportTo) throws Exception {
+		{
+			String url = "http://www.clanbnu.ws/bnubot/version.php";
+			if(CurrentVersion.revision() != null)
+				url += "?svn=" + CurrentVersion.revision();
+			elem = XMLElementDecorator.parse(url);
+		}
 		
 		XMLElementDecorator gamesElem = elem.getPath("bnubot/games");
 		if(gamesElem != null)
@@ -89,25 +43,30 @@ public class VersionCheck {
 		XMLElementDecorator verLatest = elem.getPath("bnubot/latestVersion");
 		
 		vnLatest = new VersionNumber(
-				verLatest.getPath("major").getInt(),
-				verLatest.getPath("minor").getInt(),
-				verLatest.getPath("revision").getInt(),
-				verLatest.getPath("alpha").getInt(),
-				verLatest.getPath("beta").getInt(),
-				verLatest.getPath("rc").getInt());
+				verLatest.getChild("major").getInt(),
+				verLatest.getChild("minor").getInt(),
+				verLatest.getChild("revision").getInt(),
+				verLatest.getChild("alpha").getInt(),
+				verLatest.getChild("beta").getInt(),
+				verLatest.getChild("rc").getInt(),
+				verLatest.getChild("svn").getInt());
+		
+		String url = verLatest.getChild("url").getString();
 		VersionNumber vnCurrent = CurrentVersion.version();
 
 		boolean update = vnLatest.isNewerThan(vnCurrent);
-		if(update) {
-			System.out.println("Current version: " + vnCurrent.toString());
-			System.out.println("Latest version: " + vnLatest.toString());
+		if(update && reportTo != null) {
+			reportTo.recieveError("Current version: " + vnCurrent.toString());
+			reportTo.recieveError("Latest version: " + vnLatest.toString());
+			if(url != null)
+				reportTo.recieveError("Update: " + url);
 		}
 		return update;
 	}
 	
 	public static VersionNumber getLatestVersion() throws Exception {
 		if(vnLatest == null)
-			checkVersion();
+			checkVersion(null);
 		return vnLatest;
 	}
 }
