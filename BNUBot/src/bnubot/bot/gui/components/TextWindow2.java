@@ -9,18 +9,37 @@ import java.awt.Color;
 import java.awt.Container;
 import java.awt.Graphics;
 import java.util.GregorianCalendar;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JEditorPane;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 
 import bnubot.bot.gui.ColorScheme.ColorScheme;
 import bnubot.core.BNetUser;
+import bnubot.util.BrowserLauncher;
 
 @SuppressWarnings("serial")
 public class TextWindow2 extends JScrollPane {
 	private class myJEP extends JEditorPane {
+		public myJEP() {
+			super();
+			addHyperlinkListener(new HyperlinkListener() {
+				public void hyperlinkUpdate(HyperlinkEvent e) {
+					if(e.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED))
+						try {
+							BrowserLauncher.openURL(e.getURL().toString());
+						} catch (Exception e1) {
+							e1.printStackTrace();
+						}
+				}
+			});
+		}
+		
 		public void paintComponents(Graphics g) {
 			if(!disableRedraw)
 				super.paintComponents(g);
@@ -46,11 +65,11 @@ public class TextWindow2 extends JScrollPane {
 		c.add(jep);
 		
 		head = "<html><head><style type=\"text/css\">";
-		head += " body {font-family: verdana, courier, sans-serif; font-size: 9px;}";
-		head += " .timestamp {color: #" + makeColor(cs.getTimeStampColor()) + ";}";
-		head += " .channel {color: #" + makeColor(cs.getChannelColor()) + ";}";
-		head += " .info {color: #" + makeColor(cs.getInfoColor()) + ";}";
-		head += " .error {color: #" + makeColor(cs.getErrorColor()) + ";}";
+		head += " body	{font-family: verdana, courier, sans-serif; font-size: 9px;}";
+		head += " .timestamp	{color: #" + makeColor(cs.getTimeStampColor()) + ";}";
+		head += " .channel	{color: #" + makeColor(cs.getChannelColor()) + ";}";
+		head += " .info	{color: #" + makeColor(cs.getInfoColor()) + ";}";
+		head += " .error	{color: #" + makeColor(cs.getErrorColor()) + ";}";
 		head += "</style></head><body>";
 		html = "";
 		foot = "</body></html>";
@@ -96,12 +115,26 @@ public class TextWindow2 extends JScrollPane {
 		html += String.format("[%1$tH:%1$tM:%1$tS] ", new GregorianCalendar());
 	}
 	
+	private static Pattern pattern = null;
 	public String safeHtml(String in) {
-		return in
-			.replaceAll("&", "&amp;")
-			.replaceAll("<", "&lt;")
-			.replaceAll(">", "&gt;")
-			.replaceAll("\n", "<br>\n");
+		String out;
+		
+		//if(pattern == null)
+		pattern = Pattern.compile("(.*)(\\b(http://|https://|www.|ftp://|file:/|mailto:)\\S+)(.*)");
+		//pattern = Pattern.compile("(.*[^/]+)(\\b(http://|https://|www.|ftp://|file:/|mailto:)\\S+)(.*)");
+		Matcher matcher = pattern.matcher(in); 
+		
+		if(matcher.matches()) {
+			append("There was a URL!", Color.DARK_GRAY);
+			out = safeHtml(matcher.group(1)) + "<a href=\"" + matcher.group(2) + "\">" + matcher.group(2) + "</a>" + safeHtml(matcher.group(4));
+		} else {
+			out = in
+				.replaceAll("&", "&amp;")
+				.replaceAll("<", "&lt;")
+				.replaceAll(">", "&gt;")
+				.replaceAll("\n", "<br>\n");
+		}
+		return out;
 	}
 	
 	public void append(String text, Color col) {
