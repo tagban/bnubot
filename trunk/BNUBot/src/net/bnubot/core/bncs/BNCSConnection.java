@@ -400,7 +400,7 @@ public class BNCSConnection extends Connection {
 				    	exeStream.skipBytes(3);
 				    	int success = exeStream.readDWord();
 				    	if(success != 1) {
-				    		System.err.println(bnubot.util.HexDump.hexDump(exeHashBuf.getBuffer()));
+				    		System.err.println(HexDump.hexDump(exeHashBuf.getBuffer()));
 				    		throw new Exception("BNLS failed to complete 0x1A sucessfully");
 				    	}
 			    		exeVersion = exeStream.readDWord();
@@ -1255,7 +1255,7 @@ public class BNCSConnection extends Connection {
 				// TODO: SID_CLANMEMBERINFORMATION
 				
 				default:
-					recieveError("Unknown SID 0x" + Integer.toHexString(pr.packetId) + "\n" + bnubot.util.HexDump.hexDump(pr.data));
+					recieveError("Unknown SID 0x" + Integer.toHexString(pr.packetId) + "\n" + HexDump.hexDump(pr.data));
 					break;
 				}
 			} else {

@@ -98,7 +98,7 @@ public class MCPConnection extends RealmConnection {
 						break;
 					}
 					case MCPCommandIDs.MCP_CHARLIST2: {
-						recieveRealmError(bnubot.util.HexDump.hexDump(pr.data));
+						recieveRealmError(HexDump.hexDump(pr.data));
 						/* (WORD)		 Number of characters requested
 						 * (DWORD)		 Number of characters that exist on this account
 						 * (WORD)		 Number of characters returned
@@ -141,7 +141,7 @@ public class MCPConnection extends RealmConnection {
 						break;
 					}
 					default:
-						recieveRealmError("Unknown MCP packet 0x" + Integer.toHexString(pr.packetId) + "\n" + bnubot.util.HexDump.hexDump(pr.data));
+						recieveRealmError("Unknown MCP packet 0x" + Integer.toHexString(pr.packetId) + "\n" + HexDump.hexDump(pr.data));
 						break;
 					}
 				} else {
