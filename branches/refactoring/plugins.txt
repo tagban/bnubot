@@ -1,9 +1,9 @@
 How to write plugins:
 
-Create a class that implements bnubot.bot.EventHandler:
-	package bnubot.bot.custom;
-	import bnubot.core.Connection;
-	import bnubot.bot.EventHandler;
+Create a class that implements net.bnubot.bot.EventHandler:
+	package net.bnubot.bot.custom;
+	import net.bnubot.core.Connection;
+	import net.bnubot.bot.EventHandler;
 	public class CustomEventHandler implements EventHandler {
 		Connection c;
 		
@@ -31,7 +31,7 @@ Create a class that implements bnubot.bot.EventHandler:
 Compile your java class, and place it within your CLASSPATH.	
 
 Launch BNUBot with the -plugin option:
-# java -jar BNUBot.jar -plugin bnubot.bot.custom.CustomEventHandler
+# java -jar BNUBot.jar -plugin net.bnubot.bot.custom.CustomEventHandler
 	
 You may specify multiple plugins as a colon sparated list:
-# java -jar BNUBot.jar -plugin bnubot.bot.custom.CustomEventHandler:bnubot.bot.custom.AnotherEventHandler
+# java -jar BNUBot.jar -plugin net.bnubot.bot.custom.CustomEventHandler:net.bnubot.bot.custom.AnotherEventHandler
