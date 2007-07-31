@@ -130,7 +130,6 @@ public class Main {
 		}
 		
 		//Bot
-		Database d = null;
 		EventHandler cmd = null;
 		if(cs.enableCommands) {
 			String db_driver = Settings.read("database", "driver", null);
@@ -147,10 +146,10 @@ public class Main {
 					System.out.println("Database is not configured; disabling commands.");
 			} else {
 				try {
-					d = new Database(db_driver, db_url, db_username, db_password, db_schema);
-					cmd = new CommandEventHandler(d);
+					new Database(db_driver, db_url, db_username, db_password, db_schema);
+					BNetUser.setDatabase();
+					cmd = new CommandEventHandler();
 					primary.addEventHandler(cmd);
-					BNetUser.setDatabase(d);
 				} catch(Exception e) {
 					String msg = "Failed to initialize database:\n" + e.getMessage() + "\n\nCommands will be disabled.";
 					StringWriter sw = new StringWriter();
@@ -160,14 +159,13 @@ public class Main {
 						primary.recieveError(msg);
 					else
 						System.err.println(msg);
-					d = null;
 				}
 			}
 		}
 		
 		//Trivia
 		if(cs.enableTrivia) { 
-			EventHandler trivia = new TriviaEventHandler(d);
+			EventHandler trivia = new TriviaEventHandler();
 			primary.addEventHandler(trivia);
 		}
 		

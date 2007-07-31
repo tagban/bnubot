@@ -15,6 +15,7 @@ import bnubot.core.BNetUser;
 public class Database {
 	private static final long databaseVersion = 2;		// Current schema version
 	private static final long compatibleVersion = 2;	// Minimum version compatible
+	private static Database instance;
 	private Connection conn;
 
 	private ArrayList<Statement> openStatements = new ArrayList<Statement>();
@@ -27,10 +28,16 @@ public class Database {
 		conn = DriverManager.getConnection(url, username, password);
 		System.out.println("Connected!");
 		
+		instance = this;
+		
 		if(!checkSchema())
 			createSchema(schemaFile);
 		
 		deleteOldUsers();
+	}
+	
+	public static Database getInstance() {
+		return instance;
 	}
 	
 	public void close(ResultSet rs) {

@@ -162,7 +162,7 @@ public class GuiEventHandler implements EventHandler {
 				menuItem = new JMenuItem("Rank editor");
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent event) {
-						Database d = BNetUser.getDatabase();
+						Database d = Database.getInstance();
 						if(d != null)
 							new DatabaseRankEditor(d);
 					} });
