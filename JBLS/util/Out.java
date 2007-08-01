@@ -20,7 +20,7 @@ import java.util.Date;
 
 public class Out {
 
-	private static PrintStream outStream;
+	private static PrintStream outStream = System.out;
 
     static
     {
