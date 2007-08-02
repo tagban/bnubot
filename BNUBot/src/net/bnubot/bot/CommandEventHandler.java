@@ -275,7 +275,7 @@ public class CommandEventHandler implements EventHandler {
 							long apW3Level = rsRank.getLong("apW3Level");
 							long apRecruitScore = rsRank.getLong("apRecruitScore");
 							
-							if(rsRank.wasNull()) {
+							if((apDays == 0) && (apWins == 0) && (apD2Level == 0) && (apW3Level == 0) && (apRecruitScore == 0)) {
 								String result = "Autopromotions are not enabled for rank " + subjectRank + ". ";
 								result += rsSubjectAccount.getString("name") + "'s current status is: ";
 								result += "Days: " + timeElapsed;
