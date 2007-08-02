@@ -253,6 +253,7 @@ public class CommandEventHandler implements EventHandler {
 						}
 						
 						long wins[] = d.getAccountWinsLevels(subjectAccountId, c.getConnectionSettings().recruitTagPrefix, c.getConnectionSettings().recruitTagSuffix);
+						long recruitScore = d.getAccountRecruitScore(subjectAccountId, c.getConnectionSettings().recruitAccess);
 						Timestamp ts = rsSubjectAccount.getTimestamp("lastRankChange");
 						String timeElapsed;
 						if(ts != null) {
@@ -272,22 +273,27 @@ public class CommandEventHandler implements EventHandler {
 							long apWins = rsRank.getLong("apWins");
 							long apD2Level = rsRank.getLong("apD2Level");
 							long apW3Level = rsRank.getLong("apW3Level");
+							long apRecruitScore = rsRank.getLong("apRecruitScore");
 							
 							if(rsRank.wasNull()) {
 								String result = "Autopromotions are not enabled for rank " + subjectRank + ". ";
 								result += rsSubjectAccount.getString("name") + "'s current status is: ";
-								result += timeElapsed + " days, ";
-								result += wins[0] + " wins, ";
-								result += wins[1] + " D2 level, ";
-								result += wins[2] + " W3 level";
+								result += "Days: " + timeElapsed;
+								result += ", Wins: " + wins[0];
+								result += ", D2 Level: " + wins[1];
+								result += ", W3 level: " + wins[2];
+								if(recruitScore > 0)
+									result += ", Recruit Score: " + recruitScore;
 								
 								c.sendChat(user, result, wasWhispered);
 							} else {
 								String result = "AutoPromotion Info for [" + rsSubjectAccount.getString("name") + "]: ";
-								result += timeElapsed + "/" + apDays + " days, ";
-								result += wins[0] + "/" + apWins + " wins, ";
-								result += wins[1] + "/" + apD2Level + " D2 level, ";
-								result += wins[2] + "/" + apW3Level + " W3 level";
+								result += "Days: " + timeElapsed + "/" + apDays;
+								result += ", Wins: " + wins[0] + "/" + apWins;
+								result += ", D2 Level: " + wins[1] + "/" + apD2Level;
+								result += ", W3 level: " + wins[2] + "/" + apW3Level;
+								if((apRecruitScore > 0) || (recruitScore > 0))
+									result += ", Recruit Score: " + recruitScore + "/" + apRecruitScore;
 								
 								c.sendChat(user, result, wasWhispered);
 							}
@@ -1189,17 +1195,25 @@ public class CommandEventHandler implements EventHandler {
 						long apD2Level = rsRank.getLong("apD2Level");
 						long apW3Level = rsRank.getLong("apW3Level");
 						long wins[] = d.getAccountWinsLevels(id, c.getConnectionSettings().recruitTagPrefix, c.getConnectionSettings().recruitTagSuffix);
+						
 						if(((apWins > 0) && (wins[0] >= apWins))
 						|| ((apD2Level > 0) && (wins[1] >= apD2Level))
 						|| ((apW3Level > 0) && (wins[2] >= apW3Level))
 						|| ((apWins == 0) && (apD2Level == 0) && (apW3Level == 0))) {
-							// Give them a promotion
-							rank++;
-							rsAccount.updateLong("access", rank);
-							rsAccount.updateTimestamp("lastRankChange", new Timestamp(new Date().getTime()));
-							rsAccount.updateRow();
-							user.resetPrettyName();	//Reset the presentable name
-							c.sendChat("Congratulations " + user.toString() + ", you just recieved a promotion! Your rank is now " + rank + ".");
+							// Check RS
+							long rs = d.getAccountRecruitScore(id, c.getConnectionSettings().recruitAccess);
+							long apRS = rsRank.getLong("apRecruitScore");
+							if((apRS == 0) || (rs >= apRS)) {
+								// Give them a promotion
+								rank++;
+								rsAccount.updateLong("access", rank);
+								rsAccount.updateTimestamp("lastRankChange", new Timestamp(new Date().getTime()));
+								rsAccount.updateRow();
+								user.resetPrettyName();	//Reset the presentable name
+								c.sendChat("Congratulations " + user.toString() + ", you just recieved a promotion! Your rank is now " + rank + ".");
+							} else {
+								c.sendChat(user, "You need " + Long.toString(apRS - rs) + " more recruitment points to recieve a promotion!", false);
+							}
 						} else {
 							//TODO: Tell the user they need x more wins
 							String msg = "You need ";
