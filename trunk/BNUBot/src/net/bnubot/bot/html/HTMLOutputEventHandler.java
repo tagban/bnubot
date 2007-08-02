@@ -65,6 +65,9 @@ public class HTMLOutputEventHandler implements EventHandler {
 		ui.statstr = statstr;
 		
 		writeUserList();
+		
+		append(user + " has joined" + statstr.toString() + ".",
+			cs.getChannelColor());
 	}
 	
 	public void channelLeave(BNetUser user) {
@@ -72,6 +75,9 @@ public class HTMLOutputEventHandler implements EventHandler {
 			System.err.println("Tried to remove a user that was not in the list: " + user.toString());
 		
 		writeUserList();
+		
+		append(user + " has left.",
+				cs.getChannelColor());
 	}
 	
 	public void channelUser(BNetUser user, StatString statstr) {
@@ -84,6 +90,9 @@ public class HTMLOutputEventHandler implements EventHandler {
 		ui.statstr = statstr;
 		
 		writeUserList();
+		
+		append(user + statstr.toString() + ".",
+				cs.getChannelColor());
 	}
 	
 	public void initialize(Connection c) {
@@ -101,6 +110,9 @@ public class HTMLOutputEventHandler implements EventHandler {
 	public void joinedChannel(String channel) {
 		this.channel = channel;
 		users.clear();
+		
+		append("Joining channel " + channel + ".",
+				cs.getChannelColor());
 	}
 	public void recieveError(String text) {}
 	public void recieveInfo(String text) {}
