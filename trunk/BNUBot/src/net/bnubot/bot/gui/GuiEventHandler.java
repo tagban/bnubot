@@ -115,30 +115,6 @@ public class GuiEventHandler implements EventHandler {
 					} });
 				menu.add(menuItem);
 			}
-			menuBar.add(menu);	
-			
-			menu = new JMenu("Edit");
-			{
-				menuItem = new JMenuItem("Cut");
-				menu.add(menuItem);
-				
-				menuItem = new JMenuItem("Copy");
-				menu.add(menuItem);
-				
-				menuItem = new JMenuItem("Paste");
-				menu.add(menuItem);
-				
-				menuItem = new JMenuItem("Select All");
-				menu.add(menuItem);
-				
-			}
-			menuBar.add(menu);
-			
-			menu = new JMenu("Friends");
-			{
-				menuItem = new JMenuItem("...");
-				menu.add(menuItem);
-			}
 			menuBar.add(menu);
 			
 			menu = new JMenu("Clan");
