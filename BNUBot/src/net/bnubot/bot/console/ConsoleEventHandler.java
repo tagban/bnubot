@@ -25,7 +25,7 @@ public class ConsoleEventHandler implements EventHandler {
 	}
 
 	public void channelUser(BNetUser user, StatString statstr) {
-		System.out.println(user + " (" + user.getPing() + "ms)" + statstr.toString());
+		System.out.println(user.getShortPrettyName() + " (" + user.getPing() + "ms)" + statstr.toString());
 	}
 	
 	public void channelJoin(BNetUser user, StatString statstr) {
@@ -36,19 +36,19 @@ public class ConsoleEventHandler implements EventHandler {
 	}
 
 	public void recieveChat(BNetUser user, String text) {
-		System.out.println("<" + user + "> " + text);
+		System.out.println("<" + user.getShortPrettyName() + "> " + text);
 	}
 
 	public void recieveEmote(BNetUser user, String text) {
-		System.out.println("<" + user + " " + text + ">");
+		System.out.println("<" + user.getShortPrettyName() + " " + text + ">");
 	}
 
 	public void whisperRecieved(BNetUser user, String text) {
-		System.out.println("<From: " + user + "> " + text);
+		System.out.println("<From: " + user.getShortPrettyName() + "> " + text);
 	}
 
 	public void whisperSent(BNetUser user, String text) {
-		System.out.println("<To: " + user + "> " + text);
+		System.out.println("<To: " + user.getShortPrettyName() + "> " + text);
 	}
 
 	public void recieveInfo(String text) {
