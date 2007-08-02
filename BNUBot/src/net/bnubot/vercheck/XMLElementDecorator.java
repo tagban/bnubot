@@ -17,10 +17,10 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 public class XMLElementDecorator {
-	private String name;
+	private String name = null;
 	private XMLElementDecorator parent = null;
 	private ArrayList<XMLElementDecorator> children = new ArrayList<XMLElementDecorator>();
-	private String contents;
+	private String contents = null;
 	private static XMLElementDecorator elem = null; 
 	
 	public synchronized static XMLElementDecorator parse(String url) throws Exception {
@@ -42,7 +42,7 @@ public class XMLElementDecorator {
 			}
 			
 			public void characters(char[] ch, int start, int length) throws SAXException {
-				elem.setContents(new String(ch, start, length));
+				elem.appendContents(new String(ch, start, length));
 			}
 
 			public void startPrefixMapping(String prefix, String uri) throws SAXException {}
@@ -105,8 +105,11 @@ public class XMLElementDecorator {
 		return parent;
 	}
 	
-	public void setContents(String contents) {
-		this.contents = contents;
+	public void appendContents(String contents) {
+		if(this.contents == null)
+			this.contents = contents;
+		else
+			this.contents += contents;
 	}
 	
 	public String getString() {

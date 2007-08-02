@@ -19,6 +19,12 @@ public class VersionCheck {
 				url += "?svn=" + CurrentVersion.revision();
 			elem = XMLElementDecorator.parse(url);
 		}
+
+		XMLElementDecorator error = elem.getChild("error");
+		if(error != null) {
+			System.err.println("Version check error:\n" + error.toString());
+			return false;
+		}
 		
 		XMLElementDecorator gamesElem = elem.getPath("bnubot/games");
 		if(gamesElem != null)
