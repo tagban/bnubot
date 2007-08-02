@@ -290,6 +290,21 @@ public class Database {
 		ps.setLong(2, withAccess);
 		return ps.executeQuery();
 	}
+	
+	public long getAccountRecruitScore(long accountID, long withAccess) throws SQLException {
+		PreparedStatement ps = prepareStatement("SELECT SUM(access-?) FROM `account` WHERE `createdby`=? AND `access`>=?");
+		ps.setLong(1, withAccess);
+		ps.setLong(2, accountID);
+		ps.setLong(3, withAccess);
+		ResultSet rs = ps.executeQuery();
+		if(!rs.next()) {
+			close(rs);
+			throw new SQLException("Fetch failed");
+		}
+		long score = rs.getLong(1);
+		close(rs);
+		return score;
+	}
 
 	public ResultSet createAccount(String account, long access, Long creator) throws SQLException {
 		PreparedStatement ps = prepareStatement("INSERT INTO `account` (`name`, `access`, `createdby`, `lastRankChange`) VALUES(?, ?, ?, NULL)");
