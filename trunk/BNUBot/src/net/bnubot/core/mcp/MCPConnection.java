@@ -113,7 +113,7 @@ public class MCPConnection extends RealmConnection {
 						is.readDWord();
 						int numChars = is.readWord();
 						
-						int maxLevel = 0;
+						long minTime = 0;
 						String maxCharname = null;
 						
 						for(int i = 0; i < numChars; i++) {
@@ -126,8 +126,8 @@ public class MCPConnection extends RealmConnection {
 							
 							recieveRealmInfo(TimeFormatter.formatTime(time) + " - " + charname + " - " + statstr.toString());
 							
-							if(maxLevel < statstr.getCharLevel()) {
-								maxLevel = statstr.getCharLevel();
+							if((minTime > time) || (minTime == 0)) {
+								minTime = time;
 								maxCharname = charname;
 							}
 						}
