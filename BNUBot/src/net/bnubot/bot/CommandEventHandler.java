@@ -1089,6 +1089,9 @@ public class CommandEventHandler implements EventHandler {
 	}
 
 	public void channelJoin(BNetUser user, StatString statstr) {
+		if(!c.getConnectionSettings().enableGreetings)
+			return;
+		
 		touchUser(user, "joining the channel");
 		
 		try {
@@ -1172,12 +1175,10 @@ public class CommandEventHandler implements EventHandler {
 			long id = rsAccount.getLong("id");
 			ResultSet rsRank = d.getRank(rank);
 			if(rsRank.next()) {
-				if(c.getConnectionSettings().enableGreetings) {
-					String greeting = rsRank.getString("greeting");
-					if(!rsRank.wasNull()) {
-						greeting = String.format(greeting, user.toString(), user.getPing(), user.getFullAccountName());
-						c.sendChat(greeting);
-					}
+				String greeting = rsRank.getString("greeting");
+				if(!rsRank.wasNull()) {
+					greeting = String.format(greeting, user.toString(), user.getPing(), user.getFullAccountName());
+					c.sendChat(greeting);
 				}
 
 				//Autopromotions:
