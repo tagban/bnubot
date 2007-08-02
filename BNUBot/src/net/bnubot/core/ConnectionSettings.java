@@ -42,6 +42,7 @@ public class ConnectionSettings implements Serializable {
 	public String trigger;
 	public int antiIdleTimer;
 	public boolean enableAntiIdle;
+	public boolean enableGreetings;
 	public String antiIdle;
 	public boolean autoconnect;
 	public boolean enableCLI;
@@ -164,12 +165,14 @@ public class ConnectionSettings implements Serializable {
 		Settings.write(header, "cdkeyTFT", cdkeyTFT);
 		if(product != 0)
 		Settings.write(header, "product", util.Constants.prods[product-1]);
-		Settings.write(header, "antiidle", antiIdle);
-		Settings.write(header, "enableAntiidle", Boolean.toString(enableAntiIdle));
-		Settings.write(header, "antiIdleTimer", Integer.toString(antiIdleTimer));
 		Settings.write(header, "autoconnect", Boolean.toString(autoconnect));
 		
 		if(botNum == 1) {
+			Settings.write(header, "antiidle", antiIdle);
+			Settings.write(header, "enableAntiidle", Boolean.toString(enableAntiIdle));
+			Settings.write(header, "enableGreetings", Boolean.toString(enableGreetings));
+			Settings.write(header, "antiIdleTimer", Integer.toString(antiIdleTimer));
+			Settings.write(header, "autoconnect", Boolean.toString(autoconnect));
 			Settings.write(header, "colorScheme", Byte.toString(colorScheme));
 			Settings.write(header, "trigger", trigger);
 			Settings.write(header, "enableCLI", Boolean.toString(enableCLI));
@@ -215,6 +218,8 @@ public class ConnectionSettings implements Serializable {
 		antiIdle = 	Settings.read(header, "antiidle", "/me is a BNU-Bot %version%");
 		enableAntiIdle = Boolean.parseBoolean(
 				Settings.read(header, "enableAntiidle", "false"));
+		enableGreetings = Boolean.parseBoolean(
+				Settings.read(header, "enableGreetings", "true"));
 		antiIdleTimer = Integer.parseInt(
 				Settings.read(header, "antiIdleTimer", "5"));
 		autoconnect = Boolean.parseBoolean(
