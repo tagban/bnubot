@@ -40,6 +40,7 @@ public class ConfigurationFrame extends JDialog {
 	JCheckBox chkEnableGUI = null;
 	JCheckBox chkEnableCLI = null;
 	JCheckBox chkEnableTrivia = null;
+	JCheckBox chkEnableFloodProtect = null;
 	JCheckBox chkPacketLog = null;
 	JCheckBox chkWhisperBack = null;
 	JButton btnLoad = null;
@@ -307,10 +308,13 @@ public class ConfigurationFrame extends JDialog {
 						boxCheckboxes.add(chkEnableGUI);
 	
 						chkEnableCLI = new JCheckBox("Enable CLI", cs.enableCLI);
-						boxCheckboxes.add(chkEnableCLI);;
+						boxCheckboxes.add(chkEnableCLI);
 	
 						chkEnableTrivia = new JCheckBox("Enable Trivia", cs.enableTrivia);
 						boxCheckboxes.add(chkEnableTrivia);
+	
+						chkEnableFloodProtect = new JCheckBox("Enable Flood Protect", cs.enableFloodProtect);
+						boxCheckboxes.add(chkEnableFloodProtect);
 	
 						chkPacketLog = new JCheckBox("Packet Log", cs.packetLog);
 						boxCheckboxes.add(chkPacketLog);
@@ -420,6 +424,7 @@ public class ConfigurationFrame extends JDialog {
 		cs.enableGUI = chkEnableGUI.isSelected();
 		cs.enableCLI = chkEnableCLI.isSelected();
 		cs.enableTrivia = chkEnableTrivia.isSelected();
+		cs.enableFloodProtect = chkEnableFloodProtect.isSelected();
 		cs.packetLog = chkPacketLog.isSelected();
 		cs.whisperBack = chkWhisperBack.isSelected();
 		
@@ -446,6 +451,7 @@ public class ConfigurationFrame extends JDialog {
 		chkEnableGUI.setSelected(cs.enableGUI);
 		chkEnableCLI.setSelected(cs.enableCLI);
 		chkEnableTrivia.setSelected(cs.enableTrivia);
+		chkEnableFloodProtect.setSelected(cs.enableFloodProtect);
 		chkPacketLog.setSelected(cs.packetLog);
 		chkWhisperBack.setSelected(cs.whisperBack);
 	}

@@ -265,10 +265,10 @@ public abstract class Connection extends Thread implements EventHandler {
 		if(text.length() == 0)
 			return;
 
-		if(canSendChat()) {
+		if(canSendChat() && !cs.enableFloodProtect) {
 			sendChatNow(text);
 		} else {
-			cq.enqueue(text);
+			cq.enqueue(text, cs.enableFloodProtect);
 		}
 	}
 	
