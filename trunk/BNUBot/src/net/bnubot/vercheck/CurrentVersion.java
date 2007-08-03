@@ -7,10 +7,7 @@ package net.bnubot.vercheck;
 
 import java.io.*;
 import java.net.URL;
-import java.util.Enumeration;
 import java.util.Properties;
-
-import net.bnubot.util.SortedProperties;
 
 public final class CurrentVersion {
 	protected static Integer VER_MAJOR = null;
