@@ -105,17 +105,20 @@ public final class CurrentVersion {
 		
 		try {
 			String vpPath = "/net/bnubot/version.properties";
+			// Try to load the file out of the JAR
 			URL vp = VersionNumber.class.getResource(vpPath);
 			File f = null;
 			InputStream is = null;
 			try {
 				is = vp.openStream();
 			} catch(NullPointerException e) {
+				// Either the JAR is messed up, or we're running in the ide - look for the file in the working directory
 				f = new File("." + vpPath);
 				if(f.exists())
 					is = new FileInputStream(f);
 			}
 			if(is == null) {
+				// Failed to determine the bot version
 				new FileNotFoundException(vpPath).printStackTrace();
 				System.exit(1);
 			}
