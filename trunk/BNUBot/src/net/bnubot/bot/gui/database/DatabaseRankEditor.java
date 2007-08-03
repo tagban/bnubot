@@ -35,6 +35,7 @@ public class DatabaseRankEditor extends JFrame {
 	private JTextArea txtAPD2Level;
 	private JTextArea txtAPW3Level;
 	private JTextArea txtAPRS;
+	private JTextArea txtAPMail;
 	private JButton cmdNew;
 	private JButton cmdDelete;
 	private JButton cmdApply;
@@ -370,6 +371,31 @@ public class DatabaseRankEditor extends JFrame {
 
 				boxLine = new Box(BoxLayout.X_AXIS);
 				{
+					boxLine.add(new JLabel("apMail"));
+					
+					txtAPMail = new JTextArea();
+					txtAPMail.addFocusListener(new FocusListener() {
+						public void focusGained(FocusEvent arg0) {}
+						public void focusLost(FocusEvent arg0) {
+							if(rsRank != null) {
+								String txt = txtAPMail.getText();
+								try {
+									if((txt == null) || (txt.length() == 0))
+										rsRank.updateNull("apMail");
+									else
+										rsRank.updateString("apMail", txt);
+								} catch (SQLException e) {
+									e.printStackTrace();
+								}
+							}
+						}
+					});
+					boxLine.add(txtAPMail);
+				}
+				majorRows.add(boxLine);
+
+				boxLine = new Box(BoxLayout.X_AXIS);
+				{
 					cmdNew = new JButton("New");
 					cmdNew.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent arg0) {
@@ -487,6 +513,7 @@ public class DatabaseRankEditor extends JFrame {
 			txtAPD2Level.setText(null);
 			txtAPW3Level.setText(null);
 			txtAPRS.setText(null);
+			txtAPMail.setText(null);
 		} else try {
 			if(rsRank != null) {
 				d.close(rsRank);
@@ -506,6 +533,7 @@ public class DatabaseRankEditor extends JFrame {
 			txtAPD2Level.setText(rsRank.getString("apD2Level"));
 			txtAPW3Level.setText(rsRank.getString("apW3Level"));
 			txtAPRS.setText(rsRank.getString("apRecruitScore"));
+			txtAPMail.setText(rsRank.getString("apMail"));
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

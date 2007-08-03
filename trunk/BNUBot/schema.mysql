@@ -18,7 +18,9 @@ CREATE TABLE `rank` (
 	`apDays` INTEGER DEFAULT NULL,
 	`apWins` INTEGER DEFAULT NULL,
 	`apD2Level` INTEGER DEFAULT NULL,
-	`apW3Level` INTEGER DEFAULT NULL
+	`apW3Level` INTEGER DEFAULT NULL,
+	`apRecruitScore` INTEGER DEFAULT NULL,
+	`apMail` VARCHAR(255) DEFAULT NULL
 ) TYPE=InnoDB;
 
 CREATE TABLE `account` (
@@ -94,45 +96,46 @@ CREATE TABLE `mail` (
 			ON DELETE CASCADE
 );
 
-INSERT INTO `rank` (`id`, `shortPrefix`, `prefix`, `verbstr`, `greeting`, `expireDays`, `apDays`, `apWins`, `apD2Level`, `apW3Level`) VALUES 
-(0, NULL, 'Guest', NULL, '/m %3$s Welcome to Clan BNU! If you''re a clan member, get a leader to add your account. For more information, you can visit our website at http://www.clanbnu.ws/', 1, 2, NULL, NULL, NULL),
-(1, NULL, 'Safelisted user', 'is safelisted', NULL, 90, NULL, NULL, NULL, NULL),
-(2, NULL, 'Friend', 'is a friend of the clan', '/me waves to %1$s with ping %2$d', 90, NULL, NULL, NULL, NULL),
-(3, 'God', 'The almighty', 'is a god', '/me bows before %1$s with ping %2$d', 90, NULL, NULL, NULL, NULL),
-(10, 'Private', 'Private', 'is a private', 'Hello, %1$s. Your ping is %2$d.', 5, 1, 2, 5, 1),
-(11, 'Private', 'Private First Class', 'is a Private', NULL, 15, 2, 5, 10, 3),
-(12, 'Corporal', 'Lance Corporal', 'is a Corporal', NULL, 15, 3, 10, 20, 4),
-(13, NULL, 'Corporal', 'is a Corporal', NULL, 90, 4, 15, 30, 5),
-(14, NULL, 'Sergeant', 'is a Sergeant', NULL, 90, 5, 20, 40, 6),
-(15, 'Sergeant', 'Staff Sergeant', 'is a Sergeant', NULL, 90, 6, 25, 50, 7),
-(16, 'Sergeant', 'Gunnery Sergeant', 'is a Sergeant', NULL, 90, 7, 30, 52, 7),
-(17, 'Sergeant', 'Master Sergeant', 'is a Sergeant', NULL, 90, 7, 35, 55, 8),
-(18, 'Sergeant', 'First Sergeant', 'is a Sergeant', NULL, 90, 7, 40, 57, 8),
-(19, 'Sergeant', 'Master Gunnery Sergeant', 'is a Sergeant', NULL, 90, 7, 45, 62, 9),
-(20, 'Sergeant', 'Sergeant Major', 'is a Sergeant', NULL, 90, 7, 50, 67, 9),
-(21, 'WO', 'Warrant Officer 1', 'is a Warrant Officer', NULL, 90, 14, 55, 72, 10),
-(22, 'WO', 'Warrant Officer 2', 'is a Warrant Officer', NULL, 90, 14, 60, 75, 10),
-(23, 'WO', 'Warrant Officer 3', 'is a Warrant Officer', NULL, 90, 14, 65, 78, 11),
-(24, 'WO', 'Warrant Officer 4', 'is a Warrant Officer', NULL, 90, 14, 70, 80, 11),
-(25, 'WO', 'Warrant Officer 5', 'is a Warrant Officer', NULL, 90, NULL, NULL, NULL, NULL),
-(26, 'Lieutenant', 'Second Lieutenant', NULL, NULL, 90, NULL, NULL, NULL, NULL),
-(27, 'Lieutenant', 'First Lieutenant', NULL, NULL, 90, NULL, NULL, NULL, NULL),
-(28, NULL, 'Captain', 'is a Captain', NULL, 90, NULL, NULL, NULL, NULL),
-(29, NULL, 'Major', 'is a Major', NULL, 90, NULL, NULL, NULL, NULL),
-(30, 'Colonel', 'Lieutenant Colonel', 'is a Colonel', NULL, 90, NULL, NULL, NULL, NULL),
-(31, NULL, 'Colonel', 'is a Colonel', NULL, 90, NULL, NULL, NULL, NULL),
-(32, 'General', 'Brigadier General', 'is a General', NULL, 90, NULL, NULL, NULL, NULL),
-(33, 'General', 'Major General', 'is a General', '/me salutes %1$s with ping %2$d', 90, NULL, NULL, NULL, NULL),
-(34, 'General', 'Lieutenant General', 'is a general', '/me salutes %1$s with ping %2$d', 90, NULL, NULL, NULL, NULL),
-(35, 'General', 'General', 'is a general', '/me hails %1$s with ping %2$d', 90, NULL, NULL, NULL, NULL),
-(36, 'Master', 'Master', 'is a nazi', '/me hails %1$s with ping %2$d', 90, NULL, NULL, NULL, NULL);
+INSERT INTO `rank` (`id`, `shortPrefix`, `prefix`, `verbstr`, `greeting`, `expireDays`, `apDays`, `apWins`, `apD2Level`, `apW3Level`, `apRecruitScore`, `apMail`) VALUES 
+(-1, NULL, 'Shitlisted', 'is a shitlisted n00b', '/ban %3$s', 90, NULL, NULL, NULL, NULL, NULL, NULL),
+(0, NULL, 'Guest', 'is a Guest', '/m %3$s Welcome to Clan BNU! If you''re a clan member, get a leader to add your account. For more information, you can visit our website at http://www.clanbnu.ws/', 1, 2, NULL, NULL, NULL, NULL, NULL),
+(1, NULL, 'Safelisted user', 'is safelisted', NULL, 90, NULL, NULL, NULL, NULL, NULL, NULL),
+(2, NULL, 'Friend', 'is a friend of the clan', '/me waves to %1$s with ping %2$d', 90, NULL, NULL, NULL, NULL, NULL, NULL),
+(3, 'God', 'The almighty', 'is a god', '/me bows before %1$s with ping %2$d', 90, NULL, NULL, NULL, NULL, NULL, NULL),
+(10, 'Private', 'Private', 'is a private', 'Hello, %1$s. Your ping is %2$d.', 7, 1, 2, 5, 1, NULL, 'Congratulations on your first promotion! To see the requirements for your next, type ""%trigger%apfino"" (note that you only need to meet one of the game requirements, not all three).'),
+(11, 'Private', 'Private First Class', 'is a Private', 'Hello, %1$s. Your ping is %2$d.', 15, 2, 5, 10, 3, NULL, 'Have you registered on our forums yet? Go to www.clanbnu.net and look for the link on the navigation bar.'),
+(12, 'Corporal', 'Lance Corporal', 'is a Corporal', 'Hello, %1$s. Your ping is %2$d.', 30, 3, 10, 20, 4, NULL, 'Are you registered on our forums yet? Go to http://www.clanbnu.ws/ and look for the link in the navigation bar. We post news and other important clan information (such as tournaments) there, so be sure to check often!'),
+(13, NULL, 'Corporal', 'is a Corporal', 'Hello, %1$s. Your ping is %2$d.', 60, 4, 15, 30, 5, NULL, 'Have you registered on our forums yet? Go to http://www.clanbnu.ws/ and look for the link on the navigation bar.'),
+(14, NULL, 'Sergeant', 'is a Sergeant', 'Hello, %1$s. Your ping is %2$d.', 90, 5, 20, 40, 6, NULL, 'You''re now able to recruit! Find a member, bring them to the channel, and type "%trigger%recruit [username] [account]" -- they will need to have at least one win on their BNU- account, so play a game with them first. Good luck!'),
+(15, 'Sergeant', 'Staff Sergeant', 'is a Sergeant', 'Hello, %1$s. Your ping is %2$d.', 90, 6, 25, 50, 7, NULL, 'Don''t forget to recruit! Remember: find a member, bring them to the channel, and type "%trigger%recruit [username] [webaccount]" -- they need one win on their account first, so play a game with them before you recruit. Good luck!'),
+(16, 'Sergeant', 'Gunnery Sergeant', 'is a Sergeant', '/me greets %1$s with ping %2$d', 90, 7, 30, 52, 7, NULL, 'Did you know that you need to recruit in order to get promotions past rank 17? To recruit, find a member and bring them to the channel. Then, type "%trigger%recruit [username] [webaccount]" -- Good luck!'),
+(17, 'Sergeant', 'Master Sergeant', 'is a Sergeant', '/me greets %1$s with ping %2$d', 90, 7, 35, 55, 8, 1, 'Great job getting recruits! Keep it up, and you''ll be well on your way to being a well known and respected part of BNU!'),
+(18, 'Sergeant', 'First Sergeant', 'is a Sergeant', '/me greets %1$s with ping %2$d', 90, 7, 40, 57, 8, 2, NULL),
+(19, 'Sergeant', 'Master Gunnery Sergeant', 'is a Sergeant', '/me greets %1$s with ping %2$d', 90, 7, 45, 62, 9, 3, NULL),
+(20, 'Sergeant', 'Sergeant Major', 'is a Sergeant', '/me greets %1$s with ping %2$d', 90, 7, 50, 67, 9, 4, NULL),
+(21, 'WO1', 'Warrant Officer 1', 'is a Warrant Officer', '/me welcomes %1$s with ping %2$d', 90, 14, 55, 72, 10, 5, NULL),
+(22, 'WO2', 'Warrant Officer 2', 'is a Warrant Officer', '/me welcomes %1$s with ping %2$d', 90, 14, 60, 75, 10, 6, NULL),
+(23, 'WO3', 'Warrant Officer 3', 'is a Warrant Officer', '/me welcomes %1$s with ping %2$d', 90, 14, 65, 78, 11, 7, NULL),
+(24, 'WO4', 'Warrant Officer 4', 'is a Warrant Officer', '/me welcomes %1$s with ping %2$d', 90, 14, 70, 80, 11, 8, NULL),
+(25, 'WO5', 'Warrant Officer 5', 'is a Warrant Officer', '/me welcomes %1$s with ping %2$d', 90, NULL, NULL, NULL, NULL, NULL, NULL),
+(26, 'Lieutenant', 'Second Lieutenant', 'is a Lieutenant', '/me salutes %1$s with ping %2$d', 90, NULL, NULL, NULL, NULL, NULL, NULL),
+(27, 'Lieutenant', 'First Lieutenant', 'is a Lieutenant', '/me salutes %1$s with ping %2$d', 90, NULL, NULL, NULL, NULL, NULL, NULL),
+(28, NULL, 'Captain', 'is a Captain', '/me salutes %1$s with ping %2$d', 90, NULL, NULL, NULL, NULL, NULL, NULL),
+(29, NULL, 'Major', 'is a Major', '/me salutes %1$s with ping %2$d', 90, NULL, NULL, NULL, NULL, NULL, NULL),
+(30, 'Colonel', 'Lieutenant Colonel', 'is a Colonel', '/me salutes %1$s with ping %2$d', 90, NULL, NULL, NULL, NULL, NULL, NULL),
+(31, NULL, 'Colonel', 'is a Colonel', '/me salutes %1$s with ping %2$d', 90, NULL, NULL, NULL, NULL, NULL, NULL),
+(32, 'General', 'Brigadier General', 'is a General', '/me salutes %1$s with ping %2$d', 90, NULL, NULL, NULL, NULL, NULL, NULL),
+(33, 'General', 'Major General', 'is a General', '/me salutes %1$s with ping %2$d', 90, NULL, NULL, NULL, NULL, NULL, NULL),
+(34, 'General', 'Lieutenant General', 'is a general', '/me salutes %1$s with ping %2$d', 90, NULL, NULL, NULL, NULL, NULL, NULL),
+(35, 'General', 'General', 'is a general', '/me hails %1$s with ping %2$d', 90, NULL, NULL, NULL, NULL, NULL, NULL),
+(36, 'Master', 'Master', 'is a nazi', '/me hails %1$s with ping %2$d', 90, NULL, NULL, NULL, NULL, NULL, NULL);
 
-INSERT INTO `account` (access, name, createdby) VALUES
-(36,	'Camel', NULL),
-(35,	'John', 1),
-(34,	'Sorceress', 1);
+INSERT INTO `account` (`id`, `access`, `name`, `createdby`) VALUES
+(1, 36,	'Camel', NULL),
+(2, 35,	'John', 1),
+(3, 34,	'Sorceress', 1);
 
-INSERT INTO `user` (login, account) VALUES
+INSERT INTO `user` (`login`, `account`) VALUES
 ('BNU-Camel@USEast', 1),
 ('BNU-Camel2@USEast', 1),
 ('BNU-Camel@Azeroth', 1),
@@ -144,7 +147,7 @@ INSERT INTO `user` (login, account) VALUES
 ('BNU-Loyalty@Azeroth', 3),
 ('SoRcOwNeD@USEast', 3);
 
-INSERT INTO `command` (access, name, description, cmdgroup) VALUES
+INSERT INTO `command` (`access`, `name`, `description`, `cmdgroup`) VALUES
 (1,		'access', 'Get the commands avalible to the user', 'commands'),
 (34,	'add', 'Set access', 'accounts'),
 (1,		'auth', 'Get the authorization required to use a command', 'commands'),
@@ -173,7 +176,7 @@ INSERT INTO `command` (access, name, description, cmdgroup) VALUES
 (1,		'whoami', NULL, 'accounts'),
 (1,		'whois', NULL, 'accounts');
 
-INSERT INTO `command_alias` (alias, name) VALUES
+INSERT INTO `command_alias` (`alias`, `name`) VALUES
 ('ap', 'autopromotion'),
 ('apinfo', 'autopromotion'),
 ('ca', 'createaccount'),

@@ -141,6 +141,8 @@ public class GuiEventHandler implements EventHandler {
 						Database d = Database.getInstance();
 						if(d != null)
 							new DatabaseRankEditor(d);
+						else
+							c.recieveError("There is no database initialized.");
 					} });
 				menu.add(menuItem);
 			}
