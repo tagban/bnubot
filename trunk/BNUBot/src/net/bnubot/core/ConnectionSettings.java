@@ -49,6 +49,7 @@ public class ConnectionSettings implements Serializable {
 	public boolean enableGUI;
 	public boolean enableCommands;
 	public boolean enableTrivia;
+	public boolean enableFloodProtect;
 	public boolean packetLog;
 	public boolean whisperBack;
 	public long recruitAccess;
@@ -179,6 +180,7 @@ public class ConnectionSettings implements Serializable {
 			Settings.write(header, "enableGUI", Boolean.toString(enableGUI));
 			Settings.write(header, "enableCommands", Boolean.toString(enableCommands));
 			Settings.write(header, "enableTrivia", Boolean.toString(enableTrivia));
+			Settings.write(header, "enableFloodProtect", Boolean.toString(enableTrivia));
 			Settings.write(header, "packetLog", Boolean.toString(packetLog));
 			Settings.write(header, "whisperBack", Boolean.toString(whisperBack));
 			Settings.write(header, "recruitAccess", Long.toString(recruitAccess));
@@ -232,6 +234,8 @@ public class ConnectionSettings implements Serializable {
 					Settings.read(header, "enableCommands", "false"));
 		enableTrivia = Boolean.parseBoolean(
 				Settings.read(header, "enableTrivia", "false"));
+		enableFloodProtect = Boolean.parseBoolean(
+				Settings.read(header, "enableFloodProtect", "true"));
 		packetLog = Boolean.parseBoolean(
 					Settings.read(header, "packetLog", "false"));
 		whisperBack = Boolean.parseBoolean(

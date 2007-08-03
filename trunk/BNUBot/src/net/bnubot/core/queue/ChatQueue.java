@@ -11,8 +11,9 @@ import java.util.LinkedList;
 import net.bnubot.core.Connection;
 
 public class ChatQueue extends Thread {
-	LinkedList<Connection> cons = new LinkedList<Connection>();
-	LinkedList<String> queue = new LinkedList<String>();
+	private LinkedList<Connection> cons = new LinkedList<Connection>();
+	private LinkedList<String> queue = new LinkedList<String>();
+	private int lastCon = 0;
 	
 	public ChatQueue() {
 		this.setDaemon(true);
@@ -24,9 +25,14 @@ public class ChatQueue extends Thread {
 		}
 	}
 	
-	public boolean enqueue(String text) {
-		synchronized(queue) {
+	public boolean enqueue(String text, boolean fp) {
+		if(fp) synchronized(queue) {
 			return queue.add(text);
+		} else {
+			if(lastCon >= cons.size())
+				lastCon = 0;
+			cons.get(lastCon++).sendChatNow(text);
+			return true;
 		}
 	}
 	
