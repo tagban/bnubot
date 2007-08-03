@@ -17,6 +17,7 @@ import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.core.queue.ChatQueue;
 import net.bnubot.util.TimeFormatter;
 import net.bnubot.vercheck.CurrentVersion;
+import net.bnubot.vercheck.VersionNumber;
 
 public abstract class Connection extends Thread implements EventHandler {
 	protected ConnectionSettings cs;
@@ -283,11 +284,12 @@ public abstract class Connection extends Thread implements EventHandler {
 			String prefix;
 			if(cs.whisperBack || forceWhisper) {
 				prefix = "/w " + to.getFullLogonName() + " [BNU";
-				if(CurrentVersion.VER_ALPHA != null)
+				VersionNumber cv = CurrentVersion.version();
+				if(cv.isAlpha())
 					prefix += " alpha";
-				else if(CurrentVersion.VER_BETA != null)
+				else if(cv.isBeta())
 					prefix += " beta";
-				else if(CurrentVersion.VER_RELEASE_CANDIDATE != null)
+				else if(cv.isReleaseCandidate())
 					prefix += " RC";
 				prefix += "] ";
 			} else

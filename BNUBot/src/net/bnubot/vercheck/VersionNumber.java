@@ -88,4 +88,16 @@ public class VersionNumber {
 		
 		return false;
 	}
+	
+	public boolean isAlpha() {
+		return (VER_ALPHA != null);
+	}
+	
+	public boolean isBeta() {
+		return (VER_BETA != null);
+	}
+	
+	public boolean isReleaseCandidate() {
+		return (VER_RELEASE_CANDIDATE != null);
+	}
 }
