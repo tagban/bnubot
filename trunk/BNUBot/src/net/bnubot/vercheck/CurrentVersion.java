@@ -6,16 +6,21 @@
 package net.bnubot.vercheck;
 
 import java.io.*;
+import java.net.URL;
+import java.util.Enumeration;
+import java.util.Properties;
+
+import net.bnubot.util.SortedProperties;
 
 public final class CurrentVersion {
-	public static final Integer VER_MAJOR = 2;
-	public static final Integer VER_MINOR = 0;
-	public static final Integer VER_REVISION = 0;
-	public static final Integer VER_RELEASE_CANDIDATE = null;
-	public static final Integer VER_ALPHA = null;
-	public static final Integer VER_BETA = 3;
+	protected static Integer VER_MAJOR = null;
+	protected static Integer VER_MINOR = null;
+	protected static Integer VER_REVISION = null;
+	protected static Integer VER_RELEASE_CANDIDATE = null;
+	protected static Integer VER_ALPHA = null;
+	protected static Integer VER_BETA = null;
 	private static boolean VER_SVN_SET = false;
-	private static Integer VER_SVN_REVISION = null;
+	protected static Integer VER_SVN_REVISION = null;
 	private static VersionNumber VER = null;
 	
 	private static final Integer revision(File f) {
@@ -98,8 +103,66 @@ public final class CurrentVersion {
 	}
 	
 	public static final VersionNumber version() {
-		if(VER == null)
+		if(VER != null)
+			return VER;
+		
+		try {
+			String vpPath = "/net/bnubot/version.properties";
+			URL vp = VersionNumber.class.getResource(vpPath);
+			File f = null;
+			InputStream is = null;
+			try {
+				is = vp.openStream();
+			} catch(NullPointerException e) {
+				f = new File("." + vpPath);
+				if(f.exists())
+					is = new FileInputStream(f);
+			}
+			if(is == null) {
+				new FileNotFoundException(vpPath).printStackTrace();
+				System.exit(1);
+			}
+			
+			Properties versionprops = new Properties();
+			versionprops.load(is);
+			is.close();
+			
+			Integer VER_SVN_REVISION_FILE = null;
+			if(versionprops.containsKey("VER_MAJOR"))
+				VER_MAJOR = Integer.parseInt((String)versionprops.get("VER_MAJOR"));
+			if(versionprops.containsKey("VER_MINOR"))
+				VER_MINOR = Integer.parseInt((String)versionprops.get("VER_MINOR"));
+			if(versionprops.containsKey("VER_REVISION"))
+				VER_REVISION = Integer.parseInt((String)versionprops.get("VER_REVISION"));
+			if(versionprops.containsKey("VER_RELEASE_CANDIDATE"))
+				VER_RELEASE_CANDIDATE = Integer.parseInt((String)versionprops.get("VER_RELEASE_CANDIDATE"));
+			if(versionprops.containsKey("VER_ALPHA"))
+				VER_ALPHA = Integer.parseInt((String)versionprops.get("VER_ALPHA"));
+			if(versionprops.containsKey("VER_BETA"))
+				VER_BETA = Integer.parseInt((String)versionprops.get("VER_BETA"));
+			if(versionprops.containsKey("VER_SVN_REVISION"))
+				VER_SVN_REVISION_FILE = Integer.parseInt((String)versionprops.get("VER_SVN_REVISION"));
+			
+			if(revision() == null) {
+				VER_SVN_REVISION = VER_SVN_REVISION_FILE;
+			} else {
+				if((VER_SVN_REVISION_FILE == null) || (VER_SVN_REVISION < VER_SVN_REVISION_FILE)) {
+					System.out.println("File version is " + VER_SVN_REVISION_FILE);
+					System.out.println("Calculated version is " + VER_SVN_REVISION);
+					
+					if((f != null) && (f.exists())) {
+						versionprops.setProperty("VER_SVN_REVISION", Integer.toString(VER_SVN_REVISION));
+						versionprops.store(new FileOutputStream(f), null);
+					}
+				}
+			}
+			
 			VER = new VersionNumber(VER_MAJOR, VER_MINOR, VER_REVISION, VER_ALPHA, VER_BETA, VER_RELEASE_CANDIDATE, revision());
-		return VER;
+			return VER;
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		throw new NullPointerException();
 	}
 }

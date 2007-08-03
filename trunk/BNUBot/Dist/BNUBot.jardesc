@@ -1,21 +1,22 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0"?>
 <jardesc>
-<jar path="BNUBot/Dist/BNUBot.jar"/>
-<options buildIfNeeded="true" compress="true" descriptionLocation="/BNUBot/BNUBot.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
-<storedRefactorings deprecationInfo="true" structuralOnly="false"/>
-<selectedProjects/>
-<manifest generateManifest="false" mainClassHandleIdentifier="=BNUBot/src&lt;net.bnubot{Main.java[Main" manifestLocation="/BNUBot/Dist/MANIFEST.MF" manifestVersion="1.0" reuseManifest="true" saveManifest="true" usesManifest="true">
-<sealing sealJar="false">
-<packagesToSeal/>
-<packagesToUnSeal/>
-</sealing>
-</manifest>
-<selectedElements exportClassFiles="true" exportJavaFiles="true" exportOutputFolder="false">
-<javaElement handleIdentifier="=JBLS/&lt;Hashing"/>
-<javaElement handleIdentifier="=JBLS/&lt;util"/>
-<javaElement handleIdentifier="=BNUBot/src"/>
-<file path="/BNUBot/.project"/>
-<javaElement handleIdentifier="=JBLS/&lt;BNLSProtocol"/>
-<file path="/BNUBot/.classpath"/>
-</selectedElements>
+  <jar path="BNUBot/Dist/BNUBot.jar"/>
+  <options overwrite="false" compress="true" exportErrors="true" exportWarnings="true" saveDescription="true" descriptionLocation="/BNUBot/Dist/BNUBot.jardesc" useSourceFolders="false" buildIfNeeded="true" includeDirectoryEntries="false" storeRefactorings="false"/>
+  <storedRefactorings structuralOnly="false" deprecationInfo="true"/>
+  <selectedProjects/>
+  <manifest manifestVersion="1.0" usesManifest="true" reuseManifest="true" saveManifest="true" generateManifest="false" manifestLocation="/BNUBot/Dist/MANIFEST.MF" mainClassHandleIdentifier="=BNUBot/src&lt;net.bnubot{Main.java[Main">
+    <sealing sealJar="false">
+      <packagesToSeal/>
+      <packagesToUnSeal/>
+    </sealing>
+  </manifest>
+  <selectedElements exportClassFiles="true" exportOutputFolder="false" exportJavaFiles="true">
+    <file path="/BNUBot/.project"/>
+    <javaElement handleIdentifier="=JBLS/&lt;util"/>
+    <javaElement handleIdentifier="=JBLS/&lt;BNLSProtocol"/>
+    <javaElement handleIdentifier="=BNUBot/src"/>
+    <file path="/BNUBot/.classpath"/>
+    <javaElement handleIdentifier="=JBLS/&lt;Hashing"/>
+    <folder path="/BNUBot/net"/>
+  </selectedElements>
 </jardesc>

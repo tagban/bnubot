@@ -15,7 +15,6 @@ import net.bnubot.vercheck.CurrentVersion;
 public class Settings {
 	private static File propsFile = null;
 	private static Properties props = null;
-	private static final String comments = "BNUBot " + CurrentVersion.version();
 	
 	private static void init() {
 		if(props != null)
@@ -59,7 +58,7 @@ public class Settings {
 		
 		try {
 			FileOutputStream fos = new FileOutputStream(propsFile);
-			props.store(fos, comments);
+			props.store(fos, CurrentVersion.version().toString());
 			fos.close();
 		} catch (Exception e) {
 			e.printStackTrace();
