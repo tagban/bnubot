@@ -146,7 +146,7 @@ public final class CurrentVersion {
 			if(revision() == null) {
 				VER_SVN_REVISION = VER_SVN_REVISION_FILE;
 			} else {
-				if((VER_SVN_REVISION_FILE == null) || (VER_SVN_REVISION < VER_SVN_REVISION_FILE)) {
+				if((VER_SVN_REVISION_FILE == null) || (VER_SVN_REVISION > VER_SVN_REVISION_FILE)) {
 					System.out.println("File version is " + VER_SVN_REVISION_FILE);
 					System.out.println("Calculated version is " + VER_SVN_REVISION);
 					
