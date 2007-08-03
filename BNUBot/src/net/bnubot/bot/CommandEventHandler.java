@@ -1184,7 +1184,7 @@ public class CommandEventHandler implements EventHandler {
 				//Autopromotions:
 				long apDays = rsRank.getLong("apDays");
 				Timestamp ts = rsAccount.getTimestamp("lastRankChange");
-				//Check that the 
+				//Check that they meet the days requirement
 				apBlock: if(apDays != 0) {
 					double timeElapsed = 0;
 					if(ts != null) {
@@ -1212,6 +1212,9 @@ public class CommandEventHandler implements EventHandler {
 								rsAccount.updateRow();
 								user.resetPrettyName();	//Reset the presentable name
 								c.sendChat("Congratulations " + user.toString() + ", you just recieved a promotion! Your rank is now " + rank + ".");
+								String apMail = rsRank.getString("apMail");
+								if((!rsRank.wasNull()) && (apMail.length() > 0))
+									d.sendMail(id, id, apMail);
 							} else {
 								c.sendChat(user, "You need " + Long.toString(apRS - rs) + " more recruitment points to recieve a promotion!", false);
 							}

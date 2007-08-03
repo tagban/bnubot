@@ -57,9 +57,9 @@ public class Settings {
 		init();
 		
 		try {
-			FileOutputStream fos = new FileOutputStream(propsFile);
-			props.store(fos, CurrentVersion.version().toString());
-			fos.close();
+			// Generate the comment first, because the settings.ini file could be lost if CurrentVersion.version() fails
+			String comment = CurrentVersion.version().toString();
+			props.store(new FileOutputStream(propsFile), comment);
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.exit(1);
