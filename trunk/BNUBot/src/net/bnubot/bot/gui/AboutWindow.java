@@ -32,7 +32,8 @@ public class AboutWindow extends JDialog {
 		Box b = new Box(BoxLayout.Y_AXIS);
 		{
 			b.add(new JLabel("BNU-Bot v" + CurrentVersion.version()));
-			b.add(new JLabel("Created by: BNU-Camel"));
+			b.add(new JLabel("Built " + CurrentVersion.version().getBuildDate()));
+			b.add(new JLabel("Created by BNU-Camel"));
 			b.add(Box.createVerticalStrut(15));
 			b.add(new JLabel("Special thanks to:"));
 			b.add(new JLabel("Google: project hosting"));

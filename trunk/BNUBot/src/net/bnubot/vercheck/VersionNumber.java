@@ -14,6 +14,7 @@ public class VersionNumber {
 	private Integer VER_RELEASE_CANDIDATE = null;
 	private Integer VER_SVN_REVISION = null;
 	private String VER_STRING = null;
+	private String BUILD_DATE = null;
 
 	public VersionNumber(Integer major, Integer minor, Integer revision, Integer alpha, Integer beta, Integer rc) {
 		VER_MAJOR = major;
@@ -24,9 +25,10 @@ public class VersionNumber {
 		VER_RELEASE_CANDIDATE = rc;
 	}
 	
-	public VersionNumber(Integer major, Integer minor, Integer revision, Integer alpha, Integer beta, Integer rc, Integer svn) {
+	public VersionNumber(Integer major, Integer minor, Integer revision, Integer alpha, Integer beta, Integer rc, Integer svn, String builddate) {
 		this(major, minor, revision, alpha, beta, rc);
 		VER_SVN_REVISION = svn;
+		BUILD_DATE = builddate;
 	}
 	
 	public String toString() {
@@ -45,6 +47,10 @@ public class VersionNumber {
 			VER_STRING += " (r" + VER_SVN_REVISION.toString() + ")";
 		
 		return VER_STRING;
+	}
+	
+	public String getBuildDate() {
+		return BUILD_DATE;
 	}
 	
 	public boolean isNewerThan(VersionNumber vn) {
