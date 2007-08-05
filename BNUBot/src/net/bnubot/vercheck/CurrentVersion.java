@@ -7,6 +7,7 @@ package net.bnubot.vercheck;
 
 import java.io.*;
 import java.net.URL;
+import java.util.Date;
 import java.util.Properties;
 
 public final class CurrentVersion {
@@ -19,6 +20,7 @@ public final class CurrentVersion {
 	private static boolean VER_SVN_SET = false;
 	protected static Integer VER_SVN_REVISION = null;
 	private static VersionNumber VER = null;
+	private static String BUILD_DATE = null;
 	
 	private static final Integer revision(File f) {
 		if(VER_SVN_SET)
@@ -143,6 +145,13 @@ public final class CurrentVersion {
 			if(versionprops.containsKey("VER_SVN_REVISION"))
 				VER_SVN_REVISION_FILE = Integer.parseInt((String)versionprops.get("VER_SVN_REVISION"));
 			
+			if(f == null)
+				BUILD_DATE = (String)versionprops.getProperty("BUILD_DATE");
+			else {
+				BUILD_DATE = new Date().toString();
+				versionprops.setProperty("BUILD_DATE", BUILD_DATE);
+			}
+			
 			if(revision() == null) {
 				VER_SVN_REVISION = VER_SVN_REVISION_FILE;
 			} else {
@@ -157,7 +166,7 @@ public final class CurrentVersion {
 				}
 			}
 			
-			VER = new VersionNumber(VER_MAJOR, VER_MINOR, VER_REVISION, VER_ALPHA, VER_BETA, VER_RELEASE_CANDIDATE, revision());
+			VER = new VersionNumber(VER_MAJOR, VER_MINOR, VER_REVISION, VER_ALPHA, VER_BETA, VER_RELEASE_CANDIDATE, revision(), BUILD_DATE);
 			return VER;
 		} catch(Exception e) {
 			e.printStackTrace();

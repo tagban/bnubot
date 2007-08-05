@@ -55,15 +55,17 @@ public class VersionCheck {
 				verLatest.getChild("alpha").getInt(),
 				verLatest.getChild("beta").getInt(),
 				verLatest.getChild("rc").getInt(),
-				verLatest.getChild("svn").getInt());
+				verLatest.getChild("svn").getInt(),
+				verLatest.getChild("built").getString());
 		
-		String url = verLatest.getChild("url").getString();
 		VersionNumber vnCurrent = CurrentVersion.version();
 
 		boolean update = vnLatest.isNewerThan(vnCurrent);
 		if(update && reportTo != null) {
 			reportTo.recieveError("Current version: " + vnCurrent.toString());
 			reportTo.recieveError("Latest version: " + vnLatest.toString());
+			
+			String url = verLatest.getChild("url").getString();
 			if(url != null)
 				reportTo.recieveError("Update: " + url);
 		}
