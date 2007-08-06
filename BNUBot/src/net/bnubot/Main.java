@@ -132,11 +132,11 @@ public class Main {
 		//Bot
 		EventHandler cmd = null;
 		if(cs.enableCommands) {
-			String db_driver = Settings.read("database", "driver", null);
-			String db_url = Settings.read("database", "url", null);
+			String db_driver = Settings.read("database", "driver", "org.apache.derby.jdbc.EmbeddedDriver");
+			String db_url = Settings.read("database", "url", "jdbc:derby:database;create=true");
 			String db_username = Settings.read("database", "username", null);
 			String db_password = Settings.read("database", "password", null);
-			String db_schema = Settings.read("database", "schema", null);
+			String db_schema = Settings.read("database", "schema", "schema.derby");
 			
 			if((db_driver == null)
 			|| (db_url == null)) {

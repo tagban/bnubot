@@ -8,95 +8,95 @@ DROP TABLE IF EXISTS user;
 DROP TABLE IF EXISTS account;
 DROP TABLE IF EXISTS rank;
 
-CREATE TABLE `rank` (
-	`id` INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
-	`shortPrefix` VARCHAR(32),
-	`prefix` VARCHAR(32),
-	`verbstr` VARCHAR(64) NOT NULL,
-	`greeting` VARCHAR(255),
-	`expireDays` TINYINT NOT NULL DEFAULT '90',
-	`apDays` INTEGER DEFAULT NULL,
-	`apWins` INTEGER DEFAULT NULL,
-	`apD2Level` INTEGER DEFAULT NULL,
-	`apW3Level` INTEGER DEFAULT NULL,
-	`apRecruitScore` INTEGER DEFAULT NULL,
-	`apMail` VARCHAR(255) DEFAULT NULL
+CREATE TABLE rank (
+	id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
+	shortPrefix VARCHAR(32),
+	prefix VARCHAR(32),
+	verbstr VARCHAR(64) NOT NULL,
+	greeting VARCHAR(255),
+	expireDays TINYINT NOT NULL DEFAULT '90',
+	apDays INTEGER DEFAULT NULL,
+	apWins INTEGER DEFAULT NULL,
+	apD2Level INTEGER DEFAULT NULL,
+	apW3Level INTEGER DEFAULT NULL,
+	apRecruitScore INTEGER DEFAULT NULL,
+	apMail VARCHAR(255) DEFAULT NULL
 ) TYPE=InnoDB;
 
-CREATE TABLE `account` (
-	`id` INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
-	`access` INTEGER NOT NULL,
-	`name` VARCHAR(32) UNIQUE NOT NULL,
-	`created` TIMESTAMP NOT NULL default CURRENT_TIMESTAMP,
-	`lastRankChange` TIMESTAMP DEFAULT 0,
-	`createdby` INTEGER default NULL,
-	`trivia_correct` INT NOT NULL DEFAULT '0',
-	`trivia_win` INT NOT NULL DEFAULT '0',
-	`birthday` DATE NULL,
-	CONSTRAINT `account_ibfk1`
-		FOREIGN KEY (`createdby`)
-			REFERENCES `account` (`id`)
+CREATE TABLE account (
+	id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
+	access INTEGER NOT NULL,
+	name VARCHAR(32) UNIQUE NOT NULL,
+	created TIMESTAMP NOT NULL default CURRENT_TIMESTAMP,
+	lastRankChange TIMESTAMP DEFAULT 0,
+	createdby INTEGER default NULL,
+	trivia_correct INT NOT NULL DEFAULT '0',
+	trivia_win INT NOT NULL DEFAULT '0',
+	birthday DATE NULL,
+	CONSTRAINT account_ibfk1
+		FOREIGN KEY (createdby)
+			REFERENCES account (id)
 			ON UPDATE CASCADE
 			ON DELETE SET NULL
 ) TYPE=InnoDB;
 
-CREATE TABLE `user` (
-	`id` INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
-	`login` VARCHAR(32) UNIQUE NOT NULL,
-	`account` INTEGER DEFAULT NULL,
-	`created` TIMESTAMP NOT NULL default CURRENT_TIMESTAMP,
-	`lastSeen` TIMESTAMP default 0,
-	`lastAction` VARCHAR(32),
-	`winsSTAR` INTEGER DEFAULT NULL,
-	`winsSEXP` INTEGER DEFAULT NULL,
-	`winsW2BN` INTEGER DEFAULT NULL,
-	`levelD2` INTEGER DEFAULT NULL,
-	`levelW3` INTEGER DEFAULT NULL,
-	CONSTRAINT `user_ibfk1`
-		FOREIGN KEY (`account`)
-		REFERENCES `account` (`id`)
+CREATE TABLE bnlogin (
+	id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
+	login VARCHAR(32) UNIQUE NOT NULL,
+	account INTEGER DEFAULT NULL,
+	created TIMESTAMP NOT NULL default CURRENT_TIMESTAMP,
+	lastSeen TIMESTAMP default 0,
+	lastAction VARCHAR(32),
+	winsSTAR INTEGER DEFAULT NULL,
+	winsSEXP INTEGER DEFAULT NULL,
+	winsW2BN INTEGER DEFAULT NULL,
+	levelD2 INTEGER DEFAULT NULL,
+	levelW3 INTEGER DEFAULT NULL,
+	CONSTRAINT bnlogin_ibfk1
+		FOREIGN KEY (account)
+		REFERENCES account (id)
 		ON UPDATE CASCADE
 		ON DELETE SET NULL
 ) TYPE=InnoDB;
 
-CREATE TABLE `command` (
-	`id` INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
-	`access` INTEGER NOT NULL,
-	`name` VARCHAR(32) UNIQUE NOT NULL,
-	`description` VARCHAR(255),
-	`cmdgroup`	VARCHAR(32) default 'other'
+CREATE TABLE command (
+	id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
+	access INTEGER NOT NULL,
+	name VARCHAR(32) UNIQUE NOT NULL,
+	description VARCHAR(255),
+	cmdgroup	VARCHAR(32) default 'other'
 ) TYPE=InnoDB;
 
-CREATE TABLE `command_alias` (
-	`alias` VARCHAR(32) UNIQUE NOT NULL,
-	`name` VARCHAR(32) NOT NULL,
-	CONSTRAINT `command_alias_ibfk1`
-		FOREIGN KEY (`name`)
-			REFERENCES `command` (`name`)
+CREATE TABLE command_alias (
+	alias VARCHAR(32) UNIQUE NOT NULL,
+	name VARCHAR(32) NOT NULL,
+	CONSTRAINT command_alias_ibfk1
+		FOREIGN KEY (name)
+			REFERENCES command (name)
 			ON UPDATE CASCADE
 			ON DELETE CASCADE
 ) TYPE=InnoDB;
 
-CREATE TABLE `mail` (
-	`id` INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
-	`read` BOOLEAN NOT NULL DEFAULT FALSE,
-	`from` INTEGER NOT NULL,
-	`to` INTEGER NOT NULL,
-	`message` VARCHAR(255),
-	`sent` TIMESTAMP NOT NULL default CURRENT_TIMESTAMP,
-	CONSTRAINT `mail_ibfk1`
-		FOREIGN KEY (`from`)
-			REFERENCES `account` (`id`)
+CREATE TABLE mail (
+	id INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
+	isread BOOLEAN NOT NULL DEFAULT FALSE,
+	sentfrom INTEGER NOT NULL,
+	sentto INTEGER NOT NULL,
+	message VARCHAR(255),
+	sent TIMESTAMP NOT NULL default CURRENT_TIMESTAMP,
+	CONSTRAINT mail_ibfk1
+		FOREIGN KEY (sentfrom)
+			REFERENCES account (id)
 			ON UPDATE CASCADE
 			ON DELETE SET NULL,
-	CONSTRAINT `mail_ibfk2`
-		FOREIGN KEY (`to`)
-			REFERENCES `account` (`id`)
+	CONSTRAINT mail_ibfk2
+		FOREIGN KEY (sentto)
+			REFERENCES account (id)
 			ON UPDATE CASCADE
 			ON DELETE CASCADE
 );
 
-INSERT INTO `rank` (`id`, `shortPrefix`, `prefix`, `verbstr`, `greeting`, `expireDays`, `apDays`, `apWins`, `apD2Level`, `apW3Level`, `apRecruitScore`, `apMail`) VALUES 
+INSERT INTO rank (id, shortPrefix, prefix, verbstr, greeting, expireDays, apDays, apWins, apD2Level, apW3Level, apRecruitScore, apMail) VALUES 
 (-1, NULL, 'Shitlisted', 'is a shitlisted n00b', '/ban %3$s', 90, NULL, NULL, NULL, NULL, NULL, NULL),
 (0, NULL, 'Guest', 'is a Guest', '/m %3$s Welcome to Clan BNU! If you''re a clan member, get a leader to add your account. For more information, you can visit our website at http://www.clanbnu.ws/', 1, 2, NULL, NULL, NULL, NULL, NULL),
 (1, NULL, 'Safelisted user', 'is safelisted', NULL, 90, NULL, NULL, NULL, NULL, NULL, NULL),
@@ -130,12 +130,12 @@ INSERT INTO `rank` (`id`, `shortPrefix`, `prefix`, `verbstr`, `greeting`, `expir
 (35, 'General', 'General', 'is a general', '/me hails %1$s with ping %2$d', 90, NULL, NULL, NULL, NULL, NULL, NULL),
 (36, 'Master', 'Master', 'is a nazi', '/me hails %1$s with ping %2$d', 90, NULL, NULL, NULL, NULL, NULL, NULL);
 
-INSERT INTO `account` (`id`, `access`, `name`, `createdby`) VALUES
+INSERT INTO account (id, access, name, createdby) VALUES
 (1, 36,	'Camel', NULL),
 (2, 35,	'John', 1),
 (3, 34,	'Sorceress', 1);
 
-INSERT INTO `user` (`login`, `account`) VALUES
+INSERT INTO bnlogin (login, account) VALUES
 ('BNU-Camel@USEast', 1),
 ('BNU-Camel2@USEast', 1),
 ('BNU-Camel@Azeroth', 1),
@@ -147,7 +147,7 @@ INSERT INTO `user` (`login`, `account`) VALUES
 ('BNU-Loyalty@Azeroth', 3),
 ('SoRcOwNeD@USEast', 3);
 
-INSERT INTO `command` (`access`, `name`, `description`, `cmdgroup`) VALUES
+INSERT INTO command (access, name, description, cmdgroup) VALUES
 (1,		'access', 'Get the commands avalible to the user', 'commands'),
 (34,	'add', 'Set access', 'accounts'),
 (1,		'auth', 'Get the authorization required to use a command', 'commands'),
@@ -176,7 +176,7 @@ INSERT INTO `command` (`access`, `name`, `description`, `cmdgroup`) VALUES
 (1,		'whoami', NULL, 'accounts'),
 (1,		'whois', NULL, 'accounts');
 
-INSERT INTO `command_alias` (`alias`, `name`) VALUES
+INSERT INTO command_alias (alias, name) VALUES
 ('ap', 'autopromotion'),
 ('apinfo', 'autopromotion'),
 ('ca', 'createaccount'),

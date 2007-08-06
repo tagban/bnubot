@@ -33,7 +33,11 @@ public class Database {
 		if(!checkSchema())
 			createSchema(schemaFile);
 		
-		deleteOldUsers();
+		try {
+			deleteOldUsers();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public static Database getInstance() {
@@ -116,21 +120,21 @@ public class Database {
 	}
 	
 	public ResultSet getUser(BNetUser user) throws SQLException {
-		PreparedStatement ps = prepareStatement("SELECT * FROM `user` WHERE `login`=? LIMIT 1");
+		PreparedStatement ps = prepareStatement("SELECT * FROM bnlogin WHERE LOWER(login)=LOWER(?)");
 		ps.setString(1, user.getFullAccountName());
 		return ps.executeQuery();
 	}
 	
 	public void deleteOldUsers() throws SQLException {
 		ResultSet rsOld = createStatement().executeQuery(
-			"SELECT `login`, DATEDIFF(NOW(), `lastSeen`) as dss, `rank`.`id` AS rank, `rank`.`expireDays` " +
-				"FROM `user` " +
-				"JOIN `account` ON (`user`.`account`=`account`.`id`) " +
-				"JOIN `rank` ON (`account`.`access`=`rank`.`id`) " +
+			"SELECT login, DATEDIFF(NOW(), lastSeen) as dss, rank.id AS rank, rank.expireDays " +
+				"FROM bnlogin " +
+				"JOIN account ON (bnlogin.account=account.id) " +
+				"JOIN rank ON (account.access=rank.id) " +
 			"UNION " +
-			"SELECT `login`, DATEDIFF(NOW(), `lastSeen`) as dss, NULL AS rank, 90 AS expireDays " +
-				"FROM `user` " +
-				"WHERE `account` IS NULL " +
+			"SELECT login, DATEDIFF(NOW(), lastSeen) as dss, NULL AS rank, 90 AS expireDays " +
+				"FROM bnlogin " +
+				"WHERE account IS NULL " +
 			"ORDER BY dss DESC");
 		while(rsOld.next()) {
 			long dss = rsOld.getLong("dss");
@@ -166,12 +170,12 @@ public class Database {
 		
 		//Find accounts that are not instrumental to the recruitment tree, and have no accounts
 		rsOld = createStatement().executeQuery(
-				"SELECT `account`.`id`, `account`.`name`, `account`.`access`, `account`.`createdby` " +
-				"FROM `account` " +
-				"LEFT JOIN `user` ON `user`.`account`=`account`.`id` " +
-				"LEFT JOIN `account` AS recruits ON recruits.createdby=`account`.`id` " +
-				"WHERE `user`.`login` IS NULL " +
-					"AND recruits.`name` IS NULL");
+				"SELECT account.id, account.name, account.access, account.createdby " +
+				"FROM account " +
+				"LEFT JOIN bnlogin ON bnlogin.account=account.id " +
+				"LEFT JOIN account AS recruits ON recruits.createdby=account.id " +
+				"WHERE bnlogin.login IS NULL " +
+					"AND recruits.name IS NULL");
 		while(rsOld.next()) {
 			String name = rsOld.getString("name");
 			Long cb = rsOld.getLong("createdby");
@@ -205,7 +209,7 @@ public class Database {
 		}
 		close(rsUser);
 		
-		PreparedStatement ps = prepareStatement("INSERT INTO `user` (`login`) VALUES(?)");
+		PreparedStatement ps = prepareStatement("INSERT INTO bnlogin (login) VALUES(?)");
 		ps.setString(1, user.getFullAccountName());
 		ps.execute();
 		close(ps);
@@ -221,13 +225,13 @@ public class Database {
 	}
 	
 	public ResultSet getAccount(String account) throws SQLException {
-		PreparedStatement ps = prepareStatement("SELECT * FROM `account` WHERE `name`=? LIMIT 1");
+		PreparedStatement ps = prepareStatement("SELECT * FROM account WHERE LOWER(name)=LOWER(?)");
 		ps.setString(1, account);
 		return ps.executeQuery();
 	}
 	
 	public ResultSet getAccount(Long accountID) throws SQLException {
-		PreparedStatement ps = prepareStatement("SELECT * FROM `account` WHERE `id`=? LIMIT 1");
+		PreparedStatement ps = prepareStatement("SELECT * FROM account WHERE id=?");
 		ps.setLong(1, accountID);
 		return ps.executeQuery();
 	}
@@ -235,11 +239,10 @@ public class Database {
 	public ResultSet getAccount(BNetUser user) throws SQLException {
 		PreparedStatement ps = prepareStatement(
 				"SELECT A.* " +
-				"FROM `account` AS A " +
-				"JOIN `user` AS U " +
-					"ON A.`id`=U.`account` " +
-				"WHERE U.`login`=? " +
-				"LIMIT 1");
+				"FROM account AS A " +
+				"JOIN bnlogin AS U " +
+					"ON A.id=U.account " +
+				"WHERE LOWER(U.login)=LOWER(?)");
 		String login = user.getFullAccountName();
 		if(login == null)
 			ps.setNull(1, java.sql.Types.VARCHAR);
@@ -248,22 +251,30 @@ public class Database {
 		return ps.executeQuery();
 	}
 	
+	public void setAccount(BNetUser user, long accountID) throws SQLException {
+		PreparedStatement ps = prepareStatement("UPDATE bnlogin SET account=? WHERE LOWER(login)=LOWER(?)");
+		ps.setLong(1, accountID);
+		ps.setString(2, user.getFullAccountName());
+		ps.execute();
+		close(ps);
+	}
+	
 	public long[] getAccountWinsLevels(long accountID, String prefix, String suffix) throws SQLException {
 		int questionMark = 1;
-		String SQL = "SELECT SUM(winsSTAR), SUM(winsSEXP), SUM(winsW2BN), MAX(levelD2), MAX(levelW3) FROM `user` WHERE ";
+		String SQL = "SELECT SUM(winsSTAR), SUM(winsSEXP), SUM(winsW2BN), MAX(levelD2), MAX(levelW3) FROM bnlogin WHERE ";
 		if(prefix != null)
-			SQL += "LEFT(login," + prefix.length() + ")=? AND ";
+			SQL += "login LIKE ? AND ";
 		
 		//TODO: Fix this so it actually works; PREFIX-USER-SUFFIX@REALM will break it!
 		if(suffix != null)
-			SQL += "RIGHT(login," + suffix.length() + ")=? AND ";
+			SQL += "login LIKE ? AND ";
 		
-		SQL += "`account`=? LIMIT 1";
+		SQL += "account=?";
 		PreparedStatement ps = prepareStatement(SQL);
 		if(prefix != null)
-			ps.setString(questionMark++, prefix);
+			ps.setString(questionMark++, prefix + "%");
 		if(suffix != null)
-			ps.setString(questionMark++, suffix);
+			ps.setString(questionMark++, "%" + suffix);
 		ps.setLong(questionMark++, accountID);
 		ResultSet rs = ps.executeQuery();
 		if(!rs.next()) {
@@ -279,20 +290,20 @@ public class Database {
 	}
 	
 	public ResultSet getAccountUsers(long accountID) throws SQLException {
-		PreparedStatement ps = prepareStatement("SELECT * FROM `user` WHERE `account`=?");
+		PreparedStatement ps = prepareStatement("SELECT * FROM bnlogin WHERE account=?");
 		ps.setLong(1, accountID);
 		return ps.executeQuery();
 	}
 	
 	public ResultSet getAccountRecruits(long accountID, long withAccess) throws SQLException {
-		PreparedStatement ps = prepareStatement("SELECT * FROM `account` WHERE `createdby`=? AND `access`>=?");
+		PreparedStatement ps = prepareStatement("SELECT * FROM account WHERE createdby=? AND access>=?");
 		ps.setLong(1, accountID);
 		ps.setLong(2, withAccess);
 		return ps.executeQuery();
 	}
 	
 	public long getAccountRecruitScore(long accountID, long withAccess) throws SQLException {
-		PreparedStatement ps = prepareStatement("SELECT SUM(access-?) FROM `account` WHERE `createdby`=? AND `access`>=?");
+		PreparedStatement ps = prepareStatement("SELECT SUM(access-?) FROM account WHERE createdby=? AND access>=?");
 		ps.setLong(1, withAccess);
 		ps.setLong(2, accountID);
 		ps.setLong(3, withAccess);
@@ -307,7 +318,7 @@ public class Database {
 	}
 
 	public ResultSet createAccount(String account, long access, Long creator) throws SQLException {
-		PreparedStatement ps = prepareStatement("INSERT INTO `account` (`name`, `access`, `createdby`, `lastRankChange`) VALUES(?, ?, ?, NULL)");
+		PreparedStatement ps = prepareStatement("INSERT INTO account (name, access, createdby, lastRankChange) VALUES(?, ?, ?, NULL)");
 		ps.setString(1, account);
 		ps.setLong(2, access);
 		ps.setLong(3, creator);
@@ -331,14 +342,14 @@ public class Database {
 	}
 	
 	public ResultSet getRankedAccounts(long minRank) throws SQLException {
-		PreparedStatement ps = prepareStatement("SELECT * FROM `account` WHERE `access`>=?");
+		PreparedStatement ps = prepareStatement("SELECT * FROM account WHERE access>=?");
 		ps.setLong(1, minRank);
 		return ps.executeQuery();
 	}
 	
 	public Long createRank() throws SQLException {
 		Statement stmt = createStatement();
-		stmt.executeUpdate("INSERT INTO `rank` (`id`) VALUES (NULL)");
+		stmt.executeUpdate("INSERT INTO rank (id) VALUES (NULL)");
 		ResultSet rs = stmt.getGeneratedKeys();
 		if(rs.next()) {
 			long id = rs.getLong(1);
@@ -350,11 +361,11 @@ public class Database {
 	}
 	
 	public ResultSet getRanks() throws SQLException {
-		return createStatement().executeQuery("SELECT * FROM `rank` ORDER BY `id` ASC");
+		return createStatement().executeQuery("SELECT * FROM rank ORDER BY id ASC");
 	}
 	
 	public ResultSet getRank(long access) throws SQLException {
-		PreparedStatement ps = prepareStatement("SELECT * FROM `rank` WHERE `id`=?");
+		PreparedStatement ps = prepareStatement("SELECT * FROM rank WHERE id=?");
 		ps.setLong(1, access);
 		return ps.executeQuery();
 	}
@@ -366,7 +377,7 @@ public class Database {
 		if(tmp != null)
 			return tmp;
 		
-		PreparedStatement ps = prepareStatement("SELECT `name` FROM `command_alias` WHERE `alias`=? LIMIT 1");
+		PreparedStatement ps = prepareStatement("SELECT name FROM command_alias WHERE alias=?");
 		ps.setString(1, command);
 		ResultSet rs = ps.executeQuery();
 		if(rs.next()) {
@@ -384,32 +395,32 @@ public class Database {
 
 	public ResultSet getCommand(String command) throws SQLException {
 		command = resolveCommandAlias(command);
-		PreparedStatement ps = prepareStatement("SELECT * FROM `command` WHERE `name`=? LIMIT 1");
+		PreparedStatement ps = prepareStatement("SELECT * FROM command WHERE name=?");
 		ps.setString(1, command);
 		return ps.executeQuery();
 	}
 
 	public ResultSet getCommands(long access) throws SQLException {
-		PreparedStatement ps = prepareStatement("SELECT * FROM `command` WHERE `access`<=?");
+		PreparedStatement ps = prepareStatement("SELECT * FROM command WHERE access<=?");
 		ps.setLong(1, access);
 		return ps.executeQuery();
 	}
 	
 	public ResultSet getCommandCategory(String category, long access) throws SQLException {
-		PreparedStatement ps = prepareStatement("SELECT * FROM `command` WHERE `cmdgroup`=? AND `access`<=?");
+		PreparedStatement ps = prepareStatement("SELECT * FROM command WHERE cmdgroup=? AND access<=?");
 		ps.setString(1, category);
 		ps.setLong(2, access);
 		return ps.executeQuery();
 	}
 
 	public ResultSet getCommandCategories(long access) throws SQLException {
-		PreparedStatement ps = prepareStatement("SELECT `cmdgroup` FROM `command` WHERE `access`<=? GROUP BY `cmdgroup`");
+		PreparedStatement ps = prepareStatement("SELECT cmdgroup FROM command WHERE access<=? GROUP BY cmdgroup");
 		ps.setLong(1, access);
 		return ps.executeQuery();
 	}
 	
 	public void sendMail(long senderID, long targetID, String message) throws SQLException {
-		PreparedStatement ps = prepareStatement("INSERT INTO `mail` (`from`, `to`, `message`, `sent`) VALUES (?, ?, ?, CURRENT_TIMESTAMP)");
+		PreparedStatement ps = prepareStatement("INSERT INTO mail (sentfrom, sentto, message, sent) VALUES (?, ?, ?, CURRENT_TIMESTAMP)");
 		ps.setLong(1, senderID);
 		ps.setLong(2, targetID);
 		ps.setString(3, message);
@@ -418,7 +429,7 @@ public class Database {
 	}
 	
 	public long getUnreadMailCount(long accountID) throws SQLException {
-		PreparedStatement ps = prepareStatement("SELECT COUNT(*) FROM `mail` WHERE `to`=? AND `read`=FALSE");
+		PreparedStatement ps = prepareStatement("SELECT COUNT(*) FROM mail WHERE sentto=? AND isread=FALSE");
 		ps.setLong(1, accountID);
 		ResultSet rs = ps.executeQuery();
 		if(rs.next()) {
@@ -431,7 +442,7 @@ public class Database {
 	}
 	
 	public long getMailCount(long accountID) throws SQLException {
-		PreparedStatement ps = prepareStatement("SELECT COUNT(*) FROM `mail` WHERE `to`=?");
+		PreparedStatement ps = prepareStatement("SELECT COUNT(*) FROM mail WHERE sentto=?");
 		ps.setLong(1, accountID);
 		ResultSet rs = ps.executeQuery();
 		if(rs.next()) {
@@ -444,31 +455,33 @@ public class Database {
 	}
 	
 	public void clearMail(long accountID) throws SQLException {
-		PreparedStatement ps = prepareStatement("DELETE FROM `mail` WHERE `to`=? AND `read`=TRUE");
+		PreparedStatement ps = prepareStatement("DELETE FROM mail WHERE sentto=? AND isread=?");
 		ps.setLong(1, accountID);
+		ps.setBoolean(2, true);
 		ps.execute();
 		close(ps);
 	}
 	
 	public ResultSet getMail(long accountID) throws SQLException {
-		PreparedStatement ps = prepareStatement("SELECT M.`id`, M.`sent`, A.`name`, M.`read`, M.`message` FROM `mail` AS M JOIN `account` AS A ON (A.`id` = M.`from`) WHERE M.`to`=? ORDER BY M.`id` ASC");
+		PreparedStatement ps = prepareStatement("SELECT M.id, A.name, M.sent, M.isread, M.message FROM mail AS M JOIN account AS A ON (A.id = M.sentfrom) WHERE M.sentto=? ORDER BY M.id ASC");
 		ps.setLong(1, accountID);
 		return ps.executeQuery();
 	}
 	
 	public void setMailRead(long mailID) throws SQLException {
-		PreparedStatement ps = prepareStatement("UPDATE `mail` SET `read`=TRUE WHERE `id`=? LIMIT 1");
-		ps.setLong(1, mailID);
+		PreparedStatement ps = prepareStatement("UPDATE mail SET isread=? WHERE id=?");
+		ps.setBoolean(1, true);
+		ps.setLong(2, mailID);
 		ps.execute();
 		close(ps);
 	}
 	
 	public ResultSet getTriviaLeaders() throws SQLException {
-		return createStatement().executeQuery("SELECT * FROM `account` WHERE `trivia_correct` > 0 ORDER BY `trivia_correct` DESC LIMIT 10");
+		return createStatement().executeQuery("SELECT * FROM account WHERE trivia_correct > 0 ORDER BY trivia_correct DESC");
 	}
 	
 	public long getTriviaSum() throws SQLException {
-		ResultSet rs = createStatement().executeQuery("SELECT SUM(`trivia_correct`) FROM `account`");
+		ResultSet rs = createStatement().executeQuery("SELECT SUM(trivia_correct) FROM account");
 		rs.next();
 		long sum = rs.getLong(1);
 		close(rs);
@@ -477,12 +490,12 @@ public class Database {
 	
 	/**
 	 * Resets the trivia leader board, gives the winner a trivia_win, and returns the winner
-	 * @return The `account`.`name` of the winner
+	 * @return The account.name of the winner
 	 * @throws SQLException
 	 */
 	public String resetTrivia() throws SQLException {
 		String out = null;
-		ResultSet rs = createStatement().executeQuery("SELECT `id`, `name`, `trivia_win` FROM `account` WHERE `trivia_correct` > 0 ORDER BY `trivia_correct` DESC LIMIT 1");
+		ResultSet rs = createStatement().executeQuery("SELECT id, name, trivia_win FROM account WHERE trivia_correct > 0 ORDER BY trivia_correct DESC");
 		if(rs.next()) {
 			//Get the account it
 			out = rs.getString(2);
@@ -494,7 +507,7 @@ public class Database {
 		close(rs);
 		
 		Statement stmt = createStatement();
-		stmt.execute("UPDATE `account` SET `trivia_correct`=0");
+		stmt.execute("UPDATE account SET trivia_correct=0");
 		close(stmt);
 		return out;
 	}
@@ -507,7 +520,7 @@ public class Database {
 	private boolean checkSchema() {
 		ResultSet rs = null;
 		try {
-			rs = createStatement().executeQuery("SELECT `version` FROM `dbVersion` LIMIT 1");
+			rs = createStatement().executeQuery("SELECT version FROM dbVersion");
 			if(!rs.next()) {
 				close(rs);
 				return false;
@@ -521,7 +534,7 @@ public class Database {
 			
 			System.err.println("Database version is " + version + ", we require " + compatibleVersion);
 		} catch(SQLException e) {
-			System.err.println(e.getMessage());
+			e.printStackTrace();
 		}
 		
 		if(rs != null)
@@ -558,16 +571,17 @@ public class Database {
 				}
 				
 				if(query.charAt(query.length()-1) == ';') {
+					query = query.substring(0, query.length()-1);
 					stmt.execute(query);
 					query = "";
 				}
 			}
 
-			query = "DROP TABLE IF EXISTS `dbVersion`;";
+			query = "DROP TABLE dbVersion";
+			try { stmt.execute(query); } catch(SQLException e) {}
+			query = "CREATE TABLE dbVersion (version INTEGER NOT NULL)";
 			stmt.execute(query);
-			query = "CREATE TABLE `dbVersion` (`version` INTEGER NOT NULL);";
-			stmt.execute(query);
-			query = "INSERT INTO `dbVersion` (`version`) VALUES (" + databaseVersion + ");";
+			query = "INSERT INTO dbVersion (version) VALUES (" + databaseVersion + ")";
 			stmt.execute(query);
 			close(stmt);
 		} catch(IOException e) {
