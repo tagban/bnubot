@@ -87,6 +87,10 @@ public class UserList extends JPanel {
 		users.clear();
 		validate();
 	}
+	
+	public int count() {
+		return users.size();
+	}
 
 	private static final int PRIORITY_BLIZZARD_REP = 5;
 	private static final int PRIORITY_BNET_REP = 4;

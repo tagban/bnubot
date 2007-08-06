@@ -38,6 +38,7 @@ public class GuiEventHandler implements EventHandler {
 	private FriendList friendList = null;
 	private ClanList clanList = null;
 	private RealmWindow w = null;
+	private String channel = null;
 	
 	public void initialize(Connection c) {
 		ColorScheme cs = ColorScheme.createColorScheme(c.getConnectionSettings().colorScheme);
@@ -239,19 +240,23 @@ public class GuiEventHandler implements EventHandler {
 	public void channelJoin(BNetUser user, StatString statstr) {
 		userList.showUser(user, statstr);
 		mainTextArea.channelInfo(user + " has joined" + statstr.toString() + ".");
+		channelTextArea.setText(channel + " (" + userList.count() + ")");
 	}
 
 	public void channelLeave(BNetUser user) {
 		userList.removeUser(user);
 		mainTextArea.channelInfo(user + " has left.");
+		channelTextArea.setText(channel + " (" + userList.count() + ")");
 	}
 
 	public void channelUser(BNetUser user, StatString statstr) {
 		mainTextArea.channelInfo(user + statstr.toString() + ".");
 		userList.showUser(user, statstr);
+		channelTextArea.setText(channel + " (" + userList.count() + ")");
 	}
 
 	public void joinedChannel(String channel) {
+		this.channel = channel;
 		userList.clear();
 		mainTextArea.channelInfo("Joining channel " + channel + ".");
 		channelTextArea.setText(channel);
