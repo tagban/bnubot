@@ -10,21 +10,25 @@ import java.util.Date;
 public class TimeFormatter {
 
 	public static String formatTime(long time) {
+		String text = "";
 		time /= 1000;
-		String text = Long.toString(time % 60) + "s";
+		if(time < 60*60)
+			text = Long.toString(time % 60) + "s";
 		time /= 60;
 		if(time > 0) {
-			text = Long.toString(time % 60) + "m " + text;
+			if(time < 60*24)
+				text = Long.toString(time % 60) + "m " + text;
 			time /= 60;
 			if(time > 0) {
-				text = Long.toString(time % 24) + "h " + text;
+				if(time < 24*7)
+					text = Long.toString(time % 24) + "h " + text;
 				time /= 24;
 				if(time > 0)
 					text = Long.toString(time) + "d " + text;
 			}
 		}
 		
-		return text;
+		return text.trim();
 	}
 	
 	public static Date fileTime(long ft) {

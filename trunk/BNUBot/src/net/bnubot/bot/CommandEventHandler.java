@@ -421,7 +421,7 @@ public class CommandEventHandler implements EventHandler {
 							ResultSet rsMail = d.getMail(commanderAccountID);
 							if(id == null) {
 								while(rsMail.next()) {
-									boolean read = rsMail.getBoolean("read");
+									boolean read = rsMail.getBoolean("isread");
 									if(read)
 										continue;
 
@@ -432,8 +432,8 @@ public class CommandEventHandler implements EventHandler {
 									message += ": From ";
 									message += rsMail.getString("name");
 									message += " [";
-									message += rsMail.getString("sent");
-									message += "]: ";
+									message += TimeFormatter.formatTime(new Date().getTime() - rsMail.getTimestamp("sent").getTime());
+									message += " ago]: ";
 									message += rsMail.getString("message");
 									
 									d.setMailRead(rsMail.getLong("id"));
@@ -462,8 +462,8 @@ public class CommandEventHandler implements EventHandler {
 									message += ": From ";
 									message += rsMail.getString("name");
 									message += " [";
-									message += rsMail.getString("sent");
-									message += "]: ";
+									message += TimeFormatter.formatTime(new Date().getTime() - rsMail.getTimestamp("sent").getTime());
+									message += " ago]: ";
 									message += rsMail.getString("message");
 									
 									d.setMailRead(rsMail.getLong("id"));
@@ -769,28 +769,25 @@ public class CommandEventHandler implements EventHandler {
 						ResultSet rsSubjectAccount = d.getAccount(params[1]);
 						if(!rsSubjectAccount.next()) {
 							d.close(rsSubjectAccount);
+							d.close(rsSubject);
 							c.sendChat(user, "The account [" + params[1] + "] does not exist!", wasWhispered);
 							break;
 						}
 						newAccount = rsSubjectAccount.getLong("id");
 						d.close(rsSubjectAccount);
 					}
-
+					d.close(rsSubject);
+					
+					d.setAccount(bnSubject, newAccount);
+					
 					if(newAccount == null) {
-						rsSubject.updateNull("account");
-						
 						params[1] = "NULL";
 					} else {
-						rsSubject.updateLong("account", newAccount);
-						
 						ResultSet rsSubjectAccount = d.getAccount(newAccount);
 						if(rsSubjectAccount.next())
 							params[1] = rsSubjectAccount.getString("name");
 						d.close(rsSubjectAccount);
 					}
-					
-					rsSubject.updateRow();
-					d.close(rsSubject);
 					
 					bnSubject.resetPrettyName();
 					
