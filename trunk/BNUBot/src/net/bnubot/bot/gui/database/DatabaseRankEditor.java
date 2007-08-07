@@ -17,6 +17,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import net.bnubot.bot.database.Database;
+import net.bnubot.bot.database.RankResultSet;
 
 @SuppressWarnings("serial")
 public class DatabaseRankEditor extends JFrame {
@@ -41,14 +42,14 @@ public class DatabaseRankEditor extends JFrame {
 	private JButton cmdApply;
 	private JButton cmdRevert;
 	
-	private ResultSet rsRank = null;
+	private RankResultSet rsRank = null;
 	
 	public DatabaseRankEditor(Database d) {
 		this.d = d;
 		
 		initializeGui();
 		pack();
-		setTitle("Database Rank Editor");
+		setTitle("Rank Editor");
 		setAlwaysOnTop(true);
 		setVisible(true);
 	}
@@ -96,7 +97,7 @@ public class DatabaseRankEditor extends JFrame {
 								try {value = Long.parseLong(txt);} catch(Exception e) {}
 								try {
 									if(value != null)
-										rsRank.updateLong("id", value);
+										rsRank.setId(value);
 								} catch (SQLException e) {
 									e.printStackTrace();
 								}
@@ -119,9 +120,9 @@ public class DatabaseRankEditor extends JFrame {
 								String txt = txtShortPrefix.getText();
 								try {
 									if((txt == null) || (txt.length() == 0))
-										rsRank.updateNull("shortPrefix");
+										rsRank.setShortPrefix(null);
 									else
-										rsRank.updateString("shortPrefix", txt);
+										rsRank.setShortPrefix(txt);
 								} catch (SQLException e) {
 									e.printStackTrace();
 								}
@@ -144,9 +145,9 @@ public class DatabaseRankEditor extends JFrame {
 								String txt = txtPrefix.getText();
 								try {
 									if((txt == null) || (txt.length() == 0))
-										rsRank.updateNull("prefix");
+										rsRank.setPrefix(null);
 									else
-										rsRank.updateString("prefix", txt);
+										rsRank.setPrefix(txt);
 								} catch (SQLException e) {
 									e.printStackTrace();
 								}
@@ -169,9 +170,9 @@ public class DatabaseRankEditor extends JFrame {
 								String txt = txtVerbstr.getText();
 								try {
 									if((txt == null) || (txt.length() == 0))
-										rsRank.updateNull("verbstr");
+										rsRank.setVerbStr(null);
 									else
-										rsRank.updateString("verbstr", txt);
+										rsRank.setVerbStr(txt);
 								} catch (SQLException e) {
 									e.printStackTrace();
 								}
@@ -194,9 +195,9 @@ public class DatabaseRankEditor extends JFrame {
 								String txt = txtGreeting.getText();
 								try {
 									if((txt == null) || (txt.length() == 0))
-										rsRank.updateNull("greeting");
+										rsRank.setGreeting(null);
 									else
-										rsRank.updateString("greeting", txt);
+										rsRank.setGreeting(txt);
 								} catch (SQLException e) {
 									e.printStackTrace();
 								}
@@ -221,9 +222,9 @@ public class DatabaseRankEditor extends JFrame {
 								try {value = Long.parseLong(txt);} catch(Exception e) {}
 								try {
 									if(value == null)
-										rsRank.updateNull("expireDays");
+										rsRank.setExpireDays(null);
 									else
-										rsRank.updateLong("expireDays", value);
+										rsRank.setExpireDays(value);
 								} catch (SQLException e) {
 									e.printStackTrace();
 								}
@@ -248,9 +249,9 @@ public class DatabaseRankEditor extends JFrame {
 								try {value = Long.parseLong(txt);} catch(Exception e) {}
 								try {
 									if(value == null)
-										rsRank.updateNull("apDays");
+										rsRank.setApDays(null);
 									else
-										rsRank.updateLong("apDays", value);
+										rsRank.setApDays(value);
 								} catch (SQLException e) {
 									e.printStackTrace();
 								}
@@ -275,9 +276,9 @@ public class DatabaseRankEditor extends JFrame {
 								try {value = Long.parseLong(txt);} catch(Exception e) {}
 								try {
 									if(value == null)
-										rsRank.updateNull("apRecruitScore");
+										rsRank.setApRecruitScore(null);
 									else
-										rsRank.updateLong("apRecruitScore", value);
+										rsRank.setApRecruitScore(value);
 								} catch (SQLException e) {
 									e.printStackTrace();
 								}
@@ -302,9 +303,9 @@ public class DatabaseRankEditor extends JFrame {
 								try {value = Long.parseLong(txt);} catch(Exception e) {}
 								try {
 									if(value == null)
-										rsRank.updateNull("apWins");
+										rsRank.setApWins(null);
 									else
-										rsRank.updateLong("apWins", value);
+										rsRank.setApWins(value);
 								} catch (SQLException e) {
 									e.printStackTrace();
 								}
@@ -329,9 +330,9 @@ public class DatabaseRankEditor extends JFrame {
 								try {value = Long.parseLong(txt);} catch(Exception e) {}
 								try {
 									if(value == null)
-										rsRank.updateNull("apD2Level");
+										rsRank.setApD2Level(null);
 									else
-										rsRank.updateLong("apD2Level", value);
+										rsRank.setApD2Level(value);
 								} catch (SQLException e) {
 									e.printStackTrace();
 								}
@@ -356,9 +357,9 @@ public class DatabaseRankEditor extends JFrame {
 								try {value = Long.parseLong(txt);} catch(Exception e) {}
 								try {
 									if(value == null)
-										rsRank.updateNull("apW3Level");
+										rsRank.setApW3Level(null);
 									else
-										rsRank.updateLong("apW3Level", value);
+										rsRank.setApW3Level(value);
 								} catch (SQLException e) {
 									e.printStackTrace();
 								}
@@ -381,9 +382,9 @@ public class DatabaseRankEditor extends JFrame {
 								String txt = txtAPMail.getText();
 								try {
 									if((txt == null) || (txt.length() == 0))
-										rsRank.updateNull("apMail");
+										rsRank.setApMail(null);
 									else
-										rsRank.updateString("apMail", txt);
+										rsRank.setApMail(txt);
 								} catch (SQLException e) {
 									e.printStackTrace();
 								}
@@ -438,7 +439,7 @@ public class DatabaseRankEditor extends JFrame {
 								try {
 									rsRank.updateRow();
 									rebuildRanks();
-									displayEditor(rsRank.getLong("id"));
+									displayEditor(rsRank.getId());
 								} catch (SQLException e) {
 									e.printStackTrace();
 								}
@@ -452,7 +453,7 @@ public class DatabaseRankEditor extends JFrame {
 						public void actionPerformed(ActionEvent arg0) {
 							if(rsRank != null)
 								try {
-									displayEditor(rsRank.getLong("id"));
+									displayEditor(rsRank.getId());
 								} catch (SQLException e) {
 									e.printStackTrace();
 								}
@@ -470,13 +471,13 @@ public class DatabaseRankEditor extends JFrame {
 	private void rebuildRanks() {
 		try {
 			lm.clear();
-			ResultSet rsRanks = d.getRanks();
+			RankResultSet rsRanks = d.getRanks();
 			while(rsRanks.next()) {
-				String title = rsRanks.getString("prefix");
-				if(!rsRanks.wasNull())
-					title = rsRanks.getLong("id") + " (" + title + ")";
+				String title = rsRanks.getPrefix();
+				if(title != null)
+					title = rsRanks.getId() + " (" + title + ")";
 				else
-					title = Long.toString(rsRanks.getLong("id"));
+					title = Long.toString(rsRanks.getId());
 				
 				lm.addElement(title);
 			}
@@ -490,17 +491,6 @@ public class DatabaseRankEditor extends JFrame {
 	}
 	
 	private void displayEditor(Long id) {
-		/* `id` INTEGER PRIMARY KEY AUTO_INCREMENT NOT NULL,
-		 * `shortPrefix` VARCHAR(32),
-		 * `prefix` VARCHAR(32),
-		 * `verbstr` VARCHAR(64) NOT NULL,
-		 * `greeting` VARCHAR(255),
-		 * `expireDays` TINYINT NOT NULL DEFAULT '90',
-		 * `apDays` INTEGER DEFAULT NULL,
-		 * `apWins` INTEGER DEFAULT NULL,
-		 * `apD2Level` INTEGER DEFAULT NULL,
-		 * `apW3Level` INTEGER DEFAULT NULL
-		 */
 		if(id == null) {
 			txtID.setText(null);
 			txtShortPrefix.setText(null);
@@ -521,19 +511,22 @@ public class DatabaseRankEditor extends JFrame {
 			}
 			
 			rsRank = d.getRank(id);
-			rsRank.next();
-			txtID.setText(rsRank.getString("id"));
-			txtShortPrefix.setText(rsRank.getString("shortPrefix"));
-			txtPrefix.setText(rsRank.getString("prefix"));
-			txtVerbstr.setText(rsRank.getString("verbstr"));
-			txtGreeting.setText(rsRank.getString("greeting"));
-			txtExpireDays.setText(rsRank.getString("expireDays"));
-			txtAPDays.setText(rsRank.getString("apDays"));
-			txtAPWins.setText(rsRank.getString("apWins"));
-			txtAPD2Level.setText(rsRank.getString("apD2Level"));
-			txtAPW3Level.setText(rsRank.getString("apW3Level"));
-			txtAPRS.setText(rsRank.getString("apRecruitScore"));
-			txtAPMail.setText(rsRank.getString("apMail"));
+			if(!rsRank.next()) {
+				displayEditor(null);
+				return;
+			}
+			txtID.setText(rsRank.getId().toString());
+			txtShortPrefix.setText(rsRank.getShortPrefix());
+			txtPrefix.setText(rsRank.getPrefix());
+			txtVerbstr.setText(rsRank.getVerbStr());
+			txtGreeting.setText(rsRank.getGreeting());
+			txtExpireDays.setText(rsRank.getExpireDays().toString());
+			txtAPDays.setText(rsRank.getApDays().toString());
+			txtAPWins.setText(rsRank.getApWins().toString());
+			txtAPD2Level.setText(rsRank.getApD2Level().toString());
+			txtAPW3Level.setText(rsRank.getApW3Level().toString());
+			txtAPRS.setText(rsRank.getApRecruitScore().toString());
+			txtAPMail.setText(rsRank.getApMail());
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

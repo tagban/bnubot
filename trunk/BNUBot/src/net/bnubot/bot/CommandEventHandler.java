@@ -16,7 +16,6 @@ import net.bnubot.core.*;
 import net.bnubot.core.bncs.ProductIDs;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
-import net.bnubot.util.HexDump;
 import net.bnubot.util.TimeFormatter;
 import net.bnubot.vercheck.CurrentVersion;
 
@@ -51,10 +50,10 @@ public class CommandEventHandler implements EventHandler {
 	
 	public void touchUser(BNetUser user, String action) {
 		try {
-			ResultSet rsUser = d.getCreateUser(user);
+			BNLoginResultSet rsUser = d.getCreateUser(user);
 			if(rsUser.next()) {
-				rsUser.updateTimestamp("lastSeen", new Timestamp(new Date().getTime()));
-				rsUser.updateString("lastAction", action);
+				rsUser.setLastSeen(new Timestamp(new Date().getTime()));
+				rsUser.setLastAction(action);
 				rsUser.updateRow();
 			}
 			d.close(rsUser);
@@ -76,7 +75,7 @@ public class CommandEventHandler implements EventHandler {
 			//Don't ask questions if they are a super-user
 			boolean superUser = user.equals(c.getMyUser());
 			try {
-				ResultSet rsAccount = d.getAccount(user);
+				AccountResultSet rsAccount = d.getAccount(user);
 				if((rsAccount == null) || !rsAccount.next()) {
 					if(rsAccount != null)
 						d.close(rsAccount);
@@ -86,9 +85,9 @@ public class CommandEventHandler implements EventHandler {
 						return;
 				}
 					
-				commanderAccess = rsAccount.getLong("access");
-				commanderAccount = rsAccount.getString("name");
-				commanderAccountID = rsAccount.getLong("id");
+				commanderAccess = rsAccount.getAccess();
+				commanderAccount = rsAccount.getName();
+				commanderAccountID = rsAccount.getId();
 				d.close(rsAccount);
 				if(commanderAccess <= 0)
 					return;
@@ -99,16 +98,16 @@ public class CommandEventHandler implements EventHandler {
 
 			// Closed-scope for rsCommand
 			{
-				ResultSet rsCommand = d.getCommand(command);
+				CommandResultSet rsCommand = d.getCommand(command);
 				if(!rsCommand.next()) {
 					if(!wasWhispered)
 						c.recieveError("Command " + command + " not found in database");
 					d.close(rsCommand);
 					return;
 				}
-				command = rsCommand.getString("name");
+				command = rsCommand.getName();
 				if(!superUser) {
-					long requiredAccess = rsCommand.getLong("access");
+					long requiredAccess = rsCommand.getAccess();
 					if(commanderAccess < requiredAccess) {
 						c.recieveError("Insufficient access (" + commanderAccess + "/" + requiredAccess + ")");
 						d.close(rsCommand);
@@ -130,7 +129,7 @@ public class CommandEventHandler implements EventHandler {
 						if(params.length != 1)
 							throw new InvalidUseException();
 
-						ResultSet rsSubjectCategory;
+						CommandResultSet rsSubjectCategory;
 						if(params[0].equals("all"))
 							rsSubjectCategory = d.getCommands(commanderAccess);
 						else
@@ -144,9 +143,9 @@ public class CommandEventHandler implements EventHandler {
 						}
 						
 						String result = "Available commands for rank " + commanderAccess + " in cagegory " + params[0] + ": ";
-						result += rsSubjectCategory.getString("name") + " (" + rsSubjectCategory.getLong("access") + ")";
+						result += rsSubjectCategory.getName() + " (" + rsSubjectCategory.getAccess() + ")";
 						while(rsSubjectCategory.next())
-							result += ", " + rsSubjectCategory.getString("name") + " (" + rsSubjectCategory.getLong("access") + ")";
+							result += ", " + rsSubjectCategory.getName() + " (" + rsSubjectCategory.getAccess() + ")";
 						
 						d.close(rsSubjectCategory);
 						
@@ -154,9 +153,9 @@ public class CommandEventHandler implements EventHandler {
 						c.sendChat(user, result, wasWhispered);
 					} catch(InvalidUseException e) {
 						String use = "Use: %trigger%access <category> -- Available categories for rank " + commanderAccess + ": all";
-						ResultSet rsCategories = d.getCommandCategories(commanderAccess);
+						CommandResultSet rsCategories = d.getCommandCategories(commanderAccess);
 						while(rsCategories.next())
-							use += ", " + rsCategories.getString("cmdgroup");
+							use += ", " + rsCategories.getCmdGroup();
 						d.close(rsCategories);
 						c.sendChat(user, use, wasWhispered);
 						break;
@@ -170,7 +169,7 @@ public class CommandEventHandler implements EventHandler {
 						if(params.length != 2)
 							throw new InvalidUseException();
 						
-						ResultSet rsSubjectAccount = d.getAccount(params[0]);
+						AccountResultSet rsSubjectAccount = d.getAccount(params[0]);
 						if(!rsSubjectAccount.next()) {
 							d.close(rsSubjectAccount);
 							c.sendChat(user, "That user does not have an account. See %trigger%createaccount and %trigger%setaccount.", wasWhispered);
@@ -178,7 +177,7 @@ public class CommandEventHandler implements EventHandler {
 						}
 
 						long targetAccess = Long.parseLong(params[1]);
-						String subjectAccount = rsSubjectAccount.getString("name");
+						String subjectAccount = rsSubjectAccount.getName();
 						
 						if(!superUser) {
 							if(subjectAccount.equals(commanderAccount))
@@ -187,8 +186,8 @@ public class CommandEventHandler implements EventHandler {
 								throw new InsufficientAccessException("to add users beyond " + (commanderAccess - 1));
 						}
 
-						rsSubjectAccount.updateLong("access", targetAccess);
-						rsSubjectAccount.updateTimestamp("lastRankChange", new Timestamp(new Date().getTime()));
+						rsSubjectAccount.setAccess(targetAccess);
+						rsSubjectAccount.setLastRankChange(new Timestamp(new Date().getTime()));
 						rsSubjectAccount.updateRow();
 						d.close(rsSubjectAccount);
 						c.sendChat(user, "Added user [" + subjectAccount + "] successfully with access " + targetAccess, wasWhispered);
@@ -205,14 +204,14 @@ public class CommandEventHandler implements EventHandler {
 						if(params.length != 1)
 							throw new InvalidUseException();
 						
-						ResultSet rsSubectCommand = d.getCommand(params[0]);
+						CommandResultSet rsSubectCommand = d.getCommand(params[0]);
 						if((rsSubectCommand == null) || !rsSubectCommand.next()) {
 							c.sendChat(user, "The command [" + params[0] + "] does not exist!", wasWhispered);
 							break;
 						}
 						
-						params[0] = rsSubectCommand.getString("name");
-						long access = rsSubectCommand.getLong("access");
+						params[0] = rsSubectCommand.getName();
+						long access = rsSubectCommand.getAccess();
 						
 						c.sendChat(user, "Authorization required for " + params[0] + " is " + access, wasWhispered);
 					} catch(InvalidUseException e) {
@@ -232,10 +231,10 @@ public class CommandEventHandler implements EventHandler {
 							subjectAccountId = commanderAccountID;
 							subjectRank = commanderAccess;
 						} else {
-							ResultSet rsSubjectAccount = d.getAccount(params[0]);
+							AccountResultSet rsSubjectAccount = d.getAccount(params[0]);
 							if(rsSubjectAccount.next()) {
-								subjectAccountId = rsSubjectAccount.getLong("id");
-								subjectRank = rsSubjectAccount.getLong("access");
+								subjectAccountId = rsSubjectAccount.getId();
+								subjectRank = rsSubjectAccount.getAccess();
 							}
 							d.close(rsSubjectAccount);
 						}
@@ -245,7 +244,7 @@ public class CommandEventHandler implements EventHandler {
 							break;
 						}
 						
-						ResultSet rsSubjectAccount = d.getAccount(subjectAccountId);
+						AccountResultSet rsSubjectAccount = d.getAccount(subjectAccountId);
 						if(!rsSubjectAccount.next()) {
 							d.close(rsSubjectAccount);
 							//This isn't actually invalid use, but it's a state we should never encounter
@@ -254,7 +253,7 @@ public class CommandEventHandler implements EventHandler {
 						
 						long wins[] = d.getAccountWinsLevels(subjectAccountId, c.getConnectionSettings().recruitTagPrefix, c.getConnectionSettings().recruitTagSuffix);
 						long recruitScore = d.getAccountRecruitScore(subjectAccountId, c.getConnectionSettings().recruitAccess);
-						Timestamp ts = rsSubjectAccount.getTimestamp("lastRankChange");
+						Timestamp ts = rsSubjectAccount.getLastRankChange();
 						String timeElapsed;
 						if(ts != null) {
 							double te = (double)(new Date().getTime() - ts.getTime());
@@ -267,17 +266,17 @@ public class CommandEventHandler implements EventHandler {
 							timeElapsed = "?";
 						}
 						
-						ResultSet rsRank = d.getRank(subjectRank);
+						RankResultSet rsRank = d.getRank(subjectRank);
 						if(rsRank.next()) {
-							long apDays = rsRank.getLong("apDays");
-							long apWins = rsRank.getLong("apWins");
-							long apD2Level = rsRank.getLong("apD2Level");
-							long apW3Level = rsRank.getLong("apW3Level");
-							long apRecruitScore = rsRank.getLong("apRecruitScore");
+							long apDays = rsRank.getApDays();
+							long apWins = rsRank.getApWins();
+							long apD2Level = rsRank.getApD2Level();
+							long apW3Level = rsRank.getApW3Level();
+							long apRecruitScore = rsRank.getApRecruitScore();
 							
 							if((apDays == 0) && (apWins == 0) && (apD2Level == 0) && (apW3Level == 0) && (apRecruitScore == 0)) {
 								String result = "Autopromotions are not enabled for rank " + subjectRank + ". ";
-								result += rsSubjectAccount.getString("name") + "'s current status is: ";
+								result += rsSubjectAccount.getName() + "'s current status is: ";
 								result += "Days: " + timeElapsed;
 								result += ", Wins: " + wins[0];
 								result += ", D2 Level: " + wins[1];
@@ -287,7 +286,7 @@ public class CommandEventHandler implements EventHandler {
 								
 								c.sendChat(user, result, wasWhispered);
 							} else {
-								String result = "AutoPromotion Info for [" + rsSubjectAccount.getString("name") + "]: ";
+								String result = "AutoPromotion Info for [" + rsSubjectAccount.getName() + "]: ";
 								result += "Days: " + timeElapsed + "/" + apDays;
 								result += ", Wins: " + wins[0] + "/" + apWins;
 								result += ", D2 Level: " + wins[1] + "/" + apD2Level;
@@ -299,7 +298,7 @@ public class CommandEventHandler implements EventHandler {
 							}
 						} else {
 							String result = "Rank " + subjectRank + " was not found in the database; please contact the bot master and report this error. ";
-							result += rsSubjectAccount.getString("name") + "'s current status is: ";
+							result += rsSubjectAccount.getName() + "'s current status is: ";
 							result += timeElapsed + " days, ";
 							result += wins[0] + " wins, ";
 							result += wins[1] + " D2 level, ";
@@ -332,7 +331,7 @@ public class CommandEventHandler implements EventHandler {
 						break;
 					}
 					
-					ResultSet rsAccount = d.getAccount(params[0]);
+					AccountResultSet rsAccount = d.getAccount(params[0]);
 					if(rsAccount.next()) {
 						d.close(rsAccount);
 						c.sendChat(user, "The account [" + params[0] + "] already exists", wasWhispered);
@@ -391,14 +390,14 @@ public class CommandEventHandler implements EventHandler {
 							if(params.length < 3)
 								throw new InvalidUseException();
 							
-							ResultSet rsTargetAccount = d.getAccount(params[1]);
+							AccountResultSet rsTargetAccount = d.getAccount(params[1]);
 							if(!rsTargetAccount.next()) {
 								d.close(rsTargetAccount);
 								c.sendChat(user, "The account [" + params[1] + "] does not exist!", wasWhispered);
 								break;
 							}
-							params[1] = rsTargetAccount.getString("name");
-							Long targetAccountID = rsTargetAccount.getLong("id");
+							params[1] = rsTargetAccount.getName();
+							Long targetAccountID = rsTargetAccount.getId();
 							d.close(rsTargetAccount);
 							
 							d.sendMail(commanderAccountID, targetAccountID, params[2]);
@@ -517,9 +516,9 @@ public class CommandEventHandler implements EventHandler {
 						String message = "[Sent to ranks " + rank + "+] " + params[1];
 						
 						int numAccounts = 0;
-						ResultSet rsAccounts = d.getRankedAccounts(rank);
+						AccountResultSet rsAccounts = d.getRankedAccounts(rank);
 						while(rsAccounts.next()) {
-							long targetAccountID = rsAccounts.getLong("id");
+							long targetAccountID = rsAccounts.getId();
 							d.sendMail(commanderAccountID, targetAccountID, message);
 							numAccounts++;
 						}
@@ -546,14 +545,14 @@ public class CommandEventHandler implements EventHandler {
 					}
 					
 					BNetUser bnSubject = BNetUser.getBNetUser(params[0], user);
-					ResultSet rsSubject = d.getUser(bnSubject);
-					if((rsSubject == null) || !rsSubject.next()) {
+					BNLoginResultSet rsSubject = d.getUser(bnSubject);
+					if(!rsSubject.next()) {
 						c.sendChat(user, "That user does not exist!", wasWhispered);
 						break;
 					}
 					
-					long subjectAccountId = rsSubject.getLong("account");
-					if(!rsSubject.wasNull()) {
+					Long subjectAccountId = rsSubject.getAccount();
+					if(subjectAccountId != null) {
 						c.sendChat(user, "That user already has an account!", wasWhispered);
 						break;
 					}
@@ -580,7 +579,7 @@ public class CommandEventHandler implements EventHandler {
 						}
 					}
 					
-					ResultSet rsSubjectAccount = d.getAccount(params[1]);
+					AccountResultSet rsSubjectAccount = d.getAccount(params[1]);
 					if(rsSubjectAccount.next()) {
 						d.close(rsSubjectAccount);
 						c.sendChat(user, "That account already exists!", wasWhispered);
@@ -598,11 +597,11 @@ public class CommandEventHandler implements EventHandler {
 						break;
 					}
 					
-					subjectAccountId = rsSubjectAccount.getLong("id");
-					rsSubject.updateLong("account", subjectAccountId);
+					subjectAccountId = rsSubjectAccount.getId();
+					rsSubject.setAccount(subjectAccountId);
 					rsSubject.updateRow();
 					d.close(rsSubject);
-					rsSubjectAccount.updateLong("access", c.getConnectionSettings().recruitAccess);
+					rsSubjectAccount.setAccess(c.getConnectionSettings().recruitAccess);
 					rsSubjectAccount.updateRow();
 					d.close(rsSubjectAccount);
 
@@ -622,22 +621,22 @@ public class CommandEventHandler implements EventHandler {
 							subjectAccountId = commanderAccountID;
 							output = "You have recruited: ";
 						} else {
-							ResultSet rsSubject = d.getAccount(params[0]);
+							AccountResultSet rsSubject = d.getAccount(params[0]);
 							if(!rsSubject.next()) {
 								d.close(rsSubject);
 								c.sendChat(user, "The account [" + params[0] + "] does not exist!", wasWhispered);
 								break;
 							}
-							subjectAccountId = rsSubject.getLong("id");
-							output = rsSubject.getString("name");
+							subjectAccountId = rsSubject.getId();
+							output = rsSubject.getName();
 							output += " has recruited: ";
 							d.close(rsSubject);
 						}
 												
-						ResultSet rsRecruits = d.getAccountRecruits(subjectAccountId, c.getConnectionSettings().recruitAccess);
+						AccountResultSet rsRecruits = d.getAccountRecruits(subjectAccountId, c.getConnectionSettings().recruitAccess);
 						if(rsRecruits.next()) {
 							do {
-								output += rsRecruits.getString("name") + "(" + rsRecruits.getString("access") + ") ";
+								output += rsRecruits.getName() + "(" + rsRecruits.getAccess() + ") ";
 							} while(rsRecruits.next());
 						} else {
 							output += "no one";
@@ -657,14 +656,14 @@ public class CommandEventHandler implements EventHandler {
 						break;
 					}
 					
-					ResultSet rsSubjectAccount = d.getAccount(params[0]);
+					AccountResultSet rsSubjectAccount = d.getAccount(params[0]);
 					if((rsSubjectAccount == null) || !rsSubjectAccount.next()) {
 						c.sendChat(user, "The account [" + params[0] + "] does not exist!", wasWhispered);
 						break;
 					}
 					
 					try {
-						rsSubjectAccount.updateString("name", params[1]);
+						rsSubjectAccount.setName(params[1]);
 						rsSubjectAccount.updateRow();
 					} catch(SQLException e) {
 						//TODO: Verify that the exception was actually caused by the UNIQUE restriction
@@ -691,45 +690,39 @@ public class CommandEventHandler implements EventHandler {
 					Timestamp mostRecent = null;
 					String mostRecentAction = null;
 					
-					ResultSet rsSubjectAccount = d.getAccount(params[0]);
+					AccountResultSet rsSubjectAccount = d.getAccount(params[0]);
 					if(!rsSubjectAccount.next()) {
 						d.close(rsSubjectAccount);
 						
 						//They don't have an account by that name, check if it's a user
 						BNetUser bnSubject = BNetUser.getBNetUser(params[0], user);
-						ResultSet rsSubject = d.getUser(bnSubject);
+						BNLoginResultSet rsSubject = d.getUser(bnSubject);
 						if(!rsSubject.next()) {
 							d.close(rsSubject);
 							c.sendChat(user, "I have never seen [" + bnSubject.getFullAccountName() + "]", wasWhispered);
 							break;
 						} else {
-							mostRecent = rsSubject.getTimestamp("lastSeen");
-							mostRecentAction = rsSubject.getString("lastAction");
-							params[0] = rsSubject.getString("login");
-							if(rsSubject.wasNull())
-								mostRecentAction = null;
+							mostRecent = rsSubject.getLastSeen();
+							mostRecentAction = rsSubject.getLastAction();
+							params[0] = rsSubject.getLogin();
 						}
 						d.close(rsSubject);
 					} else {
-						ResultSet rsSubjectUsers = d.getAccountUsers(rsSubjectAccount.getLong("id"));
-						params[0] = rsSubjectAccount.getString("name");
+						BNLoginResultSet rsSubjectUsers = d.getAccountUsers(rsSubjectAccount.getId());
+						params[0] = rsSubjectAccount.getName();
 						d.close(rsSubjectAccount);
 						if(!rsSubjectUsers.next()) {
 						} else {
 							//Check the user's accounts						
 							do {
-								Timestamp nt = rsSubjectUsers.getTimestamp("lastSeen");
+								Timestamp nt = rsSubjectUsers.getLastSeen();
 								if(mostRecent == null) {
 									mostRecent = nt;
-									mostRecentAction = rsSubjectUsers.getString("lastAction");
-									if(rsSubjectUsers.wasNull())
-										mostRecentAction = null;
+									mostRecentAction = rsSubjectUsers.getLastAction();
 								} else {
 									if((nt != null) && (nt.compareTo(mostRecent) > 0)) {
 										mostRecent = nt;
-										mostRecentAction = rsSubjectUsers.getString("lastAction");
-										if(rsSubjectUsers.wasNull())
-											mostRecentAction = null;
+										mostRecentAction = rsSubjectUsers.getLastAction();
 									}
 								}
 							} while(rsSubjectUsers.next());
@@ -756,24 +749,24 @@ public class CommandEventHandler implements EventHandler {
 					}
 
 					BNetUser bnSubject = BNetUser.getBNetUser(params[0], user.getFullAccountName());
-					ResultSet rsSubject = d.getUser(bnSubject);
+					BNLoginResultSet rsSubject = d.getUser(bnSubject);
 					if(!rsSubject.next()) {
 						d.close(rsSubject);
 						c.sendChat(user, "The user [" + bnSubject.getFullAccountName() + "] does not exist!", wasWhispered);
 						break;
 					}
-					String subject = rsSubject.getString("login");
+					String subject = rsSubject.getLogin();
 					
 					Long newAccount = null;
 					if(params.length == 2) {
-						ResultSet rsSubjectAccount = d.getAccount(params[1]);
+						AccountResultSet rsSubjectAccount = d.getAccount(params[1]);
 						if(!rsSubjectAccount.next()) {
 							d.close(rsSubjectAccount);
 							d.close(rsSubject);
 							c.sendChat(user, "The account [" + params[1] + "] does not exist!", wasWhispered);
 							break;
 						}
-						newAccount = rsSubjectAccount.getLong("id");
+						newAccount = rsSubjectAccount.getId();
 						d.close(rsSubjectAccount);
 					}
 					d.close(rsSubject);
@@ -783,9 +776,9 @@ public class CommandEventHandler implements EventHandler {
 					if(newAccount == null) {
 						params[1] = "NULL";
 					} else {
-						ResultSet rsSubjectAccount = d.getAccount(newAccount);
+						AccountResultSet rsSubjectAccount = d.getAccount(newAccount);
 						if(rsSubjectAccount.next())
-							params[1] = rsSubjectAccount.getString("name");
+							params[1] = rsSubjectAccount.getName();
 						d.close(rsSubjectAccount);
 					}
 					
@@ -814,10 +807,10 @@ public class CommandEventHandler implements EventHandler {
 						if(bd == null)
 							throw new InvalidUseException();
 						
-						ResultSet rsAccount = d.getAccount(commanderAccountID);
+						AccountResultSet rsAccount = d.getAccount(commanderAccountID);
 						if(!rsAccount.next())
 							throw new SQLException();
-						rsAccount.updateDate("birthday", new java.sql.Date(bd.getTime()));
+						rsAccount.setBirthday(new java.sql.Date(bd.getTime()));
 						rsAccount.updateRow();
 						d.close(rsAccount);
 						
@@ -854,36 +847,34 @@ public class CommandEventHandler implements EventHandler {
 						break;
 					}
 					
-					ResultSet rsSubject = d.getAccount(params[0]);
+					AccountResultSet rsSubject = d.getAccount(params[0]);
 					if(!rsSubject.next()) {
 						d.close(rsSubject);
 						c.sendChat(user, "The account [" + params[0] + "] does not exist!", wasWhispered);
 						break;
 					}
-					params[0] = rsSubject.getString("name");
+					params[0] = rsSubject.getName();
 					
-					ResultSet rsTarget = d.getAccount(params[1]);
+					AccountResultSet rsTarget = d.getAccount(params[1]);
 					if(!rsTarget.next()) {
 						d.close(rsSubject);
 						d.close(rsTarget);
 						c.sendChat(user, "The account [" + params[1] + "] does not exist!", wasWhispered);
 						break;
 					}
-					params[1] = rsTarget.getString("name");
+					params[1] = rsTarget.getName();
 
 					
-					long subjectID = rsSubject.getLong("id");
-					long targetID = rsTarget.getLong("id");
+					long subjectID = rsSubject.getId();
+					long targetID = rsTarget.getId();
 					
 					String recursive = params[0];
 					
 					do {
-						long id = rsTarget.getLong("id");
-						Long cb = rsTarget.getLong("createdby");
-						if(rsTarget.wasNull())
-							cb = null;
+						long id = rsTarget.getId();
+						Long cb = rsTarget.getCreatedBy();
 						
-						recursive += " -> " + rsTarget.getString("name");
+						recursive += " -> " + rsTarget.getName();
 						if(id == subjectID) {
 							c.sendChat(user, "Recursion detected: " + recursive, wasWhispered);
 							break;
@@ -897,7 +888,7 @@ public class CommandEventHandler implements EventHandler {
 						}
 						
 						if(cb == null) {
-							rsSubject.updateLong("createdby", targetID);
+							rsSubject.setCreatedBy(targetID);
 							rsSubject.updateRow();
 							c.sendChat(user, "Successfully updated recruiter for [ " + params[0] + " ] to [ " + params[1] + " ]" , wasWhispered);
 							break;
@@ -954,21 +945,21 @@ public class CommandEventHandler implements EventHandler {
 						
 
 						BNetUser bnSubject = null;
-						ResultSet rsSubjectAccount = d.getAccount(params[0]);
-						ResultSet rsCreatorAccount = null;
+						AccountResultSet rsSubjectAccount = d.getAccount(params[0]);
+						AccountResultSet rsCreatorAccount = null;
 						String result = null;
 						if(rsSubjectAccount.next()) {
-							result = rsSubjectAccount.getString("name");
+							result = rsSubjectAccount.getName();
 						} else {
 							bnSubject = BNetUser.getBNetUser(params[0], user);
-							ResultSet rsSubject = d.getUser(bnSubject);
+							BNLoginResultSet rsSubject = d.getUser(bnSubject);
 							
 							if((rsSubject == null) || (!rsSubject.next())) {
 								c.sendChat(user, "User [" + params[0] + "] is unknown", wasWhispered);
 								break;
 							}
 							
-							bnSubject = BNetUser.getBNetUser(rsSubject.getString("login"));
+							bnSubject = BNetUser.getBNetUser(rsSubject.getLogin());
 							d.close(rsSubject);
 							d.close(rsSubjectAccount);
 							rsSubjectAccount = d.getAccount(bnSubject);
@@ -983,31 +974,29 @@ public class CommandEventHandler implements EventHandler {
 							result = bnSubject.toString();
 						}
 						
-						rsCreatorAccount = d.getAccount(rsSubjectAccount.getLong("createdby"));
+						rsCreatorAccount = d.getAccount(rsSubjectAccount.getCreatedBy());
 
-						long subjectAccountID = rsSubjectAccount.getLong("id");
-						long subjectAccess = rsSubjectAccount.getLong("access");
-						ResultSet rsSubjectRank = d.getRank(subjectAccess);
+						long subjectAccountID = rsSubjectAccount.getId();
+						long subjectAccess = rsSubjectAccount.getAccess();
+						RankResultSet rsSubjectRank = d.getRank(subjectAccess);
 						
-						Date subjectBirthday = rsSubjectAccount.getDate("birthday");
-						if(rsSubjectAccount.wasNull())
-							subjectBirthday = null;
+						Date subjectBirthday = rsSubjectAccount.getBirthday();
 						
 						if(rsSubjectRank.next()) {
 							if(bnSubject == null) {
-								String prefix = rsSubjectRank.getString("shortPrefix");
+								String prefix = rsSubjectRank.getShortPrefix();
 								if(prefix == null)
-									prefix = rsSubjectRank.getString("prefix");
+									prefix = rsSubjectRank.getPrefix();
 								
 								if(prefix == null)
 									prefix = "";
 								else
 									prefix += " ";
 								
-								result = prefix + rsSubjectAccount.getString("name");
+								result = prefix + rsSubjectAccount.getName();
 							}
 							
-							result += " " + rsSubjectRank.getString("verbstr");
+							result += " " + rsSubjectRank.getVerbStr();
 							result += " (" + subjectAccess + ")";
 						} else {
 							result += " has access " + subjectAccess;
@@ -1024,16 +1013,16 @@ public class CommandEventHandler implements EventHandler {
 						// Append aliases
 						ArrayList<String> aliases = new ArrayList<String>();
 						Timestamp lastSeen = null;
-						ResultSet rsSubject = d.getAccountUsers(subjectAccountID);
+						BNLoginResultSet rsSubject = d.getAccountUsers(subjectAccountID);
 						while(rsSubject.next()) {
 							if(lastSeen == null)
-								lastSeen = rsSubject.getTimestamp("lastSeen");
+								lastSeen = rsSubject.getLastSeen();
 							else {
-								Timestamp nt = rsSubject.getTimestamp("lastSeen");
+								Timestamp nt = rsSubject.getLastSeen();
 								if((nt != null) && (nt.compareTo(lastSeen) > 0))
 									lastSeen = nt;
 							}
-							aliases.add(rsSubject.getString("login"));
+							aliases.add(rsSubject.getLogin());
 						}
 						d.close(rsSubject);
 
@@ -1045,7 +1034,7 @@ public class CommandEventHandler implements EventHandler {
 						
 						if((rsCreatorAccount != null) && rsCreatorAccount.next()) {
 							result += ", was recruited by ";
-							result += rsCreatorAccount.getString("name");
+							result += rsCreatorAccount.getName();
 						}
 						
 						boolean andHasAliases = false;
@@ -1092,22 +1081,43 @@ public class CommandEventHandler implements EventHandler {
 		touchUser(user, "joining the channel");
 		
 		try {
-			ResultSet rsUser = d.getUser(user);
+			BNLoginResultSet rsUser = d.getUser(user);
 			if(!rsUser.next()) {
 				d.close(rsUser);
 				return;
 			}
 			
 			switch(statstr.getProduct()) {
-			case ProductIDs.PRODUCT_STAR:
-			case ProductIDs.PRODUCT_SEXP:
+			case ProductIDs.PRODUCT_STAR: {
+				Integer newWins = statstr.getWins();
+				if(newWins != null) {
+					Long oldWins = rsUser.getWinsSTAR();
+					if(newWins > oldWins) {
+						rsUser.setWinsSTAR((long)newWins);
+						rsUser.updateRow();
+					}
+				}
+				break;
+			}
+			
+			case ProductIDs.PRODUCT_SEXP: {
+				Integer newWins = statstr.getWins();
+				if(newWins != null) {
+					Long oldWins = rsUser.getWinsSEXP();
+					if(newWins > oldWins) {
+						rsUser.setWinsSEXP((long)newWins);
+						rsUser.updateRow();
+					}
+				}
+				break;
+			}
+			
 			case ProductIDs.PRODUCT_W2BN: {
 				Integer newWins = statstr.getWins();
 				if(newWins != null) {
-					String col = "wins" + HexDump.DWordToPretty(statstr.getProduct());
-					Integer oldWins = rsUser.getInt(col);
+					Long oldWins = rsUser.getWinsW2BN();
 					if(newWins > oldWins) {
-						rsUser.updateInt(col, newWins);
+						rsUser.setWinsW2BN((long)newWins);
 						rsUser.updateRow();
 					}
 				}
@@ -1118,9 +1128,9 @@ public class CommandEventHandler implements EventHandler {
 			case ProductIDs.PRODUCT_D2XP: {
 				Integer newLevel = statstr.getCharLevel();
 				if(newLevel != null) {
-					Integer oldLevel = rsUser.getInt("levelD2");
+					Long oldLevel = rsUser.getLevelD2();
 					if(newLevel > oldLevel) {
-						rsUser.updateInt("levelD2", newLevel);
+						rsUser.setLevelD2((long)newLevel);
 						rsUser.updateRow();
 					}
 				}
@@ -1131,9 +1141,9 @@ public class CommandEventHandler implements EventHandler {
 			case ProductIDs.PRODUCT_W3XP: {
 				Integer newLevel = statstr.getLevel();
 				if(newLevel != null) {
-					Integer oldLevel = rsUser.getInt("levelW3");
+					Long oldLevel = rsUser.getLevelW3();
 					if(newLevel > oldLevel) {
-						rsUser.updateInt("levelW3", newLevel);
+						rsUser.setLevelW3((long)newLevel);
 						rsUser.updateRow();
 					}
 				}
@@ -1142,15 +1152,15 @@ public class CommandEventHandler implements EventHandler {
 			}
 			d.close(rsUser);
 			
-			ResultSet rsAccount = d.getAccount(user);
+			AccountResultSet rsAccount = d.getAccount(user);
 			if(!rsAccount.next()) {
 				d.close(rsAccount);
 				return;
 			}
 			
 			//check for birthdays
-			Date birthday = rsAccount.getDate("birthday");
-			if(!rsAccount.wasNull()) {
+			Date birthday = rsAccount.getBirthday();
+			if(birthday != null) {
 				SimpleDateFormat sdf = new SimpleDateFormat("M-d");
 
 				Calendar cal = Calendar.getInstance();
@@ -1168,19 +1178,19 @@ public class CommandEventHandler implements EventHandler {
 			}
 
 			//check for autopromotions
-			long rank = rsAccount.getLong("access");
-			long id = rsAccount.getLong("id");
-			ResultSet rsRank = d.getRank(rank);
+			long rank = rsAccount.getAccess();
+			long id = rsAccount.getId();
+			RankResultSet rsRank = d.getRank(rank);
 			if(rsRank.next()) {
-				String greeting = rsRank.getString("greeting");
-				if(!rsRank.wasNull()) {
+				String greeting = rsRank.getGreeting();
+				if(greeting != null) {
 					greeting = String.format(greeting, user.toString(), user.getPing(), user.getFullAccountName());
 					c.sendChat(greeting);
 				}
 
 				//Autopromotions:
-				long apDays = rsRank.getLong("apDays");
-				Timestamp ts = rsAccount.getTimestamp("lastRankChange");
+				long apDays = rsRank.getApDays();
+				Timestamp ts = rsAccount.getLastRankChange();
 				//Check that they meet the days requirement
 				apBlock: if(apDays != 0) {
 					double timeElapsed = 0;
@@ -1189,9 +1199,9 @@ public class CommandEventHandler implements EventHandler {
 						timeElapsed /= 1000 * 60 * 60 * 24;
 					}
 					if((timeElapsed > apDays) || (ts == null)) {
-						long apWins = rsRank.getLong("apWins");
-						long apD2Level = rsRank.getLong("apD2Level");
-						long apW3Level = rsRank.getLong("apW3Level");
+						long apWins = rsRank.getApWins();
+						long apD2Level = rsRank.getApD2Level();
+						long apW3Level = rsRank.getApW3Level();
 						long wins[] = d.getAccountWinsLevels(id, c.getConnectionSettings().recruitTagPrefix, c.getConnectionSettings().recruitTagSuffix);
 						
 						if(((apWins > 0) && (wins[0] >= apWins))
@@ -1200,17 +1210,17 @@ public class CommandEventHandler implements EventHandler {
 						|| ((apWins == 0) && (apD2Level == 0) && (apW3Level == 0))) {
 							// Check RS
 							long rs = d.getAccountRecruitScore(id, c.getConnectionSettings().recruitAccess);
-							long apRS = rsRank.getLong("apRecruitScore");
+							long apRS = rsRank.getApRecruitScore();
 							if((apRS == 0) || (rs >= apRS)) {
 								// Give them a promotion
 								rank++;
-								rsAccount.updateLong("access", rank);
-								rsAccount.updateTimestamp("lastRankChange", new Timestamp(new Date().getTime()));
+								rsAccount.setAccess(rank);
+								rsAccount.setLastRankChange(new Timestamp(new Date().getTime()));
 								rsAccount.updateRow();
 								user.resetPrettyName();	//Reset the presentable name
 								c.sendChat("Congratulations " + user.toString() + ", you just recieved a promotion! Your rank is now " + rank + ".");
-								String apMail = rsRank.getString("apMail");
-								if((!rsRank.wasNull()) && (apMail.length() > 0))
+								String apMail = rsRank.getApMail();
+								if((apMail != null) && (apMail.length() > 0))
 									d.sendMail(id, id, apMail);
 							} else {
 								c.sendChat(user, "You need " + Long.toString(apRS - rs) + " more recruitment points to recieve a promotion!", false);

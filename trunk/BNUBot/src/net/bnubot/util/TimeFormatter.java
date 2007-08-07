@@ -5,6 +5,9 @@
 
 package net.bnubot.util;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class TimeFormatter {
@@ -35,5 +38,16 @@ public class TimeFormatter {
 		//time /= 10000;
 		//time -= 11644455600000L; //Date.parse("1/1/1601");
 		return new Date(ft / 10000 - 11644455600000L);
+	}
+	
+	@SuppressWarnings("deprecation")
+	public static long parse(String dt) {
+		DateFormat df = new SimpleDateFormat();
+		try {
+			return df.parse(dt).getTime();
+		} catch (ParseException e) {
+			e.printStackTrace();
+			throw new NullPointerException(e.getMessage());
+		}
 	}
 }

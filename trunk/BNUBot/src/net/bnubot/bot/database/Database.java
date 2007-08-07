@@ -52,6 +52,14 @@ public class Database {
 		}
 	}
 	
+	public void close(ExtendableResultSet rs) {
+		try {
+			close(rs.getStatement());
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public void close(Statement stmt) {
 		try {
 			stmt.close();
@@ -119,10 +127,10 @@ public class Database {
 		return (PreparedStatement)pushStatement(conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE));
 	}
 	
-	public ResultSet getUser(BNetUser user) throws SQLException {
+	public BNLoginResultSet getUser(BNetUser user) throws SQLException {
 		PreparedStatement ps = prepareStatement("SELECT * FROM bnlogin WHERE LOWER(login)=LOWER(?)");
 		ps.setString(1, user.getFullAccountName());
-		return ps.executeQuery();
+		return new BNLoginResultSet(ps.executeQuery());
 	}
 	
 	public void deleteOldUsers() throws SQLException {
@@ -142,7 +150,7 @@ public class Database {
 			if(dss > expireDays) {
 				String login = rsOld.getString("login");
 
-				ResultSet rsUser = getUser(new BNetUser(login));
+				BNLoginResultSet rsUser = getUser(new BNetUser(login));
 				if(rsUser.next()) {
 					Long rank = rsOld.getLong("rank");
 					if(rsOld.wasNull())
@@ -201,8 +209,8 @@ public class Database {
 		close(rsOld);
 	}
 	
-	public ResultSet getCreateUser(BNetUser user) throws SQLException {
-		ResultSet rsUser = getUser(user);
+	public BNLoginResultSet getCreateUser(BNetUser user) throws SQLException {
+		BNLoginResultSet rsUser = getUser(user);
 		if(rsUser.next()) {
 			rsUser.beforeFirst();
 			return rsUser;
@@ -224,19 +232,19 @@ public class Database {
 		throw new SQLException("The user was created but not found");
 	}
 	
-	public ResultSet getAccount(String account) throws SQLException {
+	public AccountResultSet getAccount(String account) throws SQLException {
 		PreparedStatement ps = prepareStatement("SELECT * FROM account WHERE LOWER(name)=LOWER(?)");
 		ps.setString(1, account);
-		return ps.executeQuery();
+		return new AccountResultSet(ps.executeQuery());
 	}
 	
-	public ResultSet getAccount(Long accountID) throws SQLException {
+	public AccountResultSet getAccount(Long accountID) throws SQLException {
 		PreparedStatement ps = prepareStatement("SELECT * FROM account WHERE id=?");
 		ps.setLong(1, accountID);
-		return ps.executeQuery();
+		return new AccountResultSet(ps.executeQuery());
 	}
 	
-	public ResultSet getAccount(BNetUser user) throws SQLException {
+	public AccountResultSet getAccount(BNetUser user) throws SQLException {
 		PreparedStatement ps = prepareStatement(
 				"SELECT A.* " +
 				"FROM account AS A " +
@@ -248,7 +256,7 @@ public class Database {
 			ps.setNull(1, java.sql.Types.VARCHAR);
 		else
 			ps.setString(1, login);
-		return ps.executeQuery();
+		return new AccountResultSet(ps.executeQuery());
 	}
 	
 	public void setAccount(BNetUser user, long accountID) throws SQLException {
@@ -289,17 +297,17 @@ public class Database {
 		return w;
 	}
 	
-	public ResultSet getAccountUsers(long accountID) throws SQLException {
+	public BNLoginResultSet getAccountUsers(long accountID) throws SQLException {
 		PreparedStatement ps = prepareStatement("SELECT * FROM bnlogin WHERE account=?");
 		ps.setLong(1, accountID);
-		return ps.executeQuery();
+		return new BNLoginResultSet(ps.executeQuery());
 	}
 	
-	public ResultSet getAccountRecruits(long accountID, long withAccess) throws SQLException {
+	public AccountResultSet getAccountRecruits(long accountID, long withAccess) throws SQLException {
 		PreparedStatement ps = prepareStatement("SELECT * FROM account WHERE createdby=? AND access>=?");
 		ps.setLong(1, accountID);
 		ps.setLong(2, withAccess);
-		return ps.executeQuery();
+		return new AccountResultSet(ps.executeQuery());
 	}
 	
 	public long getAccountRecruitScore(long accountID, long withAccess) throws SQLException {
@@ -317,7 +325,7 @@ public class Database {
 		return score;
 	}
 
-	public ResultSet createAccount(String account, long access, Long creator) throws SQLException {
+	public AccountResultSet createAccount(String account, long access, Long creator) throws SQLException {
 		PreparedStatement ps = prepareStatement("INSERT INTO account (name, access, createdby, lastRankChange) VALUES(?, ?, ?, NULL)");
 		ps.setString(1, account);
 		ps.setLong(2, access);
@@ -325,26 +333,37 @@ public class Database {
 		ps.execute();
 		close(ps);
 		
-		ResultSet rsAccount = getAccount(account);
+		AccountResultSet rsAccount = getAccount(account);
 		if((rsAccount == null) || (!rsAccount.next()))
 			throw new SQLException("The account was created but not found");
 		
 		rsAccount.beforeFirst();
 		return rsAccount;
 	}
-	
-	public ResultSet getCreateAccount(String account, Long access, Long creator) throws SQLException {
-		ResultSet rsAccount = getAccount(account);
-		if(rsAccount != null)
-			return rsAccount;
-		
-		return createAccount(account, access, creator);
+
+	public Long createAccount() throws SQLException {
+		Statement stmt = createStatement();
+		stmt.executeUpdate("INSERT INTO rank (id, name) VALUES (NULL, name)");
+		ResultSet rs = stmt.getGeneratedKeys();
+		close(stmt);
+		if(rs.next()) {
+			long id = rs.getLong(1);
+			rs.updateString(2, "NEW_ACCOUNT_" + id);
+			rs.updateRow();
+			return id;
+		}
+		close(stmt);
+		return null;
 	}
 	
-	public ResultSet getRankedAccounts(long minRank) throws SQLException {
+	public AccountResultSet getRankedAccounts(long minRank) throws SQLException {
 		PreparedStatement ps = prepareStatement("SELECT * FROM account WHERE access>=?");
 		ps.setLong(1, minRank);
-		return ps.executeQuery();
+		return new AccountResultSet(ps.executeQuery());
+	}
+	
+	public AccountResultSet getAccounts() throws SQLException {
+		return new AccountResultSet(createStatement().executeQuery("SELECT * FROM account ORDER BY name ASC"));
 	}
 	
 	public Long createRank() throws SQLException {
@@ -360,14 +379,14 @@ public class Database {
 		return null;
 	}
 	
-	public ResultSet getRanks() throws SQLException {
-		return createStatement().executeQuery("SELECT * FROM rank ORDER BY id ASC");
+	public RankResultSet getRanks() throws SQLException {
+		return new RankResultSet(createStatement().executeQuery("SELECT * FROM rank ORDER BY id ASC"));
 	}
 	
-	public ResultSet getRank(long access) throws SQLException {
+	public RankResultSet getRank(long access) throws SQLException {
 		PreparedStatement ps = prepareStatement("SELECT * FROM rank WHERE id=?");
 		ps.setLong(1, access);
-		return ps.executeQuery();
+		return new RankResultSet(ps.executeQuery());
 	}
 	
 	//Cache command alias mappings to improve performance
@@ -393,30 +412,30 @@ public class Database {
 		return command;
 	}
 
-	public ResultSet getCommand(String command) throws SQLException {
+	public CommandResultSet getCommand(String command) throws SQLException {
 		command = resolveCommandAlias(command);
 		PreparedStatement ps = prepareStatement("SELECT * FROM command WHERE name=?");
 		ps.setString(1, command);
-		return ps.executeQuery();
+		return new CommandResultSet(ps.executeQuery());
 	}
 
-	public ResultSet getCommands(long access) throws SQLException {
+	public CommandResultSet getCommands(long access) throws SQLException {
 		PreparedStatement ps = prepareStatement("SELECT * FROM command WHERE access<=?");
 		ps.setLong(1, access);
-		return ps.executeQuery();
+		return new CommandResultSet(ps.executeQuery());
 	}
 	
-	public ResultSet getCommandCategory(String category, long access) throws SQLException {
+	public CommandResultSet getCommandCategory(String category, long access) throws SQLException {
 		PreparedStatement ps = prepareStatement("SELECT * FROM command WHERE cmdgroup=? AND access<=?");
 		ps.setString(1, category);
 		ps.setLong(2, access);
-		return ps.executeQuery();
+		return new CommandResultSet(ps.executeQuery());
 	}
 
-	public ResultSet getCommandCategories(long access) throws SQLException {
+	public CommandResultSet getCommandCategories(long access) throws SQLException {
 		PreparedStatement ps = prepareStatement("SELECT cmdgroup FROM command WHERE access<=? GROUP BY cmdgroup");
 		ps.setLong(1, access);
-		return ps.executeQuery();
+		return new CommandResultSet(ps.executeQuery());
 	}
 	
 	public void sendMail(long senderID, long targetID, String message) throws SQLException {
