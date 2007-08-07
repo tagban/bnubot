@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import net.bnubot.bot.EventHandler;
+import net.bnubot.bot.database.AccountResultSet;
 import net.bnubot.bot.database.Database;
 import net.bnubot.core.BNetUser;
 import net.bnubot.core.Connection;
@@ -182,11 +183,11 @@ public class TriviaEventHandler implements EventHandler {
 
 						try {
 							if(d != null) { 
-								ResultSet rsAccount = d.getAccount(answerUser);
+								AccountResultSet rsAccount = d.getAccount(answerUser);
 								if(rsAccount.next()) {
-									long score = rsAccount.getLong("trivia_correct");
+									long score = rsAccount.getTriviaCorrect();
 									score++;
-									rsAccount.updateLong("trivia_correct", score);
+									rsAccount.setTriviaCorrect(score);
 									rsAccount.updateRow();
 									extra += " Your score is " + score + ".";
 								}

@@ -20,6 +20,7 @@ import net.bnubot.bot.EventHandler;
 import net.bnubot.bot.database.Database;
 import net.bnubot.bot.gui.ColorScheme.ColorScheme;
 import net.bnubot.bot.gui.components.*;
+import net.bnubot.bot.gui.database.DatabaseAccountEditor;
 import net.bnubot.bot.gui.database.DatabaseRankEditor;
 import net.bnubot.bot.gui.icons.IconsDotBniReader;
 import net.bnubot.core.BNetUser;
@@ -142,6 +143,17 @@ public class GuiEventHandler implements EventHandler {
 						Database d = Database.getInstance();
 						if(d != null)
 							new DatabaseRankEditor(d);
+						else
+							c.recieveError("There is no database initialized.");
+					} });
+				menu.add(menuItem);
+				
+				menuItem = new JMenuItem("Account editor");
+				menuItem.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent event) {
+						Database d = Database.getInstance();
+						if(d != null)
+							new DatabaseAccountEditor(d);
 						else
 							c.recieveError("There is no database initialized.");
 					} });

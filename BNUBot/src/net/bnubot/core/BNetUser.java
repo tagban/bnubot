@@ -8,7 +8,9 @@ package net.bnubot.core;
 import java.sql.*;
 import java.util.Hashtable;
 
+import net.bnubot.bot.database.AccountResultSet;
 import net.bnubot.bot.database.Database;
+import net.bnubot.bot.database.RankResultSet;
 
 /**
  * A class responsible for formatting Battle.net usernames.
@@ -244,19 +246,19 @@ public class BNetUser {
 		if(shortPrettyName == null) {
 			shortPrettyName = shortLogonName;
 			try {
-				ResultSet rsAccount = d.getAccount(this);
+				AccountResultSet rsAccount = d.getAccount(this);
 				if(rsAccount.next()) {
-					String account = rsAccount.getString("name");
+					String account = rsAccount.getName();
 					
 					if(account != null)
 						shortPrettyName = account;
 
-					long access = rsAccount.getLong("access");
-					ResultSet rsRank = d.getRank(access);
+					long access = rsAccount.getAccess();
+					RankResultSet rsRank = d.getRank(access);
 					if(rsRank.next()) {
-						String prefix = rsRank.getString("shortPrefix");
+						String prefix = rsRank.getShortPrefix();
 						if(prefix == null)
-							prefix = rsRank.getString("prefix");
+							prefix = rsRank.getPrefix();
 						if(prefix != null)
 							shortPrettyName = prefix + " " + shortPrettyName;
 					}
@@ -281,17 +283,17 @@ public class BNetUser {
 		if(prettyName == null) {
 			prettyName = shortLogonName;
 			try {
-				ResultSet rsAccount = d.getAccount(this);
+				AccountResultSet rsAccount = d.getAccount(this);
 				if(rsAccount.next()) {
-					String account = rsAccount.getString("name");
+					String account = rsAccount.getName();
 					
 					if(account != null)
 						prettyName = account + " (" + prettyName + ")";
 
-					long access = rsAccount.getLong("access");
-					ResultSet rsRank = d.getRank(access);
+					long access = rsAccount.getAccess();
+					RankResultSet rsRank = d.getRank(access);
 					if(rsRank.next()) {
-						String prefix = rsRank.getString("prefix");
+						String prefix = rsRank.getPrefix();
 						if(prefix != null)
 							prettyName = prefix + " " + prettyName;
 					}
