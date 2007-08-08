@@ -8,14 +8,13 @@
 package BNLSProtocol;
 
 import java.io.IOException;
+import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.BindException;
-import java.lang.NullPointerException;
 
+import util.Constants;
 import util.Controller;
 import util.Out;
-import util.Constants;
 
 /**
  * This class is the actual BNLS server.  It creates the server socket,

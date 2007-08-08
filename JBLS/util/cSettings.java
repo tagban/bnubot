@@ -1,10 +1,5 @@
 package util;
 
-import java.io.*;
-import util.Out;
-import java.util.StringTokenizer;
-import util.Constants;
-import java.util.NoSuchElementException;
 
 public class cSettings {
   	

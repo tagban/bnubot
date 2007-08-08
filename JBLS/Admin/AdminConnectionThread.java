@@ -9,10 +9,9 @@ import java.io.InputStreamReader;
 import java.io.InterruptedIOException;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.lang.NullPointerException;
 
-import util.Out;
 import util.Constants;
+import util.Out;
 /**
  * @author FooL
  * 

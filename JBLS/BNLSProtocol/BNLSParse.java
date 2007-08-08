@@ -15,7 +15,6 @@ package BNLSProtocol;
 
 import java.util.Hashtable;
 import java.util.Random;
-import java.io.IOException;
 
 import util.Buffer;
 import util.Constants;

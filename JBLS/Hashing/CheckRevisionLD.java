@@ -2,15 +2,13 @@ package Hashing;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Hashtable;
-import java.util.StringTokenizer;
 
-import util.Out;
-import util.Constants;
 import util.Buffer;
+import util.Constants;
+import util.Out;
 
 /** This takes care of the CheckRevision() for the main game files of any program.
  * This is done to prevent tampering and to make sure the version is correct.

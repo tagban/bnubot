@@ -16,7 +16,6 @@ import util.Constants;
 import util.Controller;
 import util.Out;
 import Admin.IpAuth;
-import BNLSProtocol.BNLSConnectionThread;
 
 /**
  * @author The-FooL

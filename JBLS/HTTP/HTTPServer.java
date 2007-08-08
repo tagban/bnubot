@@ -1,7 +1,11 @@
 package HTTP;
-import java.net.*;
-import util.*;
 import java.io.IOException;
+import java.net.BindException;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+import util.Constants;
+import util.Out;
 
 public class HTTPServer extends Thread{
     final static String CRLF = "\r\n";
