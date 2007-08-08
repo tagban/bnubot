@@ -15,6 +15,7 @@ import net.bnubot.vercheck.CurrentVersion;
 public class Settings {
 	private static File propsFile = null;
 	private static Properties props = null;
+	private static Boolean anythingChanged = false;
 	
 	private static void init() {
 		if(props != null)
@@ -50,11 +51,22 @@ public class Settings {
 		if(Value == null)
 			Value = new String();
 		
+		// Don't allow modification of keys unless they haven't changed
+		if(props.containsKey(key) && props.getProperty(key).equals(Value))
+			return;
+		
+		anythingChanged = true;
+		System.out.println("Setting " + key + "=" + Value);
 		props.setProperty(key, Value);
 	}
 
 	public static void store() {
+		if(!anythingChanged)
+			return;
+		
 		init();
+		
+		System.out.println("Writing settings.ini");
 		
 		try {
 			// Generate the comment first, because the settings.ini file could be lost if CurrentVersion.version() fails
