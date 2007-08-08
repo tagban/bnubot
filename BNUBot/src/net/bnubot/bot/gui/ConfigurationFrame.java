@@ -40,6 +40,7 @@ public class ConfigurationFrame extends JDialog {
 	JCheckBox chkEnableGUI = null;
 	JCheckBox chkEnableCLI = null;
 	JCheckBox chkEnableTrivia = null;
+	JCheckBox chkEnableCommands = null;
 	JCheckBox chkEnableFloodProtect = null;
 	JCheckBox chkPacketLog = null;
 	JCheckBox chkWhisperBack = null;
@@ -304,14 +305,17 @@ public class ConfigurationFrame extends JDialog {
 						chkAutoConnect = new JCheckBox("Auto Connect", cs.autoconnect);
 						boxCheckboxes.add(chkAutoConnect);
 	
-						chkEnableGUI = new JCheckBox("Enable GUI", cs.enableGUI);
+						chkEnableGUI = new JCheckBox("Enable GUI (requires restart)", cs.enableGUI);
 						boxCheckboxes.add(chkEnableGUI);
 	
-						chkEnableCLI = new JCheckBox("Enable CLI", cs.enableCLI);
+						chkEnableCLI = new JCheckBox("Enable CLI (requires restart)", cs.enableCLI);
 						boxCheckboxes.add(chkEnableCLI);
 	
-						chkEnableTrivia = new JCheckBox("Enable Trivia", cs.enableTrivia);
+						chkEnableTrivia = new JCheckBox("Enable Trivia (requires restart)", cs.enableTrivia);
 						boxCheckboxes.add(chkEnableTrivia);
+	
+						chkEnableCommands = new JCheckBox("Enable Commands (requires restart)", cs.enableCommands);
+						boxCheckboxes.add(chkEnableCommands);
 	
 						chkEnableFloodProtect = new JCheckBox("Enable Flood Protect", cs.enableFloodProtect);
 						boxCheckboxes.add(chkEnableFloodProtect);
@@ -424,6 +428,7 @@ public class ConfigurationFrame extends JDialog {
 		cs.enableGUI = chkEnableGUI.isSelected();
 		cs.enableCLI = chkEnableCLI.isSelected();
 		cs.enableTrivia = chkEnableTrivia.isSelected();
+		cs.enableCommands = chkEnableCommands.isSelected();
 		cs.enableFloodProtect = chkEnableFloodProtect.isSelected();
 		cs.packetLog = chkPacketLog.isSelected();
 		cs.whisperBack = chkWhisperBack.isSelected();
@@ -451,6 +456,7 @@ public class ConfigurationFrame extends JDialog {
 		chkEnableGUI.setSelected(cs.enableGUI);
 		chkEnableCLI.setSelected(cs.enableCLI);
 		chkEnableTrivia.setSelected(cs.enableTrivia);
+		chkEnableCommands.setSelected(cs.enableCommands);
 		chkEnableFloodProtect.setSelected(cs.enableFloodProtect);
 		chkPacketLog.setSelected(cs.packetLog);
 		chkWhisperBack.setSelected(cs.whisperBack);
