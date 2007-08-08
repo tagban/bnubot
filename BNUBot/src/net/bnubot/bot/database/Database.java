@@ -134,11 +134,11 @@ public class Database {
 	}
 	
 	public void deleteOldUsers() throws SQLException {
-		String SQL;
-		if(conn instanceof org.apache.derby.iapi.jdbc.EngineConnection)
-			SQL = "{fn TIMESTAMPDIFF(SQL_TSI_DAY, CURRENT_TIMESTAMP, lastSeen)}";
-		else
-			SQL = "DATEDIFF(NOW(), lastSeen)";
+		String SQL = "DATEDIFF(NOW(), lastSeen)";
+		try {
+			if(conn instanceof org.apache.derby.iapi.jdbc.EngineConnection)
+				SQL = "{fn TIMESTAMPDIFF(SQL_TSI_DAY, CURRENT_TIMESTAMP, lastSeen)}";
+		} catch(NoClassDefFoundError e) {}
 		
 		SQL =
 			"SELECT login, " + SQL + " as dss, rank.id AS rank, rank.expireDays " +
