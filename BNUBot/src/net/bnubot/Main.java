@@ -57,11 +57,13 @@ public class Main {
 						forceConfig = true;
 						continue;
 					}
+					break;
 				case 'g':
 					if(args[i].equals("-gui")) {
 						cs.enableGUI = true;
 						continue;
 					}
+					break;
 				case 'n':
 					if(args[i].equals("-nocli")) {
 						cs.enableCLI = false;
@@ -71,11 +73,13 @@ public class Main {
 						cs.enableGUI = false;
 						continue;
 					}
+					break;
 				case 'p':
 					if(args[i].equals("-plugins")) {
 						plugins = args[++i].split(":");
 						continue;
 					}
+					break;
 				}
 			}
 			

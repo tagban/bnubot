@@ -1247,7 +1247,7 @@ public class BNCSConnection extends Connection {
 		int i = antiIdles.size();
 		if(i == 0)
 			return cs.antiIdle;
-		i = (int)Math.floor(Math.random() * (double)i);
+		i = (int)Math.floor(Math.random() * i);
 		return antiIdles.get(i);
 	}
 	
@@ -1404,7 +1404,7 @@ public class BNCSConnection extends Connection {
 		LinkedList<Object> obj = new LinkedList<Object>();
 		obj.add("This is the cookie for setRank:");
 		obj.add(user);
-		obj.add((Integer) newRank);
+		obj.add(newRank);
 		
 		int id = CookieUtility.createCookie(obj);
 		

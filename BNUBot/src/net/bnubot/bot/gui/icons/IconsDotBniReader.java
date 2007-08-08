@@ -202,17 +202,17 @@ public class IconsDotBniReader {
 				int len = (packetHeader & 0x7F) + 1;
 				if((packetHeader & 0x80) != 0) {
 					//Run-length packet
-					int blue = ((int)is.readByte()) & 0xFF;
-					int green = ((int)is.readByte()) & 0xFF;
-					int red = ((int)is.readByte()) & 0xFF;
+					int blue = is.readByte() & 0xFF;
+					int green = is.readByte() & 0xFF;
+					int red = is.readByte() & 0xFF;
 					int col = new Color(red, green, blue).getRGB();
 					for(int i = 0; i < len; i++)
 						pixelData[getRealPixelPosition(currentPixel++, height, width)] = col;
 				} else {
 					for(int i = 0; i < len; i++) {
-						int blue = ((int)is.readByte()) & 0xFF;
-						int green = ((int)is.readByte()) & 0xFF;
-						int red = ((int)is.readByte()) & 0xFF;
+						int blue = is.readByte() & 0xFF;
+						int green = is.readByte() & 0xFF;
+						int red = is.readByte() & 0xFF;
 						int col = new Color(red, green, blue).getRGB();
 						pixelData[getRealPixelPosition(currentPixel++, height, width)] = col;
 					}

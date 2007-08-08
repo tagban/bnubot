@@ -28,12 +28,11 @@ public class ChatQueue extends Thread {
 	public boolean enqueue(String text, boolean fp) {
 		if(fp) synchronized(queue) {
 			return queue.add(text);
-		} else {
-			if(lastCon >= cons.size())
-				lastCon = 0;
-			cons.get(lastCon++).sendChatNow(text);
-			return true;
 		}
+		if(lastCon >= cons.size())
+			lastCon = 0;
+		cons.get(lastCon++).sendChatNow(text);
+		return true;
 	}
 	
 	public void run() {
