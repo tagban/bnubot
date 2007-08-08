@@ -134,26 +134,30 @@ public class Database {
 	}
 	
 	public void deleteOldUsers() throws SQLException {
-		//TODO: Fix this query for derby
+		String SQL;
 		if(conn instanceof org.apache.derby.iapi.jdbc.EngineConnection)
-			return;
+			SQL = "{fn TIMESTAMPDIFF(SQL_TSI_DAY, CURRENT_TIMESTAMP, lastSeen)}";
+		else
+			SQL = "DATEDIFF(NOW(), lastSeen)";
 		
-		ResultSet rsOld = createStatement().executeQuery(
-			"SELECT login, DATEDIFF(NOW(), lastSeen) as dss, rank.id AS rank, rank.expireDays " +
+		SQL =
+			"SELECT login, " + SQL + " as dss, rank.id AS rank, rank.expireDays " +
 				"FROM bnlogin " +
 				"JOIN account ON (bnlogin.account=account.id) " +
 				"JOIN rank ON (account.access=rank.id) " +
 			"UNION " +
-			"SELECT login, DATEDIFF(NOW(), lastSeen) as dss, NULL AS rank, 90 AS expireDays " +
+			"SELECT login, " + SQL + " as dss, 0 AS rank, 90 AS expireDays " +
 				"FROM bnlogin " +
 				"WHERE account IS NULL " +
-			"ORDER BY dss DESC");
+			"ORDER BY dss DESC";
+	
+		ResultSet rsOld = createStatement().executeQuery(SQL);
 		while(rsOld.next()) {
 			long dss = rsOld.getLong("dss");
 			long expireDays = rsOld.getLong("expireDays");
 			if(dss > expireDays) {
 				String login = rsOld.getString("login");
-
+	
 				BNLoginResultSet rsUser = getUser(new BNetUser(login));
 				if(rsUser.next()) {
 					Long rank = rsOld.getLong("rank");
@@ -162,16 +166,16 @@ public class Database {
 					
 					String out = "Removing user ";
 					out += login;
-					out += " (rank=";
-					if(rank != null)
-						out += rank;
-					out += ", dss=";
+					out += " (";
+					if((rank != null) && (rank != 0))
+						out += "rank=" + rank + ", ";
+					out += "dss=";
 					out += dss;
 					out += "/";
 					out += expireDays;
 					out += ")";
 					System.out.println(out);
-
+	
 					//Delete them!
 					rsUser.deleteRow();
 				}
@@ -181,23 +185,31 @@ public class Database {
 		close(rsOld);
 		
 		//Find accounts that are not instrumental to the recruitment tree, and have no accounts
-		rsOld = createStatement().executeQuery(
-				"SELECT account.id, account.name, account.access, account.createdby " +
-				"FROM account " +
-				"LEFT JOIN bnlogin ON bnlogin.account=account.id " +
-				"LEFT JOIN account AS recruits ON recruits.createdby=account.id " +
-				"WHERE bnlogin.login IS NULL " +
-					"AND recruits.name IS NULL");
-		while(rsOld.next()) {
-			String name = rsOld.getString("name");
-			Long cb = rsOld.getLong("createdby");
-			if(rsOld.wasNull())
-				cb = null;
+		AccountResultSet rsAccount = getAccounts();
+		while(rsAccount.next()) {
+			//Check number of connected logins
+			{
+				PreparedStatement ps = prepareStatement("SELECT COUNT(*) FROM bnlogin WHERE bnlogin.account=?");
+				ps.setLong(1, rsAccount.getId());
+				ResultSet rsLogins = ps.executeQuery();
+				if(!rsLogins.next())
+					throw new SQLException("fetch failed");
+				long logins = rsLogins.getLong(1);
+				close(rsLogins);
+				if(logins > 0)
+					continue;
+			}
+			
+			// Check if they have recruits
+			if(getAccountRecruits(rsAccount.getId()) > 0)
+				continue;
+			
+			Long cb = rsAccount.getCreatedBy();
 			
 			String out = "Removing account ";
-			out += name;
+			out += rsAccount.getName();
 			out += " (rank=";
-			out += rsOld.getLong("access");
+			out += rsAccount.getAccess();
 			if(cb != null) {
 				out += ", createdby=";
 				out += cb;
@@ -206,11 +218,11 @@ public class Database {
 			System.out.println(out);
 			
 			if(cb != null)
-				sendMail(cb, cb, "Your recruit " + name + " has been removed due to inactivity");
+				sendMail(cb, cb, "Your recruit " + rsAccount.getName() + " has been removed due to inactivity");
 			
-			rsOld.deleteRow();
+			rsAccount.deleteRow();
 		}
-		close(rsOld);
+		close(rsAccount);
 	}
 	
 	public BNLoginResultSet getCreateUser(BNetUser user) throws SQLException {
@@ -314,6 +326,17 @@ public class Database {
 		return new AccountResultSet(ps.executeQuery());
 	}
 	
+	public long getAccountRecruits(long accountID) throws SQLException {
+		PreparedStatement ps = prepareStatement("SELECT COUNT(*) FROM account WHERE createdby=?");
+		ps.setLong(1, accountID);
+		ResultSet rs = ps.executeQuery();
+		if(!rs.next())
+			throw new SQLException("fetch failed");
+		long num = rs.getLong(1);
+		close(rs);
+		return num;
+	}
+	
 	public long getAccountRecruitScore(long accountID, long withAccess) throws SQLException {
 		PreparedStatement ps = prepareStatement("SELECT SUM(access-?) FROM account WHERE createdby=? AND access>=?");
 		ps.setLong(1, withAccess);
@@ -333,7 +356,10 @@ public class Database {
 		PreparedStatement ps = prepareStatement("INSERT INTO account (name, access, createdby, lastRankChange) VALUES(?, ?, ?, NULL)");
 		ps.setString(1, account);
 		ps.setLong(2, access);
-		ps.setLong(3, creator);
+		if(creator == null)
+			ps.setNull(3, java.sql.Types.VARCHAR);
+		else
+			ps.setLong(3, creator);
 		ps.execute();
 		close(ps);
 		
@@ -345,19 +371,8 @@ public class Database {
 		return rsAccount;
 	}
 
-	public Long createAccount() throws SQLException {
-		Statement stmt = createStatement();
-		stmt.executeUpdate("INSERT INTO rank (id, name) VALUES (NULL, name)");
-		ResultSet rs = stmt.getGeneratedKeys();
-		close(stmt);
-		if(rs.next()) {
-			long id = rs.getLong(1);
-			rs.updateString(2, "NEW_ACCOUNT_" + id);
-			rs.updateRow();
-			return id;
-		}
-		close(stmt);
-		return null;
+	public AccountResultSet createAccount() throws SQLException {
+		return createAccount("NEW_ACCOUNT_" + new java.util.Date().getTime(), 0, null);
 	}
 	
 	public AccountResultSet getRankedAccounts(long minRank) throws SQLException {

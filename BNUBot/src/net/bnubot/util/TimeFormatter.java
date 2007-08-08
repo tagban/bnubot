@@ -7,7 +7,6 @@ package net.bnubot.util;
 
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class TimeFormatter {
@@ -39,15 +38,23 @@ public class TimeFormatter {
 		//time -= 11644455600000L; //Date.parse("1/1/1601");
 		return new Date(ft / 10000 - 11644455600000L);
 	}
+
+	private static DateFormat df = DateFormat.getDateInstance();
+	private static DateFormat dtf = DateFormat.getDateTimeInstance();
 	
-	@SuppressWarnings("deprecation")
-	public static long parse(String dt) {
-		DateFormat df = new SimpleDateFormat();
-		try {
-			return df.parse(dt).getTime();
-		} catch (ParseException e) {
-			e.printStackTrace();
-			throw new NullPointerException(e.getMessage());
-		}
+	public static long parseDate(String d) throws ParseException {
+		return df.parse(d).getTime();
+	}
+	
+	public static String formatDate(Date d) {
+		return df.format(d);
+	}
+	
+	public static long parseDateTime(String dt) throws ParseException {
+		return dtf.parse(dt).getTime();
+	}
+	
+	public static String formatDateTime(Date d) {
+		return dtf.format(d);
 	}
 }
