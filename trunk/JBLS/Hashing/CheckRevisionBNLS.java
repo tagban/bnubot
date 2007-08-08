@@ -1,13 +1,14 @@
 package Hashing;
 
-import java.io.*;
-import java.net.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.Hashtable;
-import java.util.StringTokenizer;
 
-import BNLSProtocol.OutPacketBuffer;
-import util.Constants;
 import util.Out;
+import BNLSProtocol.OutPacketBuffer;
 
 /** 
  *This will request the CheckRevision data from another BNLS Server

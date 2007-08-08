@@ -1,9 +1,9 @@
 package HTTP;
-import java.io.*;
-import java.lang.*;
-import java.net.*;
-import java.util.*;
-import util.*;
+import java.io.DataOutputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+
+import util.Out;
 
 
 class HTTPSendFile extends Thread {

@@ -1,5 +1,10 @@
 package util;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 
 public class Ini{
 	public static String ReadIni(String FN,String Header,String Setting,String Default){
