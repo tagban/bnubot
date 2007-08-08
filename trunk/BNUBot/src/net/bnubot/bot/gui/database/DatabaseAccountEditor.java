@@ -175,7 +175,7 @@ public class DatabaseAccountEditor extends JFrame {
 							if(rsAccount != null) {
 								String txt = txtCreated.getText();
 								Timestamp value = null;
-								try {value = new Timestamp(TimeFormatter.parse(txt));} catch(Exception e) {}
+								try {value = new Timestamp(TimeFormatter.parseDateTime(txt));} catch(Exception e) {}
 								try {
 									if(value != null)
 										rsAccount.setCreated(value);
@@ -200,7 +200,7 @@ public class DatabaseAccountEditor extends JFrame {
 							if(rsAccount != null) {
 								String txt = txtLastRankChange.getText();
 								Timestamp value = null;
-								try {value = new Timestamp(TimeFormatter.parse(txt));} catch(Exception e) {}
+								try {value = new Timestamp(TimeFormatter.parseDateTime(txt));} catch(Exception e) {}
 								try {
 									if(value != null)
 										rsAccount.setLastRankChange(value);
@@ -293,14 +293,14 @@ public class DatabaseAccountEditor extends JFrame {
 				{
 					boxLine.add(new JLabel("Birthday"));
 					
-					txtTriviaWin = new JTextArea();
-					txtTriviaWin.addFocusListener(new FocusListener() {
+					txtBirthday = new JTextArea();
+					txtBirthday.addFocusListener(new FocusListener() {
 						public void focusGained(FocusEvent arg0) {}
 						public void focusLost(FocusEvent arg0) {
 							if(rsAccount != null) {
 								String txt = txtBirthday.getText();
 								java.sql.Date value = null;
-								try {value = new java.sql.Date(TimeFormatter.parse(txt));} catch(Exception e) {}
+								try {value = new java.sql.Date(TimeFormatter.parseDate(txt));} catch(Exception e) {}
 								try {
 									if(value != null)
 										rsAccount.setBirthday(value);
@@ -310,7 +310,7 @@ public class DatabaseAccountEditor extends JFrame {
 							}
 						}
 					});
-					boxLine.add(txtTriviaWin);
+					boxLine.add(txtBirthday);
 				}
 				majorRows.add(boxLine);
 
@@ -324,9 +324,11 @@ public class DatabaseAccountEditor extends JFrame {
 								rsAccount = null;
 							}
 							try {
-								long id = d.createAccount();
+								rsAccount = d.createAccount();
+								if(!rsAccount.next())
+									throw new SQLException("fetch failed");
 								rebuildAccounts();
-								displayEditor(id);
+								displayEditor(rsAccount.getId());
 							} catch (SQLException e) {
 								e.printStackTrace();
 							}
@@ -415,6 +417,16 @@ public class DatabaseAccountEditor extends JFrame {
 		throw new SQLException(identifier.getClass().getName());
 	}
 	
+	private String valueOf(Object obj) {
+		if(obj == null)
+			return null;
+		if(obj instanceof Timestamp)
+			return TimeFormatter.formatDateTime((Timestamp)obj);
+		if(obj instanceof java.sql.Date)
+			return TimeFormatter.formatDate((java.sql.Date)obj);
+		return obj.toString();
+	}
+	
 	private void displayEditor(Object identifier) {
 		if(identifier == null) {
 			txtID.setText(null);
@@ -437,15 +449,15 @@ public class DatabaseAccountEditor extends JFrame {
 				displayEditor(null);
 				return;
 			}
-			txtID.setText(rsAccount.getId().toString());
-			txtAccess.setText(rsAccount.getAccess().toString());
-			txtName.setText(rsAccount.getName());
-			txtCreated.setText(rsAccount.getCreated().toString());
-			txtLastRankChange.setText(rsAccount.getLastRankChange().toString());
-			txtCreatedBy.setText(rsAccount.getCreatedBy().toString());
-			txtTriviaCorrect.setText(rsAccount.getTriviaCorrect().toString());
-			txtTriviaWin.setText(rsAccount.getTriviaWin().toString());
-			txtBirthday.setText(rsAccount.getBirthday().toString());
+			txtID.setText(valueOf(rsAccount.getId()));
+			txtAccess.setText(valueOf(rsAccount.getAccess()));
+			txtName.setText(valueOf(rsAccount.getName()));
+			txtCreated.setText(valueOf(rsAccount.getCreated()));
+			txtLastRankChange.setText(valueOf(rsAccount.getLastRankChange()));
+			txtCreatedBy.setText(valueOf(rsAccount.getCreatedBy()));
+			txtTriviaCorrect.setText(valueOf(rsAccount.getTriviaCorrect()));
+			txtTriviaWin.setText(valueOf(rsAccount.getTriviaWin()));
+			txtBirthday.setText(valueOf(rsAccount.getBirthday()));
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

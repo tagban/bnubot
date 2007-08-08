@@ -18,6 +18,7 @@ import javax.swing.event.ListSelectionListener;
 
 import net.bnubot.bot.database.Database;
 import net.bnubot.bot.database.RankResultSet;
+import net.bnubot.util.TimeFormatter;
 
 @SuppressWarnings("serial")
 public class DatabaseRankEditor extends JFrame {
@@ -490,6 +491,16 @@ public class DatabaseRankEditor extends JFrame {
 			lstRanks.validate();
 	}
 	
+	private String valueOf(Object obj) {
+		if(obj == null)
+			return null;
+		if(obj instanceof Timestamp)
+			return TimeFormatter.formatDateTime((Timestamp)obj);
+		if(obj instanceof java.sql.Date)
+			return TimeFormatter.formatDate((java.sql.Date)obj);
+		return obj.toString();
+	}
+	
 	private void displayEditor(Long id) {
 		if(id == null) {
 			txtID.setText(null);
@@ -515,18 +526,18 @@ public class DatabaseRankEditor extends JFrame {
 				displayEditor(null);
 				return;
 			}
-			txtID.setText(rsRank.getId().toString());
-			txtShortPrefix.setText(rsRank.getShortPrefix());
-			txtPrefix.setText(rsRank.getPrefix());
-			txtVerbstr.setText(rsRank.getVerbStr());
-			txtGreeting.setText(rsRank.getGreeting());
-			txtExpireDays.setText(rsRank.getExpireDays().toString());
-			txtAPDays.setText(rsRank.getApDays().toString());
-			txtAPWins.setText(rsRank.getApWins().toString());
-			txtAPD2Level.setText(rsRank.getApD2Level().toString());
-			txtAPW3Level.setText(rsRank.getApW3Level().toString());
-			txtAPRS.setText(rsRank.getApRecruitScore().toString());
-			txtAPMail.setText(rsRank.getApMail());
+			txtID.setText(valueOf(rsRank.getId()));
+			txtShortPrefix.setText(valueOf(rsRank.getShortPrefix()));
+			txtPrefix.setText(valueOf(rsRank.getPrefix()));
+			txtVerbstr.setText(valueOf(rsRank.getVerbStr()));
+			txtGreeting.setText(valueOf(rsRank.getGreeting()));
+			txtExpireDays.setText(valueOf(rsRank.getExpireDays()));
+			txtAPDays.setText(valueOf(rsRank.getApDays()));
+			txtAPWins.setText(valueOf(rsRank.getApWins()));
+			txtAPD2Level.setText(valueOf(rsRank.getApD2Level()));
+			txtAPW3Level.setText(valueOf(rsRank.getApW3Level()));
+			txtAPRS.setText(valueOf(rsRank.getApRecruitScore()));
+			txtAPMail.setText(valueOf(rsRank.getApMail()));
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
