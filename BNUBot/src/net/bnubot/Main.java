@@ -8,6 +8,7 @@ package net.bnubot;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
 
 import net.bnubot.bot.CommandEventHandler;
 import net.bnubot.bot.EventHandler;
@@ -111,16 +112,21 @@ public class Main {
 		BNCSConnection primary = new BNCSConnection(cs, cq);
 			
 		//Other plugins
+		ArrayList<EventHandler> pluginEHs = new ArrayList<EventHandler>();
 		if(plugins != null) {
 			for(int i = 0; i < plugins.length; i++) {
 				EventHandler eh = (EventHandler)Class.forName(plugins[i]).newInstance();
+				pluginEHs.add(eh);
 				primary.addEventHandler(eh);
 			}
 		}
 		
 		//CLI
-		if(cs.enableCLI)
-			primary.addEventHandler(new ConsoleEventHandler());
+		EventHandler cli = null;
+		if(cs.enableCLI) {
+			cli = new ConsoleEventHandler();
+			primary.addEventHandler(cli);
+		}
 		
 		//GUI
 		EventHandler gui = null;
@@ -194,6 +200,10 @@ public class Main {
 				throw new Exception("Invalid configuration for bot " + i + ": " + valid);
 	
 			c = new BNCSConnection(cs, cq);
+			for(EventHandler eh : pluginEHs)
+				c.addSecondaryEventHandler(eh);
+			if(cli != null)
+				c.addSecondaryEventHandler(cli);
 			if(gui != null)
 				c.addSecondaryEventHandler(gui);
 			if(cmd != null)
