@@ -38,7 +38,6 @@ public class Main {
 				Settings.read("bnubot", "numBots", "1"));
 		} catch(Exception e) {}
 		Settings.write("bnubot", "numBots", Integer.toString(numBots));
-		Settings.store();
 		
 		ConnectionSettings cs = new ConnectionSettings();
 		cs.load(1);
@@ -92,10 +91,11 @@ public class Main {
 			} catch(Exception e) {
 				e.printStackTrace();
 				String s = cs.isValid();
+				System.err.print("There was an error initializing the configuraiton window, ");
 				if(s == null) {
-					System.out.println("There was an error initializing the configuraiton window, but the configuration was valid.");
+					System.err.println("but the configuration was valid.");
 				} else {
-					System.out.println("There was an error initializing the configuration window, and the configuration was invalid: " + s);
+					System.err.println("and the configuration was invalid: " + s);
 				}
 				System.exit(1);
 			}
@@ -154,6 +154,12 @@ public class Main {
 					BNetUser.setDatabase();
 					cmd = new CommandEventHandler();
 					primary.addEventHandler(cmd);
+					
+					Settings.write("database", "driver", db_driver);
+					Settings.write("database", "url", db_url);
+					Settings.write("database", "username", db_username);
+					Settings.write("database", "password", db_password);
+					Settings.write("database", "schema", db_schema);
 				} catch(Exception e) {
 					e.printStackTrace();
 					String msg = "Failed to initialize the database; commands will be disabled.\n" + e.getMessage();
@@ -208,5 +214,8 @@ public class Main {
 			
 			primary.addSlave(c);
 		}
+		
+		// Write out any modified settings
+		Settings.store();
 	}
 }
