@@ -44,10 +44,10 @@ public class BNetOutputStream extends DataOutputStream {
 	
 	public void writeDWord(String str) throws IOException {
 		assert(str.length() == 4);
-		writeByte((int)str.charAt(3));
-		writeByte((int)str.charAt(2));
-		writeByte((int)str.charAt(1));
-		writeByte((int)str.charAt(0));
+		writeByte(str.charAt(3));
+		writeByte(str.charAt(2));
+		writeByte(str.charAt(1));
+		writeByte(str.charAt(0));
 	}
 	
 	public void writeNTString(String str) throws IOException {

@@ -146,7 +146,7 @@ public final class CurrentVersion {
 				VER_SVN_REVISION_FILE = Integer.parseInt((String)versionprops.get("VER_SVN_REVISION"));
 			
 			if(f == null)
-				BUILD_DATE = (String)versionprops.getProperty("BUILD_DATE");
+				BUILD_DATE = versionprops.getProperty("BUILD_DATE");
 			else {
 				BUILD_DATE = new Date().toString();
 				versionprops.setProperty("BUILD_DATE", BUILD_DATE);

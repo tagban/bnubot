@@ -81,8 +81,7 @@ public class CommandEventHandler implements EventHandler {
 						d.close(rsAccount);
 					if(superUser)
 						throw new InvalidUseException();
-					else
-						return;
+					return;
 				}
 					
 				commanderAccess = rsAccount.getAccess();
@@ -256,7 +255,7 @@ public class CommandEventHandler implements EventHandler {
 						Timestamp ts = rsSubjectAccount.getLastRankChange();
 						String timeElapsed;
 						if(ts != null) {
-							double te = (double)(new Date().getTime() - ts.getTime());
+							double te = new Date().getTime() - ts.getTime();
 							te /= 1000 * 60 * 60 * 24;
 							//Round to 2 decimal places
 							timeElapsed = ("00" + ((long)Math.floor(te * 100) % 100));
@@ -701,11 +700,11 @@ public class CommandEventHandler implements EventHandler {
 							d.close(rsSubject);
 							c.sendChat(user, "I have never seen [" + bnSubject.getFullAccountName() + "]", wasWhispered);
 							break;
-						} else {
-							mostRecent = rsSubject.getLastSeen();
-							mostRecentAction = rsSubject.getLastAction();
-							params[0] = rsSubject.getLogin();
 						}
+						
+						mostRecent = rsSubject.getLastSeen();
+						mostRecentAction = rsSubject.getLastAction();
+						params[0] = rsSubject.getLogin();
 						d.close(rsSubject);
 					} else {
 						BNLoginResultSet rsSubjectUsers = d.getAccountUsers(rsSubjectAccount.getId());
@@ -1004,7 +1003,7 @@ public class CommandEventHandler implements EventHandler {
 						d.close(rsSubjectRank);
 						
 						if(subjectBirthday != null) {
-							double age = (double)(new Date().getTime() - subjectBirthday.getTime());
+							double age = new Date().getTime() - subjectBirthday.getTime();
 							age /= 1000 * 60 * 60 * 24 * 365.24;
 							age = Math.floor(age * 100) / 100;
 							result += ", who is " + Double.toString(age) + " years old";
@@ -1195,7 +1194,7 @@ public class CommandEventHandler implements EventHandler {
 				apBlock: if(apDays != 0) {
 					double timeElapsed = 0;
 					if(ts != null) {
-						timeElapsed = (double)(new Date().getTime() - ts.getTime());
+						timeElapsed = new Date().getTime() - ts.getTime();
 						timeElapsed /= 1000 * 60 * 60 * 24;
 					}
 					if((timeElapsed > apDays) || (ts == null)) {
