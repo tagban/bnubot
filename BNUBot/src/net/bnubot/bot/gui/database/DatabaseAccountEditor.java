@@ -141,6 +141,31 @@ public class DatabaseAccountEditor extends JFrame {
 				
 				boxLine = new Box(BoxLayout.X_AXIS);
 				{
+					boxLine.add(new JLabel("Name"));
+					
+					txtName = new JTextArea();
+					txtName.addFocusListener(new FocusListener() {
+						public void focusGained(FocusEvent arg0) {}
+						public void focusLost(FocusEvent arg0) {
+							if(rsAccount != null) {
+								String txt = txtName.getText();
+								try {
+									if((txt == null) || (txt.length() == 0))
+										rsAccount.setName(null);
+									else
+										rsAccount.setName(txt);
+								} catch (SQLException e) {
+									e.printStackTrace();
+								}
+							}
+						}
+					});
+					boxLine.add(txtName);
+				}
+				majorRows.add(boxLine);
+				
+				boxLine = new Box(BoxLayout.X_AXIS);
+				{
 					boxLine.add(new JLabel("Created"));
 					
 					txtCreated = new JTextArea();
@@ -286,31 +311,6 @@ public class DatabaseAccountEditor extends JFrame {
 						}
 					});
 					boxLine.add(txtTriviaWin);
-				}
-				majorRows.add(boxLine);
-				
-				boxLine = new Box(BoxLayout.X_AXIS);
-				{
-					boxLine.add(new JLabel("Name"));
-					
-					txtName = new JTextArea();
-					txtName.addFocusListener(new FocusListener() {
-						public void focusGained(FocusEvent arg0) {}
-						public void focusLost(FocusEvent arg0) {
-							if(rsAccount != null) {
-								String txt = txtName.getText();
-								try {
-									if((txt == null) || (txt.length() == 0))
-										rsAccount.setName(null);
-									else
-										rsAccount.setName(txt);
-								} catch (SQLException e) {
-									e.printStackTrace();
-								}
-							}
-						}
-					});
-					boxLine.add(txtName);
 				}
 				majorRows.add(boxLine);
 

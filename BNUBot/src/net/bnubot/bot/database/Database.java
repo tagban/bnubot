@@ -134,6 +134,10 @@ public class Database {
 	}
 	
 	public void deleteOldUsers() throws SQLException {
+		//TODO: Fix this query for derby
+		if(conn instanceof org.apache.derby.iapi.jdbc.EngineConnection)
+			return;
+		
 		ResultSet rsOld = createStatement().executeQuery(
 			"SELECT login, DATEDIFF(NOW(), lastSeen) as dss, rank.id AS rank, rank.expireDays " +
 				"FROM bnlogin " +
