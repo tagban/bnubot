@@ -1188,25 +1188,33 @@ public class CommandEventHandler implements EventHandler {
 				}
 
 				//Autopromotions:
-				long apDays = rsRank.getApDays();
+				Long apDays = rsRank.getApDays();
 				Timestamp ts = rsAccount.getLastRankChange();
 				//Check that they meet the days requirement
-				apBlock: if(apDays != 0) {
+				apBlock: if((apDays != null) && (apDays != 0)) {
 					double timeElapsed = 0;
 					if(ts != null) {
 						timeElapsed = new Date().getTime() - ts.getTime();
 						timeElapsed /= 1000 * 60 * 60 * 24;
 					}
 					if((timeElapsed > apDays) || (ts == null)) {
-						long apWins = rsRank.getApWins();
-						long apD2Level = rsRank.getApD2Level();
-						long apW3Level = rsRank.getApW3Level();
+						Long apWins = rsRank.getApWins();
+						Long apD2Level = rsRank.getApD2Level();
+						Long apW3Level = rsRank.getApW3Level();
 						long wins[] = d.getAccountWinsLevels(id, c.getConnectionSettings().recruitTagPrefix, c.getConnectionSettings().recruitTagSuffix);
 						
-						if(((apWins > 0) && (wins[0] >= apWins))
-						|| ((apD2Level > 0) && (wins[1] >= apD2Level))
-						|| ((apW3Level > 0) && (wins[2] >= apW3Level))
-						|| ((apWins == 0) && (apD2Level == 0) && (apW3Level == 0))) {
+						boolean condition = false;
+						
+						if((apWins != null)
+						&& (apD2Level != null)
+						&& (apW3Level != null)) {
+							condition |= ((apWins > 0) && (wins[0] >= apWins));
+							condition |= ((apD2Level > 0) && (wins[1] >= apD2Level));
+							condition |= ((apW3Level > 0) && (wins[2] >= apW3Level));
+							condition |= ((apWins == 0) && (apD2Level == 0) && (apW3Level == 0));
+						}
+						
+						if(condition) {
 							// Check RS
 							long rs = d.getAccountRecruitScore(id, c.getConnectionSettings().recruitAccess);
 							long apRS = rsRank.getApRecruitScore();
