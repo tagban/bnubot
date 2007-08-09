@@ -26,6 +26,9 @@ public final class CurrentVersion {
 		if(VER_SVN_SET)
 			return VER_SVN_REVISION;
 		
+		if(!f.exists())
+			return null;
+		
 		Integer r = null;
 		for(File sf : f.listFiles()) {
 			if(sf.isDirectory()) {
@@ -36,6 +39,8 @@ public final class CurrentVersion {
 			}
 			
 			int ext = sf.getName().indexOf(".java");
+			if(ext == -1)
+				continue;
 			if(ext != sf.getName().length() - 5)
 				continue;
 			
@@ -94,7 +99,7 @@ public final class CurrentVersion {
 	
 	public static final Integer revision() {
 		if(!VER_SVN_SET) {
-			VER_SVN_REVISION = revision(new File("."));
+			VER_SVN_REVISION = revision(new File("src"));
 			VER_SVN_SET = true;
 		}
 		
