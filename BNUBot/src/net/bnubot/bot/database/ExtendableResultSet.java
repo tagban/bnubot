@@ -13,6 +13,10 @@ public class ExtendableResultSet {
 	protected ExtendableResultSet(ResultSet parent) {
 		this.parent = parent;
 	}
+	
+	protected boolean absolute(int row) throws SQLException {
+		return parent.absolute(row);
+	}
 
 	protected void beforeFirst() throws SQLException {
 		parent.beforeFirst();
@@ -40,6 +44,10 @@ public class ExtendableResultSet {
 
 	protected long getLong(String columnName) throws SQLException {
 		return parent.getLong(columnName);
+	}
+	
+	protected int getRow() throws SQLException {
+		return parent.getRow();
 	}
 
 	protected Statement getStatement() throws SQLException {
