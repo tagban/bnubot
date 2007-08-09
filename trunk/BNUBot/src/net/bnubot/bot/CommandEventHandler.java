@@ -1091,7 +1091,7 @@ public class CommandEventHandler implements EventHandler {
 				Integer newWins = statstr.getWins();
 				if(newWins != null) {
 					Long oldWins = rsUser.getWinsSTAR();
-					if(newWins > oldWins) {
+					if((oldWins == null) || (newWins > oldWins)) {
 						rsUser.setWinsSTAR((long)newWins);
 						rsUser.updateRow();
 					}
@@ -1103,7 +1103,7 @@ public class CommandEventHandler implements EventHandler {
 				Integer newWins = statstr.getWins();
 				if(newWins != null) {
 					Long oldWins = rsUser.getWinsSEXP();
-					if(newWins > oldWins) {
+					if((oldWins == null) || (newWins > oldWins)) {
 						rsUser.setWinsSEXP((long)newWins);
 						rsUser.updateRow();
 					}
@@ -1115,7 +1115,7 @@ public class CommandEventHandler implements EventHandler {
 				Integer newWins = statstr.getWins();
 				if(newWins != null) {
 					Long oldWins = rsUser.getWinsW2BN();
-					if(newWins > oldWins) {
+					if((oldWins == null) || (newWins > oldWins)) {
 						rsUser.setWinsW2BN((long)newWins);
 						rsUser.updateRow();
 					}
@@ -1128,7 +1128,7 @@ public class CommandEventHandler implements EventHandler {
 				Integer newLevel = statstr.getCharLevel();
 				if(newLevel != null) {
 					Long oldLevel = rsUser.getLevelD2();
-					if(newLevel > oldLevel) {
+					if((oldLevel == null) || (newLevel > oldLevel)) {
 						rsUser.setLevelD2((long)newLevel);
 						rsUser.updateRow();
 					}
@@ -1141,7 +1141,7 @@ public class CommandEventHandler implements EventHandler {
 				Integer newLevel = statstr.getLevel();
 				if(newLevel != null) {
 					Long oldLevel = rsUser.getLevelW3();
-					if(newLevel > oldLevel) {
+					if((oldLevel == null) || (newLevel > oldLevel)) {
 						rsUser.setLevelW3((long)newLevel);
 						rsUser.updateRow();
 					}
@@ -1192,72 +1192,72 @@ public class CommandEventHandler implements EventHandler {
 				Timestamp ts = rsAccount.getLastRankChange();
 				//Check that they meet the days requirement
 				apBlock: if((apDays != null) && (apDays != 0)) {
-					double timeElapsed = 0;
 					if(ts != null) {
-						timeElapsed = new Date().getTime() - ts.getTime();
+						double timeElapsed = new Date().getTime() - ts.getTime();
 						timeElapsed /= 1000 * 60 * 60 * 24;
-					}
-					if((timeElapsed > apDays) || (ts == null)) {
-						Long apWins = rsRank.getApWins();
-						Long apD2Level = rsRank.getApD2Level();
-						Long apW3Level = rsRank.getApW3Level();
-						long wins[] = d.getAccountWinsLevels(id, c.getConnectionSettings().recruitTagPrefix, c.getConnectionSettings().recruitTagSuffix);
 						
-						boolean condition = false;
-						
-						if((apWins != null)
-						&& (apD2Level != null)
-						&& (apW3Level != null)) {
-							condition |= ((apWins > 0) && (wins[0] >= apWins));
-							condition |= ((apD2Level > 0) && (wins[1] >= apD2Level));
-							condition |= ((apW3Level > 0) && (wins[2] >= apW3Level));
-							condition |= ((apWins == 0) && (apD2Level == 0) && (apW3Level == 0));
-						}
-						
-						if(condition) {
-							// Check RS
-							long rs = d.getAccountRecruitScore(id, c.getConnectionSettings().recruitAccess);
-							long apRS = rsRank.getApRecruitScore();
-							if((apRS == 0) || (rs >= apRS)) {
-								// Give them a promotion
-								rank++;
-								rsAccount.setAccess(rank);
-								rsAccount.setLastRankChange(new Timestamp(new Date().getTime()));
-								rsAccount.updateRow();
-								user.resetPrettyName();	//Reset the presentable name
-								c.sendChat("Congratulations " + user.toString() + ", you just recieved a promotion! Your rank is now " + rank + ".");
-								String apMail = rsRank.getApMail();
-								if((apMail != null) && (apMail.length() > 0))
-									d.sendMail(id, id, apMail);
-							} else {
-								c.sendChat(user, "You need " + Long.toString(apRS - rs) + " more recruitment points to recieve a promotion!", false);
-							}
+						if(timeElapsed < apDays)
+							break apBlock;
+					} else
+						break apBlock;
+					
+					Long apWins = rsRank.getApWins();
+					Long apD2Level = rsRank.getApD2Level();
+					Long apW3Level = rsRank.getApW3Level();
+					if((apWins == null)
+					|| (apD2Level == null)
+					|| (apW3Level == null))
+						break apBlock;
+					long wins[] = d.getAccountWinsLevels(id, c.getConnectionSettings().recruitTagPrefix, c.getConnectionSettings().recruitTagSuffix);
+					
+					boolean condition = false;
+					condition |= ((apWins > 0) && (wins[0] >= apWins));
+					condition |= ((apD2Level > 0) && (wins[1] >= apD2Level));
+					condition |= ((apW3Level > 0) && (wins[2] >= apW3Level));
+					condition |= ((apWins == 0) && (apD2Level == 0) && (apW3Level == 0));
+					
+					if(condition) {
+						// Check RS
+						long rs = d.getAccountRecruitScore(id, c.getConnectionSettings().recruitAccess);
+						long apRS = rsRank.getApRecruitScore();
+						if((apRS == 0) || (rs >= apRS)) {
+							// Give them a promotion
+							rank++;
+							rsAccount.setAccess(rank);
+							rsAccount.setLastRankChange(new Timestamp(new Date().getTime()));
+							rsAccount.updateRow();
+							user.resetPrettyName();	//Reset the presentable name
+							c.sendChat("Congratulations " + user.toString() + ", you just recieved a promotion! Your rank is now " + rank + ".");
+							String apMail = rsRank.getApMail();
+							if((apMail != null) && (apMail.length() > 0))
+								d.sendMail(id, id, apMail);
 						} else {
-							//TODO: Tell the user they need x more wins
-							String msg = "You need ";
-							switch(statstr.getProduct()) {
-							case ProductIDs.PRODUCT_STAR:
-							case ProductIDs.PRODUCT_SEXP:
-							case ProductIDs.PRODUCT_W2BN:
-								msg += Long.toString(apWins - wins[0]) + " more win";
-								if(apWins - wins[0] > 1)
-									msg += "s";
-								break;
-							case ProductIDs.PRODUCT_D2DV:
-							case ProductIDs.PRODUCT_D2XP:
-								msg += "to reach Diablo 2 level " + apD2Level;
-								break;
-							case ProductIDs.PRODUCT_WAR3:
-							case ProductIDs.PRODUCT_W3XP:
-								msg += "to reach Warcraft 3 level " + apW3Level;
-								break;
-							default:
-								break apBlock;
-							}
-							msg += " to recieve a promotion!";
-							c.sendChat(user, msg, false);
+							c.sendChat(user, "You need " + Long.toString(apRS - rs) + " more recruitment points to recieve a promotion!", false);
 						}
-						
+					} else {
+						//TODO: Tell the user they need x more wins
+						String msg = "You need ";
+						switch(statstr.getProduct()) {
+						case ProductIDs.PRODUCT_STAR:
+						case ProductIDs.PRODUCT_SEXP:
+						case ProductIDs.PRODUCT_W2BN:
+							msg += Long.toString(apWins - wins[0]) + " more win";
+							if(apWins - wins[0] > 1)
+								msg += "s";
+							break;
+						case ProductIDs.PRODUCT_D2DV:
+						case ProductIDs.PRODUCT_D2XP:
+							msg += "to reach Diablo 2 level " + apD2Level;
+							break;
+						case ProductIDs.PRODUCT_WAR3:
+						case ProductIDs.PRODUCT_W3XP:
+							msg += "to reach Warcraft 3 level " + apW3Level;
+							break;
+						default:
+							break apBlock;
+						}
+						msg += " to recieve a promotion!";
+						c.sendChat(user, msg, false);
 					}
 				}
 			}
