@@ -130,10 +130,10 @@ INSERT INTO rank (id, shortPrefix, prefix, verbstr, greeting, expireDays, apDays
 (35, 'General', 'General', 'is a general', '/me hails %1$s with ping %2$d', 90, NULL, NULL, NULL, NULL, NULL, NULL),
 (36, 'Master', 'Master', 'is a nazi', '/me hails %1$s with ping %2$d', 90, NULL, NULL, NULL, NULL, NULL, NULL);
 
-INSERT INTO account (id, access, name, createdby) VALUES
-(1, 36,	'Camel', NULL),
-(2, 35,	'John', 1),
-(3, 34,	'Sorceress', 1);
+INSERT INTO account (access, name, createdby) VALUES
+(36,	'Camel', NULL),
+(35,	'John', 1),
+(34,	'Sorceress', 1);
 
 INSERT INTO bnlogin (login, account) VALUES
 ('BNU-Camel@USEast', 1),
