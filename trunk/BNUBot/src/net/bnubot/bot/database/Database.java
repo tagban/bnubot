@@ -531,6 +531,14 @@ public class Database {
 		return sum;
 	}
 	
+	public long getTriviaMax() throws SQLException {
+		ResultSet rs = createStatement().executeQuery("SELECT MAX(trivia_correct) FROM account");
+		rs.next();
+		long max = rs.getLong(1);
+		close(rs);
+		return max;
+	}
+	
 	/**
 	 * Resets the trivia leader board, gives the winner a trivia_win, and returns the winner
 	 * @return The account.name of the winner

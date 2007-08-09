@@ -217,7 +217,9 @@ public class TriviaEventHandler implements EventHandler {
 						
 						try {
 							long total = d.getTriviaSum();
-							if(total > 100) {
+							long max = d.getTriviaMax();
+							long target = c.getConnectionSettings().triviaRoundLength;
+							if((total >= (target)) || (max >= (target/2))) {
 								String out = "The trivia round is over! Congratulations to ";
 								out += d.resetTrivia();
 								out += " for winning the round!";

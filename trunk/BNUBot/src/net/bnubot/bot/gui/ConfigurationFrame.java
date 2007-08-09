@@ -40,6 +40,7 @@ public class ConfigurationFrame extends JDialog {
 	JCheckBox chkEnableGUI = null;
 	JCheckBox chkEnableCLI = null;
 	JCheckBox chkEnableTrivia = null;
+	JTextArea txtTriviaRoundLength = null;
 	JCheckBox chkEnableCommands = null;
 	JCheckBox chkEnableFloodProtect = null;
 	JCheckBox chkPacketLog = null;
@@ -57,13 +58,14 @@ public class ConfigurationFrame extends JDialog {
 	
 	public ConfigurationFrame(ConnectionSettings cs) {
 		super();
-		
 		this.cs = cs;
-
+		setTitle(cs.username);
+		
 		initializeGui();
 		setupActions();
-		setTitle(cs.username);
+		
 		pack();
+		setAlwaysOnTop(true);
 	}
 	
 	private void initializeGui() {
@@ -310,9 +312,15 @@ public class ConfigurationFrame extends JDialog {
 	
 						chkEnableCLI = new JCheckBox("Enable CLI (requires restart)", cs.enableCLI);
 						boxCheckboxes.add(chkEnableCLI);
-	
+
 						chkEnableTrivia = new JCheckBox("Enable Trivia (requires restart)", cs.enableTrivia);
 						boxCheckboxes.add(chkEnableTrivia);
+						
+						JLabel jl = new JLabel("Trivia Round Length");
+						boxCheckboxes.add(jl);
+
+						txtTriviaRoundLength = new JTextArea(Long.toString(cs.triviaRoundLength));
+						boxCheckboxes.add(txtTriviaRoundLength);
 	
 						chkEnableCommands = new JCheckBox("Enable Commands (requires restart)", cs.enableCommands);
 						boxCheckboxes.add(chkEnableCommands);
@@ -428,6 +436,7 @@ public class ConfigurationFrame extends JDialog {
 		cs.enableGUI = chkEnableGUI.isSelected();
 		cs.enableCLI = chkEnableCLI.isSelected();
 		cs.enableTrivia = chkEnableTrivia.isSelected();
+		cs.triviaRoundLength = Integer.parseInt(txtTriviaRoundLength.getText());
 		cs.enableCommands = chkEnableCommands.isSelected();
 		cs.enableFloodProtect = chkEnableFloodProtect.isSelected();
 		cs.packetLog = chkPacketLog.isSelected();
@@ -444,6 +453,7 @@ public class ConfigurationFrame extends JDialog {
 		cmbProduct.setSelectedIndex(cs.product - 1);
 		txtTrigger.setText(cs.trigger);
 		txtAntiIdle.setText(cs.antiIdle);
+		txtAntiIdleTimer.setText(Integer.toString(cs.antiIdleTimer));
 		chkAntiIdle.setSelected(cs.enableAntiIdle);
 		cmbCDKey.setSelectedItem(cs.cdkey);
 		cmbCDKeyLOD.setSelectedItem(cs.cdkeyLOD);
@@ -456,6 +466,7 @@ public class ConfigurationFrame extends JDialog {
 		chkEnableGUI.setSelected(cs.enableGUI);
 		chkEnableCLI.setSelected(cs.enableCLI);
 		chkEnableTrivia.setSelected(cs.enableTrivia);
+		txtTriviaRoundLength.setText(Long.toString(cs.triviaRoundLength));
 		chkEnableCommands.setSelected(cs.enableCommands);
 		chkEnableFloodProtect.setSelected(cs.enableFloodProtect);
 		chkPacketLog.setSelected(cs.packetLog);
