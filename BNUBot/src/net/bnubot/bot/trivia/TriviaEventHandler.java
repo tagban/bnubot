@@ -112,15 +112,15 @@ public class TriviaEventHandler implements EventHandler {
 			if(rsLeaders == null)
 				return;
 			
-			long total = d.getTriviaSum();
 			String out = "Trivia Leader Board: ";
 			while(rsLeaders.next()) {
-				long score = rsLeaders.getLong("trivia_correct");
 				out += rsLeaders.getString("name");
-				out += "(" + score + ") ";
+				out += "(";
+				out += rsLeaders.getLong("trivia_correct");
+				out += ") ";
 			}
 			d.close(rsLeaders);
-			out += "Total=" + total;
+			out += "Total=" + d.getTriviaSum();
 			c.sendChat(out);
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -138,14 +138,27 @@ public class TriviaEventHandler implements EventHandler {
 					}
 					
 					try {
-						long total = d.getTriviaSum();
-						long max = d.getTriviaMax();
-						long target = c.getConnectionSettings().triviaRoundLength;
-						if((total >= (target)) || (max >= (target/2))) {
-							String out = "The trivia round is over! Congratulations to ";
-							out += d.resetTrivia();
-							out += " for winning the round!";
-							c.sendChat(out);
+						long max[] = d.getTriviaTopTwo();
+						if(max != null) {
+							long total = d.getTriviaSum();
+							long target = c.getConnectionSettings().triviaRoundLength;
+							boolean condition = false;
+							// There are no questions left
+							condition |= (total >= target);
+							// First place has half of the points
+							condition |= (max[0] > (target/2));
+							if(max.length > 1) {
+								long questionsLeft = (target - total);
+								long bestTop2Score = max[1] + questionsLeft;
+								// Second place can't pass first place
+								condition |= (bestTop2Score < max[1]);
+							}
+							if(condition) {
+								String out = "The trivia round is over! Congratulations to ";
+								out += d.resetTrivia();
+								out += " for winning the round!";
+								c.sendChat(out);
+							}
 						}
 					} catch (SQLException e) {
 						e.printStackTrace();
@@ -250,7 +263,7 @@ public class TriviaEventHandler implements EventHandler {
 					}
 				}
 			
-				Thread.sleep(10000);
+				Thread.sleep(1000);
 				Thread.yield();
 			} catch (InterruptedException e) {}
 		}

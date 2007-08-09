@@ -531,12 +531,20 @@ public class Database {
 		return sum;
 	}
 	
-	public long getTriviaMax() throws SQLException {
-		ResultSet rs = createStatement().executeQuery("SELECT MAX(trivia_correct) FROM account");
-		rs.next();
-		long max = rs.getLong(1);
-		close(rs);
-		return max;
+	public long[] getTriviaTopTwo() throws SQLException {
+		ResultSet rs = createStatement().executeQuery("SELECT trivia_correct FROM account ORDER BY trivia_correct DESC");
+		if(rs.next()) {
+			long top1 = rs.getLong(1);
+			if(!rs.next()) {
+				close(rs);
+				return null;
+			}
+			
+			long top2 = rs.getLong(1);
+			close(rs);
+			return new long[] {top1, top2};
+		}
+		return null;
 	}
 	
 	/**
@@ -546,10 +554,21 @@ public class Database {
 	 */
 	public String resetTrivia() throws SQLException {
 		String out = null;
-		ResultSet rs = createStatement().executeQuery("SELECT id, name, trivia_win FROM account WHERE trivia_correct > 0 ORDER BY trivia_correct DESC");
-		if(rs.next()) {
+		ResultSet rs = createStatement().executeQuery("SELECT MAX(trivia_correct) FROM account");
+		if(!rs.next())
+			throw new SQLException("query failed");
+		long correct = rs.getLong(1);
+		close(rs);
+		
+		PreparedStatement ps = prepareStatement("SELECT id, name, trivia_win FROM account WHERE trivia_correct=?");
+		ps.setLong(1, correct);
+		rs = ps.executeQuery();
+		while(rs.next()) {
 			//Get the account it
-			out = rs.getString(2);
+			if(out == null)
+				out = rs.getString(2);
+			else
+				out += " and " + rs.getString(2);
 			//trivia_wins++
 			rs.updateLong(3, rs.getLong(3)+1);
 			//Commit
