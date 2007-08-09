@@ -556,12 +556,14 @@ public class CommandEventHandler implements EventHandler {
 					BNetUser bnSubject = BNetUser.getBNetUser(params[0], user);
 					BNLoginResultSet rsSubject = d.getUser(bnSubject);
 					if(!rsSubject.next()) {
-						c.sendChat(user, "That user does not exist!", wasWhispered);
+						d.close(rsSubject);
+						c.sendChat(user, "I have never seen [" + bnSubject.getFullLogonName() + "] in the channel", wasWhispered);
 						break;
 					}
 					
 					Long subjectAccountId = rsSubject.getAccount();
 					if(subjectAccountId != null) {
+						d.close(rsSubject);
 						c.sendChat(user, "That user already has an account!", wasWhispered);
 						break;
 					}
@@ -571,6 +573,7 @@ public class CommandEventHandler implements EventHandler {
 					
 					if(requiredTagPrefix != null) {
 						if(bnSubject.getFullAccountName().substring(0, requiredTagPrefix.length()).compareToIgnoreCase(requiredTagPrefix) != 0) {
+							d.close(rsSubject);
 							c.sendChat(user, "That user must have the " + requiredTagPrefix + " tag!", wasWhispered);
 							break;
 						}
@@ -583,6 +586,7 @@ public class CommandEventHandler implements EventHandler {
 							s = s.substring(0, i);
 						s = s.substring(s.length() - requiredTagSuffix.length());
 						if(s.compareToIgnoreCase(requiredTagSuffix) != 0) {
+							d.close(rsSubject);
 							c.sendChat(user, "That user must have the " + requiredTagSuffix + " tag!", wasWhispered);
 							break;
 						}
@@ -591,17 +595,22 @@ public class CommandEventHandler implements EventHandler {
 					AccountResultSet rsSubjectAccount = d.getAccount(params[1]);
 					if(rsSubjectAccount.next()) {
 						d.close(rsSubjectAccount);
+						d.close(rsSubject);
 						c.sendChat(user, "That account already exists!", wasWhispered);
 						break;
 					}
+					d.close(rsSubjectAccount);
 					
 					if(commanderAccountID == null) {
+						d.close(rsSubject);
 						c.sendChat(user, "You must have an account to use recruit.", wasWhispered);
 						break;
 					}
 					
 					rsSubjectAccount = d.createAccount(params[1], 0, commanderAccountID);
 					if(!rsSubjectAccount.next()) {
+						d.close(rsSubjectAccount);
+						d.close(rsSubject);
 						c.sendChat(user, "Failed to create account [" + params[1] + "] for an unknown reason", wasWhispered);
 						break;
 					}
@@ -963,7 +972,7 @@ public class CommandEventHandler implements EventHandler {
 							BNLoginResultSet rsSubject = d.getUser(bnSubject);
 							
 							if((rsSubject == null) || (!rsSubject.next())) {
-								c.sendChat(user, "User [" + params[0] + "] is unknown", wasWhispered);
+								c.sendChat(user, "I have never seen [" + bnSubject.getFullLogonName() + "] in the channel", wasWhispered);
 								break;
 							}
 							
@@ -1013,7 +1022,7 @@ public class CommandEventHandler implements EventHandler {
 							double age = new Date().getTime() - subjectBirthday.getTime();
 							age /= 1000 * 60 * 60 * 24 * 365.24;
 							age = Math.floor(age * 100) / 100;
-							result += ", who is " + Double.toString(age) + " years old";
+							result += ", is " + Double.toString(age) + " years old";
 						}
 						
 						// Append aliases
@@ -1033,7 +1042,7 @@ public class CommandEventHandler implements EventHandler {
 						d.close(rsSubject);
 
 						if(lastSeen != null) {
-							result += ", who was last seen [ ";
+							result += ", was last seen [ ";
 							result += TimeFormatter.formatTime(new Date().getTime() - lastSeen.getTime());
 							result += " ] ago";
 						}
