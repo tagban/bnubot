@@ -198,7 +198,7 @@ public class ConnectionSettings implements Serializable {
 		bncsServer =Settings.read(header, "server", "useast.battle.net");
 		port = Integer.parseInt(
 					Settings.read(header, "port", "6112"));
-		bnlsServer =Settings.read(header, "bnlsserver", "logon.berzerkerjbls.com");
+		bnlsServer =Settings.read(header, "bnlsserver", "bnls.valhallalegends.com");
 		username =	Settings.read(header, "username", null);
 		password =	Settings.read(header, "password", null);
 		email =		Settings.read(header, "email", null);
