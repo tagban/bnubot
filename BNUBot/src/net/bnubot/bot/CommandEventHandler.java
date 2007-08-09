@@ -171,7 +171,7 @@ public class CommandEventHandler implements EventHandler {
 						AccountResultSet rsSubjectAccount = d.getAccount(params[0]);
 						if(!rsSubjectAccount.next()) {
 							d.close(rsSubjectAccount);
-							c.sendChat(user, "That user does not have an account. See %trigger%createaccount and %trigger%setaccount.", wasWhispered);
+							c.sendChat(user, "The account [" + params[0] + "] does not exist.", wasWhispered);
 							break;
 						}
 
