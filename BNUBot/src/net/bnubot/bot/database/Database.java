@@ -238,7 +238,7 @@ public class Database {
 		}
 		close(rsUser);
 		
-		PreparedStatement ps = prepareStatement("INSERT INTO bnlogin (login) VALUES(?)");
+		PreparedStatement ps = prepareStatement("INSERT INTO bnlogin (login, lastSeen) VALUES(?, CURRENT_TIMESTAMP)");
 		ps.setString(1, user.getFullAccountName());
 		ps.execute();
 		close(ps);
