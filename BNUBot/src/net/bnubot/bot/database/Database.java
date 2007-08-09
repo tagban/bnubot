@@ -382,7 +382,7 @@ public class Database {
 	}
 	
 	public AccountResultSet getAccounts() throws SQLException {
-		return new AccountResultSet(createStatement().executeQuery("SELECT * FROM account ORDER BY name ASC"));
+		return new AccountResultSet(createStatement().executeQuery("SELECT * FROM account ORDER BY LOWER(name) ASC"));
 	}
 	
 	public Long createRank() throws SQLException {
@@ -559,6 +559,11 @@ public class Database {
 		ResultSet rs = null;
 		try {
 			rs = createStatement().executeQuery("SELECT version FROM dbVersion");
+		} catch(SQLException e) {
+			return false;
+		}
+		
+		try {
 			if(!rs.next()) {
 				close(rs);
 				return false;
