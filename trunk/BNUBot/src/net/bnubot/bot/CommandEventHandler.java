@@ -267,13 +267,20 @@ public class CommandEventHandler implements EventHandler {
 						
 						RankResultSet rsRank = d.getRank(subjectRank);
 						if(rsRank.next()) {
-							long apDays = rsRank.getApDays();
-							long apWins = rsRank.getApWins();
-							long apD2Level = rsRank.getApD2Level();
-							long apW3Level = rsRank.getApW3Level();
-							long apRecruitScore = rsRank.getApRecruitScore();
-							
-							if((apDays == 0) && (apWins == 0) && (apD2Level == 0) && (apW3Level == 0) && (apRecruitScore == 0)) {
+							Long apDays = rsRank.getApDays();
+							Long apWins = rsRank.getApWins();
+							Long apD2Level = rsRank.getApD2Level();
+							Long apW3Level = rsRank.getApW3Level();
+							Long apRecruitScore = rsRank.getApRecruitScore();
+
+							boolean condition = false;
+							condition |= (apDays == null);
+							condition |= (apWins == null);
+							condition |= (apD2Level == null);
+							condition |= (apW3Level == null);
+							if(condition == false)
+								condition = (apDays == 0) && (apWins == 0) && (apD2Level == 0) && (apW3Level == 0);
+							if(condition) {
 								String result = "Autopromotions are not enabled for rank " + subjectRank + ". ";
 								result += rsSubjectAccount.getName() + "'s current status is: ";
 								result += "Days: " + timeElapsed;
@@ -290,8 +297,11 @@ public class CommandEventHandler implements EventHandler {
 								result += ", Wins: " + wins[0] + "/" + apWins;
 								result += ", D2 Level: " + wins[1] + "/" + apD2Level;
 								result += ", W3 level: " + wins[2] + "/" + apW3Level;
-								if((apRecruitScore > 0) || (recruitScore > 0))
-									result += ", Recruit Score: " + recruitScore + "/" + apRecruitScore;
+								if(((apRecruitScore != null) && (apRecruitScore > 0)) || (recruitScore > 0)) {
+									result += ", Recruit Score: " + recruitScore;
+									if(apRecruitScore != null)
+										result += "/" + apRecruitScore;
+								}
 								
 								c.sendChat(user, result, wasWhispered);
 							}
@@ -945,7 +955,6 @@ public class CommandEventHandler implements EventHandler {
 
 						BNetUser bnSubject = null;
 						AccountResultSet rsSubjectAccount = d.getAccount(params[0]);
-						AccountResultSet rsCreatorAccount = null;
 						String result = null;
 						if(rsSubjectAccount.next()) {
 							result = rsSubjectAccount.getName();
@@ -972,8 +981,6 @@ public class CommandEventHandler implements EventHandler {
 							
 							result = bnSubject.toString();
 						}
-						
-						rsCreatorAccount = d.getAccount(rsSubjectAccount.getCreatedBy());
 
 						long subjectAccountID = rsSubjectAccount.getId();
 						long subjectAccess = rsSubjectAccount.getAccess();
@@ -1031,9 +1038,14 @@ public class CommandEventHandler implements EventHandler {
 							result += " ] ago";
 						}
 						
-						if((rsCreatorAccount != null) && rsCreatorAccount.next()) {
-							result += ", was recruited by ";
-							result += rsCreatorAccount.getName();
+						Long cb = rsSubjectAccount.getCreatedBy();
+						if(cb != null) {
+							AccountResultSet rsCreatorAccount = d.getAccount(cb);
+							if(rsCreatorAccount.next()) {
+								result += ", was recruited by ";
+								result += rsCreatorAccount.getName();
+							}
+							d.close(rsCreatorAccount);
 						}
 						
 						boolean andHasAliases = false;
@@ -1052,8 +1064,7 @@ public class CommandEventHandler implements EventHandler {
 							
 							result += l;
 						}
-
-						d.close(rsCreatorAccount);
+						
 						d.close(rsSubjectAccount);
 						c.sendChat(user, result, wasWhispered);
 					} catch(InvalidUseException e) {
