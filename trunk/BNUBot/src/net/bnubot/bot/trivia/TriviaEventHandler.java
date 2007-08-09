@@ -137,6 +137,20 @@ public class TriviaEventHandler implements EventHandler {
 						continue;
 					}
 					
+					try {
+						long total = d.getTriviaSum();
+						long max = d.getTriviaMax();
+						long target = c.getConnectionSettings().triviaRoundLength;
+						if((total >= (target)) || (max >= (target/2))) {
+							String out = "The trivia round is over! Congratulations to ";
+							out += d.resetTrivia();
+							out += " for winning the round!";
+							c.sendChat(out);
+						}
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+					
 					TriviaItem ti = trivia.remove((int)(Math.random() * trivia.size()));
 					
 					if(true) {
@@ -214,20 +228,6 @@ public class TriviaEventHandler implements EventHandler {
 						c.sendChat("/me - \"" + answerUsed + "\" is correct, " + answerUser.getShortPrettyName() + extra);
 						
 						showLeaderBoard();
-						
-						try {
-							long total = d.getTriviaSum();
-							long max = d.getTriviaMax();
-							long target = c.getConnectionSettings().triviaRoundLength;
-							if((total >= (target)) || (max >= (target/2))) {
-								String out = "The trivia round is over! Congratulations to ";
-								out += d.resetTrivia();
-								out += " for winning the round!";
-								c.sendChat(out);
-							}
-						} catch (SQLException e) {
-							e.printStackTrace();
-						}
 					} else {
 						String correct = " The correct answer was \"" + triviaAnswers[0] + "\"";
 						for(int i = 1; i < triviaAnswers.length; i++)
