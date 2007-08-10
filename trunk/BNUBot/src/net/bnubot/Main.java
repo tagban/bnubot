@@ -8,6 +8,8 @@ package net.bnubot;
 import java.io.File;
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
+
 import net.bnubot.bot.CommandEventHandler;
 import net.bnubot.bot.EventHandler;
 import net.bnubot.bot.console.ConsoleEventHandler;
@@ -104,8 +106,16 @@ public class Main {
 				System.exit(1);
 			}
 			
-			while(cf.isVisible())
+			while(cf.isVisible()) {
 				Thread.yield();
+				Thread.sleep(10);
+			}
+			
+			String reason = cs.isValid();
+			if(reason != null) {
+				JOptionPane.showMessageDialog(null, reason, "Invalid Configuration", JOptionPane.ERROR_MESSAGE);
+				System.exit(1);
+			}
 		}
 		
 		ChatQueue cq = new ChatQueue();

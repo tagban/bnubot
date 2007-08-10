@@ -54,6 +54,10 @@ public class KeyManager {
 		}
 	}
 	
+	public static void resetInitialized() {
+		initialized = false;
+	}
+	
 	private static void initialize() {
 		if(initialized)
 			return;
@@ -73,12 +77,9 @@ public class KeyManager {
 				os.write("# \r\n");
 				os.write("# You may add a comment next to each cd key.\r\n");
 				os.write("# Example:\r\n");
-				os.write("# 0123-45678-9012 my first SC key\r\n");
-				os.write("# 5555-12321-5555 my second SC key\r\n");
-				os.write("# 0123-4567-89AB-CDEF  my first D2 key\r\n");
-				os.write("# \r\n");
-				os.write("# Products for each CD key will automatically be detected\r\n");
-				os.write("# \r\n");
+				os.write("0123-45678-9012 my first SC key\r\n");
+				os.write("5555-12321-5555 my second SC key\r\n");
+				os.write("0123-4567-89AB-CDEF  my first D2 key\r\n");
 				os.write("\r\n");
 				os.close();
 			}
@@ -120,7 +121,7 @@ public class KeyManager {
 					cdkeys.add(new CDKey(key, prod, comment));
 				}
 			} catch(Exception e) {
-				System.out.print("Couldn't parse key line: " + key);
+				System.out.println("Couldn't parse cdkeys.txt line: " + key);
 			}
 		} while(true);
 		
