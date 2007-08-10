@@ -5,14 +5,32 @@
 
 package net.bnubot.bot.gui;
 
-import java.awt.*;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 
 import net.bnubot.bot.gui.KeyManager.CDKey;
 import net.bnubot.core.ConnectionSettings;
@@ -21,6 +39,9 @@ import net.bnubot.core.ConnectionSettings;
 public class ConfigurationFrame extends JDialog {
 	ConnectionSettings cs;
 	
+	JTabbedPane tabs = null;
+	
+	//Connection
 	JTextArea txtUsername = null;
 	JPasswordField txtPassword = null;
 	JTextArea txtEmail = null;
@@ -49,6 +70,10 @@ public class ConfigurationFrame extends JDialog {
 	JButton btnOK = null;
 	JButton btnCancel = null;
 	
+	//CDKeys
+	JTextArea txtCDKeys = null;
+	JButton btnSaveKeys = null;
+	
 	private class ConfigTextArea extends JTextArea {
 		public ConfigTextArea(String text) {
 			super(text);
@@ -59,18 +84,19 @@ public class ConfigurationFrame extends JDialog {
 	public ConfigurationFrame(ConnectionSettings cs) {
 		super();
 		this.cs = cs;
-		setTitle(cs.username);
+		setTitle("Configuration");
 		
 		initializeGui();
-		setupActions();
 		
-		pack();
-		setAlwaysOnTop(true);
+		setModal(true);
 	}
 	
 	private void initializeGui() {
+		tabs = new JTabbedPane();
+		
 		Box boxAll = new Box(BoxLayout.Y_AXIS);
-		{
+		boolean addConnectionStuff = true;
+		ConnectionStuff: {
 			Box boxSettings = new Box(BoxLayout.Y_AXIS);
 			{
 				int lblWidth = 100;
@@ -142,26 +168,15 @@ public class ConfigurationFrame extends JDialog {
 				boxSettings.add(boxLine);
 
 				boxLine = new Box(BoxLayout.X_AXIS);
-				{
+				{	
 					CDKey[] CDKeys = KeyManager.getKeys(KeyManager.PRODUCT_ALLNORMAL);
 					if(CDKeys.length == 0) {
 						JOptionPane.showMessageDialog(this,
 								"You have no CD keys in cdkeys.txt.",
 								"Error",
 								JOptionPane.ERROR_MESSAGE);
-						try {
-							String os = System.getProperty("os.name");
-							if(os != null) {
-								String[] cmdline = { null, "cdkeys.txt" };
-								if(os.startsWith("Windows"))
-									cmdline[0] = "notepad";
-								if(cmdline[0] != null)
-									Runtime.getRuntime().exec(cmdline);
-							}
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-						System.exit(1);
+						addConnectionStuff = false;
+						break ConnectionStuff;
 					}
 					
 					JLabel jl = new JLabel("CD Key");
@@ -223,6 +238,7 @@ public class ConfigurationFrame extends JDialog {
 							switch(cmbProduct.getSelectedIndex() + 1) {
 							case ConnectionSettings.PRODUCT_STARCRAFT:
 							case ConnectionSettings.PRODUCT_BROODWAR:
+							case ConnectionSettings.PRODUCT_JAPANSTARCRAFT:
 								prod = KeyManager.PRODUCT_STAR;
 								break;
 							case ConnectionSettings.PRODUCT_DIABLO2:
@@ -237,10 +253,10 @@ public class ConfigurationFrame extends JDialog {
 								prod = KeyManager.PRODUCT_W2BN;
 								break;
 							}
+							
+							DefaultComboBoxModel model = (DefaultComboBoxModel)cmbCDKey.getModel();
+							model.removeAllElements();
 							if(prod != KeyManager.PRODUCT_ALLNORMAL) {
-								DefaultComboBoxModel model = (DefaultComboBoxModel)cmbCDKey.getModel();
-								model.removeAllElements();
-								
 								CDKey[] CDKeys = KeyManager.getKeys(prod);
 								for(int i = 0; i < CDKeys.length; i++) {
 									model.addElement(CDKeys[i]);
@@ -348,8 +364,47 @@ public class ConfigurationFrame extends JDialog {
 			Box boxButtons = new Box(BoxLayout.X_AXIS);
 			{
 				btnLoad = new JButton("Load");
+				btnLoad.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent act) {
+						SwingUtilities.invokeLater(new Runnable() {
+							public void run() {
+								load();
+							}
+						});
+					}
+				});
+				
 				btnOK = new JButton("OK");
+				btnOK.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent act) {
+						SwingUtilities.invokeLater(new Runnable() {
+							public void run() {
+								try {
+									save();
+									close();
+								} catch(Exception e) {
+									JOptionPane.showMessageDialog(
+											null,
+											e.getClass().getName() + "\n" + e.getMessage(),
+											"The configuration is invalid",
+											JOptionPane.ERROR_MESSAGE);
+								}
+							}
+						});
+					}
+				});
+				
 				btnCancel = new JButton("Cancel");
+				btnCancel.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent act) {
+						SwingUtilities.invokeLater(new Runnable() {
+							public void run() {
+								cancel();
+							}
+						});
+					}
+				});
+				
 				boxButtons.add(Box.createHorizontalGlue());
 				boxButtons.add(btnLoad);
 				boxButtons.add(Box.createHorizontalStrut(50));
@@ -358,46 +413,58 @@ public class ConfigurationFrame extends JDialog {
 			}
 			boxAll.add(boxButtons);
 		}
-		add(boxAll);
-	}
-
-	private void setupActions() {
-		btnLoad.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent act) {
-				SwingUtilities.invokeLater(new Runnable() {
-					public void run() {
-						load();
-					}
-				});
+		if(addConnectionStuff)
+			tabs.addTab("Connection", boxAll);
+		
+		boxAll = new Box(BoxLayout.Y_AXIS);
+		{
+			String keys = null;
+			try {
+				File f = new File("cdkeys.txt");
+				BufferedReader br = new BufferedReader(new FileReader(f));
+				while(true) {
+					String l = br.readLine();
+					if(l == null)
+						break;
+					if(keys == null)
+						keys = l;
+					else
+						keys += "\n" + l;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-		});
-		btnOK.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent act) {
-				SwingUtilities.invokeLater(new Runnable() {
-					public void run() {
-						try {
-							save();
-							close();
-						} catch(Exception e) {
-							JOptionPane.showMessageDialog(
-									null,
-									e.getClass().getName() + "\n" + e.getMessage(),
-									"The configuration is invalid",
-									JOptionPane.ERROR_MESSAGE);
+			
+			txtCDKeys = new JTextArea(keys);
+			boxAll.add(new JScrollPane(txtCDKeys));
+			
+			btnSaveKeys = new JButton("Save");
+			btnSaveKeys.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					SwingUtilities.invokeLater(new Runnable() {
+						public void run() {
+							try {
+								FileWriter fw = new FileWriter(new File("cdkeys.txt"));
+								fw.write(txtCDKeys.getText());
+								fw.close();
+								
+								KeyManager.resetInitialized();
+								remove(tabs);
+								initializeGui();
+								validate();
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
 						}
-					}
-				});
-			}
-		});
-		btnCancel.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent act) {
-				SwingUtilities.invokeLater(new Runnable() {
-					public void run() {
-						cancel();
-					}
-				});
-			}
-		});
+					});
+				}
+			});
+			boxAll.add(btnSaveKeys);
+		}
+		tabs.addTab("CD Keys", boxAll);
+		
+		add(tabs);
+		pack();
 	}
 	
 	private String formatCDKey(String in) {
