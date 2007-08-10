@@ -120,7 +120,7 @@ public class IconsDotBniReader {
 
 	private static BNetIcon[] readIconsDotBni(File f) {
 		try {
-			//System.out.println("Reading " + f.getName());
+			//Out.info(this.getClass().getName(), "Reading " + f.getName());
 			
 			BNetInputStream is = new BNetInputStream(new FileInputStream(f));
 			is.skip(4); //int headerSize = is.readDWord();
@@ -132,7 +132,7 @@ public class IconsDotBniReader {
 			if(bniVersion != 1)
 				throw new Exception("Unknown BNI version");
 			
-			//System.out.println("Reading " + numIcons + " icons in format " + bniVersion + " from offset " + dataOffset);
+			//Out.info(this.getClass().getName(), "Reading " + numIcons + " icons in format " + bniVersion + " from offset " + dataOffset);
 
 			//Image headers
 			/*if(icons == null)
@@ -172,7 +172,7 @@ public class IconsDotBniReader {
 				} else
 					icon.products = null;
 				icons[i] = icon;
-				//System.out.println(icon.toString());
+				//Out.info(this.getClass().getName(), icon.toString());
 			}
 			
 			//Image in targa format

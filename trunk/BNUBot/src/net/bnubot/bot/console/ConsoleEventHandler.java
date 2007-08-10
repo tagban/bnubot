@@ -11,6 +11,7 @@ import net.bnubot.core.Connection;
 import net.bnubot.core.StatString;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
+import net.bnubot.util.Out;
 
 public class ConsoleEventHandler implements EventHandler {
 	Connection c = null;
@@ -21,42 +22,42 @@ public class ConsoleEventHandler implements EventHandler {
 	}
 
 	public void joinedChannel(String channel) {
-		System.out.println("Joining channel " + channel);
+		Out.info(this.getClass().getName(), "Joining channel " + channel);
 	}
 
 	public void channelUser(BNetUser user, StatString statstr) {
-		System.out.println(user.getShortPrettyName() + " (" + user.getPing() + "ms)" + statstr.toString());
+		Out.info(this.getClass().getName(), user.getShortPrettyName() + " (" + user.getPing() + "ms)" + statstr.toString());
 	}
 	
 	public void channelJoin(BNetUser user, StatString statstr) {
-		System.out.println(user + " has joined the channel" + statstr.toString() + ".");
+		Out.info(this.getClass().getName(), user + " has joined the channel" + statstr.toString() + ".");
 	}
 	public void channelLeave(BNetUser user) {
-		System.out.println(user + " has left the channel.");
+		Out.info(this.getClass().getName(), user + " has left the channel.");
 	}
 
 	public void recieveChat(BNetUser user, String text) {
-		System.out.println("<" + user.getShortPrettyName() + "> " + text);
+		Out.info(this.getClass().getName(), "<" + user.getShortPrettyName() + "> " + text);
 	}
 
 	public void recieveEmote(BNetUser user, String text) {
-		System.out.println("<" + user.getShortPrettyName() + " " + text + ">");
+		Out.info(this.getClass().getName(), "<" + user.getShortPrettyName() + " " + text + ">");
 	}
 
 	public void whisperRecieved(BNetUser user, String text) {
-		System.out.println("<From: " + user.getShortPrettyName() + "> " + text);
+		Out.info(this.getClass().getName(), "<From: " + user.getShortPrettyName() + "> " + text);
 	}
 
 	public void whisperSent(BNetUser user, String text) {
-		System.out.println("<To: " + user.getShortPrettyName() + "> " + text);
+		Out.info(this.getClass().getName(), "<To: " + user.getShortPrettyName() + "> " + text);
 	}
 
 	public void recieveInfo(String text) {
-		System.out.println(text);
+		Out.info(this.getClass().getName(), text);
 	}
 
 	public void recieveError(String text) {
-		System.err.println(text);
+		Out.error(this.getClass().getName(), text);
 	}
 
 	public void bnetConnected() {}

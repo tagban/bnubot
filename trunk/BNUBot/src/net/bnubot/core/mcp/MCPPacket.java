@@ -11,6 +11,7 @@ import java.io.OutputStream;
 
 import net.bnubot.core.BNetOutputStream;
 import net.bnubot.util.HexDump;
+import net.bnubot.util.Out;
 
 public class MCPPacket extends BNetOutputStream {
 	byte packetId;
@@ -37,7 +38,7 @@ public class MCPPacket extends BNetOutputStream {
 		data = baos.toByteArray();
 		
 		if(packetLog)
-			System.out.println("SEND MCP\n" + HexDump.hexDump(data));
+			Out.info("MCPPacket", "SEND MCP\n" + HexDump.hexDump(data));
 		
 		try {
 			out.write(data);

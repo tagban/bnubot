@@ -7,6 +7,8 @@ package net.bnubot.bot.gui.ColorScheme;
 
 import java.awt.Color;
 
+import net.bnubot.util.Out;
+
 public abstract class ColorScheme {
 	public static final byte COLORSCHEME_STARCRAFT = (byte)0x01;
 	public static final byte COLORSCHEME_DIABLO2 = (byte)0x02;
@@ -18,7 +20,7 @@ public abstract class ColorScheme {
 		case COLORSCHEME_DIABLO2:
 			return new Diablo2ColorScheme();
 		}
-		System.err.println("Unknown ColorScheme id " + Byte.toString(colorScheme));
+		Out.error("ColorScheme", "Unknown ColorScheme id " + Byte.toString(colorScheme));
 		return null;
 	}
 	

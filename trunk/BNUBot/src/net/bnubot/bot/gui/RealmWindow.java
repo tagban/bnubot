@@ -19,6 +19,7 @@ import net.bnubot.core.StatString;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.core.mcp.MCPConnection;
+import net.bnubot.util.Out;
 
 @SuppressWarnings("serial")
 public class RealmWindow extends JFrame implements EventHandler, RealmEventHandler {
@@ -133,11 +134,11 @@ public class RealmWindow extends JFrame implements EventHandler, RealmEventHandl
 	}
 
 	public void recieveRealmError(String text) {
-		System.err.println(text);
+		Out.error(this.getClass().getName(), text);
 	}
 
 	public void recieveRealmInfo(String text) {
-		System.out.println(text);
+		Out.info(this.getClass().getName(), text);
 	}
 
 }

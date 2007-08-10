@@ -23,6 +23,7 @@ import net.bnubot.core.Connection;
 import net.bnubot.core.StatString;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
+import net.bnubot.util.Out;
 
 public class TriviaEventHandler implements EventHandler {
 	private boolean triviaEnabled = false;
@@ -79,7 +80,7 @@ public class TriviaEventHandler implements EventHandler {
 			try {
 				trivia.add(new TriviaItem(line, defaultCategory));
 			} catch(IllegalArgumentException e) {
-				System.err.println("Failed to parse line #" + linenumber + " from " + fileName + ": " + line);
+				Out.error(this.getClass().getName(), "Failed to parse line #" + linenumber + " from " + fileName + ": " + line);
 			}
 		} while(true);
 		

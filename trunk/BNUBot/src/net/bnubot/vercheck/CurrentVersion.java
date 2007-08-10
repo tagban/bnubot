@@ -10,6 +10,8 @@ import java.net.URL;
 import java.util.Date;
 import java.util.Properties;
 
+import net.bnubot.util.Out;
+
 public final class CurrentVersion {
 	protected static Integer VER_MAJOR = null;
 	protected static Integer VER_MINOR = null;
@@ -49,7 +51,7 @@ public final class CurrentVersion {
 				do {
 					int i = fr.read();
 					if(i == -1) { // <EOF>
-						System.err.println("Couldn't find Id: tag in " + sf.getPath());
+						Out.error("CurrentVersion", "Couldn't find Id: tag in " + sf.getPath());
 						break;
 					}
 					
@@ -161,8 +163,8 @@ public final class CurrentVersion {
 				VER_SVN_REVISION = VER_SVN_REVISION_FILE;
 			} else {
 				if((VER_SVN_REVISION_FILE == null) || (VER_SVN_REVISION > VER_SVN_REVISION_FILE)) {
-					System.out.println("File version is " + VER_SVN_REVISION_FILE);
-					System.out.println("Calculated version is " + VER_SVN_REVISION);
+					Out.info("CurrentVersion", "File version is " + VER_SVN_REVISION_FILE);
+					Out.info("CurrentVersion", "Calculated version is " + VER_SVN_REVISION);
 					
 					if((f != null) && (f.exists())) {
 						versionprops.setProperty("VER_SVN_REVISION", Integer.toString(VER_SVN_REVISION));

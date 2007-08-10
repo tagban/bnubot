@@ -23,6 +23,7 @@ import net.bnubot.core.BNetUser;
 import net.bnubot.core.Connection;
 import net.bnubot.core.StatString;
 import net.bnubot.core.bncs.ProductIDs;
+import net.bnubot.util.Out;
 
 @SuppressWarnings("serial")
 public class UserList extends JPanel {
@@ -184,7 +185,7 @@ public class UserList extends JPanel {
 						if(ui.label == jl) {
 							switch(arg0.getButton()) {
 							case MouseEvent.BUTTON1:
-								System.out.println("Left clicked on " + ui.label.getText());
+								Out.info(this.getClass().getName(), "Left clicked on " + ui.label.getText());
 								break;
 							case MouseEvent.BUTTON2:
 								try { c.sendProfile(ui.user); } catch(Exception e) { e.printStackTrace(); }
@@ -318,7 +319,7 @@ public class UserList extends JPanel {
 			users.remove(user);
 			validate();
 		} else {
-			System.err.println("Attempted to remove a user that was not in the UserList: " + user);
+			Out.error(this.getClass().getName(), "Attempted to remove a user that was not in the UserList: " + user);
 		}
 	}
 

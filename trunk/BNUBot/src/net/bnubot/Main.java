@@ -6,6 +6,7 @@
 package net.bnubot;
 
 import java.io.File;
+import java.io.PrintStream;
 import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
@@ -13,18 +14,19 @@ import javax.swing.JOptionPane;
 import net.bnubot.bot.CommandEventHandler;
 import net.bnubot.bot.EventHandler;
 import net.bnubot.bot.console.ConsoleEventHandler;
-import net.bnubot.bot.database.*;
+import net.bnubot.bot.database.Database;
 import net.bnubot.bot.gui.ConfigurationFrame;
 import net.bnubot.bot.gui.GuiEventHandler;
 import net.bnubot.bot.trivia.TriviaEventHandler;
-import net.bnubot.core.*;
+import net.bnubot.core.BNetUser;
+import net.bnubot.core.ConnectionSettings;
 import net.bnubot.core.bncs.BNCSConnection;
 import net.bnubot.core.queue.ChatQueue;
+import net.bnubot.util.Out;
 import net.bnubot.util.Settings;
 import net.bnubot.vercheck.VersionCheck;
 
 public class Main {
-	
 	private static void pidFile() {
 		File f = new File("bnubot.pid");
 		if(f.exists())
@@ -66,6 +68,12 @@ public class Main {
 						continue;
 					}
 					break;
+				case 'l':
+					if(args[i].equals("-logfile")) {
+						Out.setOutputStream(new PrintStream(new File(args[++i])));
+						continue;
+					}
+					break;
 				case 'n':
 					if(args[i].equals("-nocli")) {
 						cs.enableCLI = false;
@@ -85,7 +93,7 @@ public class Main {
 				}
 			}
 			
-			System.err.println("Invalid argument: " + args[i]);
+			Out.error("Main", "Invalid argument: " + args[i]);
 			System.exit(1);
 		}
 		
@@ -97,12 +105,12 @@ public class Main {
 			} catch(Exception e) {
 				e.printStackTrace();
 				String s = cs.isValid();
-				System.err.print("There was an error initializing the configuraiton window, ");
-				if(s == null) {
-					System.err.println("but the configuration was valid.");
-				} else {
-					System.err.println("and the configuration was invalid: " + s);
-				}
+				String error = "There was an error initializing the configuraiton window, ";
+				if(s == null)
+					error += "but the configuration was valid.";
+				else
+					error += "and the configuration was invalid: " + s;
+				Out.error("Main", error);
 				System.exit(1);
 			}
 			
@@ -161,7 +169,7 @@ public class Main {
 				if(gui != null)
 					primary.recieveInfo("Database is not configured; disabling commands.");
 				else
-					System.out.println("Database is not configured; disabling commands.");
+					Out.info("main", "Database is not configured; disabling commands.");
 			} else {
 				try {
 					new Database(db_driver, db_url, db_username, db_password, db_schema);
@@ -180,7 +188,7 @@ public class Main {
 					if(gui != null)
 						primary.recieveError(msg);
 					else
-						System.err.println(msg);
+						Out.error("Main", msg);
 				}
 			}
 		}

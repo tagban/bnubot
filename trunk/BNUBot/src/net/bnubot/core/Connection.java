@@ -15,6 +15,7 @@ import net.bnubot.core.bnftp.BNFTPConnection;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.core.queue.ChatQueue;
+import net.bnubot.util.Out;
 import net.bnubot.util.TimeFormatter;
 import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.VersionNumber;
@@ -374,7 +375,7 @@ public abstract class Connection extends Thread implements EventHandler {
 		while(it2.hasNext())
 			try {
 				Connection c = it2.next();
-				System.out.println("Telling [" + c.toString() + "] to join " + channel);
+				Out.debug("Connection", "Telling [" + c.toString() + "] to join " + channel);
 				c.joinChannel(channel);
 			} catch (Exception e) {
 				e.printStackTrace();

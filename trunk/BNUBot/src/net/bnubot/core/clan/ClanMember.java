@@ -49,7 +49,6 @@ public class ClanMember {
 			return false;
 		}
 		
-		System.err.println("o.class: " + o.getClass().getName());
 		return super.equals(o);
 	}
 }
