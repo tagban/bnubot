@@ -24,6 +24,7 @@ import net.bnubot.core.StatString;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.util.HexDump;
+import net.bnubot.util.Out;
 
 public class HTMLOutputEventHandler implements EventHandler {
 	private class UserInfo {
@@ -72,7 +73,7 @@ public class HTMLOutputEventHandler implements EventHandler {
 	
 	public void channelLeave(BNetUser user) {
 		if(!users.remove(get(user)))
-			System.err.println("Tried to remove a user that was not in the list: " + user.toString());
+			Out.error(this.getClass().getName(), "Tried to remove a user that was not in the list: " + user.toString());
 		
 		writeUserList();
 		

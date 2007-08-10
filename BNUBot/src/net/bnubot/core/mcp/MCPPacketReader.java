@@ -13,6 +13,7 @@ import java.io.InputStream;
 import net.bnubot.core.BNetInputStream;
 import net.bnubot.core.BNetOutputStream;
 import net.bnubot.util.HexDump;
+import net.bnubot.util.Out;
 
 public class MCPPacketReader {
 	int packetId;
@@ -38,7 +39,7 @@ public class MCPPacketReader {
 		os.write(data);
 		
 		if(packetLog)
-			System.out.println("RECV MCP\n" + HexDump.hexDump(baos.toByteArray()));
+			Out.info("MCPPacketReader", "RECV MCP\n" + HexDump.hexDump(baos.toByteArray()));
 	}
 	
 	public BNetInputStream getData() {

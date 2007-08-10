@@ -10,6 +10,7 @@ import java.net.Socket;
 import net.bnubot.core.*;
 import net.bnubot.core.bncs.ProductIDs;
 import net.bnubot.core.queue.ChatQueue;
+import net.bnubot.util.Out;
 
 public class ChatConnection extends Connection {
 	protected Socket s;
@@ -33,7 +34,7 @@ public class ChatConnection extends Connection {
 
 			os.writeBytes("/join open tech support\n");
 			
-			System.out.println("Connected to " + cs.bncsServer + ":" + cs.port);
+			Out.info(this.getClass().getName(), "Connected to " + cs.bncsServer + ":" + cs.port);
 			
 			
 			os.writeNTString(cs.username);
@@ -41,14 +42,14 @@ public class ChatConnection extends Connection {
 			while(s.isConnected()) {
 				if(is.available() > 0) {
 					byte b = is.readByte();
-					System.out.print((char)b);
+					Out.print(Character.toString((char)b));
 				} else {
 					yield();
 					sleep(10);
 				}
 			}
 			
-			System.out.println("Disconnected");
+			Out.info(this.getClass().getName(), "Disconnected");
 			
 			s.close();
 		} catch (Exception e) {

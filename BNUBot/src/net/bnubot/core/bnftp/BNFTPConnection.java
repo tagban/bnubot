@@ -9,6 +9,7 @@ import java.io.*;
 import java.net.Socket;
 
 import net.bnubot.core.*;
+import net.bnubot.util.Out;
 
 
 public class BNFTPConnection {
@@ -33,7 +34,7 @@ public class BNFTPConnection {
 	
 	public static File downloadFile(Socket s, String fileName) {
 		try {
-			System.out.print("Downloading " + fileName + "...");
+			Out.info("BNFTPConnection", "Downloading " + fileName + "...");
 			
 			BNetInputStream is = new BNetInputStream(s.getInputStream());
 			BNetOutputStream os = new BNetOutputStream(s.getOutputStream());
@@ -75,7 +76,7 @@ public class BNFTPConnection {
 				b = b & 0xFF;
 				fw.write(b);
 			}
-			System.out.println(fileSize + " bytes recieved.");
+			Out.info("BNFTPConnection", fileSize + " bytes recieved.");
 			
 			return f;
 		} catch (Exception e) {

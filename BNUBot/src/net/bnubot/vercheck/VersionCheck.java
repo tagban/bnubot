@@ -6,6 +6,7 @@
 package net.bnubot.vercheck;
 
 import net.bnubot.core.Connection;
+import net.bnubot.util.Out;
 import util.Constants;
 
 public class VersionCheck {
@@ -22,7 +23,7 @@ public class VersionCheck {
 
 		XMLElementDecorator error = elem.getChild("error");
 		if(error != null) {
-			System.err.println("Version check error:\n" + error.toString());
+			Out.error("VersionCheck", error.toString());
 			return false;
 		}
 		
@@ -39,12 +40,12 @@ public class VersionCheck {
 				int vb = gameElem.getPath("verbyte").getInt();
 				
 				if(verByte != vb) {
-					System.err.println("Verbyte for game " + game + " is updating from 0x" + Integer.toHexString(verByte) + " to 0x" + Integer.toHexString(vb));
+					Out.error("VersionCheck", "Verbyte for game " + game + " is updating from 0x" + Integer.toHexString(verByte) + " to 0x" + Integer.toHexString(vb));
 					Constants.IX86verbytes[i] = vb;
 				}
 			}
 		else
-			System.out.println("Version check resulted in no games!");
+			Out.info("VersionCheck", "Version check resulted in no games!");
 
 		XMLElementDecorator verLatest = elem.getPath("bnubot/latestVersion");
 		

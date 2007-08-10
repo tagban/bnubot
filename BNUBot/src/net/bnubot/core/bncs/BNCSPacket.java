@@ -12,6 +12,7 @@ import java.net.SocketException;
 
 import net.bnubot.core.BNetOutputStream;
 import net.bnubot.util.HexDump;
+import net.bnubot.util.Out;
 
 public class BNCSPacket extends BNetOutputStream {
 	byte packetId;
@@ -30,11 +31,11 @@ public class BNCSPacket extends BNetOutputStream {
 		
 		if(packetId == BNCSCommandIDs.SID_CHATCOMMAND) {
 			if(data.length > 0xFB) {
-				System.err.println("Chat command is too long; ignoring.");
+				Out.error(this.getClass().getName(), "Chat command is too long; ignoring.");
 				return;
 			}
 			if(data[data.length-1] != 0x00) {
-				System.err.println("Chat command is not null terminated; ignoring.");
+				Out.error(this.getClass().getName(), "Chat command is not null terminated; ignoring.");
 				return;
 			}
 		}
@@ -52,7 +53,7 @@ public class BNCSPacket extends BNetOutputStream {
 		data = baos.toByteArray();
 		
 		if(packetLog)
-			System.out.println("SEND\n" + HexDump.hexDump(data));
+			Out.info(this.getClass().getName(), "SEND\n" + HexDump.hexDump(data));
 		
 		out.write(data);
 		out.flush();

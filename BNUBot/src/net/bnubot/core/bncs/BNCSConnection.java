@@ -32,6 +32,7 @@ import net.bnubot.core.clan.ClanStatusIDs;
 import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.core.queue.ChatQueue;
 import net.bnubot.util.HexDump;
+import net.bnubot.util.Out;
 import net.bnubot.util.TimeFormatter;
 import net.bnubot.vercheck.CurrentVersion;
 
@@ -400,7 +401,7 @@ public class BNCSConnection extends Connection {
 				    	exeStream.skipBytes(3);
 				    	int success = exeStream.readDWord();
 				    	if(success != 1) {
-				    		System.err.println(HexDump.hexDump(exeHashBuf.getBuffer()));
+				    		Out.error(this.getClass().getName(), HexDump.hexDump(exeHashBuf.getBuffer()));
 				    		throw new Exception("BNLS failed to complete 0x1A sucessfully");
 				    	}
 			    		exeVersion = exeStream.readDWord();
@@ -1295,12 +1296,12 @@ public class BNCSConnection extends Connection {
 		
 		try {
 			if(text.substring(0, 3).equals("/j ")) {
-				System.out.println("Sending join packet");
+				Out.info(this.getClass().getName(), "Sending join packet");
 				joinChannel(text.substring(3));
 				return;
 			}
 			if(text.substring(0, 6).equals("/join ")) {
-				System.out.println("Sending join packet");
+				Out.info(this.getClass().getName(), "Sending join packet");
 				joinChannel(text.substring(6));
 				return;
 			}

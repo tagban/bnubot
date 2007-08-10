@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import net.bnubot.util.Out;
+
 import util.Buffer;
 
 public class KeyManager {
@@ -121,7 +123,7 @@ public class KeyManager {
 					cdkeys.add(new CDKey(key, prod, comment));
 				}
 			} catch(Exception e) {
-				System.out.println("Couldn't parse cdkeys.txt line: " + key);
+				Out.info("KeyManager", "Couldn't parse cdkeys.txt line: " + key);
 			}
 		} while(true);
 		

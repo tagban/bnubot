@@ -19,6 +19,7 @@ import net.bnubot.bot.gui.ColorScheme.ColorScheme;
 import net.bnubot.bot.gui.icons.BNetIcon;
 import net.bnubot.bot.gui.icons.IconsDotBniReader;
 import net.bnubot.core.clan.ClanMember;
+import net.bnubot.util.Out;
 
 @SuppressWarnings("serial")
 public class ClanList extends JPanel {
@@ -154,7 +155,7 @@ public class ClanList extends JPanel {
 			cmi = get(username);
 		
 		if(cmi == null) {
-			System.err.println("Attempted to remove a clan member that was not in the ClanList: " + username);
+			Out.error(this.getClass().getName(), "Attempted to remove a clan member that was not in the ClanList: " + username);
 			return;
 		}
 		

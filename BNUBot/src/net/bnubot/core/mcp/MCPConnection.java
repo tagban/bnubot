@@ -14,6 +14,7 @@ import net.bnubot.core.BNetInputStream;
 import net.bnubot.core.RealmConnection;
 import net.bnubot.core.StatString;
 import net.bnubot.util.HexDump;
+import net.bnubot.util.Out;
 import net.bnubot.util.TimeFormatter;
 
 public class MCPConnection extends RealmConnection {
@@ -44,7 +45,7 @@ public class MCPConnection extends RealmConnection {
 			if((MCPChunk1.length != 4) || (MCPChunk2.length != 12))
 				throw new Exception("Assertion failed: ((MCPChunk1.length != 4) || (MCPChunk2.length != 12))"); 
 			
-			System.out.println("Connecting to MCP server " + server + ":" + port);
+			Out.info("MCPConnection", "Connecting to MCP server " + server + ":" + port);
 			
 			s = new Socket(server, port);
 			dis = new DataInputStream(s.getInputStream());
