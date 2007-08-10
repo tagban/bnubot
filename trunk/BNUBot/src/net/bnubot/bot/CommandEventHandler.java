@@ -1239,8 +1239,8 @@ public class CommandEventHandler implements EventHandler {
 					if(condition) {
 						// Check RS
 						long rs = d.getAccountRecruitScore(id, c.getConnectionSettings().recruitAccess);
-						long apRS = rsRank.getApRecruitScore();
-						if((apRS == 0) || (rs >= apRS)) {
+						Long apRS = rsRank.getApRecruitScore();
+						if((apRS == null) || (apRS == 0) || (rs >= apRS)) {
 							// Give them a promotion
 							rank++;
 							rsAccount.setAccess(rank);
