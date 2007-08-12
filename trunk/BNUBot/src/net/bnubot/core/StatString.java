@@ -5,6 +5,8 @@
 
 package net.bnubot.core;
 
+import java.nio.CharBuffer;
+
 import net.bnubot.core.bncs.ProductIDs;
 import net.bnubot.util.HexDump;
 import net.bnubot.util.Out;
@@ -245,8 +247,8 @@ public class StatString {
 			case ProductIDs.PRODUCT_D2DV:
 			case ProductIDs.PRODUCT_D2XP:
 				statString2 = statString[0].substring(4).split(",", 3);
-				//PX2DUSEast,EsO-SILenTNiGhT,„€ÿ'ÿÿÿÿÿÿÿÿÿÿÿÿÿÿSèšÿÿÿÿ
-				//PX2DUSEast,getoutof_myway ,„€ÿ++ÿÿÿÿÿÿÿÿÿÿÿÿÿTèžÿÿÿÿ
+				//PX2DUSEast,EsO-SILenTNiGhT,'S
+				//PX2DUSEast,getoutof_myway ,?++T
 				if(statString2.length != 3) {
 					pretty += "unknown statstr2 len: " + statString2.length;
 					break;
@@ -256,15 +258,30 @@ public class StatString {
 				pretty += ", ";
 				
 			    //                                       CC                                  CL FL AC
-			    //84 80 53 02 02 02 02 0F FF 50 02 02 FF 02 FF FF FF FF FF 4C FF FF FF FF FF 14 E8 84 FF FF 01 FF FF - „€S.....ÿP..ÿ.ÿÿÿÿÿLÿÿÿÿÿ.è„ÿÿ.ÿÿ
-				//84 80 FF FF FF FF FF FF FF FF FF FF FF 03 FF FF FF FF FF FF FF FF FF FF FF 01 C5 80 80 80 01 FF FF - „€ÿÿÿÿÿÿÿÿÿÿÿ.ÿÿÿÿÿÿÿÿÿÿÿ.Å€€€.ÿÿ
-			    //84 80 3B 02 02 02 02 14 FF FF 03 03 60 03 FF FF FF FF FF FF FF FF FF FF 32 13 E4 84 FF FF 01 FF FF - „€;.....ÿÿ..`.ÿÿÿÿÿÿÿÿÿÿ2.ä„ÿÿ.ÿÿ
+			    //84 80 53 02 02 02 02 0F FF 50 02 02 FF 02 FF FF FF FF FF 4C FF FF FF FF FF 14 E8 84 FF FF 01 FF FF - ?S.....P...L..
+				//84 80 FF FF FF FF FF FF FF FF FF FF FF 03 FF FF FF FF FF FF FF FF FF FF FF 01 C5 80 80 80 01 FF FF - ?..Å€.
+			    //84 80 3B 02 02 02 02 14 FF FF 03 03 60 03 FF FF FF FF FF FF FF FF FF FF 32 13 E4 84 FF FF 01 FF FF - ?;.......`.2..
 			    //00             05             10             15             20             25             30
-				byte[] data = statString2[2].getBytes();
+				
+				//This is a stupid workaround to unicode chars
+				char[] data2 = new char[statString2[2].length()]; 
+				CharBuffer.wrap(statString2[2]).get(data2);
+				
+				//Convert the chars to bytes
+				byte[] data = new byte[data2.length];
+				for(int i = 0; i < data.length; i++)
+					data[i] = (byte)data2[i];
+				
+				if(data.length != 33) {
+					pretty += " error: data.length != 33\n";
+					pretty += HexDump.hexDump(data);
+					break;
+				}
 				
 				byte version = (byte)(data[0] & 0x7F);
 				if(version != 4) {
-					pretty += " error: version != 4";
+					pretty += " error: version != 4\n";
+					pretty += HexDump.hexDump(data);
 					break;
 				}
 				
