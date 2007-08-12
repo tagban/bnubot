@@ -69,7 +69,7 @@ public class HexDump {
 			output += "\t";
 			for(int i = 0; i < end; i++) {
 				byte b = data[offset+i];
-				if(b < 0x20) {
+				if((b < 0x20) || (b >= 0x7F)) {
 					output += ".";
 					continue;
 				}
