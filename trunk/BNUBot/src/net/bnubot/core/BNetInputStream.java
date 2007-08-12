@@ -5,7 +5,6 @@
 
 package net.bnubot.core;
 
-import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,13 +35,12 @@ public class BNetInputStream extends DataInputStream {
 	}
 	
 	public String readNTString() throws IOException {
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		byte b;
+		String out = new String();
 		while(true) {
-			b = readByte();
-			if(b == 0)
-				return out.toString();
-			out.write(b);
+			char c = (char)readByte();
+			if(c == 0)
+				return out;
+			out += c;
 		}
 	}
 	
