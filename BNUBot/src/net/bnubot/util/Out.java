@@ -24,8 +24,8 @@ public class Out {
 	 * @param text:
 	 *            text to show
 	 */
-	public static void error(String source, String text) {
-		outStream.println(getTimestamp() + "{" + source + " - Error} " + text);
+	public static void error(Class source, String text) {
+		outStream.println(getTimestamp() + "{" + source.getName() + " - Error} " + text);
 	}
 
 	/**
@@ -36,9 +36,9 @@ public class Out {
 	 * @param text
 	 *            -text to show
 	 */
-	public static void debug(String source, String text) {
+	public static void debug(Class source, String text) {
 		if (debug)
-			outStream.println(getTimestamp() + "{" + source + " - Debug} "
+			outStream.println(getTimestamp() + "{" + source.getName() + " - Debug} "
 					+ text);
 	}
 
@@ -50,8 +50,8 @@ public class Out {
 	 * @param text:
 	 *            text to show
 	 */
-	public static void info(String source, String text) {
-		outStream.println(getTimestamp() + "{" + source + "} " + text);
+	public static void info(Class source, String text) {
+		outStream.println(getTimestamp() + "{" + source.getName() + "} " + text);
 	}
 
 	/**

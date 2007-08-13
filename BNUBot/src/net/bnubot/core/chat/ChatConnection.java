@@ -34,7 +34,7 @@ public class ChatConnection extends Connection {
 
 			os.writeBytes("/join open tech support\n");
 			
-			Out.info(this.getClass().getName(), "Connected to " + cs.bncsServer + ":" + cs.port);
+			Out.info(this.getClass(), "Connected to " + cs.bncsServer + ":" + cs.port);
 			
 			
 			os.writeNTString(cs.username);
@@ -49,7 +49,7 @@ public class ChatConnection extends Connection {
 				}
 			}
 			
-			Out.info(this.getClass().getName(), "Disconnected");
+			Out.info(this.getClass(), "Disconnected");
 			
 			s.close();
 		} catch (Exception e) {

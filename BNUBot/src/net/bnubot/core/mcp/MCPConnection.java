@@ -45,7 +45,7 @@ public class MCPConnection extends RealmConnection {
 			if((MCPChunk1.length != 4) || (MCPChunk2.length != 12))
 				throw new Exception("Assertion failed: ((MCPChunk1.length != 4) || (MCPChunk2.length != 12))"); 
 			
-			Out.info("MCPConnection", "Connecting to MCP server " + server + ":" + port);
+			Out.info(MCPConnection.class, "Connecting to MCP server " + server + ":" + port);
 			
 			s = new Socket(server, port);
 			dis = new DataInputStream(s.getInputStream());

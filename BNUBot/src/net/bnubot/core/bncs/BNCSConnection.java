@@ -401,7 +401,7 @@ public class BNCSConnection extends Connection {
 				    	exeStream.skipBytes(3);
 				    	int success = exeStream.readDWord();
 				    	if(success != 1) {
-				    		Out.error(this.getClass().getName(), HexDump.hexDump(exeHashBuf.getBuffer()));
+				    		Out.error(this.getClass(), HexDump.hexDump(exeHashBuf.getBuffer()));
 				    		throw new Exception("BNLS failed to complete 0x1A sucessfully");
 				    	}
 			    		exeVersion = exeStream.readDWord();
@@ -1296,12 +1296,12 @@ public class BNCSConnection extends Connection {
 		
 		try {
 			if(text.substring(0, 3).equals("/j ")) {
-				Out.info(this.getClass().getName(), "Sending join packet");
+				Out.info(this.getClass(), "Sending join packet");
 				joinChannel(text.substring(3));
 				return;
 			}
 			if(text.substring(0, 6).equals("/join ")) {
-				Out.info(this.getClass().getName(), "Sending join packet");
+				Out.info(this.getClass(), "Sending join packet");
 				joinChannel(text.substring(6));
 				return;
 			}

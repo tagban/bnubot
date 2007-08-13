@@ -23,7 +23,7 @@ public class VersionCheck {
 
 		XMLElementDecorator error = elem.getChild("error");
 		if(error != null) {
-			Out.error("VersionCheck", error.toString());
+			Out.error(VersionCheck.class, error.toString());
 			return false;
 		}
 		
@@ -40,7 +40,7 @@ public class VersionCheck {
 				int vb = gameElem.getPath("verbyte").getInt();
 				
 				if(verByte != vb) {
-					Out.error("VersionCheck", "Verbyte for game " + game + " is updating from 0x" + Integer.toHexString(verByte) + " to 0x" + Integer.toHexString(vb));
+					Out.error(VersionCheck.class, "Verbyte for game " + game + " is updating from 0x" + Integer.toHexString(verByte) + " to 0x" + Integer.toHexString(vb));
 					Constants.IX86verbytes[i] = vb;
 				}
 			}
