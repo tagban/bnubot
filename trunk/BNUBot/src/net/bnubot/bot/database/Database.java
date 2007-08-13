@@ -139,7 +139,7 @@ public class Database {
 		try {
 			if(conn instanceof org.apache.derby.iapi.jdbc.EngineConnection)
 				SQL = "{fn TIMESTAMPDIFF(SQL_TSI_DAY, CURRENT_TIMESTAMP, lastSeen)}";
-		} catch(ClassNotFoundException e) {}
+		} catch(NoClassDefFoundError e) {}
 		
 		SQL =
 			"SELECT login, " + SQL + " as dss, rank.id AS rank, rank.expireDays " +
