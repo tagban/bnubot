@@ -465,6 +465,10 @@ public class ConfigurationFrame extends JDialog {
 		
 		add(tabs);
 		pack();
+		
+		Dimension size = this.getSize();
+		if((size.height > 650) || (size.width > 400))
+			this.setSize(Math.min(400, size.width), Math.min(650, size.height));
 	}
 	
 	private String formatCDKey(String in) {
