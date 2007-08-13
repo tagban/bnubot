@@ -20,7 +20,7 @@ public abstract class ColorScheme {
 		case COLORSCHEME_DIABLO2:
 			return new Diablo2ColorScheme();
 		}
-		Out.error("ColorScheme", "Unknown ColorScheme id " + Byte.toString(colorScheme));
+		Out.error(ColorScheme.class, "Unknown ColorScheme id " + Byte.toString(colorScheme));
 		return null;
 	}
 	

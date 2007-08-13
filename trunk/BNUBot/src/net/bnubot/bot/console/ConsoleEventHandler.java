@@ -22,42 +22,42 @@ public class ConsoleEventHandler implements EventHandler {
 	}
 
 	public void joinedChannel(String channel) {
-		Out.info(this.getClass().getName(), "Joining channel " + channel);
+		Out.info(this.getClass(), "Joining channel " + channel);
 	}
 
 	public void channelUser(BNetUser user, StatString statstr) {
-		Out.info(this.getClass().getName(), user.getShortPrettyName() + " (" + user.getPing() + "ms)" + statstr.toString());
+		Out.info(this.getClass(), user.getShortPrettyName() + " (" + user.getPing() + "ms)" + statstr.toString());
 	}
 	
 	public void channelJoin(BNetUser user, StatString statstr) {
-		Out.info(this.getClass().getName(), user + " has joined the channel" + statstr.toString() + ".");
+		Out.info(this.getClass(), user + " has joined the channel" + statstr.toString() + ".");
 	}
 	public void channelLeave(BNetUser user) {
-		Out.info(this.getClass().getName(), user + " has left the channel.");
+		Out.info(this.getClass(), user + " has left the channel.");
 	}
 
 	public void recieveChat(BNetUser user, String text) {
-		Out.info(this.getClass().getName(), "<" + user.getShortPrettyName() + "> " + text);
+		Out.info(this.getClass(), "<" + user.getShortPrettyName() + "> " + text);
 	}
 
 	public void recieveEmote(BNetUser user, String text) {
-		Out.info(this.getClass().getName(), "<" + user.getShortPrettyName() + " " + text + ">");
+		Out.info(this.getClass(), "<" + user.getShortPrettyName() + " " + text + ">");
 	}
 
 	public void whisperRecieved(BNetUser user, String text) {
-		Out.info(this.getClass().getName(), "<From: " + user.getShortPrettyName() + "> " + text);
+		Out.info(this.getClass(), "<From: " + user.getShortPrettyName() + "> " + text);
 	}
 
 	public void whisperSent(BNetUser user, String text) {
-		Out.info(this.getClass().getName(), "<To: " + user.getShortPrettyName() + "> " + text);
+		Out.info(this.getClass(), "<To: " + user.getShortPrettyName() + "> " + text);
 	}
 
 	public void recieveInfo(String text) {
-		Out.info(this.getClass().getName(), text);
+		Out.info(this.getClass(), text);
 	}
 
 	public void recieveError(String text) {
-		Out.error(this.getClass().getName(), text);
+		Out.error(this.getClass(), text);
 	}
 
 	public void bnetConnected() {}
