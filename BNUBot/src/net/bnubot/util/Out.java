@@ -25,7 +25,7 @@ public class Out {
 	 *            text to show
 	 */
 	public static void error(Class source, String text) {
-		outStream.println(getTimestamp() + "{" + source.getName() + " - Error} " + text);
+		outStream.println(getTimestamp() + "{" + source.getSimpleName() + " - Error} " + text);
 	}
 
 	/**
@@ -38,7 +38,7 @@ public class Out {
 	 */
 	public static void debug(Class source, String text) {
 		if (debug)
-			outStream.println(getTimestamp() + "{" + source.getName() + " - Debug} "
+			outStream.println(getTimestamp() + "{" + source.getSimpleName() + " - Debug} "
 					+ text);
 	}
 
@@ -51,7 +51,7 @@ public class Out {
 	 *            text to show
 	 */
 	public static void info(Class source, String text) {
-		outStream.println(getTimestamp() + "{" + source.getName() + "} " + text);
+		outStream.println(getTimestamp() + "{" + source.getSimpleName() + "} " + text);
 	}
 
 	/**
