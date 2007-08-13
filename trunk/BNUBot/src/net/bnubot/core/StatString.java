@@ -36,8 +36,8 @@ public class StatString {
 		try {
 			parse();
 		} catch(Exception e) {
-			Out.error("StatString", "Error parsing statstring: " + statString);
-			Out.error("StatString", HexDump.hexDump(statString.getBytes()));
+			Out.error(StatString.class, "Error parsing statstring: " + statString);
+			Out.error(StatString.class, HexDump.hexDump(statString.getBytes()));
 			e.printStackTrace();
 		}
 	}

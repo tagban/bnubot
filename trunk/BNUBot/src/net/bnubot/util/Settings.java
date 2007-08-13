@@ -56,7 +56,7 @@ public class Settings {
 			return;
 		
 		anythingChanged = true;
-		Out.debug("Settings", "Setting " + key + "=" + Value);
+		Out.debug(Settings.class, "Setting " + key + "=" + Value);
 		props.setProperty(key, Value);
 	}
 
@@ -66,7 +66,7 @@ public class Settings {
 		
 		init();
 		
-		Out.debug("Settings", "Writing settings.ini");
+		Out.debug(Settings.class, "Writing settings.ini");
 		
 		try {
 			// Generate the comment first, because the settings.ini file could be lost if CurrentVersion.version() fails

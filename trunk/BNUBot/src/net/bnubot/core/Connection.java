@@ -375,7 +375,7 @@ public abstract class Connection extends Thread implements EventHandler {
 		while(it2.hasNext())
 			try {
 				Connection c = it2.next();
-				Out.debug("Connection", "Telling [" + c.toString() + "] to join " + channel);
+				Out.debug(Connection.class, "Telling [" + c.toString() + "] to join " + channel);
 				c.joinChannel(channel);
 			} catch (Exception e) {
 				e.printStackTrace();

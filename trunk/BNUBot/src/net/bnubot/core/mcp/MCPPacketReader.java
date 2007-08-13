@@ -39,7 +39,7 @@ public class MCPPacketReader {
 		os.write(data);
 		
 		if(packetLog)
-			Out.info("MCPPacketReader", "RECV MCP\n" + HexDump.hexDump(baos.toByteArray()));
+			Out.info(MCPPacketReader.class, "RECV MCP\n" + HexDump.hexDump(baos.toByteArray()));
 	}
 	
 	public BNetInputStream getData() {

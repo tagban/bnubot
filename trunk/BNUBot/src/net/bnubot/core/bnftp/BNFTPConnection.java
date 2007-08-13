@@ -34,7 +34,7 @@ public class BNFTPConnection {
 	
 	public static File downloadFile(Socket s, String fileName) {
 		try {
-			Out.info("BNFTPConnection", "Downloading " + fileName + "...");
+			Out.info(BNFTPConnection.class, "Downloading " + fileName + "...");
 			
 			BNetInputStream is = new BNetInputStream(s.getInputStream());
 			BNetOutputStream os = new BNetOutputStream(s.getOutputStream());
@@ -76,7 +76,7 @@ public class BNFTPConnection {
 				b = b & 0xFF;
 				fw.write(b);
 			}
-			Out.info("BNFTPConnection", fileSize + " bytes recieved.");
+			Out.info(BNFTPConnection.class, fileSize + " bytes recieved.");
 			
 			return f;
 		} catch (Exception e) {

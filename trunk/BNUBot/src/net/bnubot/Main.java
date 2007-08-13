@@ -93,7 +93,7 @@ public class Main {
 				}
 			}
 			
-			Out.error("Main", "Invalid argument: " + args[i]);
+			Out.error(Main.class, "Invalid argument: " + args[i]);
 			System.exit(1);
 		}
 		
@@ -110,7 +110,7 @@ public class Main {
 					error += "but the configuration was valid.";
 				else
 					error += "and the configuration was invalid: " + s;
-				Out.error("Main", error);
+				Out.error(Main.class, error);
 				System.exit(1);
 			}
 			
@@ -169,7 +169,7 @@ public class Main {
 				if(gui != null)
 					primary.recieveInfo("Database is not configured; disabling commands.");
 				else
-					Out.info("main", "Database is not configured; disabling commands.");
+					Out.info(Main.class, "Database is not configured; disabling commands.");
 			} else {
 				try {
 					new Database(db_driver, db_url, db_username, db_password, db_schema);
@@ -188,7 +188,7 @@ public class Main {
 					if(gui != null)
 						primary.recieveError(msg);
 					else
-						Out.error("Main", msg);
+						Out.error(Main.class, msg);
 				}
 			}
 		}
