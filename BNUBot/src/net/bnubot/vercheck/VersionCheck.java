@@ -44,8 +44,6 @@ public class VersionCheck {
 					Constants.IX86verbytes[i] = vb;
 				}
 			}
-		else
-			Out.info("VersionCheck", "Version check resulted in no games!");
 
 		XMLElementDecorator verLatest = elem.getPath("bnubot/latestVersion");
 		
