@@ -139,7 +139,7 @@ public class Database {
 		try {
 			if(conn instanceof org.apache.derby.iapi.jdbc.EngineConnection)
 				SQL = "{fn TIMESTAMPDIFF(SQL_TSI_DAY, CURRENT_TIMESTAMP, lastSeen)}";
-		} catch(NoClassDefFoundError e) {}
+		} catch(ClassNotFoundException e) {}
 		
 		SQL =
 			"SELECT login, " + SQL + " as dss, rank.id AS rank, rank.expireDays " +
@@ -473,7 +473,7 @@ public class Database {
 	}
 	
 	public long getUnreadMailCount(long accountID) throws SQLException {
-		PreparedStatement ps = prepareStatement("SELECT COUNT(*) FROM mail WHERE sentto=? AND isread=FALSE");
+		PreparedStatement ps = prepareStatement("SELECT COUNT(*) FROM mail WHERE sentto=? AND isread=0");
 		ps.setLong(1, accountID);
 		ResultSet rs = ps.executeQuery();
 		if(rs.next()) {
