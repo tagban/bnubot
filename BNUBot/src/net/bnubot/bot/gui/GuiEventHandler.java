@@ -226,8 +226,14 @@ public class GuiEventHandler implements EventHandler {
 		friendList = new FriendList(cs);
 		//Clan list
 		clanList = new ClanList(cs);
-		
-		JTabbedPane allLists = new JTabbedPane();
+
+		@SuppressWarnings("serial")
+		JTabbedPane allLists = new JTabbedPane() {
+			public Dimension getPreferredSize() {
+				Dimension d = getComponent(getSelectedIndex()).getPreferredSize();
+				return new Dimension(Math.max(d.width + 10, 200), d.height);
+			}
+		};
 		allLists.addTab("Channel", userList);
 		allLists.addTab("Friends", friendList);
 		allLists.addTab("Clan", clanList);
