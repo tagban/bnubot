@@ -25,9 +25,9 @@ public class Database {
 	public Database(String driver, String url, String username, String password, String schemaFile) throws SQLException, ClassNotFoundException {
 		Class.forName(driver);
 		
-		Out.info(this.getClass().getName(), "Connecting to " + url);
+		Out.info(this.getClass(), "Connecting to " + url);
 		conn = DriverManager.getConnection(url, username, password);
-		Out.info(this.getClass().getName(), "Connected!");
+		Out.info(this.getClass(), "Connected!");
 		
 		instance = this;
 		
@@ -100,7 +100,7 @@ public class Database {
 			
 			final int cushion = 3;
 			if(openStatements.size() > cushion) {
-				Out.info(this.getClass().getName(), "Out of " + original + " cached statements, " + openStatements.size() + " were left open (cushion=" + cushion + ")");
+				Out.info(this.getClass(), "Out of " + original + " cached statements, " + openStatements.size() + " were left open (cushion=" + cushion + ")");
 				
 				//Close all but the last cushion statements
 				for(int i = 0; i < openStatements.size() - cushion; i++) {
@@ -175,7 +175,7 @@ public class Database {
 					out += "/";
 					out += expireDays;
 					out += ")";
-					Out.info(this.getClass().getName(), out);
+					Out.info(this.getClass(), out);
 	
 					//Delete them!
 					rsUser.deleteRow();
@@ -221,7 +221,7 @@ public class Database {
 				out += cb;
 			}
 			out += ")";
-			Out.info(this.getClass().getName(), out);
+			Out.info(this.getClass(), out);
 			
 			if(cb != null)
 				sendMail(cb, cb, "Your recruit " + rsAccount.getName() + " has been removed due to inactivity");
@@ -427,12 +427,12 @@ public class Database {
 		if(rs.next()) {
 			String name = rs.getString(1);
 			close(rs);
-			//Out.info(this.getClass().getName(), "Alias " + command + " resolves to " + name + "; caching");
+			//Out.info(this.getClass(), "Alias " + command + " resolves to " + name + "; caching");
 			aliases.put(command, name);
 			return name;
 		}
 		close(rs);
-		//Out.info(this.getClass().getName(), "Command " + command + " is not an alias; caching");
+		//Out.info(this.getClass(), "Command " + command + " is not an alias; caching");
 		aliases.put(command, command);
 		return command;
 	}
@@ -608,7 +608,7 @@ public class Database {
 				return true;
 			}
 			
-			Out.error(this.getClass().getName(), "Database version is " + version + ", we require " + compatibleVersion);
+			Out.error(this.getClass(), "Database version is " + version + ", we require " + compatibleVersion);
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}
@@ -619,7 +619,7 @@ public class Database {
 	}
 	
 	private void createSchema(String schemaFile) throws SQLException {
-		Out.info(this.getClass().getName(), "The database requires rebuilding.");
+		Out.info(this.getClass(), "The database requires rebuilding.");
 		
 		Statement stmt = createStatement();
 		
@@ -664,7 +664,7 @@ public class Database {
 			e.printStackTrace();
 			System.exit(1);
 		} catch(SQLException e) {
-			Out.error(this.getClass().getName(), "Failed to create schema\n" + query + "\n\n" + e.getMessage());
+			Out.error(this.getClass(), "Failed to create schema\n" + query + "\n\n" + e.getMessage());
 			throw e;
 		}
 	}

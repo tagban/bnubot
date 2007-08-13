@@ -80,7 +80,7 @@ public class TriviaEventHandler implements EventHandler {
 			try {
 				trivia.add(new TriviaItem(line, defaultCategory));
 			} catch(IllegalArgumentException e) {
-				Out.error(this.getClass().getName(), "Failed to parse line #" + linenumber + " from " + fileName + ": " + line);
+				Out.error(this.getClass(), "Failed to parse line #" + linenumber + " from " + fileName + ": " + line);
 			}
 		} while(true);
 		

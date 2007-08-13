@@ -155,7 +155,7 @@ public class ClanList extends JPanel {
 			cmi = get(username);
 		
 		if(cmi == null) {
-			Out.error(this.getClass().getName(), "Attempted to remove a clan member that was not in the ClanList: " + username);
+			Out.error(this.getClass(), "Attempted to remove a clan member that was not in the ClanList: " + username);
 			return;
 		}
 		

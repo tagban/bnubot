@@ -123,7 +123,7 @@ public class KeyManager {
 					cdkeys.add(new CDKey(key, prod, comment));
 				}
 			} catch(Exception e) {
-				Out.info("KeyManager", "Couldn't parse cdkeys.txt line: " + key);
+				Out.info(KeyManager.class, "Couldn't parse cdkeys.txt line: " + key);
 			}
 		} while(true);
 		
