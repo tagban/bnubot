@@ -188,8 +188,6 @@ public class Database {
 		//Find accounts that are not instrumental to the recruitment tree, and have no accounts
 		AccountResultSet rsAccount = getAccounts();
 		while(rsAccount.next()) {
-			int row = rsAccount.getRow();
-			
 			//Check number of connected logins
 			{
 				PreparedStatement ps = prepareStatement("SELECT COUNT(*) FROM bnlogin WHERE bnlogin.account=?");
@@ -208,9 +206,6 @@ public class Database {
 				continue;
 			
 			Long cb = rsAccount.getCreatedBy();
-
-			//Restore the cursor to the appropriate row
-			rsAccount.absolute(row);
 			
 			String out = "Removing account ";
 			out += rsAccount.getName();
@@ -225,8 +220,9 @@ public class Database {
 			
 			if(cb != null)
 				sendMail(cb, cb, "Your recruit " + rsAccount.getName() + " has been removed due to inactivity");
-			
-			rsAccount.deleteRow();
+
+			//Restore the cursor to the appropriate row
+			deleteAccount(rsAccount.getId());
 		}
 		close(rsAccount);
 	}
@@ -285,6 +281,13 @@ public class Database {
 		PreparedStatement ps = prepareStatement("UPDATE bnlogin SET account=? WHERE LOWER(login)=LOWER(?)");
 		ps.setLong(1, accountID);
 		ps.setString(2, user.getFullAccountName());
+		ps.execute();
+		close(ps);
+	}
+	
+	public void deleteAccount(long accountID) throws SQLException {
+		PreparedStatement ps = prepareStatement("DELETE FROM account WHERE id=?");
+		ps.setLong(1, accountID);
 		ps.execute();
 		close(ps);
 	}
