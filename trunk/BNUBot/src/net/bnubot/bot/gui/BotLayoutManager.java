@@ -12,7 +12,6 @@ import java.awt.Dimension;
 import java.awt.LayoutManager;
 
 public class BotLayoutManager implements LayoutManager {
-	private static final int channelWidth = 200;
 	private static final int textHeight = 17;
 	private static final int padding = 5;
 	private static final int paddingEdge = 2;
@@ -37,6 +36,8 @@ public class BotLayoutManager implements LayoutManager {
 		
 		int height = parent.getHeight() - paddingEdge*2;
 		int width = parent.getWidth() - paddingEdge*2;
+		
+		int channelWidth = parent.getComponent(3).getPreferredSize().width;
 		
 		int col1x = paddingEdge;
 		int col2x = paddingEdge + width - channelWidth;
