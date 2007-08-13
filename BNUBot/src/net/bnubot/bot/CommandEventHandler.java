@@ -147,8 +147,6 @@ public class CommandEventHandler implements EventHandler {
 							result += ", " + rsSubjectCategory.getName() + " (" + rsSubjectCategory.getAccess() + ")";
 						
 						d.close(rsSubjectCategory);
-						
-						//Available commands for rank 36 in cagegory war3: invite (32), setrank (35)
 						c.sendChat(user, result, wasWhispered);
 					} catch(InvalidUseException e) {
 						String use = "Use: %trigger%access <category> -- Available categories for rank " + commanderAccess + ": all";
@@ -839,25 +837,36 @@ public class CommandEventHandler implements EventHandler {
 					break;
 				}
 				if(command.equals("setrank")) {
-					int newRank;
 					try {
 						if(params == null)
 							throw new InvalidUseException();
 						if(params.length != 2)
 							throw new InvalidUseException();
-						newRank = Integer.valueOf(params[1]);
+
+						int newRank = 0;
+						if(params[1].compareToIgnoreCase("peon") == 0)
+							newRank = 1;
+						else if(params[1].compareToIgnoreCase("grunt") == 0)
+							newRank = 2;
+						else if(params[1].compareToIgnoreCase("shaman") == 0)
+							newRank = 3;
+						else
+							try {
+								newRank = Integer.valueOf(params[1]);
+							} catch(Exception e) {}
+						
 						if((newRank < 1) || (newRank > 3))
 							throw new InvalidUseException();
+						
+						// TODO: validate that params[0] is in the clan
+						c.sendClanRankChange(params[0], newRank);
+						// TODO: send this after the response is recieved
+						c.sendChat(user, "Success", wasWhispered);
+						break;
 					} catch(InvalidUseException e) {
-						c.sendChat(user, "Use: %trigger%setrank <user> <rank:1-3>", wasWhispered);
+						c.sendChat(user, "Use: %trigger%setrank <user> <rank(peon|grunt|shaman|1-3)>", wasWhispered);
 						break;
 					}
-					
-					// TODO: validate that params[0] is in the clan
-					c.sendClanRankChange(params[0], newRank);
-					// TODO: send this after the response is recieved
-					c.sendChat(user, "Success", wasWhispered);
-					break;
 				}
 				if(command.equals("setrecruiter")) {
 					if((params == null) || (params.length != 2)) {
