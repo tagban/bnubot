@@ -174,9 +174,9 @@ public abstract class Connection extends Thread implements EventHandler {
 		//Remove all chars under 0x20
 		byte[] data = text.getBytes();
 		text = "";
-		for(int i = 0; i < data.length; i++) {
-			if(data[i] >= 0x20)
-				text += (char)data[i];
+		for(byte element : data) {
+			if(element >= 0x20)
+				text += (char)element;
 		}
 		
 		boolean somethingDone = true;

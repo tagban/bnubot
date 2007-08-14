@@ -229,15 +229,15 @@ public class UserList extends JPanel {
 		
 		BNetIcon[] icons = IconsDotBniReader.getIcons();
 		boolean keepThisIcon = false;
-		for(int i = 0; i < icons.length; i++) {
+		for(BNetIcon element : icons) {
 			//Look for 
-			if(icons[i].useFor(ui.user.getFlags(), specialIcon)) {
+			if(element.useFor(ui.user.getFlags(), specialIcon)) {
 				keepThisIcon = true;
-				icon = icons[i].getIcon();
+				icon = element.getIcon();
 				break;
 			}
-			if(icons[i].useFor(ui.user.getFlags(), product)) {
-				icon = icons[i].getIcon();
+			if(element.useFor(ui.user.getFlags(), product)) {
+				icon = element.getIcon();
 			}
 		}
 		
@@ -290,10 +290,10 @@ public class UserList extends JPanel {
 						
 					default:
 						if(icons != null)
-							for(int i = 0; i < icons.length; i++) {
-								if(icons[i].useFor(ui.user.getFlags(), specialIcon)) {
+							for(BNetIcon element : icons) {
+								if(element.useFor(ui.user.getFlags(), specialIcon)) {
 									keepThisIcon = true;
-									icon = icons[i].getIcon();
+									icon = element.getIcon();
 									break;
 								}
 							}

@@ -24,8 +24,8 @@ public class BNetIcon {
 		if(products == null)
 			return false;
 		
-		for(int i = 0; i < products.length; i++) {
-			if(product == products[i])
+		for(int element : products) {
+			if(product == element)
 				return true;
 		}
 		
@@ -36,8 +36,8 @@ public class BNetIcon {
 		String out = "Icon[flags=0x" + Integer.toHexString(flags)  + ",xSize=" + xSize + ",ySize=" + ySize;
 		if(products != null) {
 			out += ",products=[";
-			for(int i = 0; i < products.length; i++)
-				out += HexDump.DWordToPretty(products[i]) + ",";
+			for (int element : products)
+				out += HexDump.DWordToPretty(element) + ",";
 			out = out.substring(0, out.length() - 1);
 			out += "]";
 		}

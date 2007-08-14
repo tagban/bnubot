@@ -44,8 +44,8 @@ public class TriviaItem {
 		hint1 = "";
 		hint2 = "";
 		int numHidden = 0;
-		for(int i = 0; i < a.length; i++) {
-			if(isAlphaNumeric(a[i])) {
+		for(byte element : a) {
+			if(isAlphaNumeric(element)) {
 				numHidden++;
 				if(numHidden % 3 < 2) { //(Math.random() * 3 < 2) {
 					hint0 += '?';
@@ -53,16 +53,16 @@ public class TriviaItem {
 					if(numHidden % 3 < 1) //(Math.random() * 2 < 1)
 						hint2 += '?';
 					else
-						hint2 += (char)a[i];
+						hint2 += (char)element;
 				} else {
 					hint0 += '?';
-					hint1 += (char)a[i];
-					hint2 += (char)a[i];
+					hint1 += (char)element;
+					hint2 += (char)element;
 				}
 			} else {
-				hint0 += (char)a[i];
-				hint1 += (char)a[i];
-				hint2 += (char)a[i];
+				hint0 += (char)element;
+				hint1 += (char)element;
+				hint2 += (char)element;
 			}
 		}
 	}
