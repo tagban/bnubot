@@ -60,7 +60,7 @@ public class VersionCheck {
 		VersionNumber vnCurrent = CurrentVersion.version();
 
 		boolean update = vnLatest.isNewerThan(vnCurrent);
-		if(update && reportTo != null) {
+		if(update && (reportTo != null)) {
 			reportTo.recieveError("Current version: " + vnCurrent.toString());
 			reportTo.recieveError("Latest version: " + vnLatest.toString());
 			

@@ -134,8 +134,8 @@ public class Main {
 		//Other plugins
 		ArrayList<EventHandler> pluginEHs = new ArrayList<EventHandler>();
 		if(plugins != null) {
-			for(int i = 0; i < plugins.length; i++) {
-				EventHandler eh = (EventHandler)Class.forName(plugins[i]).newInstance();
+			for(String element : plugins) {
+				EventHandler eh = (EventHandler)Class.forName(element).newInstance();
 				pluginEHs.add(eh);
 				primary.addEventHandler(eh);
 			}

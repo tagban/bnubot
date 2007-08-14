@@ -227,7 +227,7 @@ public class BrowserLauncher {
                 double version = Double.valueOf(majorMRJVersion).doubleValue();
                 if (version == 2) {
                     jvm = MRJ_2_0;
-                } else if (version >= 2.1 && version < 3) {
+                } else if ((version >= 2.1) && (version < 3)) {
                     // Assume that all 2.x versions of MRJ work the same.  MRJ 2.1 actually
                     // works via Runtime.exec() and 2.2 supports that but has an openURL() method
                     // as well that we currently ignore.
@@ -443,9 +443,9 @@ public class BrowserLauncher {
                 }
                 String[] systemFolderFiles = systemFolder.list();
                 // Avoid a FilenameFilter because that can't be stopped mid-list
-                for (int i = 0; i < systemFolderFiles.length; i++) {
+                for(String element : systemFolderFiles) {
                     try {
-                        File file = new File(systemFolder, systemFolderFiles[i]);
+                        File file = new File(systemFolder, element);
                         if (!file.isFile()) {
                             continue;
                         }
