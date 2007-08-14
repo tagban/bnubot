@@ -73,9 +73,10 @@ public class ExtendableResultSet {
 	protected boolean previous() throws SQLException {
 		return parent.previous();
 	}
-
-	protected void refreshRow() throws SQLException {
-		parent.refreshRow();
+	
+	public void refreshCursor() throws SQLException {
+		parent.moveToInsertRow();
+		parent.moveToCurrentRow();	
 	}
 
 	protected void updateDate(int columnIndex, Date x) throws SQLException {

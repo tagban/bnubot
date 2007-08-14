@@ -614,9 +614,11 @@ public class CommandEventHandler implements EventHandler {
 					}
 					
 					subjectAccountId = rsSubjectAccount.getId();
+					rsSubject.refreshCursor();
 					rsSubject.setAccount(subjectAccountId);
 					rsSubject.updateRow();
 					d.close(rsSubject);
+					rsSubjectAccount.refreshCursor();
 					rsSubjectAccount.setAccess(c.getConnectionSettings().recruitAccess);
 					rsSubjectAccount.updateRow();
 					d.close(rsSubjectAccount);
@@ -768,7 +770,7 @@ public class CommandEventHandler implements EventHandler {
 					BNLoginResultSet rsSubject = d.getUser(bnSubject);
 					if(!rsSubject.next()) {
 						d.close(rsSubject);
-						c.sendChat(user, "The user [" + bnSubject.getFullAccountName() + "] does not exist!", wasWhispered);
+						c.sendChat(user, "I have never seen [" + bnSubject.getFullAccountName() + "] in the channel", wasWhispered);
 						break;
 					}
 					String subject = rsSubject.getLogin();
@@ -785,10 +787,13 @@ public class CommandEventHandler implements EventHandler {
 						newAccount = rsSubjectAccount.getId();
 						d.close(rsSubjectAccount);
 					}
+					
+					rsSubject.refreshCursor();
+					rsSubject.setAccount(newAccount);
+					rsSubject.updateRow();
 					d.close(rsSubject);
 					
-					d.setAccount(bnSubject, newAccount);
-					
+					// Set params[1] to what the account looks like in the database
 					if(newAccount == null) {
 						params[1] = "NULL";
 					} else {
@@ -799,7 +804,6 @@ public class CommandEventHandler implements EventHandler {
 					}
 					
 					bnSubject.resetPrettyName();
-					
 					c.sendChat(user, "User [" + subject + "] was added to account [" + params[1] + "] successfully.", wasWhispered);
 					break;
 				}
@@ -915,6 +919,7 @@ public class CommandEventHandler implements EventHandler {
 						}
 						
 						if(cb == null) {
+							rsSubject.refreshCursor();
 							rsSubject.setCreatedBy(targetID);
 							rsSubject.updateRow();
 							c.sendChat(user, "Successfully updated recruiter for [ " + params[0] + " ] to [ " + params[1] + " ]" , wasWhispered);
@@ -1252,6 +1257,7 @@ public class CommandEventHandler implements EventHandler {
 						if((apRS == null) || (apRS == 0) || (rs >= apRS)) {
 							// Give them a promotion
 							rank++;
+							rsAccount.refreshCursor();
 							rsAccount.setAccess(rank);
 							rsAccount.setLastRankChange(new Timestamp(new Date().getTime()));
 							rsAccount.updateRow();

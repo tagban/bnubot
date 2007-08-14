@@ -277,14 +277,6 @@ public class Database {
 		return new AccountResultSet(ps.executeQuery());
 	}
 	
-	public void setAccount(BNetUser user, long accountID) throws SQLException {
-		PreparedStatement ps = prepareStatement("UPDATE bnlogin SET account=? WHERE LOWER(login)=LOWER(?)");
-		ps.setLong(1, accountID);
-		ps.setString(2, user.getFullAccountName());
-		ps.execute();
-		close(ps);
-	}
-	
 	public void deleteAccount(long accountID) throws SQLException {
 		PreparedStatement ps = prepareStatement("DELETE FROM account WHERE id=?");
 		ps.setLong(1, accountID);
