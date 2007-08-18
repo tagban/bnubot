@@ -94,10 +94,20 @@ public class BNCSConnection extends Connection {
 	public void run() {
 		while(true) {
 			try {
-				if(forceReconnect && (cs.isValid() == null))
+				if(cs.isValid() != null) {
+					recieveError(cs.isValid());
+					int i = 1000;
+					while(--i > 0) {
+						yield();
+						sleep(10);
+					}
+					continue;
+				}
+				
+				if(forceReconnect) {
 					forceReconnect = false;
-				else {
-					if(!(cs.autoconnect && (cs.isValid() == null))) {
+				} else {
+					if(!cs.autoconnect) {
 						while(!isConnected()) {
 							yield();
 							sleep(10);
@@ -212,8 +222,6 @@ public class BNCSConnection extends Connection {
 				myClan = 0;
 				myClanRank = 0;
 				titleChanged();
-
-				//Wait a short time before allowing a reconnect
 			} catch(SocketException e) {
 			} catch(Exception e) {
 				recieveError("Unhandled exception: " + e.getMessage());
@@ -225,7 +233,12 @@ public class BNCSConnection extends Connection {
 			s = null;
 			recieveError("Disconnected from battle.net.");
 			yield();
-			try { sleep(15000); } catch (InterruptedException e1) { }
+
+			//Wait a short time before allowing a reconnect
+			int waitTime = 15000;
+			if(forceReconnect)
+				waitTime = 2000;
+			try { sleep(waitTime); } catch (InterruptedException e1) { }
 		}
 	}
 	
