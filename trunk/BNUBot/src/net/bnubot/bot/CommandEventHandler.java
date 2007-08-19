@@ -559,6 +559,7 @@ public class CommandEventHandler implements EventHandler {
 						break;
 					}
 					
+					rsSubject.saveCursor();
 					Long subjectAccountId = rsSubject.getAccount();
 					if(subjectAccountId != null) {
 						d.close(rsSubject);
@@ -612,6 +613,7 @@ public class CommandEventHandler implements EventHandler {
 						c.sendChat(user, "Failed to create account [" + params[1] + "] for an unknown reason", wasWhispered);
 						break;
 					}
+					rsSubjectAccount.saveCursor();
 					
 					subjectAccountId = rsSubjectAccount.getId();
 					rsSubject.refreshCursor();
@@ -773,6 +775,7 @@ public class CommandEventHandler implements EventHandler {
 						c.sendChat(user, "I have never seen [" + bnSubject.getFullAccountName() + "] in the channel", wasWhispered);
 						break;
 					}
+					rsSubject.saveCursor();
 					String subject = rsSubject.getLogin();
 					
 					Long newAccount = null;
@@ -884,6 +887,7 @@ public class CommandEventHandler implements EventHandler {
 						c.sendChat(user, "The account [" + params[0] + "] does not exist!", wasWhispered);
 						break;
 					}
+					rsSubject.saveCursor();
 					params[0] = rsSubject.getName();
 					
 					AccountResultSet rsTarget = d.getAccount(params[1]);
@@ -1190,6 +1194,7 @@ public class CommandEventHandler implements EventHandler {
 				d.close(rsAccount);
 				return;
 			}
+			rsAccount.saveCursor();
 			
 			//check for birthdays
 			Date birthday = rsAccount.getBirthday();

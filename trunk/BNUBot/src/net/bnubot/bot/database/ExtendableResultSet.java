@@ -9,6 +9,7 @@ import java.sql.*;
 
 public class ExtendableResultSet {
 	private ResultSet parent;
+	private Integer savedCursor = null;
 	
 	protected ExtendableResultSet(ResultSet parent) {
 		this.parent = parent;
@@ -74,9 +75,14 @@ public class ExtendableResultSet {
 		return parent.previous();
 	}
 	
+	public void saveCursor() throws SQLException {
+		savedCursor = getRow();
+	}
+	
 	public void refreshCursor() throws SQLException {
-		parent.moveToInsertRow();
-		parent.moveToCurrentRow();	
+		if(savedCursor == null)
+			throw new SQLException("no saved row");
+		parent.absolute(savedCursor);
 	}
 
 	protected void updateDate(int columnIndex, Date x) throws SQLException {
