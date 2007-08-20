@@ -7,6 +7,8 @@ package net.bnubot.bot.trivia;
 
 import java.util.ArrayList;
 
+import net.bnubot.util.HexDump;
+
 public class TriviaItem {
 	private String category;
 	private String question;
@@ -104,7 +106,7 @@ public class TriviaItem {
 		}
 		
 		for(int i = 0; i < this.answers.length; i++)
-			this.answers[i] = this.answers[i].trim();
+			this.answers[i] = HexDump.getAlphaNumerics(this.answers[i]);
 		
 		makeHints();
 	}
