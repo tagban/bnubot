@@ -354,13 +354,14 @@ public class Database {
 	}
 
 	public AccountResultSet createAccount(String account, long access, Long creator) throws SQLException {
-		PreparedStatement ps = prepareStatement("INSERT INTO account (name, access, createdby, lastRankChange) VALUES(?, ?, ?, NULL)");
+		PreparedStatement ps = prepareStatement("INSERT INTO account (name, access, createdby, lastRankChange) VALUES(?, ?, ?, ?)");
 		ps.setString(1, account);
 		ps.setLong(2, access);
 		if(creator == null)
-			ps.setNull(3, java.sql.Types.VARCHAR);
+			ps.setNull(3, java.sql.Types.INTEGER);
 		else
 			ps.setLong(3, creator);
+		ps.setTimestamp(4, new Timestamp(new java.util.Date().getTime()));
 		ps.execute();
 		close(ps);
 		
