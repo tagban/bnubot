@@ -16,7 +16,8 @@ public class ChatQueue extends Thread {
 	private int lastCon = 0;
 	
 	public ChatQueue() {
-		this.setDaemon(true);
+		super(ChatQueue.class.getSimpleName());
+		setDaemon(true);
 	}
 	
 	public boolean add(Connection c) {
