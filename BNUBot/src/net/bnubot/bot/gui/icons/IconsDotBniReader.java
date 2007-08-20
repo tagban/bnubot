@@ -15,6 +15,7 @@ import net.bnubot.core.BNetInputStream;
 import net.bnubot.core.ConnectionSettings;
 import net.bnubot.core.bnftp.BNFTPConnection;
 import net.bnubot.util.HexDump;
+import net.bnubot.util.Out;
 
 
 @SuppressWarnings("serial")
@@ -120,7 +121,7 @@ public class IconsDotBniReader {
 
 	private static BNetIcon[] readIconsDotBni(File f) {
 		try {
-			//Out.info(this.getClass().getName(), "Reading " + f.getName());
+			Out.debug(IconsDotBniReader.class, "Reading " + f.getName());
 			
 			BNetInputStream is = new BNetInputStream(new FileInputStream(f));
 			is.skip(4); //int headerSize = is.readDWord();
@@ -132,18 +133,8 @@ public class IconsDotBniReader {
 			if(bniVersion != 1)
 				throw new Exception("Unknown BNI version");
 			
-			//Out.info(this.getClass().getName(), "Reading " + numIcons + " icons in format " + bniVersion + " from offset " + dataOffset);
+			Out.debug(IconsDotBniReader.class, "Reading " + numIcons + " icons in format " + bniVersion);
 
-			//Image headers
-			/*if(icons == null)
-				icons = new BNetIcon[numIcons];
-			else {
-				BNetIcon[] newIcons = new BNetIcon[numIcons + icons.length];
-				for(int i = numIcons; i < numIcons + icons.length; i++) {
-					newIcons[i] = icons[i-numIcons];
-				}
-				icons = newIcons;
-			}*/
 			BNetIcon[] icons = new BNetIcon[numIcons];
 			
 			for(int i = 0; i < numIcons; i++) {
@@ -172,7 +163,7 @@ public class IconsDotBniReader {
 				} else
 					icon.products = null;
 				icons[i] = icon;
-				//Out.info(this.getClass().getName(), icon.toString());
+				Out.debug(IconsDotBniReader.class, icon.toString());
 			}
 			
 			//Image in targa format
@@ -224,24 +215,16 @@ public class IconsDotBniReader {
 			
 			if(util == null) {
 				util = new JFrame("Icons");
-			//	util.setLayout(new FlowLayout(FlowLayout.CENTER));
 				util.setLayout(null);
 			}
 			
-			//Box b = new Box(BoxLayout.Y_AXIS);
-			//b.add(new JLabel(f.getName()));
 			for(int i = 0; i < numIcons; i++) {
 				BNetIcon bni = icons[i];
 				bni.icon = new ImageIcon(
 						util.createImage(
 								new MemoryImageSource(bni.xSize, bni.ySize, pixelData, currentPixel, bni.xSize)));
 				currentPixel += bni.xSize * bni.ySize;
-			//	b.add(new JLabel(bni.icon));
-			//	b.add(Box.createVerticalStrut(1));
 			}
-			//util.add(b);
-			//util.pack();
-			//util.setVisible(true);
 			
 			return icons;
 		} catch (Exception e) {
