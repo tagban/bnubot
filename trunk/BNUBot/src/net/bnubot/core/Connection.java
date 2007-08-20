@@ -51,6 +51,8 @@ public abstract class Connection extends Thread implements EventHandler {
 	}
 	
 	public Connection(ConnectionSettings cs, ChatQueue cq) {
+		super(Connection.class.getSimpleName());
+		
 		this.cs = cs;
 		this.cq = cq;
 		
