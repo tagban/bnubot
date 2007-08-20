@@ -23,6 +23,7 @@ import net.bnubot.core.Connection;
 import net.bnubot.core.StatString;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
+import net.bnubot.util.HexDump;
 import net.bnubot.util.Out;
 
 public class TriviaEventHandler implements EventHandler {
@@ -303,7 +304,7 @@ public class TriviaEventHandler implements EventHandler {
 				showLeaderBoard();
 		} else {
 			if(triviaAnswers != null) {
-				text = text.trim();
+				text = HexDump.getAlphaNumerics(text);
 				for(String triviaAnswer : triviaAnswers) {
 					if(triviaAnswer.compareToIgnoreCase(text) == 0) {
 						gotAnswer = true;

@@ -44,6 +44,18 @@ public class HexDump {
 				((bytes[3] << 24) & 0xFF000000);
 	}
 	
+	public static String getAlphaNumerics(String in) {
+		String out = new String();
+		for(int i = 0; i < in.length(); i++) {
+			char c = in.charAt(i);
+			if( ((c >= 'a') && (c <= 'z'))
+			 || ((c >= 'A') && (c <= 'Z'))
+			 || ((c >= '0') && (c <= '9')))
+				out += c;
+		}
+		return out;
+	}
+	
 	private static String hexChr(int b) {
 		return Integer.toHexString(b & 0xF);
 	}
