@@ -6,7 +6,7 @@
 
 == Special Arguments ==
 || *Argument* || *Meaning* ||
-|| `<user>` || A battle.net login ||
+|| `<user>` || A Battle.net login ||
 || `<account>` || A BNU-Bot database account ||
 
 == Commands ==
