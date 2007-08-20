@@ -9,35 +9,55 @@
 || `<user>` || A Battle.net login ||
 || `<account>` || A BNU-Bot database account ||
 
-== Commands ==
-|| *Category* || *Command* || *Arguments* || *Access Required* || *Comment* ||
-|| accounts || whoami || || 1 || ||
-|| accounts || whois || `<user>` || 1 || ||
-|| accounts || seen|| `<account>` || 1 || ||
-|| accounts || mail || `read` || 1 || Reads any unread mail ||
-|| accounts || mail || `read <number>` || 1 || Reads mail with specific id ||
-|| accounts || mail || `read clear` || 1 || Delete read mail ||
-|| accounts || mail || `read send <account> <message>` || 1 || Send mail to a user ||
-|| accounts || setbirthday || `<MM/DD/YY>` || 1 || Set your birth date ||
-|| accounts || autopromotion || `[account]` || 1 || Shows autopromotion status for an account ||
-|| accounts || recruit || `<user> <account>` || 15 || The user must have been seen by the bot ||
-|| accounts || recruits || `[account]` || 10 || Shows the account's recruits ||
-|| accounts || mailall || `<minimum rank> <message>` || 30 || Sends mail to everyone of rank <minimum rank> and higher ||
-|| accounts || setaccount || `<user> <account>` || 34 || Adds <user> to <account> ||
-|| accounts || renameaccount || `<oldaccount> <newaccount>` || 34 || Renames an account ||
-|| accounts || setrecruiter || `<account (recruited)> <account (recruiter)>` || 35 || ||
-|| accounts || createaccount || `<account>` || 34 || ||
-|| accounts || add || `<account> <access>` || 34 || ||
-|| administration || reconnect || || 36 || ||
-|| administration || say || `<message>` || 36 || ||
-|| administration || quit || || 36 || ||
-|| administration || disconnect || || 36 || ||
-|| clan || setrank || `<user> <rank>` || 35 || Rank can be one of peon, grunt, shaman, or 1, 2, or 3 ||
-|| commands || auth || `<command>` || 1 || Get the rank requirement to use the given command ||
-|| commands || access || `[category]` || 1 || list available commands ||
-|| info || info || || 1 || Get the bot version and Operating System version and architecture ||
-|| moderation || sweepban || `<channel>` || 34 || Bans all users in <channel> ||
-|| moderation || unban || `<user>` || 34 || ||
-|| moderation || kick || `<user> [reason]` || 34 || ||
-|| moderation || ban || `<user> [reason]` || 35 || ||
-|| useful || trigger || `none` || 1 || called with ?trigger ||
+= Commands =
+
+==useful==
+|| *Command* || *Arguments* || *Access Required* || *Comment* ||
+|| trigger || `none` || 1 || called with ?trigger ||
+
+==accounts==
+|| *Command* || *Arguments* || *Access Required* || *Comment* ||
+|| whoami || || 1 || ||
+|| whois || `<user>` || 1 || ||
+|| seen|| `<account>` || 1 || ||
+|| mail || `read [number]` || 1 || Reads any unread mail ||
+|| mail || `clear` || 1 || Delete read mail ||
+|| mail || `send <account> <message>` || 1 || Send mail to a user ||
+|| setbirthday || `<MM/DD/YY>` || 1 || Set your birth date ||
+|| autopromotion || `[account]` || 1 || Shows autopromotion status for an account ||
+|| recruit || `<user> <account>` || 15 || The user must have been seen by the bot ||
+|| recruits || `[account]` || 10 || Shows the account's recruits ||
+|| mailall || `<minimum rank> <message>` || 30 || Sends mail to everyone of rank <minimum rank> and higher ||
+|| setaccount || `<user> <account>` || 34 || Adds <user> to <account> ||
+|| renameaccount || `<oldaccount> <newaccount>` || 34 || Renames an account ||
+|| createaccount || `<account>` || 34 || ||
+|| add || `<account> <access>` || 34 || ||
+|| setrecruiter || `<account (recruited)> <account (recruiter)>` || 35 || ||
+
+==administration==
+|| *Command* || *Arguments* || *Access Required* ||
+|| reconnect || || 36 ||
+|| say || `<message>` || 36 ||
+|| quit || || 36 ||
+|| disconnect || || 36 ||
+
+==clan==
+|| *Command* || *Arguments* || *Access Required* || *Comment* ||
+|| setrank || `<user> <rank>` || 35 || Rank can be one of peon, grunt, shaman, or 1, 2, or 3 ||
+
+==commands==
+|| *Command* || *Arguments* || *Access Required* || *Comment* ||
+|| auth || `<command>` || 1 || Get the rank requirement to use the given command ||
+|| access || `[category]` || 1 || list available commands ||
+
+==info==
+|| *Command* || *Arguments* || *Access Required* || *Comment* ||
+|| info || || 1 || Get the bot version and Operating System version and architecture ||
+
+==moderation==
+|| *Command* || *Arguments* || *Access Required* || *Comment* ||
+|| sweepban || `<channel>` || 34 || Bans all users in <channel> ||
+|| unban || `<user>` || 34 || ||
+|| kick || `<user> [reason]` || 34 || ||
+|| ban || `<user> [reason]` || 35 || ||
+
