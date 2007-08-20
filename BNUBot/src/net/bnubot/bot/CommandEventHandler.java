@@ -798,7 +798,7 @@ public class CommandEventHandler implements EventHandler {
 					
 					// Set params[1] to what the account looks like in the database
 					if(newAccount == null) {
-						params[1] = "NULL";
+						params = new String[] { params[0], "NULL" };
 					} else {
 						AccountResultSet rsSubjectAccount = d.getAccount(newAccount);
 						if(rsSubjectAccount.next())
