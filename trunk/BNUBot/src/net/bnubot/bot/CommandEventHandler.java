@@ -373,11 +373,11 @@ public class CommandEventHandler implements EventHandler {
 				break;
 			case 'k':
 				if(command.equals("kick")) {
-					if((params == null) || (params.length != 1)) {
-						c.sendChat(user, "Use: %trigger%kick <user>[@<realm>]", wasWhispered);
+					if((param == null) || (param.length() == 0)) {
+						c.sendChat(user, "Use: %trigger%kick <user>[@<realm>] [reason]", wasWhispered);
 						break;
 					}
-					c.sendChat("/kick " + params[0]);
+					c.sendChat("/kick " + param);
 					break;
 				}
 				break;
