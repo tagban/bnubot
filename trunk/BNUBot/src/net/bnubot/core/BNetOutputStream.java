@@ -43,7 +43,8 @@ public class BNetOutputStream extends DataOutputStream {
 	}
 	
 	public void writeDWord(String str) throws IOException {
-		assert(str.length() == 4);
+		if(str.length() != 4)
+			throw new IOException("string length was not 4!\n" + str);
 		writeByte(str.charAt(3));
 		writeByte(str.charAt(2));
 		writeByte(str.charAt(1));
@@ -51,7 +52,7 @@ public class BNetOutputStream extends DataOutputStream {
 	}
 	
 	public void writeNTString(String str) throws IOException {
-		write(str.getBytes());
+		write(str.getBytes("UTF-8"));
 		writeByte(0);
 	}
 }
