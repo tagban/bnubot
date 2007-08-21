@@ -17,7 +17,9 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.Locale;
 import java.util.Random;
+import java.util.TimeZone;
 
 import net.bnubot.core.BNetInputStream;
 import net.bnubot.core.BNetUser;
@@ -123,8 +125,6 @@ public class BNCSConnection extends Connection {
 				nlsRevision = -1;
 				productID = ProductIDs.ProductID[cs.product-1];
 				
-				//dos.write("GET / HTTP/1.0\n\n".getBytes());
-				
 				// Game
 				dos.writeByte(0x01);
 				
@@ -139,24 +139,29 @@ public class BNCSConnection extends Connection {
 				case ConnectionSettings.PRODUCT_LORDOFDESTRUCTION:
 				case ConnectionSettings.PRODUCT_WARCRAFT3:
 				case ConnectionSettings.PRODUCT_THEFROZENTHRONE:
-				case ConnectionSettings.PRODUCT_WAR2BNE:
+				case ConnectionSettings.PRODUCT_WAR2BNE: {
+					Locale loc = Locale.getDefault();
+					String prodLang = loc.getLanguage() + loc.getCountry();
+					int tzBias = TimeZone.getDefault().getOffset(new Date().getTime()) / -60000;
+					
 					p = new BNCSPacket(BNCSCommandIDs.SID_AUTH_INFO);
 					p.writeDWord(0);							// Protocol ID (0)
 					p.writeDWord(PlatformIDs.PLATFORM_IX86);	// Platform ID (IX86)
 					p.writeDWord(productID);					// Product ID
 					p.writeDWord(verByte);						// Version byte
-					p.writeDWord("enUS");						// Product language
+					p.writeDWord(prodLang);						// Product language
 					p.writeDWord(0);							// Local IP
-					p.writeDWord(0xf0);							// TZ bias
+					p.writeDWord(tzBias);						// TZ bias
 					p.writeDWord(0x409);						// Locale ID
 					p.writeDWord(0x409);						// Language ID
-					p.writeNTString("USA");						// Country abreviation
-					p.writeNTString("United States");			// Country
+					p.writeNTString(loc.getISO3Country());		// Country abreviation
+					p.writeNTString(loc.getDisplayCountry());	// Country
 					p.SendPacket(dos, cs.packetLog);
 					break;
+				}
 
 				case ConnectionSettings.PRODUCT_STARCRAFTSHAREWARE:
-				case ConnectionSettings.PRODUCT_JAPANSTARCRAFT:
+				case ConnectionSettings.PRODUCT_JAPANSTARCRAFT: {
 					p = new BNCSPacket(BNCSCommandIDs.SID_CLIENTID);
 					p.writeDWord(0);	// Registration Version
 					p.writeDWord(0);	// Registration Authority
@@ -173,6 +178,7 @@ public class BNCSConnection extends Connection {
 					p.writeDWord(0);							// Unknown (0)
 					p.SendPacket(dos, cs.packetLog);
 					break;
+				}
 					
 				/*case ConnectionSettings.PRODUCT_WAR2BNE:
 					p = new BNCSPacket(BNCSCommandIDs.SID_CLIENTID2);
