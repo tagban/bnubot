@@ -8,6 +8,9 @@ package net.bnubot.core;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
+
+import net.bnubot.util.Out;
 
 public class BNetInputStream extends DataInputStream {
 
@@ -35,12 +38,23 @@ public class BNetInputStream extends DataInputStream {
 	}
 	
 	public String readNTString() throws IOException {
-		String out = new String();
+		int length = 64;
+		int pos = 0;
+		ByteBuffer bb = ByteBuffer.allocate(length);
 		while(true) {
-			char c = (char)readByte();
-			if(c == 0)
-				return out;
-			out += c;
+			byte b = readByte();
+			if(b == 0)
+				return new String(bb.array(), 0, pos, "UTF-8");
+			
+			pos++;
+			if(pos > length) {
+				Out.info(this.getClass(), "readNTString overflow " + length);
+				length += length;
+				ByteBuffer bb2 = ByteBuffer.allocate(length);
+				bb2.put(bb.array());
+				bb = bb2;
+			}
+			bb.put(b);
 		}
 	}
 	
