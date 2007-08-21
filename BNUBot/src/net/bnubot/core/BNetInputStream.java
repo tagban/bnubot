@@ -10,8 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 
-import net.bnubot.util.Out;
-
 public class BNetInputStream extends DataInputStream {
 
 	public BNetInputStream(InputStream in) {
@@ -48,7 +46,6 @@ public class BNetInputStream extends DataInputStream {
 			
 			pos++;
 			if(pos > length) {
-				Out.info(this.getClass(), "readNTString overflow " + length);
 				length += length;
 				ByteBuffer bb2 = ByteBuffer.allocate(length);
 				bb2.put(bb.array());
