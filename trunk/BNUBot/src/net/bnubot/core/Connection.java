@@ -6,6 +6,7 @@
 package net.bnubot.core;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -271,6 +272,9 @@ public abstract class Connection extends Thread implements EventHandler {
 			}
 		}
 		
+		try {
+			text = new String(text.getBytes(), "UTF-8");
+		} catch (UnsupportedEncodingException e) {}
 		text = cleanText(text);
 		
 		if(text.length() == 0)
