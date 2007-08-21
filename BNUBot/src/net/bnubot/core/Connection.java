@@ -33,18 +33,18 @@ public abstract class Connection extends Thread implements EventHandler {
 	
 	public static final int MAX_CHAT_LENGTH = 242;
 
-	private int eh_semaphor = 0;
-	private int eh2_semaphor = 0;
+	private int eh_semaphore = 0;
+	private int eh2_semaphore = 0;
 	
-	private void waitForEHSemaphor() {
-		while(eh_semaphor > 0) {
+	private void waitForEHsemaphore() {
+		while(eh_semaphore > 0) {
 			try {Thread.sleep(10);} catch (InterruptedException e) {e.printStackTrace();}
 			Thread.yield();
 		}
 	}
 	
-	private void waitForEH2Semaphor() {
-		while(eh2_semaphor > 0) {
+	private void waitForEH2semaphore() {
+		while(eh2_semaphore > 0) {
 			try {Thread.sleep(10);} catch (InterruptedException e) {e.printStackTrace();}
 			Thread.yield();
 		}
@@ -89,20 +89,20 @@ public abstract class Connection extends Thread implements EventHandler {
 	}
 	
 	public void addEventHandler(EventHandler e) {
-		waitForEHSemaphor();
+		waitForEHsemaphore();
 		
 		eventHandlers.add(e);
 		e.initialize(this);
 	}
 	
 	public void addSecondaryEventHandler(EventHandler e) {
-		waitForEH2Semaphor();
+		waitForEH2semaphore();
 		
 		eventHandlers2.add(e);
 	}
 	
 	public void removeEventHandler(EventHandler e) {
-		waitForEHSemaphor();
+		waitForEHsemaphore();
 		
 		eventHandlers.remove(e);
 	}
@@ -348,89 +348,89 @@ public abstract class Connection extends Thread implements EventHandler {
 		channelName = null;
 		myUser = null;
 		
-		eh_semaphor++;
+		eh_semaphore++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().bnetDisconnected();
-		eh_semaphor--;
+		eh_semaphore--;
 	}
 
 	public void parseCommand(BNetUser user, String command, String param, boolean wasWhispered) {
-		eh_semaphor++;
+		eh_semaphore++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().parseCommand(user, command, param, wasWhispered);
-		eh_semaphor--;
+		eh_semaphore--;
 	}
 
 	public synchronized void titleChanged() {
-		eh_semaphor++;
+		eh_semaphore++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().titleChanged();
-		eh_semaphor--;
+		eh_semaphore--;
 	}
 	
 	public synchronized void joinedChannel(String channel) {
 		channelName = channel;
 
-		eh_semaphor++;
+		eh_semaphore++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().joinedChannel(channel);
-		eh_semaphor--;
+		eh_semaphore--;
 
-		eh2_semaphor++;
+		eh2_semaphore++;
 		Iterator<Connection> it2 = slaves.iterator();
 		while(it2.hasNext())
 			try {
 				Connection c = it2.next();
-				Out.debug(Connection.class, "Telling [" + c.toString() + "] to join " + channel);
+				Out.info(Connection.class, "[" + myUser.getFullLogonName() + "] Telling [" + c.myUser.getFullLogonName() + "] to join " + channel);
 				c.joinChannel(channel);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		eh2_semaphor--;
+		eh2_semaphore--;
 	}
 	
 	public synchronized void channelUser(BNetUser user, StatString statstr) {
-		eh_semaphor++;
+		eh_semaphore++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().channelUser(user, statstr);
-		eh_semaphor--;
+		eh_semaphore--;
 	}
 	
 	public synchronized void channelJoin(BNetUser user, StatString statstr) {
-		eh_semaphor++;
+		eh_semaphore++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().channelJoin(user, statstr);
-		eh_semaphor--;
+		eh_semaphore--;
 	}
 	
 	public synchronized void channelLeave(BNetUser user) {
-		eh_semaphor++;
+		eh_semaphore++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().channelLeave(user);
-		eh_semaphor--;
+		eh_semaphore--;
 	}
 
 	public synchronized void recieveChat(BNetUser user, String text) {
-		eh_semaphor++;
+		eh_semaphore++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().recieveChat(user, text);
-		eh_semaphor--;
+		eh_semaphore--;
 	}
 
 	public synchronized void recieveEmote(BNetUser user, String text) {
-		eh_semaphor++;
+		eh_semaphore++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().recieveEmote(user, text);
-		eh_semaphor--;
+		eh_semaphore--;
 	}
 
 	public synchronized void recieveInfo(String text) {
@@ -439,17 +439,17 @@ public abstract class Connection extends Thread implements EventHandler {
 		if(text.length() == 0)
 			return;
 
-		eh_semaphor++;
+		eh_semaphore++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().recieveInfo(text);
-		eh_semaphor--;
+		eh_semaphore--;
 
-		eh2_semaphor++;
+		eh2_semaphore++;
 		it = eventHandlers2.iterator();
 		while(it.hasNext())
 			it.next().recieveInfo(text);
-		eh2_semaphor--;
+		eh2_semaphore--;
 	}
 
 	public synchronized void recieveError(String text) {
@@ -458,146 +458,146 @@ public abstract class Connection extends Thread implements EventHandler {
 		if(text.length() == 0)
 			return;
 
-		eh_semaphor++;
+		eh_semaphore++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().recieveError(text);
-		eh_semaphor--;
+		eh_semaphore--;
 
-		eh2_semaphor++;
+		eh2_semaphore++;
 		it = eventHandlers2.iterator();
 		while(it.hasNext())
 			it.next().recieveError(text);
-		eh2_semaphor--;
+		eh2_semaphore--;
 	}
 	
 	public synchronized void whisperSent(BNetUser user, String text) {
-		eh_semaphor++;
+		eh_semaphore++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().whisperSent(user, text);
-		eh_semaphor--;
+		eh_semaphore--;
 
-		eh2_semaphor++;
+		eh2_semaphore++;
 		it = eventHandlers2.iterator();
 		while(it.hasNext())
 			it.next().whisperSent(user, text);
-		eh2_semaphor--;
+		eh2_semaphore--;
 	}
 	
 	public synchronized void whisperRecieved(BNetUser user, String text) {
-		eh_semaphor++;
+		eh_semaphore++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().whisperRecieved(user, text);
-		eh_semaphor--;
+		eh_semaphore--;
 
-		eh2_semaphor++;
+		eh2_semaphore++;
 		it = eventHandlers2.iterator();
 		while(it.hasNext())
 			it.next().whisperRecieved(user, text);
-		eh2_semaphor--;
+		eh2_semaphore--;
 	}
 	
 	// Realms
 	
 	public synchronized void queryRealms2(String[] realms) {
-		eh_semaphor++;
+		eh_semaphore++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().queryRealms2(realms);
-		eh_semaphor--;
+		eh_semaphore--;
 	}
 	
 	public synchronized void logonRealmEx(int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName) {
-		eh_semaphor++;
+		eh_semaphore++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().logonRealmEx(MCPChunk1, ip, port, MCPChunk2, uniqueName);
-		eh_semaphor--;
+		eh_semaphore--;
 	}
 	
 	// Friends
 
 	public synchronized void friendsList(FriendEntry[] entries) {
-		eh_semaphor++;
+		eh_semaphore++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().friendsList(entries);
-		eh_semaphor--;
+		eh_semaphore--;
 	}
 	
 	public synchronized void friendsUpdate(FriendEntry friend) {
-		eh_semaphor++;
+		eh_semaphore++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().friendsUpdate(friend);
-		eh_semaphor--;
+		eh_semaphore--;
 	}
 	
 	public synchronized void friendsAdd(FriendEntry friend) {
-		eh_semaphor++;
+		eh_semaphore++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().friendsAdd(friend);
-		eh_semaphor--;
+		eh_semaphore--;
 	}
 	
 	public void friendsRemove(byte entry) {
-		eh_semaphor++;
+		eh_semaphore++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().friendsRemove(entry);
-		eh_semaphor--;
+		eh_semaphore--;
 	}
 	
 	public void friendsPosition(byte oldPosition, byte newPosition) {
-		eh_semaphor++;
+		eh_semaphore++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().friendsPosition(oldPosition, newPosition);
-		eh_semaphor--;
+		eh_semaphore--;
 	}
 	
 	// Clan
 	
 	public synchronized void clanMOTD(Object cookie, String text) {
-		eh_semaphor++;
+		eh_semaphore++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().clanMOTD(cookie, text);
-		eh_semaphor--;
+		eh_semaphore--;
 	}
 
 	public synchronized void clanMemberList(ClanMember[] members) {
-		eh_semaphor++;
+		eh_semaphore++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().clanMemberList(members);
-		eh_semaphor--;
+		eh_semaphore--;
 	}
 	
 	public synchronized void clanMemberRemoved(String username) {
-		eh_semaphor++;
+		eh_semaphore++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().clanMemberRemoved(username);
-		eh_semaphor--;
+		eh_semaphore--;
 	}
 	
 	public synchronized void clanMemberRankChange(byte oldRank, byte newRank, String user) {
-		eh_semaphor++;
+		eh_semaphore++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().clanMemberRankChange(oldRank, newRank, user);
-		eh_semaphor--;
+		eh_semaphore--;
 	}
 	
 	public synchronized void clanMemberStatusChange(ClanMember member) {
-		eh_semaphor++;
+		eh_semaphore++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().clanMemberStatusChange(member);
-		eh_semaphor--;
+		eh_semaphore--;
 	}
 }
