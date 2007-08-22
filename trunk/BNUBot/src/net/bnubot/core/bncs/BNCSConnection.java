@@ -393,7 +393,7 @@ public class BNCSConnection extends Connection {
 
 					int exeHash;
                 	int exeVersion;
-                	String exeInfo;
+                	String exeInfo = null;
                 	
                 	try {
                 		String tmp = MPQFileName;
@@ -425,7 +425,7 @@ public class BNCSConnection extends Connection {
 				    	}
 			    		exeVersion = exeStream.readDWord();
 				    	exeHash = exeStream.readDWord();
-				    	exeInfo = exeStream.readNTString();
+				    	exeInfo = exeStream.readNTString(null);
 				    	exeStream.readDWord(); // cookie
 				    	/*int exeVerbyte =*/ exeStream.readDWord();
 				    	assert(exeStream.available() == 0);
