@@ -45,33 +45,36 @@ import HTTP.HTTPServer;
 
 public class Main {
 
-  /** Main Method - Starting point for program */
-  public static void main(String[] args) throws Exception{
-    cSettings.LoadSettings();
-    cSettings.SaveSettings();
-    
-    Out.setDefaultOutputStream();
-    Out.println("Main", "Java Battle.Net Login Sever - (JBLS)  http://www.JBLS.org/");
-    Out.println("Main", "Build: " + Constants.build);
+	/** Main Method - Starting point for program */
+	public static void main(String[] args) throws Exception {
+		cSettings.LoadSettings();
+		cSettings.SaveSettings();
 
-    Out.println("Main", "JBLS Started");
+		Out.setDefaultOutputStream();
+		Out.println("Main",
+				"Java Battle.Net Login Sever - (JBLS)  http://www.JBLS.org/");
+		Out.println("Main", "Build: " + Constants.build);
 
-    //Start BNLS Server
-    Out.println("Main","Loading JBLS Server");
-    Controller.jServer=new BNLSServer();
-    Controller.jServer.start();
+		Out.println("Main", "JBLS Started");
 
-    //Start HTTP Server
-    if(Constants.RunHTTP){
-      Out.println("Main","Loading HTTP Server");
-      Controller.hServer=new HTTPServer();
-      Controller.hServer.start();
-    }
-    
-    if(Constants.RunAdmin && (Constants.BotNetUsername.length() > 0) && (Constants.BotNetPassword.length() > 0)){
-      BotNet bn = new BotNet(Constants.BotNetUsername, Constants.BotNetPassword);
-      bn.start();
-    }
-    
-  }
-}//end main class
+		// Start BNLS Server
+		Out.println("Main", "Loading JBLS Server");
+		Controller.jServer = new BNLSServer();
+		Controller.jServer.start();
+
+		// Start HTTP Server
+		if (Constants.RunHTTP) {
+			Out.println("Main", "Loading HTTP Server");
+			Controller.hServer = new HTTPServer();
+			Controller.hServer.start();
+		}
+
+		if (Constants.RunAdmin && (Constants.BotNetUsername.length() > 0)
+				&& (Constants.BotNetPassword.length() > 0)) {
+			BotNet bn = new BotNet(Constants.BotNetUsername,
+					Constants.BotNetPassword);
+			bn.start();
+		}
+
+	}
+}// end main class
