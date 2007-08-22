@@ -64,6 +64,10 @@ public class HexDump {
 		return hexChr((b & 0xF0) >> 4) + hexChr(b & 0x0F);
 	}
 	
+	private static String toHexWord(int b) {
+		return hexChr((b & 0xF000) >> 12) + hexChr((b & 0x0F00) >> 8) + hexChr((b & 0x00F0) >> 4) + hexChr(b & 0x000F);
+	}
+	
 	public static String hexDump(byte data[]) {
 		String output = new String();
 		for(int offset = 0; offset < data.length; offset += 16) {
@@ -72,13 +76,21 @@ public class HexDump {
 				break;
 			if(end > 16)
 				end = 16;
+			
+			output += toHexWord(offset) + "  ";
+			
 			for(int i = 0; i < 16; i++) {
 				if(i >= end)
 					output += "   ";
-				else
-					output += " " + toHex(data[offset+i]);
+				else {
+					if((i == 4) || (i == 8) || (i == 12))
+						output += "-";
+					else
+						output += " ";
+					output += toHex(data[offset+i]);
+				}
 			}
-			output += "\t";
+			output += "   ";
 			for(int i = 0; i < end; i++) {
 				byte b = data[offset+i];
 				if((b < 0x20) || (b >= 0x7F)) {
