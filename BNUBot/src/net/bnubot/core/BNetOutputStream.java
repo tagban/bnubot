@@ -52,7 +52,7 @@ public class BNetOutputStream extends DataOutputStream {
 	}
 	
 	public void writeNTString(String str) throws IOException {
-		write(str.getBytes("UTF-8"));
+		write(str.getBytes());
 		writeByte(0);
 	}
 }

@@ -36,13 +36,20 @@ public class BNetInputStream extends DataInputStream {
 	}
 	
 	public String readNTString() throws IOException {
+		return readNTString("UTF-8");
+	}
+	
+	public String readNTString(String encoding) throws IOException {
 		int length = 64;
 		int pos = 0;
 		ByteBuffer bb = ByteBuffer.allocate(length);
 		while(true) {
 			byte b = readByte();
-			if(b == 0)
-				return new String(bb.array(), 0, pos, "UTF-8");
+			if(b == 0) {
+				if(encoding == null)
+					return new String(bb.array(), 0, pos);
+				return new String(bb.array(), 0, pos, encoding);
+			}
 			
 			pos++;
 			if(pos > length) {
