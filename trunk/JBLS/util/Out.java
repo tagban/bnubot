@@ -16,7 +16,7 @@ import java.util.Calendar;
 
 public class Out {
 
-	private static PrintStream outStream;
+	private static PrintStream outStream = System.out;
 
     static
     {
