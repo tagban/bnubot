@@ -18,21 +18,23 @@ package BNLSProtocol;
  *
  */
 import util.Buffer;
-public class InPacketBuffer extends Buffer{
-	private byte packetID;//packet id of the packet
-	public static final long serialVersionUID=0x1234;
 
+public class InPacketBuffer extends Buffer {
+	private byte packetID;// packet id of the packet
+	public static final long serialVersionUID = 0x1234;
 
-	public InPacketBuffer(byte pID, short pLen, String inData) throws InvalidPacketException {
+	public InPacketBuffer(byte pID, short pLen, String inData)
+			throws InvalidPacketException {
 		super(inData.getBytes());
-		this.packetID=pID;
+		this.packetID = pID;
 
-	}//end of construction
+	}// end of construction
+
 	public InPacketBuffer(byte pID, short pLen) throws InvalidPacketException {
-		//super(inData.getBytes());
-		this.packetID=pID;
+		// super(inData.getBytes());
+		this.packetID = pID;
 
-	}//end of construction
+	}// end of construction
 
 	public byte getPacketID() {
 		return packetID;

@@ -5,15 +5,15 @@
 package Hashing;
 
 /**
- * Generic Exception Class.  Stores a description string.
- * Thrown when a hashing error has occured
+ * Generic Exception Class. Stores a description string. Thrown when a hashing
+ * error has occured
  */
 public class HashException extends Exception {
 	private String errorDes;
-	public static final long serialVersionUID=0x1234;
+	public static final long serialVersionUID = 0x1234;
 
 	public HashException(String er) {
-		errorDes=er;
+		errorDes = er;
 	}
 
 	public String getError() {
@@ -21,7 +21,7 @@ public class HashException extends Exception {
 	}
 
 	public String toString() {
-		return "Error hashing: "+errorDes + super.toString();
+		return "Error hashing: " + errorDes + super.toString();
 	}
 
 }

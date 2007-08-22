@@ -16,206 +16,219 @@ import util.Out;
 import BNLSProtocol.BNLSConnectionThread;
 
 /**
- *
+ * 
  * Individual thread to accept data on a BNLS Connection Seperates out the
  * packets and contains its own Parser class for interpretting them
  */
-public class BNLSConnectionThread extends Thread
-{
-    /** Total Connection Count * */
-    public static int connectionCount = 0;
+public class BNLSConnectionThread extends Thread {
+	/** Total Connection Count * */
+	public static int connectionCount = 0;
 
-    /** Next item in the linked list */
-    private BNLSConnectionThread bNextList = null;
-    private BNLSConnectionThread bPrevList = null;
+	/** Next item in the linked list */
+	private BNLSConnectionThread bNextList = null;
+	private BNLSConnectionThread bPrevList = null;
 
-    /** Thread's Socket */
-    private Socket socket = null;
+	/** Thread's Socket */
+	private Socket socket = null;
 
-    private OutputStream out = null;
+	private OutputStream out = null;
 
-    /*
-     * Note this is only an InputStream. I spent hours trying to figure out what
-     * was wrong with the code when all along it was that "InputStreamReader"
-     * was changing some values.
-     */
-    private InputStream in = null;
+	/*
+	 * Note this is only an InputStream. I spent hours trying to figure out what
+	 * was wrong with the code when all along it was that "InputStreamReader"
+	 * was changing some values.
+	 */
+	private InputStream in = null;
 
-    /** Current Thread Count */
-    private static int threadCount = 0;
+	/** Current Thread Count */
+	private static int threadCount = 0;
 
-    /** Thread ID of this instance */
-    public int threadID;
+	/** Thread ID of this instance */
+	public int threadID;
 
+	/** Set the next item in the linked list */
+	public void setNext(BNLSConnectionThread bNext) {
+		bNextList = bNext;
+	}
 
-    /** Set the next item in the linked list */
-    public void setNext(BNLSConnectionThread bNext){
-    	bNextList = bNext;
-    }
-    /** Get the next item in the linked list */
-    public BNLSConnectionThread getNext(){
-    	return bNextList;
-    }
-    /** Set the last item in the linked list */
-    public void setPrev(BNLSConnectionThread bPrev){
-    	bPrevList = bPrev;
-    }
-    /** Get the Last item in the linked list */
-    public BNLSConnectionThread getPrev(){
-    	return bPrevList;
-    }
+	/** Get the next item in the linked list */
+	public BNLSConnectionThread getNext() {
+		return bNextList;
+	}
 
-    /** Destry removed this thread from the Linked List. */
-    public void Destroy() {
-    	if (bPrevList == null) {
-    		if (bNextList == null )
-    		  Controller.lLinkedHead = null;
-    		else
-    	      Controller.lLinkedHead = bNextList;
-    	} else {
-    	  if (bNextList == null) {
-    	    bPrevList.setNext(null);
-    	  } else {
-    	    bPrevList.setNext(bNextList);
-    	    bNextList.setPrev(bPrevList);
-    	  }
-    	}
-    	try {
-    	  out.close();
-          in.close();
-          socket.close();
-        }catch (IOException e){
-            e.printStackTrace();
-            Out.error("Thread " + threadID, "IO Error:" + e.toString());
-        }
-    }
+	/** Set the last item in the linked list */
+	public void setPrev(BNLSConnectionThread bPrev) {
+		bPrevList = bPrev;
+	}
 
+	/** Get the Last item in the linked list */
+	public BNLSConnectionThread getPrev() {
+		return bPrevList;
+	}
 
+	/** Destry removed this thread from the Linked List. */
+	public void Destroy() {
+		if (bPrevList == null) {
+			if (bNextList == null)
+				Controller.lLinkedHead = null;
+			else
+				Controller.lLinkedHead = bNextList;
+		} else {
+			if (bNextList == null) {
+				bPrevList.setNext(null);
+			} else {
+				bPrevList.setNext(bNextList);
+				bNextList.setPrev(bPrevList);
+			}
+		}
+		try {
+			out.close();
+			in.close();
+			socket.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+			Out.error("Thread " + threadID, "IO Error:" + e.toString());
+		}
+	}
 
-    /** Creates the Interpreter Thread with a given socket */
-    public BNLSConnectionThread(Socket cSocket)
-    {
-        super("BNLSConnectionThread");
-        threadID = threadCount++;
-        connectionCount++;
-        socket = cSocket;
-        setDaemon(true);// make this Thread Not Hold up the Program
-    }
-    /** Runs the Connection thread(blocks until connection done) */
-    public void run()
-    { // Run the connection thread
+	/** Creates the Interpreter Thread with a given socket */
+	public BNLSConnectionThread(Socket cSocket) {
+		super("BNLSConnectionThread");
+		threadID = threadCount++;
+		connectionCount++;
+		socket = cSocket;
+		setDaemon(true);// make this Thread Not Hold up the Program
+	}
 
-        // Check for too many thread instances(dont want to overload server)
-        if (threadCount > Constants.maxThreads)
-        {
-            Out.error("JBLS", "Max Threads Exceeded. Current count: " + threadCount + ". Max count: " + Constants.maxThreads + ".  Connection terminated.");
-            threadCount--;
-            Destroy();
-            return;
-        }
-        String IP = socket.getInetAddress().getHostAddress();
+	/** Runs the Connection thread(blocks until connection done) */
+	public void run() { // Run the connection thread
 
-        // Check for IPStatistics for this guy
-        if (!IpAuth.checkAuth(IP))
-        {
-            Out.error("Thread " + threadID, "IP Not Authorized.  Thread Terminated.");
-            threadCount--;
-            Destroy();
-            return;
-        }
+		// Check for too many thread instances(dont want to overload server)
+		if (threadCount > Constants.maxThreads) {
+			Out.error("JBLS", "Max Threads Exceeded. Current count: "
+					+ threadCount + ". Max count: " + Constants.maxThreads
+					+ ".  Connection terminated.");
+			threadCount--;
+			Destroy();
+			return;
+		}
+		String IP = socket.getInetAddress().getHostAddress();
 
-        OutPacketBuffer outputLine;
-        BNLSParse myParse = new BNLSParse(this);// create BNLS Parsing Class
-        boolean parsing = true;
-        byte errCount = 0;
+		// Check for IPStatistics for this guy
+		if (!IpAuth.checkAuth(IP)) {
+			Out.error("Thread " + threadID,
+					"IP Not Authorized.  Thread Terminated.");
+			threadCount--;
+			Destroy();
+			return;
+		}
 
-        try
-        {
-            // Retrieve Input and output Streams
-            out = socket.getOutputStream();
-            in = socket.getInputStream();
-            socket.setSoTimeout(60000);// 60 second timeout
-            socket.setKeepAlive(true);// keep connection alive
+		OutPacketBuffer outputLine;
+		BNLSParse myParse = new BNLSParse(this);// create BNLS Parsing Class
+		boolean parsing = true;
+		byte errCount = 0;
 
-            Out.debug("Thread " + threadID, "Streams created.");
+		try {
+			// Retrieve Input and output Streams
+			out = socket.getOutputStream();
+			in = socket.getInputStream();
+			socket.setSoTimeout(60000);// 60 second timeout
+			socket.setKeepAlive(true);// keep connection alive
 
-            while (parsing){
-                outputLine = null;
-                try
-                {
-                    int i;// input integer(read from input string)
-                    short pLength;// packet Length
-                    byte packetID;
-                    i = in.read();// read in first byte of Packet Length
-                    if (i == -1) throw new IOException("Connection terminated.");
-                    pLength = (short) ((i << 0) & 0x000000FF);
-                    i = in.read();// Second Packet Length Byte
-                    if (i == -1) throw new IOException("Connection terminated.");
-                    pLength |= (short) ((i << 8) & 0x0000FF00);
-                    packetID = (byte) in.read();// Read in PacketID
+			Out.debug("Thread " + threadID, "Streams created.");
 
-                    InPacketBuffer inPacket = new InPacketBuffer(packetID, pLength);
-                    int bytesRead = 0;
-                    while (bytesRead < pLength - 3)
-                    {// read in each byte
-                        i = in.read();
-                        if (i == -1)
-                            throw new IOException("Connection terminated.");
-                        inPacket.add((char)i);// add to packet
-                        bytesRead++;
-                    }
-                    if (Constants.displayPacketInfo || Constants.displayParseInfo)
-                        Out.info("Thread " + threadID, "Input Received. Packet ID: 0x" + ((packetID & 0xF0) >> 4) + "" + Integer.toString((packetID & 0x0F) >> 0, 16) + " Length: " + pLength + ".");
+			while (parsing) {
+				outputLine = null;
+				try {
+					int i;// input integer(read from input string)
+					short pLength;// packet Length
+					byte packetID;
+					i = in.read();// read in first byte of Packet Length
+					if (i == -1)
+						throw new IOException("Connection terminated.");
+					pLength = (short) ((i << 0) & 0x000000FF);
+					i = in.read();// Second Packet Length Byte
+					if (i == -1)
+						throw new IOException("Connection terminated.");
+					pLength |= (short) ((i << 8) & 0x0000FF00);
+					packetID = (byte) in.read();// Read in PacketID
 
-                    outputLine = myParse.parseInput(inPacket);
-                    if (outputLine != null)
-                    {
-                        if (Constants.displayPacketInfo)
-                            Out.info("Thread " + threadID, "Sending response.");
-                        out.write(outputLine.getBuffer());
-                        outputLine = null;
-                    }else{// outputline=null, no response
-                        if (Constants.displayPacketInfo)
-                            Out.info("Thread " + threadID, "No response.");// +outputLine.toString());
-                    }
-                }catch (InvalidPacketException e){
-                    Out.error("Thread " + threadID, "Invalid Packet: " + e.toString());
-                    errCount++;
-                    if (errCount > 2) break;
-                }catch (InterruptedIOException e){
-                    Out.error("Thread " + threadID, "Connection Timeout");
-                    parsing = false;
-                    break;
-                }catch (IOException e){
-                    Out.info("Thread " + threadID, "Disconnected (" + e.getMessage() + ")");
-                    parsing = false;
-                    break;
-                }catch (BNLSException e){ // Fatal BNLS Error(Not authorized, etc.)
-                    Out.error("Thread " + threadID, "BNLS Exception: " + e.toString());
-                    parsing = false;
-                    break;
-                }// end inner Try-Catch
-            }// end input while loop
+					InPacketBuffer inPacket = new InPacketBuffer(packetID,
+							pLength);
+					int bytesRead = 0;
+					while (bytesRead < pLength - 3) {// read in each byte
+						i = in.read();
+						if (i == -1)
+							throw new IOException("Connection terminated.");
+						inPacket.add((char) i);// add to packet
+						bytesRead++;
+					}
+					if (Constants.displayPacketInfo
+							|| Constants.displayParseInfo)
+						Out.info("Thread " + threadID,
+								"Input Received. Packet ID: 0x"
+										+ ((packetID & 0xF0) >> 4)
+										+ ""
+										+ Integer.toString(
+												(packetID & 0x0F) >> 0, 16)
+										+ " Length: " + pLength + ".");
 
-            // Take Care of Streams/Sockets
-            out.close();
-            in.close();
-            socket.close();
+					outputLine = myParse.parseInput(inPacket);
+					if (outputLine != null) {
+						if (Constants.displayPacketInfo)
+							Out.info("Thread " + threadID, "Sending response.");
+						out.write(outputLine.getBuffer());
+						outputLine = null;
+					} else {// outputline=null, no response
+						if (Constants.displayPacketInfo)
+							Out.info("Thread " + threadID, "No response.");// +outputLine.toString());
+					}
+				} catch (InvalidPacketException e) {
+					Out.error("Thread " + threadID, "Invalid Packet: "
+							+ e.toString());
+					errCount++;
+					if (errCount > 2)
+						break;
+				} catch (InterruptedIOException e) {
+					Out.error("Thread " + threadID, "Connection Timeout");
+					parsing = false;
+					break;
+				} catch (IOException e) {
+					Out.info("Thread " + threadID, "Disconnected ("
+							+ e.getMessage() + ")");
+					parsing = false;
+					break;
+				} catch (BNLSException e) { // Fatal BNLS Error(Not authorized,
+											// etc.)
+					Out.error("Thread " + threadID, "BNLS Exception: "
+							+ e.toString());
+					parsing = false;
+					break;
+				}// end inner Try-Catch
+			}// end input while loop
 
-        }catch (IOException e){
-            e.printStackTrace();
-            Out.error("Thread " + threadID, "IO Error:" + e.toString());
-        }
+			// Take Care of Streams/Sockets
+			out.close();
+			in.close();
+			socket.close();
 
-        Out.debug("Thread " + threadID, "Closed");
-        threadCount--;
-        Destroy();
+		} catch (IOException e) {
+			e.printStackTrace();
+			Out.error("Thread " + threadID, "IO Error:" + e.toString());
+		}
 
-    }// end of run method
-    public boolean send(OutPacketBuffer data){
-      try{
-        out.write(data.getBuffer());
-      }catch(Exception e){ return false;}
-      return true;
-    }
+		Out.debug("Thread " + threadID, "Closed");
+		threadCount--;
+		Destroy();
+
+	}// end of run method
+
+	public boolean send(OutPacketBuffer data) {
+		try {
+			out.write(data.getBuffer());
+		} catch (Exception e) {
+			return false;
+		}
+		return true;
+	}
 }
