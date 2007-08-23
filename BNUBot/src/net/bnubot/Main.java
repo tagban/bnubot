@@ -154,7 +154,7 @@ public class Main {
 			gui = new GuiEventHandler();
 			primary.addEventHandler(gui);
 			
-			Out.setOutputConnection(primary);
+			Out.setOutputConnection((GuiEventHandler)gui);
 		}
 		
 		//Bot
