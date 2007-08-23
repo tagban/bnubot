@@ -231,7 +231,7 @@ public class ConfigurationFrame extends JDialog {
 					JLabel jl = new JLabel("Product");
 					jl.setPreferredSize(maxSize);
 					boxLine.add(jl);
-					cmbProduct = new JComboBox(util.Constants.prods);
+					cmbProduct = new JComboBox(org.jbls.util.Constants.prods);
 					cmbProduct.addItemListener(new ItemListener() {
 						public void itemStateChanged(ItemEvent e) {
 							int prod = KeyManager.PRODUCT_ALLNORMAL;

@@ -5,9 +5,10 @@
 
 package net.bnubot.vercheck;
 
+import org.jbls.util.Constants;
+
 import net.bnubot.core.Connection;
 import net.bnubot.util.Out;
-import util.Constants;
 
 public class VersionCheck {
 	protected static XMLElementDecorator elem = null;
