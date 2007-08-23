@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
@@ -28,6 +29,9 @@ import net.bnubot.core.ConnectionSettings;
 import net.bnubot.core.CookieUtility;
 import net.bnubot.core.StatString;
 import net.bnubot.core.UnsupportedFeatureException;
+import net.bnubot.core.bnls.BNLSCommandIDs;
+import net.bnubot.core.bnls.BNLSPacket;
+import net.bnubot.core.bnls.BNLSPacketReader;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.clan.ClanRankIDs;
 import net.bnubot.core.clan.ClanStatusIDs;
@@ -388,14 +392,46 @@ public class BNCSConnection extends Connection {
 							keyHash2 = HashMain.hashKey(clientToken, serverToken, cs.cdkeyTFT).getBuffer();
 					}
 					
-					// Hash the game files
-				  	String files[] = HashMain.getFiles(cs.product, HashMain.PLATFORM_INTEL);
-
-					int exeHash;
-                	int exeVersion;
+					int exeHash = 0;
+                	int exeVersion = 0;
                 	String exeInfo = null;
                 	
-                	try {
+                	// Close off the scope of conn
+				  	{
+				    	Socket conn = new Socket(cs.bnlsServer, cs.bnlsPort);
+				    	
+				    	recieveInfo("Connected to " + cs.bnlsServer + ":" + cs.bnlsPort);
+
+				    	BNLSPacket bnlsOut = new BNLSPacket(BNLSCommandIDs.BNLS_VERSIONCHECKEX2);
+					  	bnlsOut.writeDWord(cs.product);
+					  	bnlsOut.writeDWord(0);	// Flags
+					  	bnlsOut.writeDWord(0);	// Cookie
+					  	bnlsOut.writeQWord(MPQFileTime);
+					  	bnlsOut.writeNTString(MPQFileName);
+					  	bnlsOut.writeNTString(ValueStr);
+					  	bnlsOut.SendPacket(conn.getOutputStream(), cs.packetLog);
+					  	
+					  	InputStream bnlsInputStream = conn.getInputStream(); 
+					  	BNLSPacketReader bpr = new BNLSPacketReader(bnlsInputStream, cs.packetLog);
+					  	BNetInputStream bnlsIn = bpr.getInputStream();
+					  	int success = bnlsIn.readDWord();
+				    	if(success != 1) {
+				    		Out.error(this.getClass(), "BNLS_VERSIONCHECKEX2 Failed\n" + HexDump.hexDump(bpr.getData()));
+				    		throw new Exception("BNLS failed to complete 0x1A sucessfully");
+				    	}
+			    		exeVersion = bnlsIn.readDWord();
+				    	exeHash = bnlsIn.readDWord();
+				    	exeInfo = bnlsIn.readNTString(null);
+				    	bnlsIn.readDWord(); // cookie
+				    	/*int exeVerbyte =*/ bnlsIn.readDWord();
+				    	assert(bnlsIn.available() == 0);
+				    	
+				    	recieveInfo("Recieved CheckRevision from BNLS");
+				    	
+				    	conn.close();
+				  	}
+                	
+                	/*try {
                 		String tmp = MPQFileName;
                 		tmp = tmp.substring(tmp.indexOf("IX86")+4);
                 		while((tmp.charAt(0) < 0x30) || (tmp.charAt(0) > 0x39))
@@ -427,9 +463,9 @@ public class BNCSConnection extends Connection {
 				    	exeHash = exeStream.readDWord();
 				    	exeInfo = exeStream.readNTString(null);
 				    	exeStream.readDWord(); // cookie
-				    	/*int exeVerbyte =*/ exeStream.readDWord();
+				    	/*int exeVerbyte =* / exeStream.readDWord();
 				    	assert(exeStream.available() == 0);
-                	}
+                	}*/
                 	
                 	if((exeVersion == 0) || (exeHash == 0) || (exeInfo == null) || (exeInfo.length() == 0)) {
                 		recieveError("Checkrevision failed!");
