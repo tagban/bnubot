@@ -12,11 +12,8 @@
   </manifest>
   <selectedElements exportClassFiles="true" exportOutputFolder="false" exportJavaFiles="true">
     <file path="/BNUBot/.project"/>
-    <javaElement handleIdentifier="=JBLS/&lt;util"/>
-    <javaElement handleIdentifier="=JBLS/&lt;BNLSProtocol"/>
-    <javaElement handleIdentifier="=BNUBot/src"/>
     <file path="/BNUBot/.classpath"/>
-    <javaElement handleIdentifier="=JBLS/&lt;Hashing"/>
+    <javaElement handleIdentifier="=BNUBot/src"/>
     <folder path="/BNUBot/net"/>
   </selectedElements>
 </jardesc>
