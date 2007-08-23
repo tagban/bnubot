@@ -26,18 +26,13 @@ Launch Eclipse. It will take a few moments to load. It will ask you for a direct
  * Select the desired features; the features below Integrations are not required.
  * Click *Finish* and wait for the update to complete.
  * Restart Eclipse.
-== Download the BNU-Bot and JBLS source code from SVN ==
+== Download the BNU-Bot source code from SVN ==
 === Create the BNU-Bot project ===
  * Click on the *File* menu, and navigate to *New*, and then *Project...*.
  * Expand *SVN*, and click *Checkout Projects from SVN*, and then click *Next*.
  * Click *Create a new repository location*, and then *Next*.
  * Enter _http://bnubot.googlecode.com/svn_ for the *URL*, and click *Next*.
  * Expand *trunk*, and click on *BNUBot*, then click *Finish*.
-=== Create the JBLS project ===
- * Click on the *File* menu, and navigate to *New*, and then *Project...*.
- * Expand *SVN*, and click *Checkout Projects from SVN*, and then click *Next*.
- * Click *Use existing repository location*, select the Google Code SVN server, and then *Next*.
- * Expand *trunk*, and click on *JBLS*, then click *Finish*.
 == Launch BNU-Bot ==
  * Expand *BNUBot*/*src*/*bnubot* in the *Package Explorer* view of Eclipse.
  * Right click on *Main.java*, and then *Run As*, followed by *Java Application*.
