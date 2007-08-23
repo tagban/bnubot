@@ -10,8 +10,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import net.bnubot.core.BNetInputStream;
-import net.bnubot.core.BNetOutputStream;
+import net.bnubot.util.BNetInputStream;
+import net.bnubot.util.BNetOutputStream;
 import net.bnubot.util.HexDump;
 import net.bnubot.util.Out;
 

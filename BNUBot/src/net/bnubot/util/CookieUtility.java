@@ -3,7 +3,7 @@
  * $Id$
  */
 
-package net.bnubot.core;
+package net.bnubot.util;
 
 import java.util.Iterator;
 import java.util.LinkedList;

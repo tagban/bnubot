@@ -16,6 +16,8 @@ import net.bnubot.core.*;
 import net.bnubot.core.bncs.ProductIDs;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
+import net.bnubot.util.BNetUser;
+import net.bnubot.util.StatString;
 import net.bnubot.util.TimeFormatter;
 import net.bnubot.vercheck.CurrentVersion;
 

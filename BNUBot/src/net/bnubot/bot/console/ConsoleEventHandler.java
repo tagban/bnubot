@@ -5,13 +5,13 @@
 
 package net.bnubot.bot.console;
 
-import net.bnubot.bot.EventHandler;
-import net.bnubot.core.BNetUser;
 import net.bnubot.core.Connection;
-import net.bnubot.core.StatString;
+import net.bnubot.core.EventHandler;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
+import net.bnubot.util.BNetUser;
 import net.bnubot.util.Out;
+import net.bnubot.util.StatString;
 
 public class ConsoleEventHandler implements EventHandler {
 	Connection c = null;

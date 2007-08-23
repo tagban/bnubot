@@ -3,7 +3,7 @@
  * $Id$
  */
 
-package net.bnubot.bot.html;
+package net.bnubot.bot;
 
 import java.awt.Color;
 import java.io.DataOutputStream;
@@ -16,15 +16,15 @@ import java.util.GregorianCalendar;
 
 import javax.swing.SwingUtilities;
 
-import net.bnubot.bot.EventHandler;
 import net.bnubot.bot.gui.ColorScheme.ColorScheme;
-import net.bnubot.core.BNetUser;
 import net.bnubot.core.Connection;
-import net.bnubot.core.StatString;
+import net.bnubot.core.EventHandler;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
+import net.bnubot.util.BNetUser;
 import net.bnubot.util.HexDump;
 import net.bnubot.util.Out;
+import net.bnubot.util.StatString;
 
 public class HTMLOutputEventHandler implements EventHandler {
 	private class UserInfo {

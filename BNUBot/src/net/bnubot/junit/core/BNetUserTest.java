@@ -5,7 +5,7 @@
 
 package net.bnubot.junit.core;
 
-import net.bnubot.core.BNetUser;
+import net.bnubot.util.BNetUser;
 import junit.framework.TestCase;
 
 public class BNetUserTest extends TestCase {

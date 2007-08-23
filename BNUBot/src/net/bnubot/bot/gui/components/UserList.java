@@ -19,11 +19,11 @@ import net.bnubot.bot.gui.GuiEventHandler;
 import net.bnubot.bot.gui.ColorScheme.ColorScheme;
 import net.bnubot.bot.gui.icons.BNetIcon;
 import net.bnubot.bot.gui.icons.IconsDotBniReader;
-import net.bnubot.core.BNetUser;
 import net.bnubot.core.Connection;
-import net.bnubot.core.StatString;
 import net.bnubot.core.bncs.ProductIDs;
+import net.bnubot.util.BNetUser;
 import net.bnubot.util.Out;
+import net.bnubot.util.StatString;
 
 @SuppressWarnings("serial")
 public class UserList extends JPanel {

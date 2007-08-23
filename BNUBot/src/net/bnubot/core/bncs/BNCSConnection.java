@@ -24,12 +24,9 @@ import java.util.TimeZone;
 
 import org.jbls.Hashing.*;
 
-import net.bnubot.core.BNetInputStream;
-import net.bnubot.core.BNetUser;
+import net.bnubot.core.ChatQueue;
 import net.bnubot.core.Connection;
 import net.bnubot.core.ConnectionSettings;
-import net.bnubot.core.CookieUtility;
-import net.bnubot.core.StatString;
 import net.bnubot.core.UnsupportedFeatureException;
 import net.bnubot.core.bnls.BNLSCommandIDs;
 import net.bnubot.core.bnls.BNLSPacket;
@@ -38,9 +35,12 @@ import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.clan.ClanRankIDs;
 import net.bnubot.core.clan.ClanStatusIDs;
 import net.bnubot.core.friend.FriendEntry;
-import net.bnubot.core.queue.ChatQueue;
+import net.bnubot.util.BNetInputStream;
+import net.bnubot.util.BNetUser;
+import net.bnubot.util.CookieUtility;
 import net.bnubot.util.HexDump;
 import net.bnubot.util.Out;
+import net.bnubot.util.StatString;
 import net.bnubot.util.TimeFormatter;
 import net.bnubot.vercheck.CurrentVersion;
 

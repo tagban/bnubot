@@ -3,13 +3,12 @@
  * $Id$
  */
 
-package net.bnubot.bot;
+package net.bnubot.core;
 
-import net.bnubot.core.BNetUser;
-import net.bnubot.core.Connection;
-import net.bnubot.core.StatString;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
+import net.bnubot.util.BNetUser;
+import net.bnubot.util.StatString;
 
 public interface EventHandler {
 	//Initialization

@@ -3,7 +3,7 @@
  * $Id$
  */
 
-package net.bnubot.core;
+package net.bnubot.util;
 
 import java.io.DataInputStream;
 import java.io.IOException;

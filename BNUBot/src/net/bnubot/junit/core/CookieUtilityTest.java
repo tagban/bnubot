@@ -5,7 +5,7 @@
 
 package net.bnubot.junit.core;
 
-import net.bnubot.core.CookieUtility;
+import net.bnubot.util.CookieUtility;
 import junit.framework.TestCase;
 
 public class CookieUtilityTest extends TestCase {

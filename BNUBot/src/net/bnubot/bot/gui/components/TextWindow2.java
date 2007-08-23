@@ -20,7 +20,7 @@ import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
 import net.bnubot.bot.gui.ColorScheme.ColorScheme;
-import net.bnubot.core.BNetUser;
+import net.bnubot.util.BNetUser;
 import net.bnubot.util.BrowserLauncher;
 
 @SuppressWarnings("serial")

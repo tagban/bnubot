@@ -3,16 +3,16 @@
  * $Id$
  */
 
-package net.bnubot.core.bnftp;
+package net.bnubot.core;
 
 import java.io.*;
 import java.net.Socket;
 import java.util.Date;
 
-import net.bnubot.core.*;
+import net.bnubot.util.BNetInputStream;
+import net.bnubot.util.BNetOutputStream;
 import net.bnubot.util.Out;
 import net.bnubot.util.TimeFormatter;
-
 
 public class BNFTPConnection {
 	public static final String defaultPath = "downloads/";

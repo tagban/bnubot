@@ -11,9 +11,9 @@ import java.io.*;
 
 import javax.swing.*;
 
-import net.bnubot.core.BNetInputStream;
+import net.bnubot.core.BNFTPConnection;
 import net.bnubot.core.ConnectionSettings;
-import net.bnubot.core.bnftp.BNFTPConnection;
+import net.bnubot.util.BNetInputStream;
 import net.bnubot.util.HexDump;
 import net.bnubot.util.Out;
 

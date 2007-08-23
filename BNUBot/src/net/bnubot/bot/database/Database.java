@@ -10,7 +10,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-import net.bnubot.core.BNetUser;
+import net.bnubot.util.BNetUser;
 import net.bnubot.util.Out;
 
 public class Database {

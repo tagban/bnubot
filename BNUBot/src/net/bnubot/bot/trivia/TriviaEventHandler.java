@@ -15,16 +15,16 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 
-import net.bnubot.bot.EventHandler;
 import net.bnubot.bot.database.AccountResultSet;
 import net.bnubot.bot.database.Database;
-import net.bnubot.core.BNetUser;
 import net.bnubot.core.Connection;
-import net.bnubot.core.StatString;
+import net.bnubot.core.EventHandler;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
+import net.bnubot.util.BNetUser;
 import net.bnubot.util.HexDump;
 import net.bnubot.util.Out;
+import net.bnubot.util.StatString;
 
 public class TriviaEventHandler implements EventHandler {
 	private boolean triviaEnabled = false;

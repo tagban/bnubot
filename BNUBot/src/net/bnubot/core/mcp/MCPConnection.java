@@ -10,11 +10,11 @@ import java.io.DataOutputStream;
 import java.net.Socket;
 import java.util.Date;
 
-import net.bnubot.core.BNetInputStream;
 import net.bnubot.core.RealmConnection;
-import net.bnubot.core.StatString;
+import net.bnubot.util.BNetInputStream;
 import net.bnubot.util.HexDump;
 import net.bnubot.util.Out;
+import net.bnubot.util.StatString;
 import net.bnubot.util.TimeFormatter;
 
 public class MCPConnection extends RealmConnection {
