@@ -16,7 +16,6 @@ import net.bnubot.util.Out;
 
 public class BNCSPacket extends BNetOutputStream {
 	byte packetId;
-	boolean packetLog;
 
 	public BNCSPacket(byte packetId) {
 		super(new ByteArrayOutputStream());

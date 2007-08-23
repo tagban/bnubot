@@ -30,6 +30,7 @@ public class ConnectionSettings implements Serializable {
 	public String bncsServer;
 	public int port;
 	public String bnlsServer;
+	public int bnlsPort;
 	public String username;
 	public String password;
 	public String email;
@@ -158,6 +159,7 @@ public class ConnectionSettings implements Serializable {
 		Settings.write(header, "server", bncsServer);
 		Settings.write(header, "port", Integer.toString(port));
 		Settings.write(header, "bnlsserver", bnlsServer);
+		Settings.write(header, "bnlsport", Integer.toString(bnlsPort));
 		Settings.write(header, "username", username);
 		Settings.write(header, "password", password);
 		Settings.write(header, "email", email);
@@ -202,6 +204,8 @@ public class ConnectionSettings implements Serializable {
 		port = Integer.parseInt(
 					Settings.read(header, "port", "6112"));
 		bnlsServer =Settings.read(header, "bnlsserver", "bnls.valhallalegends.com");
+		bnlsPort = Integer.parseInt(
+					Settings.read(header, "bnlsport", "9367"));
 		username =	Settings.read(header, "username", null);
 		password =	Settings.read(header, "password", null);
 		email =		Settings.read(header, "email", null);
