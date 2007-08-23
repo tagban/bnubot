@@ -8,11 +8,11 @@ package net.bnubot.util;
 import java.io.PrintStream;
 import java.util.Calendar;
 
-import net.bnubot.core.Connection;
+import net.bnubot.bot.gui.GuiEventHandler;
 
 public class Out {
 	private static PrintStream outStream = System.out;
-	private static Connection outConnection = null;
+	private static GuiEventHandler outConnection = null;
 	private static boolean debug = false;
 
 	public static void print(String out) {
@@ -43,12 +43,10 @@ public class Out {
 	 *            -text to show
 	 */
 	public static void debug(Class<?> source, String text) {
-		if(!debug)
-			return;
-		if(outStream != null)
+		if((outStream != null) && debug)
 			outStream.println(getTimestamp() + "{" + source.getSimpleName() + " - Debug} " + text);
 		if(outConnection != null)
-			outConnection.recieveInfo("{" + source.getSimpleName() + "} " + text);
+			outConnection.recieveDebug("{" + source.getSimpleName() + "} " + text);
 	}
 
 	/**
@@ -78,8 +76,8 @@ public class Out {
 		outConnection = null;
 	}
 	
-	public static void setOutputConnection(Connection c) {
-		outConnection = c;
+	public static void setOutputConnection(GuiEventHandler g) {
+		outConnection = g;
 		outStream = null;
 	}
 
