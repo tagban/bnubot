@@ -22,6 +22,8 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.TimeZone;
 
+import org.jbls.Hashing.*;
+
 import net.bnubot.core.BNetInputStream;
 import net.bnubot.core.BNetUser;
 import net.bnubot.core.Connection;
@@ -42,7 +44,6 @@ import net.bnubot.util.Out;
 import net.bnubot.util.TimeFormatter;
 import net.bnubot.vercheck.CurrentVersion;
 
-import Hashing.*;
 
 public class BNCSConnection extends Connection {
 	public static final String[] clanRanks = {"Peon", "Grunt", "Shaman", "Chieftain"};

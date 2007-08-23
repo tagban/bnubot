@@ -13,9 +13,10 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import org.jbls.util.Buffer;
+
 import net.bnubot.util.Out;
 
-import util.Buffer;
 
 public class KeyManager {
 	public static final int PRODUCT_ALLNORMAL = -1;
@@ -116,7 +117,7 @@ public class KeyManager {
 					
 					key = key.replaceAll("-", "");
 					
-					Buffer b = Hashing.HashMain.hashKey(0, 0, key);
+					Buffer b = org.jbls.Hashing.HashMain.hashKey(0, 0, key);
 					b.removeDWord();	//length
 					int prod = b.removeDWord();	//Product
 					

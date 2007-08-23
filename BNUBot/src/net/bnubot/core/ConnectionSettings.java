@@ -168,7 +168,7 @@ public class ConnectionSettings implements Serializable {
 		Settings.write(header, "cdkeyLOD", cdkeyLOD);
 		Settings.write(header, "cdkeyTFT", cdkeyTFT);
 		if(product != 0)
-		Settings.write(header, "product", util.Constants.prods[product-1]);
+		Settings.write(header, "product", org.jbls.util.Constants.prods[product-1]);
 		Settings.write(header, "autoconnect", Boolean.toString(autoconnect));
 		
 		if(botNum == 1) {
@@ -216,8 +216,8 @@ public class ConnectionSettings implements Serializable {
 		String prod = Settings.read(header, "product", null);
 		product = 0;
 		if(prod != null) {
-			for(int i = 0; i < util.Constants.prods.length; i++) {
-				if(util.Constants.prods[i].compareTo(prod) == 0)
+			for(int i = 0; i < org.jbls.util.Constants.prods.length; i++) {
+				if(org.jbls.util.Constants.prods[i].compareTo(prod) == 0)
 					product = (byte)(i+1);
 			}
 		}
