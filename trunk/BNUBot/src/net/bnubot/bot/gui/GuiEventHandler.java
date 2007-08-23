@@ -317,6 +317,10 @@ public class GuiEventHandler implements EventHandler {
 		mainTextArea.recieveError(text);
 	}
 
+	public void recieveDebug(String text) {
+		mainTextArea.recieveDebug(text);
+	}
+
 	public void whisperRecieved(BNetUser user, String text) {
 		mainTextArea.whisperRecieved(user, text);
 	}

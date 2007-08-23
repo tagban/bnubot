@@ -29,6 +29,7 @@ public abstract class ColorScheme {
 	public abstract Color getChannelColor();
 	public abstract Color getInfoColor();
 	public abstract Color getErrorColor();
+	public abstract Color getDebugColor();
 	
 	public abstract Color getUserNameColor(int flags);
 	public abstract Color getUserNameListColor(int flags);
