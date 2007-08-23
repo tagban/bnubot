@@ -3,12 +3,11 @@
  * $Id$
  */
 
-package net.bnubot.core.queue;
+package net.bnubot.core;
 
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import net.bnubot.core.Connection;
 
 public class ChatQueue extends Thread {
 	private LinkedList<Connection> cons = new LinkedList<Connection>();

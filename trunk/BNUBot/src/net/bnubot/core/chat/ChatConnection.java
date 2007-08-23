@@ -9,7 +9,8 @@ import java.net.Socket;
 
 import net.bnubot.core.*;
 import net.bnubot.core.bncs.ProductIDs;
-import net.bnubot.core.queue.ChatQueue;
+import net.bnubot.util.BNetInputStream;
+import net.bnubot.util.BNetOutputStream;
 import net.bnubot.util.Out;
 
 public class ChatConnection extends Connection {

@@ -3,13 +3,11 @@
  * $Id$
  */
 
-package net.bnubot.core;
+package net.bnubot.util;
 
 import java.nio.CharBuffer;
 
 import net.bnubot.core.bncs.ProductIDs;
-import net.bnubot.util.HexDump;
-import net.bnubot.util.Out;
 
 public class StatString {
 	private static final String[] D2Classes = {"Amazon", "Sorceress", "Necromancer", "Paladin", "Barbarian", "Druid", "Assassin" };

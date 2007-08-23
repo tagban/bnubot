@@ -3,9 +3,8 @@
  * $Id$
  */
 
-package net.bnubot.bot;
+package net.bnubot.core;
 
-import net.bnubot.core.RealmConnection;
 
 public interface RealmEventHandler {
 	//Initialization

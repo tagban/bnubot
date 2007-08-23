@@ -10,16 +10,16 @@ import java.awt.event.MouseListener;
 
 import javax.swing.*;
 
-import net.bnubot.bot.EventHandler;
-import net.bnubot.bot.RealmEventHandler;
-import net.bnubot.core.BNetUser;
 import net.bnubot.core.Connection;
+import net.bnubot.core.EventHandler;
 import net.bnubot.core.RealmConnection;
-import net.bnubot.core.StatString;
+import net.bnubot.core.RealmEventHandler;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.core.mcp.MCPConnection;
+import net.bnubot.util.BNetUser;
 import net.bnubot.util.Out;
+import net.bnubot.util.StatString;
 
 @SuppressWarnings("serial")
 public class RealmWindow extends JFrame implements EventHandler, RealmEventHandler {

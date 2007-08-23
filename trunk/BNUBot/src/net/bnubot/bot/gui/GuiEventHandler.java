@@ -16,18 +16,18 @@ import java.util.Date;
 
 import javax.swing.*;
 
-import net.bnubot.bot.EventHandler;
 import net.bnubot.bot.database.Database;
 import net.bnubot.bot.gui.ColorScheme.ColorScheme;
 import net.bnubot.bot.gui.components.*;
 import net.bnubot.bot.gui.database.DatabaseAccountEditor;
 import net.bnubot.bot.gui.database.DatabaseRankEditor;
 import net.bnubot.bot.gui.icons.IconsDotBniReader;
-import net.bnubot.core.BNetUser;
 import net.bnubot.core.Connection;
-import net.bnubot.core.StatString;
+import net.bnubot.core.EventHandler;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
+import net.bnubot.util.BNetUser;
+import net.bnubot.util.StatString;
 
 public class GuiEventHandler implements EventHandler {
 	private JFrame frame = null;

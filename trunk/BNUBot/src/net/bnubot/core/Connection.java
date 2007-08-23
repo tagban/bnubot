@@ -11,12 +11,11 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import net.bnubot.bot.EventHandler;
-import net.bnubot.core.bnftp.BNFTPConnection;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
-import net.bnubot.core.queue.ChatQueue;
+import net.bnubot.util.BNetUser;
 import net.bnubot.util.Out;
+import net.bnubot.util.StatString;
 import net.bnubot.util.TimeFormatter;
 import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.VersionNumber;

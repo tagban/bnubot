@@ -8,7 +8,6 @@ package net.bnubot.core;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import net.bnubot.bot.RealmEventHandler;
 
 public abstract class RealmConnection extends Thread implements RealmEventHandler {
 	protected LinkedList<RealmEventHandler> realmEventHandlers = new LinkedList<RealmEventHandler>();

@@ -11,7 +11,7 @@ import java.util.GregorianCalendar;
 import javax.swing.*;
 
 import net.bnubot.bot.gui.ColorScheme.ColorScheme;
-import net.bnubot.core.BNetUser;
+import net.bnubot.util.BNetUser;
 
 @SuppressWarnings("serial")
 public class TextWindow extends JScrollPane {
