@@ -37,7 +37,7 @@ public class BNLSPacketReader {
 			os.writeByte(packetId);
 			os.write(data);
 		
-			Out.info(this.getClass(), "RECV\n" + HexDump.hexDump(baos.toByteArray()));
+			Out.debug(this.getClass(), "RECV\n" + HexDump.hexDump(baos.toByteArray()));
 		}
 	}
 	
