@@ -7,22 +7,28 @@ package net.bnubot.core.bnftp;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.Date;
 
 import net.bnubot.core.*;
 import net.bnubot.util.Out;
+import net.bnubot.util.TimeFormatter;
 
 
 public class BNFTPConnection {
-	public static final String path = "downloads/";
+	public static final String defaultPath = "downloads/";
 	
 	public static File downloadFile(ConnectionSettings cs, String fileName) {
+		return downloadFile(cs, fileName, defaultPath);
+	}
+	
+	public static File downloadFile(ConnectionSettings cs, String fileName, String path) {
 		File f = new File(path + fileName);
 		if(f.exists())
 			return f;
 		
 		try {
 			Socket s = new Socket(cs.bncsServer, cs.port);
-			f = downloadFile(s, fileName);
+			f = downloadFile(s, fileName, path);
 			s.close();
 			return f;
 		} catch (Exception e) {
@@ -32,7 +38,7 @@ public class BNFTPConnection {
 		return null;
 	}
 	
-	public static File downloadFile(Socket s, String fileName) {
+	public static File downloadFile(Socket s, String fileName, String path) {
 		try {
 			Out.info(BNFTPConnection.class, "Downloading " + fileName + "...");
 			
@@ -64,7 +70,7 @@ public class BNFTPConnection {
 			int fileSize = is.readDWord();
 			is.skip(4);	//int bannersID = is.readDWord();
 			is.skip(4);	//int bannersFileExt = is.readDWord();
-			is.skip(8);	//long fileTime = is.readQWord();
+			Date fileTime = TimeFormatter.fileTime(is.readQWord());
 			fileName = is.readNTString();
 	
 			//The rest is the data
@@ -76,6 +82,11 @@ public class BNFTPConnection {
 				b = b & 0xFF;
 				fw.write(b);
 			}
+			fw.close();
+			
+			Out.info(BNFTPConnection.class, fileTime.toString());
+			f.setLastModified(fileTime.getTime());
+			
 			Out.info(BNFTPConnection.class, fileSize + " bytes recieved.");
 			
 			return f;
