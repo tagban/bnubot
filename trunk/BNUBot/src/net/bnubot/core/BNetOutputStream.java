@@ -51,8 +51,12 @@ public class BNetOutputStream extends DataOutputStream {
 		writeByte(str.charAt(0));
 	}
 	
-	public void writeNTString(String str) throws IOException {
-		write(str.getBytes());
+	public void writeNTString(byte[] str) throws IOException {
+		write(str);
 		writeByte(0);
+	}
+	
+	public void writeNTString(String str) throws IOException {
+		writeNTString(str.getBytes());
 	}
 }
