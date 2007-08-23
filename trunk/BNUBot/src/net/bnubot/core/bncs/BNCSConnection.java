@@ -412,7 +412,17 @@ public class BNCSConnection extends Connection {
 					  	bnlsOut.writeNTString(ValueStr);
 					  	bnlsOut.SendPacket(conn.getOutputStream(), cs.packetLog);
 					  	
-					  	InputStream bnlsInputStream = conn.getInputStream(); 
+					  	InputStream bnlsInputStream = conn.getInputStream();
+					  	long startTime = new Date().getTime();
+					  	while(bnlsInputStream.available() < 3) {
+					  		Thread.sleep(10);
+					  		Thread.yield();
+					  		
+					  		long timeElapsed = new Date().getTime() - startTime;
+					  		if(timeElapsed > 5000)
+					  			throw new Exception("BNLS_VERSIONCHECKEX2 timeout");
+					  	}
+					  	
 					  	BNLSPacketReader bpr = new BNLSPacketReader(bnlsInputStream, cs.packetLog);
 					  	BNetInputStream bnlsIn = bpr.getInputStream();
 					  	int success = bnlsIn.readDWord();
@@ -431,42 +441,6 @@ public class BNCSConnection extends Connection {
 				    	
 				    	conn.close();
 				  	}
-                	
-                	/*try {
-                		String tmp = MPQFileName;
-                		tmp = tmp.substring(tmp.indexOf("IX86")+4);
-                		while((tmp.charAt(0) < 0x30) || (tmp.charAt(0) > 0x39))
-                			tmp = tmp.substring(1);
-    					tmp = tmp.substring(0,tmp.indexOf("."));
-                    	int mpqNum = Integer.parseInt(tmp);
-                    	
-                    	exeHash = CheckRevision.checkRevision(ValueStr, files, mpqNum);
-				    	exeVersion = HashMain.getExeVer(cs.product);
-						exeInfo = HashMain.getExeInfo(cs.product);
-                	} catch(Exception e) {
-                		recieveError("Local hashing failed. Trying BNLS server.");
-                		
-                		BNLSProtocol.OutPacketBuffer exeHashBuf;
-                		if((cs.bnlsServer == null)
-                		|| (cs.bnlsServer.length() == 0)) {
-                			exeHashBuf = CheckRevisionBNLS.checkRevision(ValueStr, cs.product, MPQFileName, MPQFileTime);
-                		} else {
-                			exeHashBuf = CheckRevisionBNLS.checkRevision(ValueStr, cs.product, MPQFileName, MPQFileTime, cs.bnlsServer);
-                		}
-				    	BNetInputStream exeStream = new BNetInputStream(new java.io.ByteArrayInputStream(exeHashBuf.getBuffer()));
-				    	exeStream.skipBytes(3);
-				    	int success = exeStream.readDWord();
-				    	if(success != 1) {
-				    		Out.error(this.getClass(), HexDump.hexDump(exeHashBuf.getBuffer()));
-				    		throw new Exception("BNLS failed to complete 0x1A sucessfully");
-				    	}
-			    		exeVersion = exeStream.readDWord();
-				    	exeHash = exeStream.readDWord();
-				    	exeInfo = exeStream.readNTString(null);
-				    	exeStream.readDWord(); // cookie
-				    	/*int exeVerbyte =* / exeStream.readDWord();
-				    	assert(exeStream.available() == 0);
-                	}*/
                 	
                 	if((exeVersion == 0) || (exeHash == 0) || (exeInfo == null) || (exeInfo.length() == 0)) {
                 		recieveError("Checkrevision failed!");
