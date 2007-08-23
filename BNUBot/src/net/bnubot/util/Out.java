@@ -8,8 +8,11 @@ package net.bnubot.util;
 import java.io.PrintStream;
 import java.util.Calendar;
 
+import net.bnubot.core.Connection;
+
 public class Out {
 	private static PrintStream outStream = System.out;
+	private static Connection outConnection = null;
 	private static boolean debug = false;
 
 	public static void print(String out) {
@@ -25,7 +28,10 @@ public class Out {
 	 *            text to show
 	 */
 	public static void error(Class<?> source, String text) {
-		outStream.println(getTimestamp() + "{" + source.getSimpleName() + " - Error} " + text);
+		if(outStream != null)
+			outStream.println(getTimestamp() + "{" + source.getSimpleName() + " - Error} " + text);
+		if(outConnection != null)
+			outConnection.recieveError("{" + source.getSimpleName() + "} " + text);
 	}
 
 	/**
@@ -37,9 +43,12 @@ public class Out {
 	 *            -text to show
 	 */
 	public static void debug(Class<?> source, String text) {
-		if (debug)
-			outStream.println(getTimestamp() + "{" + source.getSimpleName() + " - Debug} "
-					+ text);
+		if(!debug)
+			return;
+		if(outStream != null)
+			outStream.println(getTimestamp() + "{" + source.getSimpleName() + " - Debug} " + text);
+		if(outConnection != null)
+			outConnection.recieveInfo("{" + source.getSimpleName() + "} " + text);
 	}
 
 	/**
@@ -51,7 +60,10 @@ public class Out {
 	 *            text to show
 	 */
 	public static void info(Class<?> source, String text) {
-		outStream.println(getTimestamp() + "{" + source.getSimpleName() + "} " + text);
+		if(outStream != null)
+			outStream.println(getTimestamp() + "{" + source.getSimpleName() + "} " + text);
+		if(outConnection != null)
+			outConnection.recieveInfo("{" + source.getSimpleName() + "} " + text);
 	}
 
 	/**
@@ -63,6 +75,12 @@ public class Out {
 	 */
 	public static void setOutputStream(PrintStream s) {
 		outStream = s;
+		outConnection = null;
+	}
+	
+	public static void setOutputConnection(Connection c) {
+		outConnection = c;
+		outStream = null;
 	}
 
 	static public String padString(String str, int length, char c) {
