@@ -153,6 +153,8 @@ public class Main {
 		if(cs.enableGUI) {
 			gui = new GuiEventHandler();
 			primary.addEventHandler(gui);
+			
+			Out.setOutputConnection(primary);
 		}
 		
 		//Bot
