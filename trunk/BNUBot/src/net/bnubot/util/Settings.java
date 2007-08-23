@@ -72,6 +72,7 @@ public class Settings {
 			// Generate the comment first, because the settings.ini file could be lost if CurrentVersion.version() fails
 			String comment = CurrentVersion.version().toString();
 			props.store(new FileOutputStream(propsFile), comment);
+			anythingChanged = false;
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.exit(1);
