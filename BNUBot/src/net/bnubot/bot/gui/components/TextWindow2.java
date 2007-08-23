@@ -70,6 +70,7 @@ public class TextWindow2 extends JScrollPane {
 		head += " .channel	{color: #" + makeColor(cs.getChannelColor()) + ";}";
 		head += " .info	{color: #" + makeColor(cs.getInfoColor()) + ";}";
 		head += " .error	{color: #" + makeColor(cs.getErrorColor()) + ";}";
+		head += " .debug	{font-family: courier; color: #" + makeColor(cs.getDebugColor()) + ";}";
 		head += "</style></head><body>";
 		html = "";
 		foot = "</body></html>";
@@ -173,6 +174,10 @@ public class TextWindow2 extends JScrollPane {
 	
 	public void recieveError(String text) {
 		append(text, "error");
+	}
+	
+	public void recieveDebug(String text) {
+		append(text, "debug");
 	}
 	
 	public void userChat(BNetUser user, String text) {
