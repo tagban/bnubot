@@ -1,3 +1,6 @@
+/**
+ * $Id$
+ */
 /*
  * War3Decode.java
  *

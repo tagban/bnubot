@@ -1,3 +1,6 @@
+/**
+ * $Id$
+ */
 package org.jbls.util;
 
 public final class Constants {
