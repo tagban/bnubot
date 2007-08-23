@@ -1,3 +1,6 @@
+/**
+ * $Id$
+ */
 package org.jbls.Hashing;
 
 import java.security.MessageDigest;
