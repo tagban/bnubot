@@ -1330,12 +1330,10 @@ public class BNCSConnection extends Connection {
 		
 		try {
 			if(text.substring(0, 3).equals("/j ")) {
-				Out.info(this.getClass(), "Sending join packet");
 				joinChannel(text.substring(3));
 				return;
 			}
 			if(text.substring(0, 6).equals("/join ")) {
-				Out.info(this.getClass(), "Sending join packet");
 				joinChannel(text.substring(6));
 				return;
 			}
