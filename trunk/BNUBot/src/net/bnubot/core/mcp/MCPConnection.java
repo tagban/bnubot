@@ -154,13 +154,13 @@ public class MCPConnection extends RealmConnection {
 						int result = is.readDWord();
 						switch(result) {
 						case 0x00:
-							recieveRealmInfo("Logon success");
+							recieveRealmInfo("Character logon success");
 							break;
 						case 0x46:
 							recieveRealmError("Player not found");
 							break;
 						case 0x7A:
-							recieveRealmError("Logon failed");
+							recieveRealmError("Character logon failed");
 							break;
 						case 0x7B:
 							recieveRealmError("Character expired");
