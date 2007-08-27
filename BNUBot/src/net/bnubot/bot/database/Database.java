@@ -53,27 +53,19 @@ public class Database {
 		}
 	}
 	
-	public void close(ExtendableResultSet rs) {
-		try {
-			close(rs.getStatement());
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+	public void close(ExtendableResultSet rs) throws SQLException {
+		close(rs.getStatement());
 	}
 	
-	public void close(Statement stmt) {
-		try {
-			stmt.close();
+	public void close(Statement stmt) throws SQLException {
+		stmt.close();
 			
-			int i = openStatements.indexOf(stmt);
-			if(i == -1)
-				throw new IllegalStateException("Statement not found in cache");
-			
-			openStatements.remove(i);
-			openStmtExcept.remove(i);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		int i = openStatements.indexOf(stmt);
+		if(i == -1)
+			throw new IllegalStateException("Statement not found in cache");
+		
+		openStatements.remove(i);
+		openStmtExcept.remove(i);
 	}
 	
 	private Statement pushStatement(Statement stmt) {
@@ -106,7 +98,7 @@ public class Database {
 				for(int i = 0; i < openStatements.size() - cushion; i++) {
 					Statement s = openStatements.get(i);
 					try {
-						s.close();
+						close(s);
 					} catch (SQLException e) {
 						e.printStackTrace();
 					}

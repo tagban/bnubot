@@ -401,11 +401,11 @@ public class DatabaseRankEditor extends JFrame {
 					cmdNew = new JButton("New");
 					cmdNew.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent arg0) {
-							if(rsRank != null) {
-								d.close(rsRank);
-								rsRank = null;
-							}
 							try {
+								if(rsRank != null) {
+									d.close(rsRank);
+									rsRank = null;
+								}
 								long rankid = d.createRank();
 								rebuildRanks();
 								displayEditor(rankid);
