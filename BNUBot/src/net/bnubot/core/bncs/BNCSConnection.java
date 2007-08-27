@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
@@ -397,8 +398,7 @@ public class BNCSConnection extends Connection {
                 	int exeVersion = 0;
                 	String exeInfo = null;
                 	
-                	// Close off the scope of conn
-				  	{
+                	try {
 				    	Socket conn = new Socket(cs.bnlsServer, cs.bnlsPort);
 				    	
 				    	recieveInfo("Connected to " + cs.bnlsServer + ":" + cs.bnlsPort);
@@ -440,6 +440,10 @@ public class BNCSConnection extends Connection {
 				    	recieveInfo("Recieved CheckRevision from BNLS");
 				    	
 				    	conn.close();
+				  	} catch(UnknownHostException e) {
+				  		recieveError("BNLS connection failed: " + e.getMessage());
+				  		setConnected(false);
+				  		break;
 				  	}
                 	
                 	if((exeVersion == 0) || (exeHash == 0) || (exeInfo == null) || (exeInfo.length() == 0)) {
