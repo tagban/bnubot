@@ -127,7 +127,7 @@ public class MCPConnection extends RealmConnection {
 							
 							recieveRealmInfo(TimeFormatter.formatTime(time) + " - " + charname + " - " + statstr.toString());
 							
-							if((minTime > time) || (minTime == 0)) {
+							if(((minTime > time) || (minTime == 0)) && (time >= 0)) {
 								minTime = time;
 								maxCharname = charname;
 							}
