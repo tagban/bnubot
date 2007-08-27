@@ -132,7 +132,8 @@ public class TextWindow2 extends JScrollPane {
 				.replaceAll("&", "&amp;")
 				.replaceAll("<", "&lt;")
 				.replaceAll(">", "&gt;")
-				.replaceAll("\n", "<br>\n");
+				.replaceAll("\n", "<br>\n")
+				.replaceAll("  ", " &nbsp;");
 		}
 		return out;
 	}
