@@ -36,6 +36,10 @@ public class BNetInputStream extends DataInputStream {
 	}
 	
 	public String readNTString() throws IOException {
+		return readNTString(null);
+	}
+	
+	public String readNTStringUTF8() throws IOException {
 		return readNTString("UTF-8");
 	}
 	

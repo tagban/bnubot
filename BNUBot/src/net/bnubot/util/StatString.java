@@ -5,8 +5,6 @@
 
 package net.bnubot.util;
 
-import java.nio.CharBuffer;
-
 import net.bnubot.core.bncs.ProductIDs;
 
 public class StatString {
@@ -261,14 +259,7 @@ public class StatString {
 			    //84 80 3B 02 02 02 02 14 FF FF 03 03 60 03 FF FF FF FF FF FF FF FF FF FF 32 13 E4 84 FF FF 01 FF FF - ?;.......`.2..
 			    //00             05             10             15             20             25             30
 				
-				//This is a stupid workaround to unicode chars
-				char[] data2 = new char[statString2[2].length()]; 
-				CharBuffer.wrap(statString2[2]).get(data2);
-				
-				//Convert the chars to bytes
-				byte[] data = new byte[data2.length];
-				for(int i = 0; i < data.length; i++)
-					data[i] = (byte)data2[i];
+				byte[] data = statString2[2].getBytes();
 				
 				if(data.length != 33) {
 					pretty += " error: data.length != 33\n";
