@@ -30,14 +30,15 @@ public class MCPConnection extends RealmConnection {
 	protected DataInputStream dis = null;
 	protected DataOutputStream dos = null;
 	protected boolean connected = false;
-
+	protected boolean packetLog;
 	
-	public MCPConnection(int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName) {
+	public MCPConnection(int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName, boolean packetLog) {
 		this.MCPChunk1 = MCPChunk1;
 		this.server = HexDump.DWordToIP(ip);
 		this.port = port;
 		this.MCPChunk2 = MCPChunk2;
 		this.uniqueName = uniqueName;
+		this.packetLog = packetLog;
 	}
 	
 	public void run() {
@@ -62,11 +63,11 @@ public class MCPConnection extends RealmConnection {
 			for(int i = 0; i < 12; i++)
 				p.writeDWord(MCPChunk2[i]);
 			p.writeNTString(uniqueName);
-		    p.SendPacket(dos, true);
+		    p.SendPacket(dos, packetLog);
 		    
 			while(!s.isClosed() && connected) {
 				if(dis.available() > 0) {
-					MCPPacketReader pr = new MCPPacketReader(dis, true);
+					MCPPacketReader pr = new MCPPacketReader(dis, packetLog);
 					BNetInputStream is = pr.getData();
 					switch(pr.packetId) {
 					case MCPCommandIDs.MCP_STARTUP: {
@@ -85,7 +86,7 @@ public class MCPConnection extends RealmConnection {
 							
 							p = new MCPPacket(MCPCommandIDs.MCP_CHARLIST2);
 							p.writeDWord(8);	//Nubmer of chars to list
-							p.SendPacket(dos, true);
+							p.SendPacket(dos, packetLog);
 							break;
 						case 0x0C:
 							recieveRealmError("Realm server did not detect a Battle.net connection");
@@ -98,8 +99,8 @@ public class MCPConnection extends RealmConnection {
 						}
 						break;
 					}
+					
 					case MCPCommandIDs.MCP_CHARLIST2: {
-						recieveRealmError(HexDump.hexDump(pr.data));
 						/* (WORD)		 Number of characters requested
 						 * (DWORD)		 Number of characters that exist on this account
 						 * (WORD)		 Number of characters returned
@@ -136,11 +137,41 @@ public class MCPConnection extends RealmConnection {
 						if(maxCharname != null) {
 							p = new MCPPacket(MCPCommandIDs.MCP_CHARLOGON);
 							p.writeNTString(maxCharname);
-							p.SendPacket(dos, true);
+							p.SendPacket(dos, packetLog);
 						}
 						
 						break;
 					}
+					
+					case MCPCommandIDs.MCP_CHARLOGON: {
+						/* (DWORD) Result 
+						 * 
+						 * 0x00: Success
+						 * 0x46: Player not found
+						 * 0x7A: Logon failed
+						 * 0x7B: Character expired
+						 */
+						int result = is.readDWord();
+						switch(result) {
+						case 0x00:
+							recieveRealmInfo("Logon success");
+							break;
+						case 0x46:
+							recieveRealmError("Player not found");
+							break;
+						case 0x7A:
+							recieveRealmError("Logon failed");
+							break;
+						case 0x7B:
+							recieveRealmError("Character expired");
+							break;
+						default:
+							recieveRealmError("Unknown MCP_CHARLOGON result: 0x" + Integer.toHexString(result));
+							break;
+						}
+						break;
+					}
+					
 					default:
 						recieveRealmError("Unknown MCP packet 0x" + Integer.toHexString(pr.packetId) + "\n" + HexDump.hexDump(pr.data));
 						break;

@@ -124,7 +124,7 @@ public class RealmWindow extends JFrame implements EventHandler, RealmEventHandl
 	public void queryRealms2(String[] realms) {}
 
 	public void logonRealmEx(int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName) {
-		MCPConnection mcpc = new MCPConnection(MCPChunk1, ip, port, MCPChunk2, uniqueName);
+		MCPConnection mcpc = new MCPConnection(MCPChunk1, ip, port, MCPChunk2, uniqueName, c.getConnectionSettings().packetLog);
 		mcpc.addRealmEventHandler(this);
 		mcpc.start();
 		
