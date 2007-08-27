@@ -32,7 +32,7 @@ import net.bnubot.util.StatString;
 public class GuiEventHandler implements EventHandler {
 	private JFrame frame = null;
 	private Connection c = null;
-	private TextWindow2 mainTextArea = null;
+	private TextWindow mainTextArea = null;
 	private JTextArea chatTextArea = null;
 	private JTextArea channelTextArea = null;
 	private UserList userList = null;
@@ -200,7 +200,7 @@ public class GuiEventHandler implements EventHandler {
 		frame.setLayout(new BotLayoutManager());
 		
 		//Main text area
-		mainTextArea = new TextWindow2(cs);
+		mainTextArea = new TextWindow(cs);
 		//Send chat textbox
 		chatTextArea = new JTextArea();
 		chatTextArea.setBackground(cs.getBackgroundColor());
