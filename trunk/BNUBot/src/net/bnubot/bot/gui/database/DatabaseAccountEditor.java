@@ -319,11 +319,11 @@ public class DatabaseAccountEditor extends JFrame {
 					cmdNew = new JButton("New");
 					cmdNew.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent arg0) {
-							if(rsAccount != null) {
-								d.close(rsAccount);
-								rsAccount = null;
-							}
 							try {
+								if(rsAccount != null) {
+									d.close(rsAccount);
+									rsAccount = null;
+								}
 								rsAccount = d.createAccount();
 								if(!rsAccount.next())
 									throw new SQLException("fetch failed");
