@@ -665,7 +665,7 @@ public class BNCSConnection extends Connection {
 					is.read(server_M2, 0, 20);
 					String additionalInfo = null;
 					if(is.available() != 0)
-						additionalInfo = is.readNTString();
+						additionalInfo = is.readNTStringUTF8();
 					
 					switch(status) {
 					case 0x00:
@@ -834,7 +834,7 @@ public class BNCSConnection extends Connection {
 					
 					for(int i = 0; i < numEntries; i++) {
 						int timeStamp = is.readDWord();
-						String news = is.readNTString().trim();
+						String news = is.readNTStringUTF8().trim();
 						if(timeStamp == 0)	// MOTD
 							recieveInfo(news);
 					}
@@ -852,7 +852,7 @@ public class BNCSConnection extends Connection {
 				//	is.readDWord(); // Registration authority (defunct)
 					String username = is.readNTString();
 					String text = is.readNTString();
-
+					
 					BNetUser user = null;
 					switch(eid) {
 					case BNCSChatEventIDs.EID_SHOWUSER:
@@ -934,8 +934,8 @@ public class BNCSConnection extends Connection {
 				
 				case BNCSCommandIDs.SID_MESSAGEBOX: {
 					/*int style =*/ is.readDWord();
-					String text = is.readNTString();
-					String caption = is.readNTString();
+					String text = is.readNTStringUTF8();
+					String caption = is.readNTStringUTF8();
 					
 					recieveInfo("<" + caption + "> " + text);
 					break;
@@ -965,8 +965,8 @@ public class BNCSConnection extends Connection {
 					String realms[] = new String[numRealms];
 					for(int i = 0; i < numRealms; i++) {
 						is.readDWord();
-						realms[i] = is.readNTString();
-						is.readNTString();
+						realms[i] = is.readNTStringUTF8();
+						is.readNTStringUTF8();
 					}
 					queryRealms2(realms);
 					break;
@@ -1049,7 +1049,7 @@ public class BNCSConnection extends Connection {
 					recieveInfo("Profile for " + keys.remove(0));
 					for(int i = 0; i < numKeys; i++) {
 						String key = keys.get(i);
-						String value = is.readNTString();
+						String value = is.readNTStringUTF8();
 						if((key == null) || (key.length() == 0) || (value.length() == 0))
 							continue;
 						value = prettyProfileValue(key, value);
@@ -1081,7 +1081,7 @@ public class BNCSConnection extends Connection {
 						byte uStatus = is.readByte();
 						byte uLocation = is.readByte();
 						int uProduct = is.readDWord();
-						String uLocationName = is.readNTString();
+						String uLocationName = is.readNTStringUTF8();
 						
 						entries[i] = new FriendEntry(uAccount, uStatus, uLocation, uProduct, uLocationName);
 					}
@@ -1101,7 +1101,7 @@ public class BNCSConnection extends Connection {
 					byte fLocation = is.readByte();
 					byte fStatus = is.readByte();
 					int fProduct = is.readDWord();
-					String fLocationName = is.readNTString();
+					String fLocationName = is.readNTStringUTF8();
 					
 					friendsUpdate(new FriendEntry(fEntry, fStatus, fLocation, fProduct, fLocationName));
 					break;
@@ -1118,7 +1118,7 @@ public class BNCSConnection extends Connection {
 					byte fLocation = is.readByte();
 					byte fStatus = is.readByte();
 					int fProduct = is.readDWord();
-					String fLocationName = is.readNTString();
+					String fLocationName = is.readNTStringUTF8();
 
 					friendsAdd(new FriendEntry(fAccount, fStatus, fLocation, fProduct, fLocationName));
 					break;
@@ -1217,7 +1217,7 @@ public class BNCSConnection extends Connection {
 					 */
 					int cookieId = is.readDWord();
 					is.readDWord();
-					String text = is.readNTString();
+					String text = is.readNTStringUTF8();
 					
 					Object cookie = CookieUtility.destroyCookie(cookieId);
 					clanMOTD(cookie, text);
@@ -1242,7 +1242,7 @@ public class BNCSConnection extends Connection {
 						String uName = is.readNTString();
 						byte uRank = is.readByte();
 						byte uOnline = is.readByte();
-						String uLocation = is.readNTString();
+						String uLocation = is.readNTStringUTF8();
 						
 						members[i] = new ClanMember(uName, uRank, uOnline, uLocation);
 					}
@@ -1268,7 +1268,7 @@ public class BNCSConnection extends Connection {
 					String username = is.readNTString();
 					byte rank = is.readByte();
 					byte status = is.readByte();
-					String location = is.readNTString();
+					String location = is.readNTStringUTF8();
 					
 					clanMemberStatusChange(new ClanMember(username, rank, status, location));
 					break;
