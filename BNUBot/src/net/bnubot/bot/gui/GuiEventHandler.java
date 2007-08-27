@@ -40,6 +40,7 @@ public class GuiEventHandler implements EventHandler {
 	private ClanList clanList = null;
 	private RealmWindow w = null;
 	private String channel = null;
+	private TrayIcon ti = null;
 	
 	public void initialize(Connection c) {
 		ColorScheme cs = ColorScheme.createColorScheme(c.getConnectionSettings().colorScheme);
@@ -50,8 +51,52 @@ public class GuiEventHandler implements EventHandler {
 		} else {
 			initializeGui("BNU`Bot", cs);
 		}
+		
+		initializeSystemTray();
 	}
 
+	private void initializeSystemTray() {
+		if(!SystemTray.isSupported())
+			return;
+		
+		Image image = Toolkit.getDefaultToolkit().getImage("tray.gif");
+			
+		PopupMenu pm = new PopupMenu("title");
+		
+		pm.add(new MenuItem("test"));
+		
+		ti = new TrayIcon(image, c.toString(), pm);
+		ti.addMouseListener(new MouseListener() {
+			public void mouseClicked(MouseEvent e) {
+				if(e.getButton() == 1) {
+					frame.setVisible(!frame.isVisible());
+					if(frame.isVisible())
+						frame.toFront();
+				}
+			}
+			public void mouseEntered(MouseEvent e) {}
+			public void mouseExited(MouseEvent e) {}
+			public void mousePressed(MouseEvent e) {}
+			public void mouseReleased(MouseEvent e) {}
+		});
+		ti.setImageAutoSize(true);
+		
+		try {
+			SystemTray.getSystemTray().add(ti);
+		} catch(AWTException e) {
+			e.printStackTrace();
+		}
+		
+		frame.addWindowStateListener(new WindowStateListener() {
+			public void windowStateChanged(WindowEvent e) {
+				if((e.getNewState() & java.awt.Frame.ICONIFIED) != 0) {
+					frame.setVisible(false);
+					frame.setState(e.getNewState() & ~java.awt.Frame.ICONIFIED);
+				}
+			}
+		});
+	}
+	
 	private void initializeGui(String title, ColorScheme cs) {
 		//Create and set up the window
 		frame = new JFrame(title);
@@ -235,7 +280,6 @@ public class GuiEventHandler implements EventHandler {
 		//Clan list
 		clanList = new ClanList(cs);
 
-		@SuppressWarnings("serial")
 		JTabbedPane allLists = new JTabbedPane();
 		allLists.addTab("Channel", new JScrollPane(userList));
 		allLists.addTab("Friends", new JScrollPane(friendList));
@@ -246,9 +290,9 @@ public class GuiEventHandler implements EventHandler {
 		frame.add(chatTextArea);
 		frame.add(channelTextArea);
 		frame.add(allLists);
-		/*JSplitPane leftPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, mainTextScroll, chatTextArea);
+		/*JSplitPane leftPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, mainTextArea, chatTextArea);
 		leftPane.setResizeWeight(1);
-		JSplitPane rightPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, channelTextArea, userList);
+		JSplitPane rightPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, channelTextArea, allLists);
 		JSplitPane mainPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPane, rightPane);
 		mainPane.setResizeWeight(1);
 		frame.add(mainPane);*/
@@ -286,6 +330,12 @@ public class GuiEventHandler implements EventHandler {
 
 	public void recieveChat(BNetUser user, String text) {
 		mainTextArea.userChat(user, text);
+
+		if((ti != null) && !frame.isVisible()) {
+	        ti.displayMessage("User is chatting: " + user.getShortLogonName(), 
+	            text,
+	            TrayIcon.MessageType.INFO);
+		}
 	}
 
 	public void recieveEmote(BNetUser user, String text) {
@@ -318,6 +368,12 @@ public class GuiEventHandler implements EventHandler {
 
 	public void whisperRecieved(BNetUser user, String text) {
 		mainTextArea.whisperRecieved(user, text);
+
+		if((ti != null) && !frame.isVisible()) {
+	        ti.displayMessage("Whisper from " + user.getShortLogonName(), 
+	            text,
+	            TrayIcon.MessageType.INFO);
+		}
 	}
 
 	public void whisperSent(BNetUser user, String text) {
@@ -336,6 +392,8 @@ public class GuiEventHandler implements EventHandler {
 
 	public void titleChanged() {
 		frame.setTitle(c.toString());
+		if(ti != null)
+			ti.setToolTip(c.toString());
 	}
 
 	public void friendsList(FriendEntry[] entries) {

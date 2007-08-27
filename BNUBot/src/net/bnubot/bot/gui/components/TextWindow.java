@@ -1,6 +1,6 @@
 /**
  * This file is distributed under the GPL 
- * $Id$
+ * $Id: TextWindow.java 604 2007-08-27 14:33:35Z scotta $
  */
 
 package net.bnubot.bot.gui.components;
@@ -113,7 +113,7 @@ public class TextWindow extends JScrollPane {
 	
 	public void appendDate() {
 		html += "<div class=\"timestamp\">";
-		html += String.format("[%1$tH:%1$tM:%1$tS] ", new GregorianCalendar());
+		html += String.format("[%1$tH:%1$tM:%1$tS.%1$tL] ", new GregorianCalendar());
 	}
 	
 	private static Pattern pattern = null;
