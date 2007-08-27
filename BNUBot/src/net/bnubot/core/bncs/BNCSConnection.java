@@ -235,7 +235,7 @@ public class BNCSConnection extends Connection {
 				titleChanged();
 			} catch(SocketException e) {
 			} catch(Exception e) {
-				recieveError("Unhandled exception: " + e.getMessage());
+				recieveError("Unhandled " + e.getClass().getSimpleName() + ": " + e.getMessage());
 				e.printStackTrace();
 			}
 
