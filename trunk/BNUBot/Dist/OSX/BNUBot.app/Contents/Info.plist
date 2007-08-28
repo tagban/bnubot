@@ -31,7 +31,7 @@
 			<key>com.apple.macos.useScreenMenuBar</key>
 			<string>true</string>
 			<key>com.apple.mrj.application.apple.menu.about.name</key>
-			<string>SampleApp</string>
+			<string>BNUBot</string>
 		</dict>
 	</dict>
 </dict>
