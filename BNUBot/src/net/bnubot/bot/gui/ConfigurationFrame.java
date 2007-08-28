@@ -38,8 +38,9 @@ import net.bnubot.bot.gui.KeyManager.CDKey;
 import net.bnubot.core.ConnectionSettings;
 import net.bnubot.util.Out;
 
-@SuppressWarnings("serial")
 public class ConfigurationFrame extends JDialog {
+	private static final long serialVersionUID = 1308177934480442149L;
+
 	ConnectionSettings cs;
 	
 	JTabbedPane tabs = null;
@@ -81,6 +82,11 @@ public class ConfigurationFrame extends JDialog {
 	JComboBox cmbLookAndFeel = null;
 	
 	private class ConfigTextArea extends JTextArea {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -2894805163754230265L;
+
 		public ConfigTextArea(String text) {
 			super(text);
 			setBorder(BorderFactory.createEtchedBorder());

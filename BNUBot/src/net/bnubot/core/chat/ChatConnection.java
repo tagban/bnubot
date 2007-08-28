@@ -7,7 +7,10 @@ package net.bnubot.core.chat;
 
 import java.net.Socket;
 
-import net.bnubot.core.*;
+import net.bnubot.core.ChatQueue;
+import net.bnubot.core.Connection;
+import net.bnubot.core.ConnectionSettings;
+import net.bnubot.core.UnsupportedFeatureException;
 import net.bnubot.core.bncs.ProductIDs;
 import net.bnubot.util.BNetInputStream;
 import net.bnubot.util.BNetOutputStream;
@@ -43,7 +46,7 @@ public class ChatConnection extends Connection {
 			while(s.isConnected()) {
 				if(is.available() > 0) {
 					byte b = is.readByte();
-					Out.print(Character.toString((char)b));
+					Out.info(getClass(), Character.toString((char)b));
 				} else {
 					yield();
 					sleep(10);

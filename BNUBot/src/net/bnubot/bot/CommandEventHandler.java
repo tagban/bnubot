@@ -9,10 +9,18 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Properties;
 
-import net.bnubot.bot.database.*;
-import net.bnubot.core.*;
+import net.bnubot.bot.database.AccountResultSet;
+import net.bnubot.bot.database.BNLoginResultSet;
+import net.bnubot.bot.database.CommandResultSet;
+import net.bnubot.bot.database.Database;
+import net.bnubot.bot.database.RankResultSet;
+import net.bnubot.core.Connection;
+import net.bnubot.core.EventHandler;
 import net.bnubot.core.bncs.ProductIDs;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
@@ -33,6 +41,7 @@ public class CommandEventHandler implements EventHandler {
 	private class InvalidUseException extends Exception {
 		private static final long serialVersionUID = 3993849990858233332L;
 	}
+	
 	private class InsufficientAccessException extends Exception {
 		private static final long serialVersionUID = -1954683087381833989L;
 		public InsufficientAccessException(String string) {

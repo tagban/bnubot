@@ -5,7 +5,11 @@
 
 package net.bnubot.bot.database;
 
-import java.sql.*;
+import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
 
 public class ExtendableResultSet {
 	private ResultSet parent;

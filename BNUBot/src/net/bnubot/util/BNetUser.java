@@ -5,7 +5,7 @@
 
 package net.bnubot.util;
 
-import java.sql.*;
+import java.sql.SQLException;
 import java.util.Hashtable;
 
 import net.bnubot.bot.database.AccountResultSet;

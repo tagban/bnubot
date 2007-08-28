@@ -23,8 +23,6 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.TimeZone;
 
-import org.jbls.Hashing.*;
-
 import net.bnubot.core.ChatQueue;
 import net.bnubot.core.Connection;
 import net.bnubot.core.ConnectionSettings;
@@ -44,6 +42,11 @@ import net.bnubot.util.Out;
 import net.bnubot.util.StatString;
 import net.bnubot.util.TimeFormatter;
 import net.bnubot.vercheck.CurrentVersion;
+
+import org.jbls.Hashing.BrokenSHA1;
+import org.jbls.Hashing.DoubleHash;
+import org.jbls.Hashing.HashMain;
+import org.jbls.Hashing.SRP;
 
 
 public class BNCSConnection extends Connection {

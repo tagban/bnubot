@@ -5,11 +5,17 @@
 
 package net.bnubot.bot.gui.icons;
 
-import java.awt.*;
-import java.awt.image.*;
-import java.io.*;
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.image.MemoryImageSource;
+import java.io.File;
+import java.io.FileInputStream;
 
-import javax.swing.*;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 
 import net.bnubot.core.BNFTPConnection;
 import net.bnubot.core.ConnectionSettings;
@@ -18,7 +24,6 @@ import net.bnubot.util.HexDump;
 import net.bnubot.util.Out;
 
 
-@SuppressWarnings("serial")
 public class IconsDotBniReader {
 	private static boolean initialized = false;
 	private static boolean initializedWindow = false;

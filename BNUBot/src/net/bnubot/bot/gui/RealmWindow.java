@@ -8,7 +8,11 @@ package net.bnubot.bot.gui;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-import javax.swing.*;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
+import javax.swing.JFrame;
+import javax.swing.JList;
 
 import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
@@ -21,8 +25,9 @@ import net.bnubot.util.BNetUser;
 import net.bnubot.util.Out;
 import net.bnubot.util.StatString;
 
-@SuppressWarnings("serial")
 public class RealmWindow extends JFrame implements EventHandler, RealmEventHandler {
+	private static final long serialVersionUID = 3965057306231374646L;
+	
 	protected Connection c = null;
 	protected RealmConnection rc = null;
 	protected String[] realms = null;

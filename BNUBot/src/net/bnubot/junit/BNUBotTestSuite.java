@@ -5,7 +5,8 @@
 
 package net.bnubot.junit;
 
-import junit.framework.*;
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
 public class BNUBotTestSuite {
 	

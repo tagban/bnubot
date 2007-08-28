@@ -5,7 +5,9 @@
 
 package net.bnubot.bot.database;
 
-import java.sql.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 
 public class BNLoginResultSet extends ExtendableResultSet {
 	public static final String ROW_ID = "id";
