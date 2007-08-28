@@ -9,6 +9,8 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import javax.swing.JOptionPane;
+
 import net.bnubot.bot.gui.GuiEventHandler;
 
 public class Out {
@@ -17,16 +19,22 @@ public class Out {
 	private static boolean debug = false;
 	
 	public static void excepton(Exception e) {
-		if(outStream != null)
-			e.printStackTrace(outStream);
 		if(outConnection != null) {
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
 			outConnection.recieveError(sw.toString());
-		}
+		} else if(outStream != null)
+			e.printStackTrace(outStream);
+		else
+			e.printStackTrace();
 	}
 	
 	public static void fatalException(Exception e) {
+		try {
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			JOptionPane.showMessageDialog(null, sw.toString(), e.getClass().getSimpleName(), JOptionPane.ERROR_MESSAGE);
+		} catch(Exception e1) {}
 		e.printStackTrace();
 		System.exit(1);
 	}
