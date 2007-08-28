@@ -183,7 +183,6 @@ public class ConnectionSettings implements Serializable {
 			Settings.write(header, "enableGUI", Boolean.toString(enableGUI));
 			Settings.write(header, "enableCommands", Boolean.toString(enableCommands));
 			Settings.write(header, "enableTrivia", Boolean.toString(enableTrivia));
-			Settings.write(header, "enableFloodProtect", Boolean.toString(enableTrivia));
 			Settings.write(header, "triviaRoundLength", Long.toString(triviaRoundLength));
 			Settings.write(header, "enableFloodProtect", Boolean.toString(enableFloodProtect));
 			Settings.write(header, "packetLog", Boolean.toString(packetLog));
