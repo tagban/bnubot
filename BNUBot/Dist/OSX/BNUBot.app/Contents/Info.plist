@@ -21,14 +21,14 @@
 		<key>ClassPath</key>
 		<string>/System/Library/Java:$JAVAROOT/BNUBot.jar:$JAVAROOT/Derby.jar</string>
 		<key>JVMVersion</key>
-		<string>1.5+</string>
+		<string>1.6+</string>
 		<key>MainClass</key>
 		<string>net.bnubot.Main</string>
 		<key>WorkingDirectory</key>
 		<string>$APP_PACKAGE</string>
 		<key>Properties</key>
 		<dict>
-			<key>com.apple.macos.useScreenMenuBar</key>
+			<key>apple.laf.useScreenMenuBar</key>
 			<string>true</string>
 			<key>com.apple.mrj.application.apple.menu.about.name</key>
 			<string>BNUBot</string>
