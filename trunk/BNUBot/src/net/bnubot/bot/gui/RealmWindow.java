@@ -57,8 +57,7 @@ public class RealmWindow extends JFrame implements EventHandler, RealmEventHandl
 				try {
 					c.sendLogonRealmEx(s);
 				} catch (Exception e) {
-					e.printStackTrace();
-					System.exit(1);
+					Out.fatalException(e);
 				}
 			}
 			public void mouseEntered(MouseEvent arg0) {}

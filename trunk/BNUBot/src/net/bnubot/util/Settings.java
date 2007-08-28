@@ -27,7 +27,7 @@ public class Settings {
 		if(propsFile.exists()) try {
 			props.load(new FileInputStream(propsFile));
 		} catch(Exception e) {
-			e.printStackTrace();
+			Out.excepton(e);
 		}
 	}
 	
@@ -74,8 +74,7 @@ public class Settings {
 			props.store(new FileOutputStream(propsFile), comment);
 			anythingChanged = false;
 		} catch (Exception e) {
-			e.printStackTrace();
-			System.exit(1);
+			Out.fatalException(e);
 		}
 	}
 

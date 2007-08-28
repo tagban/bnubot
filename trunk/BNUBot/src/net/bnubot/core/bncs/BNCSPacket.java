@@ -45,8 +45,7 @@ public class BNCSPacket extends BNetOutputStream {
 			sckout.writeWord(data.length + 4);
 			sckout.write(data);
 		} catch(IOException e) {
-			e.printStackTrace();
-			System.exit(1);
+			Out.fatalException(e);
 		}
 		
 		data = baos.toByteArray();

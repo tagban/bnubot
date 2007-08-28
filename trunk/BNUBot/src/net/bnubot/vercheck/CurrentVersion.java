@@ -109,7 +109,7 @@ public final class CurrentVersion {
 					break;
 				} while(true);
 			} catch(Exception e) {
-				e.printStackTrace();
+				Out.excepton(e);
 			}
 		}
 		return r;
@@ -144,8 +144,7 @@ public final class CurrentVersion {
 			}
 			if(is == null) {
 				// Failed to determine the bot version
-				new FileNotFoundException(vpPath).printStackTrace();
-				System.exit(1);
+				Out.fatalException(new FileNotFoundException(vpPath));
 			}
 			
 			Properties versionprops = new Properties();
@@ -192,7 +191,7 @@ public final class CurrentVersion {
 			VER = new VersionNumber(VER_MAJOR, VER_MINOR, VER_REVISION, VER_ALPHA, VER_BETA, VER_RELEASE_CANDIDATE, revision(), BUILD_DATE);
 			return VER;
 		} catch(Exception e) {
-			e.printStackTrace();
+			Out.excepton(e);
 		}
 		
 		throw new NullPointerException();

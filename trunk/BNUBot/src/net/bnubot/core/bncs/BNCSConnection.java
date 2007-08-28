@@ -240,7 +240,7 @@ public class BNCSConnection extends Connection {
 			} catch(SocketException e) {
 			} catch(Exception e) {
 				recieveError("Unhandled " + e.getClass().getSimpleName() + ": " + e.getMessage());
-				e.printStackTrace();
+				Out.excepton(e);
 			}
 
 			setConnected(false);
@@ -277,8 +277,7 @@ public class BNCSConnection extends Connection {
 				}
 				is = new BufferedReader(new FileReader(f));
 			} catch (Exception e) {
-				e.printStackTrace();
-				System.exit(1);
+				Out.fatalException(e);
 			}
 			
 			do {
@@ -286,8 +285,7 @@ public class BNCSConnection extends Connection {
 				try {
 					line = is.readLine();
 				} catch (IOException e) {
-					e.printStackTrace();
-					System.exit(1);
+					Out.fatalException(e);
 				}
 				if(line == null)
 					break;
@@ -1385,8 +1383,7 @@ public class BNCSConnection extends Connection {
 				setConnected(false);
 			return;
 		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(1);
+			Out.fatalException(e);
 		}
 
 		if(text.charAt(0) != '/')

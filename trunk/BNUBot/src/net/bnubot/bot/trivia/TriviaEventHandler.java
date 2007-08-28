@@ -49,8 +49,7 @@ public class TriviaEventHandler implements EventHandler {
 				throw new FileNotFoundException(fileName);
 			is = new BufferedReader(new FileReader(f));
 		} catch (Exception e) {
-			e.printStackTrace();
-			System.exit(1);
+			Out.fatalException(e);
 		}
 		
 		String defaultCategory = fileName;
@@ -68,8 +67,7 @@ public class TriviaEventHandler implements EventHandler {
 			try {
 				line = is.readLine();
 			} catch (IOException e) {
-				e.printStackTrace();
-				System.exit(1);
+				Out.fatalException(e);
 			}
 			if(line == null)
 				break;
@@ -125,7 +123,7 @@ public class TriviaEventHandler implements EventHandler {
 			out += "Total=" + d.getTriviaSum();
 			c.sendChat(out);
 		} catch (SQLException e) {
-			e.printStackTrace();
+			Out.excepton(e);
 		}
 	}
 	
@@ -163,7 +161,7 @@ public class TriviaEventHandler implements EventHandler {
 							}
 						}
 					} catch (SQLException e) {
-						e.printStackTrace();
+						Out.excepton(e);
 					}
 					
 					TriviaItem ti = trivia.remove((int)(Math.random() * trivia.size()));
@@ -223,7 +221,7 @@ public class TriviaEventHandler implements EventHandler {
 								d.close(rsAccount);
 							}
 						} catch(Exception e) {
-							e.printStackTrace();
+							Out.excepton(e);
 						}
 
 						if(triviaAnswers.length > 1) {

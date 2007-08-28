@@ -15,6 +15,7 @@ import javax.swing.JFrame;
 import javax.swing.JTextArea;
 
 import net.bnubot.core.Connection;
+import net.bnubot.util.Out;
 
 public class ClanMOTDEditor extends JFrame {
 	private static final long serialVersionUID = 1208173058716246046L;
@@ -44,8 +45,7 @@ public class ClanMOTDEditor extends JFrame {
 					try {
 						c.sendClanSetMOTD(txtMOTD.getText());
 					} catch (Exception e) {
-						e.printStackTrace();
-						System.exit(1);
+						Out.fatalException(e);
 					}
 					dispose();
 				} });

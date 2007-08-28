@@ -33,8 +33,7 @@ public class BNFTPConnection {
 			s.close();
 			return f;
 		} catch (Exception e) {
-			e.printStackTrace();
-			System.exit(1);
+			Out.fatalException(e);
 		}
 		return null;
 	}
@@ -92,8 +91,7 @@ public class BNFTPConnection {
 			
 			return f;
 		} catch (Exception e) {
-			e.printStackTrace();
-			System.exit(1);
+			Out.fatalException(e);
 		}
 		return null;
 	}

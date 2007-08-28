@@ -101,8 +101,7 @@ public class HTMLOutputEventHandler implements EventHandler {
 		if(!f.exists())
 			f.mkdir();
 		if(!f.isDirectory()) {
-			new Exception("Logs is not a directory!").printStackTrace();
-			System.exit(1);
+			Out.fatalException(new Exception("Logs is not a directory!"));
 		}
 		
 		cs = ColorScheme.createColorScheme(c.getConnectionSettings().colorScheme);
@@ -161,7 +160,7 @@ public class HTMLOutputEventHandler implements EventHandler {
 			
 						fos.close();
 					} catch (Exception e) {
-						e.printStackTrace();
+						Out.excepton(e);
 					}
 				}
 			};
@@ -200,8 +199,7 @@ public class HTMLOutputEventHandler implements EventHandler {
 			fos.write(text.getBytes());
 			fos.close();
 		} catch (Exception e) {
-			e.printStackTrace();
-			System.exit(1);
+			Out.fatalException(e);
 		}
 	}
 	

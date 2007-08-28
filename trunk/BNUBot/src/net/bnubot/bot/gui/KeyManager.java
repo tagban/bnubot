@@ -88,8 +88,7 @@ public class KeyManager {
 			}
 			is = new BufferedReader(new FileReader(keys));
 		} catch (Exception e) {
-			e.printStackTrace();
-			System.exit(1);
+			Out.fatalException(e);
 		}
 		
 		do {
@@ -97,7 +96,7 @@ public class KeyManager {
 			try {
 				key = is.readLine();
 			} catch (IOException e) {
-				e.printStackTrace();
+				Out.excepton(e);
 			}
 			if(key == null)
 				break;
