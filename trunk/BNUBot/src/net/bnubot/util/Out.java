@@ -13,7 +13,6 @@ import net.bnubot.bot.gui.GuiEventHandler;
 public class Out {
 	private static PrintStream outStream = System.out;
 	private static GuiEventHandler outConnection = null;
-	private static boolean debug = false;
 
 	public static void print(String out) {
 		outStream.print(out);
@@ -28,10 +27,10 @@ public class Out {
 	 *            text to show
 	 */
 	public static void error(Class<?> source, String text) {
-		if(outStream != null)
-			outStream.println(getTimestamp() + "{" + source.getSimpleName() + " - Error} " + text);
 		if(outConnection != null)
 			outConnection.recieveError("{" + source.getSimpleName() + "} " + text);
+		else if(outStream != null)
+			outStream.println(getTimestamp() + "{" + source.getSimpleName() + " - Error} " + text);
 	}
 
 	/**
@@ -43,10 +42,8 @@ public class Out {
 	 *            -text to show
 	 */
 	public static void debug(Class<?> source, String text) {
-		if((outStream != null) && debug)
-			outStream.println(getTimestamp() + "{" + source.getSimpleName() + " - Debug} " + text);
-		if(outConnection != null)
-			outConnection.recieveDebug("{" + source.getSimpleName() + "} " + text);
+		if((outStream != null) && (outConnection != null))
+			outStream.println(getTimestamp() + "{" + source.getSimpleName() + "} " + text);
 	}
 
 	/**
@@ -58,10 +55,10 @@ public class Out {
 	 *            text to show
 	 */
 	public static void info(Class<?> source, String text) {
-		if(outStream != null)
-			outStream.println(getTimestamp() + "{" + source.getSimpleName() + "} " + text);
 		if(outConnection != null)
 			outConnection.recieveInfo("{" + source.getSimpleName() + "} " + text);
+		else if(outStream != null)
+			outStream.println(getTimestamp() + "{" + source.getSimpleName() + "} " + text);
 	}
 
 	/**
@@ -73,12 +70,10 @@ public class Out {
 	 */
 	public static void setOutputStream(PrintStream s) {
 		outStream = s;
-		outConnection = null;
 	}
 	
 	public static void setOutputConnection(GuiEventHandler g) {
 		outConnection = g;
-		outStream = null;
 	}
 
 	static public String padString(String str, int length, char c) {
