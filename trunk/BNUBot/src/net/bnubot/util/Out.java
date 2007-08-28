@@ -32,14 +32,22 @@ public class Out {
 	 * @param text text to show
 	 */
 	public static void debug(Class<?> source, String text) {
-		if(!debug)
-			return;
+		if(debug)
+			debugAlways(source, text);
+	}
+
+	/**
+	 * Displays debugging information
+	 * @param source source of the info
+	 * @param text text to show
+	 */
+	public static void debugAlways(Class<?> source, String text) {
 		if(outConnection != null)
 			outConnection.recieveDebug("{" + source.getSimpleName() + "} " + text);
 		else if(outStream != null)
 			outStream.println("[" + TimeFormatter.getTimestamp() + "] {" + source.getSimpleName() + "} DEBUG " + text);
 	}
-
+	
 	/**
 	 * Displays information
 	 * @param source source of the info

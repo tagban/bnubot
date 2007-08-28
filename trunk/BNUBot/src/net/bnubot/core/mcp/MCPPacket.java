@@ -38,7 +38,7 @@ public class MCPPacket extends BNetOutputStream {
 		data = baos.toByteArray();
 		
 		if(packetLog)
-			Out.debug(MCPPacket.class, "SEND\n" + HexDump.hexDump(data));
+			Out.debugAlways(MCPPacket.class, "SEND\n" + HexDump.hexDump(data));
 		
 		try {
 			out.write(data);

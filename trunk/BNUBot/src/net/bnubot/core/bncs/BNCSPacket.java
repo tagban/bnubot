@@ -52,7 +52,7 @@ public class BNCSPacket extends BNetOutputStream {
 		data = baos.toByteArray();
 		
 		if(packetLog)
-			Out.debug(this.getClass(), "SEND\n" + HexDump.hexDump(data));
+			Out.debugAlways(this.getClass(), "SEND\n" + HexDump.hexDump(data));
 		
 		out.write(data);
 		out.flush();
