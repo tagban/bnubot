@@ -33,7 +33,7 @@ public class StatString {
 			parse();
 		} catch(Exception e) {
 			Out.error(StatString.class, "Error parsing statstring: " + statString + "\n" + HexDump.hexDump(statString.getBytes()));
-			e.printStackTrace();
+			Out.excepton(e);
 		}
 	}
 	

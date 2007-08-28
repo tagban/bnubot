@@ -25,6 +25,7 @@ import net.bnubot.core.bncs.ProductIDs;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.util.BNetUser;
+import net.bnubot.util.Out;
 import net.bnubot.util.StatString;
 import net.bnubot.util.TimeFormatter;
 import net.bnubot.vercheck.CurrentVersion;
@@ -836,7 +837,7 @@ public class CommandEventHandler implements EventHandler {
 							SimpleDateFormat sdf = new SimpleDateFormat("M/d/y");
 							bd = sdf.parse(param);
 						} catch(Exception e) {
-							e.printStackTrace();
+							Out.excepton(e);
 						}
 						if(bd == null)
 							throw new InvalidUseException();
@@ -1117,7 +1118,7 @@ public class CommandEventHandler implements EventHandler {
 		} catch(InsufficientAccessException e) {
 			c.sendChat(user, "You have insufficient access " + e.getMessage(), wasWhispered);
 		} catch(Exception e) {
-			e.printStackTrace();
+			Out.excepton(e);
 			c.sendChat(user, e.getClass().getName() + ": " + e.getMessage(), wasWhispered);
 		}
 	}
@@ -1320,7 +1321,7 @@ public class CommandEventHandler implements EventHandler {
 			if(umc > 0)
 				c.sendChat(user, "You have " + umc + " unread messages; type [ %trigger%mail read ] to retrieve them", false);
 		} catch (Exception e) {
-			e.printStackTrace();
+			Out.excepton(e);
 		}
 	}
 	

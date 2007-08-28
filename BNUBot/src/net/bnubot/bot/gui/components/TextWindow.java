@@ -22,6 +22,7 @@ import javax.swing.event.HyperlinkListener;
 import net.bnubot.bot.gui.ColorScheme.ColorScheme;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.BrowserLauncher;
+import net.bnubot.util.Out;
 
 @SuppressWarnings("serial")
 public class TextWindow extends JScrollPane {
@@ -34,7 +35,7 @@ public class TextWindow extends JScrollPane {
 						try {
 							BrowserLauncher.openURL(e.getURL().toString());
 						} catch (Exception e1) {
-							e1.printStackTrace();
+							Out.excepton(e1);
 						}
 				}
 			});

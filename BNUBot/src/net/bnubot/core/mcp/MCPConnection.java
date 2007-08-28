@@ -183,8 +183,7 @@ public class MCPConnection extends RealmConnection {
 			}
 			
 		} catch (Exception e) {
-			e.printStackTrace();
-			System.exit(1);
+			Out.fatalException(e);
 		}
 	}
 }

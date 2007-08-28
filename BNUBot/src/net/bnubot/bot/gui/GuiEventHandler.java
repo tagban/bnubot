@@ -48,6 +48,7 @@ import net.bnubot.core.EventHandler;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.util.BNetUser;
+import net.bnubot.util.Out;
 import net.bnubot.util.StatString;
 
 public class GuiEventHandler implements EventHandler {
@@ -105,7 +106,7 @@ public class GuiEventHandler implements EventHandler {
 		try {
 			SystemTray.getSystemTray().add(ti);
 		} catch(AWTException e) {
-			e.printStackTrace();
+			Out.excepton(e);
 		}
 		
 		frame.addWindowStateListener(new WindowStateListener() {
@@ -185,8 +186,7 @@ public class GuiEventHandler implements EventHandler {
 						try {
 							c.sendQueryRealms();
 						} catch (Exception e) {
-							e.printStackTrace();
-							System.exit(1);
+							Out.fatalException(e);
 						}
 					} });
 				menu.add(menuItem);
@@ -201,8 +201,7 @@ public class GuiEventHandler implements EventHandler {
 						try {
 							c.sendClanMOTD(new ClanMOTDEditor(c));
 						} catch(Exception e) {
-							e.printStackTrace();
-							System.exit(1);
+							Out.fatalException(e);
 						}
 					} });
 				menu.add(menuItem);

@@ -57,8 +57,7 @@ public class ChatConnection extends Connection {
 			
 			s.close();
 		} catch (Exception e) {
-			e.printStackTrace();
-			System.exit(1);
+			Out.fatalException(e);
 		}
 	}
 

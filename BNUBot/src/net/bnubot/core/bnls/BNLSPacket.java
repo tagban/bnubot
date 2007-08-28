@@ -31,8 +31,7 @@ public class BNLSPacket extends BNetOutputStream {
 			sckout.writeByte(packetId);
 			sckout.write(data);
 		} catch(IOException e) {
-			e.printStackTrace();
-			System.exit(1);
+			Out.fatalException(e);
 		}
 		
 		data = baos.toByteArray();

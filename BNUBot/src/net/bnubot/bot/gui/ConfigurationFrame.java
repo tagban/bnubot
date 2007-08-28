@@ -444,7 +444,7 @@ public class ConfigurationFrame extends JDialog {
 						keys += "\n" + l;
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				Out.excepton(e);
 			}
 			
 			txtCDKeys = new JTextArea(keys);
@@ -465,7 +465,7 @@ public class ConfigurationFrame extends JDialog {
 								initializeGui();
 								validate();
 							} catch (IOException e) {
-								e.printStackTrace();
+								Out.excepton(e);
 							}
 						}
 					});
@@ -488,7 +488,7 @@ public class ConfigurationFrame extends JDialog {
 					try {
 						UIManager.setLookAndFeel(laf);
 					} catch(Exception ex) {
-						ex.printStackTrace();
+						Out.excepton(ex);
 					}
 				}
 			});

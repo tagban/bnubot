@@ -173,7 +173,7 @@ public class UserList extends JPanel {
 				public void actionPerformed(ActionEvent arg0) {
 					UserInfo ui = getUserInfo(arg0);
 					if(ui != null)
-						try { c.sendProfile(ui.user); } catch(Exception e) { e.printStackTrace(); }
+						try { c.sendProfile(ui.user); } catch(Exception e) { Out.excepton(e); }
 				}});
 			ui.menu.add(menuItem);
 			ui.menu.add(Box.createHorizontalGlue());
@@ -195,7 +195,7 @@ public class UserList extends JPanel {
 								Out.info(this.getClass(), "Left clicked on " + ui.label.getText());
 								break;
 							case MouseEvent.BUTTON2:
-								try { c.sendProfile(ui.user); } catch(Exception e) { e.printStackTrace(); }
+								try { c.sendProfile(ui.user); } catch(Exception e) { Out.excepton(e); }
 								break;
 							case MouseEvent.BUTTON3:
 								ui.menu.show(arg0.getComponent(), arg0.getX(), arg0.getY());

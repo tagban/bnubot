@@ -98,7 +98,7 @@ public class Main {
 					break;
 				}
 			}
-			
+
 			Out.error(Main.class, "Invalid argument: " + args[i]);
 			System.exit(1);
 		}
@@ -109,7 +109,7 @@ public class Main {
 				cf = new ConfigurationFrame(cs);
 				cf.setVisible(true);
 			} catch(Exception e) {
-				e.printStackTrace();
+				Out.excepton(e);
 				String s = cs.isValid();
 				String error = "There was an error initializing the configuraiton window, ";
 				if(s == null)
@@ -190,7 +190,7 @@ public class Main {
 					Settings.write("database", "password", db_password);
 					Settings.write("database", "schema", db_schema);
 				} catch(Exception e) {
-					e.printStackTrace();
+					Out.excepton(e);
 					String msg = "Failed to initialize the database; commands will be disabled.\n" + e.getMessage();
 					if(gui != null)
 						primary.recieveError(msg);
@@ -209,7 +209,7 @@ public class Main {
 		try {
 			VersionCheck.checkVersion(primary);
 		} catch(Exception e) {
-			e.printStackTrace();
+			Out.excepton(e);
 		}
 		
 		primary.start();

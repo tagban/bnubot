@@ -233,8 +233,7 @@ public class IconsDotBniReader {
 			
 			return icons;
 		} catch (Exception e) {
-			e.printStackTrace();
-			System.exit(1);
+			Out.fatalException(e);
 		}
 		return null;
 	}

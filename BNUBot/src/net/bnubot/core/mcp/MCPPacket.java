@@ -31,8 +31,7 @@ public class MCPPacket extends BNetOutputStream {
 			sckout.writeByte(packetId);
 			sckout.write(data);
 		} catch(IOException e) {
-			e.printStackTrace();
-			System.exit(1);
+			Out.fatalException(e);
 		}
 		
 		data = baos.toByteArray();
@@ -44,8 +43,7 @@ public class MCPPacket extends BNetOutputStream {
 			out.write(data);
 			out.flush();
 		} catch (Exception e) {
-			e.printStackTrace();
-			System.exit(1);
+			Out.fatalException(e);
 		}
 	}
 }

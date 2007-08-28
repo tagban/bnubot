@@ -6,6 +6,8 @@
 package net.bnubot.util;
 
 import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 import net.bnubot.bot.gui.GuiEventHandler;
 
@@ -13,6 +15,21 @@ public class Out {
 	private static PrintStream outStream = System.out;
 	private static GuiEventHandler outConnection = null;
 	private static boolean debug = false;
+	
+	public static void excepton(Exception e) {
+		if(outStream != null)
+			e.printStackTrace(outStream);
+		if(outConnection != null) {
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			outConnection.recieveError(sw.toString());
+		}
+	}
+	
+	public static void fatalException(Exception e) {
+		e.printStackTrace();
+		System.exit(1);
+	}
 
 	/**
 	 * Displays error messages

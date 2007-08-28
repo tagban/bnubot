@@ -6,6 +6,7 @@
 package net.bnubot.bot.console;
 
 import net.bnubot.core.Connection;
+import net.bnubot.util.Out;
 
 public class CLIThread extends Thread {
 	Connection c;
@@ -30,8 +31,7 @@ public class CLIThread extends Thread {
 				yield();
 			}
 		} catch(Exception e) {
-			e.printStackTrace();
-			System.exit(1);
+			Out.fatalException(e);
 		}
 	}
 }

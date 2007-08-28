@@ -47,7 +47,7 @@ public class Database {
 		try {
 			deleteOldUsers();
 		} catch(Exception e) {
-			e.printStackTrace();
+			Out.excepton(e);
 		}
 	}
 	
@@ -59,7 +59,7 @@ public class Database {
 		try {
 			close(rs.getStatement());
 		} catch (SQLException e) {
-			e.printStackTrace();
+			Out.excepton(e);
 		}
 	}
 	
@@ -110,9 +110,9 @@ public class Database {
 					try {
 						close(s);
 					} catch (SQLException e) {
-						e.printStackTrace();
+						Out.excepton(e);
 					}
-					openStmtExcept.get(i).printStackTrace();
+					Out.excepton(openStmtExcept.get(i));
 				}
 			}
 		}
@@ -608,7 +608,7 @@ public class Database {
 			
 			Out.error(this.getClass(), "Database version is " + version + ", we require " + compatibleVersion);
 		} catch(SQLException e) {
-			e.printStackTrace();
+			Out.excepton(e);
 		}
 		
 		if(rs != null)
@@ -659,8 +659,7 @@ public class Database {
 			stmt.execute(query);
 			close(stmt);
 		} catch(IOException e) {
-			e.printStackTrace();
-			System.exit(1);
+			Out.fatalException(e);
 		} catch(SQLException e) {
 			Out.error(this.getClass(), "Failed to create schema\n" + query + "\n\n" + e.getMessage());
 			throw e;
