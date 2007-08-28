@@ -77,6 +77,8 @@ public class HexDump {
 			if(end > 16)
 				end = 16;
 			
+			if(offset != 0)
+				output += "\n";
 			output += toHexWord(offset) + "  ";
 			
 			for(int i = 0; i < 16; i++) {
@@ -99,7 +101,6 @@ public class HexDump {
 				}
 				output += new Character((char)b);
 			}
-			output += "\n";
 		}
 		return output;
 	}
