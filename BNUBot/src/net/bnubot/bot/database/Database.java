@@ -25,9 +25,9 @@ public class Database {
 	public Database(String driver, String url, String username, String password, String schemaFile) throws SQLException, ClassNotFoundException {
 		Class.forName(driver);
 		
-		Out.info(this.getClass(), "Connecting to " + url);
+		Out.debug(this.getClass(), "Connecting to " + url);
 		conn = DriverManager.getConnection(url, username, password);
-		Out.info(this.getClass(), "Connected!");
+		Out.debug(this.getClass(), "Connected!");
 		
 		instance = this;
 		
