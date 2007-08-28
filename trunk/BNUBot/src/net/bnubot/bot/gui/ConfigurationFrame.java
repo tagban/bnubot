@@ -478,8 +478,7 @@ public class ConfigurationFrame extends JDialog {
 			cmbLookAndFeel.addItemListener(new ItemListener() {
 				public void itemStateChanged(ItemEvent e) {
 					String laf = (String)cmbLookAndFeel.getSelectedItem();
-					Out.info(getClass(), "Setting Look and Feel to " + laf);
-					JDialog x;
+					Out.debug(ConfigurationFrame.class, "Setting Look and Feel to " + laf);
 					try {
 						UIManager.setLookAndFeel(laf);
 					} catch(Exception ex) {
