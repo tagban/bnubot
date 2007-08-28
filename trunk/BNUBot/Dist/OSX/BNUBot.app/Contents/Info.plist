@@ -26,6 +26,13 @@
 		<string>net.bnubot.Main</string>
 		<key>WorkingDirectory</key>
 		<string>$APP_PACKAGE</string>
+		<key>Properties</key>
+		<dict>
+			<key>com.apple.macos.useScreenMenuBar</key>
+			<string>true</string>
+			<key>com.apple.mrj.application.apple.menu.about.name</key>
+			<string>SampleApp</string>
+		</dict>
 	</dict>
 </dict>
 </plist>
