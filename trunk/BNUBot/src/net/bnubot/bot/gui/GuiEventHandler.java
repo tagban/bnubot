@@ -15,6 +15,7 @@ import java.awt.event.*;
 import java.util.Date;
 
 import javax.swing.*;
+import javax.swing.UIManager.LookAndFeelInfo;
 
 import net.bnubot.bot.database.Database;
 import net.bnubot.bot.gui.ColorScheme.ColorScheme;
@@ -27,6 +28,7 @@ import net.bnubot.core.EventHandler;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.util.BNetUser;
+import net.bnubot.util.Out;
 import net.bnubot.util.StatString;
 
 public class GuiEventHandler implements EventHandler {
