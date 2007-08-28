@@ -428,7 +428,7 @@ public class BNCSConnection extends Connection {
 					  	int success = bnlsIn.readDWord();
 				    	if(success != 1) {
 				    		Out.error(this.getClass(), "BNLS_VERSIONCHECKEX2 Failed\n" + HexDump.hexDump(bpr.getData()));
-				    		throw new Exception("BNLS failed to complete 0x1A sucessfully");
+				    		throw new Exception("BNLS failed to complete BNLS_VERSIONCHECKEX2 sucessfully");
 				    	}
 			    		exeVersion = bnlsIn.readDWord();
 				    	exeHash = bnlsIn.readDWord();
