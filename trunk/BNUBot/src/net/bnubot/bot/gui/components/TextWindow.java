@@ -1,6 +1,6 @@
 /**
  * This file is distributed under the GPL 
- * $Id: TextWindow.java 604 2007-08-27 14:33:35Z scotta $
+ * $Id$
  */
 
 package net.bnubot.bot.gui.components;
