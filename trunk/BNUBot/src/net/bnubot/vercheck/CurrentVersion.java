@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.Properties;
 
 import net.bnubot.util.Out;
+import net.bnubot.util.SortedProperties;
 
 public final class CurrentVersion {
 	protected static Integer VER_MAJOR = null;
@@ -147,7 +148,7 @@ public final class CurrentVersion {
 				Out.fatalException(new FileNotFoundException(vpPath));
 			}
 			
-			Properties versionprops = new Properties();
+			Properties versionprops = new SortedProperties();
 			versionprops.load(is);
 			is.close();
 			
