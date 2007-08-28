@@ -68,7 +68,18 @@ public final class CurrentVersion {
 						continue;
 
 					// Skip over the filename
-					while(fr.read() != ' ');
+					String fileName = new String();
+					do {
+						int c = fr.read();
+						if(c == ' ')
+							break;
+						fileName += (char)c;
+					} while(true);
+					
+					if(!sf.getName().equals(fileName)) {
+						Out.error(CurrentVersion.class, "File name in Id: tag doesn't match actual file name: " + sf.getPath());
+						break;
+					}
 					
 					// Read in the revision as a String
 					String rev = "";

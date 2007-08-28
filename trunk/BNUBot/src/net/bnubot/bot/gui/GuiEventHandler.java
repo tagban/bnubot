@@ -3,11 +3,6 @@
  * $Id$
  */
 
-/**
- * This file is distributed under the GPL 
- * $Id$
- */
-
 package net.bnubot.bot.gui;
 
 import java.awt.*;
