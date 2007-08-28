@@ -31,9 +31,12 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
 
 import net.bnubot.bot.gui.KeyManager.CDKey;
 import net.bnubot.core.ConnectionSettings;
+import net.bnubot.util.Out;
 
 @SuppressWarnings("serial")
 public class ConfigurationFrame extends JDialog {
@@ -73,6 +76,9 @@ public class ConfigurationFrame extends JDialog {
 	//CDKeys
 	JTextArea txtCDKeys = null;
 	JButton btnSaveKeys = null;
+	
+	//Extra
+	JComboBox cmbLookAndFeel = null;
 	
 	private class ConfigTextArea extends JTextArea {
 		public ConfigTextArea(String text) {
@@ -462,6 +468,28 @@ public class ConfigurationFrame extends JDialog {
 			boxAll.add(btnSaveKeys);
 		}
 		tabs.addTab("CD Keys", boxAll);
+		
+		boxAll = new Box(BoxLayout.Y_AXIS);
+		{
+			DefaultComboBoxModel model = new DefaultComboBoxModel();
+			for(LookAndFeelInfo lafi : UIManager.getInstalledLookAndFeels())
+				model.addElement(lafi.getClassName());
+			cmbLookAndFeel = new JComboBox(model);
+			cmbLookAndFeel.addItemListener(new ItemListener() {
+				public void itemStateChanged(ItemEvent e) {
+					String laf = (String)cmbLookAndFeel.getSelectedItem();
+					Out.info(getClass(), "Setting Look and Feel to " + laf);
+					JDialog x;
+					try {
+						UIManager.setLookAndFeel(laf);
+					} catch(Exception ex) {
+						ex.printStackTrace();
+					}
+				}
+			});
+			boxAll.add(cmbLookAndFeel);
+		}
+		tabs.addTab("Extra", boxAll);
 		
 		add(tabs);
 		pack();
