@@ -10,9 +10,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.sql.*;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 
-import javax.swing.*;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JTextArea;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -20,8 +28,9 @@ import net.bnubot.bot.database.Database;
 import net.bnubot.bot.database.RankResultSet;
 import net.bnubot.util.TimeFormatter;
 
-@SuppressWarnings("serial")
 public class DatabaseRankEditor extends JFrame {
+	private static final long serialVersionUID = 8358635720495103894L;
+
 	private Database d = null;
 
 	private DefaultListModel lm;

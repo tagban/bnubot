@@ -28,8 +28,9 @@ import net.bnubot.bot.database.AccountResultSet;
 import net.bnubot.bot.database.Database;
 import net.bnubot.util.TimeFormatter;
 
-@SuppressWarnings("serial")
 public class DatabaseAccountEditor extends JFrame {
+	private static final long serialVersionUID = -3408441296609359300L;
+
 	private Database d = null;
 	
 	private DefaultListModel lm;

@@ -5,14 +5,41 @@
 
 package net.bnubot.bot.gui;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.AWTException;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Image;
+import java.awt.MenuItem;
+import java.awt.PopupMenu;
+import java.awt.SystemTray;
+import java.awt.Toolkit;
+import java.awt.TrayIcon;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowStateListener;
 import java.util.Date;
 
-import javax.swing.*;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+
 import net.bnubot.bot.database.Database;
 import net.bnubot.bot.gui.ColorScheme.ColorScheme;
-import net.bnubot.bot.gui.components.*;
+import net.bnubot.bot.gui.components.ClanList;
+import net.bnubot.bot.gui.components.FriendList;
+import net.bnubot.bot.gui.components.TextWindow;
+import net.bnubot.bot.gui.components.UserList;
 import net.bnubot.bot.gui.database.DatabaseAccountEditor;
 import net.bnubot.bot.gui.database.DatabaseRankEditor;
 import net.bnubot.bot.gui.icons.IconsDotBniReader;

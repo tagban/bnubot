@@ -13,7 +13,13 @@ import java.awt.event.MouseListener;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
-import javax.swing.*;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.Icon;
+import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 
 import net.bnubot.bot.gui.GuiEventHandler;
 import net.bnubot.bot.gui.ColorScheme.ColorScheme;
@@ -25,8 +31,9 @@ import net.bnubot.util.BNetUser;
 import net.bnubot.util.Out;
 import net.bnubot.util.StatString;
 
-@SuppressWarnings("serial")
 public class UserList extends JPanel {
+	private static final long serialVersionUID = -6511252902076594213L;
+
 	private class UserInfo {
 		BNetUser user;
 		int lastFlags;

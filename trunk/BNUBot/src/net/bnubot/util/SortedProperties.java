@@ -5,10 +5,14 @@
 
 package net.bnubot.util;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.Properties;
+import java.util.Vector;
 
-@SuppressWarnings("serial")
 public class SortedProperties extends Properties {
+	private static final long serialVersionUID = 213081373529965920L;
+
 	@SuppressWarnings("unchecked")
 	public synchronized Enumeration keys() {
 		Enumeration keysEnum = super.keys();

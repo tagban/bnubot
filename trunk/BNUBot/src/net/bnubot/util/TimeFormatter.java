@@ -7,9 +7,17 @@ package net.bnubot.util;
 
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.util.Calendar;
 import java.util.Date;
 
 public class TimeFormatter {
+
+	/**
+	 * Simply displays a nicely formatted timestamp.
+	 */
+	public static String getTimestamp() {
+		return String.format("%1$tH:%1$tM:%1$tS.%1$tL", Calendar.getInstance());
+	}
 
 	public static String formatTime(long time) {
 		String text = "";

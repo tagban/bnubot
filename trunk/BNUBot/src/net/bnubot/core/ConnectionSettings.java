@@ -9,10 +9,9 @@ import java.io.Serializable;
 
 import net.bnubot.util.Settings;
 
-
 public class ConnectionSettings implements Serializable {
-	private static final long serialVersionUID = 0L;
-
+	private static final long serialVersionUID = -8169038278487314919L;
+	
 	// These are for BNLS/JBLS
     public static final byte PRODUCT_STARCRAFT         = (byte)0x01; //Fully supported
     public static final byte PRODUCT_BROODWAR          = (byte)0x02; //Fully Supported

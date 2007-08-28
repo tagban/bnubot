@@ -90,8 +90,10 @@ public class TextWindow extends JScrollPane {
 					jep.setText(head + html + foot);
 					validate();
 					
-					JScrollBar vsb = getVerticalScrollBar();
-					vsb.setValue(vsb.getMaximum());
+					try {
+						JScrollBar vsb = getVerticalScrollBar();
+						vsb.setValue(vsb.getMaximum());
+					} catch(Exception e) {}
 					
 					disableRedraw = false;
 					validate();

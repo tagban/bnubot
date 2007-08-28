@@ -16,8 +16,8 @@ import javax.swing.JTextArea;
 
 import net.bnubot.core.Connection;
 
-@SuppressWarnings("serial")
 public class ClanMOTDEditor extends JFrame {
+	private static final long serialVersionUID = 1208173058716246046L;
 	Connection c;
 	Box b;
 	JTextArea txtMOTD;

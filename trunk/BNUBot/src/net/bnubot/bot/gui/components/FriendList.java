@@ -19,8 +19,9 @@ import net.bnubot.bot.gui.icons.BNetIcon;
 import net.bnubot.bot.gui.icons.IconsDotBniReader;
 import net.bnubot.core.friend.FriendEntry;
 
-@SuppressWarnings("serial")
 public class FriendList extends JPanel {
+	private static final long serialVersionUID = 609660115699769279L;
+
 	private class FriendInfo {
 		int entryNumber;
 		FriendEntry entry;

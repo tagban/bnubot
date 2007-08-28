@@ -62,6 +62,12 @@ public class Main {
 						continue;
 					}
 					break;
+				case 'd':
+					if(args[i].equals("-debug")) {
+						Out.setDebug(true);
+						continue;
+					}
+					break;
 				case 'g':
 					if(args[i].equals("-gui")) {
 						cs.enableGUI = true;
@@ -149,12 +155,11 @@ public class Main {
 		}
 		
 		//GUI
-		EventHandler gui = null;
+		GuiEventHandler gui = null;
 		if(cs.enableGUI) {
 			gui = new GuiEventHandler();
 			primary.addEventHandler(gui);
-			
-			Out.setOutputConnection((GuiEventHandler)gui);
+			Out.setOutputConnection(gui);
 		}
 		
 		//Bot

@@ -5,7 +5,8 @@
 
 package net.bnubot.core;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.net.Socket;
 import java.util.Date;
 
