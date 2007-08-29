@@ -207,7 +207,7 @@ public class Main {
 		}
 		
 		try {
-			VersionCheck.checkVersion(primary);
+			VersionCheck.checkVersion();
 		} catch(Exception e) {
 			Out.excepton(e);
 		}
