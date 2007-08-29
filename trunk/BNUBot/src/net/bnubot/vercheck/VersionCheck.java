@@ -7,14 +7,13 @@ package net.bnubot.vercheck;
 
 import org.jbls.util.Constants;
 
-import net.bnubot.core.Connection;
 import net.bnubot.util.Out;
 
 public class VersionCheck {
 	protected static XMLElementDecorator elem = null;
 	protected static VersionNumber vnLatest = null;
 	
-	public static boolean checkVersion(Connection reportTo) throws Exception {
+	public static boolean checkVersion() throws Exception {
 		{
 			String url = "http://www.clanbnu.ws/bnubot/version.php";
 			if(CurrentVersion.revision() != null)
@@ -60,21 +59,21 @@ public class VersionCheck {
 		
 		VersionNumber vnCurrent = CurrentVersion.version();
 
-		boolean update = vnLatest.isNewerThan(vnCurrent);
-		if(update && (reportTo != null)) {
-			reportTo.recieveError("Current version: " + vnCurrent.toString());
-			reportTo.recieveError("Latest version: " + vnLatest.toString());
-			
-			String url = verLatest.getChild("url").getString();
-			if(url != null)
-				reportTo.recieveError("Update: " + url);
-		}
-		return update;
+		if(!vnLatest.isNewerThan(vnCurrent))
+			return false;
+		
+		Out.error(VersionCheck.class, "Current version: " + vnCurrent.toString());
+		Out.error(VersionCheck.class, "Latest version: " + vnLatest.toString());
+		
+		String url = verLatest.getChild("url").getString();
+		if(url != null)
+			Out.error(VersionCheck.class, "Update: " + url);
+		return true;
 	}
 	
 	public static VersionNumber getLatestVersion() throws Exception {
 		if(vnLatest == null)
-			checkVersion(null);
+			checkVersion();
 		return vnLatest;
 	}
 }
