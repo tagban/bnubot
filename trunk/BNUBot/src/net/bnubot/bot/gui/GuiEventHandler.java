@@ -78,8 +78,10 @@ public class GuiEventHandler implements EventHandler {
 	}
 
 	private void initializeSystemTray() {
-		if(!SystemTray.isSupported())
+		if(!SystemTray.isSupported()) {
+			Out.info(getClass(), "System tray is not supported");
 			return;
+		}
 		
 		Image image = Toolkit.getDefaultToolkit().getImage("tray.gif");
 			
