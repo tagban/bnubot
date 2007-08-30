@@ -73,7 +73,7 @@ public class HTMLOutputEventHandler implements EventHandler {
 	
 	public void channelLeave(BNetUser user) {
 		if(!users.remove(get(user)))
-			Out.error(this.getClass(), "Tried to remove a user that was not in the list: " + user.toString());
+			Out.error(getClass(), "Tried to remove a user that was not in the list: " + user.toString());
 		
 		writeUserList();
 		

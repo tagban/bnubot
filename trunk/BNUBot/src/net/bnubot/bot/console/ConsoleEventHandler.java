@@ -22,42 +22,42 @@ public class ConsoleEventHandler implements EventHandler {
 	}
 
 	public void joinedChannel(String channel) {
-		Out.info(this.getClass(), "Joining channel " + channel);
+		Out.info(getClass(), "Joining channel " + channel);
 	}
 
 	public void channelUser(BNetUser user, StatString statstr) {
-		Out.info(this.getClass(), user.getShortPrettyName() + " (" + user.getPing() + "ms)" + statstr.toString());
+		Out.info(getClass(), user.getShortPrettyName() + " (" + user.getPing() + "ms)" + statstr.toString());
 	}
 	
 	public void channelJoin(BNetUser user, StatString statstr) {
-		Out.info(this.getClass(), user + " has joined the channel" + statstr.toString() + ".");
+		Out.info(getClass(), user + " has joined the channel" + statstr.toString() + ".");
 	}
 	public void channelLeave(BNetUser user) {
-		Out.info(this.getClass(), user + " has left the channel.");
+		Out.info(getClass(), user + " has left the channel.");
 	}
 
 	public void recieveChat(BNetUser user, String text) {
-		Out.info(this.getClass(), "<" + user.getShortPrettyName() + "> " + text);
+		Out.info(getClass(), "<" + user.getShortPrettyName() + "> " + text);
 	}
 
 	public void recieveEmote(BNetUser user, String text) {
-		Out.info(this.getClass(), "<" + user.getShortPrettyName() + " " + text + ">");
+		Out.info(getClass(), "<" + user.getShortPrettyName() + " " + text + ">");
 	}
 
 	public void whisperRecieved(BNetUser user, String text) {
-		Out.info(this.getClass(), "<From: " + user.getShortPrettyName() + "> " + text);
+		Out.info(getClass(), "<From: " + user.getShortPrettyName() + "> " + text);
 	}
 
 	public void whisperSent(BNetUser user, String text) {
-		Out.info(this.getClass(), "<To: " + user.getShortPrettyName() + "> " + text);
+		Out.info(getClass(), "<To: " + user.getShortPrettyName() + "> " + text);
 	}
 
 	public void recieveInfo(String text) {
-		Out.info(this.getClass(), text);
+		Out.info(getClass(), text);
 	}
 
 	public void recieveError(String text) {
-		Out.error(this.getClass(), text);
+		Out.error(getClass(), text);
 	}
 
 	public void bnetConnected() {}

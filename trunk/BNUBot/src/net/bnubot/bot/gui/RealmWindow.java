@@ -138,11 +138,11 @@ public class RealmWindow extends JFrame implements EventHandler, RealmEventHandl
 	}
 
 	public void recieveRealmError(String text) {
-		Out.error(this.getClass(), text);
+		Out.error(getClass(), text);
 	}
 
 	public void recieveRealmInfo(String text) {
-		Out.info(this.getClass(), text);
+		Out.info(getClass(), text);
 	}
 
 }

@@ -192,7 +192,7 @@ public class UserList extends JPanel {
 						if(ui.label == jl) {
 							switch(arg0.getButton()) {
 							case MouseEvent.BUTTON1:
-								Out.info(this.getClass(), "Left clicked on " + ui.label.getText());
+								Out.info(getClass(), "Left clicked on " + ui.label.getText());
 								break;
 							case MouseEvent.BUTTON2:
 								try { c.sendProfile(ui.user); } catch(Exception e) { Out.excepton(e); }
@@ -326,7 +326,7 @@ public class UserList extends JPanel {
 			users.remove(user);
 			validate();
 		} else {
-			Out.error(this.getClass(), "Attempted to remove a user that was not in the UserList: " + user);
+			Out.error(getClass(), "Attempted to remove a user that was not in the UserList: " + user);
 		}
 	}
 
