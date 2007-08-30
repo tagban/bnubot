@@ -7,6 +7,9 @@ package net.bnubot.core;
 
 import java.io.Serializable;
 
+import javax.swing.UIManager;
+
+import net.bnubot.util.Out;
 import net.bnubot.util.Settings;
 
 public class ConnectionSettings implements Serializable {
@@ -56,6 +59,7 @@ public class ConnectionSettings implements Serializable {
 	public long recruitAccess;
 	public String recruitTagPrefix;
 	public String recruitTagSuffix;
+	private String lookAndFeel;
 	
 	public String myRealm;
 	
@@ -153,6 +157,19 @@ public class ConnectionSettings implements Serializable {
 		return null;
 	}
 	
+	public void setLookAndFeel(String laf) {
+		try {
+			UIManager.setLookAndFeel(laf);
+			lookAndFeel = laf;
+		} catch(Exception ex) {
+			Out.excepton(ex);
+		}
+	}
+	
+	public String getLookAndFeel() {
+		return lookAndFeel;
+	}
+	
 	public void save() {
 		String header = Integer.toString(botNum);
 		Settings.write(header, "server", bncsServer);
@@ -168,9 +185,9 @@ public class ConnectionSettings implements Serializable {
 		Settings.write(header, "cdkeyTFT", cdkeyTFT);
 		if(product != 0)
 		Settings.write(header, "product", org.jbls.util.Constants.prods[product-1]);
-		Settings.write(header, "autoconnect", Boolean.toString(autoconnect));
 		
 		if(botNum == 1) {
+			header = null;
 			Settings.write(header, "antiidle", antiIdle);
 			Settings.write(header, "enableAntiidle", Boolean.toString(enableAntiIdle));
 			Settings.write(header, "enableGreetings", Boolean.toString(enableGreetings));
@@ -189,6 +206,7 @@ public class ConnectionSettings implements Serializable {
 			Settings.write(header, "recruitAccess", Long.toString(recruitAccess));
 			Settings.write(header, "recruitTagPrefix", recruitTagPrefix);
 			Settings.write(header, "recruitTagSuffix", recruitTagSuffix);
+			Settings.write(header, "lookAndFeel", lookAndFeel);
 		}
 		
 		Settings.store();
@@ -219,37 +237,42 @@ public class ConnectionSettings implements Serializable {
 					product = (byte)(i+1);
 			}
 		}
-		colorScheme = Byte.parseByte(
-					Settings.read(header, "colorScheme", "1"));
-		trigger = 	Settings.read(header, "trigger", "!");
-		antiIdle = 	Settings.read(header, "antiidle", "/me is a BNU-Bot %version%");
-		enableAntiIdle = Boolean.parseBoolean(
-				Settings.read(header, "enableAntiidle", "false"));
-		enableGreetings = Boolean.parseBoolean(
-				Settings.read(header, "enableGreetings", "true"));
-		antiIdleTimer = Integer.parseInt(
-				Settings.read(header, "antiIdleTimer", "5"));
-		autoconnect = Boolean.parseBoolean(
+		
+		if(botNum == 1) {
+			header = null;
+			colorScheme = Byte.parseByte(
+						Settings.read(header, "colorScheme", "1"));
+			trigger = 	Settings.read(header, "trigger", "!");
+			antiIdle = 	Settings.read(header, "antiidle", "/me is a BNU-Bot %version%");
+			enableAntiIdle = Boolean.parseBoolean(
+					Settings.read(header, "enableAntiidle", "false"));
+			enableGreetings = Boolean.parseBoolean(
+					Settings.read(header, "enableGreetings", "true"));
+			antiIdleTimer = Integer.parseInt(
+					Settings.read(header, "antiIdleTimer", "5"));
+			autoconnect = Boolean.parseBoolean(
 					Settings.read(header, "autoconnect", "true"));
-		enableCLI = Boolean.parseBoolean(
-					Settings.read(header, "enableCLI", "false"));
-		enableGUI = Boolean.parseBoolean(
-					Settings.read(header, "enableGUI", "true"));
-		enableCommands = Boolean.parseBoolean(
-					Settings.read(header, "enableCommands", "false"));
-		enableTrivia = Boolean.parseBoolean(
-				Settings.read(header, "enableTrivia", "false"));
-		triviaRoundLength = Long.parseLong(
-				Settings.read(header, "triviaRoundLength", "100"));
-		enableFloodProtect = Boolean.parseBoolean(
-				Settings.read(header, "enableFloodProtect", "true"));
-		packetLog = Boolean.parseBoolean(
-					Settings.read(header, "packetLog", "false"));
-		whisperBack = Boolean.parseBoolean(
-					Settings.read(header, "whisperBack", "true"));
-		recruitAccess = Long.parseLong(
-				Settings.read(header, "recruitAccess", "10"));
-		recruitTagPrefix =	Settings.read(header, "recruitTagPrefix", "BNU-");
-		recruitTagSuffix =	Settings.read(header, "recruitTagSuffix", null);
+			enableCLI = Boolean.parseBoolean(
+						Settings.read(header, "enableCLI", "false"));
+			enableGUI = Boolean.parseBoolean(
+						Settings.read(header, "enableGUI", "true"));
+			enableCommands = Boolean.parseBoolean(
+						Settings.read(header, "enableCommands", "false"));
+			enableTrivia = Boolean.parseBoolean(
+					Settings.read(header, "enableTrivia", "false"));
+			triviaRoundLength = Long.parseLong(
+					Settings.read(header, "triviaRoundLength", "100"));
+			enableFloodProtect = Boolean.parseBoolean(
+					Settings.read(header, "enableFloodProtect", "true"));
+			packetLog = Boolean.parseBoolean(
+						Settings.read(header, "packetLog", "false"));
+			whisperBack = Boolean.parseBoolean(
+						Settings.read(header, "whisperBack", "true"));
+			recruitAccess = Long.parseLong(
+					Settings.read(header, "recruitAccess", "10"));
+			recruitTagPrefix =	Settings.read(header, "recruitTagPrefix", "BNU-");
+			recruitTagSuffix =	Settings.read(header, "recruitTagSuffix", null);
+			setLookAndFeel(Settings.read(header, "lookAndFeel", UIManager.getLookAndFeel().getClass().getName()));
+		}
 	}
 }
