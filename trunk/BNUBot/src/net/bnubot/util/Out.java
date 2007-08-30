@@ -108,6 +108,7 @@ public class Out {
 	 */
 	public static void setDebug(boolean debug) {
 		Out.debug = debug;
+		info(Out.class, "Debug logging " + (debug ? "en" : "dis") + "abled");
 	}
 
 	/**
