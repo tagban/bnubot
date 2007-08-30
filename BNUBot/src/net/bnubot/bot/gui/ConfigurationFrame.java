@@ -6,6 +6,7 @@
 package net.bnubot.bot.gui;
 
 import java.awt.Dimension;
+import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -19,6 +20,7 @@ import java.io.IOException;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -46,26 +48,26 @@ public class ConfigurationFrame extends JDialog {
 	JTabbedPane tabs = null;
 	
 	//Connection
-	JTextArea txtUsername = null;
+	ConfigTextArea txtUsername = null;
 	JPasswordField txtPassword = null;
-	JTextArea txtEmail = null;
-	JComboBox cmbProduct = null;
-	JTextArea txtTrigger = null;
+	ConfigTextArea txtEmail = null;
+	ConfigComboBox cmbProduct = null;
+	ConfigTextArea txtTrigger = null;
 	JCheckBox chkAntiIdle = null;
-	JTextArea txtAntiIdle = null;
-	JTextArea txtAntiIdleTimer = null;
-	JComboBox cmbCDKey = null;
-	JComboBox cmbCDKeyLOD = null;
-	JComboBox cmbCDKeyTFT = null;
-	JTextArea txtBNCSServer = null;
-	JTextArea txtBNLSServer = null;
-	JTextArea txtChannel = null;
-	JComboBox cmbColorScheme = null;
+	ConfigTextArea txtAntiIdle = null;
+	ConfigTextArea txtAntiIdleTimer = null;
+	ConfigComboBox cmbCDKey = null;
+	ConfigComboBox cmbCDKeyLOD = null;
+	ConfigComboBox cmbCDKeyTFT = null;
+	ConfigTextArea txtBNCSServer = null;
+	ConfigTextArea txtBNLSServer = null;
+	ConfigTextArea txtChannel = null;
+	ConfigComboBox cmbColorScheme = null;
 	JCheckBox chkAutoConnect = null;
 	JCheckBox chkEnableGUI = null;
 	JCheckBox chkEnableCLI = null;
 	JCheckBox chkEnableTrivia = null;
-	JTextArea txtTriviaRoundLength = null;
+	ConfigTextArea txtTriviaRoundLength = null;
 	JCheckBox chkEnableCommands = null;
 	JCheckBox chkEnableFloodProtect = null;
 	JCheckBox chkPacketLog = null;
@@ -75,21 +77,37 @@ public class ConfigurationFrame extends JDialog {
 	JButton btnCancel = null;
 	
 	//CDKeys
-	JTextArea txtCDKeys = null;
+	ConfigTextArea txtCDKeys = null;
 	JButton btnSaveKeys = null;
 	
 	//Extra
 	JComboBox cmbLookAndFeel = null;
 	
 	private class ConfigTextArea extends JTextArea {
-		/**
-		 * 
-		 */
 		private static final long serialVersionUID = -2894805163754230265L;
-
+		
 		public ConfigTextArea(String text) {
 			super(text);
-			setBorder(BorderFactory.createEtchedBorder());
+			setBorder(BorderFactory.createLoweredBevelBorder());
+			
+			// Enable tab key for focus traversal
+			// http://forum.java.sun.com/thread.jspa?threadID=283320&messageID=2194505
+			setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, null);
+			setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, null);
+		}
+	}
+	
+	private class ConfigComboBox extends JComboBox {
+		private static final long serialVersionUID = 4793810467982453882L;
+		
+		public ConfigComboBox(Object[] items) {
+			super(items);
+			setBorder(BorderFactory.createLoweredBevelBorder());
+		}
+		
+		public ConfigComboBox(ComboBoxModel model) {
+			super(model);
+			setBorder(BorderFactory.createLoweredBevelBorder());
 		}
 	}
 	
@@ -194,7 +212,7 @@ public class ConfigurationFrame extends JDialog {
 					JLabel jl = new JLabel("CD Key");
 					jl.setPreferredSize(maxSize);
 					boxLine.add(jl);
-					cmbCDKey = new JComboBox(CDKeys);
+					cmbCDKey = new ConfigComboBox(CDKeys);
 					boxLine.add(cmbCDKey);
 					
 					for(int i = 0; i < CDKeys.length; i++) {
@@ -211,7 +229,7 @@ public class ConfigurationFrame extends JDialog {
 					JLabel jl = new JLabel("LOD Key");
 					jl.setPreferredSize(maxSize);
 					boxLine.add(jl);
-					cmbCDKeyLOD = new JComboBox(CDKeys);
+					cmbCDKeyLOD = new ConfigComboBox(CDKeys);
 					boxLine.add(cmbCDKeyLOD);
 					
 					for(int i = 0; i < CDKeys.length; i++) {
@@ -228,7 +246,7 @@ public class ConfigurationFrame extends JDialog {
 					JLabel jl = new JLabel("TFT Key");
 					jl.setPreferredSize(maxSize);
 					boxLine.add(jl);
-					cmbCDKeyTFT = new JComboBox(CDKeys);
+					cmbCDKeyTFT = new ConfigComboBox(CDKeys);
 					boxLine.add(cmbCDKeyTFT);
 					
 					for(int i = 0; i < CDKeys.length; i++) {
@@ -243,7 +261,7 @@ public class ConfigurationFrame extends JDialog {
 					JLabel jl = new JLabel("Product");
 					jl.setPreferredSize(maxSize);
 					boxLine.add(jl);
-					cmbProduct = new JComboBox(org.jbls.util.Constants.prods);
+					cmbProduct = new ConfigComboBox(org.jbls.util.Constants.prods);
 					cmbProduct.addItemListener(new ItemListener() {
 						public void itemStateChanged(ItemEvent e) {
 							int prod = KeyManager.PRODUCT_ALLNORMAL;
@@ -320,7 +338,7 @@ public class ConfigurationFrame extends JDialog {
 					JLabel jl = new JLabel("Color Scheme");
 					jl.setPreferredSize(maxSize);
 					boxLine.add(jl);
-					cmbColorScheme = new JComboBox(new String[] { "Starcraft", "Diablo 2" });
+					cmbColorScheme = new ConfigComboBox(new String[] { "Starcraft", "Diablo 2" });
 					cmbColorScheme.setSelectedIndex(cs.colorScheme - 1);
 					boxLine.add(cmbColorScheme);
 				}
@@ -347,7 +365,7 @@ public class ConfigurationFrame extends JDialog {
 						JLabel jl = new JLabel("Trivia Round Length");
 						boxCheckboxes.add(jl);
 
-						txtTriviaRoundLength = new JTextArea(Long.toString(cs.triviaRoundLength));
+						txtTriviaRoundLength = new ConfigTextArea(Long.toString(cs.triviaRoundLength));
 						boxCheckboxes.add(txtTriviaRoundLength);
 	
 						chkEnableCommands = new JCheckBox("Enable Commands (requires restart)", cs.enableCommands);
@@ -447,7 +465,7 @@ public class ConfigurationFrame extends JDialog {
 				Out.excepton(e);
 			}
 			
-			txtCDKeys = new JTextArea(keys);
+			txtCDKeys = new ConfigTextArea(keys);
 			boxAll.add(new JScrollPane(txtCDKeys));
 			
 			btnSaveKeys = new JButton("Save");
@@ -484,7 +502,7 @@ public class ConfigurationFrame extends JDialog {
 				if(cs.getLookAndFeel().equals(lafi.getClassName()))
 					selected = lafi;
 			}
-			cmbLookAndFeel = new JComboBox(model);
+			cmbLookAndFeel = new ConfigComboBox(model);
 			if(selected != null)
 				cmbLookAndFeel.setSelectedItem(selected.getClassName());
 			cmbLookAndFeel.addItemListener(new ItemListener() {
