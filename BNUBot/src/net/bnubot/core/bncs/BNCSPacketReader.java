@@ -37,15 +37,19 @@ public class BNCSPacketReader {
 			data[i] = is.readByte();
 		}
 		
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		BNetOutputStream os = new BNetOutputStream(baos);
-		os.writeByte(0xFF);
-		os.writeByte(packetId);
-		os.writeWord(packetLength);
-		os.write(data);
-		
-		if(packetLog)
-			Out.debugAlways(getClass(), "RECV\n" + HexDump.hexDump(baos.toByteArray()));
+		if(packetLog) {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			BNetOutputStream os = new BNetOutputStream(baos);
+			os.writeByte(0xFF);
+			os.writeByte(packetId);
+			os.writeWord(packetLength);
+			os.write(data);
+			
+			if(Out.isDebug())
+				Out.debugAlways(getClass(), "RECV\n" + HexDump.hexDump(baos.toByteArray()));
+			else
+				Out.debugAlways(getClass(), "RECV 0x" + Integer.toHexString(packetId));
+		}
 	}
 	
 	public BNetInputStream getData() {

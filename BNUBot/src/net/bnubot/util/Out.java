@@ -110,4 +110,12 @@ public class Out {
 		Out.debug = debug;
 	}
 
+	/**
+	 * Gets whether debugging messages should be shown
+	 * @return true when debugging messages will be shown
+	 */
+	public static boolean isDebug() {
+		return debug;
+	}
+
 }
