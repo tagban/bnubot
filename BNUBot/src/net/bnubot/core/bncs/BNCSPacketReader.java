@@ -45,7 +45,7 @@ public class BNCSPacketReader {
 		os.write(data);
 		
 		if(packetLog)
-			Out.debugAlways(this.getClass(), "RECV\n" + HexDump.hexDump(baos.toByteArray()));
+			Out.debugAlways(getClass(), "RECV\n" + HexDump.hexDump(baos.toByteArray()));
 	}
 	
 	public BNetInputStream getData() {

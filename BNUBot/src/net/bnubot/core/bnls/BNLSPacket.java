@@ -37,7 +37,7 @@ public class BNLSPacket extends BNetOutputStream {
 		data = baos.toByteArray();
 		
 		if(packetLog)
-			Out.debugAlways(this.getClass(), "SEND\n" + HexDump.hexDump(data));
+			Out.debugAlways(getClass(), "SEND\n" + HexDump.hexDump(data));
 		
 		out.write(data);
 		out.flush();

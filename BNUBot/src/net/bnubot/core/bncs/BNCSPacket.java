@@ -30,11 +30,11 @@ public class BNCSPacket extends BNetOutputStream {
 		
 		if(packetId == BNCSCommandIDs.SID_CHATCOMMAND) {
 			if(data.length > 0xFB) {
-				Out.error(this.getClass(), "Chat command is too long; ignoring.");
+				Out.error(getClass(), "Chat command is too long; ignoring.");
 				return;
 			}
 			if(data[data.length-1] != 0x00) {
-				Out.error(this.getClass(), "Chat command is not null terminated; ignoring.");
+				Out.error(getClass(), "Chat command is not null terminated; ignoring.");
 				return;
 			}
 		}
@@ -51,7 +51,7 @@ public class BNCSPacket extends BNetOutputStream {
 		data = baos.toByteArray();
 		
 		if(packetLog)
-			Out.debugAlways(this.getClass(), "SEND\n" + HexDump.hexDump(data));
+			Out.debugAlways(getClass(), "SEND\n" + HexDump.hexDump(data));
 		
 		out.write(data);
 		out.flush();
