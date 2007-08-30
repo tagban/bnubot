@@ -478,18 +478,18 @@ public class ConfigurationFrame extends JDialog {
 		boxAll = new Box(BoxLayout.Y_AXIS);
 		{
 			DefaultComboBoxModel model = new DefaultComboBoxModel();
-			for(LookAndFeelInfo lafi : UIManager.getInstalledLookAndFeels())
+			LookAndFeelInfo selected = null;
+			for(LookAndFeelInfo lafi : UIManager.getInstalledLookAndFeels()) {
 				model.addElement(lafi.getClassName());
+				if(cs.getLookAndFeel().equals(lafi.getClassName()))
+					selected = lafi;
+			}
 			cmbLookAndFeel = new JComboBox(model);
+			if(selected != null)
+				cmbLookAndFeel.setSelectedItem(selected.getClassName());
 			cmbLookAndFeel.addItemListener(new ItemListener() {
 				public void itemStateChanged(ItemEvent e) {
-					String laf = (String)cmbLookAndFeel.getSelectedItem();
-					Out.debug(ConfigurationFrame.class, "Setting Look and Feel to " + laf);
-					try {
-						UIManager.setLookAndFeel(laf);
-					} catch(Exception ex) {
-						Out.excepton(ex);
-					}
+					cs.setLookAndFeel((String)cmbLookAndFeel.getSelectedItem());
 				}
 			});
 			boxAll.add(cmbLookAndFeel);

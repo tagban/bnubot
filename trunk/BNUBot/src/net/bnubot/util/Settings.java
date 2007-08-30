@@ -32,6 +32,8 @@ public class Settings {
 	}
 	
 	private static String getKey(String Header, String Setting) {
+		if(Header == null)
+			return "general_" + Setting;
 		return Header + "_" + Setting;
 	}
 	
