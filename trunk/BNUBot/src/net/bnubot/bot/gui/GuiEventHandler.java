@@ -244,6 +244,16 @@ public class GuiEventHandler implements EventHandler {
 						IconsDotBniReader.showWindow();
 					} });
 				menu.add(menuItem);
+				
+				menuItem = new JMenuItem((Out.isDebug() ? "Dis" : "En") + "able debug logging");
+				menuItem.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent event) {
+						Out.setDebug(!Out.isDebug());
+						
+						JMenuItem jmi = (JMenuItem)event.getSource();
+						jmi.setText((Out.isDebug() ? "Dis" : "En") + "able debug logging");
+					} });
+				menu.add(menuItem);
 			}
 			menuBar.add(menu);
 			
