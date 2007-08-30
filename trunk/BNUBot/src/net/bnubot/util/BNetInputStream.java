@@ -65,10 +65,4 @@ public class BNetInputStream extends DataInputStream {
 			bb.put(b);
 		}
 	}
-	
-	public String readFixedLengthString(int length) throws IOException {
-		byte[] out = new byte[length];
-		read(out, 0, length);
-		return new String(out);
-	}
 }

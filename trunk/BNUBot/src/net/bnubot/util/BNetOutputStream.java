@@ -23,12 +23,6 @@ public class BNetOutputStream extends DataOutputStream {
 	}
 
 	public void writeDWord(int doubleword) throws IOException {
-		/*int dw = 0;
-		dw |= (doubleword & 0x000000FF) << 24;
-		dw |= (doubleword & 0x0000FF00) << 8;
-		dw |= (doubleword & 0x00FF0000) >> 8;
-		dw |= (doubleword & 0xFF000000) >> 24;
-		writeInt(dw);*/
 		writeByte((doubleword & 0x000000FF));
 		writeByte((doubleword & 0x0000FF00) >> 8);
 		writeByte((doubleword & 0x00FF0000) >> 16);
@@ -52,7 +46,11 @@ public class BNetOutputStream extends DataOutputStream {
 	}
 	
 	public void writeNTString(byte[] str) throws IOException {
-		write(str);
+		for(byte b : str) {
+			if(b == 0)
+				throw new IOException("String contains a null character:\n" + HexDump.hexDump(str));
+			writeByte(b);
+		}
 		writeByte(0);
 	}
 	
