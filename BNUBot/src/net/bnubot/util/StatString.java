@@ -5,6 +5,7 @@
 
 package net.bnubot.util;
 
+import java.io.EOFException;
 import java.io.IOException;
 
 import net.bnubot.core.bncs.ProductIDs;
@@ -151,7 +152,11 @@ public class StatString {
 				return;
 			}
 		} else {
-			product = is.readDWord();
+			try {
+				product = is.readDWord();
+			} catch(EOFException e) {
+				return;
+			}
 		}
 
 		pretty = " using ";
