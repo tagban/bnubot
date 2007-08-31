@@ -433,7 +433,7 @@ public class BNCSConnection extends Connection {
 				    	}
 			    		exeVersion = bnlsIn.readDWord();
 				    	exeHash = bnlsIn.readDWord();
-				    	exeInfo = bnlsIn.readNTString(null);
+				    	exeInfo = bnlsIn.readNTString();
 				    	bnlsIn.readDWord(); // cookie
 				    	/*int exeVerbyte =*/ bnlsIn.readDWord();
 				    	assert(bnlsIn.available() == 0);
