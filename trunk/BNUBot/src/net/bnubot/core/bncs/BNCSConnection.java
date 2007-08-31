@@ -18,11 +18,11 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Random;
 import java.util.TimeZone;
 
+import net.bnubot.bot.CommandResponseCookie;
 import net.bnubot.core.ChatQueue;
 import net.bnubot.core.Connection;
 import net.bnubot.core.ConnectionSettings;
@@ -1188,9 +1188,69 @@ public class BNCSConnection extends Connection {
 				}
 				
 				// SID_CLANQUITNOTIFY
-				// SID_CLANINVITATION
+				case BNCSCommandIDs.SID_CLANINVITATION: {
+					Object cookie = CookieUtility.destroyCookie(is.readDWord());
+					byte status = is.readByte();
+					
+					String result;
+					switch(status) {
+					case 0x00:
+						result = "Invitation accepted";
+						break;
+					case 0x04:
+						result = "Invitation declined";
+						break;
+					case 0x05:
+						result = "Failed to invite user";
+						break;
+					case 0x09:
+						result = "Clan is full";
+						break;
+					default:
+						result = "Unknown response 0x" + Integer.toHexString(status);
+						break;
+					}
+					
+					if(cookie instanceof CommandResponseCookie)
+						((CommandResponseCookie)cookie).sendChat(this, result);
+					else
+						Out.info(getClass(), result);
+					
+					break;
+				}
+				
 				// SID_CLANREMOVEMEMBER
-				// SID_CLANINVITATIONRESPONSE
+				
+				case BNCSCommandIDs.SID_CLANINVITATIONRESPONSE: {
+					/* (DWORD) Cookie
+					 * (DWORD) Clan tag
+					 * (STRING) Clan name
+					 * (STRING) Inviter 
+					 */
+					int cookie = is.readDWord();
+					int clanTag = is.readDWord();
+					String clanName = is.readNTString();
+					String inviter = is.readNTString();
+					
+					recieveInfo("You were invited to Clan " + HexDump.DWordToPretty(clanTag) + " (" + clanName + ") by " + inviter);
+					
+					/* (DWORD) Cookie
+					 * (DWORD) Clan tag
+					 * (STRING) Inviter
+					 * (BYTE) Response
+					 * 
+					 * Response:
+					 * 0x04: Decline
+					 * 0x06: Accept
+					 */
+					BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_CLANINVITATIONRESPONSE);
+					p.writeDWord(cookie);
+					p.writeDWord(clanTag);
+					p.writeNTString(inviter);
+					p.writeByte(0x06);
+					p.SendPacket(dos, cs.packetLog);
+					break;
+				}
 				
 				case BNCSCommandIDs.SID_CLANRANKCHANGE: {
 					int cookie = is.readDWord();
@@ -1402,7 +1462,7 @@ public class BNCSConnection extends Connection {
 			recieveChat(myUser, text);
 	}
 
-	public void sendClanRankChange(String user, int newRank) throws Exception {
+	public void sendClanInvitation(Object cookie, String user) throws Exception {
 		switch(productID) {
 		case ProductIDs.PRODUCT_WAR3:
 		case ProductIDs.PRODUCT_W3XP:
@@ -1411,15 +1471,26 @@ public class BNCSConnection extends Connection {
 			throw new UnsupportedFeatureException("Only WAR3/W3XP support clans.");
 		}
 		
-		LinkedList<Object> obj = new LinkedList<Object>();
-		obj.add("This is the cookie for setRank:");
-		obj.add(user);
-		obj.add(newRank);
+		if(myClanRank < 2)
+			throw new UnsupportedFeatureException("Must be shaman to invite");
 		
-		int id = CookieUtility.createCookie(obj);
+		BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_CLANINVITATION);
+		p.writeDWord(CookieUtility.createCookie(cookie));	//Cookie
+		p.writeNTString(user);	//Username
+		p.SendPacket(dos, cs.packetLog);
+	}
+	
+	public void sendClanRankChange(Object cookie, String user, int newRank) throws Exception {
+		switch(productID) {
+		case ProductIDs.PRODUCT_WAR3:
+		case ProductIDs.PRODUCT_W3XP:
+			break;
+		default:
+			throw new UnsupportedFeatureException("Only WAR3/W3XP support clans.");
+		}
 		
 		BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_CLANRANKCHANGE);
-		p.writeDWord(id);		//Cookie
+		p.writeDWord(CookieUtility.createCookie(cookie));	//Cookie
 		p.writeNTString(user);	//Username
 		p.writeByte(newRank);	//New rank
 		p.SendPacket(dos, cs.packetLog);

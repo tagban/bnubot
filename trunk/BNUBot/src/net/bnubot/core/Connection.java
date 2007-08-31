@@ -71,7 +71,8 @@ public abstract class Connection extends Thread implements EventHandler {
 	public abstract void joinChannel(String channel) throws Exception;
 	public abstract void sendQueryRealms() throws Exception;
 	public abstract void sendLogonRealmEx(String realmTitle) throws Exception;
-	public abstract void sendClanRankChange(String string, int newRank) throws Exception;
+	public abstract void sendClanInvitation(Object cookie, String user) throws Exception;
+	public abstract void sendClanRankChange(Object cookie, String user, int newRank) throws Exception;
 	public abstract void sendClanMOTD(Object cookie) throws Exception;
 	public abstract void sendClanSetMOTD(String text) throws Exception;
 	public abstract void sendProfile(String user) throws Exception;

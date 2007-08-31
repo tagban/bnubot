@@ -167,6 +167,8 @@ public class ClanList extends JPanel {
 	
 	public void statusChange(ClanMember member) {
 		ClanMemberInfo cmi = get(member);
+		if(cmi == null)
+			return;
 		cmi.label.setText(member.toString());
 		cmi.entry = member;
 		setIcon(cmi);

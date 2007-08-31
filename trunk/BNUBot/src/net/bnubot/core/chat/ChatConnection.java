@@ -85,8 +85,15 @@ public class ChatConnection extends Connection {
 	}
 
 	@Override
-	public void sendClanRankChange(String string, int newRank) throws Exception {
+	public void sendClanInvitation(Object cookie, String user) throws Exception {
 		throw new UnsupportedFeatureException("Chat clients can not use clans");
+		
+	}
+
+	@Override
+	public void sendClanRankChange(Object cookie, String user, int newRank) throws Exception {
+		throw new UnsupportedFeatureException("Chat clients can not use clans");
+		
 	}
 
 	@Override

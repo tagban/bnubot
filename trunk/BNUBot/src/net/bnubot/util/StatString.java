@@ -142,8 +142,6 @@ public class StatString {
 			return;
 		parsed = true;
 		
-		pretty = " using ";
-		
 		if(is == null) {
 			try {
 				product = HexDump.StringToDWord(statString[0]);
@@ -155,7 +153,8 @@ public class StatString {
 		} else {
 			product = is.readDWord();
 		}
-		
+
+		pretty = " using ";
 		switch(product) {
 		case ProductIDs.PRODUCT_DSHR:
 			pretty += "Diablo Shareware";
