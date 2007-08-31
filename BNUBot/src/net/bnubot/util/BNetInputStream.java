@@ -36,7 +36,13 @@ public class BNetInputStream extends DataInputStream {
 	}
 	
 	public String readNTString() throws IOException {
-		return readNTString(null);
+		String out = new String();
+		do {
+			int c = readByte();
+			if(c == 0)
+				return out;
+			out +=  Character.toString((char)c);
+		} while(true);
 	}
 	
 	public String readNTStringUTF8() throws IOException {
@@ -50,8 +56,6 @@ public class BNetInputStream extends DataInputStream {
 		while(true) {
 			byte b = readByte();
 			if(b == 0) {
-				if(encoding == null)
-					return new String(bb.array(), 0, pos);
 				return new String(bb.array(), 0, pos, encoding);
 			}
 			
