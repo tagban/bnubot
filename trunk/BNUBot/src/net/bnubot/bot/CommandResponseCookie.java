@@ -1,6 +1,8 @@
 /**
- * 
+ * This file is distributed under the GPL 
+ * $Id$
  */
+
 package net.bnubot.bot;
 
 import net.bnubot.util.BNetUser;
