@@ -5,6 +5,8 @@
 
 package net.bnubot.core.mcp;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
@@ -12,6 +14,7 @@ import java.util.Date;
 
 import net.bnubot.core.RealmConnection;
 import net.bnubot.util.BNetInputStream;
+import net.bnubot.util.BNetOutputStream;
 import net.bnubot.util.HexDump;
 import net.bnubot.util.Out;
 import net.bnubot.util.StatString;
@@ -25,7 +28,6 @@ public class MCPConnection extends RealmConnection {
 	protected String uniqueName;
 	
 	protected Socket s;
-	protected String realm;
 	protected int serverToken;
 	protected DataInputStream dis = null;
 	protected DataOutputStream dos = null;
@@ -121,7 +123,17 @@ public class MCPConnection extends RealmConnection {
 						for(int i = 0; i < numChars; i++) {
 							int secs = is.readDWord();
 							String charname = is.readNTString();
-							StatString statstr = new StatString("PX2D[Realm]," + charname + "," + is.readNTString());
+							
+							ByteArrayOutputStream baos = new ByteArrayOutputStream();
+							BNetOutputStream bos = new BNetOutputStream(baos);
+							bos.write(("PX2D[Realm]," + charname + ",").getBytes());
+							byte[] data = new byte[33];
+							is.read(data);
+							bos.write(data);
+							if(is.readByte() != 0)
+								throw new Exception("invalid statstr format\n" + HexDump.hexDump(baos.toByteArray()));
+							bos.writeByte(0);
+							StatString statstr = new StatString(new BNetInputStream(new ByteArrayInputStream(baos.toByteArray())));
 							
 							long time = new Date().getTime();
 							time = (((long)secs) * 1000) - time;
