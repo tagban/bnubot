@@ -5,14 +5,16 @@
 
 package net.bnubot.util;
 
+import java.io.IOException;
+
 import net.bnubot.core.bncs.ProductIDs;
 
 public class StatString {
 	private static final String[] D2Classes = {"Amazon", "Sorceress", "Necromancer", "Paladin", "Barbarian", "Druid", "Assassin" };
 	
 	private boolean parsed = false;
-	private String[] statString;
-	private String[] statString2;
+	private String[] statString = null;
+	private String[] statString2 = null;
 	private String pretty = null;
 	private int product = 0;
 	private int icon = 0;
@@ -23,6 +25,7 @@ public class StatString {
 	private int highLadderRating = 0;
 	private int ladderRank = 0;
 	private boolean spawn = false;
+	private BNetInputStream is = null;
 	
 	public StatString(String statString) {
 		this.statString = statString.split(" ", 2);
@@ -32,7 +35,16 @@ public class StatString {
 		try {
 			parse();
 		} catch(Exception e) {
-			Out.error(StatString.class, "Error parsing statstring: " + statString + "\n" + HexDump.hexDump(statString.getBytes()));
+			Out.error(StatString.class, "Error parsing statstring: " + e.getMessage() + "\n" + HexDump.hexDump(statString.getBytes()));
+			Out.excepton(e);
+		}
+	}
+	
+	public StatString(BNetInputStream is) {
+		this.is = is;
+		try {
+			parse();
+		} catch(Exception e) {
 			Out.excepton(e);
 		}
 	}
@@ -125,22 +137,23 @@ public class StatString {
 		return "Unknown " + HexDump.DWordToPretty(icon);
 	}
 	
-	public void parse() {
+	public void parse() throws IOException {
 		if(parsed)
 			return;
 		parsed = true;
 		
-		if(statString.length == 0)
-			return;
-		
 		pretty = " using ";
 		
-		try {
-			product = HexDump.StringToDWord(statString[0]);
-			icon = product;
-		} catch(Exception e) {
-			pretty = e.getMessage();
-			return;
+		if(is == null) {
+			try {
+				product = HexDump.StringToDWord(statString[0]);
+				icon = product;
+			} catch(Exception e) {
+				pretty = e.getMessage();
+				return;
+			}
+		} else {
+			product = is.readDWord();
 		}
 		
 		switch(product) {
@@ -179,7 +192,7 @@ public class StatString {
 			break;
 		}
 
-		if((statString.length > 1) || (statString[0].length() > 4)) {
+		if((is != null) || (statString.length > 1) || (statString[0].length() > 4)) {
 			switch(product) {
 			case ProductIDs.PRODUCT_STAR:
 			case ProductIDs.PRODUCT_SEXP:
@@ -200,6 +213,12 @@ public class StatString {
 				8 	Unknown 	
 				9 	Icon 	This value should be matched against the product values of each icon in each Battle.net Icon file that is loaded. If a match is found, the client should use this icon when displaying the user.
 				*/
+				if(is != null) {
+					if(is.readByte() == 0) // discard the space, or terminate the string
+						break;
+					statString2 = is.readNTString().split(" ");
+				}
+				
 				if(statString2.length != 9) {
 					pretty += "\ninvalid length " + statString2.length;
 					return;
@@ -209,12 +228,16 @@ public class StatString {
 					ladderRating = Integer.parseInt(statString2[0]);
 					ladderRank = Integer.parseInt(statString2[1]);
 					wins = Integer.parseInt(statString2[2]);
-					spawn = !statString2[3].equals("0");
+					spawn = statString2[3].equals("1");
 					long unknown5 = Integer.parseInt(statString2[4]);
 					highLadderRating = Integer.parseInt(statString2[5]);
 					long unknown7 = Integer.parseInt(statString2[6]);
 					long unknown8 = Integer.parseInt(statString2[7]);
-					icon = HexDump.StringToDWord(statString2[8]);
+					try {
+						icon = HexDump.StringToDWord(statString2[8]);
+					} catch(Exception e) {
+						Out.excepton(e);
+					}
 		
 					if(ladderRating != 0)
 						pretty += ", Ladder rating " + ladderRating;
@@ -235,19 +258,40 @@ public class StatString {
 					if((icon != 0) && (icon != product))
 						pretty += ", " + HexDump.DWordToPretty(icon) + " icon";
 				} catch(Exception e) {
-					pretty += statString[1];
+					Out.excepton(e);
 				}
 				break;
 	
 			case ProductIDs.PRODUCT_D2DV:
 			case ProductIDs.PRODUCT_D2XP:
-				statString2 = statString[0].substring(4).split(",", 3);
+				byte[] data = null;
+				
+				if(is == null) {
+					statString2 = statString[0].substring(4).split(",", 3);
+					data = statString2[2].getBytes();
+
+					if(statString2.length != 3) {
+						pretty += "unknown statstr2 len: " + statString2.length;
+						break;
+					}
+				} else {
+					statString2 = new String[2];
+					try {
+						statString2[0] = is.readCommaTermString();
+					} catch(IOException e) {
+						// No realm was found
+						break;
+					}
+					statString2[1] = is.readCommaTermString();
+					data = new byte[33];
+					is.read(data);
+					if(is.readByte() != 0)
+						throw new IOException("after read 33 bytes of data, no null found");
+				}
+				
 				//PX2DUSEast,EsO-SILenTNiGhT,'S
 				//PX2DUSEast,getoutof_myway ,?++T
-				if(statString2.length != 3) {
-					pretty += "unknown statstr2 len: " + statString2.length;
-					break;
-				}
+				
 				pretty += ", Realm " + statString2[0];
 				//TODO: Prefix
 				pretty += ", ";
@@ -258,20 +302,12 @@ public class StatString {
 			    //84 80 3B 02 02 02 02 14 FF FF 03 03 60 03 FF FF FF FF FF FF FF FF FF FF 32 13 E4 84 FF FF 01 FF FF - ?;.......`.2..
 			    //00             05             10             15             20             25             30
 				
-				byte[] data = statString2[2].getBytes();
-				
-				if(data.length != 33) {
-					pretty += " error: data.length != 33\n";
-					pretty += HexDump.hexDump(data);
-					break;
-				}
+				if(data.length != 33)
+					throw new IOException("data.length != 33");;
 				
 				byte version = (byte)(data[0] & 0x7F);
-				if(version != 4) {
-					pretty += " error: version != 4\n";
-					pretty += HexDump.hexDump(data);
-					break;
-				}
+				if(version != 4)
+					throw new IOException("version != 4");
 				
 				byte charClass = (byte)(data[13]-1);
 				if((charClass < 0) || (charClass > 6))
@@ -345,6 +381,12 @@ public class StatString {
 				
 			case ProductIDs.PRODUCT_WAR3:
 			case ProductIDs.PRODUCT_W3XP:
+				if(is != null) {
+					if(is.readByte() == 0) // discard the space, or terminate the string
+						break;
+					statString2 = is.readNTString().split(" ");
+				}
+				
 				if(statString2.length >= 2) {
 					//3RAW 1R3W 1 UNB
 					icon = HexDump.StringToDWord(statString2[0]);

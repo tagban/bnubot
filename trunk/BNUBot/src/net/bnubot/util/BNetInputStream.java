@@ -35,13 +35,29 @@ public class BNetInputStream extends DataInputStream {
 		return qw;
 	}
 	
+	public StatString readStatString() {
+		return new StatString(this);
+	}
+	
+	public String readCommaTermString() throws IOException {
+		String out = new String();
+		do {
+			int c = readByte();
+			if(c == 0)
+				throw new IOException("Read a null, looking for comma terminator");
+			if(c == ',')
+				return out;
+			out += (char)c;
+		} while(true);
+	}
+	
 	public String readNTString() throws IOException {
 		String out = new String();
 		do {
 			int c = readByte();
 			if(c == 0)
 				return out;
-			out +=  Character.toString((char)c);
+			out += (char)c;
 		} while(true);
 	}
 	

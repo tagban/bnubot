@@ -5,6 +5,8 @@
 
 package net.bnubot.util;
 
+import java.security.InvalidParameterException;
+
 public class HexDump {
 	public static String DWordToIP(int dword) {
 		int bytes[] = new int[4];
@@ -30,6 +32,8 @@ public class HexDump {
 	
 	public static int PrettyToDWord(String pretty) {
 		byte bytes[] = pretty.getBytes();
+		if(bytes.length != 4)
+			throw new InvalidParameterException("bytes.length != 4");
         return	((bytes[3] << 0) & 0x000000FF) |
 				((bytes[2] << 8) & 0x0000FF00) |
 				((bytes[1] << 16) & 0x00FF0000) |
@@ -38,6 +42,8 @@ public class HexDump {
 	
 	public static int StringToDWord(String str) {
 		byte bytes[] = str.getBytes();
+		if(bytes.length != 4)
+			throw new InvalidParameterException("bytes.length != 4");
         return	((bytes[0] << 0) & 0x000000FF) |
 				((bytes[1] << 8) & 0x0000FF00) |
 				((bytes[2] << 16) & 0x00FF0000) |

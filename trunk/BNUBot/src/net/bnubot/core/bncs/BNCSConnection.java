@@ -852,7 +852,19 @@ public class BNCSConnection extends Connection {
 				//	is.readDWord();	// Account number (defunct)
 				//	is.readDWord(); // Registration authority (defunct)
 					String username = is.readNTString();
-					String text = is.readNTString();
+					String text = null;
+					StatString statstr = null;
+					
+					switch(eid) {
+					case BNCSChatEventIDs.EID_SHOWUSER:
+					case BNCSChatEventIDs.EID_USERFLAGS:
+					case BNCSChatEventIDs.EID_JOIN:
+						statstr = is.readStatString();
+						break;
+					default:
+						text = is.readNTString();
+						break;
+					}
 					
 					BNetUser user = null;
 					switch(eid) {
@@ -882,10 +894,10 @@ public class BNCSConnection extends Connection {
 					switch(eid) {
 					case BNCSChatEventIDs.EID_SHOWUSER:
 					case BNCSChatEventIDs.EID_USERFLAGS:
-						channelUser(user, new StatString(text));
+						channelUser(user, statstr);
 						break;
 					case BNCSChatEventIDs.EID_JOIN:
-						channelJoin(user, new StatString(text));
+						channelJoin(user, statstr);
 						break;
 					case BNCSChatEventIDs.EID_LEAVE:
 						channelLeave(user);
