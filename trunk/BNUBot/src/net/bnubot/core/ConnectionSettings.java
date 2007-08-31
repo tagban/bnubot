@@ -82,9 +82,6 @@ public class ConnectionSettings implements Serializable {
 		
 		if((channel == null) || (channel.length() == 0))
 			return "Channel unset";
-		
-		if((trigger == null) || (trigger.length() != 1))
-			return "Trigger invalid";
 
 		switch(product) {
 		case PRODUCT_DIABLO2:
@@ -122,6 +119,11 @@ public class ConnectionSettings implements Serializable {
 		myRealm = getMyRealm();
 		if(myRealm == null)
 			return "I don't know what realm I will be on";
+		
+		if(botNum == 1) {
+			if((trigger == null) || (trigger.length() != 1))
+				return "Trigger invalid";
+		}
 		
 		return null;
 	}
@@ -272,7 +274,10 @@ public class ConnectionSettings implements Serializable {
 					Settings.read(header, "recruitAccess", "10"));
 			recruitTagPrefix =	Settings.read(header, "recruitTagPrefix", "BNU-");
 			recruitTagSuffix =	Settings.read(header, "recruitTagSuffix", null);
-			setLookAndFeel(Settings.read(header, "lookAndFeel", UIManager.getLookAndFeel().getClass().getName()));
+			if(enableGUI)
+				setLookAndFeel(Settings.read(header, "lookAndFeel", UIManager.getLookAndFeel().getClass().getName()));
+		} else {
+			autoconnect = true;
 		}
 	}
 }
