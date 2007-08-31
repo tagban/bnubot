@@ -25,6 +25,7 @@ import net.bnubot.core.bncs.ProductIDs;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.util.BNetUser;
+import net.bnubot.util.CookieUtility;
 import net.bnubot.util.Out;
 import net.bnubot.util.StatString;
 import net.bnubot.util.TimeFormatter;
@@ -381,6 +382,20 @@ public class CommandEventHandler implements EventHandler {
 					Properties p = System.getProperties();
 					c.sendChat(user, "BNU-Bot " + CurrentVersion.version() + " running on " + p.getProperty("os.name") + " (" + p.getProperty("os.arch") + ")", wasWhispered);
 					break;
+				}
+				if(command.equals("invite")) {
+					try {
+						if(params == null)
+							throw new InvalidUseException();
+						if(params.length != 1)
+							throw new InvalidUseException();
+
+						c.sendClanInvitation(new CommandResponseCookie(user, wasWhispered), params[0]);
+						break;
+					} catch(InvalidUseException e) {
+						c.sendChat(user, "Use: %trigger%invite <user>", wasWhispered);
+						break;
+					}
 				}
 				break;
 			case 'k':
@@ -878,9 +893,10 @@ public class CommandEventHandler implements EventHandler {
 							throw new InvalidUseException();
 						
 						// TODO: validate that params[0] is in the clan
-						c.sendClanRankChange(params[0], newRank);
-						// TODO: send this after the response is recieved
-						c.sendChat(user, "Success", wasWhispered);
+						c.sendClanRankChange(
+								CookieUtility.createCookie(new CommandResponseCookie(user, wasWhispered)),
+								params[0],
+								newRank);
 						break;
 					} catch(InvalidUseException e) {
 						c.sendChat(user, "Use: %trigger%setrank <user> <rank(peon|grunt|shaman|1-3)>", wasWhispered);

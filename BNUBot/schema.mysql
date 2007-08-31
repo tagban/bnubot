@@ -156,6 +156,7 @@ INSERT INTO command (access, name, description, cmdgroup) VALUES
 (34,	'createaccount', NULL, 'accounts'),
 (36,	'disconnect', NULL, 'administration'),
 (1,		'info', 'Bot version', 'info'),
+(30,	'invite', NULL, 'clan'),
 (34,	'kick', NULL, 'moderation'),
 (1,		'mail', NULL, 'accounts'),
 (30,	'mailall', NULL, 'accounts'),
