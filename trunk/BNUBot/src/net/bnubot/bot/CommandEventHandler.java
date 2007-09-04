@@ -70,8 +70,8 @@ public class CommandEventHandler implements EventHandler {
 				rsUser.updateRow();
 			}
 			d.close(rsUser);
-		} catch(SQLException e) {
-			c.recieveError(e.getClass().getName() + ": " + e.getMessage());
+		} catch(Exception e) {
+			c.recieveError(e.getClass().getSimpleName() + ": " + e.getMessage());
 		}
 	}
 	
@@ -1135,7 +1135,7 @@ public class CommandEventHandler implements EventHandler {
 			c.sendChat(user, "You have insufficient access " + e.getMessage(), wasWhispered);
 		} catch(Exception e) {
 			Out.excepton(e);
-			c.sendChat(user, e.getClass().getName() + ": " + e.getMessage(), wasWhispered);
+			c.sendChat(user, e.getClass().getSimpleName() + ": " + e.getMessage(), wasWhispered);
 		}
 	}
 
