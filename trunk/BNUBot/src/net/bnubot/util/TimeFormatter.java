@@ -11,29 +11,35 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class TimeFormatter {
+	public static String tsFormat = "%1$tH:%1$tM:%1$tS.%1$tL";
 
 	/**
 	 * Simply displays a nicely formatted timestamp.
 	 */
 	public static String getTimestamp() {
-		return String.format("%1$tH:%1$tM:%1$tS.%1$tL", Calendar.getInstance());
+		return String.format(tsFormat, Calendar.getInstance());
 	}
 
+	/**
+	 * Display a formatted length of time 
+	 * @param time The time, in milliseconds
+	 * @return A String with the formatted length of time
+	 */
 	public static String formatTime(long time) {
 		String text = "";
-		if(time < 60*1000)
+		if(time < 1000*60) // 60 seconds
 			text = Long.toString(time % 1000) + "ms";
 		time /= 1000;
 		if(time > 0) {
-			if(time < 60*60)
+			if(time < 60*60) // 60 minutes
 				text = Long.toString(time % 60) + "s " + text;
 			time /= 60;
 			if(time > 0) {
-				if(time < 60*24)
+				if(time < 60*24) // 24 hours
 					text = Long.toString(time % 60) + "m " + text;
 				time /= 60;
 				if(time > 0) {
-					if(time < 24*7)
+					if(time < 24*7)	// 7 days
 						text = Long.toString(time % 24) + "h " + text;
 					time /= 24;
 					if(time > 0)

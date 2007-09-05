@@ -46,9 +46,9 @@ public class Out {
 	 */
 	public static void error(Class<?> source, String text) {
 		if(outConnection != null)
-			outConnection.recieveError("{" + source.getSimpleName() + "} " + text);
+			outConnection.recieveError("(" + source.getSimpleName() + ") " + text);
 		else if(outStream != null)
-			outStream.println("[" + TimeFormatter.getTimestamp() + "] {" + source.getSimpleName() + "} ERROR " + text);
+			outStream.println("[" + TimeFormatter.getTimestamp() + "] (" + source.getSimpleName() + ") ERROR " + text);
 	}
 
 	/**
@@ -68,9 +68,9 @@ public class Out {
 	 */
 	public static void debugAlways(Class<?> source, String text) {
 		if(outConnection != null)
-			outConnection.recieveDebug("{" + source.getSimpleName() + "} " + text);
+			outConnection.recieveDebug("(" + source.getSimpleName() + ") " + text);
 		else if(outStream != null)
-			outStream.println("[" + TimeFormatter.getTimestamp() + "] {" + source.getSimpleName() + "} DEBUG " + text);
+			outStream.println("[" + TimeFormatter.getTimestamp() + "] (" + source.getSimpleName() + ") DEBUG " + text);
 	}
 	
 	/**
@@ -80,9 +80,9 @@ public class Out {
 	 */
 	public static void info(Class<?> source, String text) {
 		if(outConnection != null)
-			outConnection.recieveInfo("{" + source.getSimpleName() + "} " + text);
+			outConnection.recieveInfo("(" + source.getSimpleName() + ") " + text);
 		else if(outStream != null)
-			outStream.println("[" + TimeFormatter.getTimestamp() + "] {" + source.getSimpleName() + "} INFO " + text);
+			outStream.println("[" + TimeFormatter.getTimestamp() + "] (" + source.getSimpleName() + ") INFO " + text);
 	}
 
 	/**
