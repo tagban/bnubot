@@ -11,6 +11,7 @@ import javax.swing.UIManager;
 
 import net.bnubot.util.Out;
 import net.bnubot.util.Settings;
+import net.bnubot.util.TimeFormatter;
 
 public class ConnectionSettings implements Serializable {
 	private static final long serialVersionUID = -8169038278487314919L;
@@ -209,6 +210,7 @@ public class ConnectionSettings implements Serializable {
 			Settings.write(header, "recruitTagPrefix", recruitTagPrefix);
 			Settings.write(header, "recruitTagSuffix", recruitTagSuffix);
 			Settings.write(header, "lookAndFeel", lookAndFeel);
+			Settings.write(header, "tsFormat", TimeFormatter.tsFormat);
 		}
 		
 		Settings.store();
@@ -276,6 +278,8 @@ public class ConnectionSettings implements Serializable {
 			recruitTagSuffix =	Settings.read(header, "recruitTagSuffix", null);
 			if(enableGUI)
 				setLookAndFeel(Settings.read(header, "lookAndFeel", UIManager.getLookAndFeel().getClass().getName()));
+			TimeFormatter.tsFormat =
+					Settings.read(header, "tsFormat", TimeFormatter.tsFormat);
 		} else {
 			autoconnect = true;
 		}

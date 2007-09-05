@@ -39,6 +39,7 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import net.bnubot.bot.gui.KeyManager.CDKey;
 import net.bnubot.core.ConnectionSettings;
 import net.bnubot.util.Out;
+import net.bnubot.util.TimeFormatter;
 
 public class ConfigurationFrame extends JDialog {
 	private static final long serialVersionUID = 1308177934480442149L;
@@ -63,6 +64,7 @@ public class ConfigurationFrame extends JDialog {
 	ConfigTextArea txtBNLSServer = null;
 	ConfigTextArea txtChannel = null;
 	ConfigComboBox cmbColorScheme = null;
+	ConfigComboBox cmbTSFormat = null;
 	JCheckBox chkAutoConnect = null;
 	JCheckBox chkEnableGUI = null;
 	JCheckBox chkEnableCLI = null;
@@ -343,6 +345,18 @@ public class ConfigurationFrame extends JDialog {
 					boxLine.add(cmbColorScheme);
 				}
 				boxSettings.add(boxLine);
+
+				boxLine = new Box(BoxLayout.X_AXIS);
+				{
+					JLabel jl = new JLabel("TimeStamp Format");
+					jl.setPreferredSize(maxSize);
+					boxLine.add(jl);
+					cmbTSFormat = new ConfigComboBox(new String[] { TimeFormatter.tsFormat, "%1$tH:%1$tM:%1$tS.%1$tL", "%1$tH:%1$tM:%1$tS", "%1$tH:%1$tM" });
+					cmbTSFormat.setSelectedItem(TimeFormatter.tsFormat);
+					cmbTSFormat.setEditable(true);
+					boxLine.add(cmbTSFormat);
+				}
+				boxSettings.add(boxLine);
 				
 				boxLine = new Box(BoxLayout.X_AXIS);
 				{
@@ -554,6 +568,7 @@ public class ConfigurationFrame extends JDialog {
 		cs.bnlsServer = txtBNLSServer.getText();
 		cs.channel = txtChannel.getText();
 		cs.colorScheme = (byte)(cmbColorScheme.getSelectedIndex() + 1);
+		TimeFormatter.tsFormat = (String)cmbTSFormat.getSelectedItem();
 		cs.autoconnect = chkAutoConnect.isSelected();
 		cs.enableGUI = chkEnableGUI.isSelected();
 		cs.enableCLI = chkEnableCLI.isSelected();
@@ -584,6 +599,7 @@ public class ConfigurationFrame extends JDialog {
 		txtBNLSServer.setText(cs.bnlsServer);
 		txtChannel.setText(cs.channel);
 		cmbColorScheme.setSelectedIndex(cs.colorScheme - 1);
+		cmbTSFormat.setSelectedItem(TimeFormatter.tsFormat);
 		chkAutoConnect.setSelected(cs.autoconnect);
 		chkEnableGUI.setSelected(cs.enableGUI);
 		chkEnableCLI.setSelected(cs.enableCLI);

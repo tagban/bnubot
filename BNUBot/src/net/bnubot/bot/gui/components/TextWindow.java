@@ -8,7 +8,6 @@ package net.bnubot.bot.gui.components;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Graphics;
-import java.util.GregorianCalendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,6 +22,7 @@ import net.bnubot.bot.gui.ColorScheme.ColorScheme;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.BrowserLauncher;
 import net.bnubot.util.Out;
+import net.bnubot.util.TimeFormatter;
 
 @SuppressWarnings("serial")
 public class TextWindow extends JScrollPane {
@@ -115,8 +115,9 @@ public class TextWindow extends JScrollPane {
 	}
 	
 	public void appendDate() {
-		html += "<div class=\"timestamp\">";
-		html += String.format("[%1$tH:%1$tM:%1$tS.%1$tL] ", new GregorianCalendar());
+		html += "<div class=\"timestamp\">[";
+		html += TimeFormatter.getTimestamp();
+		html += "] ";
 	}
 	
 	private static Pattern pattern = null;
