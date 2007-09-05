@@ -355,6 +355,7 @@ public class GuiEventHandler implements EventHandler {
 	public void joinedChannel(String channel) {
 		this.channel = channel;
 		userList.clear();
+		mainTextArea.addSeparator();
 		mainTextArea.channelInfo("Joining channel " + channel + ".");
 		channelTextArea.setText(channel);
 		frame.setTitle(c.toString());
@@ -420,6 +421,7 @@ public class GuiEventHandler implements EventHandler {
 	public void bnetDisconnected() {
 		userList.clear();
 		channelTextArea.setText(null);
+		mainTextArea.addSeparator();
 	}
 
 	public void titleChanged() {
