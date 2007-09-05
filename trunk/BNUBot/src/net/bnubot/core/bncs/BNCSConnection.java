@@ -13,6 +13,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -127,8 +128,12 @@ public class BNCSConnection extends Connection {
 				}
 				
 				setConnected(true);
-				recieveInfo("Connecting to " + cs.bncsServer + ":" + cs.port);
-				s = new Socket(cs.bncsServer, cs.port);
+				{
+					InetAddress []addresses = InetAddress.getAllByName(cs.bncsServer);
+					InetAddress address = addresses[(int)(Math.random() * addresses.length)];
+					recieveInfo("Connecting to " + address + ":" + cs.port);
+					s = new Socket(address, cs.port);
+				}
 				dis = new DataInputStream(s.getInputStream());
 				dos = new DataOutputStream(s.getOutputStream());
 				nlsRevision = -1;
@@ -400,9 +405,11 @@ public class BNCSConnection extends Connection {
                 	String exeInfo = null;
                 	
                 	try {
-				    	Socket conn = new Socket(cs.bnlsServer, cs.bnlsPort);
+    					InetAddress []addresses = InetAddress.getAllByName(cs.bnlsServer);
+    					InetAddress address = addresses[(int)(Math.random() * addresses.length)];
+    					Socket conn = new Socket(address, cs.bnlsPort);
 				    	
-				    	recieveInfo("Connected to " + cs.bnlsServer + ":" + cs.bnlsPort);
+				    	recieveInfo("Connected to " + address + ":" + cs.bnlsPort);
 
 				    	BNLSPacket bnlsOut = new BNLSPacket(BNLSCommandIDs.BNLS_VERSIONCHECKEX2);
 					  	bnlsOut.writeDWord(cs.product);
