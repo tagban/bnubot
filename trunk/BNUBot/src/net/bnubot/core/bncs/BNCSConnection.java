@@ -50,7 +50,7 @@ import org.jbls.Hashing.SRP;
 
 
 public class BNCSConnection extends Connection {
-	public static final String[] clanRanks = {"Peon", "Grunt", "Shaman", "Chieftain"};
+	public static final String[] clanRanks = {"Initiate", "Peon", "Grunt", "Shaman", "Chieftain"};
 	
 	protected Socket s = null;
 	protected DataInputStream dis = null;
@@ -65,7 +65,7 @@ public class BNCSConnection extends Connection {
 	private boolean forceReconnect = false;
 	protected StatString myStatString = null;
 	protected int myClan = 0;
-	protected byte myClanRank = 0; 
+	protected Byte myClanRank = null; 
 	protected long lastNullPacket;
 
 	public BNCSConnection(ConnectionSettings cs, ChatQueue cq) {
@@ -235,7 +235,7 @@ public class BNCSConnection extends Connection {
 				myStatString = null;
 				myUser = null;
 				myClan = 0;
-				myClanRank = 0;
+				myClanRank = null;
 				titleChanged();
 			} catch(SocketException e) {
 			} catch(Exception e) {
@@ -1471,8 +1471,10 @@ public class BNCSConnection extends Connection {
 			throw new UnsupportedFeatureException("Only WAR3/W3XP support clans.");
 		}
 		
-		if(myClanRank < 2)
-			throw new UnsupportedFeatureException("Must be shaman to invite");
+		if(myClanRank == null)
+			throw new UnsupportedFeatureException("Must be in a clan");
+		if(myClanRank < 3)
+			throw new UnsupportedFeatureException("Must be " + clanRanks[3] + " or " + clanRanks[4] + " to invite");
 		
 		BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_CLANINVITATION);
 		p.writeDWord(CookieUtility.createCookie(cookie));	//Cookie
@@ -1626,11 +1628,11 @@ public class BNCSConnection extends Connection {
 		if(myUser != null) {
 			out += " - [ ";
 			
-			if(myClanRank > 0) {
+			if(myClanRank != null) {
 				out += "Clan ";
 				out += HexDump.DWordToPretty(myClan);
 				out += " ";
-				out += clanRanks[myClanRank-1];
+				out += clanRanks[myClanRank];
 				out += " ";
 			}
 			out += myUser.getShortLogonName() + " ]";
