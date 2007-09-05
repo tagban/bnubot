@@ -161,6 +161,9 @@ public class StatString {
 
 		pretty = " using ";
 		switch(product) {
+		case ProductIDs.PRODUCT_DRTL:
+			pretty += "Diablo";
+			break;
 		case ProductIDs.PRODUCT_DSHR:
 			pretty += "Diablo Shareware";
 			break;
@@ -192,7 +195,7 @@ public class StatString {
 			pretty += "Warcraft III: The Frozen Throne";
 			break;
 		default:
-			pretty += "[" + HexDump.DWordToPretty(product) + "]";
+			pretty += HexDump.DWordToPretty(product);
 			break;
 		}
 
@@ -204,6 +207,7 @@ public class StatString {
 			case ProductIDs.PRODUCT_W2BN:
 			case ProductIDs.PRODUCT_SSHR:
 			case ProductIDs.PRODUCT_DSHR:
+			case ProductIDs.PRODUCT_DRTL:
 				/*
 				Starcraft, Starcraft Japanese, Brood War, and Warcraft II
 				These products use the same format for their statstrings as Diablo. Most of these fields are usually 0 and their meanings are not known.
@@ -239,9 +243,7 @@ public class StatString {
 					long unknown8 = Integer.parseInt(statString2[7]);
 					try {
 						icon = HexDump.StringToDWord(statString2[8]);
-					} catch(Exception e) {
-						Out.excepton(e);
-					}
+					} catch(Exception e) {}
 		
 					if(ladderRating != 0)
 						pretty += ", Ladder rating " + ladderRating;
@@ -416,13 +418,20 @@ public class StatString {
 				break;
 				
 			default:
-				pretty += ", statstr = " + statString[1];
+				pretty += ", statstr = ";
+				if(is == null) {
+					pretty += statString[1];
+				} else {
+					pretty += is.readNTString();
+				}
 				break;
 			}
 		}
 	}
 
 	public String toString() {
+		if(pretty == null)
+			return new String();
 		return pretty;
 	}
 	
