@@ -79,7 +79,7 @@ public class TextWindow extends JScrollPane {
 	
 	public void setText() {
 		if(html.length() > 0x8000) {
-			int i = html.indexOf("</div>", 0);
+			int i = html.indexOf("\n", 0);
 			if(i > 0)
 				html = html.substring(i + 6);
 		}
@@ -115,9 +115,9 @@ public class TextWindow extends JScrollPane {
 	}
 	
 	public void appendDate() {
-		html += "<div class=\"timestamp\">[";
+		html += "<font class=\"timestamp\">[";
 		html += TimeFormatter.getTimestamp();
-		html += "] ";
+		html += "] </font>";
 	}
 	
 	private static Pattern pattern = null;
@@ -146,7 +146,7 @@ public class TextWindow extends JScrollPane {
 		appendDate();
 		makeFont(col);
 		html += safeHtml(text);
-		html += "</font></div>";
+		html += "</font><br>\n";
 		setText();
 	}
 	
@@ -154,7 +154,7 @@ public class TextWindow extends JScrollPane {
 		appendDate();
 		html += "<font class=\"" + clazz + "\">";
 		html += safeHtml(text);
-		html += "</font></div>";
+		html += "</font><br>\n";
 		setText();
 	}
 	
@@ -165,8 +165,12 @@ public class TextWindow extends JScrollPane {
 		html += "</font>";
 		makeFont(col2);
 		html += safeHtml(text2);
-		html += "</font></div>";
+		html += "</font><br>\n";
 		setText();
+	}
+	
+	public void addSeparator() {
+		html += "<hr>\n";
 	}
 	
 	public void channelInfo(String text) {
@@ -211,7 +215,7 @@ public class TextWindow extends JScrollPane {
 	
 	public void userEmote(BNetUser user, String text) {
 		append(
-			"<" + user.getShortPrettyName() + " " + text + "> ",
+			"<" + user.getShortPrettyName() + " " + text + ">",
 			cs.getEmoteColor(user.getFlags()));
 	}
 }
