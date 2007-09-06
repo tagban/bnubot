@@ -13,11 +13,12 @@ public class VersionCheck {
 	protected static XMLElementDecorator elem = null;
 	protected static VersionNumber vnLatest = null;
 	
-	public static boolean checkVersion() throws Exception {
+	public static boolean checkVersion(ReleaseType release) throws Exception {
 		{
 			String url = "http://www.clanbnu.ws/bnubot/version.php";
 			if(CurrentVersion.revision() != null)
 				url += "?svn=" + CurrentVersion.revision();
+			url += "&release=" + release.toString();
 			elem = XMLElementDecorator.parse(url);
 		}
 
@@ -48,6 +49,7 @@ public class VersionCheck {
 		XMLElementDecorator verLatest = elem.getPath("bnubot/latestVersion");
 		
 		vnLatest = new VersionNumber(
+				Enum.valueOf(ReleaseType.class, verLatest.getChild("type").getString()),
 				verLatest.getChild("major").getInt(),
 				verLatest.getChild("minor").getInt(),
 				verLatest.getChild("revision").getInt(),
@@ -63,17 +65,11 @@ public class VersionCheck {
 			return false;
 		
 		Out.error(VersionCheck.class, "Current version: " + vnCurrent.toString());
-		Out.error(VersionCheck.class, "Latest version: " + vnLatest.toString());
+		Out.error(VersionCheck.class, "Latest version (" + release.toString() + "): " + vnLatest.toString());
 		
 		String url = verLatest.getChild("url").getString();
 		if(url != null)
 			Out.error(VersionCheck.class, "Update: " + url);
 		return true;
-	}
-	
-	public static VersionNumber getLatestVersion() throws Exception {
-		if(vnLatest == null)
-			checkVersion();
-		return vnLatest;
 	}
 }

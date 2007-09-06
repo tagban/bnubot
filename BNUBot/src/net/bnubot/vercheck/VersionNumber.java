@@ -6,6 +6,7 @@
 package net.bnubot.vercheck;
 
 public class VersionNumber {
+	private ReleaseType RELEASE_TYPE = null;
 	private Integer VER_MAJOR = null;
 	private Integer VER_MINOR = null;
 	private Integer VER_REVISION = null;
@@ -16,7 +17,8 @@ public class VersionNumber {
 	private String VER_STRING = null;
 	private String BUILD_DATE = null;
 
-	public VersionNumber(Integer major, Integer minor, Integer revision, Integer alpha, Integer beta, Integer rc) {
+	public VersionNumber(ReleaseType rt, Integer major, Integer minor, Integer revision, Integer alpha, Integer beta, Integer rc) {
+		RELEASE_TYPE = rt;
 		VER_MAJOR = major;
 		VER_MINOR = minor;
 		VER_REVISION = revision;
@@ -25,8 +27,8 @@ public class VersionNumber {
 		VER_RELEASE_CANDIDATE = rc;
 	}
 	
-	public VersionNumber(Integer major, Integer minor, Integer revision, Integer alpha, Integer beta, Integer rc, Integer svn, String builddate) {
-		this(major, minor, revision, alpha, beta, rc);
+	public VersionNumber(ReleaseType rt, Integer major, Integer minor, Integer revision, Integer alpha, Integer beta, Integer rc, Integer svn, String builddate) {
+		this(rt, major, minor, revision, alpha, beta, rc);
 		VER_SVN_REVISION = svn;
 		BUILD_DATE = builddate;
 	}
@@ -93,6 +95,10 @@ public class VersionNumber {
 		}
 		
 		return false;
+	}
+	
+	public ReleaseType getReleaseType() {
+		return RELEASE_TYPE;
 	}
 	
 	public boolean isAlpha() {
