@@ -50,6 +50,7 @@ import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.Out;
 import net.bnubot.util.StatString;
+import net.bnubot.vercheck.CurrentVersion;
 
 public class GuiEventHandler implements EventHandler {
 	private JFrame frame = null;
@@ -86,8 +87,31 @@ public class GuiEventHandler implements EventHandler {
 		Image image = Toolkit.getDefaultToolkit().getImage("tray.gif");
 			
 		PopupMenu pm = new PopupMenu("title");
-		
-		pm.add(new MenuItem("test"));
+		{
+			MenuItem mi = new MenuItem("BNU-Bot " + CurrentVersion.version().toString());
+			mi.setEnabled(false);
+			pm.add(mi);
+			
+			pm.addSeparator();
+			
+			mi = new MenuItem("Hide/show");
+			mi.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					frame.setVisible(!frame.isVisible());
+					if(frame.isVisible())
+						frame.toFront();
+				}
+			});
+			pm.add(mi);
+			
+			mi = new MenuItem("Exit");
+			mi.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					System.exit(0);
+				}
+			});
+			pm.add(mi);
+		}
 		
 		ti = new TrayIcon(image, c.toString(), pm);
 		ti.addMouseListener(new MouseListener() {
