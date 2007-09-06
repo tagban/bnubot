@@ -42,7 +42,7 @@ public class AboutWindow extends JDialog {
 			b.add(Box.createVerticalStrut(15));
 			b.add(new JLabel("Contributors:"));
 			b.add(new JLabel("Hdx, the JBLS project"));
-			b.add(new JLabel("iago, various Java classes"));
+			b.add(new JLabel("iago, Canadian ambassador"));
 			b.add(new JLabel("The Protege-2000 project, browser launcher"));
 			b.add(Box.createVerticalStrut(15));
 			b.add(new JLabel("This project is distributed under the"));
@@ -50,7 +50,7 @@ public class AboutWindow extends JDialog {
 			b.add(Box.createVerticalStrut(15));
 			b.add(new JLabel("Want to contribute?"));
 			b.add(new JLabel("Visit the project website:"));
-			b.add(new JLabel("http://code.google.com/p/bnubot/"));
+			b.add(new JLabel("http://bnubot.net/"));
 		}
 		add(b);
 	}
