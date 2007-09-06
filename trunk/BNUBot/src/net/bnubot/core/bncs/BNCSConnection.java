@@ -1535,6 +1535,14 @@ public class BNCSConnection extends Connection {
 	}
 	
 	public void sendQueryRealms() throws Exception {
+		switch(productID) {
+		case ProductIDs.PRODUCT_D2DV:
+		case ProductIDs.PRODUCT_D2XP:
+			break;
+		default:
+			throw new UnsupportedFeatureException("Only D2DV/D2XP support realms");
+		}
+		
 		/* (DWORD)		 Unused (0)
 		 * (DWORD)		 Unused (0)
 		 * (STRING) 	 Unknown (empty)
