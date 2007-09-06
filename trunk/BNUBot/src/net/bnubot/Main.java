@@ -207,7 +207,7 @@ public class Main {
 		}
 		
 		try {
-			VersionCheck.checkVersion();
+			VersionCheck.checkVersion(cs.releaseType);
 		} catch(Exception e) {
 			Out.exception(e);
 		}

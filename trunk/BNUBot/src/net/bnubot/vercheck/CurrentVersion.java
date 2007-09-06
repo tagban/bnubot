@@ -19,6 +19,7 @@ import net.bnubot.util.Out;
 import net.bnubot.util.SortedProperties;
 
 public final class CurrentVersion {
+	protected static ReleaseType RELEASE_TYPE = null;
 	protected static Integer VER_MAJOR = null;
 	protected static Integer VER_MINOR = null;
 	protected static Integer VER_REVISION = null;
@@ -153,6 +154,8 @@ public final class CurrentVersion {
 			is.close();
 			
 			Integer VER_SVN_REVISION_FILE = null;
+			if(versionprops.containsKey("RELEASE_TYPE"))
+				RELEASE_TYPE = Enum.valueOf(ReleaseType.class, (String)versionprops.get("RELEASE_TYPE"));
 			if(versionprops.containsKey("VER_MAJOR"))
 				VER_MAJOR = Integer.parseInt((String)versionprops.get("VER_MAJOR"));
 			if(versionprops.containsKey("VER_MINOR"))
@@ -189,7 +192,7 @@ public final class CurrentVersion {
 				}
 			}
 			
-			VER = new VersionNumber(VER_MAJOR, VER_MINOR, VER_REVISION, VER_ALPHA, VER_BETA, VER_RELEASE_CANDIDATE, revision(), BUILD_DATE);
+			VER = new VersionNumber(RELEASE_TYPE, VER_MAJOR, VER_MINOR, VER_REVISION, VER_ALPHA, VER_BETA, VER_RELEASE_CANDIDATE, revision(), BUILD_DATE);
 			return VER;
 		} catch(Exception e) {
 			Out.exception(e);

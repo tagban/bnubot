@@ -40,6 +40,7 @@ import net.bnubot.bot.gui.KeyManager.CDKey;
 import net.bnubot.core.ConnectionSettings;
 import net.bnubot.util.Out;
 import net.bnubot.util.TimeFormatter;
+import net.bnubot.vercheck.ReleaseType;
 
 public class ConfigurationFrame extends JDialog {
 	private static final long serialVersionUID = 1308177934480442149L;
@@ -65,6 +66,7 @@ public class ConfigurationFrame extends JDialog {
 	ConfigTextArea txtChannel = null;
 	ConfigComboBox cmbColorScheme = null;
 	ConfigComboBox cmbTSFormat = null;
+	ConfigComboBox cmbReleaseType = null;
 	JCheckBox chkAutoConnect = null;
 	JCheckBox chkEnableGUI = null;
 	JCheckBox chkEnableCLI = null;
@@ -357,6 +359,17 @@ public class ConfigurationFrame extends JDialog {
 					boxLine.add(cmbTSFormat);
 				}
 				boxSettings.add(boxLine);
+
+				boxLine = new Box(BoxLayout.X_AXIS);
+				{
+					JLabel jl = new JLabel("Version Check");
+					jl.setPreferredSize(maxSize);
+					boxLine.add(jl);
+					cmbReleaseType = new ConfigComboBox(ReleaseType.values());
+					cmbReleaseType.setSelectedItem(cs.releaseType);
+					boxLine.add(cmbReleaseType);
+				}
+				boxSettings.add(boxLine);
 				
 				boxLine = new Box(BoxLayout.X_AXIS);
 				{
@@ -569,6 +582,7 @@ public class ConfigurationFrame extends JDialog {
 		cs.channel = txtChannel.getText();
 		cs.colorScheme = (byte)(cmbColorScheme.getSelectedIndex() + 1);
 		TimeFormatter.tsFormat = (String)cmbTSFormat.getSelectedItem();
+		cs.releaseType = (ReleaseType)cmbReleaseType.getSelectedItem();
 		cs.autoconnect = chkAutoConnect.isSelected();
 		cs.enableGUI = chkEnableGUI.isSelected();
 		cs.enableCLI = chkEnableCLI.isSelected();
@@ -600,6 +614,7 @@ public class ConfigurationFrame extends JDialog {
 		txtChannel.setText(cs.channel);
 		cmbColorScheme.setSelectedIndex(cs.colorScheme - 1);
 		cmbTSFormat.setSelectedItem(TimeFormatter.tsFormat);
+		cmbReleaseType.setSelectedItem(cs.releaseType);
 		chkAutoConnect.setSelected(cs.autoconnect);
 		chkEnableGUI.setSelected(cs.enableGUI);
 		chkEnableCLI.setSelected(cs.enableCLI);
