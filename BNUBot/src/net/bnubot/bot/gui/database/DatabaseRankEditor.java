@@ -110,7 +110,7 @@ public class DatabaseRankEditor extends JFrame {
 									if(value != null)
 										rsRank.setId(value);
 								} catch (SQLException e) {
-									Out.excepton(e);
+									Out.exception(e);
 								}
 							}
 						}
@@ -135,7 +135,7 @@ public class DatabaseRankEditor extends JFrame {
 									else
 										rsRank.setShortPrefix(txt);
 								} catch (SQLException e) {
-									Out.excepton(e);
+									Out.exception(e);
 								}
 							}
 						}
@@ -160,7 +160,7 @@ public class DatabaseRankEditor extends JFrame {
 									else
 										rsRank.setPrefix(txt);
 								} catch (SQLException e) {
-									Out.excepton(e);
+									Out.exception(e);
 								}
 							}
 						}
@@ -185,7 +185,7 @@ public class DatabaseRankEditor extends JFrame {
 									else
 										rsRank.setVerbStr(txt);
 								} catch (SQLException e) {
-									Out.excepton(e);
+									Out.exception(e);
 								}
 							}
 						}
@@ -210,7 +210,7 @@ public class DatabaseRankEditor extends JFrame {
 									else
 										rsRank.setGreeting(txt);
 								} catch (SQLException e) {
-									Out.excepton(e);
+									Out.exception(e);
 								}
 							}
 						}
@@ -237,7 +237,7 @@ public class DatabaseRankEditor extends JFrame {
 									else
 										rsRank.setExpireDays(value);
 								} catch (SQLException e) {
-									Out.excepton(e);
+									Out.exception(e);
 								}
 							}
 						}
@@ -264,7 +264,7 @@ public class DatabaseRankEditor extends JFrame {
 									else
 										rsRank.setApDays(value);
 								} catch (SQLException e) {
-									Out.excepton(e);
+									Out.exception(e);
 								}
 							}
 						}
@@ -291,7 +291,7 @@ public class DatabaseRankEditor extends JFrame {
 									else
 										rsRank.setApRecruitScore(value);
 								} catch (SQLException e) {
-									Out.excepton(e);
+									Out.exception(e);
 								}
 							}
 						}
@@ -318,7 +318,7 @@ public class DatabaseRankEditor extends JFrame {
 									else
 										rsRank.setApWins(value);
 								} catch (SQLException e) {
-									Out.excepton(e);
+									Out.exception(e);
 								}
 							}
 						}
@@ -345,7 +345,7 @@ public class DatabaseRankEditor extends JFrame {
 									else
 										rsRank.setApD2Level(value);
 								} catch (SQLException e) {
-									Out.excepton(e);
+									Out.exception(e);
 								}
 							}
 						}
@@ -372,7 +372,7 @@ public class DatabaseRankEditor extends JFrame {
 									else
 										rsRank.setApW3Level(value);
 								} catch (SQLException e) {
-									Out.excepton(e);
+									Out.exception(e);
 								}
 							}
 						}
@@ -397,7 +397,7 @@ public class DatabaseRankEditor extends JFrame {
 									else
 										rsRank.setApMail(txt);
 								} catch (SQLException e) {
-									Out.excepton(e);
+									Out.exception(e);
 								}
 							}
 						}
@@ -420,7 +420,7 @@ public class DatabaseRankEditor extends JFrame {
 								rebuildRanks();
 								displayEditor(rankid);
 							} catch (SQLException e) {
-								Out.excepton(e);
+								Out.exception(e);
 							}
 						}
 					});
@@ -437,7 +437,7 @@ public class DatabaseRankEditor extends JFrame {
 									rebuildRanks();
 								}
 							} catch (SQLException e) {
-								Out.excepton(e);
+								Out.exception(e);
 							}
 						}
 					});
@@ -452,7 +452,7 @@ public class DatabaseRankEditor extends JFrame {
 									rebuildRanks();
 									displayEditor(rsRank.getId());
 								} catch (SQLException e) {
-									Out.excepton(e);
+									Out.exception(e);
 								}
 							}
 						}
@@ -466,7 +466,7 @@ public class DatabaseRankEditor extends JFrame {
 								try {
 									displayEditor(rsRank.getId());
 								} catch (SQLException e) {
-									Out.excepton(e);
+									Out.exception(e);
 								}
 						}
 					});
@@ -494,7 +494,7 @@ public class DatabaseRankEditor extends JFrame {
 			}
 			d.close(rsRanks);
 		} catch (SQLException e) {
-			Out.excepton(e);
+			Out.exception(e);
 		}
 		
 		if(lstRanks != null)
@@ -549,7 +549,7 @@ public class DatabaseRankEditor extends JFrame {
 			txtAPRS.setText(valueOf(rsRank.getApRecruitScore()));
 			txtAPMail.setText(valueOf(rsRank.getApMail()));
 		} catch (SQLException e) {
-			Out.excepton(e);
+			Out.exception(e);
 		}
 		
 		pack();

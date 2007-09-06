@@ -35,7 +35,7 @@ public class TextWindow extends JScrollPane {
 						try {
 							BrowserLauncher.openURL(e.getURL().toString());
 						} catch (Exception e1) {
-							Out.excepton(e1);
+							Out.exception(e1);
 						}
 				}
 			});

@@ -165,7 +165,7 @@ public class ConnectionSettings implements Serializable {
 			UIManager.setLookAndFeel(laf);
 			lookAndFeel = laf;
 		} catch(Exception ex) {
-			Out.excepton(ex);
+			Out.exception(ex);
 		}
 	}
 	

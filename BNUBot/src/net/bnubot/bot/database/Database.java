@@ -47,7 +47,7 @@ public class Database {
 		try {
 			deleteOldUsers();
 		} catch(Exception e) {
-			Out.excepton(e);
+			Out.exception(e);
 		}
 	}
 	
@@ -59,7 +59,7 @@ public class Database {
 		try {
 			close(rs.getStatement());
 		} catch (SQLException e) {
-			Out.excepton(e);
+			Out.exception(e);
 		}
 	}
 	
@@ -110,9 +110,9 @@ public class Database {
 					try {
 						close(s);
 					} catch (SQLException e) {
-						Out.excepton(e);
+						Out.exception(e);
 					}
-					Out.excepton(openStmtExcept.get(i));
+					Out.exception(openStmtExcept.get(i));
 				}
 			}
 		}
@@ -608,7 +608,7 @@ public class Database {
 			
 			Out.error(getClass(), "Database version is " + version + ", we require " + compatibleVersion);
 		} catch(SQLException e) {
-			Out.excepton(e);
+			Out.exception(e);
 		}
 		
 		if(rs != null)

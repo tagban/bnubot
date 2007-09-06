@@ -18,7 +18,7 @@ public class Out {
 	private static GuiEventHandler outConnection = null;
 	private static boolean debug = false;
 	
-	public static void excepton(Exception e) {
+	public static void exception(Exception e) {
 		if(outConnection != null) {
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));

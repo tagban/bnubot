@@ -175,7 +175,7 @@ public class HTMLOutputEventHandler implements EventHandler {
 			
 						fos.close();
 					} catch (Exception e) {
-						Out.excepton(e);
+						Out.exception(e);
 					}
 				}
 			};

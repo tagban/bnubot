@@ -37,7 +37,7 @@ public class StatString {
 			parse();
 		} catch(Exception e) {
 			Out.error(StatString.class, "Error parsing statstring: " + e.getMessage() + "\n" + HexDump.hexDump(statString.getBytes()));
-			Out.excepton(e);
+			Out.exception(e);
 		}
 	}
 	
@@ -46,7 +46,7 @@ public class StatString {
 		try {
 			parse();
 		} catch(Exception e) {
-			Out.excepton(e);
+			Out.exception(e);
 		}
 	}
 	
@@ -264,7 +264,7 @@ public class StatString {
 					if((icon != 0) && (icon != product))
 						pretty += ", " + HexDump.DWordToPretty(icon) + " icon";
 				} catch(Exception e) {
-					Out.excepton(e);
+					Out.exception(e);
 				}
 				break;
 	

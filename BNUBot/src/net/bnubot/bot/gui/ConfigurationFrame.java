@@ -476,7 +476,7 @@ public class ConfigurationFrame extends JDialog {
 						keys += "\n" + l;
 				}
 			} catch (Exception e) {
-				Out.excepton(e);
+				Out.exception(e);
 			}
 			
 			txtCDKeys = new ConfigTextArea(keys);
@@ -497,7 +497,7 @@ public class ConfigurationFrame extends JDialog {
 								initializeGui();
 								validate();
 							} catch (IOException e) {
-								Out.excepton(e);
+								Out.exception(e);
 							}
 						}
 					});

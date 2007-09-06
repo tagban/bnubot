@@ -110,7 +110,7 @@ public final class CurrentVersion {
 					break;
 				} while(true);
 			} catch(Exception e) {
-				Out.excepton(e);
+				Out.exception(e);
 			}
 		}
 		return r;
@@ -192,7 +192,7 @@ public final class CurrentVersion {
 			VER = new VersionNumber(VER_MAJOR, VER_MINOR, VER_REVISION, VER_ALPHA, VER_BETA, VER_RELEASE_CANDIDATE, revision(), BUILD_DATE);
 			return VER;
 		} catch(Exception e) {
-			Out.excepton(e);
+			Out.exception(e);
 		}
 		
 		throw new NullPointerException();

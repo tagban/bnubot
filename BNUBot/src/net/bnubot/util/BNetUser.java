@@ -266,7 +266,7 @@ public class BNetUser {
 				}
 				d.close(rsAccount);
 			} catch(SQLException e) {
-				Out.excepton(e);
+				Out.exception(e);
 			}
 		}
 		return shortPrettyName;
@@ -301,7 +301,7 @@ public class BNetUser {
 				}
 				d.close(rsAccount);
 			} catch(SQLException e) {
-				Out.excepton(e);
+				Out.exception(e);
 			}
 		}
 		return prettyName;

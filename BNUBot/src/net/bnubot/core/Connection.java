@@ -38,14 +38,14 @@ public abstract class Connection extends Thread implements EventHandler {
 	
 	private void waitForEHsemaphore() {
 		while(eh_semaphore > 0) {
-			try {Thread.sleep(10);} catch (InterruptedException e) {Out.excepton(e);}
+			try {Thread.sleep(10);} catch (InterruptedException e) {Out.exception(e);}
 			Thread.yield();
 		}
 	}
 	
 	private void waitForEH2semaphore() {
 		while(eh2_semaphore > 0) {
-			try {Thread.sleep(10);} catch (InterruptedException e) {Out.excepton(e);}
+			try {Thread.sleep(10);} catch (InterruptedException e) {Out.exception(e);}
 			Thread.yield();
 		}
 	}
@@ -264,7 +264,7 @@ public abstract class Connection extends Thread implements EventHandler {
 						else
 							sendProfile(command[1]);
 					} catch(Exception e) {
-						Out.excepton(e);
+						Out.exception(e);
 					}
 					return;
 				}
@@ -392,7 +392,7 @@ public abstract class Connection extends Thread implements EventHandler {
 				Out.info(Connection.class, "[" + myUser.getFullLogonName() + "] Telling [" + c.myUser.getFullLogonName() + "] to join " + channel);
 				c.joinChannel(channel);
 			} catch (Exception e) {
-				Out.excepton(e);
+				Out.exception(e);
 			}
 		eh2_semaphore--;
 	}
