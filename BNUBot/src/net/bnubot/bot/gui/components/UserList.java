@@ -25,6 +25,7 @@ import net.bnubot.bot.gui.GuiEventHandler;
 import net.bnubot.bot.gui.ColorScheme.ColorScheme;
 import net.bnubot.bot.gui.icons.BNetIcon;
 import net.bnubot.bot.gui.icons.IconsDotBniReader;
+import net.bnubot.core.ChannelListPriority;
 import net.bnubot.core.Connection;
 import net.bnubot.core.bncs.ProductIDs;
 import net.bnubot.util.BNetUser;
@@ -99,27 +100,12 @@ public class UserList extends JPanel {
 	public int count() {
 		return users.size();
 	}
-
-	private static final int PRIORITY_BLIZZARD_REP = 5;
-	private static final int PRIORITY_BNET_REP = 4;
-	private static final int PRIORITY_OPERATOR= 3;
-	private static final int PRIORITY_SPEAKER = 2;
-	private static final int PRIORITY_BIZZARD_GUEST = 1;
-	private static final int PRIORITY_NORMAL = 0;
-	private int getPrioByFlags(int flags) {
-		if((flags & 0x01) != 0)	return PRIORITY_BLIZZARD_REP;
-		if((flags & 0x08) != 0)	return PRIORITY_BNET_REP;
-		if((flags & 0x02) != 0)	return PRIORITY_OPERATOR;
-		if((flags & 0x04) != 0)	return PRIORITY_SPEAKER;
-		if((flags & 0x40) != 0)	return PRIORITY_BIZZARD_GUEST;
-		return PRIORITY_NORMAL;
-	}
 	
 	private int getInsertPosition(int priority) {
 		for(int i = 0; i < b.getComponentCount(); i++) {
 			JLabel lbl = (JLabel)b.getComponent(i);
 			UserInfo ui = getUI(lbl);
-			int pCurrent = getPrioByFlags(ui.user.getFlags());
+			int pCurrent = ChannelListPriority.getPrioByFlags(ui.user.getFlags());
 			
 			if(priority > pCurrent)
 				return i;
@@ -148,7 +134,7 @@ public class UserList extends JPanel {
 			ui = new UserInfo();
 			ui.user = user;
 			ui.statstr = statstr;
-			ui.priority = getPrioByFlags(user.getFlags());
+			ui.priority = ChannelListPriority.getPrioByFlags(user.getFlags());
 			
 			ui.menu = new JPopupMenu();
 			ui.menu.add(new JLabel(user.getShortPrettyName() + ": " + statstr.toString()));
@@ -217,7 +203,7 @@ public class UserList extends JPanel {
 			//They did; order the list appropriately
 			ui.lastFlags = ui.user.getFlags();
 
-			int newPriority = getPrioByFlags(ui.lastFlags);
+			int newPriority = ChannelListPriority.getPrioByFlags(ui.lastFlags);
 			if(ui.priority != newPriority) {
 				ui.priority = newPriority;
 				b.remove(ui.label);

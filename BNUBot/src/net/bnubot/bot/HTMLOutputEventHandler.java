@@ -11,12 +11,15 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
 import javax.swing.SwingUtilities;
 
 import net.bnubot.bot.gui.ColorScheme.ColorScheme;
+import net.bnubot.core.ChannelListPriority;
 import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.clan.ClanMember;
@@ -31,6 +34,16 @@ public class HTMLOutputEventHandler implements EventHandler {
 		BNetUser user;
 		StatString statstr;
 	}
+	
+	private class UserInfoComparator implements Comparator<UserInfo> {
+		public int compare(UserInfo arg0, UserInfo arg1) {
+			int prio0 = ChannelListPriority.getPrioByFlags(arg0.user.getFlags());
+			int prio1 = ChannelListPriority.getPrioByFlags(arg1.user.getFlags());
+			return new Integer(prio0).compareTo(prio1);
+		}
+		
+	}
+	
 	private String channel = null;
 	private boolean generationNeeded = false;
 	private Runnable writeUserListRunnable = null;
@@ -147,6 +160,8 @@ public class HTMLOutputEventHandler implements EventHandler {
 						fos.write("</b> (".getBytes());
 						fos.write(Integer.toString(users.size()).getBytes());
 						fos.write(")</td></tr>".getBytes());
+						
+						Collections.sort(users, new UserInfoComparator());
 
 						for(UserInfo ui : users.toArray(new UserInfo[users.size()])) {
 							String product = getIcon(ui.statstr.getProduct(), ui.statstr.getIcon(), ui.user.getFlags());
