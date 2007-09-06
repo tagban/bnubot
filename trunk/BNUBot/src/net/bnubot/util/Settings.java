@@ -27,7 +27,7 @@ public class Settings {
 		if(propsFile.exists()) try {
 			props.load(new FileInputStream(propsFile));
 		} catch(Exception e) {
-			Out.excepton(e);
+			Out.exception(e);
 		}
 	}
 	

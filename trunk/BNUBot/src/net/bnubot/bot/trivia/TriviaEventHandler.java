@@ -123,7 +123,7 @@ public class TriviaEventHandler implements EventHandler {
 			out += "Total=" + d.getTriviaSum();
 			c.sendChat(out);
 		} catch (SQLException e) {
-			Out.excepton(e);
+			Out.exception(e);
 		}
 	}
 	
@@ -161,7 +161,7 @@ public class TriviaEventHandler implements EventHandler {
 							}
 						}
 					} catch (SQLException e) {
-						Out.excepton(e);
+						Out.exception(e);
 					}
 					
 					TriviaItem ti = trivia.remove((int)(Math.random() * trivia.size()));
@@ -221,7 +221,7 @@ public class TriviaEventHandler implements EventHandler {
 								d.close(rsAccount);
 							}
 						} catch(Exception e) {
-							Out.excepton(e);
+							Out.exception(e);
 						}
 
 						if(triviaAnswers.length > 1) {

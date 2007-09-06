@@ -852,7 +852,7 @@ public class CommandEventHandler implements EventHandler {
 							SimpleDateFormat sdf = new SimpleDateFormat("M/d/y");
 							bd = sdf.parse(param);
 						} catch(Exception e) {
-							Out.excepton(e);
+							Out.exception(e);
 						}
 						if(bd == null)
 							throw new InvalidUseException();
@@ -1134,7 +1134,7 @@ public class CommandEventHandler implements EventHandler {
 		} catch(InsufficientAccessException e) {
 			c.sendChat(user, "You have insufficient access " + e.getMessage(), wasWhispered);
 		} catch(Exception e) {
-			Out.excepton(e);
+			Out.exception(e);
 			c.sendChat(user, e.getClass().getSimpleName() + ": " + e.getMessage(), wasWhispered);
 		}
 	}
@@ -1337,7 +1337,7 @@ public class CommandEventHandler implements EventHandler {
 			if(umc > 0)
 				c.sendChat(user, "You have " + umc + " unread messages; type [ %trigger%mail read ] to retrieve them", false);
 		} catch (Exception e) {
-			Out.excepton(e);
+			Out.exception(e);
 		}
 	}
 	

@@ -107,7 +107,7 @@ public class DatabaseAccountEditor extends JFrame {
 									if(value != null)
 										rsAccount.setId(value);
 								} catch (SQLException e) {
-									Out.excepton(e);
+									Out.exception(e);
 								}
 							}
 						}
@@ -132,7 +132,7 @@ public class DatabaseAccountEditor extends JFrame {
 									if(value != null)
 										rsAccount.setAccess(value);
 								} catch (SQLException e) {
-									Out.excepton(e);
+									Out.exception(e);
 								}
 							}
 						}
@@ -157,7 +157,7 @@ public class DatabaseAccountEditor extends JFrame {
 									else
 										rsAccount.setName(txt);
 								} catch (SQLException e) {
-									Out.excepton(e);
+									Out.exception(e);
 								}
 							}
 						}
@@ -182,7 +182,7 @@ public class DatabaseAccountEditor extends JFrame {
 									if(value != null)
 										rsAccount.setCreated(value);
 								} catch (SQLException e) {
-									Out.excepton(e);
+									Out.exception(e);
 								}
 							}
 						}
@@ -207,7 +207,7 @@ public class DatabaseAccountEditor extends JFrame {
 									if(value != null)
 										rsAccount.setLastRankChange(value);
 								} catch (SQLException e) {
-									Out.excepton(e);
+									Out.exception(e);
 								}
 							}
 						}
@@ -232,7 +232,7 @@ public class DatabaseAccountEditor extends JFrame {
 									if(value != null)
 										rsAccount.setCreatedBy(value);
 								} catch (SQLException e) {
-									Out.excepton(e);
+									Out.exception(e);
 								}
 							}
 						}
@@ -257,7 +257,7 @@ public class DatabaseAccountEditor extends JFrame {
 									if(value != null)
 										rsAccount.setTriviaCorrect(value);
 								} catch (SQLException e) {
-									Out.excepton(e);
+									Out.exception(e);
 								}
 							}
 						}
@@ -282,7 +282,7 @@ public class DatabaseAccountEditor extends JFrame {
 									if(value != null)
 										rsAccount.setTriviaWin(value);
 								} catch (SQLException e) {
-									Out.excepton(e);
+									Out.exception(e);
 								}
 							}
 						}
@@ -307,7 +307,7 @@ public class DatabaseAccountEditor extends JFrame {
 									if(value != null)
 										rsAccount.setBirthday(value);
 								} catch (SQLException e) {
-									Out.excepton(e);
+									Out.exception(e);
 								}
 							}
 						}
@@ -332,7 +332,7 @@ public class DatabaseAccountEditor extends JFrame {
 								rebuildAccounts();
 								displayEditor(rsAccount.getId());
 							} catch (SQLException e) {
-								Out.excepton(e);
+								Out.exception(e);
 							}
 						}
 					});
@@ -349,7 +349,7 @@ public class DatabaseAccountEditor extends JFrame {
 									rebuildAccounts();
 								}
 							} catch (SQLException e) {
-								Out.excepton(e);
+								Out.exception(e);
 							}
 						}
 					});
@@ -364,7 +364,7 @@ public class DatabaseAccountEditor extends JFrame {
 									rebuildAccounts();
 									displayEditor(rsAccount.getName());
 								} catch (SQLException e) {
-									Out.excepton(e);
+									Out.exception(e);
 								}
 							}
 						}
@@ -378,7 +378,7 @@ public class DatabaseAccountEditor extends JFrame {
 								try {
 									displayEditor(rsAccount.getName());
 								} catch (SQLException e) {
-									Out.excepton(e);
+									Out.exception(e);
 								}
 						}
 					});
@@ -404,7 +404,7 @@ public class DatabaseAccountEditor extends JFrame {
 			}
 			d.close(rsAccounts);
 		} catch (SQLException e) {
-			Out.excepton(e);
+			Out.exception(e);
 		}
 		
 		if(lstAccounts != null)
@@ -461,7 +461,7 @@ public class DatabaseAccountEditor extends JFrame {
 			txtTriviaWin.setText(valueOf(rsAccount.getTriviaWin()));
 			txtBirthday.setText(valueOf(rsAccount.getBirthday()));
 		} catch (SQLException e) {
-			Out.excepton(e);
+			Out.exception(e);
 		}
 		
 		pack();

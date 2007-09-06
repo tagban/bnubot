@@ -132,7 +132,7 @@ public class GuiEventHandler implements EventHandler {
 		try {
 			SystemTray.getSystemTray().add(ti);
 		} catch(AWTException e) {
-			Out.excepton(e);
+			Out.exception(e);
 		}
 		
 		frame.addWindowStateListener(new WindowStateListener() {
@@ -212,7 +212,7 @@ public class GuiEventHandler implements EventHandler {
 						try {
 							c.sendQueryRealms();
 						} catch (Exception e) {
-							Out.fatalException(e);
+							Out.exception(e);
 						}
 					} });
 				menu.add(menuItem);
@@ -227,7 +227,7 @@ public class GuiEventHandler implements EventHandler {
 						try {
 							c.sendClanMOTD(new ClanMOTDEditor(c));
 						} catch(Exception e) {
-							Out.fatalException(e);
+							Out.exception(e);
 						}
 					} });
 				menu.add(menuItem);

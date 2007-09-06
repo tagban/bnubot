@@ -96,7 +96,7 @@ public class KeyManager {
 			try {
 				key = is.readLine();
 			} catch (IOException e) {
-				Out.excepton(e);
+				Out.exception(e);
 			}
 			if(key == null)
 				break;
