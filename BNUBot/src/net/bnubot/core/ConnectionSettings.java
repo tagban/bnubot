@@ -12,6 +12,7 @@ import javax.swing.UIManager;
 import net.bnubot.util.Out;
 import net.bnubot.util.Settings;
 import net.bnubot.util.TimeFormatter;
+import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.ReleaseType;
 
 public class ConnectionSettings implements Serializable {
@@ -286,7 +287,7 @@ public class ConnectionSettings implements Serializable {
 			TimeFormatter.tsFormat =
 					Settings.read(header, "tsFormat", TimeFormatter.tsFormat);
 			releaseType = Enum.valueOf(ReleaseType.class,
-					Settings.read(header, "releaseType", ReleaseType.Stable.toString()));
+					Settings.read(header, "releaseType", CurrentVersion.version().getReleaseType().toString()));
 		} else {
 			autoconnect = true;
 		}
