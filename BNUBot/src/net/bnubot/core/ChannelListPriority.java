@@ -13,8 +13,8 @@ public enum ChannelListPriority {
 	PRIORITY_BLIZZARD_GUEST (1, 0x40),
 	PRIORITY_NORMAL (0, 0);
 	
-	int priority;
-	int flags;
+	private int priority;
+	private int flags;
 	ChannelListPriority(int priority, int flags) {
 		this.priority = priority;
 		this.flags = flags;
