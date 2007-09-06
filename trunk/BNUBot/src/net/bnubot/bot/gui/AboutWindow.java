@@ -41,8 +41,9 @@ public class AboutWindow extends JDialog {
 			b.add(new JLabel("BNU-Sorceress: Alpha testing"));
 			b.add(Box.createVerticalStrut(15));
 			b.add(new JLabel("Contributors:"));
-			b.add(new JLabel("HDX, the JBLS project"));
-			b.add(new JLabel("Protege-2000: browser launcher"));
+			b.add(new JLabel("Hdx, the JBLS project"));
+			b.add(new JLabel("iago, various Java classes"));
+			b.add(new JLabel("The Protege-2000 project, browser launcher"));
 			b.add(Box.createVerticalStrut(15));
 			b.add(new JLabel("This project is distributed under the"));
 			b.add(new JLabel("GNU Public License, Version 2."));
