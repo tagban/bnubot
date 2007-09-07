@@ -117,7 +117,7 @@ public final class CurrentVersion {
 		return r;
 	}
 	
-	public static final Integer revision() {
+	private static final Integer revision() {
 		if(!VER_SVN_SET) {
 			VER_SVN_REVISION = revision(new File("src"));
 			VER_SVN_SET = true;
