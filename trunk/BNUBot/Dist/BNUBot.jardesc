@@ -13,7 +13,6 @@
   <selectedElements exportClassFiles="true" exportOutputFolder="false" exportJavaFiles="true">
     <file path="/BNUBot/.project"/>
     <file path="/BNUBot/.classpath"/>
-    <file path="/BNUBot/src/net/bnubot/version.properties"/>
     <javaElement handleIdentifier="=BNUBot/src"/>
   </selectedElements>
 </jardesc>

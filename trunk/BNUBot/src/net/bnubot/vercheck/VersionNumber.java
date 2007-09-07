@@ -112,4 +112,8 @@ public class VersionNumber {
 	public boolean isReleaseCandidate() {
 		return (VER_RELEASE_CANDIDATE != null);
 	}
+	
+	public Integer revision() {
+		return VER_SVN_REVISION;
+	}
 }
