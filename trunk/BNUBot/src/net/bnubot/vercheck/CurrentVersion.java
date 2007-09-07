@@ -140,7 +140,7 @@ public final class CurrentVersion {
 				is = vp.openStream();
 			} catch(NullPointerException e) {
 				// Either the JAR is messed up, or we're running in the ide - look for the file in the working directory
-				f = new File("." + vpPath);
+				f = new File("src" + vpPath);
 				if(f.exists())
 					is = new FileInputStream(f);
 			}
