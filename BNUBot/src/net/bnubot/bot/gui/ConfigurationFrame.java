@@ -55,7 +55,7 @@ public class ConfigurationFrame extends JDialog {
 	ConfigTextArea txtEmail = null;
 	ConfigComboBox cmbProduct = null;
 	ConfigTextArea txtTrigger = null;
-	JCheckBox chkAntiIdle = null;
+	ConfigCheckBox chkAntiIdle = null;
 	ConfigTextArea txtAntiIdle = null;
 	ConfigTextArea txtAntiIdleTimer = null;
 	ConfigComboBox cmbCDKey = null;
@@ -67,15 +67,15 @@ public class ConfigurationFrame extends JDialog {
 	ConfigComboBox cmbColorScheme = null;
 	ConfigComboBox cmbTSFormat = null;
 	ConfigComboBox cmbReleaseType = null;
-	JCheckBox chkAutoConnect = null;
-	JCheckBox chkEnableGUI = null;
-	JCheckBox chkEnableCLI = null;
-	JCheckBox chkEnableTrivia = null;
+	ConfigCheckBox chkAutoConnect = null;
+	ConfigCheckBox chkEnableGUI = null;
+	ConfigCheckBox chkEnableCLI = null;
+	ConfigCheckBox chkEnableTrivia = null;
 	ConfigTextArea txtTriviaRoundLength = null;
-	JCheckBox chkEnableCommands = null;
-	JCheckBox chkEnableFloodProtect = null;
-	JCheckBox chkPacketLog = null;
-	JCheckBox chkWhisperBack = null;
+	ConfigCheckBox chkEnableCommands = null;
+	ConfigCheckBox chkEnableFloodProtect = null;
+	ConfigCheckBox chkPacketLog = null;
+	ConfigCheckBox chkWhisperBack = null;
 	JButton btnLoad = null;
 	JButton btnOK = null;
 	JButton btnCancel = null;
@@ -111,6 +111,15 @@ public class ConfigurationFrame extends JDialog {
 		
 		public ConfigComboBox(ComboBoxModel model) {
 			super(model);
+			setBorder(BorderFactory.createLoweredBevelBorder());
+		}
+	}
+	
+	private class ConfigCheckBox extends JCheckBox {
+		private static final long serialVersionUID = 1831878850976738056L;
+
+		public ConfigCheckBox(String text, boolean checked) {
+			super(text, checked);
 			setBorder(BorderFactory.createLoweredBevelBorder());
 		}
 	}
@@ -182,7 +191,7 @@ public class ConfigurationFrame extends JDialog {
 					jl.setPreferredSize(maxSize);
 					boxLine.add(jl);
 					
-					chkAntiIdle = new JCheckBox("Enable", cs.enableAntiIdle);
+					chkAntiIdle = new ConfigCheckBox("Enable", cs.enableAntiIdle);
 					boxLine.add(chkAntiIdle);
 					
 					txtAntiIdle = new ConfigTextArea(cs.antiIdle);
@@ -377,16 +386,16 @@ public class ConfigurationFrame extends JDialog {
 					
 					Box boxCheckboxes = new Box(BoxLayout.Y_AXIS);
 					{
-						chkAutoConnect = new JCheckBox("Auto Connect", cs.autoconnect);
+						chkAutoConnect = new ConfigCheckBox("Auto Connect", cs.autoconnect);
 						boxCheckboxes.add(chkAutoConnect);
 	
-						chkEnableGUI = new JCheckBox("Enable GUI (requires restart)", cs.enableGUI);
+						chkEnableGUI = new ConfigCheckBox("Enable GUI (requires restart)", cs.enableGUI);
 						boxCheckboxes.add(chkEnableGUI);
 	
-						chkEnableCLI = new JCheckBox("Enable CLI (requires restart)", cs.enableCLI);
+						chkEnableCLI = new ConfigCheckBox("Enable CLI (requires restart)", cs.enableCLI);
 						boxCheckboxes.add(chkEnableCLI);
 
-						chkEnableTrivia = new JCheckBox("Enable Trivia (requires restart)", cs.enableTrivia);
+						chkEnableTrivia = new ConfigCheckBox("Enable Trivia (requires restart)", cs.enableTrivia);
 						boxCheckboxes.add(chkEnableTrivia);
 						
 						JLabel jl = new JLabel("Trivia Round Length");
@@ -395,16 +404,16 @@ public class ConfigurationFrame extends JDialog {
 						txtTriviaRoundLength = new ConfigTextArea(Long.toString(cs.triviaRoundLength));
 						boxCheckboxes.add(txtTriviaRoundLength);
 	
-						chkEnableCommands = new JCheckBox("Enable Commands (requires restart)", cs.enableCommands);
+						chkEnableCommands = new ConfigCheckBox("Enable Commands (requires restart)", cs.enableCommands);
 						boxCheckboxes.add(chkEnableCommands);
 	
-						chkEnableFloodProtect = new JCheckBox("Enable Flood Protect", cs.enableFloodProtect);
+						chkEnableFloodProtect = new ConfigCheckBox("Enable Flood Protect", cs.enableFloodProtect);
 						boxCheckboxes.add(chkEnableFloodProtect);
 	
-						chkPacketLog = new JCheckBox("Packet Log", cs.packetLog);
+						chkPacketLog = new ConfigCheckBox("Packet Log", cs.packetLog);
 						boxCheckboxes.add(chkPacketLog);
 	
-						chkWhisperBack = new JCheckBox("Whisper Commands", cs.whisperBack);
+						chkWhisperBack = new ConfigCheckBox("Whisper Commands", cs.whisperBack);
 						boxCheckboxes.add(chkWhisperBack);
 					}
 					boxLine.add(boxCheckboxes);
@@ -545,8 +554,8 @@ public class ConfigurationFrame extends JDialog {
 		pack();
 		
 		Dimension size = this.getSize();
-		if((size.height > 650) || (size.width > 400))
-			this.setSize(Math.min(400, size.width), Math.min(650, size.height));
+		if((size.height > 700) || (size.width > 400))
+			this.setSize(Math.min(400, size.width), Math.min(700, size.height));
 	}
 	
 	private String formatCDKey(String in) {
