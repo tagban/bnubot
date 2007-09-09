@@ -22,11 +22,11 @@ import net.bnubot.bot.gui.GuiEventHandler;
 public class Out {
 	private static PrintStream outStream = System.out;
 	private static GuiEventHandler outConnection = null;
-	private static boolean globalDebug = false;
-	private static Properties debug = null;
+	private static boolean globalDebug;
+	private static Properties debug = new SortedProperties();
 	private static File debugFile = new File("debug.properties");
 	static {
-		debug = new SortedProperties();
+		globalDebug = Boolean.parseBoolean(Settings.read(null, "debug", "false"));
 		try {
 			if(!debugFile.exists())
 				debugFile.createNewFile();
@@ -129,6 +129,8 @@ public class Out {
 	public static void setDebug(boolean debug) {
 		globalDebug = debug;
 		info(Out.class, "Debug logging " + (debug ? "en" : "dis") + "abled");
+		Settings.write(null, "debug", Boolean.toString(debug));
+		Settings.store();
 	}
 
 	/**
@@ -166,4 +168,7 @@ public class Out {
 		return true;
 	}
 
+	public static Properties getProperties() {
+		return debug;
+	}
 }
