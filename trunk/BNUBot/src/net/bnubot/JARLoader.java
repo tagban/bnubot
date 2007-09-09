@@ -8,7 +8,6 @@ package net.bnubot;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -32,12 +31,9 @@ public class JARLoader {
 		URL[] urls = new URL[files.length];
 		for(int i = 0; i < files.length; i++)
 			try {
-				Out.info(JARLoader.class, "Loading " + files[i]);
+				Out.debug(JARLoader.class, "Loading " + files[i]);
 				urls[i] = new URL("file:" + folder + "/" + files[i]);
-				urls[i].openStream();
 			} catch (MalformedURLException e) {
-				Out.exception(e);
-			} catch (IOException e) {
 				Out.exception(e);
 			}
 		
@@ -45,7 +41,7 @@ public class JARLoader {
 	}
 	
 	public static Class<?> forName(String name) throws ClassNotFoundException {
-		Out.info(JARLoader.class, name);
+		Out.debug(JARLoader.class, name);
 		return loader.loadClass(name);
 	}
 }
