@@ -49,7 +49,6 @@ import org.jbls.Hashing.DoubleHash;
 import org.jbls.Hashing.HashMain;
 import org.jbls.Hashing.SRP;
 
-
 public class BNCSConnection extends Connection {
 	public static final String[] clanRanks = {"Initiate", "Peon", "Grunt", "Shaman", "Chieftain"};
 	
@@ -251,7 +250,6 @@ public class BNCSConnection extends Connection {
 			setConnected(false);
 			try { s.close(); } catch (Exception e) { }
 			s = null;
-			recieveError("Disconnected from battle.net.");
 			yield();
 
 			//Wait a short time before allowing a reconnect
