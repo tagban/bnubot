@@ -445,6 +445,7 @@ public class GuiEventHandler implements EventHandler {
 	public void bnetDisconnected() {
 		userList.clear();
 		channelTextArea.setText(null);
+		mainTextArea.recieveError("Disconnected from battle.net.");
 		mainTextArea.addSeparator();
 	}
 

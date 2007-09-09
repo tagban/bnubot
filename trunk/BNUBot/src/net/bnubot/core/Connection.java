@@ -113,6 +113,9 @@ public abstract class Connection extends Thread implements EventHandler {
 	}
 	
 	public void setConnected(boolean c) {
+		if(connected == c)
+			return;
+		
 		if(c) {
 			String v = cs.isValid();
 			if(v != null) {
@@ -120,7 +123,7 @@ public abstract class Connection extends Thread implements EventHandler {
 				return;
 			}
 		}
-		
+
 		connected = c;
 		
 		if(c)
