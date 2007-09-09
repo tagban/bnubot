@@ -11,6 +11,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -20,6 +21,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
+import net.bnubot.JARLoader;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.Out;
 
@@ -32,8 +34,9 @@ public class Database {
 	private ArrayList<Statement> openStatements = new ArrayList<Statement>();
 	private ArrayList<Exception> openStmtExcept = new ArrayList<Exception>();
 	
-	public Database(String driver, String url, String username, String password, String schemaFile) throws SQLException, ClassNotFoundException {
-		Class.forName(driver);
+	public Database(String driver, String url, String username, String password, String schemaFile) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+		Driver d = (Driver)JARLoader.forName(driver).newInstance();
+		DriverManager.registerDriver(new DriverShim(d));
 		
 		Out.debug(getClass(), "Connecting to " + url);
 		conn = DriverManager.getConnection(url, username, password);
@@ -43,7 +46,6 @@ public class Database {
 		
 		if(!checkSchema())
 			createSchema(schemaFile);
-		
 		try {
 			deleteOldUsers();
 		} catch(Exception e) {
@@ -139,7 +141,7 @@ public class Database {
 	public void deleteOldUsers() throws SQLException {
 		String SQL = "DATEDIFF(NOW(), lastSeen)";
 		try {
-			if(conn instanceof org.apache.derby.iapi.jdbc.EngineConnection)
+			if(conn.getClass().getName().startsWith("org.apache.derby"))
 				SQL = "{fn TIMESTAMPDIFF(SQL_TSI_DAY, CURRENT_TIMESTAMP, lastSeen)}";
 		} catch(NoClassDefFoundError e) {}
 		
