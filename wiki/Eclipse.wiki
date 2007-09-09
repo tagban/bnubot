@@ -4,9 +4,8 @@
 If you don't already have the JRE (1.5 or later), get it from Sun's website.
 == Getting started with Eclipse ==
 === Download Eclipse ===
-Visit [http://www.eclipse.org/downloads/] and click:
-[http://www.eclipse.org/home/images/downloadbutton.gif]
-The package "Eclipse IDE for Java Developers" is sufficient.
+Visit [http://www.eclipse.org/downloads/].
+The package "Eclipse IDE for Java Developers" is all you need.
 === Install Eclipse ===
  * Windows: Unzip the file you just downloaded to your Program Files directory, or anywhere that you want to keep it.
  * OSX: Drag the Eclipse application to your Applications folder.
@@ -38,3 +37,4 @@ Launch Eclipse. It will take a few moments to load. It will ask you for a direct
  * Right click on *Main.java*, and then *Run As*, followed by *Java Application*.
  * The bot will start up, and the configuration window will appear.
  * You will need to fill in the cdkeys.txt file before you can select CD keys from the drop down menu.
+
