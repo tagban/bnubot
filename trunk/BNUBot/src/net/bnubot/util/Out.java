@@ -5,9 +5,15 @@
 
 package net.bnubot.util;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Properties;
 
 import javax.swing.JOptionPane;
 
@@ -16,7 +22,21 @@ import net.bnubot.bot.gui.GuiEventHandler;
 public class Out {
 	private static PrintStream outStream = System.out;
 	private static GuiEventHandler outConnection = null;
-	private static boolean debug = false;
+	private static boolean globalDebug = false;
+	private static Properties debug = null;
+	private static File debugFile = new File("debug.properties");
+	static {
+		debug = new SortedProperties();
+		try {
+			if(!debugFile.exists())
+				debugFile.createNewFile();
+			debug.load(new FileReader(debugFile));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	public static void exception(Exception e) {
 		if(outConnection != null) {
@@ -57,7 +77,7 @@ public class Out {
 	 * @param text text to show
 	 */
 	public static void debug(Class<?> source, String text) {
-		if(debug)
+		if(isDebug(source))
 			debugAlways(source, text);
 	}
 
@@ -107,8 +127,22 @@ public class Out {
 	 * @param debug true means debugging messages will be shown
 	 */
 	public static void setDebug(boolean debug) {
-		Out.debug = debug;
+		globalDebug = debug;
 		info(Out.class, "Debug logging " + (debug ? "en" : "dis") + "abled");
+	}
+
+	/**
+	 * Sets whether debugging messages should be shown for a given class
+	 * @param debug true means debugging messages will be shown
+	 */
+	public static void setDebug(Class<?> c, boolean debug) {
+		Out.debug.setProperty(c.getName(), Boolean.toString(debug));
+		try {
+			Out.debug.store(new FileWriter(debugFile), null);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		info(Out.class, "Debug logging {" + c.getName() + "} " + (debug ? "en" : "dis") + "abled");
 	}
 
 	/**
@@ -116,7 +150,20 @@ public class Out {
 	 * @return true when debugging messages will be shown
 	 */
 	public static boolean isDebug() {
-		return debug;
+		return globalDebug;
+	}
+
+	/**
+	 * Gets whether debugging messages should be shown for a given class
+	 * @return true when debugging messages will be shown
+	 */
+	public static boolean isDebug(Class<?> c) {
+		if(!globalDebug)
+			return false;
+		if(debug.containsKey(c.getName()))
+			return Boolean.parseBoolean(debug.getProperty(c.getName()));
+		setDebug(c, true);
+		return true;
 	}
 
 }
