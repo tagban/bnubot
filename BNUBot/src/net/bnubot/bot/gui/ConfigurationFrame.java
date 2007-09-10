@@ -69,10 +69,10 @@ public class ConfigurationFrame extends JDialog {
 	ConfigTextArea txtBNCSServer = null;
 	ConfigTextArea txtBNLSServer = null;
 	ConfigTextArea txtChannel = null;
-	ConfigComboBox cmbColorScheme = null;
-	ConfigComboBox cmbLookAndFeel = null;
 	ConfigComboBox cmbTSFormat = null;
 	ConfigComboBox cmbReleaseType = null;
+	ConfigComboBox cmbColorScheme = null;
+	ConfigComboBox cmbLookAndFeel = null;
 	ConfigCheckBox chkAutoConnect = null;
 	ConfigCheckBox chkEnableGUI = null;
 	ConfigCheckBox chkEnableCLI = null;
@@ -371,6 +371,31 @@ public class ConfigurationFrame extends JDialog {
 
 				boxLine = new Box(BoxLayout.X_AXIS);
 				{
+					JLabel jl = new JLabel("TimeStamp Format");
+					jl.setPreferredSize(maxSize);
+					boxLine.add(jl);
+					
+					cmbTSFormat = new ConfigComboBox(new String[] { TimeFormatter.tsFormat, "%1$tH:%1$tM:%1$tS.%1$tL", "%1$tH:%1$tM:%1$tS", "%1$tH:%1$tM" });
+					cmbTSFormat.setSelectedItem(TimeFormatter.tsFormat);
+					cmbTSFormat.setEditable(true);
+					boxLine.add(cmbTSFormat);
+				}
+				boxSettings.add(boxLine);
+
+				boxLine = new Box(BoxLayout.X_AXIS);
+				{
+					JLabel jl = new JLabel("Version Check");
+					jl.setPreferredSize(maxSize);
+					boxLine.add(jl);
+					
+					cmbReleaseType = new ConfigComboBox(ReleaseType.values());
+					cmbReleaseType.setSelectedItem(cs.releaseType);
+					boxLine.add(cmbReleaseType);
+				}
+				boxSettings.add(boxLine);
+
+				boxLine = new Box(BoxLayout.X_AXIS);
+				{
 					JLabel jl = new JLabel("Color Scheme");
 					jl.setPreferredSize(maxSize);
 					boxLine.add(jl);
@@ -403,31 +428,6 @@ public class ConfigurationFrame extends JDialog {
 						}
 					});
 					boxLine.add(cmbLookAndFeel);
-				}
-				boxSettings.add(boxLine);
-
-				boxLine = new Box(BoxLayout.X_AXIS);
-				{
-					JLabel jl = new JLabel("TimeStamp Format");
-					jl.setPreferredSize(maxSize);
-					boxLine.add(jl);
-					
-					cmbTSFormat = new ConfigComboBox(new String[] { TimeFormatter.tsFormat, "%1$tH:%1$tM:%1$tS.%1$tL", "%1$tH:%1$tM:%1$tS", "%1$tH:%1$tM" });
-					cmbTSFormat.setSelectedItem(TimeFormatter.tsFormat);
-					cmbTSFormat.setEditable(true);
-					boxLine.add(cmbTSFormat);
-				}
-				boxSettings.add(boxLine);
-
-				boxLine = new Box(BoxLayout.X_AXIS);
-				{
-					JLabel jl = new JLabel("Version Check");
-					jl.setPreferredSize(maxSize);
-					boxLine.add(jl);
-					
-					cmbReleaseType = new ConfigComboBox(ReleaseType.values());
-					cmbReleaseType.setSelectedItem(cs.releaseType);
-					boxLine.add(cmbReleaseType);
 				}
 				boxSettings.add(boxLine);
 				
