@@ -16,6 +16,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.util.Enumeration;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -36,6 +39,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
+import net.bnubot.bot.database.DatabaseSettings;
+import net.bnubot.bot.database.DriverShim;
 import net.bnubot.bot.gui.KeyManager.CDKey;
 import net.bnubot.core.ConnectionSettings;
 import net.bnubot.util.Out;
@@ -85,7 +90,16 @@ public class ConfigurationFrame extends JDialog {
 	JButton btnSaveKeys = null;
 	
 	//Extra
-	JComboBox cmbLookAndFeel = null;
+	ConfigComboBox cmbLookAndFeel = null;
+	
+	//Database
+	DatabaseSettings dbSettings = null;
+	ConfigComboBox cmbDrivers = null;
+	ConfigTextArea txtDriverURL = null;
+	ConfigTextArea txtDriverUsername = null;
+	ConfigTextArea txtDriverPassword = null;
+	ConfigTextArea txtDriverSchema = null;
+	JButton btnSaveDatabase = null;
 	
 	private class ConfigTextArea extends JTextArea {
 		private static final long serialVersionUID = -2894805163754230265L;
@@ -135,16 +149,16 @@ public class ConfigurationFrame extends JDialog {
 	}
 	
 	private void initializeGui() {
+		int lblWidth = 100;
+		Dimension maxSize = new Dimension(lblWidth, 0);
+		
 		tabs = new JTabbedPane();
 		
 		Box boxAll = new Box(BoxLayout.Y_AXIS);
 		boolean addConnectionStuff = true;
 		ConnectionStuff: {
 			Box boxSettings = new Box(BoxLayout.Y_AXIS);
-			{
-				int lblWidth = 100;
-				Dimension maxSize = new Dimension(lblWidth, 0);
-				
+			{				
 				Box boxLine = new Box(BoxLayout.X_AXIS);
 				{
 					JLabel jl = new JLabel("Username");
@@ -549,6 +563,90 @@ public class ConfigurationFrame extends JDialog {
 			boxAll.add(cmbLookAndFeel);
 		}
 		tabs.addTab("Extra", boxAll);
+		
+		boxAll = new Box(BoxLayout.Y_AXIS);
+		{
+			dbSettings = new DatabaseSettings();
+			dbSettings.load();
+
+			Box boxLine = new Box(BoxLayout.X_AXIS);
+			{
+				JLabel jl = new JLabel("Driver");
+				jl.setPreferredSize(maxSize);
+				boxLine.add(jl);
+				
+				DefaultComboBoxModel model = new DefaultComboBoxModel();
+				Enumeration<Driver> drivers = DriverManager.getDrivers();
+				while(drivers.hasMoreElements()) {
+					Driver d = drivers.nextElement();
+					if(d instanceof DriverShim)
+						model.addElement(((DriverShim)d).getDriverClass().getName());
+				}
+					
+				cmbDrivers = new ConfigComboBox(model);
+				cmbDrivers.setSelectedItem(dbSettings.driver);
+				boxLine.add(cmbDrivers);
+			}
+			boxAll.add(boxLine);
+			
+			boxLine = new Box(BoxLayout.X_AXIS);
+			{
+				JLabel jl = new JLabel("URL");
+				jl.setPreferredSize(maxSize);
+				boxLine.add(jl);
+				
+				txtDriverURL = new ConfigTextArea(dbSettings.url);
+				boxLine.add(txtDriverURL);
+			}
+			boxAll.add(boxLine);
+			
+			boxLine = new Box(BoxLayout.X_AXIS);
+			{
+				JLabel jl = new JLabel("Username");
+				jl.setPreferredSize(maxSize);
+				boxLine.add(jl);
+
+				txtDriverUsername = new ConfigTextArea(dbSettings.username);
+				boxLine.add(txtDriverUsername);
+			}
+			boxAll.add(boxLine);
+			
+			boxLine = new Box(BoxLayout.X_AXIS);
+			{
+				JLabel jl = new JLabel("Password");
+				jl.setPreferredSize(maxSize);
+				boxLine.add(jl);
+
+				txtDriverPassword = new ConfigTextArea(dbSettings.password);
+				boxLine.add(txtDriverPassword);
+			}
+			boxAll.add(boxLine);
+			
+			boxLine = new Box(BoxLayout.X_AXIS);
+			{
+				JLabel jl = new JLabel("Schema");
+				jl.setPreferredSize(maxSize);
+				boxLine.add(jl);
+
+				txtDriverSchema = new ConfigTextArea(dbSettings.schema);
+				boxLine.add(txtDriverSchema);
+			}
+			boxAll.add(boxLine);
+			
+			btnSaveDatabase = new JButton("Save");
+			btnSaveDatabase.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					dbSettings.driver = (String)cmbDrivers.getSelectedItem();
+					dbSettings.url = txtDriverURL.getText();
+					dbSettings.username = txtDriverUsername.getText();
+					dbSettings.password = txtDriverPassword.getText();
+					dbSettings.schema = txtDriverSchema.getText();
+					dbSettings.save();
+				}
+			});
+			boxAll.add(btnSaveDatabase);
+		}
+		tabs.addTab("Database", boxAll);
 		
 		add(tabs);
 		pack();
