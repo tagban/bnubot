@@ -70,6 +70,7 @@ public class ConfigurationFrame extends JDialog {
 	ConfigTextArea txtBNLSServer = null;
 	ConfigTextArea txtChannel = null;
 	ConfigComboBox cmbColorScheme = null;
+	ConfigComboBox cmbLookAndFeel = null;
 	ConfigComboBox cmbTSFormat = null;
 	ConfigComboBox cmbReleaseType = null;
 	ConfigCheckBox chkAutoConnect = null;
@@ -88,9 +89,6 @@ public class ConfigurationFrame extends JDialog {
 	//CDKeys
 	ConfigTextArea txtCDKeys = null;
 	JButton btnSaveKeys = null;
-	
-	//Extra
-	ConfigComboBox cmbLookAndFeel = null;
 	
 	//Database
 	DatabaseSettings dbSettings = null;
@@ -164,6 +162,7 @@ public class ConfigurationFrame extends JDialog {
 					JLabel jl = new JLabel("Username");
 					jl.setPreferredSize(maxSize);
 					boxLine.add(jl);
+					
 					txtUsername = new ConfigTextArea(cs.username);
 					boxLine.add(txtUsername);
 				}
@@ -174,6 +173,7 @@ public class ConfigurationFrame extends JDialog {
 					JLabel jl = new JLabel("Password");
 					jl.setPreferredSize(maxSize);
 					boxLine.add(jl);
+					
 					txtPassword = new JPasswordField(cs.password);
 					boxLine.add(txtPassword);
 				}
@@ -184,6 +184,7 @@ public class ConfigurationFrame extends JDialog {
 					JLabel jl = new JLabel("Email");
 					jl.setPreferredSize(maxSize);
 					boxLine.add(jl);
+					
 					txtEmail = new ConfigTextArea(cs.email);
 					boxLine.add(txtEmail);
 				}
@@ -194,6 +195,7 @@ public class ConfigurationFrame extends JDialog {
 					JLabel jl = new JLabel("Trigger");
 					jl.setPreferredSize(maxSize);
 					boxLine.add(jl);
+					
 					txtTrigger = new ConfigTextArea(cs.trigger);
 					boxLine.add(txtTrigger);
 				}
@@ -239,6 +241,7 @@ public class ConfigurationFrame extends JDialog {
 					JLabel jl = new JLabel("CD Key");
 					jl.setPreferredSize(maxSize);
 					boxLine.add(jl);
+					
 					cmbCDKey = new ConfigComboBox(CDKeys);
 					boxLine.add(cmbCDKey);
 					
@@ -256,6 +259,7 @@ public class ConfigurationFrame extends JDialog {
 					JLabel jl = new JLabel("LOD Key");
 					jl.setPreferredSize(maxSize);
 					boxLine.add(jl);
+					
 					cmbCDKeyLOD = new ConfigComboBox(CDKeys);
 					boxLine.add(cmbCDKeyLOD);
 					
@@ -273,6 +277,7 @@ public class ConfigurationFrame extends JDialog {
 					JLabel jl = new JLabel("TFT Key");
 					jl.setPreferredSize(maxSize);
 					boxLine.add(jl);
+					
 					cmbCDKeyTFT = new ConfigComboBox(CDKeys);
 					boxLine.add(cmbCDKeyTFT);
 					
@@ -288,6 +293,7 @@ public class ConfigurationFrame extends JDialog {
 					JLabel jl = new JLabel("Product");
 					jl.setPreferredSize(maxSize);
 					boxLine.add(jl);
+					
 					cmbProduct = new ConfigComboBox(org.jbls.util.Constants.prods);
 					cmbProduct.addItemListener(new ItemListener() {
 						public void itemStateChanged(ItemEvent e) {
@@ -335,6 +341,7 @@ public class ConfigurationFrame extends JDialog {
 					JLabel jl = new JLabel("Battle.net Server");
 					jl.setPreferredSize(maxSize);
 					boxLine.add(jl);
+					
 					txtBNCSServer = new ConfigTextArea(cs.bncsServer);
 					boxLine.add(txtBNCSServer);
 				}
@@ -345,6 +352,7 @@ public class ConfigurationFrame extends JDialog {
 					JLabel jl = new JLabel("BNLS Server");
 					jl.setPreferredSize(maxSize);
 					boxLine.add(jl);
+					
 					txtBNLSServer = new ConfigTextArea(cs.bnlsServer);
 					boxLine.add(txtBNLSServer);
 				}
@@ -355,6 +363,7 @@ public class ConfigurationFrame extends JDialog {
 					JLabel jl = new JLabel("Channel");
 					jl.setPreferredSize(maxSize);
 					boxLine.add(jl);
+					
 					txtChannel = new ConfigTextArea(cs.channel);
 					boxLine.add(txtChannel);
 				}
@@ -365,6 +374,7 @@ public class ConfigurationFrame extends JDialog {
 					JLabel jl = new JLabel("Color Scheme");
 					jl.setPreferredSize(maxSize);
 					boxLine.add(jl);
+					
 					cmbColorScheme = new ConfigComboBox(new String[] { "Starcraft", "Diablo 2" });
 					cmbColorScheme.setSelectedIndex(cs.colorScheme - 1);
 					boxLine.add(cmbColorScheme);
@@ -373,9 +383,35 @@ public class ConfigurationFrame extends JDialog {
 
 				boxLine = new Box(BoxLayout.X_AXIS);
 				{
+					JLabel jl = new JLabel("Look and Feel");
+					jl.setPreferredSize(maxSize);
+					boxLine.add(jl);
+					
+					DefaultComboBoxModel model = new DefaultComboBoxModel();
+					LookAndFeelInfo selected = null;
+					for(LookAndFeelInfo lafi : UIManager.getInstalledLookAndFeels()) {
+						model.addElement(lafi.getClassName());
+						if(cs.getLookAndFeel().equals(lafi.getClassName()))
+							selected = lafi;
+					}
+					cmbLookAndFeel = new ConfigComboBox(model);
+					if(selected != null)
+						cmbLookAndFeel.setSelectedItem(selected.getClassName());
+					cmbLookAndFeel.addItemListener(new ItemListener() {
+						public void itemStateChanged(ItemEvent e) {
+							cs.setLookAndFeel((String)cmbLookAndFeel.getSelectedItem());
+						}
+					});
+					boxLine.add(cmbLookAndFeel);
+				}
+				boxSettings.add(boxLine);
+
+				boxLine = new Box(BoxLayout.X_AXIS);
+				{
 					JLabel jl = new JLabel("TimeStamp Format");
 					jl.setPreferredSize(maxSize);
 					boxLine.add(jl);
+					
 					cmbTSFormat = new ConfigComboBox(new String[] { TimeFormatter.tsFormat, "%1$tH:%1$tM:%1$tS.%1$tL", "%1$tH:%1$tM:%1$tS", "%1$tH:%1$tM" });
 					cmbTSFormat.setSelectedItem(TimeFormatter.tsFormat);
 					cmbTSFormat.setEditable(true);
@@ -388,6 +424,7 @@ public class ConfigurationFrame extends JDialog {
 					JLabel jl = new JLabel("Version Check");
 					jl.setPreferredSize(maxSize);
 					boxLine.add(jl);
+					
 					cmbReleaseType = new ConfigComboBox(ReleaseType.values());
 					cmbReleaseType.setSelectedItem(cs.releaseType);
 					boxLine.add(cmbReleaseType);
@@ -542,27 +579,6 @@ public class ConfigurationFrame extends JDialog {
 			boxAll.add(btnSaveKeys);
 		}
 		tabs.addTab("CD Keys", boxAll);
-		
-		boxAll = new Box(BoxLayout.Y_AXIS);
-		{
-			DefaultComboBoxModel model = new DefaultComboBoxModel();
-			LookAndFeelInfo selected = null;
-			for(LookAndFeelInfo lafi : UIManager.getInstalledLookAndFeels()) {
-				model.addElement(lafi.getClassName());
-				if(cs.getLookAndFeel().equals(lafi.getClassName()))
-					selected = lafi;
-			}
-			cmbLookAndFeel = new ConfigComboBox(model);
-			if(selected != null)
-				cmbLookAndFeel.setSelectedItem(selected.getClassName());
-			cmbLookAndFeel.addItemListener(new ItemListener() {
-				public void itemStateChanged(ItemEvent e) {
-					cs.setLookAndFeel((String)cmbLookAndFeel.getSelectedItem());
-				}
-			});
-			boxAll.add(cmbLookAndFeel);
-		}
-		tabs.addTab("Extra", boxAll);
 		
 		boxAll = new Box(BoxLayout.Y_AXIS);
 		{
