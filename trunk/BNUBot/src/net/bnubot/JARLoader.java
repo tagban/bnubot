@@ -42,7 +42,13 @@ public class JARLoader {
 	}
 	
 	public static Class<?> forName(String name) throws ClassNotFoundException {
-		Out.debug(JARLoader.class, name);
-		return loader.loadClass(name);
+		try {
+			Class<?> c = loader.loadClass(name);
+			Out.debug(JARLoader.class, "Loaded " + name);
+			return c;
+		} catch(ClassNotFoundException e) {
+			Out.debug(JARLoader.class, "Failed to load " + name);
+			throw e;
+		}
 	}
 }
