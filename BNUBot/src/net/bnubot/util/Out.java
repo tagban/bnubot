@@ -42,7 +42,7 @@ public class Out {
 		if(outConnection != null) {
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
-			outConnection.recieveError(sw.toString());
+			outConnection.recieveError(sw.toString().trim());
 		} else if(outStream != null)
 			e.printStackTrace(outStream);
 		else

@@ -40,7 +40,8 @@ public class Database {
 			try {
 				d = (Driver)JARLoader.forName(driver).newInstance();
 				DriverManager.registerDriver(new DriverShim(d));
-			} catch (Exception e) {
+			} catch(ClassNotFoundException e) {
+			} catch(Exception e) {
 				Out.exception(e);
 			}
 		}
@@ -55,11 +56,7 @@ public class Database {
 		
 		if(!checkSchema())
 			createSchema(settings.schema);
-		try {
-			deleteOldUsers();
-		} catch(Exception e) {
-			Out.exception(e);
-		}
+		deleteOldUsers();
 	}
 	
 	public static Database getInstance() {
