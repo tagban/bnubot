@@ -15,17 +15,18 @@ import java.net.URLClassLoader;
 import net.bnubot.util.Out;
 
 public class JARLoader {
-	private static final FilenameFilter fnf = new FilenameFilter() {
-		public boolean accept(File dir, String name) {
-			return name.endsWith(".jar");
-		}};
-	private static URLClassLoader loader;
+	private static final URLClassLoader loader;
 	static {
 		String folder = "lib";
 		
 		File f = new File(folder);
 		if(!f.exists() || !f.isDirectory())
 			Out.fatalException(new FileNotFoundException(f.getName()));
+		
+		FilenameFilter fnf = new FilenameFilter() {
+			public boolean accept(File dir, String name) {
+				return name.endsWith(".jar");
+			}};
 		
 		String[] files = f.list(fnf);
 		URL[] urls = new URL[files.length];
