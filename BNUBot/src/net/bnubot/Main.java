@@ -14,6 +14,7 @@ import javax.swing.JOptionPane;
 import net.bnubot.bot.CommandEventHandler;
 import net.bnubot.bot.console.ConsoleEventHandler;
 import net.bnubot.bot.database.Database;
+import net.bnubot.bot.database.DatabaseSettings;
 import net.bnubot.bot.gui.ConfigurationFrame;
 import net.bnubot.bot.gui.GuiEventHandler;
 import net.bnubot.bot.trivia.TriviaEventHandler;
@@ -165,30 +166,23 @@ public class Main {
 		//Bot
 		EventHandler cmd = null;
 		if(cs.enableCommands) {
-			String db_driver = Settings.read("database", "driver", "org.apache.derby.jdbc.EmbeddedDriver");
-			String db_url = Settings.read("database", "url", "jdbc:derby:database;create=true");
-			String db_username = Settings.read("database", "username", null);
-			String db_password = Settings.read("database", "password", null);
-			String db_schema = Settings.read("database", "schema", "schema.derby");
+			DatabaseSettings ds = new DatabaseSettings();
+			ds.load();
 			
-			if((db_driver == null)
-			|| (db_url == null)) {
+			if((ds.driver == null)
+			|| (ds.url == null)) {
 				if(gui != null)
 					primary.recieveInfo("Database is not configured; disabling commands.");
 				else
 					Out.info(Main.class, "Database is not configured; disabling commands.");
 			} else {
 				try {
-					new Database(db_driver, db_url, db_username, db_password, db_schema);
+					new Database(ds);
 					BNetUser.setDatabase();
 					cmd = new CommandEventHandler();
 					primary.addEventHandler(cmd);
 					
-					Settings.write("database", "driver", db_driver);
-					Settings.write("database", "url", db_url);
-					Settings.write("database", "username", db_username);
-					Settings.write("database", "password", db_password);
-					Settings.write("database", "schema", db_schema);
+					ds.save();
 				} catch(Exception e) {
 					Out.exception(e);
 					String msg = "Failed to initialize the database; commands will be disabled.\n" + e.getMessage();

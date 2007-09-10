@@ -34,18 +34,27 @@ public class Database {
 	private ArrayList<Statement> openStatements = new ArrayList<Statement>();
 	private ArrayList<Exception> openStmtExcept = new ArrayList<Exception>();
 	
-	public Database(String driver, String url, String username, String password, String schemaFile) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException {
-		Driver d = (Driver)JARLoader.forName(driver).newInstance();
-		DriverManager.registerDriver(new DriverShim(d));
-		
-		Out.debug(getClass(), "Connecting to " + url);
-		conn = DriverManager.getConnection(url, username, password);
+	static {
+		for(String driver : new String[] {"org.apache.derby.jdbc.EmbeddedDriver", "com.mysql.jdbc.Driver"}) {
+			Driver d;
+			try {
+				d = (Driver)JARLoader.forName(driver).newInstance();
+				DriverManager.registerDriver(new DriverShim(d));
+			} catch (Exception e) {
+				Out.exception(e);
+			}
+		}
+	}
+	
+	public Database(DatabaseSettings settings) throws SQLException {
+		Out.debug(getClass(), "Connecting to " + settings.url);
+		conn = DriverManager.getConnection(settings.url, settings.username, settings.password);
 		Out.debug(getClass(), "Connected!");
 		
 		instance = this;
 		
 		if(!checkSchema())
-			createSchema(schemaFile);
+			createSchema(settings.schema);
 		try {
 			deleteOldUsers();
 		} catch(Exception e) {
