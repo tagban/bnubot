@@ -14,6 +14,6 @@ if [ -f $PIDFILE ] ; then
 fi
 
 echo "starting a new one"
-java -cp mysql-connector-java-5.0.6-bin.jar:BNUBot.jar net.bnubot.Main -plugins net.bnubot.bot.html.HTMLOutputEventHandler > stdout.txt 2> stderr.txt &
+java -jar BNUBot.jar -plugins net.bnubot.bot.html.HTMLOutputEventHandler > stdout.txt 2> stderr.txt &
 pid=$!
 echo $pid > $PIDFILE
