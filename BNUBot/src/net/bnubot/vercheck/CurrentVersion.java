@@ -140,9 +140,11 @@ public final class CurrentVersion {
 				is = vp.openStream();
 			} catch(NullPointerException e) {
 				// Either the JAR is messed up, or we're running in the ide - look for the file in the working directory
+				// Eclipse likes to copy version.properties to bin; if it's there, delete it
 				f = new File("bin" + vpPath);
 				if(f.exists())
 					f.delete();
+				// Update the one in src
 				f = new File("src" + vpPath);
 				if(f.exists())
 					is = new FileInputStream(f);
