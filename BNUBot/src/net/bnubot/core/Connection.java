@@ -7,7 +7,6 @@ package net.bnubot.core;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -135,7 +134,7 @@ public abstract class Connection extends Thread implements EventHandler {
 	protected long lastChatTime = 0;
 	protected int lastChatLen = 0;
 	private int increaseDelay(int bytes) {
-		long thisTime = new Date().getTime();
+		long thisTime = System.currentTimeMillis();
 		
 		if(lastChatTime == 0) {
 			lastChatTime = thisTime;
@@ -156,7 +155,7 @@ public abstract class Connection extends Thread implements EventHandler {
 		if(lastChatTime == 0)
 			return 0;
 
-		long thisTime = new Date().getTime();
+		long thisTime = System.currentTimeMillis();
 		int delay = (lastChatLen * BYTE_WEIGHT) + PACKET_WEIGHT;
 		delay -= (thisTime - lastChatTime);
 		if(delay < 0)
@@ -175,13 +174,13 @@ public abstract class Connection extends Thread implements EventHandler {
 	}
 	
 	public void sendChatNow(String text) {
-		lastAntiIdle = new Date().getTime();
+		lastAntiIdle = System.currentTimeMillis();
 		
 		if(canSendChat())
 			increaseDelay(text.length());
 		else
 			// Fake the bot in to thinking we sent chat in the future
-			lastChatTime = new Date().getTime() + increaseDelay(text.length());
+			lastChatTime = System.currentTimeMillis() + increaseDelay(text.length());
 	}
 	
 	public String cleanText(String text) {

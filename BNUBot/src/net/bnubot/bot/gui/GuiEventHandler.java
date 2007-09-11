@@ -22,7 +22,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowStateListener;
-import java.util.Date;
 
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -404,7 +403,7 @@ public class GuiEventHandler implements EventHandler {
 	private static long lastInfoRecieved = 0;
 	private static String lastInfo = null;
 	public void recieveInfo(String text) {
-		long now = new Date().getTime();
+		long now = System.currentTimeMillis();
 		// Do not allow duplicate info strings unless there's a 50ms delay
 		if((now - lastInfoRecieved < 50)
 		&& text.equals(lastInfo)) {

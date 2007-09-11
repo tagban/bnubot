@@ -18,7 +18,6 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Locale;
 import java.util.Random;
 import java.util.TimeZone;
@@ -155,7 +154,7 @@ public class BNCSConnection extends Connection {
 				case ConnectionSettings.PRODUCT_WAR2BNE: {
 					Locale loc = Locale.getDefault();
 					String prodLang = loc.getLanguage() + loc.getCountry();
-					int tzBias = TimeZone.getDefault().getOffset(new Date().getTime()) / -60000;
+					int tzBias = TimeZone.getDefault().getOffset(System.currentTimeMillis()) / -60000;
 					
 					p = new BNCSPacket(BNCSCommandIDs.SID_AUTH_INFO);
 					p.writeDWord(0);							// Protocol ID (0)
@@ -313,11 +312,11 @@ public class BNCSConnection extends Connection {
 	}
 	
 	private void connectedLoop() throws Exception {
-		lastAntiIdle = new Date().getTime();
-		lastNullPacket = new Date().getTime();
+		lastAntiIdle = System.currentTimeMillis();
+		lastNullPacket = System.currentTimeMillis();
 		
 		while(!s.isClosed() && connected) {
-			long timeNow = new Date().getTime();
+			long timeNow = System.currentTimeMillis();
 			
 			//Send null packets every 30 seconds
 			if(true) {
@@ -419,12 +418,12 @@ public class BNCSConnection extends Connection {
 					  	bnlsOut.SendPacket(conn.getOutputStream(), cs.packetLog);
 					  	
 					  	InputStream bnlsInputStream = conn.getInputStream();
-					  	long startTime = new Date().getTime();
+					  	long startTime = System.currentTimeMillis();
 					  	while(bnlsInputStream.available() < 3) {
 					  		Thread.sleep(10);
 					  		Thread.yield();
 					  		
-					  		long timeElapsed = new Date().getTime() - startTime;
+					  		long timeElapsed = System.currentTimeMillis() - startTime;
 					  		if(timeElapsed > 5000)
 					  			throw new Exception("BNLS_VERSIONCHECKEX2 timeout");
 					  	}
