@@ -38,6 +38,11 @@ public class Out {
 		}
 	}
 	
+	/**
+	 * Get the lines of the stack trace relevant to the project
+	 * @param e The exception source
+	 * @return Each line of the exception starting with net.bnubot, and ellipsies where lines were trimmed
+	 */
 	private static String getRelevantStack(Exception e) {
 		StringWriter sw = new StringWriter();
 		e.printStackTrace(new PrintWriter(sw));
@@ -58,6 +63,10 @@ public class Out {
 		return out;
 	}
 	
+	/**
+	 * Display the stack trace in an appropriate location
+	 * @param e The exception source
+	 */
 	public static void exception(Exception e) {
 		if(outConnection != null)
 			outConnection.recieveError(getRelevantStack(e));
@@ -67,6 +76,10 @@ public class Out {
 			e.printStackTrace();
 	}
 	
+	/**
+	 * Attempt to popup a window with a stack trace, and exit with code 1
+	 * @param e The exception source
+	 */
 	public static void fatalException(Exception e) {
 		try {
 			JOptionPane.showMessageDialog(null, getRelevantStack(e), e.getClass().getSimpleName(), JOptionPane.ERROR_MESSAGE);
