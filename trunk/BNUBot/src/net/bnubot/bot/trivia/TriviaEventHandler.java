@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 
 import net.bnubot.bot.database.AccountResultSet;
 import net.bnubot.bot.database.Database;
@@ -180,14 +179,14 @@ public class TriviaEventHandler implements EventHandler {
 					gotAnswer = false;
 					answerUser = null;
 					
-					long timeQuestionAsked = new Date().getTime();
+					long timeQuestionAsked = System.currentTimeMillis();
 					long timeElapsed = 0;
 					int numHints = 0;
 					do {
 						if(gotAnswer)
 							break;
 						
-						timeElapsed = new Date().getTime() - timeQuestionAsked;
+						timeElapsed = System.currentTimeMillis() - timeQuestionAsked;
 						timeElapsed /= 1000;
 
 						if((timeElapsed > 10) && (numHints < 1)) {

@@ -10,7 +10,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
-import java.util.Date;
 
 import net.bnubot.core.RealmConnection;
 import net.bnubot.util.BNetInputStream;
@@ -135,7 +134,7 @@ public class MCPConnection extends RealmConnection {
 							bos.writeByte(0);
 							StatString statstr = new StatString(new BNetInputStream(new ByteArrayInputStream(baos.toByteArray())));
 							
-							long time = new Date().getTime();
+							long time = System.currentTimeMillis();
 							time = (((long)secs) * 1000) - time;
 							
 							recieveRealmInfo(TimeFormatter.formatTime(time) + " - " + charname + " - " + statstr.toString());

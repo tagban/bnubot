@@ -65,7 +65,7 @@ public class CommandEventHandler implements EventHandler {
 		try {
 			BNLoginResultSet rsUser = d.getCreateUser(user);
 			if(rsUser.next()) {
-				rsUser.setLastSeen(new Timestamp(new Date().getTime()));
+				rsUser.setLastSeen(new Timestamp(System.currentTimeMillis()));
 				rsUser.setLastAction(action);
 				rsUser.updateRow();
 			}
@@ -130,7 +130,7 @@ public class CommandEventHandler implements EventHandler {
 			}
 			
 			lastCommandUser = user;
-			lastCommandTime = new Date().getTime();
+			lastCommandTime = System.currentTimeMillis();
 		
 			COMMAND: switch(command.charAt(0)) {
 			case 'a':
@@ -197,7 +197,7 @@ public class CommandEventHandler implements EventHandler {
 						}
 
 						rsSubjectAccount.setAccess(targetAccess);
-						rsSubjectAccount.setLastRankChange(new Timestamp(new Date().getTime()));
+						rsSubjectAccount.setLastRankChange(new Timestamp(System.currentTimeMillis()));
 						rsSubjectAccount.updateRow();
 						d.close(rsSubjectAccount);
 						c.sendChat(user, "Added user [" + subjectAccount + "] successfully with access " + targetAccess, wasWhispered);
@@ -266,7 +266,7 @@ public class CommandEventHandler implements EventHandler {
 						Timestamp ts = rsSubjectAccount.getLastRankChange();
 						String timeElapsed;
 						if(ts != null) {
-							double te = new Date().getTime() - ts.getTime();
+							double te = System.currentTimeMillis() - ts.getTime();
 							te /= 1000 * 60 * 60 * 24;
 							//Round to 2 decimal places
 							timeElapsed = ("00" + ((long)Math.floor(te * 100) % 100));
@@ -465,7 +465,7 @@ public class CommandEventHandler implements EventHandler {
 									message += ": From ";
 									message += rsMail.getString("name");
 									message += " [";
-									message += TimeFormatter.formatTime(new Date().getTime() - rsMail.getTimestamp("sent").getTime());
+									message += TimeFormatter.formatTime(System.currentTimeMillis() - rsMail.getTimestamp("sent").getTime());
 									message += " ago]: ";
 									message += rsMail.getString("message");
 									
@@ -495,7 +495,7 @@ public class CommandEventHandler implements EventHandler {
 									message += ": From ";
 									message += rsMail.getString("name");
 									message += " [";
-									message += TimeFormatter.formatTime(new Date().getTime() - rsMail.getTimestamp("sent").getTime());
+									message += TimeFormatter.formatTime(System.currentTimeMillis() - rsMail.getTimestamp("sent").getTime());
 									message += " ago]: ";
 									message += rsMail.getString("message");
 									
@@ -782,7 +782,7 @@ public class CommandEventHandler implements EventHandler {
 						break;
 					}
 					
-					String diff = TimeFormatter.formatTime(new Date().getTime() - mostRecent.getTime());
+					String diff = TimeFormatter.formatTime(System.currentTimeMillis() - mostRecent.getTime());
 					diff = "User [" + params[0] + "] was last seen " + diff + " ago";
 					if(mostRecentAction != null)
 						diff += " " + mostRecentAction;
@@ -1065,7 +1065,7 @@ public class CommandEventHandler implements EventHandler {
 						d.close(rsSubjectRank);
 						
 						if(subjectBirthday != null) {
-							double age = new Date().getTime() - subjectBirthday.getTime();
+							double age = System.currentTimeMillis() - subjectBirthday.getTime();
 							age /= 1000 * 60 * 60 * 24 * 365.24;
 							age = Math.floor(age * 100) / 100;
 							result += ", is " + Double.toString(age) + " years old";
@@ -1089,7 +1089,7 @@ public class CommandEventHandler implements EventHandler {
 
 						if(lastSeen != null) {
 							result += ", was last seen [ ";
-							result += TimeFormatter.formatTime(new Date().getTime() - lastSeen.getTime());
+							result += TimeFormatter.formatTime(System.currentTimeMillis() - lastSeen.getTime());
 							result += " ] ago";
 						}
 						
@@ -1260,7 +1260,7 @@ public class CommandEventHandler implements EventHandler {
 				//Check that they meet the days requirement
 				apBlock: if((apDays != null) && (apDays != 0)) {
 					if(ts != null) {
-						double timeElapsed = new Date().getTime() - ts.getTime();
+						double timeElapsed = System.currentTimeMillis() - ts.getTime();
 						timeElapsed /= 1000 * 60 * 60 * 24;
 						
 						if(timeElapsed < apDays)
@@ -1292,7 +1292,7 @@ public class CommandEventHandler implements EventHandler {
 							rank++;
 							rsAccount.refreshCursor();
 							rsAccount.setAccess(rank);
-							rsAccount.setLastRankChange(new Timestamp(new Date().getTime()));
+							rsAccount.setLastRankChange(new Timestamp(System.currentTimeMillis()));
 							rsAccount.updateRow();
 							user.resetPrettyName();	//Reset the presentable name
 							c.sendChat("Congratulations " + user.toString() + ", you just recieved a promotion! Your rank is now " + rank + ".");
@@ -1379,7 +1379,7 @@ public class CommandEventHandler implements EventHandler {
 		if(!enableSendInfoErrorBack)
 			return;
 		
-		long timeElapsed = new Date().getTime() - lastCommandTime;
+		long timeElapsed = System.currentTimeMillis() - lastCommandTime;
 		// 200ms
 		if(timeElapsed < 200) {
 			if(!text.equals(lastInfo)) {
