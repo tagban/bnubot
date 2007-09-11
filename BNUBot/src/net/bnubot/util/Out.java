@@ -38,12 +38,30 @@ public class Out {
 		}
 	}
 	
+	private static String getRelevantStack(Exception e) {
+		StringWriter sw = new StringWriter();
+		e.printStackTrace(new PrintWriter(sw));
+		String lines[] = sw.toString().trim().split("\n");
+		
+		String out = lines[0];
+		boolean ellipsis = false;
+		for(String line : lines) {
+			line = line.trim();
+			if(line.startsWith("at net.bnubot.")) {
+				out += "\n" + line;
+				ellipsis = false;
+			} else if(!ellipsis) {
+				ellipsis = true;
+				out += "\n...";
+			}
+		}	
+		return out;
+	}
+	
 	public static void exception(Exception e) {
-		if(outConnection != null) {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw));
-			outConnection.recieveError(sw.toString().trim());
-		} else if(outStream != null)
+		if(outConnection != null)
+			outConnection.recieveError(getRelevantStack(e));
+		else if(outStream != null)
 			e.printStackTrace(outStream);
 		else
 			e.printStackTrace();
@@ -51,9 +69,7 @@ public class Out {
 	
 	public static void fatalException(Exception e) {
 		try {
-			StringWriter sw = new StringWriter();
-			e.printStackTrace(new PrintWriter(sw));
-			JOptionPane.showMessageDialog(null, sw.toString(), e.getClass().getSimpleName(), JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, getRelevantStack(e), e.getClass().getSimpleName(), JOptionPane.ERROR_MESSAGE);
 		} catch(Exception e1) {}
 		e.printStackTrace();
 		System.exit(1);
