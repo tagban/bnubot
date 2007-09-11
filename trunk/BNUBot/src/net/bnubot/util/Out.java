@@ -6,9 +6,9 @@
 package net.bnubot.util;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -30,7 +30,7 @@ public class Out {
 		try {
 			if(!debugFile.exists())
 				debugFile.createNewFile();
-			debug.load(new FileReader(debugFile));
+			debug.load(new FileInputStream(debugFile));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -140,7 +140,7 @@ public class Out {
 	public static void setDebug(Class<?> c, boolean debug) {
 		Out.debug.setProperty(c.getName(), Boolean.toString(debug));
 		try {
-			Out.debug.store(new FileWriter(debugFile), null);
+			Out.debug.store(new FileOutputStream(debugFile), null);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
