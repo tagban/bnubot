@@ -186,6 +186,19 @@ public class GuiEventHandler implements EventHandler {
 				
 				menu.addSeparator();
 				
+				menuItem = new JMenuItem("Realms");
+				menuItem.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent evt) {
+						try {
+							c.sendQueryRealms();
+						} catch (Exception e) {
+							Out.exception(e);
+						}
+					} });
+				menu.add(menuItem);
+				
+				menu.addSeparator();
+				
 				menuItem = new JMenuItem("Settings");
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
@@ -202,82 +215,71 @@ public class GuiEventHandler implements EventHandler {
 					} });
 				menu.add(menuItem);
 			}
-			menuBar.add(menu);	
-			
-			menu = new JMenu("Realm");
-			{
-				menuItem = new JMenuItem("Show Realms Window");
-				menuItem.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent evt) {
-						try {
-							c.sendQueryRealms();
-						} catch (Exception e) {
-							Out.exception(e);
-						}
-					} });
-				menu.add(menuItem);
-			}
 			menuBar.add(menu);
-			
-			menu = new JMenu("Clan");
+
+			menu = new JMenu("Edit");
 			{
-				menuItem = new JMenuItem("Edit MOTD");
-				menuItem.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent event) {
-						try {
-							c.sendClanMOTD(new ClanMOTDEditor(c));
-						} catch(Exception e) {
-							Out.exception(e);
-						}
-					} });
-				menu.add(menuItem);
-			}
-			menuBar.add(menu);
-			
-			menu = new JMenu("Database");
-			{
-				menuItem = new JMenuItem("Rank editor");
-				menuItem.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent event) {
-						Database d = Database.getInstance();
-						if(d != null)
-							new DatabaseRankEditor(d);
-						else
-							c.recieveError("There is no database initialized.");
-					} });
-				menu.add(menuItem);
+				JMenu subMenu = new JMenu("Clan");
+				{
+					menuItem = new JMenuItem("Edit MOTD");
+					menuItem.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent event) {
+							try {
+								c.sendClanMOTD(new ClanMOTDEditor(c));
+							} catch(Exception e) {
+								Out.exception(e);
+							}
+						} });
+					subMenu.add(menuItem);
+				}
+				menu.add(subMenu);
 				
-				menuItem = new JMenuItem("Account editor");
-				menuItem.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent event) {
-						Database d = Database.getInstance();
-						if(d != null)
-							new DatabaseAccountEditor(d);
-						else
-							c.recieveError("There is no database initialized.");
-					} });
-				menu.add(menuItem);
-			}
-			menuBar.add(menu);
+				subMenu = new JMenu("Database");
+				{
+					menuItem = new JMenuItem("Rank editor");
+					menuItem.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent event) {
+							Database d = Database.getInstance();
+							if(d != null)
+								new DatabaseRankEditor(d);
+							else
+								c.recieveError("There is no database initialized.");
+						} });
+					subMenu.add(menuItem);
+					
+					menuItem = new JMenuItem("Account editor");
+					menuItem.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent event) {
+							Database d = Database.getInstance();
+							if(d != null)
+								new DatabaseAccountEditor(d);
+							else
+								c.recieveError("There is no database initialized.");
+						} });
+					subMenu.add(menuItem);
+				}
+				menu.add(subMenu);
 			
-			menu = new JMenu("Debug");
-			{
-				menuItem = new JMenuItem("Show Icons");
-				menuItem.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent event) {
-						IconsDotBniReader.showWindow();
-					} });
-				menu.add(menuItem);
-				
-				menuItem = new JMenuItem((Out.isDebug() ? "Dis" : "En") + "able debug logging");
-				menuItem.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent event) {
-						Out.setDebug(!Out.isDebug());
-						
-						JMenuItem jmi = (JMenuItem)event.getSource();
-						jmi.setText((Out.isDebug() ? "Dis" : "En") + "able debug logging");
-					} });
-				menu.add(menuItem);
+				subMenu = new JMenu("Debug");
+				{
+					menuItem = new JMenuItem("Show Icons");
+					menuItem.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent event) {
+							IconsDotBniReader.showWindow();
+						} });
+					subMenu.add(menuItem);
+					
+					menuItem = new JMenuItem((Out.isDebug() ? "Dis" : "En") + "able debug logging");
+					menuItem.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent event) {
+							Out.setDebug(!Out.isDebug());
+							
+							JMenuItem jmi = (JMenuItem)event.getSource();
+							jmi.setText((Out.isDebug() ? "Dis" : "En") + "able debug logging");
+						} });
+					subMenu.add(menuItem);
+				}
+				menu.add(subMenu);
 			}
 			menuBar.add(menu);
 			
