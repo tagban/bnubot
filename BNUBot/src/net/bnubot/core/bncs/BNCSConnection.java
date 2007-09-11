@@ -38,6 +38,7 @@ import net.bnubot.util.BNetInputStream;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.CookieUtility;
 import net.bnubot.util.HexDump;
+import net.bnubot.util.MirrorSelector;
 import net.bnubot.util.Out;
 import net.bnubot.util.StatString;
 import net.bnubot.util.TimeFormatter;
@@ -127,8 +128,7 @@ public class BNCSConnection extends Connection {
 				
 				setConnected(true);
 				{
-					InetAddress []addresses = InetAddress.getAllByName(cs.bncsServer);
-					InetAddress address = addresses[(int)(Math.random() * addresses.length)];
+					InetAddress address = MirrorSelector.getClosestMirror(cs.bncsServer, cs.port);
 					recieveInfo("Connecting to " + address + ":" + cs.port);
 					s = new Socket(address, cs.port);
 				}
@@ -402,8 +402,7 @@ public class BNCSConnection extends Connection {
                 	String exeInfo = null;
                 	
                 	try {
-    					InetAddress []addresses = InetAddress.getAllByName(cs.bnlsServer);
-    					InetAddress address = addresses[(int)(Math.random() * addresses.length)];
+    					InetAddress address = MirrorSelector.getClosestMirror(cs.bnlsServer, cs.bnlsPort);
     					Socket conn = new Socket(address, cs.bnlsPort);
 				    	
 				    	recieveInfo("Connected to " + address + ":" + cs.bnlsPort);
