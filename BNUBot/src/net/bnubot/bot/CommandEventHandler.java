@@ -51,6 +51,13 @@ public class CommandEventHandler implements EventHandler {
 		}
 	}
 	
+	private class AccountDoesNotExistException extends Exception {
+		private static final long serialVersionUID = 8234222521214115822L;
+		public AccountDoesNotExistException(String string) {
+			super(string);
+		}
+	}
+	
 	public CommandEventHandler() {
 		this.d = Database.getInstance();
 		if(this.d == null)
@@ -182,8 +189,7 @@ public class CommandEventHandler implements EventHandler {
 						AccountResultSet rsSubjectAccount = d.getAccount(params[0]);
 						if(!rsSubjectAccount.next()) {
 							d.close(rsSubjectAccount);
-							c.sendChat(user, "The account [" + params[0] + "] does not exist.", wasWhispered);
-							break;
+							throw new AccountDoesNotExistException(params[0]);
 						}
 
 						long targetAccess = Long.parseLong(params[1]);
@@ -249,10 +255,8 @@ public class CommandEventHandler implements EventHandler {
 							d.close(rsSubjectAccount);
 						}
 						
-						if((subjectAccountId == null) || (subjectRank == null)) {
-							c.sendChat(user, "The account [" + params[0] + "] does not exist!", wasWhispered);
-							break;
-						}
+						if((subjectAccountId == null) || (subjectRank == null))
+							throw new AccountDoesNotExistException(params[0]);
 						
 						AccountResultSet rsSubjectAccount = d.getAccount(subjectAccountId);
 						if(!rsSubjectAccount.next()) {
@@ -427,8 +431,7 @@ public class CommandEventHandler implements EventHandler {
 							AccountResultSet rsTargetAccount = d.getAccount(params[1]);
 							if(!rsTargetAccount.next()) {
 								d.close(rsTargetAccount);
-								c.sendChat(user, "The account [" + params[1] + "] does not exist!", wasWhispered);
-								break;
+								throw new AccountDoesNotExistException(params[1]);
 							}
 							params[1] = rsTargetAccount.getName();
 							Long targetAccountID = rsTargetAccount.getId();
@@ -671,8 +674,7 @@ public class CommandEventHandler implements EventHandler {
 							AccountResultSet rsSubject = d.getAccount(params[0]);
 							if(!rsSubject.next()) {
 								d.close(rsSubject);
-								c.sendChat(user, "The account [" + params[0] + "] does not exist!", wasWhispered);
-								break;
+								throw new AccountDoesNotExistException(params[0]);
 							}
 							subjectAccountId = rsSubject.getId();
 							output = rsSubject.getName();
@@ -704,10 +706,8 @@ public class CommandEventHandler implements EventHandler {
 					}
 					
 					AccountResultSet rsSubjectAccount = d.getAccount(params[0]);
-					if((rsSubjectAccount == null) || !rsSubjectAccount.next()) {
-						c.sendChat(user, "The account [" + params[0] + "] does not exist!", wasWhispered);
-						break;
-					}
+					if((rsSubjectAccount == null) || !rsSubjectAccount.next())
+						throw new AccountDoesNotExistException(params[0]);
 					
 					try {
 						rsSubjectAccount.setName(params[1]);
@@ -811,8 +811,7 @@ public class CommandEventHandler implements EventHandler {
 						if(!rsSubjectAccount.next()) {
 							d.close(rsSubjectAccount);
 							d.close(rsSubject);
-							c.sendChat(user, "The account [" + params[1] + "] does not exist!", wasWhispered);
-							break;
+							throw new AccountDoesNotExistException(params[1]);
 						}
 						newAccount = rsSubjectAccount.getId();
 						d.close(rsSubjectAccount);
@@ -912,8 +911,7 @@ public class CommandEventHandler implements EventHandler {
 					AccountResultSet rsSubject = d.getAccount(params[0]);
 					if(!rsSubject.next()) {
 						d.close(rsSubject);
-						c.sendChat(user, "The account [" + params[0] + "] does not exist!", wasWhispered);
-						break;
+						throw new AccountDoesNotExistException(params[0]);
 					}
 					rsSubject.saveCursor();
 					params[0] = rsSubject.getName();
@@ -922,8 +920,7 @@ public class CommandEventHandler implements EventHandler {
 					if(!rsTarget.next()) {
 						d.close(rsSubject);
 						d.close(rsTarget);
-						c.sendChat(user, "The account [" + params[1] + "] does not exist!", wasWhispered);
-						break;
+						throw new AccountDoesNotExistException(params[1]);
 					}
 					params[1] = rsTarget.getName();
 
@@ -1130,7 +1127,8 @@ public class CommandEventHandler implements EventHandler {
 				}
 				break;
 			}
-		
+		} catch(AccountDoesNotExistException e) {
+			c.sendChat(user, "The account [" + e.getMessage() + "] does not exist!", wasWhispered);
 		} catch(InsufficientAccessException e) {
 			c.sendChat(user, "You have insufficient access " + e.getMessage(), wasWhispered);
 		} catch(Exception e) {
