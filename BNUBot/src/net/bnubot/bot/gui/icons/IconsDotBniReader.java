@@ -50,6 +50,9 @@ public class IconsDotBniReader {
 			
 			BNetIcon[][] iconss = {icons, icons_STAR, icons_WAR3, icons_W3XP, legacy_icons};
 			for(BNetIcon[] icons : iconss) {
+				if(icons == null)
+					continue;
+				
 				Box b = new Box(BoxLayout.Y_AXIS);
 				for(int i = 0; i < icons.length; i++) {
 					BNetIcon bni = icons[i];
