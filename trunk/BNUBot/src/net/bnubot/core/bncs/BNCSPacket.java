@@ -21,13 +21,13 @@ public class BNCSPacket extends BNetOutputStream {
 		super(new ByteArrayOutputStream());
 		this.packetId = packetId;
 	}
-	
+
 	public void SendPacket(OutputStream out, boolean packetLog) throws IOException, SocketException {
 		byte data[] = ((ByteArrayOutputStream)this.out).toByteArray();
 		//BNCSOutputStream sckout = new BNCSOutputStream(out);
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		BNetOutputStream sckout = new BNetOutputStream(baos);
-		
+
 		if(packetId == BNCSCommandIDs.SID_CHATCOMMAND) {
 			if(data.length > 0xFB) {
 				Out.error(getClass(), "Chat command is too long; ignoring.");
@@ -38,7 +38,7 @@ public class BNCSPacket extends BNetOutputStream {
 				return;
 			}
 		}
-		
+
 		try {
 			sckout.writeByte(0xFF);
 			sckout.writeByte(packetId);
@@ -47,7 +47,7 @@ public class BNCSPacket extends BNetOutputStream {
 		} catch(IOException e) {
 			Out.fatalException(e);
 		}
-		
+
 		data = baos.toByteArray();
 
 		if(packetLog) {
@@ -56,7 +56,7 @@ public class BNCSPacket extends BNetOutputStream {
 			else
 				Out.debugAlways(getClass(), "SEND 0x" + Integer.toHexString(packetId));
 		}
-		
+
 		out.write(data);
 		out.flush();
 	}
