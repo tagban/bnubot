@@ -24,9 +24,13 @@ public class VersionCheck {
 
 		XMLElementDecorator error = elem.getChild("error");
 		if(error != null) {
-			Out.error(VersionCheck.class, error.toString());
+			Out.error(VersionCheck.class, error.getString());
 			return false;
 		}
+
+		XMLElementDecorator motd = elem.getPath("bnubot/motd");
+		if(motd != null)
+			Out.info(VersionCheck.class, motd.getString());
 		
 		XMLElementDecorator gamesElem = elem.getPath("bnubot/games");
 		if(gamesElem != null)
@@ -47,6 +51,8 @@ public class VersionCheck {
 			}
 
 		XMLElementDecorator verLatest = elem.getPath("bnubot/latestVersion");
+		if(verLatest == null)
+			return false;
 		
 		vnLatest = new VersionNumber(
 				Enum.valueOf(ReleaseType.class, verLatest.getChild("type").getString()),
