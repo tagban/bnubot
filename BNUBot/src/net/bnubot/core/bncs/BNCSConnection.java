@@ -402,53 +402,57 @@ public class BNCSConnection extends Connection {
                 	String exeInfo = null;
                 	
                 	try {
-    					InetAddress address = MirrorSelector.getClosestMirror(cs.bnlsServer, cs.bnlsPort);
-    					Socket conn = new Socket(address, cs.bnlsPort);
-				    	
-				    	recieveInfo("Connected to " + address + ":" + cs.bnlsPort);
+                		InetAddress address = MirrorSelector.getClosestMirror(cs.bnlsServer, cs.bnlsPort);
+                		Socket conn = new Socket(address, cs.bnlsPort);
 
-				    	BNLSPacket bnlsOut = new BNLSPacket(BNLSCommandIDs.BNLS_VERSIONCHECKEX2);
-					  	bnlsOut.writeDWord(cs.product);
-					  	bnlsOut.writeDWord(0);	// Flags
-					  	bnlsOut.writeDWord(0);	// Cookie
-					  	bnlsOut.writeQWord(MPQFileTime);
-					  	bnlsOut.writeNTString(MPQFileName);
-					  	bnlsOut.writeNTString(ValueStr);
-					  	bnlsOut.SendPacket(conn.getOutputStream(), cs.packetLog);
-					  	
-					  	InputStream bnlsInputStream = conn.getInputStream();
-					  	long startTime = System.currentTimeMillis();
-					  	while(bnlsInputStream.available() < 3) {
-					  		Thread.sleep(10);
-					  		Thread.yield();
-					  		
-					  		long timeElapsed = System.currentTimeMillis() - startTime;
-					  		if(timeElapsed > 5000)
-					  			throw new Exception("BNLS_VERSIONCHECKEX2 timeout");
-					  	}
-					  	
-					  	BNLSPacketReader bpr = new BNLSPacketReader(bnlsInputStream, cs.packetLog);
-					  	BNetInputStream bnlsIn = bpr.getInputStream();
-					  	int success = bnlsIn.readDWord();
-				    	if(success != 1) {
-				    		Out.error(getClass(), "BNLS_VERSIONCHECKEX2 Failed\n" + HexDump.hexDump(bpr.getData()));
-				    		throw new Exception("BNLS failed to complete BNLS_VERSIONCHECKEX2 sucessfully");
-				    	}
-			    		exeVersion = bnlsIn.readDWord();
-				    	exeHash = bnlsIn.readDWord();
-				    	exeInfo = bnlsIn.readNTString();
-				    	bnlsIn.readDWord(); // cookie
-				    	/*int exeVerbyte =*/ bnlsIn.readDWord();
-				    	assert(bnlsIn.available() == 0);
-				    	
-				    	recieveInfo("Recieved CheckRevision from BNLS");
-				    	
-				    	conn.close();
-				  	} catch(UnknownHostException e) {
-				  		recieveError("BNLS connection failed: " + e.getMessage());
-				  		setConnected(false);
-				  		break;
-				  	}
+                		recieveInfo("Connected to " + address + ":" + cs.bnlsPort);
+
+                		BNLSPacket bnlsOut = new BNLSPacket(BNLSCommandIDs.BNLS_VERSIONCHECKEX2);
+                		bnlsOut.writeDWord(cs.product);
+                		bnlsOut.writeDWord(0);	// Flags
+                		bnlsOut.writeDWord(0);	// Cookie
+                		bnlsOut.writeQWord(MPQFileTime);
+                		bnlsOut.writeNTString(MPQFileName);
+                		bnlsOut.writeNTString(ValueStr);
+                		bnlsOut.SendPacket(conn.getOutputStream(), cs.packetLog);
+
+                		InputStream bnlsInputStream = conn.getInputStream();
+                		long startTime = System.currentTimeMillis();
+                		while(bnlsInputStream.available() < 3) {
+                			Thread.sleep(10);
+                			Thread.yield();
+
+                			long timeElapsed = System.currentTimeMillis() - startTime;
+                			if(timeElapsed > 5000)
+                				throw new Exception("BNLS_VERSIONCHECKEX2 timeout");
+                		}
+
+                		BNLSPacketReader bpr = new BNLSPacketReader(bnlsInputStream, cs.packetLog);
+                		BNetInputStream bnlsIn = bpr.getInputStream();
+                		int success = bnlsIn.readDWord();
+                		if(success != 1) {
+                			Out.error(getClass(), "BNLS_VERSIONCHECKEX2 Failed\n" + HexDump.hexDump(bpr.getData()));
+                			throw new Exception("BNLS failed to complete BNLS_VERSIONCHECKEX2 sucessfully");
+                		}
+                		exeVersion = bnlsIn.readDWord();
+                		exeHash = bnlsIn.readDWord();
+                		exeInfo = bnlsIn.readNTString();
+                		bnlsIn.readDWord(); // cookie
+                		int exeVerbyte = bnlsIn.readDWord();
+                		assert(bnlsIn.available() == 0);
+
+                		recieveInfo("Recieved version check from BNLS");
+                		
+                		int verByte = HashMain.getVerByte(cs.product);
+                		if(exeVerbyte != verByte)
+                			recieveError("BNLS reported a different verByte(0x" + Integer.toHexString(exeVerbyte) + ") from the one we used (0x" + Integer.toHexString(verByte) + ")");
+
+                		conn.close();
+                	} catch(UnknownHostException e) {
+                		recieveError("BNLS connection failed: " + e.getMessage());
+                		setConnected(false);
+                		break;
+                	}
                 	
                 	if((exeVersion == 0) || (exeHash == 0) || (exeInfo == null) || (exeInfo.length() == 0)) {
                 		recieveError("Checkrevision failed!");
