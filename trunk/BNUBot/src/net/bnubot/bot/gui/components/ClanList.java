@@ -111,12 +111,25 @@ public class ClanList extends JPanel {
 		// 4 - Chieftain - WAR3-W3R3 (17)
 
 		Icon icon = null;
-		switch(cmi.entry.getRank()) {
-		case 0: icon = iconsWAR3[2].getIcon(); break;
-		case 1: icon = iconsWAR3[10].getIcon(); break;
-		case 2: icon = iconsWAR3[11].getIcon(); break;
-		case 3: icon = iconsW3XP[20].getIcon(); break;
-		case 4: icon = iconsWAR3[17].getIcon(); break;
+		try {
+			switch(cmi.entry.getRank()) {
+			case 0: icon = iconsWAR3[2].getIcon(); break;
+			case 1: icon = iconsWAR3[10].getIcon(); break;
+			case 2: icon = iconsWAR3[11].getIcon(); break;
+			case 3: icon = iconsW3XP[20].getIcon(); break;
+			case 4: icon = iconsWAR3[17].getIcon(); break;
+			}
+		} catch(NullPointerException e) {
+			BNetIcon icons[] = IconsDotBniReader.getIcons();
+			if(icons != null) {
+				switch(cmi.entry.getRank()) {
+				case 0: icon = icons[11].getIcon(); break;
+				case 1: icon = icons[9].getIcon(); break;
+				case 2: icon = icons[15].getIcon(); break;
+				case 3: icon = icons[2].getIcon(); break;
+				case 4: icon = icons[0].getIcon(); break;
+				}
+			}
 		}
 		
 		if(icon != null)
