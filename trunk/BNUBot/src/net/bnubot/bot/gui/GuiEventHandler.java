@@ -78,7 +78,10 @@ public class GuiEventHandler implements EventHandler {
 	}
 
 	private void initializeSystemTray() {
-		if(!SystemTray.isSupported()) {
+		try {
+			if(!SystemTray.isSupported())
+				throw new NoClassDefFoundError();
+		} catch(NoClassDefFoundError e) {
 			Out.info(getClass(), "System tray is not supported");
 			return;
 		}
