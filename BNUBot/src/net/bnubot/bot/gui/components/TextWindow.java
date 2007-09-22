@@ -122,24 +122,20 @@ public class TextWindow extends JScrollPane {
 	
 	private static Pattern pattern = null;
 	public String safeHtml(String in) {
-		String out;
-		
 		if(pattern == null)
 			pattern = Pattern.compile("(.*)(\\b(http://|https://|www.|ftp://|file:/|mailto:)\\S+)(.*)");
 		Matcher matcher = pattern.matcher(in); 
 		
-		if(matcher.matches()) {
-			append("There was a URL!", Color.DARK_GRAY);
-			out = safeHtml(matcher.group(1)) + "<a href=\"" + matcher.group(2) + "\">" + matcher.group(2) + "</a>" + safeHtml(matcher.group(4));
-		} else {
-			out = in
-				.replaceAll("&", "&amp;")
-				.replaceAll("<", "&lt;")
-				.replaceAll(">", "&gt;")
-				.replaceAll("\n", "<br>\n")
-				.replaceAll("  ", " &nbsp;");
-		}
-		return out;
+		if(matcher.matches())
+			return safeHtml(matcher.group(1))
+				+ "<a href=\"" + matcher.group(2) + "\">" + matcher.group(2) + "</a>"
+				+ safeHtml(matcher.group(4));
+		return in
+			.replaceAll("&", "&amp;")
+			.replaceAll("<", "&lt;")
+			.replaceAll(">", "&gt;")
+			.replaceAll("\n", "<br>\n")
+			.replaceAll("  ", " &nbsp;");
 	}
 	
 	public void append(String text, Color col) {
