@@ -123,13 +123,13 @@ public class TextWindow extends JScrollPane {
 	private static Pattern pattern = null;
 	public String safeHtml(String in) {
 		if(pattern == null)
-			pattern = Pattern.compile("(.*?)\\b((([a-zA-Z]{3,6}://)|(www.)){1}([a-zA-Z0-9-.]+)([^-]\\.[a-zA-Z]{2,5}){1}((/\\S+){1}|\\s*?))(.*)");
+			pattern = Pattern.compile("((.|\n)*?)\\b((([a-zA-Z]{3,6}://)|(www.)){1}([a-zA-Z0-9-.]+)([^-]\\.[a-zA-Z]{2,5}){1}((/\\S+){1}|\\s*?))((.|\n)*)");
 		Matcher matcher = pattern.matcher(in); 
 		
 		if(matcher.matches())
 			return safeHtml(matcher.group(1))
-				+ "<a href=\"" + matcher.group(2) + "\">" + matcher.group(2) + "</a>"
-				+ safeHtml(matcher.group(10));
+				+ "<a href=\"" + matcher.group(3) + "\">" + matcher.group(3) + "</a>"
+				+ safeHtml(matcher.group(11));
 		return in
 			.replaceAll("&", "&amp;")
 			.replaceAll("<", "&lt;")
