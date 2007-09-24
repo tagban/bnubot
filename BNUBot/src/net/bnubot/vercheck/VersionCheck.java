@@ -15,10 +15,10 @@ public class VersionCheck {
 	
 	public static boolean checkVersion(ReleaseType release) throws Exception {
 		{
-			String url = "http://www.clanbnu.ws/bnubot/version.php";
+			String url = "http://www.clanbnu.ws/bnubot/version.php?";
 			if(CurrentVersion.version().revision() != null)
-				url += "?svn=" + CurrentVersion.version().revision();
-			url += "&release=" + release.toString();
+				url += "svn=" + CurrentVersion.version().revision() + "&";
+			url += "release=" + release.toString();
 			elem = XMLElementDecorator.parse(url);
 		}
 
