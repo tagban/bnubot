@@ -480,7 +480,7 @@ public class ConfigurationFrame extends JDialog {
 
 			Box boxButtons = new Box(BoxLayout.X_AXIS);
 			{
-				btnLoad = new JButton("Load");
+				btnLoad = new JButton("Undo");
 				btnLoad.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent act) {
 						SwingUtilities.invokeLater(new Runnable() {
