@@ -30,6 +30,7 @@ public final class CurrentVersion {
 	protected static Integer VER_SVN_REVISION = null;
 	private static VersionNumber VER = null;
 	private static String BUILD_DATE = null;
+	private static boolean fromJar = false; 
 	
 	private static final Integer revision(File f) {
 		if(VER_SVN_SET)
@@ -142,6 +143,7 @@ public final class CurrentVersion {
 			InputStream is = null;
 			try {
 				is = vp.openStream();
+				fromJar = true;
 			} catch(NullPointerException e) {
 				// Either the JAR is messed up, or we're running in the ide - look for the file in the working directory
 				f = new File("src" + vpPath);
@@ -182,6 +184,10 @@ public final class CurrentVersion {
 				versionprops.setProperty("BUILD_DATE", BUILD_DATE);
 			}
 			
+			if(fromJar && ReleaseType.Development.equals(RELEASE_TYPE)) {
+				Out.error(CurrentVersion.class, "WARNING: This is a development build, not for distribution!");
+			}
+			
 			if(revision() == null) {
 				VER_SVN_REVISION = VER_SVN_REVISION_FILE;
 			} else {
@@ -190,6 +196,7 @@ public final class CurrentVersion {
 					Out.info(CurrentVersion.class, "Calculated version is " + VER_SVN_REVISION);
 					
 					if((f != null) && (f.exists())) {
+						versionprops.setProperty("RELEASE_TYPE", ReleaseType.Development.name());
 						versionprops.setProperty("VER_SVN_REVISION", Integer.toString(VER_SVN_REVISION));
 						versionprops.store(new FileOutputStream(f), null);
 					}
