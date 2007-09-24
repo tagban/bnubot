@@ -14,12 +14,18 @@ import java.net.URLClassLoader;
 
 import net.bnubot.util.Out;
 
+/**
+ * A class for loading classes from JARs in the lib folder
+ * @author scotta
+ */
 public class JARLoader {
 	private static final URLClassLoader loader;
 	static {
 		String folder = "lib";
 		
 		File f = new File(folder);
+		if(!f.exists())
+			f.mkdir();
 		if(!f.exists() || !f.isDirectory())
 			Out.fatalException(new FileNotFoundException(f.getName()));
 		

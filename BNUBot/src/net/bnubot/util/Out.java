@@ -19,6 +19,11 @@ import javax.swing.JOptionPane;
 
 import net.bnubot.bot.gui.GuiEventHandler;
 
+/**
+ * An output class, modified from JBLS
+ * @author hdx
+ * @author scotta
+ */
 public class Out {
 	private static PrintStream outStream = System.out;
 	private static GuiEventHandler outConnection = null;
