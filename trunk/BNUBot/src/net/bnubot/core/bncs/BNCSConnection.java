@@ -57,7 +57,7 @@ public class BNCSConnection extends Connection {
 	protected DataOutputStream dos = null;
 	private int productID = 0;
 	private int verByte;
-	private int nlsRevision = -1;
+	private Integer nlsRevision = null;
 	private int serverToken = 0;
 	private int clientToken = Math.abs(new Random().nextInt());
 	private SRP srp = null;
@@ -134,7 +134,7 @@ public class BNCSConnection extends Connection {
 				}
 				dis = new DataInputStream(s.getInputStream());
 				dos = new DataOutputStream(s.getOutputStream());
-				nlsRevision = -1;
+				nlsRevision = null;
 				productID = ProductIDs.ProductID[cs.product-1];
 				
 				// Game
@@ -143,6 +143,9 @@ public class BNCSConnection extends Connection {
 				verByte = HashMain.getVerByte(cs.product);
 				
 				BNCSPacket p;
+				Locale loc = Locale.getDefault();
+				String prodLang = loc.getLanguage() + loc.getCountry();
+				int tzBias = TimeZone.getDefault().getOffset(System.currentTimeMillis()) / -60000;
 				
 				switch(cs.product) {
 				case ConnectionSettings.PRODUCT_STARCRAFT:
@@ -150,12 +153,7 @@ public class BNCSConnection extends Connection {
 				case ConnectionSettings.PRODUCT_DIABLO2:
 				case ConnectionSettings.PRODUCT_LORDOFDESTRUCTION:
 				case ConnectionSettings.PRODUCT_WARCRAFT3:
-				case ConnectionSettings.PRODUCT_THEFROZENTHRONE:
-				case ConnectionSettings.PRODUCT_WAR2BNE: {
-					Locale loc = Locale.getDefault();
-					String prodLang = loc.getLanguage() + loc.getCountry();
-					int tzBias = TimeZone.getDefault().getOffset(System.currentTimeMillis()) / -60000;
-					
+				case ConnectionSettings.PRODUCT_THEFROZENTHRONE: {
 					p = new BNCSPacket(BNCSCommandIDs.SID_AUTH_INFO);
 					p.writeDWord(0);							// Protocol ID (0)
 					p.writeDWord(PlatformIDs.PLATFORM_IX86);	// Platform ID (IX86)
@@ -191,8 +189,8 @@ public class BNCSConnection extends Connection {
 					p.SendPacket(dos, cs.packetLog);
 					break;
 				}
-					
-				/*case ConnectionSettings.PRODUCT_WAR2BNE:
+				
+				case ConnectionSettings.PRODUCT_WAR2BNE:
 					p = new BNCSPacket(BNCSCommandIDs.SID_CLIENTID2);
 					p.writeDWord(1);	// Server version
 					p.writeDWord(0);	// Registration Version
@@ -206,14 +204,14 @@ public class BNCSConnection extends Connection {
 					p = new BNCSPacket(BNCSCommandIDs.SID_LOCALEINFO);
 					p.writeQWord(0);		// System time
 					p.writeQWord(0);		// Local time
-					p.writeDWord(0xf0);		// TZ bias
+					p.writeDWord(tzBias);	// TZ bias
 					p.writeDWord(0x409);	// SystemDefaultLCID
 					p.writeDWord(0x409);	// UserDefaultLCID
-					p.writeDWord(0x409);	// UserDefaultLangID	
-					p.writeNTString("ena");	// Abbreviated language name		
+					p.writeDWord(0x409);	// UserDefaultLangID
+					p.writeNTString("ena");	// Abbreviated language name
 					p.writeNTString("1");	// Country code
-					p.writeNTString("USA");	// Abbreviated country name
-					p.writeNTString("United States");	// Country (English)
+					p.writeNTString(loc.getISO3Country());	// Abbreviated country name
+					p.writeNTString(loc.getDisplayCountry());	// Country (English)
 					p.SendPacket(dos, cs.packetLog);
 					
 					p = new BNCSPacket(BNCSCommandIDs.SID_STARTVERSIONING);
@@ -222,7 +220,7 @@ public class BNCSConnection extends Connection {
 					p.writeDWord(verByte);						// Version byte
 					p.writeDWord(0);							// Unknown (0)
 					p.SendPacket(dos, cs.packetLog);
-					break;*/
+					break;
 					
 				default:
 					recieveError("Don't know how to connect with product " + productID);
@@ -389,7 +387,7 @@ public class BNCSConnection extends Connection {
 					// Hash the CD key
 					byte keyHash[] = null;
 					byte keyHash2[] = null;
-					if(nlsRevision != -1) {
+					if(nlsRevision != null) {
 						keyHash = HashMain.hashKey(clientToken, serverToken, cs.cdkey).getBuffer();
 						if(cs.product == ConnectionSettings.PRODUCT_LORDOFDESTRUCTION)
 							keyHash2 = HashMain.hashKey(clientToken, serverToken, cs.cdkeyLOD).getBuffer();
@@ -461,7 +459,7 @@ public class BNCSConnection extends Connection {
                 	}
 
 					// Respond
-                	if(nlsRevision != -1) {
+                	if(nlsRevision != null) {
 						BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_AUTH_CHECK);
 						p.writeDWord(clientToken);
 						p.writeDWord(exeVersion);
