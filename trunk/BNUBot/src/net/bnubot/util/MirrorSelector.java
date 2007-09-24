@@ -15,9 +15,10 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
 /**
+ * A class for picking the fastest address
  * http://www.x86labs.org/forum/index.php/topic,10225.0.html
- * 
  * @author Chavo
+ * @author scotta
  */
 public class MirrorSelector {
 	private static int MAX_TIME = 1000; // timeout time in ms
