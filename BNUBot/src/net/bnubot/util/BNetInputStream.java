@@ -52,27 +52,28 @@ public class BNetInputStream extends DataInputStream {
 	}
 	
 	public String readNTString() throws IOException {
-		String out = new String();
-		do {
-			int c = readByte();
-			if(c == 0)
-				return out;
-			out += (char)c;
-		} while(true);
+		return new String(readNTBytes());
 	}
 	
 	public String readNTStringUTF8() throws IOException {
 		return readNTString("UTF-8");
 	}
-	
+
 	public String readNTString(String encoding) throws IOException {
+		return new String(readNTBytes(), encoding);
+	}
+	
+	public byte[] readNTBytes() throws IOException {
 		int length = 64;
 		int pos = 0;
 		ByteBuffer bb = ByteBuffer.allocate(length);
 		while(true) {
 			byte b = readByte();
 			if(b == 0) {
-				return new String(bb.array(), 0, pos, encoding);
+				byte[] out = new byte[pos];
+				for(int i = 0; i < pos; i++)
+					out[i] = bb.get(i);
+				return out;
 			}
 			
 			pos++;
