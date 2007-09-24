@@ -100,6 +100,22 @@ public class BNCSConnection extends Connection {
 			p.SendPacket(dos, cs.packetLog);
 		}
 	}
+	
+	private void enterChat(boolean sendChannel) throws Exception {
+		BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_ENTERCHAT);
+		p.writeNTString("");
+		p.writeNTString("");
+		p.SendPacket(dos, cs.packetLog);
+		
+		if(sendChannel) {
+			// Get channel list
+			p = new BNCSPacket(BNCSCommandIDs.SID_GETCHANNELLIST);
+			p.writeDWord(productID);
+			p.SendPacket(dos, cs.packetLog);
+		
+			joinChannel(cs.channel);
+		}
+	}
 
 	public void run() {
 		while(true) {
@@ -147,6 +163,7 @@ public class BNCSConnection extends Connection {
 				int tzBias = TimeZone.getDefault().getOffset(System.currentTimeMillis()) / -60000;
 				
 				switch(cs.product) {
+				case ConnectionSettings.PRODUCT_WAR2BNE:
 				case ConnectionSettings.PRODUCT_STARCRAFT:
 				case ConnectionSettings.PRODUCT_BROODWAR:
 				case ConnectionSettings.PRODUCT_DIABLO2:
@@ -189,7 +206,7 @@ public class BNCSConnection extends Connection {
 					break;
 				}
 				
-				case ConnectionSettings.PRODUCT_WAR2BNE:
+				/*case ConnectionSettings.PRODUCT_WAR2BNE:
 					p = new BNCSPacket(BNCSCommandIDs.SID_CLIENTID2);
 					p.writeDWord(1);	// Server version
 					p.writeDWord(0);	// Registration Version
@@ -219,7 +236,7 @@ public class BNCSConnection extends Connection {
 					p.writeDWord(verByte);						// Version byte
 					p.writeDWord(0);							// Unknown (0)
 					p.SendPacket(dos, cs.packetLog);
-					break;
+					break;*/
 					
 				default:
 					recieveError("Don't know how to connect with product " + productID);
@@ -726,11 +743,7 @@ public class BNCSConnection extends Connection {
 					}
 
 					recieveInfo("Login successful; entering chat.");
-
-					BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_ENTERCHAT);
-					p.writeNTString("");
-					p.writeNTString("");
-					p.SendPacket(dos, cs.packetLog);
+					enterChat(false);
 					break;
 				}
 				
@@ -739,18 +752,14 @@ public class BNCSConnection extends Connection {
 					switch(result) {
 					case 0x00:	// Success
 						recieveInfo("Login successful; entering chat.");
-
-						BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_ENTERCHAT);
-						p.writeNTString("");
-						p.writeNTString("");
-						p.SendPacket(dos, cs.packetLog);
+						enterChat(true);
 						break;
 					case 0x01:	// Account doesn't exist
 						recieveInfo("Account doesn't exist; creating...");
 						
 						int[] passwordHash = BrokenSHA1.calcHashBuffer(cs.password.toLowerCase().getBytes());
 						
-						p = new BNCSPacket(BNCSCommandIDs.SID_CREATEACCOUNT2);
+						BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_CREATEACCOUNT2);
 						p.writeDWord(passwordHash[0]);
 						p.writeDWord(passwordHash[1]);
 						p.writeDWord(passwordHash[2]);
@@ -849,9 +858,10 @@ public class BNCSConnection extends Connection {
 					// Get friends list
 					p = new BNCSPacket(BNCSCommandIDs.SID_FRIENDSLIST);
 					p.SendPacket(dos, cs.packetLog);
-					
+
 					// Join home channel
-					joinChannel(cs.channel);
+					if(nlsRevision != null)
+						joinChannel(cs.channel);
 					break;
 				}
 				
@@ -869,6 +879,16 @@ public class BNCSConnection extends Connection {
 							recieveInfo(news);
 					}
 					
+					break;
+				}
+				
+				case BNCSCommandIDs.SID_GETCHANNELLIST: {
+					do {
+						String s = is.readNTString();
+						if(s.length() == 0)
+							break;
+						recieveInfo("Channel: " + s);
+					} while(true);
 					break;
 				}
 				
