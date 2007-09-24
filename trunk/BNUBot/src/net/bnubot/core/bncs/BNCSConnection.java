@@ -73,7 +73,7 @@ public class BNCSConnection extends Connection {
 	}
 	
 	private void sendPassword() throws Exception {
-		if(nlsRevision == 0) {
+		if((nlsRevision == null) || (nlsRevision == 0)) {
 			int passwordHash[] = DoubleHash.doubleHash(cs.password.toLowerCase(), clientToken, serverToken);
 			
 			BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_LOGONRESPONSE2);
@@ -86,7 +86,6 @@ public class BNCSConnection extends Connection {
 			p.writeDWord(passwordHash[4]);
 			p.writeNTString(cs.username);
 			p.SendPacket(dos, cs.packetLog);
-			
 		} else {
 			srp = new SRP(cs.username, cs.password);
 			srp.set_NLS(nlsRevision);
@@ -346,6 +345,7 @@ public class BNCSConnection extends Connection {
 				BNetInputStream is = pr.getData();
 				
 				switch(pr.packetId) {
+				case BNCSCommandIDs.SID_OPTIONALWORK:
 				case BNCSCommandIDs.SID_EXTRAWORK:
 				case BNCSCommandIDs.SID_REQUIREDWORK:
 					break;
@@ -373,7 +373,7 @@ public class BNCSConnection extends Connection {
 					}
 					long MPQFileTime = is.readQWord();
 					String MPQFileName = is.readNTString();
-					String ValueStr = is.readNTString();
+					byte[] ValueStr = is.readNTBytes();
 					
 					recieveInfo("MPQ: " + MPQFileName);
 				
@@ -397,7 +397,7 @@ public class BNCSConnection extends Connection {
 					
 					int exeHash = 0;
                 	int exeVersion = 0;
-                	String exeInfo = null;
+                	byte[] exeInfo = null;
                 	
                 	try {
                 		InetAddress address = MirrorSelector.getClosestMirror(cs.bnlsServer, cs.bnlsPort);
@@ -434,7 +434,7 @@ public class BNCSConnection extends Connection {
                 		}
                 		exeVersion = bnlsIn.readDWord();
                 		exeHash = bnlsIn.readDWord();
-                		exeInfo = bnlsIn.readNTString();
+                		exeInfo = bnlsIn.readNTBytes();
                 		bnlsIn.readDWord(); // cookie
                 		int exeVerbyte = bnlsIn.readDWord();
                 		assert(bnlsIn.available() == 0);
@@ -452,7 +452,7 @@ public class BNCSConnection extends Connection {
                 		break;
                 	}
                 	
-                	if((exeVersion == 0) || (exeHash == 0) || (exeInfo == null) || (exeInfo.length() == 0)) {
+                	if((exeVersion == 0) || (exeHash == 0) || (exeInfo == null) || (exeInfo.length == 0)) {
                 		recieveError("Checkrevision failed!");
                 		setConnected(false);
                 		break;
@@ -503,53 +503,77 @@ public class BNCSConnection extends Connection {
                 	}
 					break;
 				}
-				
+
+				case BNCSCommandIDs.SID_REPORTVERSION:
 				case BNCSCommandIDs.SID_AUTH_CHECK: {
 					int result = is.readDWord();
 					String extraInfo = is.readNTString();
 					assert(is.available() == 0);
 					
-					if(result != 0) {
-						switch(result) {
-						case 0x0101:
-							recieveError("Invalid version");
-							break;
-						case 0x102:
-							recieveError("Game version must be downgraded: " + extraInfo);
-							break;
-						case 0x200:
-							recieveError("Invalid CD key");
-							break;
-						case 0x201:
-							recieveError("CD key in use by " + extraInfo);
-							break;
-						case 0x202:
-							recieveError("Banned key");
-							break;
-						case 0x203:
-							recieveError("Wrong product for CD key");
-							break;
-						case 0x210:
-							recieveError("Invalid second CD key");
-							break;
-						case 0x211:
-							recieveError("Second CD key in use by " + extraInfo);
-							break;
-						case 0x212:
-							recieveError("Banned second key");
-							break;
-						case 0x213:
-							recieveError("Wrong product for second CD key");
-							break;
-						default:
-							recieveError("Unknown SID_AUTH_CHECK result 0x" + Integer.toHexString(result));
+					if(pr.packetId == BNCSCommandIDs.SID_AUTH_CHECK) {
+						if(result != 0) {
+							switch(result) {
+							case 0x0101:
+								recieveError("Invalid version");
+								break;
+							case 0x102:
+								recieveError("Game version must be downgraded: " + extraInfo);
+								break;
+							case 0x200:
+								recieveError("Invalid CD key");
+								break;
+							case 0x201:
+								recieveError("CD key in use by " + extraInfo);
+								break;
+							case 0x202:
+								recieveError("Banned key");
+								break;
+							case 0x203:
+								recieveError("Wrong product for CD key");
+								break;
+							case 0x210:
+								recieveError("Invalid second CD key");
+								break;
+							case 0x211:
+								recieveError("Second CD key in use by " + extraInfo);
+								break;
+							case 0x212:
+								recieveError("Banned second key");
+								break;
+							case 0x213:
+								recieveError("Wrong product for second CD key");
+								break;
+							default:
+								recieveError("Unknown SID_AUTH_CHECK result 0x" + Integer.toHexString(result));
+								break;
+							}
+							setConnected(false);
 							break;
 						}
-						setConnected(false);
-						break;
+						recieveInfo("Passed CD key challenge and CheckRevision");
+					} else {
+						if(result != 2) {
+							switch(result) {
+							case 0:
+								recieveError("Failed version check");
+								break;
+							case 1:
+								recieveError("Old game version");
+								break;
+							case 3:
+								recieveError("Reinstall required");
+								break;
+
+							default:
+								recieveError("Unknown SID_REPORTVERSION result 0x" + Integer.toHexString(result));
+								break;
+							}
+							setConnected(false);
+							break;
+						}
+						recieveInfo("Passed CheckRevision");
 					}
 					
-					recieveInfo("Passed CD key challenge and CheckRevision");
 					sendPassword();
 					break;
 				}
