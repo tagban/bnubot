@@ -287,7 +287,7 @@ public class ConnectionSettings implements Serializable {
 			TimeFormatter.tsFormat =
 					Settings.read(header, "tsFormat", TimeFormatter.tsFormat);
 			releaseType = Enum.valueOf(ReleaseType.class,
-					Settings.read(header, "releaseType", CurrentVersion.version().getReleaseType().toString()));
+					Settings.read(header, "releaseType", CurrentVersion.version().getReleaseType().name()));
 		} else {
 			autoconnect = true;
 		}
