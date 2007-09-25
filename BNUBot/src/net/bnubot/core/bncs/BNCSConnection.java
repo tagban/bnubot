@@ -131,20 +131,17 @@ public class BNCSConnection extends Connection {
 		}
 	}
 	
-	private void enterChat(boolean sendChannel) throws Exception {
+	private void enterChat() throws Exception {
 		BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_ENTERCHAT);
 		p.writeNTString("");
 		p.writeNTString("");
 		p.SendPacket(dos, cs.packetLog);
-		
-		if(sendChannel) {
-			// Get channel list
-			p = new BNCSPacket(BNCSCommandIDs.SID_GETCHANNELLIST);
-			p.writeDWord(productID);
-			p.SendPacket(dos, cs.packetLog);
-		
-			joinChannel(cs.channel);
-		}
+	}
+	
+	private void getChannelList() throws Exception {
+		BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_GETCHANNELLIST);
+		p.writeDWord(productID);
+		p.SendPacket(dos, cs.packetLog);
 	}
 
 	public void run() {
@@ -813,7 +810,7 @@ public class BNCSConnection extends Connection {
 					}
 
 					recieveInfo("Login successful; entering chat.");
-					enterChat(false);
+					enterChat();
 					break;
 				}
 				
@@ -822,7 +819,9 @@ public class BNCSConnection extends Connection {
 					switch(result) {
 					case 0x00:	// Success
 						recieveInfo("Login successful; entering chat.");
-						enterChat(true);
+						enterChat();
+						getChannelList();
+						joinChannel(cs.channel);
 						break;
 					case 0x01:	// Account doesn't exist
 						recieveInfo("Account doesn't exist; creating...");
@@ -930,8 +929,10 @@ public class BNCSConnection extends Connection {
 					p.SendPacket(dos, cs.packetLog);
 
 					// Join home channel
-					if(nlsRevision != null)
+					if(nlsRevision != null) {
+						getChannelList();
 						joinChannel(cs.channel);
+					}
 					break;
 				}
 				
