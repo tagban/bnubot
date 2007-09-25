@@ -72,6 +72,36 @@ public class BNCSConnection extends Connection {
 		super(cs, cq);
 	}
 	
+	private void sendKeyOrPassword() throws Exception {
+		BNCSPacket p;
+		
+		switch(productID) {
+		case ProductIDs.PRODUCT_JSTR:
+			p = new BNCSPacket(BNCSCommandIDs.SID_CDKEY);
+			p.writeDWord(0); //Spawn
+			p.writeNTString(cs.cdkey);
+			p.writeNTString(cs.username);
+			p.SendPacket(dos, cs.packetLog);
+			break;
+			
+		case ProductIDs.PRODUCT_W2BN:
+			byte[] keyHash = HashMain.hashW2Key(clientToken, serverToken, cs.cdkey).getBuffer();
+			if(keyHash.length != 40)
+				throw new Exception("Invalid keyHash length");
+			
+			p = new BNCSPacket(BNCSCommandIDs.SID_CDKEY2);
+			p.writeDWord(0); //Spawn
+			p.write(keyHash);
+			p.writeNTString(cs.username);
+			p.SendPacket(dos, cs.packetLog);
+			break;
+			
+		default:
+			sendPassword();
+			break;
+		}
+	}
+	
 	private void sendPassword() throws Exception {
 		if((nlsRevision == null) || (nlsRevision == 0)) {
 			int passwordHash[] = DoubleHash.doubleHash(cs.password.toLowerCase(), clientToken, serverToken);
@@ -163,7 +193,6 @@ public class BNCSConnection extends Connection {
 				int tzBias = TimeZone.getDefault().getOffset(System.currentTimeMillis()) / -60000;
 				
 				switch(cs.product) {
-				case ConnectionSettings.PRODUCT_WAR2BNE:
 				case ConnectionSettings.PRODUCT_STARCRAFT:
 				case ConnectionSettings.PRODUCT_BROODWAR:
 				case ConnectionSettings.PRODUCT_DIABLO2:
@@ -206,7 +235,7 @@ public class BNCSConnection extends Connection {
 					break;
 				}
 				
-				/*case ConnectionSettings.PRODUCT_WAR2BNE:
+				case ConnectionSettings.PRODUCT_WAR2BNE:
 					p = new BNCSPacket(BNCSCommandIDs.SID_CLIENTID2);
 					p.writeDWord(1);	// Server version
 					p.writeDWord(0);	// Registration Version
@@ -236,7 +265,7 @@ public class BNCSConnection extends Connection {
 					p.writeDWord(verByte);						// Version byte
 					p.writeDWord(0);							// Unknown (0)
 					p.SendPacket(dos, cs.packetLog);
-					break;*/
+					break;
 					
 				default:
 					recieveError("Don't know how to connect with product " + productID);
@@ -591,6 +620,47 @@ public class BNCSConnection extends Connection {
 						recieveInfo("Passed CheckRevision");
 					}
 					
+					sendKeyOrPassword();
+					break;
+				}
+
+				case BNCSCommandIDs.SID_CDKEY:
+				case BNCSCommandIDs.SID_CDKEY2: {
+					/* (DWORD) Result
+					 * (STRING) Key owner
+					 * 
+					 * 0x01: Ok
+					 * 0x02: Invalid key
+					 * 0x03: Bad product
+					 * 0x04: Banned
+					 * 0x05: In use 
+					 */
+					int result = is.readDWord();
+					String keyOwner = is.readNTString();
+					
+					if(result != 1) {
+						switch(result) {
+						case 0x02:
+							recieveError("Invalid CD key.");
+							break;
+						case 0x03:
+							recieveError("Bad CD key product.");
+							break;
+						case 0x04:
+							recieveError("CD key banned.");
+							break;
+						case 0x05:
+							recieveError("CD key in use by " + keyOwner);
+							break;
+						default:
+							recieveError("Unknown SID_CDKEY response 0x" + Integer.toHexString(result));
+							break;
+						}
+						setConnected(false);
+						break;
+					}
+					
+					recieveInfo("CD key accepted.");
 					sendPassword();
 					break;
 				}
@@ -687,7 +757,7 @@ public class BNCSConnection extends Connection {
 					switch(status) {
 					case 0x00:
 						recieveInfo("Create account succeeded; logging in.");
-						sendPassword();
+						sendKeyOrPassword();
 						break;
 					default:
 						recieveError("Create account failed with error code 0x" + Integer.toHexString(status));
@@ -718,7 +788,7 @@ public class BNCSConnection extends Connection {
 					case 0x00:
 						break;
 					case 0x02:
-						recieveError("Incorrect password");
+						recieveError("Incorrect password.");
 						setConnected(false);
 						break;
 					case 0x0E:
@@ -769,10 +839,10 @@ public class BNCSConnection extends Connection {
 						p.SendPacket(dos, cs.packetLog);
 						break;
 					case 0x02:	// Invalid password;
-						recieveError("Incorrect password");
+						recieveError("Incorrect password.");
 						setConnected(false);
 						break;
-					case 0x06:	// Account is cloed
+					case 0x06:	// Account is closed
 						recieveError("Your account is closed.");
 						setConnected(false);
 						break;
@@ -807,7 +877,7 @@ public class BNCSConnection extends Connection {
 					switch(status) {
 					case 0x00:
 						recieveInfo("Account created");
-						sendPassword();
+						sendKeyOrPassword();
 						break;
 					case 0x02:
 						recieveError("Name contained invalid characters");

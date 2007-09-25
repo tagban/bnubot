@@ -97,6 +97,8 @@ public class ConnectionSettings implements Serializable {
 		case PRODUCT_STARCRAFT:
 		case PRODUCT_BROODWAR:
 		case PRODUCT_WAR2BNE:
+		case PRODUCT_STARCRAFTSHAREWARE:
+		case PRODUCT_JAPANSTARCRAFT:
 			break;
 		default:
 			return "Unsupported product";	

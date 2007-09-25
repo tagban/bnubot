@@ -58,6 +58,9 @@ public class HashMain {
 		throw new HashException("Invalid Key Length");
 	}// end of hashKey Method
 
+	/**
+	 * NLS-style key hashing
+	 */
 	private static Buffer hashD2Key(int clientToken, int serverToken, String key)
 			throws HashException {
 		D2KeyDecode d2 = new D2KeyDecode(key);
@@ -67,6 +70,24 @@ public class HashMain {
 		ret.addDWord(d2.getVal1());
 		ret.addDWord(0);
 		int hashedKey[] = d2.getKeyHash(clientToken, serverToken);
+		for (int i = 0; i < 5; i++)
+			ret.addDWord(hashedKey[i]);
+		return ret;
+	}
+
+	/**
+	 * OLS-style key hash
+	 */
+	public static Buffer hashW2Key(int clientToken, int serverToken, String key)
+			throws HashException {
+		D2KeyDecode d2 = new D2KeyDecode(key);
+		Buffer ret = new Buffer();
+		ret.addDWord(key.length());
+		ret.addDWord(d2.getProduct());
+		ret.addDWord(d2.getVal1());
+		ret.addDWord(serverToken);
+		ret.addDWord(clientToken);
+		int hashedKey[] = d2.getOldKeyHash(clientToken, serverToken);
 		for (int i = 0; i < 5; i++)
 			ret.addDWord(hashedKey[i]);
 		return ret;
