@@ -57,7 +57,7 @@ public class Main {
 				switch(args[i].charAt(1)) {
 				case 'c':
 					if(args[i].equals("-cli")) {
-						cs.enableCLI = true;
+						ConnectionSettings.enableCLI = true;
 						continue;
 					}
 					if(args[i].equals("-cfg")) {
@@ -73,7 +73,7 @@ public class Main {
 					break;
 				case 'g':
 					if(args[i].equals("-gui")) {
-						cs.enableGUI = true;
+						ConnectionSettings.enableGUI = true;
 						continue;
 					}
 					break;
@@ -85,11 +85,11 @@ public class Main {
 					break;
 				case 'n':
 					if(args[i].equals("-nocli")) {
-						cs.enableCLI = false;
+						ConnectionSettings.enableCLI = false;
 						continue;
 					}
 					if(args[i].equals("-nogui")) {
-						cs.enableGUI = false;
+						ConnectionSettings.enableGUI = false;
 						continue;
 					}
 					break;
@@ -152,14 +152,14 @@ public class Main {
 		
 		//CLI
 		EventHandler cli = null;
-		if(cs.enableCLI) {
+		if(ConnectionSettings.enableCLI) {
 			cli = new ConsoleEventHandler();
 			primary.addEventHandler(cli);
 		}
 		
 		//GUI
 		GuiEventHandler gui = null;
-		if(cs.enableGUI) {
+		if(ConnectionSettings.enableGUI) {
 			gui = new GuiEventHandler();
 			primary.addEventHandler(gui);
 			Out.setOutputConnection(gui);
@@ -170,7 +170,7 @@ public class Main {
 		
 		//Bot
 		EventHandler cmd = null;
-		if(cs.enableCommands) {
+		if(ConnectionSettings.enableCommands) {
 			DatabaseSettings ds = new DatabaseSettings();
 			ds.load();
 			
@@ -200,19 +200,20 @@ public class Main {
 		}
 		
 		//Trivia
-		if(cs.enableTrivia) { 
+		if(ConnectionSettings.enableTrivia) { 
 			EventHandler trivia = new TriviaEventHandler();
 			primary.addEventHandler(trivia);
 		}
 		
 		try {
-			VersionCheck.checkVersion(cs.releaseType);
+			VersionCheck.checkVersion(ConnectionSettings.releaseType);
 		} catch(Exception e) {
 			Out.exception(e);
 		}
 		
 		primary.start();
 		BNCSConnection c = primary;
+		String primaryServer = cs.bncsServer;
 		
 		for(int i = 2; i <= numBots; i++) {
 			//Wait for the previous bot to connect
@@ -230,17 +231,22 @@ public class Main {
 				throw new Exception("Invalid configuration for bot " + i + ": " + valid);
 	
 			c = new BNCSConnection(cs, cq);
-			for(EventHandler eh : pluginEHs)
-				c.addSecondaryEventHandler(eh);
-			if(cli != null)
-				c.addSecondaryEventHandler(cli);
-			if(gui != null)
-				c.addSecondaryEventHandler(gui);
-			if(cmd != null)
-				c.addSecondaryEventHandler(cmd);
-			c.start();
-			
-			primary.addSlave(c);
+			if(cs.bncsServer.equals(primaryServer)) {
+				for(EventHandler eh : pluginEHs)
+					c.addSecondaryEventHandler(eh);
+				if(cli != null)
+					c.addSecondaryEventHandler(cli);
+				if(gui != null)
+					c.addSecondaryEventHandler(gui);
+				if(cmd != null)
+					c.addSecondaryEventHandler(cmd);
+				c.start();
+				primary.addSlave(c);
+			} else {
+				if(gui != null)
+					c.addEventHandler(new GuiEventHandler());
+				c.start();
+			}
 		}
 		
 		// Write out any modified settings

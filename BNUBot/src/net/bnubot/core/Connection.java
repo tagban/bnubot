@@ -216,7 +216,7 @@ public abstract class Connection extends Thread implements EventHandler {
 				
 				String first = text.substring(0, i);
 				String last = text.substring(i + 9);
-				text = first + cs.trigger + last;
+				text = first + ConnectionSettings.trigger + last;
 			}
 			
 			i = text.indexOf("%version%");
@@ -282,10 +282,10 @@ public abstract class Connection extends Thread implements EventHandler {
 		if(text.length() == 0)
 			return;
 
-		if(canSendChat() && !cs.enableFloodProtect) {
+		if(canSendChat() && !ConnectionSettings.enableFloodProtect) {
 			sendChatNow(text);
 		} else {
-			cq.enqueue(text, cs.enableFloodProtect);
+			cq.enqueue(text, ConnectionSettings.enableFloodProtect);
 		}
 	}
 	
@@ -299,7 +299,7 @@ public abstract class Connection extends Thread implements EventHandler {
 			recieveInfo(text);
 		else {
 			String prefix;
-			if(cs.whisperBack || forceWhisper) {
+			if(ConnectionSettings.whisperBack || forceWhisper) {
 				prefix = "/w " + to.getFullLogonName() + " [BNU";
 				VersionNumber cv = CurrentVersion.version();
 				if(cv.isAlpha())

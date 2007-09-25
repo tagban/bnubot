@@ -44,26 +44,26 @@ public class ConnectionSettings implements Serializable {
 	public String cdkeyLOD;
 	public String cdkeyTFT;
 	public byte product;
-	public byte colorScheme;
-	public String trigger;
-	public int antiIdleTimer;
-	public boolean enableAntiIdle;
-	public boolean enableGreetings;
-	public String antiIdle;
-	public boolean autoconnect;
-	public boolean enableCLI;
-	public boolean enableGUI;
-	public boolean enableCommands;
-	public boolean enableTrivia;
-	public long triviaRoundLength;
-	public boolean enableFloodProtect;
-	public boolean packetLog;
-	public boolean whisperBack;
-	public long recruitAccess;
-	public String recruitTagPrefix;
-	public String recruitTagSuffix;
-	
-	public ReleaseType releaseType;
+
+	public static byte colorScheme;
+	public static String trigger;
+	public static String antiIdle;
+	public static boolean enableGreetings;
+	public static int antiIdleTimer;
+	public static boolean enableAntiIdle;
+	public static boolean autoconnect;
+	public static boolean enableCLI;
+	public static boolean enableGUI;
+	public static boolean enableCommands;
+	public static boolean enableTrivia;
+	public static long triviaRoundLength;
+	public static boolean enableFloodProtect;
+	public static boolean packetLog;
+	public static boolean whisperBack;
+	public static long recruitAccess;
+	public static String recruitTagPrefix;
+	public static String recruitTagSuffix;
+	public static ReleaseType releaseType;
 	
 	public String myRealm;
 	
@@ -196,7 +196,7 @@ public class ConnectionSettings implements Serializable {
 		if(product != 0)
 		Settings.write(header, "product", org.jbls.util.Constants.prods[product-1]);
 		
-		if(botNum == 1) {
+		if(true) {
 			header = null;
 			Settings.write(header, "antiidle", antiIdle);
 			Settings.write(header, "enableAntiidle", Boolean.toString(enableAntiIdle));
@@ -250,7 +250,7 @@ public class ConnectionSettings implements Serializable {
 			}
 		}
 		
-		if(botNum == 1) {
+		if(true) {
 			header = null;
 			colorScheme = Byte.parseByte(
 						Settings.read(header, "colorScheme", "1"));
