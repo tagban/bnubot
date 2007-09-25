@@ -25,6 +25,8 @@ import net.bnubot.core.bncs.BNCSConnection;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.Out;
 import net.bnubot.util.Settings;
+import net.bnubot.vercheck.CurrentVersion;
+import net.bnubot.vercheck.ReleaseType;
 import net.bnubot.vercheck.VersionCheck;
 
 public class Main {
@@ -162,6 +164,9 @@ public class Main {
 			primary.addEventHandler(gui);
 			Out.setOutputConnection(gui);
 		}
+		
+		if(CurrentVersion.fromJar() && ReleaseType.Development.equals(CurrentVersion.version().getReleaseType()))
+			Out.error(CurrentVersion.class, "WARNING: This is a development build, not for distribution!");
 		
 		//Bot
 		EventHandler cmd = null;
