@@ -68,6 +68,19 @@ public class SCKeyDecode {
 
 		return BrokenSHA1.calcHashBuffer(hashData.getBuffer());
 	}
+	
+	public int[] getOldKeyHash(int clientToken, int serverToken) {
+
+		Buffer hashData = new Buffer();
+
+		hashData.addDWord(clientToken);
+		hashData.addDWord(serverToken);
+		hashData.addDWord(getProduct());
+		hashData.addDWord(getVal1());
+		hashData.addDWord(getVal2());
+
+		return BrokenSHA1.calcHashBuffer(hashData.getBuffer());
+	}
 
 	/**
 	 * Verifies that the CDKey is valid.
