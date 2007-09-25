@@ -38,10 +38,12 @@ public class VersionNumber {
 			return VER_STRING;
 		
 		VER_STRING = VER_MAJOR.toString() + '.' + VER_MINOR.toString() + '.' + VER_REVISION.toString();
-		if(VER_ALPHA != null)
-			VER_STRING += " alpha " + VER_ALPHA.toString();
+		if(ReleaseType.Development.equals(RELEASE_TYPE))
+			VER_STRING += " Development";
+		else if(VER_ALPHA != null)
+			VER_STRING += " Alpha " + VER_ALPHA.toString();
 		else if(VER_BETA != null)
-			VER_STRING += " beta " + VER_BETA.toString();
+			VER_STRING += " Beta " + VER_BETA.toString();
 		else if(VER_RELEASE_CANDIDATE != null)
 			VER_STRING += " RC " + VER_RELEASE_CANDIDATE.toString();
 		

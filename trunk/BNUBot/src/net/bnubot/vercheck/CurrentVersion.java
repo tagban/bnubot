@@ -127,6 +127,11 @@ public final class CurrentVersion {
 		return VER_SVN_REVISION;
 	}
 	
+	public static boolean fromJar() {
+		version();
+		return fromJar;
+	}
+	
 	public static final VersionNumber version() {
 		if(VER != null)
 			return VER;
@@ -182,10 +187,6 @@ public final class CurrentVersion {
 			else {
 				BUILD_DATE = new Date().toString();
 				versionprops.setProperty("BUILD_DATE", BUILD_DATE);
-			}
-			
-			if(fromJar && ReleaseType.Development.equals(RELEASE_TYPE)) {
-				Out.error(CurrentVersion.class, "WARNING: This is a development build, not for distribution!");
 			}
 			
 			if(revision() == null) {
