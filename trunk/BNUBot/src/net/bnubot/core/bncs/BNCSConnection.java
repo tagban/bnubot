@@ -174,7 +174,7 @@ public class BNCSConnection extends Connection {
 				setConnected(true);
 				{
 					InetAddress address = MirrorSelector.getClosestMirror(cs.bncsServer, cs.port);
-					recieveInfo("Connecting to " + address + ":" + cs.port);
+					recieveInfo("Connecting to " + address + ":" + cs.port + ".");
 					s = new Socket(address, cs.port);
 				}
 				dis = new DataInputStream(s.getInputStream());
@@ -449,7 +449,7 @@ public class BNCSConnection extends Connection {
                 		InetAddress address = MirrorSelector.getClosestMirror(cs.bnlsServer, cs.bnlsPort);
                 		Socket conn = new Socket(address, cs.bnlsPort);
 
-                		recieveInfo("Connected to " + address + ":" + cs.bnlsPort);
+                		recieveInfo("Connected to " + address + ":" + cs.bnlsPort + ".");
 
                 		BNLSPacket bnlsOut = new BNLSPacket(BNLSCommandIDs.BNLS_VERSIONCHECKEX2);
                 		bnlsOut.writeDWord(cs.product);
@@ -485,7 +485,7 @@ public class BNCSConnection extends Connection {
                 		int exeVerbyte = bnlsIn.readDWord();
                 		assert(bnlsIn.available() == 0);
 
-                		recieveInfo("Recieved version check from BNLS");
+                		recieveInfo("Recieved version check from BNLS.");
                 		
                 		int verByte = HashMain.getVerByte(cs.product);
                 		if(exeVerbyte != verByte)
@@ -499,7 +499,7 @@ public class BNCSConnection extends Connection {
                 	}
                 	
                 	if((exeVersion == 0) || (exeHash == 0) || (exeInfo == null) || (exeInfo.length == 0)) {
-                		recieveError("Checkrevision failed!");
+                		recieveError("Checkrevision failed.");
                 		setConnected(false);
                 		break;
                 	}
@@ -560,34 +560,34 @@ public class BNCSConnection extends Connection {
 						if(result != 0) {
 							switch(result) {
 							case 0x0101:
-								recieveError("Invalid version");
+								recieveError("Invalid version.");
 								break;
 							case 0x102:
 								recieveError("Game version must be downgraded: " + extraInfo);
 								break;
 							case 0x200:
-								recieveError("Invalid CD key");
+								recieveError("Invalid CD key.");
 								break;
 							case 0x201:
 								recieveError("CD key in use by " + extraInfo);
 								break;
 							case 0x202:
-								recieveError("Banned key");
+								recieveError("Banned key.");
 								break;
 							case 0x203:
-								recieveError("Wrong product for CD key");
+								recieveError("Wrong product for CD key.");
 								break;
 							case 0x210:
-								recieveError("Invalid second CD key");
+								recieveError("Invalid second CD key.");
 								break;
 							case 0x211:
 								recieveError("Second CD key in use by " + extraInfo);
 								break;
 							case 0x212:
-								recieveError("Banned second key");
+								recieveError("Banned second key.");
 								break;
 							case 0x213:
-								recieveError("Wrong product for second CD key");
+								recieveError("Wrong product for second CD key.");
 								break;
 							default:
 								recieveError("Unknown SID_AUTH_CHECK result 0x" + Integer.toHexString(result));
@@ -596,18 +596,18 @@ public class BNCSConnection extends Connection {
 							setConnected(false);
 							break;
 						}
-						recieveInfo("Passed CD key challenge and CheckRevision");
+						recieveInfo("Passed CD key challenge and CheckRevision.");
 					} else {
 						if(result != 2) {
 							switch(result) {
 							case 0:
-								recieveError("Failed version check");
+								recieveError("Failed version check.");
 								break;
 							case 1:
-								recieveError("Old game version");
+								recieveError("Old game version.");
 								break;
 							case 3:
-								recieveError("Reinstall required");
+								recieveError("Reinstall required.");
 								break;
 
 							default:
@@ -617,7 +617,7 @@ public class BNCSConnection extends Connection {
 							setConnected(false);
 							break;
 						}
-						recieveInfo("Passed CheckRevision");
+						recieveInfo("Passed CheckRevision.");
 					}
 					
 					sendKeyOrPassword();
@@ -915,7 +915,7 @@ public class BNCSConnection extends Connection {
 					/*String accountName =*/ is.readNTString();
 					
 					myUser = BNetUser.getBNetUser(uniqueUserName, cs.myRealm);
-					recieveInfo("Logged in as " + myUser.getFullLogonName());
+					recieveInfo("Logged in as " + myUser.getFullLogonName() + ".");
 					titleChanged();
 					
 					// We are officially logged in!
@@ -953,12 +953,17 @@ public class BNCSConnection extends Connection {
 				}
 				
 				case BNCSCommandIDs.SID_GETCHANNELLIST: {
+					String channelList = null;
 					do {
 						String s = is.readNTString();
 						if(s.length() == 0)
 							break;
-						recieveInfo("Channel: " + s);
+						if(channelList == null)
+							channelList = s;
+						else
+							channelList += ", " + s;
 					} while(true);
+					recieveInfo("Channels: " + channelList + ".");
 					break;
 				}
 				
