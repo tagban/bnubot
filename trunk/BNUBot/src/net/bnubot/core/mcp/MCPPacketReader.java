@@ -10,6 +10,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import net.bnubot.core.ConnectionSettings;
 import net.bnubot.util.BNetInputStream;
 import net.bnubot.util.BNetOutputStream;
 import net.bnubot.util.HexDump;
@@ -20,7 +21,7 @@ public class MCPPacketReader {
 	int packetLength;
 	byte data[];
 	
-	public MCPPacketReader(InputStream rawis, boolean packetLog) throws IOException {
+	public MCPPacketReader(InputStream rawis) throws IOException {
 		BNetInputStream is = new BNetInputStream(rawis);
 		
 		packetLength = is.readWord() & 0x0000FFFF;
@@ -32,7 +33,7 @@ public class MCPPacketReader {
 			data[i] = is.readByte();
 		}
 		
-		if(packetLog) {
+		if(ConnectionSettings.packetLog) {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			BNetOutputStream os = new BNetOutputStream(baos);
 			os.writeByte(packetId);

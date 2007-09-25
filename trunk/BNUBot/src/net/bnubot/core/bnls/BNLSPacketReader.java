@@ -9,6 +9,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import net.bnubot.core.ConnectionSettings;
 import net.bnubot.util.BNetInputStream;
 import net.bnubot.util.BNetOutputStream;
 import net.bnubot.util.HexDump;
@@ -19,7 +20,7 @@ public class BNLSPacketReader {
 	int packetLength;
 	byte data[];
 	
-	public BNLSPacketReader(InputStream rawis, boolean packetLog) throws IOException {
+	public BNLSPacketReader(InputStream rawis) throws IOException {
 		BNetInputStream is = new BNetInputStream(rawis);
 		
 		packetLength = is.readWord() & 0x0000FFFF;
@@ -30,7 +31,7 @@ public class BNLSPacketReader {
 		for(int i = 0; i < packetLength-3; i++)
 			data[i] = is.readByte();
 
-		if(packetLog) {
+		if(ConnectionSettings.packetLog) {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			BNetOutputStream os = new BNetOutputStream(baos);
 			os.writeWord(packetLength);

@@ -43,6 +43,7 @@ import net.bnubot.bot.gui.database.DatabaseAccountEditor;
 import net.bnubot.bot.gui.database.DatabaseRankEditor;
 import net.bnubot.bot.gui.icons.IconsDotBniReader;
 import net.bnubot.core.Connection;
+import net.bnubot.core.ConnectionSettings;
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
@@ -65,7 +66,7 @@ public class GuiEventHandler implements EventHandler {
 	private TrayIcon ti = null;
 	
 	public void initialize(Connection c) {
-		ColorScheme cs = ColorScheme.createColorScheme(c.getConnectionSettings().colorScheme);
+		ColorScheme cs = ColorScheme.createColorScheme(ConnectionSettings.colorScheme);
 		
 		if(c != null) {
 			this.c = c;

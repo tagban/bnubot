@@ -31,15 +31,13 @@ public class MCPConnection extends RealmConnection {
 	protected DataInputStream dis = null;
 	protected DataOutputStream dos = null;
 	protected boolean connected = false;
-	protected boolean packetLog;
 	
-	public MCPConnection(int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName, boolean packetLog) {
+	public MCPConnection(int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName) {
 		this.MCPChunk1 = MCPChunk1;
 		this.server = HexDump.DWordToIP(ip);
 		this.port = port;
 		this.MCPChunk2 = MCPChunk2;
 		this.uniqueName = uniqueName;
-		this.packetLog = packetLog;
 	}
 	
 	public void run() {
@@ -64,11 +62,11 @@ public class MCPConnection extends RealmConnection {
 			for(int i = 0; i < 12; i++)
 				p.writeDWord(MCPChunk2[i]);
 			p.writeNTString(uniqueName);
-		    p.SendPacket(dos, packetLog);
+		    p.SendPacket(dos);
 		    
 			while(!s.isClosed() && connected) {
 				if(dis.available() > 0) {
-					MCPPacketReader pr = new MCPPacketReader(dis, packetLog);
+					MCPPacketReader pr = new MCPPacketReader(dis);
 					BNetInputStream is = pr.getData();
 					switch(pr.packetId) {
 					case MCPCommandIDs.MCP_STARTUP: {
@@ -87,7 +85,7 @@ public class MCPConnection extends RealmConnection {
 							
 							p = new MCPPacket(MCPCommandIDs.MCP_CHARLIST2);
 							p.writeDWord(8);	//Nubmer of chars to list
-							p.SendPacket(dos, packetLog);
+							p.SendPacket(dos);
 							break;
 						case 0x0C:
 							recieveRealmError("Realm server did not detect a Battle.net connection");
@@ -148,7 +146,7 @@ public class MCPConnection extends RealmConnection {
 						if(maxCharname != null) {
 							p = new MCPPacket(MCPCommandIDs.MCP_CHARLOGON);
 							p.writeNTString(maxCharname);
-							p.SendPacket(dos, packetLog);
+							p.SendPacket(dos);
 						}
 						
 						break;

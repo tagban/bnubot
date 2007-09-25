@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.SocketException;
 
+import net.bnubot.core.ConnectionSettings;
 import net.bnubot.util.BNetOutputStream;
 import net.bnubot.util.HexDump;
 import net.bnubot.util.Out;
@@ -22,7 +23,7 @@ public class BNCSPacket extends BNetOutputStream {
 		this.packetId = packetId;
 	}
 
-	public void SendPacket(OutputStream out, boolean packetLog) throws IOException, SocketException {
+	public void SendPacket(OutputStream out) throws IOException, SocketException {
 		byte data[] = ((ByteArrayOutputStream)this.out).toByteArray();
 		//BNCSOutputStream sckout = new BNCSOutputStream(out);
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -50,7 +51,7 @@ public class BNCSPacket extends BNetOutputStream {
 
 		data = baos.toByteArray();
 
-		if(packetLog) {
+		if(ConnectionSettings.packetLog) {
 			if(Out.isDebug())
 				Out.debugAlways(getClass(), "SEND\n" + HexDump.hexDump(data));
 			else

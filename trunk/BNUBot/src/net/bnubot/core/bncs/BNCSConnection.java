@@ -81,7 +81,7 @@ public class BNCSConnection extends Connection {
 			p.writeDWord(0); //Spawn
 			p.writeNTString(cs.cdkey);
 			p.writeNTString(cs.username);
-			p.SendPacket(dos, cs.packetLog);
+			p.SendPacket(dos);
 			break;
 			
 		case ProductIDs.PRODUCT_W2BN:
@@ -93,7 +93,7 @@ public class BNCSConnection extends Connection {
 			p.writeDWord(0); //Spawn
 			p.write(keyHash);
 			p.writeNTString(cs.username);
-			p.SendPacket(dos, cs.packetLog);
+			p.SendPacket(dos);
 			break;
 			
 		default:
@@ -115,7 +115,7 @@ public class BNCSConnection extends Connection {
 			p.writeDWord(passwordHash[3]);
 			p.writeDWord(passwordHash[4]);
 			p.writeNTString(cs.username);
-			p.SendPacket(dos, cs.packetLog);
+			p.SendPacket(dos);
 		} else {
 			srp = new SRP(cs.username, cs.password);
 			srp.set_NLS(nlsRevision);
@@ -127,7 +127,7 @@ public class BNCSConnection extends Connection {
 			BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_AUTH_ACCOUNTLOGON);
 			p.write(A);
 			p.writeNTString(cs.username);
-			p.SendPacket(dos, cs.packetLog);
+			p.SendPacket(dos);
 		}
 	}
 	
@@ -135,13 +135,13 @@ public class BNCSConnection extends Connection {
 		BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_ENTERCHAT);
 		p.writeNTString("");
 		p.writeNTString("");
-		p.SendPacket(dos, cs.packetLog);
+		p.SendPacket(dos);
 	}
 	
 	private void getChannelList() throws Exception {
 		BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_GETCHANNELLIST);
 		p.writeDWord(productID);
-		p.SendPacket(dos, cs.packetLog);
+		p.SendPacket(dos);
 	}
 
 	public void run() {
@@ -160,7 +160,7 @@ public class BNCSConnection extends Connection {
 				if(forceReconnect) {
 					forceReconnect = false;
 				} else {
-					if(!cs.autoconnect) {
+					if(!ConnectionSettings.autoconnect) {
 						while(!isConnected()) {
 							yield();
 							sleep(10);
@@ -208,7 +208,7 @@ public class BNCSConnection extends Connection {
 					p.writeDWord(0x409);						// Language ID
 					p.writeNTString(loc.getISO3Country());		// Country abreviation
 					p.writeNTString(loc.getDisplayCountry());	// Country
-					p.SendPacket(dos, cs.packetLog);
+					p.SendPacket(dos);
 					break;
 				}
 
@@ -221,14 +221,14 @@ public class BNCSConnection extends Connection {
 					p.writeDWord(0);	// Registration Token
 					p.writeByte(0);		// LAN computer name
 					p.writeByte(0);		// LAN username
-					p.SendPacket(dos, cs.packetLog);
+					p.SendPacket(dos);
 					
 					p = new BNCSPacket(BNCSCommandIDs.SID_STARTVERSIONING);
 					p.writeDWord(PlatformIDs.PLATFORM_IX86);	// Platform ID (IX86)
 					p.writeDWord(productID);					// Product ID
 					p.writeDWord(verByte);						// Version byte
 					p.writeDWord(0);							// Unknown (0)
-					p.SendPacket(dos, cs.packetLog);
+					p.SendPacket(dos);
 					break;
 				}
 				
@@ -241,7 +241,7 @@ public class BNCSConnection extends Connection {
 					p.writeDWord(0);	// Registration Token
 					p.writeByte(0);		// LAN computer name
 					p.writeByte(0);		// LAN username
-					p.SendPacket(dos, cs.packetLog);
+					p.SendPacket(dos);
 					
 					p = new BNCSPacket(BNCSCommandIDs.SID_LOCALEINFO);
 					p.writeQWord(0);		// System time
@@ -254,14 +254,14 @@ public class BNCSConnection extends Connection {
 					p.writeNTString("1");	// Country code
 					p.writeNTString(loc.getISO3Country());	// Abbreviated country name
 					p.writeNTString(loc.getDisplayCountry());	// Country (English)
-					p.SendPacket(dos, cs.packetLog);
+					p.SendPacket(dos);
 					
 					p = new BNCSPacket(BNCSCommandIDs.SID_STARTVERSIONING);
 					p.writeDWord(PlatformIDs.PLATFORM_IX86);	// Platform ID (IX86)
 					p.writeDWord(productID);					// Product ID
 					p.writeDWord(verByte);						// Version byte
 					p.writeDWord(0);							// Unknown (0)
-					p.SendPacket(dos, cs.packetLog);
+					p.SendPacket(dos);
 					break;
 					
 				default:
@@ -346,7 +346,7 @@ public class BNCSConnection extends Connection {
 		//grab one
 		int i = antiIdles.size();
 		if(i == 0)
-			return cs.antiIdle;
+			return ConnectionSettings.antiIdle;
 		i = (int)Math.floor(Math.random() * i);
 		return antiIdles.get(i);
 	}
@@ -366,25 +366,25 @@ public class BNCSConnection extends Connection {
 				if(timeSinceNullPacket > 30) {
 					lastNullPacket = timeNow;
 					BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_NULL);
-					p.SendPacket(dos, cs.packetLog);
+					p.SendPacket(dos);
 				}
 			}
 			
 			//Send anti-idles every 5 minutes
-			if((channelName != null) && cs.enableAntiIdle) {
+			if((channelName != null) && ConnectionSettings.enableAntiIdle) {
 				long timeSinceAntiIdle = timeNow - lastAntiIdle;
 				
 				//Wait 5 minutes
 				timeSinceAntiIdle /= 1000;
 				timeSinceAntiIdle /= 60;
-				if(timeSinceAntiIdle >= cs.antiIdleTimer) {
+				if(timeSinceAntiIdle >= ConnectionSettings.antiIdleTimer) {
 					lastAntiIdle = timeNow;
 					sendChat(getAntiIdle());
 				}
 			}
 			
 			if(dis.available() > 0) {
-				BNCSPacketReader pr = new BNCSPacketReader(dis, cs.packetLog);
+				BNCSPacketReader pr = new BNCSPacketReader(dis);
 				BNetInputStream is = pr.getData();
 				
 				switch(pr.packetId) {
@@ -396,14 +396,14 @@ public class BNCSConnection extends Connection {
 				case BNCSCommandIDs.SID_NULL: {
 					lastNullPacket = timeNow;
 					BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_NULL);
-					p.SendPacket(dos, cs.packetLog);
+					p.SendPacket(dos);
 					break;
 				}
 				
 				case BNCSCommandIDs.SID_PING: {
 					BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_PING);
 					p.writeDWord(is.readDWord());
-					p.SendPacket(dos, cs.packetLog);
+					p.SendPacket(dos);
 					break;
 				}
 				
@@ -455,7 +455,7 @@ public class BNCSConnection extends Connection {
                 		bnlsOut.writeQWord(MPQFileTime);
                 		bnlsOut.writeNTString(MPQFileName);
                 		bnlsOut.writeNTString(ValueStr);
-                		bnlsOut.SendPacket(conn.getOutputStream(), cs.packetLog);
+                		bnlsOut.SendPacket(conn.getOutputStream());
 
                 		InputStream bnlsInputStream = conn.getInputStream();
                 		long startTime = System.currentTimeMillis();
@@ -468,7 +468,7 @@ public class BNCSConnection extends Connection {
                 				throw new Exception("BNLS_VERSIONCHECKEX2 timeout");
                 		}
 
-                		BNLSPacketReader bpr = new BNLSPacketReader(bnlsInputStream, cs.packetLog);
+                		BNLSPacketReader bpr = new BNLSPacketReader(bnlsInputStream);
                 		BNetInputStream bnlsIn = bpr.getInputStream();
                 		int success = bnlsIn.readDWord();
                 		if(success != 1) {
@@ -526,7 +526,7 @@ public class BNCSConnection extends Connection {
 						//Finally,
 						p.writeNTString(exeInfo);
 						p.writeNTString(cs.username);
-						p.SendPacket(dos, cs.packetLog);
+						p.SendPacket(dos);
                 	} else {
                 		/* (DWORD)		 Platform ID
                 		 * (DWORD)		 Product ID
@@ -542,7 +542,7 @@ public class BNCSConnection extends Connection {
 						p.writeDWord(exeVersion);
 						p.writeDWord(exeHash);
 						p.writeNTString(exeInfo);
-						p.SendPacket(dos, cs.packetLog);
+						p.SendPacket(dos);
                 	}
 					break;
 				}
@@ -699,7 +699,7 @@ public class BNCSConnection extends Connection {
 				        p.write(salt);
 				        p.write(verifier);
 				        p.writeNTString(cs.username);
-				        p.SendPacket(dos, cs.packetLog);
+				        p.SendPacket(dos);
 						
 						break;
 					case 0x05:
@@ -733,7 +733,7 @@ public class BNCSConnection extends Connection {
 
 					BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_AUTH_ACCOUNTLOGONPROOF);
 					p.write(M1);
-					p.SendPacket(dos, cs.packetLog);
+					p.SendPacket(dos);
 					break;
 				}
 				
@@ -835,7 +835,7 @@ public class BNCSConnection extends Connection {
 						p.writeDWord(passwordHash[3]);
 						p.writeDWord(passwordHash[4]);
 						p.writeNTString(cs.username);
-						p.SendPacket(dos, cs.packetLog);
+						p.SendPacket(dos);
 						break;
 					case 0x02:	// Invalid password;
 						recieveError("Incorrect password.");
@@ -922,11 +922,11 @@ public class BNCSConnection extends Connection {
 					// Get MOTD
 					BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_NEWS_INFO);
 					p.writeDWord((int)(new java.util.Date().getTime() / 1000)); // timestamp
-					p.SendPacket(dos, cs.packetLog);
+					p.SendPacket(dos);
 					
 					// Get friends list
 					p = new BNCSPacket(BNCSCommandIDs.SID_FRIENDSLIST);
-					p.SendPacket(dos, cs.packetLog);
+					p.SendPacket(dos);
 
 					// Join home channel
 					if(nlsRevision != null) {
@@ -1054,7 +1054,7 @@ public class BNCSConnection extends Connection {
 						BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_JOINCHANNEL);
 						p.writeDWord(2); // create join
 						p.writeNTString(text);
-						p.SendPacket(dos, cs.packetLog);
+						p.SendPacket(dos);
 						break;
 					case BNCSChatEventIDs.EID_CHANNELRESTRICTED:
 						recieveError("Channel " + text + " is restricted");
@@ -1308,7 +1308,7 @@ public class BNCSConnection extends Connection {
 					// Get clan list
 					BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_CLANMEMBERLIST);
 					p.writeDWord(0);	// Cookie
-					p.SendPacket(dos, cs.packetLog);
+					p.SendPacket(dos);
 					break;
 				}
 				
@@ -1373,7 +1373,7 @@ public class BNCSConnection extends Connection {
 					p.writeDWord(clanTag);
 					p.writeNTString(inviter);
 					p.writeByte(0x06);
-					p.SendPacket(dos, cs.packetLog);
+					p.SendPacket(dos);
 					break;
 				}
 				
@@ -1513,14 +1513,14 @@ public class BNCSConnection extends Connection {
 		recieveInfo("Register email address: " + cs.email);
 		BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_SETEMAIL);
 		p.writeNTString(cs.email);
-		p.SendPacket(dos, cs.packetLog);
+		p.SendPacket(dos);
 	}
 
 	public void joinChannel(String channel) throws Exception {
 		BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_JOINCHANNEL);
 		p.writeDWord(0); // nocreate join
 		p.writeNTString(channel);
-		p.SendPacket(dos, cs.packetLog);
+		p.SendPacket(dos);
 	}
 	
 	public void sendChat(String text) {
@@ -1572,9 +1572,9 @@ public class BNCSConnection extends Connection {
 		try {
 			BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_CHATCOMMAND);
 			p.writeNTString(text);
-			p.SendPacket(dos, cs.packetLog);
+			p.SendPacket(dos);
 		} catch(SocketException e) {
-			if(cs.autoconnect)
+			if(ConnectionSettings.autoconnect)
 				reconnect();
 			else
 				setConnected(false);
@@ -1604,7 +1604,7 @@ public class BNCSConnection extends Connection {
 		BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_CLANINVITATION);
 		p.writeDWord(CookieUtility.createCookie(cookie));	//Cookie
 		p.writeNTString(user);	//Username
-		p.SendPacket(dos, cs.packetLog);
+		p.SendPacket(dos);
 	}
 	
 	public void sendClanRankChange(Object cookie, String user, int newRank) throws Exception {
@@ -1620,7 +1620,7 @@ public class BNCSConnection extends Connection {
 		p.writeDWord(CookieUtility.createCookie(cookie));	//Cookie
 		p.writeNTString(user);	//Username
 		p.writeByte(newRank);	//New rank
-		p.SendPacket(dos, cs.packetLog);
+		p.SendPacket(dos);
 	}
 
 	public void sendClanMOTD(Object cookie) throws Exception {
@@ -1634,7 +1634,7 @@ public class BNCSConnection extends Connection {
 		
 		BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_CLANMOTD);
 		p.writeDWord(CookieUtility.createCookie(cookie));
-		p.SendPacket(dos, cs.packetLog);
+		p.SendPacket(dos);
 	}
 	
 	public void sendClanSetMOTD(String text) throws Exception {
@@ -1649,7 +1649,7 @@ public class BNCSConnection extends Connection {
 		BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_CLANSETMOTD);
 		p.writeDWord(0);	//Cookie
 		p.writeNTString(text);
-		p.SendPacket(dos, cs.packetLog);
+		p.SendPacket(dos);
 	}
 	
 	public void sendQueryRealms() throws Exception {
@@ -1666,7 +1666,7 @@ public class BNCSConnection extends Connection {
 		 * (STRING) 	 Unknown (empty)
 		 */
 		BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_QUERYREALMS2);
-		p.SendPacket(dos, cs.packetLog);
+		p.SendPacket(dos);
 	}
 	
 	public void sendLogonRealmEx(String realmTitle) throws Exception {
@@ -1692,7 +1692,7 @@ public class BNCSConnection extends Connection {
 		p.writeDWord(hash[3]);
 		p.writeDWord(hash[4]);
 		p.writeNTString(realmTitle);
-		p.SendPacket(dos, cs.packetLog);
+		p.SendPacket(dos);
 	}
 	
 	private String prettyProfileValue(String key, String value) {
@@ -1718,7 +1718,7 @@ public class BNCSConnection extends Connection {
 		/*BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_PROFILE);
 		p.writeDWord(CookieUtility.createCookie(user));
 		p.writeNTString(user);
-		p.SendPacket(dos, cs.packetLog);*/
+		p.SendPacket(dos);*/
 		/* (DWORD)		 Number of Accounts
 		 * (DWORD)		 Number of Keys
 		 * (DWORD)		 Request ID
@@ -1748,7 +1748,7 @@ public class BNCSConnection extends Connection {
 		p.writeNTString(user);
 		for(int i = 1; i < keys.size(); i++)
 			p.writeNTString(keys.get(i));
-		p.SendPacket(dos, cs.packetLog);
+		p.SendPacket(dos);
 	 	
 	}
 	

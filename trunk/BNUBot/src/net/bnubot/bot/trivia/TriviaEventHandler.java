@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import net.bnubot.bot.database.AccountResultSet;
 import net.bnubot.bot.database.Database;
 import net.bnubot.core.Connection;
+import net.bnubot.core.ConnectionSettings;
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
@@ -140,7 +141,7 @@ public class TriviaEventHandler implements EventHandler {
 						long max[] = d.getTriviaTopTwo();
 						if(max != null) {
 							long total = d.getTriviaSum();
-							long target = c.getConnectionSettings().triviaRoundLength;
+							long target = ConnectionSettings.triviaRoundLength;
 							boolean condition = false;
 							// There are no questions left
 							condition |= (total >= target);

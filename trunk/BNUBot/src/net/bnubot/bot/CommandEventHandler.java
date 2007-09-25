@@ -20,6 +20,7 @@ import net.bnubot.bot.database.CommandResultSet;
 import net.bnubot.bot.database.Database;
 import net.bnubot.bot.database.RankResultSet;
 import net.bnubot.core.Connection;
+import net.bnubot.core.ConnectionSettings;
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.bncs.ProductIDs;
 import net.bnubot.core.clan.ClanMember;
@@ -265,8 +266,8 @@ public class CommandEventHandler implements EventHandler {
 							throw new InvalidUseException();
 						}
 						
-						long wins[] = d.getAccountWinsLevels(subjectAccountId, c.getConnectionSettings().recruitTagPrefix, c.getConnectionSettings().recruitTagSuffix);
-						long recruitScore = d.getAccountRecruitScore(subjectAccountId, c.getConnectionSettings().recruitAccess);
+						long wins[] = d.getAccountWinsLevels(subjectAccountId, ConnectionSettings.recruitTagPrefix, ConnectionSettings.recruitTagSuffix);
+						long recruitScore = d.getAccountRecruitScore(subjectAccountId, ConnectionSettings.recruitAccess);
 						Timestamp ts = rsSubjectAccount.getLastRankChange();
 						String timeElapsed;
 						if(ts != null) {
@@ -597,8 +598,8 @@ public class CommandEventHandler implements EventHandler {
 						break;
 					}
 
-					String requiredTagPrefix =  c.getConnectionSettings().recruitTagPrefix;
-					String requiredTagSuffix =  c.getConnectionSettings().recruitTagSuffix;
+					String requiredTagPrefix = ConnectionSettings.recruitTagPrefix;
+					String requiredTagSuffix = ConnectionSettings.recruitTagSuffix;
 					
 					if(requiredTagPrefix != null) {
 						if(bnSubject.getFullAccountName().substring(0, requiredTagPrefix.length()).compareToIgnoreCase(requiredTagPrefix) != 0) {
@@ -651,7 +652,7 @@ public class CommandEventHandler implements EventHandler {
 					rsSubject.updateRow();
 					d.close(rsSubject);
 					rsSubjectAccount.refreshCursor();
-					rsSubjectAccount.setAccess(c.getConnectionSettings().recruitAccess);
+					rsSubjectAccount.setAccess(ConnectionSettings.recruitAccess);
 					rsSubjectAccount.updateRow();
 					d.close(rsSubjectAccount);
 
@@ -682,7 +683,7 @@ public class CommandEventHandler implements EventHandler {
 							d.close(rsSubject);
 						}
 												
-						AccountResultSet rsRecruits = d.getAccountRecruits(subjectAccountId, c.getConnectionSettings().recruitAccess);
+						AccountResultSet rsRecruits = d.getAccountRecruits(subjectAccountId, ConnectionSettings.recruitAccess);
 						if(rsRecruits.next()) {
 							do {
 								output += rsRecruits.getName() + "(" + rsRecruits.getAccess() + ") ";
@@ -976,7 +977,7 @@ public class CommandEventHandler implements EventHandler {
 				break;
 			case 't':
 				if(command.equals("trigger")) {
-					char trigger = c.getConnectionSettings().trigger.charAt(0);
+					char trigger = ConnectionSettings.trigger.charAt(0);
 					String output = "0000" + Integer.toString(trigger);
 					output = output.substring(output.length() - 4);
 					output = "Current trigger: " + trigger + " (alt+" + output + ")";
@@ -1138,7 +1139,7 @@ public class CommandEventHandler implements EventHandler {
 	}
 
 	public void channelJoin(BNetUser user, StatString statstr) {
-		if(!c.getConnectionSettings().enableGreetings)
+		if(!ConnectionSettings.enableGreetings)
 			return;
 		
 		touchUser(user, "joining the channel");
@@ -1273,7 +1274,7 @@ public class CommandEventHandler implements EventHandler {
 					|| (apD2Level == null)
 					|| (apW3Level == null))
 						break apBlock;
-					long wins[] = d.getAccountWinsLevels(id, c.getConnectionSettings().recruitTagPrefix, c.getConnectionSettings().recruitTagSuffix);
+					long wins[] = d.getAccountWinsLevels(id, ConnectionSettings.recruitTagPrefix, ConnectionSettings.recruitTagSuffix);
 					
 					boolean condition = false;
 					condition |= ((apWins > 0) && (wins[0] >= apWins));
@@ -1283,7 +1284,7 @@ public class CommandEventHandler implements EventHandler {
 					
 					if(condition) {
 						// Check RS
-						long rs = d.getAccountRecruitScore(id, c.getConnectionSettings().recruitAccess);
+						long rs = d.getAccountRecruitScore(id, ConnectionSettings.recruitAccess);
 						Long apRS = rsRank.getApRecruitScore();
 						if((apRS == null) || (apRS == 0) || (rs >= apRS)) {
 							// Give them a promotion
@@ -1354,7 +1355,7 @@ public class CommandEventHandler implements EventHandler {
 		
 		touchUser(user, "chatting in the channel");
 		
-		char trigger = c.getConnectionSettings().trigger.charAt(0);
+		char trigger = ConnectionSettings.trigger.charAt(0);
 		
 		if(text.equals("?trigger"))
 			parseCommand(user, "trigger", null, false); //c.sendChat(user, "The bot's trigger is: " + trigger);
@@ -1456,7 +1457,7 @@ public class CommandEventHandler implements EventHandler {
 		if(text.length() == 0)
 			return;
 		
-		char trigger = c.getConnectionSettings().trigger.charAt(0);
+		char trigger = ConnectionSettings.trigger.charAt(0);
 		if(text.charAt(0) == trigger)
 			text = text.substring(1);
 		

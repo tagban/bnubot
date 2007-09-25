@@ -196,7 +196,7 @@ public class ConfigurationFrame extends JDialog {
 					jl.setPreferredSize(maxSize);
 					boxLine.add(jl);
 					
-					txtTrigger = new ConfigTextArea(cs.trigger);
+					txtTrigger = new ConfigTextArea(ConnectionSettings.trigger);
 					boxLine.add(txtTrigger);
 				}
 				boxSettings.add(boxLine);
@@ -207,10 +207,10 @@ public class ConfigurationFrame extends JDialog {
 					jl.setPreferredSize(maxSize);
 					boxLine.add(jl);
 					
-					chkAntiIdle = new ConfigCheckBox("Enable", cs.enableAntiIdle);
+					chkAntiIdle = new ConfigCheckBox("Enable", ConnectionSettings.enableAntiIdle);
 					boxLine.add(chkAntiIdle);
 					
-					txtAntiIdle = new ConfigTextArea(cs.antiIdle);
+					txtAntiIdle = new ConfigTextArea(ConnectionSettings.antiIdle);
 					boxLine.add(txtAntiIdle);
 				}
 				boxSettings.add(boxLine);
@@ -221,7 +221,7 @@ public class ConfigurationFrame extends JDialog {
 					jl.setPreferredSize(maxSize);
 					boxLine.add(jl);
 					
-					txtAntiIdleTimer = new ConfigTextArea(Integer.toString(cs.antiIdleTimer));
+					txtAntiIdleTimer = new ConfigTextArea(Integer.toString(ConnectionSettings.antiIdleTimer));
 					boxLine.add(txtAntiIdleTimer);
 				}
 				boxSettings.add(boxLine);
@@ -389,7 +389,7 @@ public class ConfigurationFrame extends JDialog {
 					boxLine.add(jl);
 					
 					cmbReleaseType = new ConfigComboBox(ReleaseType.values());
-					cmbReleaseType.setSelectedItem(cs.releaseType);
+					cmbReleaseType.setSelectedItem(ConnectionSettings.releaseType);
 					boxLine.add(cmbReleaseType);
 				}
 				boxSettings.add(boxLine);
@@ -401,7 +401,7 @@ public class ConfigurationFrame extends JDialog {
 					boxLine.add(jl);
 					
 					cmbColorScheme = new ConfigComboBox(new String[] { "Starcraft", "Diablo 2" });
-					cmbColorScheme.setSelectedIndex(cs.colorScheme - 1);
+					cmbColorScheme.setSelectedIndex(ConnectionSettings.colorScheme - 1);
 					boxLine.add(cmbColorScheme);
 				}
 				boxSettings.add(boxLine);
@@ -437,34 +437,34 @@ public class ConfigurationFrame extends JDialog {
 					
 					Box boxCheckboxes = new Box(BoxLayout.Y_AXIS);
 					{
-						chkAutoConnect = new ConfigCheckBox("Auto Connect", cs.autoconnect);
+						chkAutoConnect = new ConfigCheckBox("Auto Connect", ConnectionSettings.autoconnect);
 						boxCheckboxes.add(chkAutoConnect);
 	
-						chkEnableGUI = new ConfigCheckBox("Enable GUI (requires restart)", cs.enableGUI);
+						chkEnableGUI = new ConfigCheckBox("Enable GUI (requires restart)", ConnectionSettings.enableGUI);
 						boxCheckboxes.add(chkEnableGUI);
 	
-						chkEnableCLI = new ConfigCheckBox("Enable CLI (requires restart)", cs.enableCLI);
+						chkEnableCLI = new ConfigCheckBox("Enable CLI (requires restart)", ConnectionSettings.enableCLI);
 						boxCheckboxes.add(chkEnableCLI);
 
-						chkEnableTrivia = new ConfigCheckBox("Enable Trivia (requires restart)", cs.enableTrivia);
+						chkEnableTrivia = new ConfigCheckBox("Enable Trivia (requires restart)", ConnectionSettings.enableTrivia);
 						boxCheckboxes.add(chkEnableTrivia);
 						
 						JLabel jl = new JLabel("Trivia Round Length");
 						boxCheckboxes.add(jl);
 
-						txtTriviaRoundLength = new ConfigTextArea(Long.toString(cs.triviaRoundLength));
+						txtTriviaRoundLength = new ConfigTextArea(Long.toString(ConnectionSettings.triviaRoundLength));
 						boxCheckboxes.add(txtTriviaRoundLength);
 	
-						chkEnableCommands = new ConfigCheckBox("Enable Commands (requires restart)", cs.enableCommands);
+						chkEnableCommands = new ConfigCheckBox("Enable Commands (requires restart)", ConnectionSettings.enableCommands);
 						boxCheckboxes.add(chkEnableCommands);
 	
-						chkEnableFloodProtect = new ConfigCheckBox("Enable Flood Protect", cs.enableFloodProtect);
+						chkEnableFloodProtect = new ConfigCheckBox("Enable Flood Protect", ConnectionSettings.enableFloodProtect);
 						boxCheckboxes.add(chkEnableFloodProtect);
 	
-						chkPacketLog = new ConfigCheckBox("Packet Log", cs.packetLog);
+						chkPacketLog = new ConfigCheckBox("Packet Log", ConnectionSettings.packetLog);
 						boxCheckboxes.add(chkPacketLog);
 	
-						chkWhisperBack = new ConfigCheckBox("Whisper Commands", cs.whisperBack);
+						chkWhisperBack = new ConfigCheckBox("Whisper Commands", ConnectionSettings.whisperBack);
 						boxCheckboxes.add(chkWhisperBack);
 					}
 					boxLine.add(boxCheckboxes);
@@ -685,10 +685,10 @@ public class ConfigurationFrame extends JDialog {
 		cs.password = new String(txtPassword.getPassword());
 		cs.email = txtEmail.getText();
 		cs.product = (byte)(cmbProduct.getSelectedIndex() + 1);
-		cs.trigger = txtTrigger.getText();
-		cs.antiIdle = txtAntiIdle.getText();
-		cs.antiIdleTimer = Integer.parseInt(txtAntiIdleTimer.getText());
-		cs.enableAntiIdle = chkAntiIdle.isSelected();
+		ConnectionSettings.trigger = txtTrigger.getText();
+		ConnectionSettings.antiIdle = txtAntiIdle.getText();
+		ConnectionSettings.antiIdleTimer = Integer.parseInt(txtAntiIdleTimer.getText());
+		ConnectionSettings.enableAntiIdle = chkAntiIdle.isSelected();
 		
 		CDKey k = (CDKey)cmbCDKey.getSelectedItem();
 		CDKey kLOD = (CDKey)cmbCDKeyLOD.getSelectedItem();
@@ -703,18 +703,18 @@ public class ConfigurationFrame extends JDialog {
 		cs.bncsServer = txtBNCSServer.getText();
 		cs.bnlsServer = txtBNLSServer.getText();
 		cs.channel = txtChannel.getText();
-		cs.colorScheme = (byte)(cmbColorScheme.getSelectedIndex() + 1);
+		ConnectionSettings.colorScheme = (byte)(cmbColorScheme.getSelectedIndex() + 1);
 		TimeFormatter.tsFormat = (String)cmbTSFormat.getSelectedItem();
-		cs.releaseType = (ReleaseType)cmbReleaseType.getSelectedItem();
-		cs.autoconnect = chkAutoConnect.isSelected();
-		cs.enableGUI = chkEnableGUI.isSelected();
-		cs.enableCLI = chkEnableCLI.isSelected();
-		cs.enableTrivia = chkEnableTrivia.isSelected();
-		cs.triviaRoundLength = Integer.parseInt(txtTriviaRoundLength.getText());
-		cs.enableCommands = chkEnableCommands.isSelected();
-		cs.enableFloodProtect = chkEnableFloodProtect.isSelected();
-		cs.packetLog = chkPacketLog.isSelected();
-		cs.whisperBack = chkWhisperBack.isSelected();
+		ConnectionSettings.releaseType = (ReleaseType)cmbReleaseType.getSelectedItem();
+		ConnectionSettings.autoconnect = chkAutoConnect.isSelected();
+		ConnectionSettings.enableGUI = chkEnableGUI.isSelected();
+		ConnectionSettings.enableCLI = chkEnableCLI.isSelected();
+		ConnectionSettings.enableTrivia = chkEnableTrivia.isSelected();
+		ConnectionSettings.triviaRoundLength = Integer.parseInt(txtTriviaRoundLength.getText());
+		ConnectionSettings.enableCommands = chkEnableCommands.isSelected();
+		ConnectionSettings.enableFloodProtect = chkEnableFloodProtect.isSelected();
+		ConnectionSettings.packetLog = chkPacketLog.isSelected();
+		ConnectionSettings.whisperBack = chkWhisperBack.isSelected();
 		
 		cs.save();
 	}
@@ -725,28 +725,28 @@ public class ConfigurationFrame extends JDialog {
 		txtPassword.setText(cs.password);
 		txtEmail.setText(cs.email);
 		cmbProduct.setSelectedIndex(cs.product - 1);
-		txtTrigger.setText(cs.trigger);
-		txtAntiIdle.setText(cs.antiIdle);
-		txtAntiIdleTimer.setText(Integer.toString(cs.antiIdleTimer));
-		chkAntiIdle.setSelected(cs.enableAntiIdle);
+		txtTrigger.setText(ConnectionSettings.trigger);
+		txtAntiIdle.setText(ConnectionSettings.antiIdle);
+		txtAntiIdleTimer.setText(Integer.toString(ConnectionSettings.antiIdleTimer));
+		chkAntiIdle.setSelected(ConnectionSettings.enableAntiIdle);
 		cmbCDKey.setSelectedItem(cs.cdkey);
 		cmbCDKeyLOD.setSelectedItem(cs.cdkeyLOD);
 		cmbCDKeyTFT.setSelectedItem(cs.cdkeyTFT);
 		txtBNCSServer.setText(cs.bncsServer);
 		txtBNLSServer.setText(cs.bnlsServer);
 		txtChannel.setText(cs.channel);
-		cmbColorScheme.setSelectedIndex(cs.colorScheme - 1);
+		cmbColorScheme.setSelectedIndex(ConnectionSettings.colorScheme - 1);
 		cmbTSFormat.setSelectedItem(TimeFormatter.tsFormat);
-		cmbReleaseType.setSelectedItem(cs.releaseType);
-		chkAutoConnect.setSelected(cs.autoconnect);
-		chkEnableGUI.setSelected(cs.enableGUI);
-		chkEnableCLI.setSelected(cs.enableCLI);
-		chkEnableTrivia.setSelected(cs.enableTrivia);
-		txtTriviaRoundLength.setText(Long.toString(cs.triviaRoundLength));
-		chkEnableCommands.setSelected(cs.enableCommands);
-		chkEnableFloodProtect.setSelected(cs.enableFloodProtect);
-		chkPacketLog.setSelected(cs.packetLog);
-		chkWhisperBack.setSelected(cs.whisperBack);
+		cmbReleaseType.setSelectedItem(ConnectionSettings.releaseType);
+		chkAutoConnect.setSelected(ConnectionSettings.autoconnect);
+		chkEnableGUI.setSelected(ConnectionSettings.enableGUI);
+		chkEnableCLI.setSelected(ConnectionSettings.enableCLI);
+		chkEnableTrivia.setSelected(ConnectionSettings.enableTrivia);
+		txtTriviaRoundLength.setText(Long.toString(ConnectionSettings.triviaRoundLength));
+		chkEnableCommands.setSelected(ConnectionSettings.enableCommands);
+		chkEnableFloodProtect.setSelected(ConnectionSettings.enableFloodProtect);
+		chkPacketLog.setSelected(ConnectionSettings.packetLog);
+		chkWhisperBack.setSelected(ConnectionSettings.whisperBack);
 	}
 	
 	private void cancel() {
