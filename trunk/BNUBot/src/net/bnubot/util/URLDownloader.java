@@ -17,15 +17,14 @@ import java.net.URL;
  *
  */
 public class URLDownloader {
-	public static void downloadURL(URL url, String to) throws IOException {
-		File f = new File(to);
-		if(f.exists())
+	public static void downloadURL(URL url, File to) throws IOException {
+		if(to.exists())
 			return;
 		
 		Out.info(URLDownloader.class, "Downloading " + url.toExternalForm());
 		
 		DataInputStream is = new DataInputStream(new BufferedInputStream(url.openStream()));
-		FileOutputStream os = new FileOutputStream(f);
+		FileOutputStream os = new FileOutputStream(to);
 		byte[] b = new byte[0x1000];
 		do {
 			int c = is.read(b);
