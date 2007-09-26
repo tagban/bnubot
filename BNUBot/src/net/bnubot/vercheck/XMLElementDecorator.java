@@ -87,6 +87,14 @@ public class XMLElementDecorator {
 		return null;
 	}
 	
+	public XMLElementDecorator[] getChildren(String name) {
+		ArrayList<XMLElementDecorator> matches = new ArrayList<XMLElementDecorator>();
+		for(XMLElementDecorator child : children)
+			if(child.getName().equals(name))
+				matches.add(child);
+		return matches.toArray(new XMLElementDecorator[matches.size()]);
+	}
+	
 	public XMLElementDecorator getPath(String path) {
 		XMLElementDecorator ed = this;
 		for(String id : path.split("\\/")) {

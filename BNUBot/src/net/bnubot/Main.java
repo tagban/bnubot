@@ -26,7 +26,6 @@ import net.bnubot.util.BNetUser;
 import net.bnubot.util.Out;
 import net.bnubot.util.Settings;
 import net.bnubot.vercheck.CurrentVersion;
-import net.bnubot.vercheck.ReleaseType;
 import net.bnubot.vercheck.VersionCheck;
 
 public class Main {
@@ -165,8 +164,14 @@ public class Main {
 			Out.setOutputConnection(gui);
 		}
 		
-		if(CurrentVersion.fromJar() && ReleaseType.Development.equals(CurrentVersion.version().getReleaseType()))
+		if(CurrentVersion.fromJar() && CurrentVersion.version().getReleaseType().isDevelopment())
 			Out.error(CurrentVersion.class, "WARNING: This is a development build, not for distribution!");
+		
+		try {
+			VersionCheck.checkVersion();
+		} catch(Exception e) {
+			Out.exception(e);
+		}
 		
 		//Bot
 		EventHandler cmd = null;
@@ -203,12 +208,6 @@ public class Main {
 		if(ConnectionSettings.enableTrivia) { 
 			EventHandler trivia = new TriviaEventHandler();
 			primary.addEventHandler(trivia);
-		}
-		
-		try {
-			VersionCheck.checkVersion(ConnectionSettings.releaseType);
-		} catch(Exception e) {
-			Out.exception(e);
 		}
 		
 		primary.start();
