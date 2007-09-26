@@ -91,15 +91,17 @@ public class ConnectionSettings implements Serializable {
 			return "Channel unset";
 
 		switch(product) {
-		case PRODUCT_DIABLO2:
-		case PRODUCT_LORDOFDESTRUCTION:
-		case PRODUCT_WARCRAFT3:
-		case PRODUCT_THEFROZENTHRONE:
 		case PRODUCT_STARCRAFT:
 		case PRODUCT_BROODWAR:
 		case PRODUCT_WAR2BNE:
-		case PRODUCT_STARCRAFTSHAREWARE:
+		case PRODUCT_DIABLO2:
+		case PRODUCT_LORDOFDESTRUCTION:
 		case PRODUCT_JAPANSTARCRAFT:
+		case PRODUCT_WARCRAFT3:
+		case PRODUCT_THEFROZENTHRONE:
+		case PRODUCT_DIABLO:
+		case PRODUCT_DIABLOSHAREWARE:
+		case PRODUCT_STARCRAFTSHAREWARE:
 			break;
 		default:
 			return "Unsupported product";	

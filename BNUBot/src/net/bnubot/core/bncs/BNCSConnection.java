@@ -212,36 +212,31 @@ public class BNCSConnection extends Connection {
 					break;
 				}
 
+				case ConnectionSettings.PRODUCT_DIABLO:
+				case ConnectionSettings.PRODUCT_DIABLOSHAREWARE:
 				case ConnectionSettings.PRODUCT_STARCRAFTSHAREWARE:
-				case ConnectionSettings.PRODUCT_JAPANSTARCRAFT: {
-					p = new BNCSPacket(BNCSCommandIDs.SID_CLIENTID);
-					p.writeDWord(0);	// Registration Version
-					p.writeDWord(0);	// Registration Authority
-					p.writeDWord(0);	// Account Number
-					p.writeDWord(0);	// Registration Token
-					p.writeByte(0);		// LAN computer name
-					p.writeByte(0);		// LAN username
-					p.SendPacket(dos);
-					
-					p = new BNCSPacket(BNCSCommandIDs.SID_STARTVERSIONING);
-					p.writeDWord(PlatformIDs.PLATFORM_IX86);	// Platform ID (IX86)
-					p.writeDWord(productID);					// Product ID
-					p.writeDWord(verByte);						// Version byte
-					p.writeDWord(0);							// Unknown (0)
-					p.SendPacket(dos);
-					break;
-				}
-				
-				case ConnectionSettings.PRODUCT_WAR2BNE:
-					p = new BNCSPacket(BNCSCommandIDs.SID_CLIENTID2);
-					p.writeDWord(1);	// Server version
-					p.writeDWord(0);	// Registration Version
-					p.writeDWord(0);	// Registration Authority
-					p.writeDWord(0);	// Account Number
-					p.writeDWord(0);	// Registration Token
-					p.writeByte(0);		// LAN computer name
-					p.writeByte(0);		// LAN username
-					p.SendPacket(dos);
+				case ConnectionSettings.PRODUCT_JAPANSTARCRAFT:
+				case ConnectionSettings.PRODUCT_WAR2BNE: {
+					if(cs.product == ConnectionSettings.PRODUCT_STARCRAFTSHAREWARE) {
+						p = new BNCSPacket(BNCSCommandIDs.SID_CLIENTID);
+						p.writeDWord(0);	// Registration Version
+						p.writeDWord(0);	// Registration Authority
+						p.writeDWord(0);	// Account Number
+						p.writeDWord(0);	// Registration Token
+						p.writeByte(0);		// LAN computer name
+						p.writeByte(0);		// LAN username
+						p.SendPacket(dos);
+					} else {
+						p = new BNCSPacket(BNCSCommandIDs.SID_CLIENTID2);
+						p.writeDWord(1);	// Server version
+						p.writeDWord(0);	// Registration Version
+						p.writeDWord(0);	// Registration Authority
+						p.writeDWord(0);	// Account Number
+						p.writeDWord(0);	// Registration Token
+						p.writeByte(0);		// LAN computer name
+						p.writeByte(0);		// LAN username
+						p.SendPacket(dos);
+					}
 					
 					p = new BNCSPacket(BNCSCommandIDs.SID_LOCALEINFO);
 					p.writeQWord(0);		// System time
@@ -256,6 +251,8 @@ public class BNCSConnection extends Connection {
 					p.writeNTString(loc.getDisplayCountry());	// Country (English)
 					p.SendPacket(dos);
 					
+					// TODO: JSTR/SSHR: SID_SYSTEMINFO
+					
 					p = new BNCSPacket(BNCSCommandIDs.SID_STARTVERSIONING);
 					p.writeDWord(PlatformIDs.PLATFORM_IX86);	// Platform ID (IX86)
 					p.writeDWord(productID);					// Product ID
@@ -263,6 +260,7 @@ public class BNCSConnection extends Connection {
 					p.writeDWord(0);							// Unknown (0)
 					p.SendPacket(dos);
 					break;
+				}
 					
 				default:
 					recieveError("Don't know how to connect with product " + productID);
