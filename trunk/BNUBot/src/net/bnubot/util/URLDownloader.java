@@ -17,9 +17,29 @@ import java.net.URL;
  *
  */
 public class URLDownloader {
-	public static void downloadURL(URL url, File to) throws IOException {
-		if(to.exists())
+	public static void downloadURL(URL url, File to, boolean force) throws IOException {
+		// Don't download the file if it already exists
+		if(to.exists() && (force == false))
 			return;
+		
+		// Make sure the path to the file exists
+		{
+			String sep = System.getProperty("file.separator");
+			String folders = to.getPath();
+			String path = "";
+			for(int i = 0; i < folders.length(); i++) {
+				path += folders.charAt(i);
+				if(path.endsWith(sep)) {
+					File f = new File(path);
+					if(!f.exists())
+						f.mkdir();
+					if(!f.isDirectory()) {
+						Out.error(URLDownloader.class, path + " is not a directory!");
+						return;
+					}
+				}
+			}
+		}
 		
 		Out.info(URLDownloader.class, "Downloading " + url.toExternalForm());
 		

@@ -44,7 +44,8 @@ public class VersionCheck {
 			for(XMLElementDecorator file : downloads.getChildren("file"))
 				URLDownloader.downloadURL(
 					new URL(file.getChild("from").getString()),
-					new File(file.getChild("to").getString()));
+					new File(file.getChild("to").getString()),
+					false);
 		}
 		
 		XMLElementDecorator gamesElem = elem.getPath("bnubot/games");
@@ -92,19 +93,18 @@ public class VersionCheck {
 			try {
 				File thisJar = new File("BNUBot.jar");
 				if(thisJar.exists()) {
-					String msg = "There is an update to BNU-Bot avalable.\nCurrent version: " + vnCurrent.toString();
+					String msg = "There is an update to BNU-Bot avalable.\nWould you like to update to version " + vnLatest.toString() + "?";
 					if(JOptionPane.showConfirmDialog(null, msg, "Update?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
 						Out.error(VersionCheck.class, "Downloading updated jar!");
-						File nextJar = new File("BNUBot-r" + vnLatest.revision() + ".jar");
-						URLDownloader.downloadURL(new URL(url), nextJar);
-						thisJar.renameTo(new File("BNUBot-r" + vnCurrent.revision() + ".jar"));
-						nextJar.renameTo(new File("BNUBot.jar"));
+						URLDownloader.downloadURL(new URL(url), new File("BNUBot.jar"), true);
 						JOptionPane.showMessageDialog(null, "Update complete. Please restart BNU-Bot.");
 						System.exit(0);
 					}
 					return true;
 				}
-			} catch(Exception e) {}
+			} catch(Exception e) {
+				Out.exception(e);
+			}
 			
 			Out.error(VersionCheck.class, "Update: " + url);
 		}
