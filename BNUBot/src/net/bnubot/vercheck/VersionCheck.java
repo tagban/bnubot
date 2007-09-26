@@ -99,6 +99,7 @@ public class VersionCheck {
 						URLDownloader.downloadURL(new URL(url), nextJar);
 						thisJar.renameTo(new File("BNUBot-r" + vnCurrent.revision() + ".jar"));
 						nextJar.renameTo(new File("BNUBot.jar"));
+						JOptionPane.showMessageDialog(null, "Update complete. Please restart BNU-Bot.");
 						System.exit(0);
 					}
 					return true;
