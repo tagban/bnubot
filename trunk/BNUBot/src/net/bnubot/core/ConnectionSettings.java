@@ -8,6 +8,7 @@ package net.bnubot.core;
 import java.io.Serializable;
 
 import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
 
 import net.bnubot.util.Out;
 import net.bnubot.util.Settings;
@@ -167,10 +168,10 @@ public class ConnectionSettings implements Serializable {
 		return null;
 	}
 	
-	public void setLookAndFeel(String laf) {
+	public void setLookAndFeel(LookAndFeelInfo lafi) {
 		try {
-			UIManager.setLookAndFeel(laf);
-			lookAndFeel = laf;
+			UIManager.setLookAndFeel(lafi.getClassName());
+			lookAndFeel = lafi.getName();
 		} catch(Exception ex) {
 			Out.exception(ex);
 		}
@@ -284,8 +285,12 @@ public class ConnectionSettings implements Serializable {
 					Settings.read(header, "recruitAccess", "10"));
 			recruitTagPrefix =	Settings.read(header, "recruitTagPrefix", "BNU-");
 			recruitTagSuffix =	Settings.read(header, "recruitTagSuffix", null);
-			if(enableGUI)
-				setLookAndFeel(Settings.read(header, "lookAndFeel", UIManager.getLookAndFeel().getClass().getName()));
+			if(enableGUI) {
+				String laf = Settings.read(header, "lookAndFeel", "Metal");
+				for(LookAndFeelInfo lafi : UIManager.getInstalledLookAndFeels())
+					if(lafi.getName().equals(laf))
+						setLookAndFeel(lafi);
+			}
 			TimeFormatter.tsFormat =
 					Settings.read(header, "tsFormat", TimeFormatter.tsFormat);
 			releaseType = Enum.valueOf(ReleaseType.class,
