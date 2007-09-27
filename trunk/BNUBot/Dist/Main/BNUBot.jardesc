@@ -4,7 +4,7 @@
   <options overwrite="false" compress="true" exportErrors="true" exportWarnings="true" saveDescription="true" descriptionLocation="/BNUBot/Dist/BNUBot.jardesc" useSourceFolders="false" buildIfNeeded="true" includeDirectoryEntries="false" storeRefactorings="false"/>
   <storedRefactorings structuralOnly="false" deprecationInfo="true"/>
   <selectedProjects/>
-  <manifest manifestVersion="1.0" usesManifest="true" reuseManifest="true" saveManifest="true" generateManifest="false" manifestLocation="/BNUBot/Dist/MANIFEST.MF" mainClassHandleIdentifier="=BNUBot/src&lt;net.bnubot{Main.java[Main">
+  <manifest manifestVersion="1.0" usesManifest="true" reuseManifest="true" saveManifest="true" generateManifest="false" manifestLocation="/BNUBot/Dist/Main/MANIFEST.MF" mainClassHandleIdentifier="=BNUBot/src&lt;net.bnubot{Main.java[Main">
     <sealing sealJar="false">
       <packagesToSeal/>
       <packagesToUnSeal/>
