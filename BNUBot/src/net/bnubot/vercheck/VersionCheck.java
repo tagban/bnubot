@@ -19,10 +19,11 @@ import net.bnubot.util.URLDownloader;
 public class VersionCheck {
 	protected static XMLElementDecorator elem = null;
 	protected static VersionNumber vnLatest = null;
+	public static final String baseUpdateURL = "http://www.clanbnu.ws/bnubot/version.php?";
 	
 	public static boolean checkVersion() throws Exception {
 		{
-			String url = "http://www.clanbnu.ws/bnubot/version.php?";
+			String url = baseUpdateURL;
 			if(CurrentVersion.version().revision() != null)
 				url += "svn=" + CurrentVersion.version().revision() + "&";
 			url += "release=" + ConnectionSettings.releaseType.toString();
