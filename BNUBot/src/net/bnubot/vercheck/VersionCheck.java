@@ -19,14 +19,17 @@ import net.bnubot.util.URLDownloader;
 public class VersionCheck {
 	protected static XMLElementDecorator elem = null;
 	protected static VersionNumber vnLatest = null;
-	public static final String baseUpdateURL = "http://www.clanbnu.ws/bnubot/version.php?";
 	
 	public static boolean checkVersion() throws Exception {
+		return checkVersion(false, ConnectionSettings.releaseType);
+	}
+	
+	public static boolean checkVersion(boolean forceDownload, ReleaseType rt) throws Exception {
 		{
-			String url = baseUpdateURL;
-			if(CurrentVersion.version().revision() != null)
+			String url = "http://www.clanbnu.ws/bnubot/version.php?";
+			if(!forceDownload && (CurrentVersion.version().revision() != null))
 				url += "svn=" + CurrentVersion.version().revision() + "&";
-			url += "release=" + ConnectionSettings.releaseType.toString();
+			url += "release=" + rt.toString();
 			elem = XMLElementDecorator.parse(url);
 		}
 
@@ -81,22 +84,26 @@ public class VersionCheck {
 				verLatest.getChild("rc").getInt(),
 				verLatest.getChild("svn").getInt(),
 				verLatest.getChild("built").getString());
-		
-		VersionNumber vnCurrent = CurrentVersion.version();
 
-		if(!vnLatest.isNewerThan(vnCurrent))
+		String url = verLatest.getChild("url").getString();
+		if(forceDownload) {
+			if(url == null)
+				return false;
+			URLDownloader.downloadURL(new URL(url), new File("BNUBot.jar"), true);
+			return true;
+		}
+			
+		if(!vnLatest.isNewerThan(CurrentVersion.version()))
 			return false;
 		
 		Out.error(VersionCheck.class, "Latest version: " + vnLatest.toString());
 		
-		String url = verLatest.getChild("url").getString();
 		if(url != null) {
 			try {
 				File thisJar = new File("BNUBot.jar");
 				if(thisJar.exists()) {
 					String msg = "There is an update to BNU-Bot avalable.\nWould you like to update to version " + vnLatest.toString() + "?";
 					if(JOptionPane.showConfirmDialog(null, msg, "Update?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
-						Out.error(VersionCheck.class, "Downloading updated jar!");
 						URLDownloader.downloadURL(new URL(url), new File("BNUBot.jar"), true);
 						JOptionPane.showMessageDialog(null, "Update complete. Please restart BNU-Bot.");
 						System.exit(0);
