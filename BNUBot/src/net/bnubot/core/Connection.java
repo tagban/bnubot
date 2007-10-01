@@ -17,7 +17,7 @@ import net.bnubot.util.Out;
 import net.bnubot.util.StatString;
 import net.bnubot.util.TimeFormatter;
 import net.bnubot.vercheck.CurrentVersion;
-import net.bnubot.vercheck.VersionNumber;
+import net.bnubot.vercheck.ReleaseType;
 
 public abstract class Connection extends Thread implements EventHandler {
 	protected ConnectionSettings cs;
@@ -301,12 +301,12 @@ public abstract class Connection extends Thread implements EventHandler {
 			String prefix;
 			if(ConnectionSettings.whisperBack || forceWhisper) {
 				prefix = "/w " + to.getFullLogonName() + " [BNU";
-				VersionNumber cv = CurrentVersion.version();
-				if(cv.isAlpha())
-					prefix += " alpha";
-				else if(cv.isBeta())
-					prefix += " beta";
-				else if(cv.isReleaseCandidate())
+				ReleaseType rt = CurrentVersion.version().getReleaseType();
+				if(rt.isAlpha())
+					prefix += " Alpha";
+				else if(rt.isBeta())
+					prefix += " Beta";
+				else if(rt.isReleaseCandidate())
 					prefix += " RC";
 				prefix += "] ";
 			} else
