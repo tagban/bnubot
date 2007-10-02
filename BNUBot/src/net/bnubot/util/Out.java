@@ -27,11 +27,10 @@ import net.bnubot.bot.gui.GuiEventHandler;
 public class Out {
 	private static PrintStream outStream = System.out;
 	private static GuiEventHandler outConnection = null;
-	private static boolean globalDebug;
+	private static boolean globalDebug = Boolean.parseBoolean(Settings.read(null, "debug", "false"));
 	private static Properties debug = new SortedProperties();
 	private static File debugFile = new File("debug.properties");
 	static {
-		globalDebug = Boolean.parseBoolean(Settings.read(null, "debug", "false"));
 		try {
 			if(!debugFile.exists())
 				debugFile.createNewFile();
@@ -75,7 +74,7 @@ public class Out {
 	public static void exception(Exception e) {
 		if(outConnection != null)
 			outConnection.recieveError(getRelevantStack(e));
-		else if(outStream != null)
+		if(outStream != null)
 			e.printStackTrace(outStream);
 		else
 			e.printStackTrace();
