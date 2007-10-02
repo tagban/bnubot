@@ -6,13 +6,17 @@
 package net.bnubot.core;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.Socket;
 import java.util.Iterator;
 import java.util.LinkedList;
 
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.util.BNetUser;
+import net.bnubot.util.MirrorSelector;
 import net.bnubot.util.Out;
 import net.bnubot.util.StatString;
 import net.bnubot.util.TimeFormatter;
@@ -20,6 +24,9 @@ import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.ReleaseType;
 
 public abstract class Connection extends Thread implements EventHandler {
+	protected Socket bnlsSocket = null;
+	protected Socket socket = null;
+	
 	protected ConnectionSettings cs;
 	protected ChatQueue cq;
 	protected LinkedList<EventHandler> eventHandlers = new LinkedList<EventHandler>();
@@ -29,6 +36,7 @@ public abstract class Connection extends Thread implements EventHandler {
 	protected LinkedList<Connection> slaves = new LinkedList<Connection>();
 	protected String channelName = null;
 	protected long lastAntiIdle;
+	protected boolean forceReconnect = false;
 	
 	public static final int MAX_CHAT_LENGTH = 242;
 
@@ -111,18 +119,48 @@ public abstract class Connection extends Thread implements EventHandler {
 		return connected;
 	}
 	
+	public void setBNLSConnected(boolean c) throws IOException {
+		if(c) {
+			if(bnlsSocket == null) {
+				InetAddress address = MirrorSelector.getClosestMirror(cs.bnlsServer, cs.bnlsPort);
+        		recieveInfo("Connecting to " + address + ":" + cs.bnlsPort + ".");
+        		bnlsSocket = new Socket(address, cs.bnlsPort);
+			}
+		} else {
+			if(bnlsSocket != null) {
+				bnlsSocket.close();
+				bnlsSocket = null;
+			}
+		}
+	}
+	
 	public void setConnected(boolean c) {
 		if(connected == c)
 			return;
 		
-		if(c) {
-			String v = cs.isValid();
-			if(v != null) {
-				recieveError(v);
-				return;
+		try {
+			if(c) {
+				String v = cs.isValid();
+				if(v != null) {
+					recieveError(v);
+					return;
+				}
+				
+				if(socket == null) {
+					InetAddress address = MirrorSelector.getClosestMirror(cs.bncsServer, cs.port);
+					recieveInfo("Connecting to " + address + ":" + cs.port + ".");
+					socket = new Socket(address, cs.port);
+				}
+			} else {
+				if(socket != null) {
+					socket.close();
+					socket = null;
+				}
 			}
+		} catch(IOException e) {
+			Out.fatalException(e);
 		}
-
+		
 		connected = c;
 		
 		if(c)
