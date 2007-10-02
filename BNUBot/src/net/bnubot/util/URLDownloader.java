@@ -9,7 +9,6 @@ import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.net.URL;
 
 /**
@@ -17,10 +16,20 @@ import java.net.URL;
  *
  */
 public class URLDownloader {
-	public static void downloadURL(URL url, File to, boolean force) throws IOException {
+	public static void downloadURL(URL url, File to, SHA1Sum sha1, boolean force) throws Exception {
 		// Don't download the file if it already exists
-		if(to.exists() && (force == false))
-			return;
+		if(to.exists() && (force == false)) {
+			// If no MD5 sum was given
+			if(sha1 == null)
+				return;
+			
+			// If the MD5 sums match
+			SHA1Sum fSHA1 = new SHA1Sum(to);
+			if(fSHA1.equals(sha1))
+				return;
+			
+			Out.info(URLDownloader.class, "SHA1 mismatch for " + to.getName() + "\nExpected: " + sha1 + "\nCalculated: " + fSHA1);
+		}
 		
 		// Make sure the path to the file exists
 		{
