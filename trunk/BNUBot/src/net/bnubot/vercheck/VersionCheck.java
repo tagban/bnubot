@@ -10,11 +10,12 @@ import java.net.URL;
 
 import javax.swing.JOptionPane;
 
-import org.jbls.util.Constants;
-
 import net.bnubot.core.ConnectionSettings;
 import net.bnubot.util.Out;
+import net.bnubot.util.SHA1Sum;
 import net.bnubot.util.URLDownloader;
+
+import org.jbls.util.Constants;
 
 public class VersionCheck {
 	protected static XMLElementDecorator elem = null;
@@ -30,6 +31,7 @@ public class VersionCheck {
 			if(!forceDownload && (CurrentVersion.version().revision() != null))
 				url += "svn=" + CurrentVersion.version().revision() + "&";
 			url += "release=" + rt.toString();
+			Out.debug(VersionCheck.class, "Requesting latest version from " + url);
 			elem = XMLElementDecorator.parse(url);
 		}
 
@@ -42,14 +44,20 @@ public class VersionCheck {
 		XMLElementDecorator motd = elem.getPath("bnubot/motd");
 		if((motd != null) && (motd.getString() != null))
 			Out.info(VersionCheck.class, motd.getString());
-
+		
 		XMLElementDecorator downloads = elem.getPath("bnubot/downloads");
 		if(downloads != null) {
-			for(XMLElementDecorator file : downloads.getChildren("file"))
+			for(XMLElementDecorator file : downloads.getChildren("file")) {
+				XMLElementDecorator sha1Element = file.getChild("sha1");
+				SHA1Sum sha1 = null;
+				if(sha1Element != null)
+					sha1 = new SHA1Sum(sha1Element.getString());
 				URLDownloader.downloadURL(
 					new URL(file.getChild("from").getString()),
 					new File(file.getChild("to").getString()),
+					sha1,
 					false);
+			}
 		}
 		
 		XMLElementDecorator gamesElem = elem.getPath("bnubot/games");
@@ -89,7 +97,7 @@ public class VersionCheck {
 		if(forceDownload) {
 			if(url == null)
 				return false;
-			URLDownloader.downloadURL(new URL(url), new File("BNUBot.jar"), true);
+			URLDownloader.downloadURL(new URL(url), new File("BNUBot.jar"), null, true);
 			return true;
 		}
 			
@@ -104,7 +112,7 @@ public class VersionCheck {
 				if(thisJar.exists()) {
 					String msg = "There is an update to BNU-Bot avalable.\nWould you like to update to version " + vnLatest.toString() + "?";
 					if(JOptionPane.showConfirmDialog(null, msg, "Update?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
-						URLDownloader.downloadURL(new URL(url), new File("BNUBot.jar"), true);
+						URLDownloader.downloadURL(new URL(url), new File("BNUBot.jar"), null, true);
 						JOptionPane.showMessageDialog(null, "Update complete. Please restart BNU-Bot.");
 						System.exit(0);
 					}
