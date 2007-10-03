@@ -370,7 +370,7 @@ public class BNCSConnection extends Connection {
 		lastAntiIdle = System.currentTimeMillis();
 		lastNullPacket = System.currentTimeMillis();
 		
-		while(!socket.isClosed() && connected) {
+		while(connected && !socket.isClosed()) {
 			long timeNow = System.currentTimeMillis();
 			
 			//Send null packets every 30 seconds
