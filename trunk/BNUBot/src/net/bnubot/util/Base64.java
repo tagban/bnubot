@@ -3,6 +3,8 @@
  * $Id$
  */
 
+package net.bnubot.util;
+
 /**
  * A Base64 Encoder/Decoder.
  * 
@@ -27,9 +29,6 @@
  * &nbsp; New method encode(byte[],int) added.<br>
  * &nbsp; New method decode(String) added.<br>
  */
-
-package net.bnubot.util;
-
 public class Base64 {
 
 	// Mapping table from 6-bit nibbles to Base64 characters.
