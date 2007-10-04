@@ -22,4 +22,9 @@ public class HexDumpTest extends TestCase {
 		assertEquals(ProductIDs.PRODUCT_W2BN, HexDump.PrettyToDWord("W2BN"));
 		assertEquals(ProductIDs.PRODUCT_W3XP, HexDump.PrettyToDWord("W3XP"));
 	}
+	
+	public void testHexDump() {
+		assertEquals("00017f80ff", HexDump.encode(new byte[] {0x00, 0x01, 0x7F, (byte)0x80, (byte)0xFF}));
+		assertEquals("00017f80ff", HexDump.encode(HexDump.decode("00017f80ff")));
+	}
 }
