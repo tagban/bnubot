@@ -1,4 +1,9 @@
 /**
+ * This file is distributed under the GPL 
+ * $Id$
+ */
+
+/**
  * A Base64 Encoder/Decoder.
  * 
  * <p>
