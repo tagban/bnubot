@@ -74,6 +74,44 @@ public class HexDump {
 		return hexChr((b & 0xF000) >> 12) + hexChr((b & 0x0F00) >> 8) + hexChr((b & 0x00F0) >> 4) + hexChr(b & 0x000F);
 	}
 	
+	public static String encode(byte data[]) {
+		String output = new String();
+		for (byte element : data)
+			output += toHex(element);
+		return output;
+	}
+	
+	private static byte decode(char c1, char c2) {
+		byte output;
+		if((c1 >= '0') && (c1 <= '9'))
+			output = (byte)(c1 - '0');
+		else if((c1 >= 'A') && (c1 <= 'F'))
+			output = (byte)((c1 - 'A') + 10);
+		else if((c1 >= 'a') && (c1 <= 'f'))
+			output = (byte)((c1 - 'a') + 10);
+		else
+			throw new IllegalArgumentException("Invalid hex string");
+		output <<= 4;
+		if((c2 >= '0') && (c2 <= '9'))
+			output += (byte)(c2 - '0');
+		else if((c2 >= 'A') && (c2 <= 'F'))
+			output += (byte)((c2 - 'A') + 10);
+		else if((c2 >= 'a') && (c2 <= 'f'))
+			output += (byte)((c2 - 'a') + 10);
+		else
+			throw new IllegalArgumentException("Invalid hex string");
+		return output;
+	}
+	
+	public static byte[] decode(String data) {
+		int len = data.length() >> 1;
+		byte[] output = new byte[len];
+		int pos = 0;
+		for(int offset = 0; offset < len; offset++)
+			output[offset] = decode(data.charAt(pos++), data.charAt(pos++));
+		return output;
+	}
+	
 	public static String hexDump(byte data[]) {
 		String output = new String();
 		for(int offset = 0; offset < data.length; offset += 16) {
