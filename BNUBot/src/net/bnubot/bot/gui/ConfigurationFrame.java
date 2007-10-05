@@ -48,6 +48,7 @@ import net.bnubot.bot.gui.KeyManager.CDKey;
 import net.bnubot.core.ConnectionSettings;
 import net.bnubot.util.Out;
 import net.bnubot.util.TimeFormatter;
+import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.ReleaseType;
 
 public class ConfigurationFrame extends JDialog {
@@ -229,27 +230,7 @@ public class ConfigurationFrame extends JDialog {
 
 				txtAntiIdleTimer = makeText("Anti-Idle Timer", Integer.toString(ConnectionSettings.antiIdleTimer), boxSettings);
 
-				CDKey[] CDKeys = KeyManager.getKeys(KeyManager.PRODUCT_ALLNORMAL);
-				if(CDKeys.length == 0) {
-					JOptionPane.showMessageDialog(this,
-							"You have no CD keys in cdkeys.txt.",
-							"Error",
-							JOptionPane.ERROR_MESSAGE);
-					addConnectionStuff = false;
-					break ConnectionStuff;
-				}
-				cmbCDKey = makeCombo("CD key", CDKeys, false, boxSettings);
-				cmbCDKey.setSelectedItem(cs.cdkey);
-
-				CDKeys = KeyManager.getKeys(KeyManager.PRODUCT_D2XP);
-				cmbCDKeyLOD = makeCombo("LOD key", CDKeys, false, boxSettings);
-				cmbCDKeyLOD.setSelectedItem(cs.cdkeyLOD);
-
-				CDKeys = KeyManager.getKeys(KeyManager.PRODUCT_W3XP);
-				cmbCDKeyTFT = makeCombo("TFT key", CDKeys, false, boxSettings);
-				cmbCDKeyTFT.setSelectedItem(cs.cdkeyTFT);
-
-				cmbProduct = makeCombo("Product", Constants.prods, false, boxSettings);
+				cmbProduct = makeCombo("Product", Constants.prodsDisplay, false, boxSettings);
 				cmbProduct.addItemListener(new ItemListener() {
 					public void itemStateChanged(ItemEvent e) {
 						int prod = KeyManager.PRODUCT_ALLNORMAL;
@@ -286,23 +267,54 @@ public class ConfigurationFrame extends JDialog {
 
 					}
 				});
+				//Initialize CD Keys combo box before setting product
+
+				CDKey[] CDKeys = KeyManager.getKeys(KeyManager.PRODUCT_ALLNORMAL);
+				if(CDKeys.length == 0) {
+					JOptionPane.showMessageDialog(this,
+							"You have no CD keys in cdkeys.txt.",
+							"Error",
+							JOptionPane.ERROR_MESSAGE);
+					addConnectionStuff = false;
+					break ConnectionStuff;
+				}
+				cmbCDKey = makeCombo("CD key", CDKeys, false, boxSettings);
+				
 				cmbProduct.setSelectedIndex(cs.product - 1);
+				cmbCDKey.setSelectedItem(cs.cdkey);
+
+				CDKeys = KeyManager.getKeys(KeyManager.PRODUCT_D2XP);
+				cmbCDKeyLOD = makeCombo("LOD key", CDKeys, false, boxSettings);
+				cmbCDKeyLOD.setSelectedItem(cs.cdkeyLOD);
+
+				CDKeys = KeyManager.getKeys(KeyManager.PRODUCT_W3XP);
+				cmbCDKeyTFT = makeCombo("TFT key", CDKeys, false, boxSettings);
+				cmbCDKeyTFT.setSelectedItem(cs.cdkeyTFT);
 
 				txtBNCSServer = makeText("Battle.net Server", cs.bncsServer, boxSettings);
 				txtBNLSServer = makeText("BNLS Server", cs.bnlsServer, boxSettings);
 				txtChannel = makeText("Channel", cs.channel, boxSettings);
 
-				String[] values = { TimeFormatter.tsFormat, "%1$tH:%1$tM:%1$tS.%1$tL", "%1$tH:%1$tM:%1$tS", "%1$tH:%1$tM" };
+				Object[] values = { TimeFormatter.tsFormat, "%1$tH:%1$tM:%1$tS.%1$tL", "%1$tH:%1$tM:%1$tS", "%1$tH:%1$tM" };
 				cmbTSFormat = makeCombo("TimeStamp Format", values, true, boxSettings);
 				cmbTSFormat.setSelectedItem(TimeFormatter.tsFormat);
-
-				cmbReleaseType = makeCombo("Version Check", ReleaseType.values(), false, boxSettings);
+			
+				if(CurrentVersion.version().getReleaseType().isDevelopment())
+					values = new ReleaseType[] {
+						ReleaseType.Development };
+				else
+					values = new ReleaseType[] {
+						ReleaseType.Stable,
+						ReleaseType.ReleaseCandidate,
+						ReleaseType.Beta,
+						ReleaseType.Alpha };
+				cmbReleaseType = makeCombo("Version Check", values, false, boxSettings);
 				cmbReleaseType.setSelectedItem(ConnectionSettings.releaseType);
 
 				values = new String[] { "Starcraft", "Diablo 2" };
 				cmbColorScheme = makeCombo("Color Scheme", values, false, boxSettings);
 				cmbColorScheme.setSelectedIndex(ConnectionSettings.colorScheme - 1);
-
+				
 				ArrayList<String> lafs = new ArrayList<String>();
 				for(LookAndFeelInfo lafi : UIManager.getInstalledLookAndFeels())
 					lafs.add(lafi.getName());
