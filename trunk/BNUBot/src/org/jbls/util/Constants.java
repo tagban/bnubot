@@ -16,8 +16,31 @@ public final class Constants {
 	public static final byte PRODUCT_DIABLOSHAREWARE = 0x0A;
 	public static final byte PRODUCT_STARCRAFTSHAREWARE = 0x0B;
 
-	public static String[] prods = { "STAR", "SEXP", "W2BN", "D2DV", "D2XP",
-			"JSTR", "WAR3", "W3XP", "DRTL", "DSHR", "SSHR" };
+	public static String[] prods = {
+		"STAR",
+		"SEXP",
+		"W2BN",
+		"D2DV",
+		"D2XP",
+		"JSTR",
+		"WAR3",
+		"W3XP",
+		"DRTL",
+		"DSHR",
+		"SSHR" };
+
+	public static String[] prodsDisplay = {
+		"Starcraft",
+		"Starcraft: Brood War",
+		"Warcraft II",
+		"Diablo II",
+		"Diablo II: Lord of Destruction",
+		"Starcraft Japanese",
+		"Warcraft III",
+		"Warcraft III: The Frozen Throne",
+		"Diablo",
+		"Diablo Shareware",
+		"Starcraft Shareware" };
 
 	public static String[][] IX86files = {
 			{ "IX86/STAR/", "Starcraft.exe", "Storm.dll", "Battle.snp" },
