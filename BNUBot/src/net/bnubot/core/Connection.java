@@ -26,7 +26,7 @@ import net.bnubot.vercheck.ReleaseType;
 public abstract class Connection extends Thread implements EventHandler {
 	protected Socket bnlsSocket = null;
 	protected Socket socket = null;
-	
+
 	protected ConnectionSettings cs;
 	protected ChatQueue cq;
 	protected LinkedList<EventHandler> eventHandlers = new LinkedList<EventHandler>();
@@ -37,35 +37,35 @@ public abstract class Connection extends Thread implements EventHandler {
 	protected String channelName = null;
 	protected long lastAntiIdle;
 	protected boolean forceReconnect = false;
-	
+
 	public static final int MAX_CHAT_LENGTH = 242;
 
 	private int eh_semaphore = 0;
 	private int eh2_semaphore = 0;
-	
+
 	private void waitForEHsemaphore() {
 		while(eh_semaphore > 0) {
 			try {Thread.sleep(10);} catch (InterruptedException e) {Out.exception(e);}
 			Thread.yield();
 		}
 	}
-	
+
 	private void waitForEH2semaphore() {
 		while(eh2_semaphore > 0) {
 			try {Thread.sleep(10);} catch (InterruptedException e) {Out.exception(e);}
 			Thread.yield();
 		}
 	}
-	
+
 	public Connection(ConnectionSettings cs, ChatQueue cq) {
 		super(Connection.class.getSimpleName());
-		
+
 		this.cs = cs;
 		this.cq = cq;
-		
+
 		if(cq != null)
 			cq.add(this);
-		
+
 		try {
 			String realm = cs.bncsServer;
 			int i = realm.indexOf('.');
@@ -83,48 +83,49 @@ public abstract class Connection extends Thread implements EventHandler {
 	public abstract void sendClanMOTD(Object cookie) throws Exception;
 	public abstract void sendClanSetMOTD(String text) throws Exception;
 	public abstract void sendProfile(String user) throws Exception;
-	
+
 	public void sendProfile(BNetUser user) throws Exception {
 		sendProfile(user.getFullAccountName());
 	}
-	
+
 	public abstract void reconnect();
 	public abstract boolean isOp();
 	public abstract int getProductID();
-	
+
 	public void addSlave(Connection c) {
 		slaves.add(c);
 	}
-	
+
 	public void addEventHandler(EventHandler e) {
 		waitForEHsemaphore();
-		
+
 		eventHandlers.add(e);
 		e.initialize(this);
 	}
-	
+
 	public void addSecondaryEventHandler(EventHandler e) {
 		waitForEH2semaphore();
-		
+
 		eventHandlers2.add(e);
 	}
-	
+
 	public void removeEventHandler(EventHandler e) {
 		waitForEHsemaphore();
-		
+
 		eventHandlers.remove(e);
 	}
 
 	public boolean isConnected() {
 		return connected;
 	}
-	
+
 	public void setBNLSConnected(boolean c) throws IOException {
 		if(c) {
 			if(bnlsSocket == null) {
 				InetAddress address = MirrorSelector.getClosestMirror(cs.bnlsServer, cs.bnlsPort);
-        		recieveInfo("Connecting to " + address + ":" + cs.bnlsPort + ".");
-        		bnlsSocket = new Socket(address, cs.bnlsPort);
+				recieveInfo("Connecting to " + address + ":" + cs.bnlsPort + ".");
+				bnlsSocket = new Socket(address, cs.bnlsPort);
+				bnlsSocket.setKeepAlive(true);
 			}
 		} else {
 			if(bnlsSocket != null) {
@@ -133,11 +134,11 @@ public abstract class Connection extends Thread implements EventHandler {
 			}
 		}
 	}
-	
+
 	public void setConnected(boolean c) {
 		if(connected == c)
 			return;
-		
+
 		try {
 			if(c) {
 				String v = cs.isValid();
@@ -145,7 +146,7 @@ public abstract class Connection extends Thread implements EventHandler {
 					recieveError(v);
 					return;
 				}
-				
+
 				if(socket == null) {
 					InetAddress address = MirrorSelector.getClosestMirror(cs.bncsServer, cs.port);
 					recieveInfo("Connecting to " + address + ":" + cs.port + ".");
@@ -160,26 +161,26 @@ public abstract class Connection extends Thread implements EventHandler {
 		} catch(IOException e) {
 			Out.fatalException(e);
 		}
-		
+
 		connected = c;
-		
+
 		if(c)
 			bnetConnected();
 		else
 			bnetDisconnected();
 	}
-	
+
 	protected long lastChatTime = 0;
 	protected int lastChatLen = 0;
 	private int increaseDelay(int bytes) {
 		long thisTime = System.currentTimeMillis();
-		
+
 		if(lastChatTime == 0) {
 			lastChatTime = thisTime;
 			lastChatLen = bytes;
 			return 0;
 		}
-		
+
 		int delay = checkDelay();
 		lastChatTime = thisTime;
 		lastChatLen = bytes;
@@ -204,23 +205,23 @@ public abstract class Connection extends Thread implements EventHandler {
 	public boolean canSendChat() {
 		if(channelName == null)
 			return false;
-		
+
 		if(myUser == null)
 			return false;
-		
+
 		return (checkDelay() <= 0);
 	}
-	
+
 	public void sendChatNow(String text) {
 		lastAntiIdle = System.currentTimeMillis();
-		
+
 		if(canSendChat())
 			increaseDelay(text.length());
 		else
 			// Fake the bot in to thinking we sent chat in the future
 			lastChatTime = System.currentTimeMillis() + increaseDelay(text.length());
 	}
-	
+
 	public String cleanText(String text) {
 		//Remove all chars under 0x20
 		byte[] data = text.getBytes();
@@ -229,38 +230,38 @@ public abstract class Connection extends Thread implements EventHandler {
 			if(element >= 0x20)
 				text += (char)element;
 		}
-		
+
 		boolean somethingDone = true;
 		while(somethingDone) {
 			somethingDone = false;
-			
+
 			if(text.indexOf('%') == -1)
 				break;
-			
+
 			int i = text.indexOf("%uptime%");
 			if(i != -1) {
 				somethingDone = true;
-				
+
 				String first = text.substring(0, i);
 				String last = text.substring(i + 8);
-				
+
 				long uptime = java.lang.management.ManagementFactory.getRuntimeMXBean().getUptime();
 				text = first + TimeFormatter.formatTime(uptime) + last;
 			}
-			
+
 			i = text.indexOf("%trigger%");
 			if(i != -1) {
 				somethingDone = true;
-				
+
 				String first = text.substring(0, i);
 				String last = text.substring(i + 9);
 				text = first + ConnectionSettings.trigger + last;
 			}
-			
+
 			i = text.indexOf("%version%");
 			if(i != -1) {
 				somethingDone = true;
-				
+
 				String first = text.substring(0, i);
 				String last = text.substring(i + 9);
 				text = first + CurrentVersion.version() + last;
@@ -268,7 +269,7 @@ public abstract class Connection extends Thread implements EventHandler {
 		}
 		return text;
 	}
-	
+
 	public void sendChat(String text) {
 		if(text == null)
 			return;
@@ -276,7 +277,7 @@ public abstract class Connection extends Thread implements EventHandler {
 			return;
 		if(!isConnected())
 			return;
-		
+
 		if(text.charAt(0) == '/') {
 			String[] command = text.substring(1).split(" ", 3);
 			switch(command[0].charAt(0)) {
@@ -284,7 +285,7 @@ public abstract class Connection extends Thread implements EventHandler {
 				if(command[0].equals("cmd")) {
 					if(command.length == 1)
 						break;
-					
+
 					String params = null;
 					if(command.length > 2)
 						params = command[2];
@@ -292,7 +293,7 @@ public abstract class Connection extends Thread implements EventHandler {
 					Iterator<EventHandler> it = eventHandlers.iterator();
 					while(it.hasNext())
 						it.next().parseCommand(myUser, command[1], params, true);
-					
+
 					return;
 				}
 				break;
@@ -311,12 +312,12 @@ public abstract class Connection extends Thread implements EventHandler {
 				break;
 			}
 		}
-		
+
 		try {
 			text = new String(text.getBytes(), "UTF-8");
 		} catch (UnsupportedEncodingException e) {}
 		text = cleanText(text);
-		
+
 		if(text.length() == 0)
 			return;
 
@@ -326,13 +327,13 @@ public abstract class Connection extends Thread implements EventHandler {
 			cq.enqueue(text, ConnectionSettings.enableFloodProtect);
 		}
 	}
-	
+
 	public void sendChat(BNetUser to, String text, boolean forceWhisper) {
 		if(text == null)
 			return;
 
 		text = cleanText(text);
-		
+
 		if(myUser.equals(to))
 			recieveInfo(text);
 		else {
@@ -349,7 +350,7 @@ public abstract class Connection extends Thread implements EventHandler {
 				prefix += "] ";
 			} else
 				prefix = to.getShortPrettyName() + ": ";
-			
+
 			//Split up the text in to appropriate sized pieces
 			int pieceSize = MAX_CHAT_LENGTH - prefix.length();
 			for(int i = 0; i < text.length(); i += pieceSize) {
@@ -360,11 +361,11 @@ public abstract class Connection extends Thread implements EventHandler {
 			}
 		}
 	}
-	
+
 	public File downloadFile(String filename) {
 		return BNFTPConnection.downloadFile(cs, filename);
 	}
-	
+
 	public ConnectionSettings getConnectionSettings() {
 		return cs;
 	}
@@ -372,7 +373,7 @@ public abstract class Connection extends Thread implements EventHandler {
 	public BNetUser getMyUser() {
 		return myUser;
 	}
-	
+
 	/*
 	 * EventHandler methods follow
 	 * 
@@ -381,17 +382,17 @@ public abstract class Connection extends Thread implements EventHandler {
 	public void initialize(Connection c) {
 		new UnsupportedOperationException();
 	}
-	
+
 	public synchronized void bnetConnected() {
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
 			it.next().bnetConnected();
 	}
-	
+
 	public synchronized void bnetDisconnected() {
 		channelName = null;
 		myUser = null;
-		
+
 		eh_semaphore++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
@@ -414,7 +415,7 @@ public abstract class Connection extends Thread implements EventHandler {
 			it.next().titleChanged();
 		eh_semaphore--;
 	}
-	
+
 	public synchronized void joinedChannel(String channel) {
 		channelName = channel;
 
@@ -434,9 +435,9 @@ public abstract class Connection extends Thread implements EventHandler {
 			} catch (Exception e) {
 				Out.exception(e);
 			}
-		eh2_semaphore--;
+			eh2_semaphore--;
 	}
-	
+
 	public synchronized void channelUser(BNetUser user, StatString statstr) {
 		eh_semaphore++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
@@ -444,7 +445,7 @@ public abstract class Connection extends Thread implements EventHandler {
 			it.next().channelUser(user, statstr);
 		eh_semaphore--;
 	}
-	
+
 	public synchronized void channelJoin(BNetUser user, StatString statstr) {
 		eh_semaphore++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
@@ -452,7 +453,7 @@ public abstract class Connection extends Thread implements EventHandler {
 			it.next().channelJoin(user, statstr);
 		eh_semaphore--;
 	}
-	
+
 	public synchronized void channelLeave(BNetUser user) {
 		eh_semaphore++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
@@ -514,7 +515,7 @@ public abstract class Connection extends Thread implements EventHandler {
 			it.next().recieveError(text);
 		eh2_semaphore--;
 	}
-	
+
 	public synchronized void whisperSent(BNetUser user, String text) {
 		eh_semaphore++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
@@ -528,7 +529,7 @@ public abstract class Connection extends Thread implements EventHandler {
 			it.next().whisperSent(user, text);
 		eh2_semaphore--;
 	}
-	
+
 	public synchronized void whisperRecieved(BNetUser user, String text) {
 		eh_semaphore++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
@@ -542,9 +543,9 @@ public abstract class Connection extends Thread implements EventHandler {
 			it.next().whisperRecieved(user, text);
 		eh2_semaphore--;
 	}
-	
+
 	// Realms
-	
+
 	public synchronized void queryRealms2(String[] realms) {
 		eh_semaphore++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
@@ -552,7 +553,7 @@ public abstract class Connection extends Thread implements EventHandler {
 			it.next().queryRealms2(realms);
 		eh_semaphore--;
 	}
-	
+
 	public synchronized void logonRealmEx(int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName) {
 		eh_semaphore++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
@@ -560,7 +561,7 @@ public abstract class Connection extends Thread implements EventHandler {
 			it.next().logonRealmEx(MCPChunk1, ip, port, MCPChunk2, uniqueName);
 		eh_semaphore--;
 	}
-	
+
 	// Friends
 
 	public synchronized void friendsList(FriendEntry[] entries) {
@@ -570,7 +571,7 @@ public abstract class Connection extends Thread implements EventHandler {
 			it.next().friendsList(entries);
 		eh_semaphore--;
 	}
-	
+
 	public synchronized void friendsUpdate(FriendEntry friend) {
 		eh_semaphore++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
@@ -578,7 +579,7 @@ public abstract class Connection extends Thread implements EventHandler {
 			it.next().friendsUpdate(friend);
 		eh_semaphore--;
 	}
-	
+
 	public synchronized void friendsAdd(FriendEntry friend) {
 		eh_semaphore++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
@@ -586,7 +587,7 @@ public abstract class Connection extends Thread implements EventHandler {
 			it.next().friendsAdd(friend);
 		eh_semaphore--;
 	}
-	
+
 	public void friendsRemove(byte entry) {
 		eh_semaphore++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
@@ -594,7 +595,7 @@ public abstract class Connection extends Thread implements EventHandler {
 			it.next().friendsRemove(entry);
 		eh_semaphore--;
 	}
-	
+
 	public void friendsPosition(byte oldPosition, byte newPosition) {
 		eh_semaphore++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
@@ -602,9 +603,9 @@ public abstract class Connection extends Thread implements EventHandler {
 			it.next().friendsPosition(oldPosition, newPosition);
 		eh_semaphore--;
 	}
-	
+
 	// Clan
-	
+
 	public synchronized void clanMOTD(Object cookie, String text) {
 		eh_semaphore++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
@@ -620,7 +621,7 @@ public abstract class Connection extends Thread implements EventHandler {
 			it.next().clanMemberList(members);
 		eh_semaphore--;
 	}
-	
+
 	public synchronized void clanMemberRemoved(String username) {
 		eh_semaphore++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
@@ -628,7 +629,7 @@ public abstract class Connection extends Thread implements EventHandler {
 			it.next().clanMemberRemoved(username);
 		eh_semaphore--;
 	}
-	
+
 	public synchronized void clanMemberRankChange(byte oldRank, byte newRank, String user) {
 		eh_semaphore++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
@@ -636,7 +637,7 @@ public abstract class Connection extends Thread implements EventHandler {
 			it.next().clanMemberRankChange(oldRank, newRank, user);
 		eh_semaphore--;
 	}
-	
+
 	public synchronized void clanMemberStatusChange(ClanMember member) {
 		eh_semaphore++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
