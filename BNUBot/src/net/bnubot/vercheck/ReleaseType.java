@@ -18,18 +18,22 @@ public enum ReleaseType {
 	}
 	
 	public boolean isDevelopment() {
-		return (t >= Development.t);
+		return (t == Development.t);
 	}
 	
 	public boolean isAlpha() {
-		return (t >= Alpha.t);
+		return (t == Alpha.t);
 	}
 	
 	public boolean isBeta() {
-		return (t >= Beta.t);
+		return (t == Beta.t);
 	}
 	
 	public boolean isReleaseCandidate() {
-		return (t >= ReleaseCandidate.t);
+		return (t == ReleaseCandidate.t);
+	}
+	
+	public boolean isStable() {
+		return (t == Stable.t);
 	}
 }

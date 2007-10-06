@@ -64,6 +64,12 @@ public class VersionNumber {
 		if(VER_MINOR < vn.VER_MINOR) return false;
 		if(VER_REVISION > vn.VER_REVISION) return true;
 		if(VER_REVISION < vn.VER_REVISION) return false;
+		
+		if(vn.RELEASE_TYPE.isStable())
+			return false;
+		
+		if(RELEASE_TYPE.isStable())
+			return true;
 
 		if(VER_RELEASE_CANDIDATE != vn.VER_RELEASE_CANDIDATE) {
 			if(VER_RELEASE_CANDIDATE == null)
