@@ -17,7 +17,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JFrame;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JTextArea;
@@ -29,7 +29,7 @@ import net.bnubot.bot.database.Database;
 import net.bnubot.util.Out;
 import net.bnubot.util.TimeFormatter;
 
-public class DatabaseAccountEditor extends JFrame {
+public class DatabaseAccountEditor extends JDialog {
 	private static final long serialVersionUID = -3408441296609359300L;
 
 	private Database d = null;
@@ -54,11 +54,11 @@ public class DatabaseAccountEditor extends JFrame {
 	
 	public DatabaseAccountEditor(Database d) {
 		this.d = d;
-		
 		initializeGui();
-		pack();
 		setTitle("Account Editor");
-		setAlwaysOnTop(true);
+		
+		pack();
+		setModal(true);
 		setVisible(true);
 	}
 
