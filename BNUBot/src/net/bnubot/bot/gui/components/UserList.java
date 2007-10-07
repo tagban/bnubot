@@ -178,7 +178,7 @@ public class UserList extends JPanel {
 						if(ui.label == jl) {
 							switch(arg0.getButton()) {
 							case MouseEvent.BUTTON1:
-								Out.info(getClass(), "Left clicked on " + ui.label.getText());
+								// "Left clicked on " + ui.label.getText()
 								break;
 							case MouseEvent.BUTTON2:
 								try { c.sendProfile(ui.user); } catch(Exception e) { Out.exception(e); }
