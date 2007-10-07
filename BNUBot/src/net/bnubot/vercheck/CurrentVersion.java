@@ -31,6 +31,16 @@ public final class CurrentVersion {
 	private static VersionNumber VER = null;
 	private static String BUILD_DATE = null;
 	private static boolean fromJar = false; 
+
+	private static final String sReleaseType = "RELEASE_TYPE";
+	private static final String sVerMajor = "VER_MAJOR";
+	private static final String sVerMinor = "VER_MINOR";
+	private static final String sVerRevision = "VER_REVISION";
+	private static final String sVerReleaseCandidate = "VER_RELEASE_CANDIDATE";
+	private static final String sVerAlpha = "VER_ALPHA";
+	private static final String sVerBeta = "VER_BETA";
+	private static final String sVerSVNRevision = "VER_SVN_REVISION";
+	private static final String sBuildDate = "BUILD_DATE";
 	
 	private static final Integer revision(File f) {
 		if(VER_SVN_SET)
@@ -165,41 +175,44 @@ public final class CurrentVersion {
 			is.close();
 			
 			Integer VER_SVN_REVISION_FILE = null;
-			if(versionprops.containsKey("RELEASE_TYPE"))
-				RELEASE_TYPE = Enum.valueOf(ReleaseType.class, (String)versionprops.get("RELEASE_TYPE"));
-			if(versionprops.containsKey("VER_MAJOR"))
-				VER_MAJOR = Integer.parseInt((String)versionprops.get("VER_MAJOR"));
-			if(versionprops.containsKey("VER_MINOR"))
-				VER_MINOR = Integer.parseInt((String)versionprops.get("VER_MINOR"));
-			if(versionprops.containsKey("VER_REVISION"))
-				VER_REVISION = Integer.parseInt((String)versionprops.get("VER_REVISION"));
-			if(versionprops.containsKey("VER_RELEASE_CANDIDATE"))
-				VER_RELEASE_CANDIDATE = Integer.parseInt((String)versionprops.get("VER_RELEASE_CANDIDATE"));
-			if(versionprops.containsKey("VER_ALPHA"))
-				VER_ALPHA = Integer.parseInt((String)versionprops.get("VER_ALPHA"));
-			if(versionprops.containsKey("VER_BETA"))
-				VER_BETA = Integer.parseInt((String)versionprops.get("VER_BETA"));
-			if(versionprops.containsKey("VER_SVN_REVISION"))
-				VER_SVN_REVISION_FILE = Integer.parseInt((String)versionprops.get("VER_SVN_REVISION"));
+			if(versionprops.containsKey(sReleaseType))
+				RELEASE_TYPE = Enum.valueOf(ReleaseType.class, (String)versionprops.get(sReleaseType));
+			if(versionprops.containsKey(sVerMajor))
+				VER_MAJOR = Integer.parseInt((String)versionprops.get(sVerMajor));
+			if(versionprops.containsKey(sVerMinor))
+				VER_MINOR = Integer.parseInt((String)versionprops.get(sVerMinor));
+			if(versionprops.containsKey(sVerRevision))
+				VER_REVISION = Integer.parseInt((String)versionprops.get(sVerRevision));
+			if(versionprops.containsKey(sVerReleaseCandidate))
+				VER_RELEASE_CANDIDATE = Integer.parseInt((String)versionprops.get(sVerReleaseCandidate));
+			if(versionprops.containsKey(sVerAlpha))
+				VER_ALPHA = Integer.parseInt((String)versionprops.get(sVerAlpha));
+			if(versionprops.containsKey(sVerBeta))
+				VER_BETA = Integer.parseInt((String)versionprops.get(sVerBeta));
+			if(versionprops.containsKey(sVerSVNRevision))
+				VER_SVN_REVISION_FILE = Integer.parseInt((String)versionprops.get(sVerSVNRevision));
 			
 			if(f == null)
-				BUILD_DATE = versionprops.getProperty("BUILD_DATE");
+				BUILD_DATE = versionprops.getProperty(sBuildDate);
 			else {
 				BUILD_DATE = new Date().toString();
-				versionprops.setProperty("BUILD_DATE", BUILD_DATE);
+				versionprops.setProperty(sBuildDate, BUILD_DATE);
 			}
 			
 			if(revision() == null) {
 				VER_SVN_REVISION = VER_SVN_REVISION_FILE;
 			} else {
 				if((VER_SVN_REVISION_FILE == null) || (VER_SVN_REVISION > VER_SVN_REVISION_FILE)) {
-					Out.info(CurrentVersion.class, "File version is " + VER_SVN_REVISION_FILE);
-					Out.info(CurrentVersion.class, "Calculated version is " + VER_SVN_REVISION);
-					
 					if((f != null) && (f.exists())) {
-						versionprops.setProperty("RELEASE_TYPE", ReleaseType.Development.name());
-						versionprops.setProperty("VER_SVN_REVISION", Integer.toString(VER_SVN_REVISION));
+						Out.info(CurrentVersion.class, "File version (" + VER_SVN_REVISION_FILE + ") updating to " + VER_SVN_REVISION + ".");
+						
+						RELEASE_TYPE = ReleaseType.Development;
+						versionprops.setProperty(sReleaseType, RELEASE_TYPE.name());
+						versionprops.setProperty(sVerSVNRevision, Integer.toString(VER_SVN_REVISION));
 						versionprops.store(new FileOutputStream(f), null);
+					} else {
+						Out.error(CurrentVersion.class, "File version (" + VER_SVN_REVISION_FILE + ") does not match calculated (" + VER_SVN_REVISION + ").");
+						Out.error(CurrentVersion.class, "Additionally, this condition should never occur.");
 					}
 				}
 			}
