@@ -50,10 +50,13 @@ public class TimeFormatter {
 		return text.trim();
 	}
 	
+	/**
+	 * Converts a Windows FileTime structure to a Date
+	 * @param ft contains a 64-bit value representing the number of 100-nanosecond intervals since January 1, 1601 (UTC).
+	 * @return a Date with the correct time
+	 */
 	public static Date fileTime(long ft) {
-		// Contains a 64-bit value representing the number of 100-nanosecond intervals since January 1, 1601 (UTC).
-		//time /= 10000;
-		//time -= 11644455600000L; //Date.parse("1/1/1601");
+		// Date.parse("1/1/1601") == 11644455600000L
 		return new Date(ft / 10000 - 11644455600000L);
 	}
 

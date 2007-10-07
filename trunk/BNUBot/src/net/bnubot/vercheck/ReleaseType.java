@@ -6,34 +6,29 @@
 package net.bnubot.vercheck;
 
 public enum ReleaseType {
-	Stable(0),
-	ReleaseCandidate(1),
-	Beta(2),
-	Alpha(3), 
-	Development(4);
-	
-	private int t;
-	private ReleaseType(int t) {
-		this.t = t;
-	}
+	Stable,
+	ReleaseCandidate,
+	Beta,
+	Alpha, 
+	Development;
 	
 	public boolean isDevelopment() {
-		return (t == Development.t);
+		return (this == Development);
 	}
 	
 	public boolean isAlpha() {
-		return (t == Alpha.t);
+		return (this == Alpha);
 	}
 	
 	public boolean isBeta() {
-		return (t == Beta.t);
+		return (this == Beta);
 	}
 	
 	public boolean isReleaseCandidate() {
-		return (t == ReleaseCandidate.t);
+		return (this == ReleaseCandidate);
 	}
 	
 	public boolean isStable() {
-		return (t == Stable.t);
+		return (this == Stable);
 	}
 }
