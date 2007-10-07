@@ -11,7 +11,7 @@ import java.awt.event.MouseListener;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
-import javax.swing.JFrame;
+import javax.swing.JDialog;
 import javax.swing.JList;
 
 import net.bnubot.core.Connection;
@@ -25,7 +25,7 @@ import net.bnubot.util.BNetUser;
 import net.bnubot.util.Out;
 import net.bnubot.util.StatString;
 
-public class RealmWindow extends JFrame implements EventHandler, RealmEventHandler {
+public class RealmWindow extends JDialog implements EventHandler, RealmEventHandler {
 	private static final long serialVersionUID = 3965057306231374646L;
 	
 	protected Connection c = null;
@@ -37,13 +37,13 @@ public class RealmWindow extends JFrame implements EventHandler, RealmEventHandl
 	protected JList lstCharactorTypes;
 	
 	public RealmWindow(String[] realms) {
-		super("Realms");
 		this.realms = realms;
-		
 		initializeGUI();
+		setTitle("About BNU-Bot");
 		
 		pack();
-		setAlwaysOnTop(true);
+		setModal(true);
+		setVisible(true);
 	}
 	
 	public void initializeGUI() {
