@@ -233,7 +233,7 @@ public class ConnectionSettings implements Serializable {
 		bncsServer =Settings.read(header, "server", "useast.battle.net");
 		port = Integer.parseInt(
 					Settings.read(header, "port", "6112"));
-		bnlsServer =Settings.read(header, "bnlsserver", "jbls.org");
+		bnlsServer =Settings.read(header, "bnlsserver", "jbls.clanbnu.net");
 		bnlsPort = Integer.parseInt(
 					Settings.read(header, "bnlsport", "9367"));
 		username =	Settings.read(header, "username", null);
