@@ -87,9 +87,7 @@ public class VersionCheck {
 				verLatest.getChild("major").getInt(),
 				verLatest.getChild("minor").getInt(),
 				verLatest.getChild("revision").getInt(),
-				verLatest.getChild("alpha").getInt(),
-				verLatest.getChild("beta").getInt(),
-				verLatest.getChild("rc").getInt(),
+				verLatest.getChild("release").getInt(),
 				verLatest.getChild("svn").getInt(),
 				verLatest.getChild("built").getString());
 

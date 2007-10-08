@@ -23,9 +23,7 @@ public final class CurrentVersion {
 	protected static Integer VER_MAJOR = null;
 	protected static Integer VER_MINOR = null;
 	protected static Integer VER_REVISION = null;
-	protected static Integer VER_RELEASE_CANDIDATE = null;
-	protected static Integer VER_ALPHA = null;
-	protected static Integer VER_BETA = null;
+	protected static Integer VER_RELEASE = null;
 	private static boolean VER_SVN_SET = false;
 	protected static Integer VER_SVN_REVISION = null;
 	private static VersionNumber VER = null;
@@ -36,9 +34,7 @@ public final class CurrentVersion {
 	private static final String sVerMajor = "VER_MAJOR";
 	private static final String sVerMinor = "VER_MINOR";
 	private static final String sVerRevision = "VER_REVISION";
-	private static final String sVerReleaseCandidate = "VER_RELEASE_CANDIDATE";
-	private static final String sVerAlpha = "VER_ALPHA";
-	private static final String sVerBeta = "VER_BETA";
+	private static final String sVerRelease = "VER_RELEASE";
 	private static final String sVerSVNRevision = "VER_SVN_REVISION";
 	private static final String sBuildDate = "BUILD_DATE";
 	
@@ -183,12 +179,8 @@ public final class CurrentVersion {
 				VER_MINOR = Integer.parseInt((String)versionprops.get(sVerMinor));
 			if(versionprops.containsKey(sVerRevision))
 				VER_REVISION = Integer.parseInt((String)versionprops.get(sVerRevision));
-			if(versionprops.containsKey(sVerReleaseCandidate))
-				VER_RELEASE_CANDIDATE = Integer.parseInt((String)versionprops.get(sVerReleaseCandidate));
-			if(versionprops.containsKey(sVerAlpha))
-				VER_ALPHA = Integer.parseInt((String)versionprops.get(sVerAlpha));
-			if(versionprops.containsKey(sVerBeta))
-				VER_BETA = Integer.parseInt((String)versionprops.get(sVerBeta));
+			if(versionprops.containsKey(sVerRelease))
+				VER_RELEASE = Integer.parseInt((String)versionprops.get(sVerRelease));
 			if(versionprops.containsKey(sVerSVNRevision))
 				VER_SVN_REVISION_FILE = Integer.parseInt((String)versionprops.get(sVerSVNRevision));
 			
@@ -217,7 +209,7 @@ public final class CurrentVersion {
 				}
 			}
 			
-			VER = new VersionNumber(RELEASE_TYPE, VER_MAJOR, VER_MINOR, VER_REVISION, VER_ALPHA, VER_BETA, VER_RELEASE_CANDIDATE, revision(), BUILD_DATE);
+			VER = new VersionNumber(RELEASE_TYPE, VER_MAJOR, VER_MINOR, VER_REVISION, VER_RELEASE, revision(), BUILD_DATE);
 			return VER;
 		} catch(Exception e) {
 			Out.exception(e);
