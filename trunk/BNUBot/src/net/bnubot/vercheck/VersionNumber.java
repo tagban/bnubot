@@ -10,25 +10,21 @@ public class VersionNumber {
 	private Integer VER_MAJOR = null;
 	private Integer VER_MINOR = null;
 	private Integer VER_REVISION = null;
-	private Integer VER_ALPHA = null;
-	private Integer VER_BETA = null;
-	private Integer VER_RELEASE_CANDIDATE = null;
+	private Integer VER_RELEASE = null;
 	private Integer VER_SVN_REVISION = null;
 	private String VER_STRING = null;
 	private String BUILD_DATE = null;
 
-	public VersionNumber(ReleaseType rt, Integer major, Integer minor, Integer revision, Integer alpha, Integer beta, Integer rc) {
+	public VersionNumber(ReleaseType rt, Integer major, Integer minor, Integer revision, Integer release) {
 		RELEASE_TYPE = rt;
 		VER_MAJOR = major;
 		VER_MINOR = minor;
 		VER_REVISION = revision;
-		VER_ALPHA = alpha;
-		VER_BETA = beta;
-		VER_RELEASE_CANDIDATE = rc;
+		VER_RELEASE = release;
 	}
 	
-	public VersionNumber(ReleaseType rt, Integer major, Integer minor, Integer revision, Integer alpha, Integer beta, Integer rc, Integer svn, String builddate) {
-		this(rt, major, minor, revision, alpha, beta, rc);
+	public VersionNumber(ReleaseType rt, Integer major, Integer minor, Integer revision, Integer release, Integer svn, String builddate) {
+		this(rt, major, minor, revision, release);
 		VER_SVN_REVISION = svn;
 		BUILD_DATE = builddate;
 	}
@@ -38,14 +34,14 @@ public class VersionNumber {
 			return VER_STRING;
 		
 		VER_STRING = VER_MAJOR.toString() + '.' + VER_MINOR.toString() + '.' + VER_REVISION.toString();
-		if(ReleaseType.Development.equals(RELEASE_TYPE))
+		if(RELEASE_TYPE.isDevelopment())
 			VER_STRING += " Development";
-		else if(VER_ALPHA != null)
-			VER_STRING += " Alpha " + VER_ALPHA.toString();
-		else if(VER_BETA != null)
-			VER_STRING += " Beta " + VER_BETA.toString();
-		else if(VER_RELEASE_CANDIDATE != null)
-			VER_STRING += " RC " + VER_RELEASE_CANDIDATE.toString();
+		else if(RELEASE_TYPE.isAlpha())
+			VER_STRING += " Alpha " + VER_RELEASE.toString();
+		else if(RELEASE_TYPE.isBeta())
+			VER_STRING += " Beta " + VER_RELEASE.toString();
+		else if(RELEASE_TYPE.isReleaseCandidate())
+			VER_STRING += " RC " + VER_RELEASE.toString();
 		
 		if(VER_SVN_REVISION != null)
 			VER_STRING += " (r" + VER_SVN_REVISION.toString() + ")";
@@ -58,51 +54,82 @@ public class VersionNumber {
 	}
 	
 	public boolean isNewerThan(VersionNumber vn) {
-		if(VER_MAJOR > vn.VER_MAJOR) return true;
-		if(VER_MAJOR < vn.VER_MAJOR) return false;
-		if(VER_MINOR > vn.VER_MINOR) return true;
-		if(VER_MINOR < vn.VER_MINOR) return false;
-		if(VER_REVISION > vn.VER_REVISION) return true;
-		if(VER_REVISION < vn.VER_REVISION) return false;
+		return compareTo(vn) > 0;
+	}
+	
+	public int compareTo(VersionNumber vn) {
+		// Check Major
+		if(VER_MAJOR > vn.VER_MAJOR) return 1;
+		if(VER_MAJOR < vn.VER_MAJOR) return -1;
 		
-		if(vn.RELEASE_TYPE.isStable())
-			return false;
+		// Check Minor
+		if(VER_MINOR > vn.VER_MINOR) return 1;
+		if(VER_MINOR < vn.VER_MINOR) return -1;
+		
+		// Check Revision
+		if(VER_REVISION > vn.VER_REVISION) return 1;
+		if(VER_REVISION < vn.VER_REVISION) return -1;
+		
+		// Check Development
+		if(vn.RELEASE_TYPE.isDevelopment()
+		|| RELEASE_TYPE.isDevelopment())
+			return VER_SVN_REVISION.compareTo(vn.VER_SVN_REVISION);
+		
+		// Check Stable
+		if(vn.RELEASE_TYPE.isStable()) {
+			if(!RELEASE_TYPE.isStable())
+				return -1;
+			
+			if(VER_RELEASE > vn.VER_RELEASE) return 1;
+			if(VER_RELEASE < vn.VER_RELEASE) return -1;
+		}
 		
 		if(RELEASE_TYPE.isStable())
-			return true;
-
-		if(VER_RELEASE_CANDIDATE != vn.VER_RELEASE_CANDIDATE) {
-			if(VER_RELEASE_CANDIDATE == null)
-				return false;
-			if(vn.VER_RELEASE_CANDIDATE == null)
-				return true;
-			if(VER_RELEASE_CANDIDATE > vn.VER_RELEASE_CANDIDATE) return true;
-			if(VER_RELEASE_CANDIDATE < vn.VER_RELEASE_CANDIDATE) return false;
-		}
-
-		if(VER_BETA != vn.VER_BETA) {
-			if(VER_BETA == null)
-				return false;
-			if(vn.VER_BETA == null)
-				return true;
-			if(VER_BETA > vn.VER_BETA) return true;
-			if(VER_BETA < vn.VER_BETA) return false;
-		}
-
-		if(VER_ALPHA != vn.VER_ALPHA) {
-			if(VER_ALPHA == null)
-				return false;
-			if(vn.VER_ALPHA == null)
-				return true;
-			if(VER_ALPHA > vn.VER_ALPHA) return true;
-			if(VER_ALPHA < vn.VER_ALPHA) return false;
+			return 1;
+		
+		// Check RC
+		if(vn.RELEASE_TYPE.isReleaseCandidate()) {
+			if(!RELEASE_TYPE.isReleaseCandidate())
+				return -1;
+			
+			if(VER_RELEASE > vn.VER_RELEASE) return 1;
+			if(VER_RELEASE < vn.VER_RELEASE) return -1;
 		}
 		
-		if((VER_SVN_REVISION != null) && (vn.VER_SVN_REVISION != null)) {
-			if(VER_SVN_REVISION > vn.VER_SVN_REVISION) return true;
+		if(RELEASE_TYPE.isReleaseCandidate())
+			return 1;
+		
+		// Check Beta
+		if(vn.RELEASE_TYPE.isBeta()) {
+			if(!RELEASE_TYPE.isBeta())
+				return -1;
+			
+			if(VER_RELEASE > vn.VER_RELEASE) return 1;
+			if(VER_RELEASE < vn.VER_RELEASE) return -1;
 		}
 		
-		return false;
+		if(RELEASE_TYPE.isBeta())
+			return 1;
+		
+		// Check Alpha
+		if(vn.RELEASE_TYPE.isAlpha()) {
+			if(!RELEASE_TYPE.isAlpha())
+				return -1;
+			
+			if(VER_RELEASE > vn.VER_RELEASE) return 1;
+			if(VER_RELEASE < vn.VER_RELEASE) return -1;
+		}
+		
+		if(RELEASE_TYPE.isAlpha())
+			return 1;
+
+		// Check SVN revision
+		if((VER_SVN_REVISION != null) && (vn.VER_SVN_REVISION != null))
+			if(VER_SVN_REVISION > vn.VER_SVN_REVISION)
+				return 1;
+		
+		// They are the same!
+		return 0;
 	}
 	
 	public ReleaseType getReleaseType() {
