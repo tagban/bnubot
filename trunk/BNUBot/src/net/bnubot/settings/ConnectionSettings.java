@@ -296,6 +296,11 @@ public class ConnectionSettings implements Serializable {
 					Settings.read(header, "tsFormat", TimeFormatter.tsFormat);
 			releaseType = Enum.valueOf(ReleaseType.class,
 					Settings.read(header, "releaseType", CurrentVersion.version().getReleaseType().name()));
+			
+			// Ensure that development builds check for development, and non-development builds don't
+			ReleaseType rt = CurrentVersion.version().getReleaseType();
+			if(rt.isDevelopment() || releaseType.isDevelopment())
+				releaseType = rt;
 		} else {
 			autoconnect = true;
 		}
