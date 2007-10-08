@@ -1068,7 +1068,8 @@ public class BNCSConnection extends Connection {
 						p.SendPacket(bncsOutputStream);
 						break;
 					case BNCSChatEventIDs.EID_CHANNELRESTRICTED:
-						recieveError("Channel " + text + " is restricted");
+						recieveError("Channel " + text + " is restricted; forcing entry");
+						joinChannel2(text);
 						break;
 					case BNCSChatEventIDs.EID_CHANNELFULL:
 						recieveError("Channel " + text + " is full");
@@ -1533,6 +1534,13 @@ public class BNCSConnection extends Connection {
 		p.writeNTString(channel);
 		p.SendPacket(bncsOutputStream);
 	}
+
+	public void joinChannel2(String channel) throws Exception {
+		BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_JOINCHANNEL);
+		p.writeDWord(2); // force join
+		p.writeNTString(channel);
+		p.SendPacket(bncsOutputStream);
+	}
 	
 	public void sendChat(String text) {
 		text = cleanText(text);
@@ -1544,6 +1552,10 @@ public class BNCSConnection extends Connection {
 			}
 			if(text.substring(0, 6).equals("/join ")) {
 				joinChannel(text.substring(6));
+				return;
+			}
+			if(text.substring(0, 6).equals("/join2 ")) {
+				joinChannel2(text.substring(6));
 				return;
 			}
 		} catch(Exception e) {}
