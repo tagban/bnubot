@@ -7,7 +7,6 @@ package net.bnubot.util;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -36,9 +35,7 @@ public class Out {
 			if(!debugFile.exists())
 				debugFile.createNewFile();
 			debug.load(new FileInputStream(debugFile));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -57,7 +54,8 @@ public class Out {
 		boolean ellipsis = false;
 		for(String line : lines) {
 			line = line.trim();
-			if(line.startsWith("at net.bnubot.")) {
+			if(line.startsWith("at net.bnubot.")
+			|| line.startsWith("Caused by:")) {
 				out += "\n" + line;
 				ellipsis = false;
 			} else if(!ellipsis) {
