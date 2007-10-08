@@ -43,7 +43,7 @@ public class Out {
 	/**
 	 * Get the lines of the stack trace relevant to the project
 	 * @param e The exception source
-	 * @return Each line of the exception starting with net.bnubot, and ellipsies where lines were trimmed
+	 * @return Each line of the exception starting with net.bnubot, and ellipses where lines were trimmed
 	 */
 	private static String getRelevantStack(Exception e) {
 		StringWriter sw = new StringWriter();
@@ -72,7 +72,7 @@ public class Out {
 	 */
 	public static void exception(Exception e) {
 		if(outConnection != null)
-			outConnection.recieveError(getRelevantStack(e));
+			error(e.getClass(), e.getMessage());
 		if(outStream != null)
 			e.printStackTrace(outStream);
 		else
