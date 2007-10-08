@@ -567,6 +567,9 @@ public class BNCSConnection extends Connection {
 					if(pr.packetId == BNCSCommandIDs.SID_AUTH_CHECK) {
 						if(result != 0) {
 							switch(result) {
+							case 0x0100:
+								recieveError("Update required: " + extraInfo);
+								break;
 							case 0x0101:
 								recieveError("Invalid version.");
 								break;

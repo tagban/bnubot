@@ -37,9 +37,8 @@ public class Database {
 	
 	static {
 		for(String driver : new String[] {"org.apache.derby.jdbc.EmbeddedDriver", "com.mysql.jdbc.Driver"}) {
-			Driver d;
 			try {
-				d = (Driver)JARLoader.forName(driver).newInstance();
+				Driver d = (Driver)JARLoader.forName(driver).newInstance();
 				DriverManager.registerDriver(new DriverShim(d));
 			} catch(ClassNotFoundException e) {
 			} catch(Exception e) {
@@ -48,7 +47,10 @@ public class Database {
 		}
 	}
 	
-	public Database(DatabaseSettings settings) throws SQLException {
+	public Database(DatabaseSettings settings) throws Exception {
+		Out.debug(getClass(), "Registering " + settings.driver);
+		Driver d = (Driver)JARLoader.forName(settings.driver).newInstance();
+		DriverManager.registerDriver(new DriverShim(d));
 		Out.debug(getClass(), "Connecting to " + settings.url);
 		conn = DriverManager.getConnection(settings.url, settings.username, settings.password);
 		Out.debug(getClass(), "Connected!");
@@ -146,11 +148,11 @@ public class Database {
 	}
 	
 	public void deleteOldUsers() throws SQLException {
-		String SQL = "DATEDIFF(NOW(), lastSeen)";
-		try {
-			if(conn.getClass().getName().startsWith("org.apache.derby"))
-				SQL = "{fn TIMESTAMPDIFF(SQL_TSI_DAY, CURRENT_TIMESTAMP, lastSeen)}";
-		} catch(NoClassDefFoundError e) {}
+		String SQL;
+		if(conn.getClass().getName().startsWith("org.apache.derby"))
+			SQL = "{fn TIMESTAMPDIFF(SQL_TSI_DAY, CURRENT_TIMESTAMP, lastSeen)}";
+		else
+			SQL = "DATEDIFF(NOW(), lastSeen)";
 		
 		SQL =
 			"SELECT login, " + SQL + " as dss, rank.id AS rank, rank.expireDays " +
