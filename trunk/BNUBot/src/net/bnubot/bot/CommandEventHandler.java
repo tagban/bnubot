@@ -20,11 +20,11 @@ import net.bnubot.bot.database.CommandResultSet;
 import net.bnubot.bot.database.Database;
 import net.bnubot.bot.database.RankResultSet;
 import net.bnubot.core.Connection;
-import net.bnubot.core.ConnectionSettings;
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.bncs.ProductIDs;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
+import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.CookieUtility;
 import net.bnubot.util.Out;
@@ -60,9 +60,9 @@ public class CommandEventHandler implements EventHandler {
 	}
 	
 	public CommandEventHandler() {
-		this.d = Database.getInstance();
-		if(this.d == null)
-			throw new NullPointerException("There was no Database");
+		d = Database.getInstance();
+		if(d == null)
+			throw new AssertionError("Can not enable commands without a database!");
 	}
 	
 	public void initialize(Connection c) {

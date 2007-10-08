@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 
 import net.bnubot.JARLoader;
+import net.bnubot.settings.DatabaseSettings;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.Out;
 
@@ -49,7 +50,12 @@ public class Database {
 	
 	public Database(DatabaseSettings settings) throws SQLException {
 		Out.debug(getClass(), "Connecting to " + settings.url);
-		conn = DriverManager.getConnection(settings.url, settings.username, settings.password);
+		try {
+			conn = DriverManager.getConnection(settings.url, settings.username, settings.password);
+		} catch(SQLException e) {
+			Out.error(e.getClass(), e.getMessage());
+			return;
+		}
 		Out.debug(getClass(), "Connected!");
 		
 		instance = this;

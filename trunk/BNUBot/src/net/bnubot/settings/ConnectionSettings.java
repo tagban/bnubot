@@ -3,7 +3,7 @@
  * $Id$
  */
 
-package net.bnubot.core;
+package net.bnubot.settings;
 
 import java.io.Serializable;
 
@@ -11,7 +11,6 @@ import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
 import net.bnubot.util.Out;
-import net.bnubot.util.Settings;
 import net.bnubot.util.TimeFormatter;
 import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.ReleaseType;

@@ -18,6 +18,7 @@ import java.util.Properties;
 import javax.swing.JOptionPane;
 
 import net.bnubot.bot.gui.GuiEventHandler;
+import net.bnubot.settings.Settings;
 
 /**
  * An output class, modified from JBLS
