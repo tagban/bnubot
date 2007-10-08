@@ -48,12 +48,16 @@ public class Database {
 	}
 	
 	public Database(DatabaseSettings settings) throws Exception {
-		Out.debug(getClass(), "Registering " + settings.driver);
-		Driver d = (Driver)JARLoader.forName(settings.driver).newInstance();
-		DriverManager.registerDriver(new DriverShim(d));
+		try {
+			DriverManager.getDriver(settings.url);
+		} catch(SQLException e) {
+			Out.debug(getClass(), "Registering " + settings.driver);
+			Driver d = (Driver)JARLoader.forName(settings.driver).newInstance();
+			DriverManager.registerDriver(new DriverShim(d));
+		}
+		
 		Out.debug(getClass(), "Connecting to " + settings.url);
 		conn = DriverManager.getConnection(settings.url, settings.username, settings.password);
-		Out.debug(getClass(), "Connected!");
 		
 		instance = this;
 		
