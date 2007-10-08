@@ -27,6 +27,7 @@ public class BNetUser {
 	private String prettyName = null;
 	private Integer flags = null;
 	private Integer ping = null;
+	private StatString statString = null;
 	
 	/**
 	 * Clear the BNetUser cache
@@ -338,5 +339,13 @@ public class BNetUser {
 
 	public void setPing(Integer ping) {
 		this.ping = ping;
+	}
+
+	public StatString getStatString() {
+		return this.statString;
+	}
+
+	public void setStatString(StatString statString) {
+		this.statString = statString;
 	}
 }

@@ -31,15 +31,10 @@ import net.bnubot.util.Out;
 import net.bnubot.util.StatString;
 
 public class HTMLOutputEventHandler implements EventHandler {
-	private class UserInfo {
-		BNetUser user;
-		StatString statstr;
-	}
-	
-	private class UserInfoComparator implements Comparator<UserInfo> {
-		public int compare(UserInfo arg0, UserInfo arg1) {
-			int prio0 = ChannelListPriority.getPrioByFlags(arg0.user.getFlags());
-			int prio1 = ChannelListPriority.getPrioByFlags(arg1.user.getFlags());
+	private class SortOrderComparator implements Comparator<BNetUser> {
+		public int compare(BNetUser arg0, BNetUser arg1) {
+			int prio0 = ChannelListPriority.getPrioByFlags(arg0.getFlags());
+			int prio1 = ChannelListPriority.getPrioByFlags(arg0.getFlags());
 			return new Integer(prio0).compareTo(prio1);
 		}
 		
@@ -50,18 +45,18 @@ public class HTMLOutputEventHandler implements EventHandler {
 	private Runnable writeUserListRunnable = null;
 	private ColorScheme cs = null;
 	
-	private ArrayList<UserInfo> users;
+	private ArrayList<BNetUser> users;
 	
-	private UserInfo get(BNetUser u) {
-		for(UserInfo ui : users.toArray(new UserInfo[users.size()])) {
-			if(u.equals(ui.user))
+	private BNetUser get(BNetUser u) {
+		for(BNetUser ui : users.toArray(new BNetUser[users.size()])) {
+			if(u.equals(ui))
 				return ui;
 		}
 		return null;
 	}
 
 	public void bnetConnected() {
-		users = new ArrayList<UserInfo>();
+		users = new ArrayList<BNetUser>();
 		File f = new File("html");
 		f.mkdir();
 	}
@@ -73,15 +68,12 @@ public class HTMLOutputEventHandler implements EventHandler {
 
 	public void titleChanged() {}
 
-	public void channelJoin(BNetUser user, StatString statstr) {
-		UserInfo ui = new UserInfo();
-		users.add(ui);
-		ui.user = user;
-		ui.statstr = statstr;
+	public void channelJoin(BNetUser user) {
+		users.add(user);
 		
 		writeUserList();
 		
-		append(user + " has joined" + statstr.toString() + ".",
+		append(user + " has joined" + user.getStatString().toString() + ".",
 			cs.getChannelColor());
 	}
 	
@@ -95,18 +87,13 @@ public class HTMLOutputEventHandler implements EventHandler {
 				cs.getChannelColor());
 	}
 	
-	public void channelUser(BNetUser user, StatString statstr) {
-		UserInfo ui = get(user);
-		if(ui == null) {
-			ui = new UserInfo();
-			users.add(ui);
-		}
-		ui.user = user;
-		ui.statstr = statstr;
+	public void channelUser(BNetUser user) {
+		if(get(user) == null)
+			users.add(user);
 		
 		writeUserList();
 		
-		append(user + statstr.toString() + ".",
+		append(user + user.getStatString().toString() + ".",
 				cs.getChannelColor());
 	}
 	
@@ -162,15 +149,16 @@ public class HTMLOutputEventHandler implements EventHandler {
 						fos.write(Integer.toString(users.size()).getBytes());
 						fos.write(")</td></tr>".getBytes());
 						
-						Collections.sort(users, new UserInfoComparator());
+						Collections.sort(users, new SortOrderComparator());
 
-						for(UserInfo ui : users.toArray(new UserInfo[users.size()])) {
-							String product = getIcon(ui.statstr.getProduct(), ui.statstr.getIcon(), ui.user.getFlags());
+						for(BNetUser ui : users.toArray(new BNetUser[users.size()])) {
+							StatString ss = ui.getStatString();
+							String product = getIcon(ss.getProduct(), ss.getIcon(), ui.getFlags());
 							
 							fos.write("<tr>".getBytes());
 							fos.write(("<td><img src=\"images/" + product + ".jpg\"></td>").getBytes());
-							fos.write(("<td>" + ui.user.getFullLogonName() + "</td>").getBytes());
-							fos.write(("<td>" + ui.user.getPing() + "ms</td>").getBytes());
+							fos.write(("<td>" + ui.getFullLogonName() + "</td>").getBytes());
+							fos.write(("<td>" + ui.getPing() + "ms</td>").getBytes());
 							fos.write("</tr>".getBytes());
 						}
 			

@@ -19,7 +19,6 @@ import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.MirrorSelector;
 import net.bnubot.util.Out;
-import net.bnubot.util.StatString;
 import net.bnubot.util.TimeFormatter;
 import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.ReleaseType;
@@ -439,19 +438,19 @@ public abstract class Connection extends Thread implements EventHandler {
 			eh2_semaphore--;
 	}
 
-	public synchronized void channelUser(BNetUser user, StatString statstr) {
+	public synchronized void channelUser(BNetUser user) {
 		eh_semaphore++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
-			it.next().channelUser(user, statstr);
+			it.next().channelUser(user);
 		eh_semaphore--;
 	}
 
-	public synchronized void channelJoin(BNetUser user, StatString statstr) {
+	public synchronized void channelJoin(BNetUser user) {
 		eh_semaphore++;
 		Iterator<EventHandler> it = eventHandlers.iterator();
 		while(it.hasNext())
-			it.next().channelJoin(user, statstr);
+			it.next().channelJoin(user);
 		eh_semaphore--;
 	}
 

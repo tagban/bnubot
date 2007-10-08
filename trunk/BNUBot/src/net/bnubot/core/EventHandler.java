@@ -8,7 +8,6 @@ package net.bnubot.core;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.util.BNetUser;
-import net.bnubot.util.StatString;
 
 public interface EventHandler {
 	//Initialization
@@ -24,8 +23,8 @@ public interface EventHandler {
 
 	//Channel events
 	public void joinedChannel(String channel);
-	public void channelUser(BNetUser user, StatString statstr);
-	public void channelJoin(BNetUser user, StatString statstr);
+	public void channelUser(BNetUser user);
+	public void channelJoin(BNetUser user);
 	public void channelLeave(BNetUser user);
 	public void recieveChat(BNetUser user, String text);
 	public void recieveEmote(BNetUser user, String text);

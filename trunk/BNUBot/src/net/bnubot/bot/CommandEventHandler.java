@@ -28,7 +28,6 @@ import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.CookieUtility;
 import net.bnubot.util.Out;
-import net.bnubot.util.StatString;
 import net.bnubot.util.TimeFormatter;
 import net.bnubot.vercheck.CurrentVersion;
 
@@ -1138,7 +1137,7 @@ public class CommandEventHandler implements EventHandler {
 		}
 	}
 
-	public void channelJoin(BNetUser user, StatString statstr) {
+	public void channelJoin(BNetUser user) {
 		if(!ConnectionSettings.enableGreetings)
 			return;
 		
@@ -1151,9 +1150,9 @@ public class CommandEventHandler implements EventHandler {
 				return;
 			}
 			
-			switch(statstr.getProduct()) {
+			switch(user.getStatString().getProduct()) {
 			case ProductIDs.PRODUCT_STAR: {
-				Integer newWins = statstr.getWins();
+				Integer newWins = user.getStatString().getWins();
 				if(newWins != null) {
 					Long oldWins = rsUser.getWinsSTAR();
 					if((oldWins == null) || (newWins > oldWins)) {
@@ -1165,7 +1164,7 @@ public class CommandEventHandler implements EventHandler {
 			}
 			
 			case ProductIDs.PRODUCT_SEXP: {
-				Integer newWins = statstr.getWins();
+				Integer newWins = user.getStatString().getWins();
 				if(newWins != null) {
 					Long oldWins = rsUser.getWinsSEXP();
 					if((oldWins == null) || (newWins > oldWins)) {
@@ -1177,7 +1176,7 @@ public class CommandEventHandler implements EventHandler {
 			}
 			
 			case ProductIDs.PRODUCT_W2BN: {
-				Integer newWins = statstr.getWins();
+				Integer newWins = user.getStatString().getWins();
 				if(newWins != null) {
 					Long oldWins = rsUser.getWinsW2BN();
 					if((oldWins == null) || (newWins > oldWins)) {
@@ -1190,7 +1189,7 @@ public class CommandEventHandler implements EventHandler {
 				
 			case ProductIDs.PRODUCT_D2DV:
 			case ProductIDs.PRODUCT_D2XP: {
-				Integer newLevel = statstr.getCharLevel();
+				Integer newLevel = user.getStatString().getCharLevel();
 				if(newLevel != null) {
 					Long oldLevel = rsUser.getLevelD2();
 					if((oldLevel == null) || (newLevel > oldLevel)) {
@@ -1203,7 +1202,7 @@ public class CommandEventHandler implements EventHandler {
 
 			case ProductIDs.PRODUCT_WAR3:
 			case ProductIDs.PRODUCT_W3XP: {
-				Integer newLevel = statstr.getLevel();
+				Integer newLevel = user.getStatString().getLevel();
 				if(newLevel != null) {
 					Long oldLevel = rsUser.getLevelW3();
 					if((oldLevel == null) || (newLevel > oldLevel)) {
@@ -1304,7 +1303,7 @@ public class CommandEventHandler implements EventHandler {
 					} else {
 						//TODO: Tell the user they need x more wins
 						String msg = "You need ";
-						switch(statstr.getProduct()) {
+						switch(user.getStatString().getProduct()) {
 						case ProductIDs.PRODUCT_STAR:
 						case ProductIDs.PRODUCT_SEXP:
 						case ProductIDs.PRODUCT_W2BN:
@@ -1344,7 +1343,7 @@ public class CommandEventHandler implements EventHandler {
 		touchUser(user, "leaving the channel");
 	}
 	
-	public void channelUser(BNetUser user, StatString statstr) {}
+	public void channelUser(BNetUser user) {}
 	public void joinedChannel(String channel) {}
 
 	public void recieveChat(BNetUser user, String text) {

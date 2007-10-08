@@ -23,7 +23,6 @@ import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.core.mcp.MCPConnection;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.Out;
-import net.bnubot.util.StatString;
 
 public class RealmWindow extends JDialog implements EventHandler, RealmEventHandler {
 	private static final long serialVersionUID = 3965057306231374646L;
@@ -101,8 +100,8 @@ public class RealmWindow extends JDialog implements EventHandler, RealmEventHand
 	public void realmConnected() {}
 	public void realmDisconnected() {}
 
-	public void channelJoin(BNetUser user, StatString statstr) {}
-	public void channelUser(BNetUser user, StatString statstr) {}
+	public void channelJoin(BNetUser user) {}
+	public void channelUser(BNetUser user) {}
 	public void channelLeave(BNetUser user) {}
 	
 	public void friendsList(FriendEntry[] entries) {}

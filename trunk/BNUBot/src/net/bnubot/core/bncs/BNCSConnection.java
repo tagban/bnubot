@@ -1027,16 +1027,18 @@ public class BNCSConnection extends Connection {
 						user = BNetUser.getBNetUser(username, cs.myRealm);
 						user.setFlags(flags);
 						user.setPing(ping);
+						if(statstr != null)
+							user.setStatString(statstr);
 						break;
 					}
 					
 					switch(eid) {
 					case BNCSChatEventIDs.EID_SHOWUSER:
 					case BNCSChatEventIDs.EID_USERFLAGS:
-						channelUser(user, statstr);
+						channelUser(user);
 						break;
 					case BNCSChatEventIDs.EID_JOIN:
-						channelJoin(user, statstr);
+						channelJoin(user);
 						break;
 					case BNCSChatEventIDs.EID_LEAVE:
 						channelLeave(user);
