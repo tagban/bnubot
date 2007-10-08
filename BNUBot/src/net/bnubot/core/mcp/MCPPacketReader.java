@@ -10,7 +10,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import net.bnubot.core.ConnectionSettings;
+import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.util.BNetInputStream;
 import net.bnubot.util.BNetOutputStream;
 import net.bnubot.util.HexDump;

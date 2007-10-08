@@ -42,10 +42,10 @@ import javax.swing.UIManager.LookAndFeelInfo;
 
 import org.jbls.util.Constants;
 
-import net.bnubot.bot.database.DatabaseSettings;
 import net.bnubot.bot.database.DriverShim;
 import net.bnubot.bot.gui.KeyManager.CDKey;
-import net.bnubot.core.ConnectionSettings;
+import net.bnubot.settings.ConnectionSettings;
+import net.bnubot.settings.DatabaseSettings;
 import net.bnubot.util.Out;
 import net.bnubot.util.TimeFormatter;
 import net.bnubot.vercheck.CurrentVersion;

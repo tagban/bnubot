@@ -27,12 +27,6 @@ public class BNetUser {
 	private String prettyName = null;
 	private Integer flags = null;
 	private Integer ping = null;
-
-	private static Database d = null;
-	
-	public static void setDatabase() {
-		d = Database.getInstance();
-	}
 	
 	/**
 	 * Clear the BNetUser cache
@@ -240,6 +234,7 @@ public class BNetUser {
 	}
 	
 	public String getShortPrettyName() {
+		Database d = Database.getInstance();
 		if(d == null)
 			return shortLogonName;
 		
@@ -277,6 +272,7 @@ public class BNetUser {
 	 * @return User[#N][@Realm] or [Prefix ][Account (]FullLogonName[)]
 	 */
 	public String toString() {
+		Database d = Database.getInstance();
 		if(d == null)
 			return shortLogonName;
 

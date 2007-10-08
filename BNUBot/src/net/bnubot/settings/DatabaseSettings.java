@@ -3,9 +3,8 @@
  * $Id$
  */
 
-package net.bnubot.bot.database;
+package net.bnubot.settings;
 
-import net.bnubot.util.Settings;
 
 public class DatabaseSettings {
 	private static final String header = "database";

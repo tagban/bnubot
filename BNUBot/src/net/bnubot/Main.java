@@ -14,17 +14,16 @@ import javax.swing.JOptionPane;
 import net.bnubot.bot.CommandEventHandler;
 import net.bnubot.bot.console.ConsoleEventHandler;
 import net.bnubot.bot.database.Database;
-import net.bnubot.bot.database.DatabaseSettings;
 import net.bnubot.bot.gui.ConfigurationFrame;
 import net.bnubot.bot.gui.GuiEventHandler;
 import net.bnubot.bot.trivia.TriviaEventHandler;
 import net.bnubot.core.ChatQueue;
-import net.bnubot.core.ConnectionSettings;
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.bncs.BNCSConnection;
-import net.bnubot.util.BNetUser;
+import net.bnubot.settings.ConnectionSettings;
+import net.bnubot.settings.DatabaseSettings;
+import net.bnubot.settings.Settings;
 import net.bnubot.util.Out;
-import net.bnubot.util.Settings;
 import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.VersionCheck;
 
@@ -173,7 +172,7 @@ public class Main {
 			Out.exception(e);
 		}
 		
-		//Bot
+		//Commands
 		EventHandler cmd = null;
 		if(ConnectionSettings.enableCommands) {
 			DatabaseSettings ds = new DatabaseSettings();
@@ -181,21 +180,21 @@ public class Main {
 			
 			if((ds.driver == null)
 			|| (ds.url == null)) {
+				String msg = "Database is not configured; disabling commands.";
 				if(gui != null)
-					primary.recieveInfo("Database is not configured; disabling commands.");
+					primary.recieveInfo(msg);
 				else
-					Out.info(Main.class, "Database is not configured; disabling commands.");
+					Out.info(Main.class, msg);
 			} else {
 				try {
 					new Database(ds);
-					BNetUser.setDatabase();
 					cmd = new CommandEventHandler();
 					primary.addEventHandler(cmd);
 					
 					ds.save();
 				} catch(Exception e) {
 					Out.exception(e);
-					String msg = "Failed to initialize the database; commands will be disabled.\n" + e.getMessage();
+					String msg = "Failed to initialize the database; commands disabled.\n" + e.getMessage();
 					if(gui != null)
 						primary.recieveError(msg);
 					else

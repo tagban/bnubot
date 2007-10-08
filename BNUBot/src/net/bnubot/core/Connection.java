@@ -15,6 +15,7 @@ import java.util.LinkedList;
 
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
+import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.MirrorSelector;
 import net.bnubot.util.Out;

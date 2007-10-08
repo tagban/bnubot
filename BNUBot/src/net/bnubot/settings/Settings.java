@@ -3,13 +3,15 @@
  * $Id$
  */
 
-package net.bnubot.util;
+package net.bnubot.settings;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.Properties;
 
+import net.bnubot.util.Out;
+import net.bnubot.util.SortedProperties;
 import net.bnubot.vercheck.CurrentVersion;
 
 public class Settings {

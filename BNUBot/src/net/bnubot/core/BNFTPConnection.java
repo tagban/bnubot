@@ -10,6 +10,7 @@ import java.io.FileOutputStream;
 import java.net.Socket;
 import java.util.Date;
 
+import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.util.BNetInputStream;
 import net.bnubot.util.BNetOutputStream;
 import net.bnubot.util.Out;

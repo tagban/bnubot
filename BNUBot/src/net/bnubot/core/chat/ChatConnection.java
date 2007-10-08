@@ -9,9 +9,9 @@ import java.net.Socket;
 
 import net.bnubot.core.ChatQueue;
 import net.bnubot.core.Connection;
-import net.bnubot.core.ConnectionSettings;
 import net.bnubot.core.UnsupportedFeatureException;
 import net.bnubot.core.bncs.ProductIDs;
+import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.util.BNetInputStream;
 import net.bnubot.util.BNetOutputStream;
 import net.bnubot.util.Out;

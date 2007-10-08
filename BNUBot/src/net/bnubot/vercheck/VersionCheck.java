@@ -10,7 +10,7 @@ import java.net.URL;
 
 import javax.swing.JOptionPane;
 
-import net.bnubot.core.ConnectionSettings;
+import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.util.Out;
 import net.bnubot.util.SHA1Sum;
 import net.bnubot.util.URLDownloader;
