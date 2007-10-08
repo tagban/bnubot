@@ -50,12 +50,7 @@ public class Database {
 	
 	public Database(DatabaseSettings settings) throws SQLException {
 		Out.debug(getClass(), "Connecting to " + settings.url);
-		try {
-			conn = DriverManager.getConnection(settings.url, settings.username, settings.password);
-		} catch(SQLException e) {
-			Out.error(e.getClass(), e.getMessage());
-			return;
-		}
+		conn = DriverManager.getConnection(settings.url, settings.username, settings.password);
 		Out.debug(getClass(), "Connected!");
 		
 		instance = this;
