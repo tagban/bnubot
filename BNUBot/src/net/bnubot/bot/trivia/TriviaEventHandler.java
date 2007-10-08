@@ -24,7 +24,6 @@ import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.HexDump;
 import net.bnubot.util.Out;
-import net.bnubot.util.StatString;
 
 public class TriviaEventHandler implements EventHandler {
 	private boolean triviaEnabled = false;
@@ -99,9 +98,9 @@ public class TriviaEventHandler implements EventHandler {
 	public void bnetDisconnected() {}
 	public void titleChanged() {}
 
-	public void channelJoin(BNetUser user, StatString statstr) {}
+	public void channelJoin(BNetUser user) {}
 	public void channelLeave(BNetUser user) {}
-	public void channelUser(BNetUser user, StatString statstr) {}
+	public void channelUser(BNetUser user) {}
 	
 	private void showLeaderBoard() {
 		try {

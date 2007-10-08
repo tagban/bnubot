@@ -30,7 +30,6 @@ import net.bnubot.core.Connection;
 import net.bnubot.core.bncs.ProductIDs;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.Out;
-import net.bnubot.util.StatString;
 
 public class UserList extends JPanel {
 	private static final long serialVersionUID = -6511252902076594213L;
@@ -39,7 +38,6 @@ public class UserList extends JPanel {
 		BNetUser user;
 		int lastFlags;
 		int priority;
-		StatString statstr;
 		JLabel label;
 		JPopupMenu menu;
 	}
@@ -128,16 +126,15 @@ public class UserList extends JPanel {
 		return null;
 	}
 	
-	public void showUser(BNetUser user, StatString statstr) {
+	public void showUser(BNetUser user) {
 		UserInfo ui = getUI(user);
 		if(ui == null) {
 			ui = new UserInfo();
 			ui.user = user;
-			ui.statstr = statstr;
 			ui.priority = ChannelListPriority.getPrioByFlags(user.getFlags());
 			
 			ui.menu = new JPopupMenu();
-			ui.menu.add(new JLabel(user.getShortPrettyName() + statstr.toString()));
+			ui.menu.add(new JLabel(user.getShortPrettyName() + user.getStatString().toString()));
 			JMenuItem menuItem = new JMenuItem("Whisper");
 			menuItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
@@ -212,11 +209,10 @@ public class UserList extends JPanel {
 			
 			ui.label.setForeground(cs.getUserNameListColor(ui.lastFlags));
 		}
-		ui.statstr = statstr;
 				
 		Icon icon = null;
-		int product = ui.statstr.getProduct();
-		int specialIcon = ui.statstr.getIcon();
+		int product = user.getStatString().getProduct();
+		int specialIcon = user.getStatString().getIcon();
 		if(specialIcon == product)
 			specialIcon = 0;
 		
@@ -257,9 +253,9 @@ public class UserList extends JPanel {
 					switch(product) {
 					case ProductIDs.PRODUCT_STAR:
 					case ProductIDs.PRODUCT_SEXP:
-						int w = Math.max(Math.min(statstr.getWins(), 10), 0);
+						int w = Math.max(Math.min(user.getStatString().getWins(), 10), 0);
 						icon = icons[w].getIcon();
-						int r = statstr.getLadderRank();
+						int r = user.getStatString().getLadderRank();
 						if(r > 0) {
 							if(r == 1)
 								icon = icons[IconsDotBniReader.LEGACY_LADDERNUM1].getIcon();
@@ -269,10 +265,10 @@ public class UserList extends JPanel {
 						break;
 
 					case ProductIDs.PRODUCT_W2BN:
-						w = Math.max(Math.min(statstr.getWins(), 10), 0);
+						w = Math.max(Math.min(user.getStatString().getWins(), 10), 0);
 						icon = icons[IconsDotBniReader.LEGACY_W2BNWIN + w].getIcon();
 						
-						r = statstr.getLadderRank();
+						r = user.getStatString().getLadderRank();
 						if(r > 0) {
 							if(r == 1)
 								icon = icons[IconsDotBniReader.LEGACY_LADDERNUM1].getIcon();

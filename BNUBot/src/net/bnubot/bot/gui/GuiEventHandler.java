@@ -49,7 +49,6 @@ import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.Out;
-import net.bnubot.util.StatString;
 import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.VersionCheck;
 
@@ -377,9 +376,9 @@ public class GuiEventHandler implements EventHandler {
 		frame.setVisible(true);
 	}
 
-	public void channelJoin(BNetUser user, StatString statstr) {
-		userList.showUser(user, statstr);
-		mainTextArea.channelInfo(user + " has joined" + statstr.toString() + ".");
+	public void channelJoin(BNetUser user) {
+		userList.showUser(user);
+		mainTextArea.channelInfo(user + " has joined" + user.getStatString().toString() + ".");
 		channelTextArea.setText(channel + " (" + userList.count() + ")");
 	}
 
@@ -389,9 +388,9 @@ public class GuiEventHandler implements EventHandler {
 		channelTextArea.setText(channel + " (" + userList.count() + ")");
 	}
 
-	public void channelUser(BNetUser user, StatString statstr) {
-		mainTextArea.channelInfo(user + statstr.toString() + ".");
-		userList.showUser(user, statstr);
+	public void channelUser(BNetUser user) {
+		mainTextArea.channelInfo(user + user.getStatString().toString() + ".");
+		userList.showUser(user);
 		channelTextArea.setText(channel + " (" + userList.count() + ")");
 	}
 

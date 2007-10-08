@@ -11,7 +11,6 @@ import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.Out;
-import net.bnubot.util.StatString;
 
 public class ConsoleEventHandler implements EventHandler {
 	Connection c = null;
@@ -25,12 +24,12 @@ public class ConsoleEventHandler implements EventHandler {
 		Out.info(getClass(), "Joining channel " + channel);
 	}
 
-	public void channelUser(BNetUser user, StatString statstr) {
-		Out.info(getClass(), user.getShortPrettyName() + " (" + user.getPing() + "ms)" + statstr.toString());
+	public void channelUser(BNetUser user) {
+		Out.info(getClass(), user.getShortPrettyName() + " (" + user.getPing() + "ms)" + user.getStatString().toString());
 	}
 	
-	public void channelJoin(BNetUser user, StatString statstr) {
-		Out.info(getClass(), user + " has joined the channel" + statstr.toString() + ".");
+	public void channelJoin(BNetUser user) {
+		Out.info(getClass(), user + " has joined the channel" + user.getStatString().toString() + ".");
 	}
 	public void channelLeave(BNetUser user) {
 		Out.info(getClass(), user + " has left the channel.");
