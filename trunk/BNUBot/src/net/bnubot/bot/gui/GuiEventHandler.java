@@ -20,10 +20,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowStateListener;
 
 import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -42,6 +41,7 @@ import net.bnubot.bot.gui.components.UserList;
 import net.bnubot.bot.gui.database.DatabaseAccountEditor;
 import net.bnubot.bot.gui.database.DatabaseRankEditor;
 import net.bnubot.bot.gui.icons.IconsDotBniReader;
+import net.bnubot.bot.gui.main.GuiDesktop;
 import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.clan.ClanMember;
@@ -53,7 +53,7 @@ import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.VersionCheck;
 
 public class GuiEventHandler implements EventHandler {
-	private JFrame frame = null;
+	private JInternalFrame frame = null;
 	private Connection c = null;
 	private TextWindow mainTextArea = null;
 	private JTextArea chatTextArea = null;
@@ -138,19 +138,19 @@ public class GuiEventHandler implements EventHandler {
 			Out.exception(e);
 		}
 		
-		frame.addWindowStateListener(new WindowStateListener() {
+		/*frame.addWindowStateListener(new WindowStateListener() {
 			public void windowStateChanged(WindowEvent e) {
 				if((e.getNewState() & java.awt.Frame.ICONIFIED) != 0) {
 					frame.setVisible(false);
 					frame.setState(e.getNewState() & ~java.awt.Frame.ICONIFIED);
 				}
 			}
-		});
+		});*/
 	}
 	
 	private void initializeGui(String title, ColorScheme cs) {
 		//Create and set up the window
-		frame = new JFrame(title);
+		frame = new JInternalFrame(title);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		//Create the menu bar.
@@ -364,16 +364,13 @@ public class GuiEventHandler implements EventHandler {
 		frame.add(chatTextArea);
 		frame.add(channelTextArea);
 		frame.add(allLists);
-		/*JSplitPane leftPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, mainTextArea, chatTextArea);
-		leftPane.setResizeWeight(1);
-		JSplitPane rightPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, channelTextArea, allLists);
-		JSplitPane mainPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPane, rightPane);
-		mainPane.setResizeWeight(1);
-		frame.add(mainPane);*/
 		
 		//Display the window
 		frame.pack();
+		frame.setSize(new Dimension(750, 450));
+		frame.setResizable(true);
 		frame.setVisible(true);
+		GuiDesktop.add(frame);
 	}
 
 	public void channelJoin(BNetUser user) {
