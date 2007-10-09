@@ -28,15 +28,20 @@ import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.VersionCheck;
 
 public class Main {
-	private static void pidFile() {
+	static {
+		// Delete the bnubot.pid file on application exit
 		File f = new File("bnubot.pid");
 		if(f.exists())
 			f.deleteOnExit();
+
+		// On OSX, set the application name
+		String osName = System.getProperty("os.name");
+		if (osName.startsWith("Mac OS")) {
+			System.setProperty("com.apple.mrj.application.apple.menu.about.name", "BNU-Bot");
+		}
 	}
 
 	public static void main(String[] args) throws Exception {
-		pidFile();
-		
 		int numBots = 1;
 		try {
 			numBots = Integer.parseInt(
