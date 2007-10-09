@@ -7,17 +7,24 @@ package net.bnubot.junit;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
+import net.bnubot.junit.core.BNetUserTest;
+import net.bnubot.junit.core.CookieUtilityTest;
+import net.bnubot.junit.util.Base64Test;
+import net.bnubot.junit.util.HexDumpTest;
+import net.bnubot.junit.vercheck.VersionNumberTest;
 
 public class BNUBotTestSuite {
 	
 	public static Test suite() {
 		TestSuite suite = new TestSuite("BNUBot");
 		
-		suite.addTestSuite(net.bnubot.junit.core.BNetUserTest.class);
-		suite.addTestSuite(net.bnubot.junit.core.CookieUtilityTest.class);
+		suite.addTestSuite(BNetUserTest.class);
+		suite.addTestSuite(CookieUtilityTest.class);
 
-		suite.addTestSuite(net.bnubot.junit.util.Base64Test.class);
-		suite.addTestSuite(net.bnubot.junit.util.HexDumpTest.class);
+		suite.addTestSuite(Base64Test.class);
+		suite.addTestSuite(HexDumpTest.class);
+		
+		suite.addTestSuite(VersionNumberTest.class);
 		
 		return suite;
 	}
