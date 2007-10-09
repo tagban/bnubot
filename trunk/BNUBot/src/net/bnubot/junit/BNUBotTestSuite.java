@@ -7,9 +7,9 @@ package net.bnubot.junit;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import net.bnubot.junit.core.BNetUserTest;
-import net.bnubot.junit.core.CookieUtilityTest;
+import net.bnubot.junit.util.BNetUserTest;
 import net.bnubot.junit.util.Base64Test;
+import net.bnubot.junit.util.CookieUtilityTest;
 import net.bnubot.junit.util.HexDumpTest;
 import net.bnubot.junit.vercheck.VersionNumberTest;
 
