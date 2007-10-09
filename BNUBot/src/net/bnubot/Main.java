@@ -8,6 +8,7 @@ package net.bnubot;
 import java.io.File;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Hashtable;
 
 import javax.swing.JOptionPane;
 
@@ -215,9 +216,11 @@ public class Main {
 		}
 		
 		primary.start();
-		BNCSConnection c = primary;
-		String primaryServer = cs.bncsServer;
 		
+		Hashtable<String, BNCSConnection> primaries = new Hashtable<String, BNCSConnection>();
+		primaries.put(cs.bncsServer, primary);
+		
+		BNCSConnection c = primary;
 		for(int i = 2; i <= numBots; i++) {
 			//Wait for the previous bot to connect
 			while(!c.canSendChat())
@@ -232,9 +235,10 @@ public class Main {
 			String valid = cs.isValid();
 			if(valid != null)
 				throw new Exception("Invalid configuration for bot " + i + ": " + valid);
-	
+			
 			c = new BNCSConnection(cs, cq);
-			if(cs.bncsServer.equals(primaryServer)) {
+			primary = primaries.get(cs.bncsServer);
+			if(primary != null) {
 				for(EventHandler eh : pluginEHs)
 					c.addSecondaryEventHandler(eh);
 				if(cli != null)
