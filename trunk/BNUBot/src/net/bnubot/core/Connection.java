@@ -28,7 +28,7 @@ public abstract class Connection extends Thread implements EventHandler {
 	protected Socket socket = null;
 
 	protected ConnectionSettings cs;
-	protected ChatQueue cq;
+	protected ChatQueue chatQueue;
 	protected LinkedList<EventHandler> eventHandlers = new LinkedList<EventHandler>();
 	protected LinkedList<EventHandler> eventHandlers2 = new LinkedList<EventHandler>();
 	protected BNetUser myUser = null;
@@ -61,7 +61,7 @@ public abstract class Connection extends Thread implements EventHandler {
 		super(Connection.class.getSimpleName());
 
 		this.cs = cs;
-		this.cq = cq;
+		this.chatQueue = cq;
 
 		if(cq != null)
 			cq.add(this);
@@ -324,7 +324,7 @@ public abstract class Connection extends Thread implements EventHandler {
 		if(canSendChat() && !ConnectionSettings.enableFloodProtect) {
 			sendChatNow(text);
 		} else {
-			cq.enqueue(text, ConnectionSettings.enableFloodProtect);
+			chatQueue.enqueue(text, ConnectionSettings.enableFloodProtect);
 		}
 	}
 
@@ -644,5 +644,9 @@ public abstract class Connection extends Thread implements EventHandler {
 		while(it.hasNext())
 			it.next().clanMemberStatusChange(member);
 		eh_semaphore--;
+	}
+
+	public ChatQueue getChatQueue() {
+		return this.chatQueue;
 	}
 }

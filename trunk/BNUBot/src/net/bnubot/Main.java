@@ -139,10 +139,10 @@ public class Main {
 			}
 		}
 		
-		ChatQueue cq = new ChatQueue();
-		cq.start();
+		ChatQueue chatQueue = new ChatQueue();
+		chatQueue.start();
 		
-		BNCSConnection primary = new BNCSConnection(cs, cq);
+		BNCSConnection primary = new BNCSConnection(cs, chatQueue);
 			
 		//Other plugins
 		ArrayList<EventHandler> pluginEHs = new ArrayList<EventHandler>();
@@ -166,7 +166,6 @@ public class Main {
 		if(ConnectionSettings.enableGUI) {
 			gui = new GuiEventHandler();
 			primary.addEventHandler(gui);
-			Out.setOutputConnection(gui);
 		}
 		
 		if(CurrentVersion.fromJar() && CurrentVersion.version().getReleaseType().isDevelopment())
@@ -218,7 +217,11 @@ public class Main {
 		primary.start();
 		
 		Hashtable<String, BNCSConnection> primaries = new Hashtable<String, BNCSConnection>();
-		primaries.put(cs.bncsServer, primary);
+		Hashtable<String, GuiEventHandler> guis = new Hashtable<String, GuiEventHandler>();
+
+		String profile = cs.bncsServer;
+		primaries.put(profile, primary);
+		guis.put(profile, gui);
 		
 		BNCSConnection c = primary;
 		for(int i = 2; i <= numBots; i++) {
@@ -236,22 +239,32 @@ public class Main {
 			if(valid != null)
 				throw new Exception("Invalid configuration for bot " + i + ": " + valid);
 			
-			c = new BNCSConnection(cs, cq);
-			primary = primaries.get(cs.bncsServer);
+			profile = cs.bncsServer;
+			primary = primaries.get(profile);
+			
 			if(primary != null) {
-				for(EventHandler eh : pluginEHs)
-					c.addSecondaryEventHandler(eh);
-				if(cli != null)
-					c.addSecondaryEventHandler(cli);
-				if(gui != null)
-					c.addSecondaryEventHandler(gui);
-				if(cmd != null)
-					c.addSecondaryEventHandler(cmd);
+				chatQueue = primary.getChatQueue();
+				c = new BNCSConnection(cs, chatQueue);
+				
+				if(ConnectionSettings.enableGUI)
+					c.addSecondaryEventHandler(guis.get(profile));
+				
 				c.start();
 				primary.addSlave(c);
 			} else {
-				if(gui != null)
-					c.addEventHandler(new GuiEventHandler());
+				chatQueue = new ChatQueue();
+				chatQueue.start();
+				
+				c = new BNCSConnection(cs, chatQueue);
+				primaries.put(profile, c);
+				
+				if(ConnectionSettings.enableGUI) {
+					gui = new GuiEventHandler();
+					guis.put(profile, gui);
+					c.addEventHandler(gui);
+				}
+				if(cmd != null)
+					c.addEventHandler(new CommandEventHandler());
 				c.start();
 			}
 		}
