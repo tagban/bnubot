@@ -50,7 +50,6 @@ import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.Out;
 import net.bnubot.vercheck.CurrentVersion;
-import net.bnubot.vercheck.VersionCheck;
 
 public class GuiEventHandler implements EventHandler {
 	private JInternalFrame frame = null;
@@ -156,7 +155,6 @@ public class GuiEventHandler implements EventHandler {
 		//Create the menu bar.
 		JMenuBar menuBar = new JMenuBar();
 		menuBar.setOpaque(true);
-		menuBar.setPreferredSize(new Dimension(200, 20));
 		{
 			JMenu menu;
 			JMenuItem menuItem;
@@ -206,15 +204,6 @@ public class GuiEventHandler implements EventHandler {
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						new ConfigurationFrame(c.getConnectionSettings()).setVisible(true);
-					} });
-				menu.add(menuItem);
-				
-				menu.addSeparator();
-				
-				menuItem = new JMenuItem("Exit");
-				menuItem.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						System.exit(0);
 					} });
 				menu.add(menuItem);
 			}
@@ -283,33 +272,6 @@ public class GuiEventHandler implements EventHandler {
 					subMenu.add(menuItem);
 				}
 				menu.add(subMenu);
-			}
-			menuBar.add(menu);
-			
-			menu = new JMenu("Help");
-			{
-				menuItem = new JMenuItem("Complain about scrollbars");
-				menu.add(menuItem);
-				
-				menu.addSeparator();
-				
-				menuItem = new JMenuItem("Check for updates");
-				menuItem.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent event) {
-						try {
-							VersionCheck.checkVersion();
-						} catch (Exception e) {
-							Out.exception(e);
-						}
-					} });
-				menu.add(menuItem);
-				
-				menuItem = new JMenuItem("About");
-				menuItem.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent event) {
-						new AboutWindow();
-					} });
-				menu.add(menuItem);
 			}
 			menuBar.add(menu);
 		}

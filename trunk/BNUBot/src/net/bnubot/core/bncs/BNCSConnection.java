@@ -39,7 +39,6 @@ import net.bnubot.util.HexDump;
 import net.bnubot.util.Out;
 import net.bnubot.util.StatString;
 import net.bnubot.util.TimeFormatter;
-import net.bnubot.vercheck.CurrentVersion;
 
 import org.jbls.Hashing.BrokenSHA1;
 import org.jbls.Hashing.DoubleHash;
@@ -1781,14 +1780,9 @@ public class BNCSConnection extends Connection {
 	}
 	
 	public String toString() {
-		String out = "BNU-Bot " + CurrentVersion.version();
-		
-		if(channelName != null)
-			out += " - [ #" + channelName + " ]";
+		String out = new String();
 		
 		if(myUser != null) {
-			out += " - [ ";
-			
 			if(myClanRank != null) {
 				out += "Clan ";
 				out += HexDump.DWordToPretty(myClan);
@@ -1796,8 +1790,11 @@ public class BNCSConnection extends Connection {
 				out += clanRanks[myClanRank];
 				out += " ";
 			}
-			out += myUser.getShortLogonName() + " ]";
+			out += myUser.getShortLogonName();
 		}
+		
+		if(channelName != null)
+			out += " - [ #" + channelName + " ]";
 		
 		return out;
 	}
