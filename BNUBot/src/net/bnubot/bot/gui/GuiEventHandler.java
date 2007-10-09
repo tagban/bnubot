@@ -71,8 +71,9 @@ public class GuiEventHandler implements EventHandler {
 			this.c = c;
 			initializeGui(c.toString(), cs);
 		} else {
-			initializeGui("BNU`Bot", cs);
+			initializeGui("BNU-Bot", cs);
 		}
+		Out.setOutputConnection(this);
 		
 		initializeSystemTray();
 	}
