@@ -140,6 +140,7 @@ public class GuiEventHandler implements EventHandler {
 		
 		//Create the menu bar.
 		menuBar.setOpaque(true);
+		menuBar.setText(c.getConnectionSettings().bncsServer);
 		{
 			JMenu menu;
 			JMenuItem menuItem;
@@ -364,7 +365,14 @@ public class GuiEventHandler implements EventHandler {
 	}
 
 	public void titleChanged() {
-		String name = c.getMyUser().getFullAccountName();
+		BNetUser user = c.getMyUser();
+		String name;
+		
+		if(user != null)
+			name = c.getMyUser().getFullAccountName();
+		else
+			name = c.getConnectionSettings().bncsServer;
+		
 		menuBar.setText(name);
 		GuiDesktop.setTitle(this, name, c.getProductID());
 		if(ti != null)

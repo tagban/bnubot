@@ -52,7 +52,8 @@ public class GuiDesktop extends JFrame {
 					if(jp != gui.getFrame())
 						continue;
 					
-					// Found the gui
+					// Found the selected GUI
+					Out.setOutputConnection(gui);
 					
 					break;
 				}
