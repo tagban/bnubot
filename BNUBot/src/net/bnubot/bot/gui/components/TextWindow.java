@@ -33,7 +33,7 @@ public class TextWindow extends JScrollPane {
 				public void hyperlinkUpdate(HyperlinkEvent e) {
 					if(e.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED))
 						try {
-							BrowserLauncher.openURL(e.getURL().toString());
+							BrowserLauncher.openURL(e.getDescription());
 						} catch (Exception e1) {
 							Out.exception(e1);
 						}

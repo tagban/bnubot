@@ -5,41 +5,27 @@
 
 package net.bnubot.bot.gui;
 
-import java.awt.AWTException;
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Image;
-import java.awt.MenuItem;
-import java.awt.PopupMenu;
-import java.awt.SystemTray;
-import java.awt.Toolkit;
 import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 
-import javax.swing.JFrame;
-import javax.swing.JInternalFrame;
 import javax.swing.JMenu;
-import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
-import net.bnubot.bot.database.Database;
 import net.bnubot.bot.gui.ColorScheme.ColorScheme;
 import net.bnubot.bot.gui.components.ClanList;
 import net.bnubot.bot.gui.components.FriendList;
 import net.bnubot.bot.gui.components.TextWindow;
 import net.bnubot.bot.gui.components.UserList;
-import net.bnubot.bot.gui.database.DatabaseAccountEditor;
-import net.bnubot.bot.gui.database.DatabaseRankEditor;
 import net.bnubot.bot.gui.icons.IconsDotBniReader;
 import net.bnubot.bot.gui.main.GuiDesktop;
 import net.bnubot.core.Connection;
@@ -49,10 +35,9 @@ import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.Out;
-import net.bnubot.vercheck.CurrentVersion;
 
 public class GuiEventHandler implements EventHandler {
-	private JInternalFrame frame = null;
+	private JPanel frame = null;
 	private Connection c = null;
 	private TextWindow mainTextArea = null;
 	private JTextArea chatTextArea = null;
@@ -63,6 +48,7 @@ public class GuiEventHandler implements EventHandler {
 	private RealmWindow w = null;
 	private String channel = null;
 	private TrayIcon ti = null;
+	private JMenu menuBar = new JMenu();
 	
 	public void initialize(Connection c) {
 		ColorScheme cs = ColorScheme.createColorScheme(ConnectionSettings.colorScheme);
@@ -79,7 +65,7 @@ public class GuiEventHandler implements EventHandler {
 	}
 
 	private void initializeSystemTray() {
-		try {
+	/*	try {
 			if(!SystemTray.isSupported())
 				throw new NoClassDefFoundError();
 		} catch(NoClassDefFoundError e) {
@@ -149,18 +135,25 @@ public class GuiEventHandler implements EventHandler {
 	}
 	
 	private void initializeGui(String title, ColorScheme cs) {
-		//Create and set up the window
-		frame = new JInternalFrame(title);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		//Create the panel
+		frame = new JPanel(true);
 		
 		//Create the menu bar.
-		JMenuBar menuBar = new JMenuBar();
 		menuBar.setOpaque(true);
 		{
 			JMenu menu;
 			JMenuItem menuItem;
+			
+			menuItem = new JMenuItem("Settings");
+			menuItem.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					new ConfigurationFrame(c.getConnectionSettings()).setVisible(true);
+				} });
+			menuBar.add(menuItem);
+			
+			menuBar.addSeparator();
 
-			menu = new JMenu("File");
+			menu = new JMenu("Battle.net");
 			{	
 				menuItem = new JMenuItem("Connect");
 				menuItem.addActionListener(new ActionListener() {
@@ -185,98 +178,36 @@ public class GuiEventHandler implements EventHandler {
 							c.setConnected(false);
 					} });
 				menu.add(menuItem);
-				
-				menu.addSeparator();
-				
-				menuItem = new JMenuItem("Realms");
+			}
+			menuBar.add(menu);
+			
+			menuItem = new JMenuItem("Realms");
+			menuItem.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent evt) {
+					try {
+						c.sendQueryRealms();
+					} catch (Exception e) {
+						Out.exception(e);
+					}
+				} });
+			menuBar.add(menuItem);
+
+			menu = new JMenu("Clan");
+			{
+				menuItem = new JMenuItem("Edit MOTD");
 				menuItem.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent evt) {
+					public void actionPerformed(ActionEvent event) {
 						try {
-							c.sendQueryRealms();
-						} catch (Exception e) {
+							c.sendClanMOTD(new ClanMOTDEditor(c));
+						} catch(Exception e) {
 							Out.exception(e);
 						}
 					} });
 				menu.add(menuItem);
-				
-				menu.addSeparator();
-				
-				menuItem = new JMenuItem("Settings");
-				menuItem.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						new ConfigurationFrame(c.getConnectionSettings()).setVisible(true);
-					} });
-				menu.add(menuItem);
-			}
-			menuBar.add(menu);
-
-			menu = new JMenu("Edit");
-			{
-				JMenu subMenu = new JMenu("Clan");
-				{
-					menuItem = new JMenuItem("Edit MOTD");
-					menuItem.addActionListener(new ActionListener() {
-						public void actionPerformed(ActionEvent event) {
-							try {
-								c.sendClanMOTD(new ClanMOTDEditor(c));
-							} catch(Exception e) {
-								Out.exception(e);
-							}
-						} });
-					subMenu.add(menuItem);
-				}
-				menu.add(subMenu);
-				
-				subMenu = new JMenu("Database");
-				{
-					menuItem = new JMenuItem("Rank editor");
-					menuItem.addActionListener(new ActionListener() {
-						public void actionPerformed(ActionEvent event) {
-							Database d = Database.getInstance();
-							if(d != null)
-								new DatabaseRankEditor(d);
-							else
-								c.recieveError("There is no database initialized.");
-						} });
-					subMenu.add(menuItem);
-					
-					menuItem = new JMenuItem("Account editor");
-					menuItem.addActionListener(new ActionListener() {
-						public void actionPerformed(ActionEvent event) {
-							Database d = Database.getInstance();
-							if(d != null)
-								new DatabaseAccountEditor(d);
-							else
-								c.recieveError("There is no database initialized.");
-						} });
-					subMenu.add(menuItem);
-				}
-				menu.add(subMenu);
-			
-				subMenu = new JMenu("Debug");
-				{
-					menuItem = new JMenuItem("Show Icons");
-					menuItem.addActionListener(new ActionListener() {
-						public void actionPerformed(ActionEvent event) {
-							IconsDotBniReader.showWindow();
-						} });
-					subMenu.add(menuItem);
-					
-					menuItem = new JMenuItem((Out.isDebug() ? "Dis" : "En") + "able debug logging");
-					menuItem.addActionListener(new ActionListener() {
-						public void actionPerformed(ActionEvent event) {
-							Out.setDebug(!Out.isDebug());
-							
-							JMenuItem jmi = (JMenuItem)event.getSource();
-							jmi.setText((Out.isDebug() ? "Dis" : "En") + "able debug logging");
-						} });
-					subMenu.add(menuItem);
-				}
-				menu.add(subMenu);
 			}
 			menuBar.add(menu);
 		}
-		frame.setJMenuBar(menuBar);
+		//frame.setJMenuBar(menuBar);
 		
 		//Create a LayoutManager to organize the frame
 		frame.setLayout(new BotLayoutManager());
@@ -329,13 +260,17 @@ public class GuiEventHandler implements EventHandler {
 		frame.add(allLists);
 		
 		//Display the window
-		frame.pack();
-		frame.setSize(new Dimension(750, 450));
-		frame.setResizable(true);
-		frame.setVisible(true);
-		GuiDesktop.add(frame);
+		GuiDesktop.add(this, c.getConnectionSettings().bncsServer);
 	}
 
+	public JPanel getFrame() {
+		return frame;
+	}
+	
+	public JMenu getMenuBar() {
+		return menuBar;
+	}
+	
 	public void channelJoin(BNetUser user) {
 		userList.showUser(user);
 		mainTextArea.channelInfo(user + " has joined" + user.getStatString().toString() + ".");
@@ -360,7 +295,8 @@ public class GuiEventHandler implements EventHandler {
 		mainTextArea.addSeparator();
 		mainTextArea.channelInfo("Joining channel " + channel + ".");
 		channelTextArea.setText(channel);
-		frame.setTitle(c.toString());
+		
+		GuiDesktop.setTitle(this, c.toString(), c.getProductID());
 	}
 
 	public void recieveChat(BNetUser user, String text) {
@@ -428,7 +364,9 @@ public class GuiEventHandler implements EventHandler {
 	}
 
 	public void titleChanged() {
-		frame.setTitle(c.toString());
+		String name = c.getMyUser().getFullAccountName();
+		menuBar.setText(name);
+		GuiDesktop.setTitle(this, name, c.getProductID());
 		if(ti != null)
 			ti.setToolTip(c.toString());
 	}
