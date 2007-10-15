@@ -261,7 +261,7 @@ public class GuiEventHandler implements EventHandler {
 		frame.add(allLists);
 		
 		//Display the window
-		GuiDesktop.add(this, c.getConnectionSettings().bncsServer);
+		GuiDesktop.add(this);
 	}
 
 	public JPanel getFrame() {
@@ -297,7 +297,7 @@ public class GuiEventHandler implements EventHandler {
 		mainTextArea.channelInfo("Joining channel " + channel + ".");
 		channelTextArea.setText(channel);
 		
-		GuiDesktop.setTitle(this, c.toString(), c.getProductID());
+		GuiDesktop.setTitle(this, c.getProductID());
 	}
 
 	public void recieveChat(BNetUser user, String text) {
@@ -374,7 +374,8 @@ public class GuiEventHandler implements EventHandler {
 			name = c.getConnectionSettings().bncsServer;
 		
 		menuBar.setText(name);
-		GuiDesktop.setTitle(this, name, c.getProductID());
+		
+		GuiDesktop.setTitle(this, c.getProductID());
 		if(ti != null)
 			ti.setToolTip(c.toString());
 	}
@@ -444,5 +445,10 @@ public class GuiEventHandler implements EventHandler {
 
 	public void parseCommand(BNetUser user, String command, String param, boolean wasWhispered) {
 		mainTextArea.recieveInfo(String.format("parseCommand(\"%1$s\", \"%2$s\", \"%3$s\")", user.getShortLogonName(), command, param));
+	}
+
+	@Override
+	public String toString() {
+		return c.toString();
 	}
 }
