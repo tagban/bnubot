@@ -16,9 +16,9 @@ import net.bnubot.util.HexDump;
 import net.bnubot.util.Out;
 
 public class BNCSPacket extends BNetOutputStream {
-	byte packetId;
+	BNCSCommandIDs packetId;
 
-	public BNCSPacket(byte packetId) {
+	public BNCSPacket(BNCSCommandIDs packetId) {
 		super(new ByteArrayOutputStream());
 		this.packetId = packetId;
 	}
@@ -42,7 +42,7 @@ public class BNCSPacket extends BNetOutputStream {
 
 		try {
 			sckout.writeByte(0xFF);
-			sckout.writeByte(packetId);
+			sckout.writeByte(packetId.getId());
 			sckout.writeWord(data.length + 4);
 			sckout.write(data);
 		} catch(IOException e) {
@@ -53,9 +53,9 @@ public class BNCSPacket extends BNetOutputStream {
 
 		if(ConnectionSettings.packetLog) {
 			if(Out.isDebug())
-				Out.debugAlways(getClass(), "SEND\n" + HexDump.hexDump(data));
+				Out.debugAlways(getClass(), "SEND " + packetId.name() + "\n" + HexDump.hexDump(data));
 			else
-				Out.debugAlways(getClass(), "SEND 0x" + Integer.toHexString(packetId));
+				Out.debugAlways(getClass(), "SEND " + packetId.name());
 		}
 
 		out.write(data);
