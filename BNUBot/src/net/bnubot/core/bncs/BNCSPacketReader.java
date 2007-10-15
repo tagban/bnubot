@@ -10,6 +10,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import net.bnubot.core.EnumIdNotPresentException;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.util.BNetInputStream;
 import net.bnubot.util.BNetOutputStream;
@@ -17,11 +18,11 @@ import net.bnubot.util.HexDump;
 import net.bnubot.util.Out;
 
 public class BNCSPacketReader {
-	int packetId;
+	BNCSCommandIDs packetId;
 	int packetLength;
 	byte data[];
 	
-	public BNCSPacketReader(InputStream rawis) throws IOException {
+	public BNCSPacketReader(InputStream rawis) throws IOException, EnumIdNotPresentException {
 		BNetInputStream is = new BNetInputStream(rawis);
 		
 		byte magic;
@@ -29,7 +30,7 @@ public class BNCSPacketReader {
 			magic = is.readByte();
 		} while(magic != (byte)0xFF);
 		
-		packetId = is.readByte() & 0x000000FF;
+		packetId = BNCSCommandIDs.fromId(is.readByte() & 0x000000FF);
 		packetLength = is.readWord() & 0x0000FFFF;
 		assert(packetLength >= 4);
 		
@@ -42,14 +43,14 @@ public class BNCSPacketReader {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			BNetOutputStream os = new BNetOutputStream(baos);
 			os.writeByte(0xFF);
-			os.writeByte(packetId);
+			os.writeByte(packetId.getId());
 			os.writeWord(packetLength);
 			os.write(data);
 			
 			if(Out.isDebug())
-				Out.debugAlways(getClass(), "RECV\n" + HexDump.hexDump(baos.toByteArray()));
+				Out.debugAlways(getClass(), "RECV " + packetId.name() + "\n" + HexDump.hexDump(baos.toByteArray()));
 			else
-				Out.debugAlways(getClass(), "RECV 0x" + Integer.toHexString(packetId));
+				Out.debugAlways(getClass(), "RECV " + packetId.name());
 		}
 	}
 	

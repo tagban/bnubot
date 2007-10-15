@@ -5,97 +5,116 @@
 
 package net.bnubot.core.bncs;
 
-public interface BNCSCommandIDs {
-	public static final byte SID_NULL						= (byte)0x00;
-	public static final byte SID_STOPADV					= (byte)0x02;  
-	public static final byte SID_CLIENTID					= (byte)0x05;
-	public static final byte SID_STARTVERSIONING			= (byte)0x06;  
-	public static final byte SID_REPORTVERSION				= (byte)0x07;
-	public static final byte SID_STARTADVEX					= (byte)0x08;
-	public static final byte SID_GETADVLISTEX				= (byte)0x09;
-	public static final byte SID_ENTERCHAT					= (byte)0x0A;
-	public static final byte SID_GETCHANNELLIST				= (byte)0x0B;
-	public static final byte SID_JOINCHANNEL				= (byte)0x0C;
-	public static final byte SID_CHATCOMMAND				= (byte)0x0E;
-	public static final byte SID_CHATEVENT					= (byte)0x0F;
-	public static final byte SID_LEAVECHAT					= (byte)0x10;
-	public static final byte SID_LOCALEINFO					= (byte)0x12;
-	public static final byte SID_FLOODDETECTED				= (byte)0x13;
-	public static final byte SID_UDPPINGRESPONSE			= (byte)0x14; 
-	public static final byte SID_CHECKAD					= (byte)0x15;
-	public static final byte SID_CLICKAD					= (byte)0x16;
-	public static final byte SID_MESSAGEBOX					= (byte)0x19;
-	public static final byte SID_STARTADVEX3				= (byte)0x1C;  
-	public static final byte SID_LOGONCHALLENGEEX			= (byte)0x1D; 
-	public static final byte SID_CLIENTID2					= (byte)0x1E;
-	public static final byte SID_LEAVEGAME					= (byte)0x1F;
-	public static final byte SID_DISPLAYAD					= (byte)0x21;
-	public static final byte SID_NOTIFYJOIN					= (byte)0x22;
-	public static final byte SID_PING						= (byte)0x25;
-	public static final byte SID_READUSERDATA				= (byte)0x26;  
-	public static final byte SID_WRITEUSERDATA				= (byte)0x27; 
-	public static final byte SID_LOGONCHALLENGE				= (byte)0x28;
-	public static final byte SID_LOGONRESPONSE				= (byte)0x29;
-	public static final byte SID_CREATEACCOUNT				= (byte)0x2A;
-	public static final byte SID_GAMERESULT					= (byte)0x2C;
-	public static final byte SID_GETICONDATA				= (byte)0x2D;
-	public static final byte SID_GETLADDERDATA				= (byte)0x2E;
-	public static final byte SID_FINDLADDERUSER				= (byte)0x2F;
-	public static final byte SID_CDKEY						= (byte)0x30;
-	public static final byte SID_CHANGEPASSWORD				= (byte)0x31;  
-	public static final byte SID_CHECKDATAFILE				= (byte)0x32; 
-	public static final byte SID_GETFILETIME				= (byte)0x33;  
-	public static final byte SID_QUERYREALMS				= (byte)0x34; 
-	public static final byte SID_PROFILE					= (byte)0x35;
-	public static final byte SID_CDKEY2						= (byte)0x36;
-	public static final byte SID_LOGONRESPONSE2				= (byte)0x3A; 
-	public static final byte SID_CHECKDATAFILE2				= (byte)0x3C;
-	public static final byte SID_CREATEACCOUNT2				= (byte)0x3D;
-	public static final byte SID_LOGONREALMEX				= (byte)0x3E;
-	public static final byte SID_STARTVERSIONING2			= (byte)0x3F;  
-	public static final byte SID_QUERYREALMS2				= (byte)0x40;
-	public static final byte SID_QUERYADURL					= (byte)0x41;
-	public static final byte SID_WARCRAFTGENERAL			= (byte)0x44;  
-	public static final byte SID_NETGAMEPORT				= (byte)0x45; 
-	public static final byte SID_NEWS_INFO					= (byte)0x46;
-	public static final byte SID_OPTIONALWORK				= (byte)0x4A;
-	public static final byte SID_EXTRAWORK					= (byte)0x4B;
-	public static final byte SID_REQUIREDWORK				= (byte)0x4C;
-	public static final byte SID_AUTH_INFO					= (byte)0x50;
-	public static final byte SID_AUTH_CHECK					= (byte)0x51;
-	public static final byte SID_AUTH_ACCOUNTCREATE			= (byte)0x52;  
-	public static final byte SID_AUTH_ACCOUNTLOGON			= (byte)0x53; 
-	public static final byte SID_AUTH_ACCOUNTLOGONPROOF		= (byte)0x54;
-	public static final byte SID_AUTH_ACCOUNTCHANGE			= (byte)0x55;
-	public static final byte SID_AUTH_ACCOUNTCHANGEPROOF	= (byte)0x56;
-	public static final byte SID_AUTH_ACCOUNTUPGRADE		= (byte)0x57;
-	public static final byte SID_AUTH_ACCOUNTUPGRADEPROOF	= (byte)0x58;
-	public static final byte SID_SETEMAIL					= (byte)0x59;
-	public static final byte SID_RESETPASSWORD				= (byte)0x5A;
-	public static final byte SID_CHANGEEMAIL				= (byte)0x5B;  
-	public static final byte SID_SWITCHPRODUCT				= (byte)0x5C;
-	public static final byte SID_GAMEPLAYERSEARCH			= (byte)0x60;  
-	public static final byte SID_FRIENDSLIST				= (byte)0x65;  
-	public static final byte SID_FRIENDSUPDATE				= (byte)0x66;
-	public static final byte SID_FRIENDSADD					= (byte)0x67;
-	public static final byte SID_FRIENDSREMOVE				= (byte)0x68;
-	public static final byte SID_FRIENDSPOSITION			= (byte)0x69;  
-	public static final byte SID_CLANFINDCANDIDATES			= (byte)0x70; 
-	public static final byte SID_CLANINVITEMULTIPLE			= (byte)0x71;
-	public static final byte SID_CLANCREATIONINVITATION		= (byte)0x72;
-	public static final byte SID_CLANDISBAND				= (byte)0x73;
-	public static final byte SID_CLANMAKECHIEFTAIN			= (byte)0x74;
-	public static final byte SID_CLANINFO					= (byte)0x75;
-	public static final byte SID_CLANQUITNOTIFY				= (byte)0x76;
-	public static final byte SID_CLANINVITATION				= (byte)0x77;
-	public static final byte SID_CLANREMOVEMEMBER			= (byte)0x78;
-	public static final byte SID_CLANINVITATIONRESPONSE		= (byte)0x79;
-	public static final byte SID_CLANRANKCHANGE				= (byte)0x7A;
-	public static final byte SID_CLANSETMOTD				= (byte)0x7B;  
-	public static final byte SID_CLANMOTD					= (byte)0x7C;
-	public static final byte SID_CLANMEMBERLIST				= (byte)0x7D;
-	public static final byte SID_CLANMEMBERREMOVED			= (byte)0x7E;  
-	public static final byte SID_CLANMEMBERSTATUSCHANGE		= (byte)0x7F; 
-	public static final byte SID_CLANMEMBERRANKCHANGE		= (byte)0x81;
-	public static final byte SID_CLANMEMBERINFORMATION		= (byte)0x82;
+import net.bnubot.core.EnumIdNotPresentException;
+
+public enum BNCSCommandIDs {
+	SID_NULL(0x00),
+	SID_STOPADV(0x02),  
+	SID_CLIENTID(0x05),
+	SID_STARTVERSIONING(0x06),  
+	SID_REPORTVERSION(0x07),
+	SID_STARTADVEX(0x08),
+	SID_GETADVLISTEX(0x09),
+	SID_ENTERCHAT(0x0A),
+	SID_GETCHANNELLIST(0x0B),
+	SID_JOINCHANNEL(0x0C),
+	SID_CHATCOMMAND(0x0E),
+	SID_CHATEVENT(0x0F),
+	SID_LEAVECHAT(0x10),
+	SID_LOCALEINFO(0x12),
+	SID_FLOODDETECTED(0x13),
+	SID_UDPPINGRESPONSE(0x14), 
+	SID_CHECKAD(0x15),
+	SID_CLICKAD(0x16),
+	SID_MESSAGEBOX(0x19),
+	SID_STARTADVEX3(0x1C),  
+	SID_LOGONCHALLENGEEX(0x1D), 
+	SID_CLIENTID2(0x1E),
+	SID_LEAVEGAME(0x1F),
+	SID_DISPLAYAD(0x21),
+	SID_NOTIFYJOIN(0x22),
+	SID_PING(0x25),
+	SID_READUSERDATA(0x26),  
+	SID_WRITEUSERDATA(0x27), 
+	SID_LOGONCHALLENGE(0x28),
+	SID_LOGONRESPONSE(0x29),
+	SID_CREATEACCOUNT(0x2A),
+	SID_GAMERESULT(0x2C),
+	SID_GETICONDATA(0x2D),
+	SID_GETLADDERDATA(0x2E),
+	SID_FINDLADDERUSER(0x2F),
+	SID_CDKEY(0x30),
+	SID_CHANGEPASSWORD(0x31),  
+	SID_CHECKDATAFILE(0x32), 
+	SID_GETFILETIME(0x33),  
+	SID_QUERYREALMS(0x34), 
+	SID_PROFILE(0x35),
+	SID_CDKEY2(0x36),
+	SID_LOGONRESPONSE2(0x3A), 
+	SID_CHECKDATAFILE2(0x3C),
+	SID_CREATEACCOUNT2(0x3D),
+	SID_LOGONREALMEX(0x3E),
+	SID_STARTVERSIONING2(0x3F),  
+	SID_QUERYREALMS2(0x40),
+	SID_QUERYADURL(0x41),
+	SID_WARCRAFTGENERAL(0x44),  
+	SID_NETGAMEPORT(0x45), 
+	SID_NEWS_INFO(0x46),
+	SID_OPTIONALWORK(0x4A),
+	SID_EXTRAWORK(0x4B),
+	SID_REQUIREDWORK(0x4C),
+	SID_AUTH_INFO(0x50),
+	SID_AUTH_CHECK(0x51),
+	SID_AUTH_ACCOUNTCREATE(0x52),  
+	SID_AUTH_ACCOUNTLOGON(0x53), 
+	SID_AUTH_ACCOUNTLOGONPROOF(0x54),
+	SID_AUTH_ACCOUNTCHANGE(0x55),
+	SID_AUTH_ACCOUNTCHANGEPROOF(0x56),
+	SID_AUTH_ACCOUNTUPGRADE(0x57),
+	SID_AUTH_ACCOUNTUPGRADEPROOF(0x58),
+	SID_SETEMAIL(0x59),
+	SID_RESETPASSWORD(0x5A),
+	SID_CHANGEEMAIL(0x5B),  
+	SID_SWITCHPRODUCT(0x5C),
+	SID_GAMEPLAYERSEARCH(0x60),  
+	SID_FRIENDSLIST(0x65),  
+	SID_FRIENDSUPDATE(0x66),
+	SID_FRIENDSADD(0x67),
+	SID_FRIENDSREMOVE(0x68),
+	SID_FRIENDSPOSITION(0x69),  
+	SID_CLANFINDCANDIDATES(0x70), 
+	SID_CLANINVITEMULTIPLE(0x71),
+	SID_CLANCREATIONINVITATION(0x72),
+	SID_CLANDISBAND(0x73),
+	SID_CLANMAKECHIEFTAIN(0x74),
+	SID_CLANINFO(0x75),
+	SID_CLANQUITNOTIFY(0x76),
+	SID_CLANINVITATION(0x77),
+	SID_CLANREMOVEMEMBER(0x78),
+	SID_CLANINVITATIONRESPONSE(0x79),
+	SID_CLANRANKCHANGE(0x7A),
+	SID_CLANSETMOTD(0x7B),  
+	SID_CLANMOTD(0x7C),
+	SID_CLANMEMBERLIST(0x7D),
+	SID_CLANMEMBERREMOVED(0x7E),  
+	SID_CLANMEMBERSTATUSCHANGE(0x7F), 
+	SID_CLANMEMBERRANKCHANGE(0x81),
+	SID_CLANMEMBERINFORMATION(0x82);
+
+	private final int id;
+	private BNCSCommandIDs(int id) {
+		this.id = id;
+	}
+	
+	public int getId() {
+		return id;
+	}
+	
+	public static BNCSCommandIDs fromId(int id) throws EnumIdNotPresentException {
+		// TODO: replace this with a map
+		for(BNCSCommandIDs command : values())
+			if(command.getId() == id)
+				return command;
+		throw new EnumIdNotPresentException(BNCSCommandIDs.class, id);
+	}
 }

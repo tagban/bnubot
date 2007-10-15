@@ -23,6 +23,7 @@ import java.util.TimeZone;
 import net.bnubot.bot.CommandResponseCookie;
 import net.bnubot.core.ChatQueue;
 import net.bnubot.core.Connection;
+import net.bnubot.core.EnumIdNotPresentException;
 import net.bnubot.core.UnsupportedFeatureException;
 import net.bnubot.core.bnls.BNLSCommandIDs;
 import net.bnubot.core.bnls.BNLSPacket;
@@ -365,7 +366,7 @@ public class BNCSConnection extends Connection {
 		return antiIdles.get(i);
 	}
 	
-	private void connectedLoop() throws Exception {
+	private void connectedLoop() throws Exception  {
 		lastAntiIdle = System.currentTimeMillis();
 		lastNullPacket = System.currentTimeMillis();
 		
@@ -398,31 +399,37 @@ public class BNCSConnection extends Connection {
 			}
 			
 			if(bncsInputStream.available() > 0) {
-				BNCSPacketReader pr = new BNCSPacketReader(bncsInputStream);
+				BNCSPacketReader pr;
+				try {
+					pr = new BNCSPacketReader(bncsInputStream);
+				} catch (EnumIdNotPresentException e) {
+					e.printStackTrace();
+					continue;
+				}
 				BNetInputStream is = pr.getData();
 				
 				switch(pr.packetId) {
-				case BNCSCommandIDs.SID_OPTIONALWORK:
-				case BNCSCommandIDs.SID_EXTRAWORK:
-				case BNCSCommandIDs.SID_REQUIREDWORK:
+				case SID_OPTIONALWORK:
+				case SID_EXTRAWORK:
+				case SID_REQUIREDWORK:
 					break;
 					
-				case BNCSCommandIDs.SID_NULL: {
+				case SID_NULL: {
 					lastNullPacket = timeNow;
 					BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_NULL);
 					p.SendPacket(bncsOutputStream);
 					break;
 				}
 				
-				case BNCSCommandIDs.SID_PING: {
+				case SID_PING: {
 					BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_PING);
 					p.writeDWord(is.readDWord());
 					p.SendPacket(bncsOutputStream);
 					break;
 				}
 				
-				case BNCSCommandIDs.SID_AUTH_INFO:
-				case BNCSCommandIDs.SID_STARTVERSIONING: {
+				case SID_AUTH_INFO:
+				case SID_STARTVERSIONING: {
 					if(pr.packetId == BNCSCommandIDs.SID_AUTH_INFO) {
 						nlsRevision = is.readDWord();
 						serverToken = is.readDWord();
@@ -557,8 +564,8 @@ public class BNCSConnection extends Connection {
 					break;
 				}
 
-				case BNCSCommandIDs.SID_REPORTVERSION:
-				case BNCSCommandIDs.SID_AUTH_CHECK: {
+				case SID_REPORTVERSION:
+				case SID_AUTH_CHECK: {
 					int result = is.readDWord();
 					String extraInfo = is.readNTString();
 					assert(is.available() == 0);
@@ -634,8 +641,8 @@ public class BNCSConnection extends Connection {
 					break;
 				}
 
-				case BNCSCommandIDs.SID_CDKEY:
-				case BNCSCommandIDs.SID_CDKEY2: {
+				case SID_CDKEY:
+				case SID_CDKEY2: {
 					/* (DWORD) Result
 					 * (STRING) Key owner
 					 * 
@@ -675,7 +682,7 @@ public class BNCSConnection extends Connection {
 					break;
 				}
 				
-				case BNCSCommandIDs.SID_AUTH_ACCOUNTLOGON: {
+				case SID_AUTH_ACCOUNTLOGON: {
 					/* (DWORD)		 Status
 					 * (BYTE[32])	 Salt (socket)
 					 * (BYTE[32])	 Server Key (B)
@@ -750,7 +757,7 @@ public class BNCSConnection extends Connection {
 					break;
 				}
 				
-				case BNCSCommandIDs.SID_AUTH_ACCOUNTCREATE: {
+				case SID_AUTH_ACCOUNTCREATE: {
 					/* 
 					 * (DWORD)		 Status
 					 * 0x00: Successfully created account name.
@@ -776,7 +783,7 @@ public class BNCSConnection extends Connection {
 					break;
 				}
 				
-				case BNCSCommandIDs.SID_AUTH_ACCOUNTLOGONPROOF: {
+				case SID_AUTH_ACCOUNTLOGONPROOF: {
 					/* (DWORD)		 Status
 					 * (BYTE[20])	 Server Password Proof (M2)
 					 * (STRING) 	 Additional information
@@ -827,7 +834,7 @@ public class BNCSConnection extends Connection {
 					break;
 				}
 				
-				case BNCSCommandIDs.SID_LOGONRESPONSE2: {
+				case SID_LOGONRESPONSE2: {
 					int result = is.readDWord();
 					switch(result) {
 					case 0x00:	// Success
@@ -866,23 +873,23 @@ public class BNCSConnection extends Connection {
 					break;
 				}
 				
-				case BNCSCommandIDs.SID_CLIENTID: {
+				case SID_CLIENTID: {
 					//Sends new registration values; no longer used
 					break;
 				}
 				
-				case BNCSCommandIDs.SID_LOGONCHALLENGE: {
+				case SID_LOGONCHALLENGE: {
 					serverToken = is.readDWord();
 					break;
 				}
 				
-				case BNCSCommandIDs.SID_LOGONCHALLENGEEX: {
+				case SID_LOGONCHALLENGEEX: {
 					/*int udpToken =*/ is.readDWord();
 					serverToken = is.readDWord();
 					break;
 				}
 				
-				case BNCSCommandIDs.SID_CREATEACCOUNT2: {
+				case SID_CREATEACCOUNT2: {
 					int status = is.readDWord();
 					/*String suggestion =*/ is.readNTString();
 					
@@ -915,13 +922,13 @@ public class BNCSConnection extends Connection {
 					break;
 				}
 				
-				case BNCSCommandIDs.SID_SETEMAIL: {
+				case SID_SETEMAIL: {
 					recieveError("An email address should be registered for this account.");
 					registerEmail();
 					break;
 				}
 				
-				case BNCSCommandIDs.SID_ENTERCHAT: {
+				case SID_ENTERCHAT: {
 					String uniqueUserName = is.readNTString();
 					myStatString = new StatString(is.readNTString());
 					/*String accountName =*/ is.readNTString();
@@ -949,7 +956,7 @@ public class BNCSConnection extends Connection {
 					break;
 				}
 				
-				case BNCSCommandIDs.SID_NEWS_INFO: {
+				case SID_NEWS_INFO: {
 					int numEntries = is.readByte();
 					//int lastLogon = is.readDWord();
 					//int oldestNews = is.readDWord();
@@ -966,7 +973,7 @@ public class BNCSConnection extends Connection {
 					break;
 				}
 				
-				case BNCSCommandIDs.SID_GETCHANNELLIST: {
+				case SID_GETCHANNELLIST: {
 					String channelList = null;
 					do {
 						String s = is.readNTString();
@@ -981,7 +988,7 @@ public class BNCSConnection extends Connection {
 					break;
 				}
 				
-				case BNCSCommandIDs.SID_CHATEVENT: {
+				case SID_CHATEVENT: {
 					int eid = is.readDWord();
 					int flags = is.readDWord();
 					int ping = is.readDWord();
@@ -1086,7 +1093,7 @@ public class BNCSConnection extends Connection {
 					break;
 				}
 				
-				case BNCSCommandIDs.SID_MESSAGEBOX: {
+				case SID_MESSAGEBOX: {
 					/*int style =*/ is.readDWord();
 					String text = is.readNTStringUTF8();
 					String caption = is.readNTStringUTF8();
@@ -1095,7 +1102,7 @@ public class BNCSConnection extends Connection {
 					break;
 				}
 				
-				case BNCSCommandIDs.SID_FLOODDETECTED: {
+				case SID_FLOODDETECTED: {
 					recieveError("You have been disconnected for flooding.");
 					setConnected(false);
 					break;
@@ -1105,7 +1112,7 @@ public class BNCSConnection extends Connection {
 				 *	|  Realms  |
 				 *	'----------'
 				 */
-				case BNCSCommandIDs.SID_QUERYREALMS2: {
+				case SID_QUERYREALMS2: {
 					/* (DWORD)		 Unknown0
 					 * (DWORD)		 Number of Realms
 					 * 
@@ -1126,7 +1133,7 @@ public class BNCSConnection extends Connection {
 					break;
 				}
 				
-				case  BNCSCommandIDs.SID_LOGONREALMEX: {
+				case SID_LOGONREALMEX: {
 					/* (DWORD)		 Cookie
 					 * (DWORD)		 Status
 					 * (DWORD[2])	 MCP Chunk 1
@@ -1186,7 +1193,7 @@ public class BNCSConnection extends Connection {
 				 *	'-----------'
 				 */
 				
-				case BNCSCommandIDs.SID_READUSERDATA: {
+				case SID_READUSERDATA: {
 					/* (DWORD)		 Number of accounts
 					 * (DWORD)		 Number of keys
 					 * (DWORD)		 Request ID
@@ -1217,7 +1224,7 @@ public class BNCSConnection extends Connection {
 				 *	'-----------'
 				 */
 				
-				case BNCSCommandIDs.SID_FRIENDSLIST: {
+				case SID_FRIENDSLIST: {
 					/* (BYTE)		 Number of Entries
 					 * 
 					 * For each member:
@@ -1244,7 +1251,7 @@ public class BNCSConnection extends Connection {
 					break;
 				}
 				
-				case BNCSCommandIDs.SID_FRIENDSUPDATE: {
+				case SID_FRIENDSUPDATE: {
 					/* (BYTE)		 Entry number
 					 * (BYTE)		 Friend Location
 					 * (BYTE)		 Friend Status
@@ -1261,7 +1268,7 @@ public class BNCSConnection extends Connection {
 					break;
 				}
 				
-				case BNCSCommandIDs.SID_FRIENDSADD: {
+				case SID_FRIENDSADD: {
 					/* (STRING) 	 Account
 					 * (BYTE)		 Friend Type
 					 * (BYTE)		 Friend Status
@@ -1278,7 +1285,7 @@ public class BNCSConnection extends Connection {
 					break;
 				}
 				
-				case BNCSCommandIDs.SID_FRIENDSREMOVE: {
+				case SID_FRIENDSREMOVE: {
 					/* (BYTE)		 Entry Number
 					 */
 					byte entry = is.readByte();
@@ -1287,7 +1294,7 @@ public class BNCSConnection extends Connection {
 					break;
 				}
 				
-				case BNCSCommandIDs.SID_FRIENDSPOSITION: {
+				case SID_FRIENDSPOSITION: {
 					/* (BYTE)		 Old Position
 					 * (BYTE)		 New Position
 					 */
@@ -1309,7 +1316,7 @@ public class BNCSConnection extends Connection {
 				// SID_CLANDISBAND
 				// SID_CLANMAKECHIEFTAIN
 				
-				case BNCSCommandIDs.SID_CLANINFO: {
+				case SID_CLANINFO: {
 					/* (BYTE)		 Unknown (0)
 					 * (DWORD)		 Clan tag
 					 * (BYTE)		 Rank
@@ -1329,7 +1336,7 @@ public class BNCSConnection extends Connection {
 				}
 				
 				// SID_CLANQUITNOTIFY
-				case BNCSCommandIDs.SID_CLANINVITATION: {
+				case SID_CLANINVITATION: {
 					Object cookie = CookieUtility.destroyCookie(is.readDWord());
 					byte status = is.readByte();
 					
@@ -1362,7 +1369,7 @@ public class BNCSConnection extends Connection {
 				
 				// SID_CLANREMOVEMEMBER
 				
-				case BNCSCommandIDs.SID_CLANINVITATIONRESPONSE: {
+				case SID_CLANINVITATIONRESPONSE: {
 					/* (DWORD) Cookie
 					 * (DWORD) Clan tag
 					 * (STRING) Clan name
@@ -1393,7 +1400,7 @@ public class BNCSConnection extends Connection {
 					break;
 				}
 				
-				case BNCSCommandIDs.SID_CLANRANKCHANGE: {
+				case SID_CLANRANKCHANGE: {
 					int cookie = is.readDWord();
 					byte status = is.readByte();
 					
@@ -1424,7 +1431,7 @@ public class BNCSConnection extends Connection {
 					break;
 				}
 				
-				case BNCSCommandIDs.SID_CLANMOTD: {
+				case SID_CLANMOTD: {
 					/* (DWORD)		 Cookie
 					 * (DWORD)		 Unknown (0)
 					 * (STRING) 	 MOTD
@@ -1438,7 +1445,7 @@ public class BNCSConnection extends Connection {
 					break;
 				}
 				
-				case BNCSCommandIDs.SID_CLANMEMBERLIST: {
+				case SID_CLANMEMBERLIST: {
 					/* (DWORD)		 Cookie
 					 * (BYTE)		 Number of Members
 					 * 
@@ -1465,7 +1472,7 @@ public class BNCSConnection extends Connection {
 					break;
 				}
 				
-				case BNCSCommandIDs.SID_CLANMEMBERREMOVED: {
+				case SID_CLANMEMBERREMOVED: {
 					/* (STRING) 	 Username
 					 */
 					String username = is.readNTString();
@@ -1473,7 +1480,7 @@ public class BNCSConnection extends Connection {
 					break;
 				}
 
-				case BNCSCommandIDs.SID_CLANMEMBERSTATUSCHANGE: {
+				case SID_CLANMEMBERSTATUSCHANGE: {
 					/* (STRING) 	 Username
 					 * (BYTE)		 Rank
 					 * (BYTE)		 Status
@@ -1488,7 +1495,7 @@ public class BNCSConnection extends Connection {
 					break;
 				}
 				
-				case BNCSCommandIDs.SID_CLANMEMBERRANKCHANGE: {
+				case SID_CLANMEMBERRANKCHANGE: {
 					/* (BYTE)		 Old rank
 					 * (BYTE)		 New rank
 					 * (STRING) 	 Clan member who changed your rank
@@ -1504,7 +1511,7 @@ public class BNCSConnection extends Connection {
 				// TODO: SID_CLANMEMBERINFORMATION
 				
 				default:
-					recieveError("Unknown SID 0x" + Integer.toHexString(pr.packetId) + "\n" + HexDump.hexDump(pr.data));
+					recieveError("Unknown packet " + pr.packetId.name() + "\n" + HexDump.hexDump(pr.data));
 					break;
 				}
 			} else {
