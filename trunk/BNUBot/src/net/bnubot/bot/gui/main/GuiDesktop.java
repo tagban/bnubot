@@ -33,12 +33,14 @@ import net.bnubot.vercheck.VersionCheck;
 public class GuiDesktop extends JFrame {
 	private static final long serialVersionUID = -7144648179041514994L;
 	private static final ArrayList<GuiEventHandler> guis = new ArrayList<GuiEventHandler>();
+	private static GuiEventHandler selectedGui = null;
 	private static final JTabbedPane desktop = new JTabbedPane();
 	private static final JMenuBar menuBar = new JMenuBar();
 	private static final GuiDesktop instance = new GuiDesktop();
 	
 	private GuiDesktop() {
-		super("BNU-Bot " + CurrentVersion.version());
+		super();
+		setTitle();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		setContentPane(desktop);
@@ -51,8 +53,19 @@ public class GuiDesktop extends JFrame {
 				for(GuiEventHandler gui : guis) {
 					if(jp != gui.getFrame())
 						continue;
-					
+
 					// Found the selected GUI
+					setTitle();
+					
+					// Swap out the menus
+					if(selectedGui != null)
+						selectedGui.getMenuBar().setVisible(false);
+					gui.getMenuBar().setVisible(true);
+					
+					// Store the selected gui
+					selectedGui = gui;
+					
+					// Tell Out to direct info to the selected gui
 					Out.setOutputConnection(gui);
 					
 					break;
@@ -146,6 +159,10 @@ public class GuiDesktop extends JFrame {
 				menu.add(menuItem);
 			}
 			menuBar.add(menu);
+			
+			menu = new JMenu();
+			menu.setVisible(false);
+			menuBar.add(menu);
 		}
 		setJMenuBar(menuBar);
 		
@@ -156,13 +173,26 @@ public class GuiDesktop extends JFrame {
 		return instance;
 	}
 	
-	public static void add(GuiEventHandler geh, String title) {
-		guis.add(geh);
-		desktop.addTab(title, geh.getFrame());
+	public static void add(GuiEventHandler geh) {
+		geh.getMenuBar().setVisible(false);
 		menuBar.add(geh.getMenuBar());
+		
+		guis.add(geh);
+		desktop.addTab(geh.toString(), geh.getFrame());
 	}
 	
-	public static void setTitle(GuiEventHandler geh, String title, int product) {
+	private void setTitle() {
+		String title = "BNU-Bot " + CurrentVersion.version();
+		if(selectedGui != null) {
+			title += " - ";
+			title += selectedGui.toString();
+		}
+		setTitle(title);
+	}
+	
+	public static void setTitle(GuiEventHandler geh, int product) {
+		instance.setTitle();
+		
 		Icon icon = null;
 		for(BNetIcon element : IconsDotBniReader.getIcons()) {
 			if(element.useFor(0, product)) {
@@ -174,7 +204,7 @@ public class GuiDesktop extends JFrame {
 		JPanel component = geh.getFrame();
 		for(int i = 0; i < desktop.getTabCount(); i++) {
 			if(component == desktop.getComponentAt(i)) {
-				desktop.setTitleAt(i, title);
+				desktop.setTitleAt(i, geh.toString());
 				desktop.setIconAt(i, icon);
 				geh.getMenuBar().setIcon(icon);
 				break;
