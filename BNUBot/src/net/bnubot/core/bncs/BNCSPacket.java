@@ -16,9 +16,9 @@ import net.bnubot.util.HexDump;
 import net.bnubot.util.Out;
 
 public class BNCSPacket extends BNetOutputStream {
-	BNCSCommandIDs packetId;
+	BNCSPacketId packetId;
 
-	public BNCSPacket(BNCSCommandIDs packetId) {
+	public BNCSPacket(BNCSPacketId packetId) {
 		super(new ByteArrayOutputStream());
 		this.packetId = packetId;
 	}
@@ -29,7 +29,7 @@ public class BNCSPacket extends BNetOutputStream {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		BNetOutputStream sckout = new BNetOutputStream(baos);
 
-		if(packetId == BNCSCommandIDs.SID_CHATCOMMAND) {
+		if(packetId == BNCSPacketId.SID_CHATCOMMAND) {
 			if(data.length > 0xFB) {
 				Out.error(getClass(), "Chat command is too long; ignoring.");
 				return;
