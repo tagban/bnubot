@@ -292,7 +292,7 @@ public abstract class Connection extends Thread implements EventHandler {
 
 					Iterator<EventHandler> it = eventHandlers.iterator();
 					while(it.hasNext())
-						it.next().parseCommand(myUser, command[1], params, true);
+						it.next().parseCommand(myUser, command[1], params, false);
 
 					return;
 				}
