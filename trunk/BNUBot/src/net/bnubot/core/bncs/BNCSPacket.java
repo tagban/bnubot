@@ -42,7 +42,7 @@ public class BNCSPacket extends BNetOutputStream {
 
 		try {
 			sckout.writeByte(0xFF);
-			sckout.writeByte(packetId.getId());
+			sckout.writeByte(packetId.ordinal());
 			sckout.writeWord(data.length + 4);
 			sckout.write(data);
 		} catch(IOException e) {

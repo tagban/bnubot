@@ -23,7 +23,6 @@ import java.util.TimeZone;
 import net.bnubot.bot.CommandResponseCookie;
 import net.bnubot.core.ChatQueue;
 import net.bnubot.core.Connection;
-import net.bnubot.core.EnumIdNotPresentException;
 import net.bnubot.core.UnsupportedFeatureException;
 import net.bnubot.core.bnls.BNLSCommandIDs;
 import net.bnubot.core.bnls.BNLSPacket;
@@ -400,12 +399,7 @@ public class BNCSConnection extends Connection {
 			
 			if(bncsInputStream.available() > 0) {
 				BNCSPacketReader pr;
-				try {
-					pr = new BNCSPacketReader(bncsInputStream);
-				} catch (EnumIdNotPresentException e) {
-					e.printStackTrace();
-					continue;
-				}
+				pr = new BNCSPacketReader(bncsInputStream);
 				BNetInputStream is = pr.getData();
 				
 				switch(pr.packetId) {
