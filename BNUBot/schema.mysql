@@ -160,6 +160,7 @@ INSERT INTO command (access, name, description, cmdgroup) VALUES
 (34,	'kick', NULL, 'moderation'),
 (1,		'mail', NULL, 'accounts'),
 (30,	'mailall', NULL, 'accounts'),
+(1,		'ping', NULL, 'info'),
 (36,	'quit', 'Close program', 'administration'),
 (36,	'reconnect', NULL, 'administration'),
 (15,	'recruit', NULL, 'accounts'),
