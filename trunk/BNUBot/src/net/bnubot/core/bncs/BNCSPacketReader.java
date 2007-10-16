@@ -17,7 +17,7 @@ import net.bnubot.util.HexDump;
 import net.bnubot.util.Out;
 
 public class BNCSPacketReader {
-	BNCSCommandIDs packetId;
+	BNCSPacketId packetId;
 	int packetLength;
 	byte data[];
 	
@@ -29,7 +29,7 @@ public class BNCSPacketReader {
 			magic = is.readByte();
 		} while(magic != (byte)0xFF);
 		
-		packetId = BNCSCommandIDs.values()[is.readByte() & 0x000000FF];
+		packetId = BNCSPacketId.values()[is.readByte() & 0x000000FF];
 		packetLength = is.readWord() & 0x0000FFFF;
 		assert(packetLength >= 4);
 		
