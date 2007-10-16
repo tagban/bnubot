@@ -565,6 +565,23 @@ public class CommandEventHandler implements EventHandler {
 					}
 				}
 				break;
+			case 'p':
+				if(command.equals("ping")) {
+					if((params == null) || (params.length != 1)) {
+						c.sendChat(user, "Use: %trigger%ping <user>[@<realm>]", wasWhispered);
+						break;
+					}
+					
+					BNetUser bnSubject = BNetUser.getBNetUser(params[0], user);
+					Integer ping = bnSubject.getPing();
+					if(ping == null)
+						c.sendChat(user, "I do not know the ping for " + bnSubject.getFullLogonName(), wasWhispered);
+					else
+						c.sendChat(user, "Ping for " + bnSubject.getFullLogonName() + ": " + ping, wasWhispered);
+					
+					break;
+				}
+				break;
 			case 'q':
 				if(command.equals("quit")) {
 					System.exit(0);

@@ -45,18 +45,20 @@ public class VersionCheck {
 		if((motd != null) && (motd.getString() != null))
 			Out.info(VersionCheck.class, motd.getString());
 		
-		XMLElementDecorator downloads = elem.getPath("bnubot/downloads");
-		if(downloads != null) {
-			for(XMLElementDecorator file : downloads.getChildren("file")) {
-				XMLElementDecorator sha1Element = file.getChild("sha1");
-				SHA1Sum sha1 = null;
-				if(sha1Element != null)
-					sha1 = new SHA1Sum(sha1Element.getString());
-				URLDownloader.downloadURL(
-					new URL(file.getChild("from").getString()),
-					new File(file.getChild("to").getString()),
-					sha1,
-					false);
+		if(CurrentVersion.fromJar()) {
+			XMLElementDecorator downloads = elem.getPath("bnubot/downloads");
+			if(downloads != null) {
+				for(XMLElementDecorator file : downloads.getChildren("file")) {
+					XMLElementDecorator sha1Element = file.getChild("sha1");
+					SHA1Sum sha1 = null;
+					if(sha1Element != null)
+						sha1 = new SHA1Sum(sha1Element.getString());
+					URLDownloader.downloadURL(
+						new URL(file.getChild("from").getString()),
+						new File(file.getChild("to").getString()),
+						sha1,
+						false);
+				}
 			}
 		}
 		
