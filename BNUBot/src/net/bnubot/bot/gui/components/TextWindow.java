@@ -52,7 +52,7 @@ public class TextWindow extends JScrollPane {
 	private String head = null;
 	private String foot = null;
 	private String html = null;
-	private static Runnable scrollDown = null;
+	private Runnable scrollDown = null;
 	private boolean disableRedraw = false;
 
 	public TextWindow(ColorScheme cs) {
@@ -75,6 +75,7 @@ public class TextWindow extends JScrollPane {
 		head += "</style></head><body>";
 		html = "";
 		foot = "</body></html>";
+		setText();
 	}
 	
 	public void setText() {
