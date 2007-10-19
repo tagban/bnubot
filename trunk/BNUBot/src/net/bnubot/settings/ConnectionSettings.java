@@ -54,6 +54,7 @@ public class ConnectionSettings implements Serializable {
 	public static boolean autoconnect;
 	public static boolean enableCLI;
 	public static boolean enableGUI;
+	public static boolean enableLegacyIcons;
 	public static boolean enableCommands;
 	public static boolean enableTrivia;
 	public static long triviaRoundLength;
@@ -209,6 +210,7 @@ public class ConnectionSettings implements Serializable {
 			Settings.write(header, "trigger", trigger);
 			Settings.write(header, "enableCLI", Boolean.toString(enableCLI));
 			Settings.write(header, "enableGUI", Boolean.toString(enableGUI));
+			Settings.write(header, "enableLegacyIcons", Boolean.toString(enableLegacyIcons));
 			Settings.write(header, "enableCommands", Boolean.toString(enableCommands));
 			Settings.write(header, "enableTrivia", Boolean.toString(enableTrivia));
 			Settings.write(header, "triviaRoundLength", Long.toString(triviaRoundLength));
@@ -270,6 +272,8 @@ public class ConnectionSettings implements Serializable {
 						Settings.read(header, "enableCLI", "false"));
 			enableGUI = Boolean.parseBoolean(
 						Settings.read(header, "enableGUI", "true"));
+			enableLegacyIcons = Boolean.parseBoolean(
+					Settings.read(header, "enableLegacyIcons", "true"));
 			enableCommands = Boolean.parseBoolean(
 						Settings.read(header, "enableCommands", "false"));
 			enableTrivia = Boolean.parseBoolean(

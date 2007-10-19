@@ -274,13 +274,13 @@ public class GuiEventHandler implements EventHandler {
 	
 	public void channelJoin(BNetUser user) {
 		userList.showUser(user);
-		mainTextArea.channelInfo(user + " has joined" + user.getStatString().toString() + ".");
+		mainTextArea.channelInfo(user + " has joined the channel" + user.getStatString().toString() + ".");
 		channelTextArea.setText(channel + " (" + userList.count() + ")");
 	}
 
 	public void channelLeave(BNetUser user) {
 		userList.removeUser(user);
-		mainTextArea.channelInfo(user + " has left.");
+		mainTextArea.channelInfo(user + " has left the channel.");
 		channelTextArea.setText(channel + " (" + userList.count() + ")");
 	}
 

@@ -69,6 +69,7 @@ public class ConfigurationFrame extends JDialog {
 	ConfigComboBox cmbLookAndFeel = null;
 	ConfigCheckBox chkAutoConnect = null;
 	ConfigCheckBox chkEnableGUI = null;
+	ConfigCheckBox chkEnableLegacyIcons = null;
 	ConfigCheckBox chkEnableCLI = null;
 	ConfigCheckBox chkEnableTrivia = null;
 	ConfigTextArea txtTriviaRoundLength = null;
@@ -339,6 +340,9 @@ public class ConfigurationFrame extends JDialog {
 
 						chkEnableGUI = new ConfigCheckBox("Enable GUI (requires restart)", ConnectionSettings.enableGUI);
 						boxCheckboxes.add(chkEnableGUI);
+						
+						chkEnableLegacyIcons = new ConfigCheckBox("Enable Legacy Icons", ConnectionSettings.enableLegacyIcons);
+						boxCheckboxes.add(chkEnableLegacyIcons);
 
 						chkEnableCLI = new ConfigCheckBox("Enable CLI (requires restart)", ConnectionSettings.enableCLI);
 						boxCheckboxes.add(chkEnableCLI);
@@ -566,6 +570,7 @@ public class ConfigurationFrame extends JDialog {
 		ConnectionSettings.releaseType = (ReleaseType)cmbReleaseType.getSelectedItem();
 		ConnectionSettings.autoconnect = chkAutoConnect.isSelected();
 		ConnectionSettings.enableGUI = chkEnableGUI.isSelected();
+		ConnectionSettings.enableLegacyIcons = chkEnableLegacyIcons.isSelected();
 		ConnectionSettings.enableCLI = chkEnableCLI.isSelected();
 		ConnectionSettings.enableTrivia = chkEnableTrivia.isSelected();
 		ConnectionSettings.triviaRoundLength = Integer.parseInt(txtTriviaRoundLength.getText());
@@ -598,6 +603,7 @@ public class ConfigurationFrame extends JDialog {
 		cmbReleaseType.setSelectedItem(ConnectionSettings.releaseType);
 		chkAutoConnect.setSelected(ConnectionSettings.autoconnect);
 		chkEnableGUI.setSelected(ConnectionSettings.enableGUI);
+		chkEnableLegacyIcons.setSelected(ConnectionSettings.enableLegacyIcons);
 		chkEnableCLI.setSelected(ConnectionSettings.enableCLI);
 		chkEnableTrivia.setSelected(ConnectionSettings.enableTrivia);
 		txtTriviaRoundLength.setText(Long.toString(ConnectionSettings.triviaRoundLength));

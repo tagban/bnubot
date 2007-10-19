@@ -37,7 +37,6 @@ public class HTMLOutputEventHandler implements EventHandler {
 			int prio1 = ChannelListPriority.getPrioByFlags(arg0.getFlags());
 			return new Integer(prio0).compareTo(prio1);
 		}
-		
 	}
 	
 	private String channel = null;
@@ -73,7 +72,7 @@ public class HTMLOutputEventHandler implements EventHandler {
 		
 		writeUserList();
 		
-		append(user + " has joined" + user.getStatString().toString() + ".",
+		append(user + " has joined the channel" + user.getStatString().toString() + ".",
 			cs.getChannelColor());
 	}
 	
@@ -83,7 +82,7 @@ public class HTMLOutputEventHandler implements EventHandler {
 		
 		writeUserList();
 		
-		append(user + " has left.",
+		append(user + " has left the channel.",
 				cs.getChannelColor());
 	}
 	
