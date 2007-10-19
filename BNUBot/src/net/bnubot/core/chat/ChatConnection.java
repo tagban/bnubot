@@ -9,6 +9,7 @@ import java.net.Socket;
 
 import net.bnubot.core.ChatQueue;
 import net.bnubot.core.Connection;
+import net.bnubot.core.Profile;
 import net.bnubot.core.UnsupportedFeatureException;
 import net.bnubot.core.bncs.ProductIDs;
 import net.bnubot.settings.ConnectionSettings;
@@ -21,8 +22,8 @@ public class ChatConnection extends Connection {
 	protected BNetInputStream is;
 	protected BNetOutputStream os;
 	
-	public ChatConnection(ConnectionSettings cs, ChatQueue cq) {
-		super(cs, cq);
+	public ChatConnection(ConnectionSettings cs, ChatQueue cq, Profile p) {
+		super(cs, cq, p);
 	}
 	
 	public void run() {

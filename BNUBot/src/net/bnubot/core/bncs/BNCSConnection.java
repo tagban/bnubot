@@ -23,6 +23,7 @@ import java.util.TimeZone;
 import net.bnubot.bot.CommandResponseCookie;
 import net.bnubot.core.ChatQueue;
 import net.bnubot.core.Connection;
+import net.bnubot.core.Profile;
 import net.bnubot.core.UnsupportedFeatureException;
 import net.bnubot.core.bnls.BNLSPacketId;
 import net.bnubot.core.bnls.BNLSPacket;
@@ -66,8 +67,8 @@ public class BNCSConnection extends Connection {
 	protected Byte myClanRank = null; 
 	protected long lastNullPacket;
 
-	public BNCSConnection(ConnectionSettings cs, ChatQueue cq) {
-		super(cs, cq);
+	public BNCSConnection(ConnectionSettings cs, ChatQueue cq, Profile p) {
+		super(cs, cq, p);
 	}
 	
 	private void sendKeyOrPassword() throws Exception {

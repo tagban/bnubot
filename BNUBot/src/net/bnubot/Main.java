@@ -7,22 +7,12 @@ package net.bnubot;
 
 import java.io.File;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Hashtable;
 
 import javax.swing.JOptionPane;
 
-import net.bnubot.bot.CommandEventHandler;
-import net.bnubot.bot.console.ConsoleEventHandler;
-import net.bnubot.bot.database.Database;
 import net.bnubot.bot.gui.ConfigurationFrame;
-import net.bnubot.bot.gui.GuiEventHandler;
-import net.bnubot.bot.trivia.TriviaEventHandler;
-import net.bnubot.core.ChatQueue;
-import net.bnubot.core.EventHandler;
-import net.bnubot.core.bncs.BNCSConnection;
+import net.bnubot.core.Profile;
 import net.bnubot.settings.ConnectionSettings;
-import net.bnubot.settings.DatabaseSettings;
 import net.bnubot.settings.Settings;
 import net.bnubot.util.Out;
 import net.bnubot.vercheck.CurrentVersion;
@@ -139,34 +129,17 @@ public class Main {
 			}
 		}
 		
-		ChatQueue chatQueue = new ChatQueue();
-		chatQueue.start();
-		
-		BNCSConnection primary = new BNCSConnection(cs, chatQueue);
+		for(int i = 1; i <= numBots; i++) {
+			//Start up the next connection
+			cs = new ConnectionSettings();
+			cs.load(i);
+			String valid = cs.isValid();
+			if(valid != null)
+				throw new Exception("Invalid configuration for bot " + i + ": " + valid);
 			
-		//Other plugins
-		ArrayList<EventHandler> pluginEHs = new ArrayList<EventHandler>();
-		if(plugins != null) {
-			for(String element : plugins) {
-				EventHandler eh = (EventHandler)Class.forName(element).newInstance();
-				pluginEHs.add(eh);
-				primary.addEventHandler(eh);
-			}
+			Profile.add(cs, plugins);
 		}
 		
-		//CLI
-		EventHandler cli = null;
-		if(ConnectionSettings.enableCLI) {
-			cli = new ConsoleEventHandler();
-			primary.addEventHandler(cli);
-		}
-		
-		//GUI
-		GuiEventHandler gui = null;
-		if(ConnectionSettings.enableGUI) {
-			gui = new GuiEventHandler();
-			primary.addEventHandler(gui);
-		}
 		
 		if(CurrentVersion.fromJar() && CurrentVersion.version().getReleaseType().isDevelopment())
 			Out.error(CurrentVersion.class, "WARNING: This is a development build, not for distribution!");
@@ -175,98 +148,6 @@ public class Main {
 			VersionCheck.checkVersion();
 		} catch(Exception e) {
 			Out.exception(e);
-		}
-		
-		//Commands
-		EventHandler cmd = null;
-		if(ConnectionSettings.enableCommands) {
-			DatabaseSettings ds = new DatabaseSettings();
-			ds.load();
-			
-			if((ds.driver == null)
-			|| (ds.url == null)) {
-				String msg = "Database is not configured; disabling commands.";
-				if(gui != null)
-					primary.recieveInfo(msg);
-				else
-					Out.info(Main.class, msg);
-			} else {
-				try {
-					new Database(ds);
-					cmd = new CommandEventHandler();
-					primary.addEventHandler(cmd);
-					
-					ds.save();
-				} catch(Exception e) {
-					Out.exception(e);
-					String msg = "Failed to initialize the database; commands disabled.\n" + e.getMessage();
-					if(gui != null)
-						primary.recieveError(msg);
-					else
-						Out.error(Main.class, msg);
-				}
-			}
-		}
-		
-		//Trivia
-		if(ConnectionSettings.enableTrivia) { 
-			EventHandler trivia = new TriviaEventHandler();
-			primary.addEventHandler(trivia);
-		}
-		
-		primary.start();
-		
-		Hashtable<String, BNCSConnection> primaries = new Hashtable<String, BNCSConnection>();
-		Hashtable<String, GuiEventHandler> guis = new Hashtable<String, GuiEventHandler>();
-
-		String profile = cs.bncsServer;
-		primaries.put(profile, primary);
-		guis.put(profile, gui);
-		
-		BNCSConnection c = primary;
-		for(int i = 2; i <= numBots; i++) {
-			//Wait for the previous bot to connect
-			while(!c.canSendChat())
-				Thread.sleep(20);
-			
-			//Wait an additional 500ms
-			Thread.sleep(500);
-			
-			//Start up the next connection
-			cs = new ConnectionSettings();
-			cs.load(i);
-			String valid = cs.isValid();
-			if(valid != null)
-				throw new Exception("Invalid configuration for bot " + i + ": " + valid);
-			
-			profile = cs.bncsServer;
-			primary = primaries.get(profile);
-			
-			if(primary != null) {
-				chatQueue = primary.getChatQueue();
-				c = new BNCSConnection(cs, chatQueue);
-				
-				if(ConnectionSettings.enableGUI)
-					c.addSecondaryEventHandler(guis.get(profile));
-				
-				c.start();
-				primary.addSlave(c);
-			} else {
-				chatQueue = new ChatQueue();
-				chatQueue.start();
-				
-				c = new BNCSConnection(cs, chatQueue);
-				primaries.put(profile, c);
-				
-				if(ConnectionSettings.enableGUI) {
-					gui = new GuiEventHandler();
-					guis.put(profile, gui);
-					c.addEventHandler(gui);
-				}
-				if(cmd != null)
-					c.addEventHandler(new CommandEventHandler());
-				c.start();
-			}
 		}
 		
 		// Write out any modified settings
