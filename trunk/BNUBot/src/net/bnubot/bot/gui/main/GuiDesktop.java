@@ -21,6 +21,7 @@ import javax.swing.event.ChangeListener;
 
 import net.bnubot.bot.database.Database;
 import net.bnubot.bot.gui.AboutWindow;
+import net.bnubot.bot.gui.GlobalConfigurationFrame;
 import net.bnubot.bot.gui.GuiEventHandler;
 import net.bnubot.bot.gui.database.DatabaseAccountEditor;
 import net.bnubot.bot.gui.database.DatabaseRankEditor;
@@ -77,7 +78,14 @@ public class GuiDesktop extends JFrame {
 		{
 			JMenu menu = new JMenu("File");
 			{
-				JMenuItem menuItem = new JMenuItem("Exit");
+				JMenuItem menuItem = new JMenuItem("Settings");
+				menuItem.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						new GlobalConfigurationFrame().setVisible(true);
+					} });
+				menu.add(menuItem);
+				
+				menuItem = new JMenuItem("Exit");
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						System.exit(0);
