@@ -28,6 +28,7 @@ import net.bnubot.bot.gui.icons.IconsDotBniReader;
 import net.bnubot.core.ChannelListPriority;
 import net.bnubot.core.Connection;
 import net.bnubot.core.bncs.ProductIDs;
+import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.Out;
 
@@ -231,7 +232,7 @@ public class UserList extends JPanel {
 		}
 		
 		if(!keepThisIcon) {
-			if(true) { //(product == c.getProductID()) {
+			if(ConnectionSettings.enableLegacyIcons) {
 				switch(product) {
 				case ProductIDs.PRODUCT_STAR:
 				case ProductIDs.PRODUCT_SEXP:
