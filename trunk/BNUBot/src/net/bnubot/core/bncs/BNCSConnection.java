@@ -1506,7 +1506,7 @@ public class BNCSConnection extends Connection {
 				// TODO: SID_CLANMEMBERINFORMATION
 				
 				default:
-					recieveError("Unknown packet " + pr.packetId.name() + "\n" + HexDump.hexDump(pr.data));
+					Out.debugAlways(getClass(), "Unknown packet " + pr.packetId.name() + "\n" + HexDump.hexDump(pr.data));
 					break;
 				}
 			} else {

@@ -54,7 +54,8 @@ public class RealmWindow extends JDialog implements EventHandler, RealmEventHand
 			public void mouseClicked(MouseEvent arg0) {
 				String s = (String)lstRealms.getSelectedValue();
 				try {
-					c.sendLogonRealmEx(s);
+					if(c != null)
+						c.sendLogonRealmEx(s);
 				} catch (Exception e) {
 					Out.fatalException(e);
 				}
