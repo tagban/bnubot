@@ -32,6 +32,7 @@ public class ConnectionSettings implements Serializable {
     public static final byte PRODUCT_STARCRAFTSHAREWARE= (byte)0x0B; //Fully Supported
 
     public int botNum;
+    public String profile;
 	public String bncsServer;
 	public int port;
 	public String bnlsServer;
@@ -45,6 +46,7 @@ public class ConnectionSettings implements Serializable {
 	public String cdkeyTFT;
 	public byte product;
 
+	public static int numBots;
 	public static byte colorScheme;
 	public static String trigger;
 	public static String antiIdle;
@@ -187,6 +189,7 @@ public class ConnectionSettings implements Serializable {
 	
 	public void save() {
 		String header = Integer.toString(botNum);
+		Settings.write(header, "profile", profile);
 		Settings.write(header, "server", bncsServer);
 		Settings.write(header, "port", Integer.toString(port));
 		Settings.write(header, "bnlsserver", bnlsServer);
@@ -205,6 +208,7 @@ public class ConnectionSettings implements Serializable {
 	}
 	
 	public static void globalSave() {
+		Settings.write(null, "numBots", Integer.toString(numBots));
 		Settings.write(null, "antiidle", antiIdle);
 		Settings.write(null, "enableAntiidle", Boolean.toString(enableAntiIdle));
 		Settings.write(null, "enableGreetings", Boolean.toString(enableGreetings));
@@ -233,6 +237,7 @@ public class ConnectionSettings implements Serializable {
 		String header = Integer.toString(botNum);
 		
 		this.botNum = botNum;
+		profile = 	Settings.read(header, "profile", "Profile" + botNum);
 		bncsServer =Settings.read(header, "server", "useast.battle.net");
 		port = Integer.parseInt(
 					Settings.read(header, "port", "6112"));
@@ -259,6 +264,8 @@ public class ConnectionSettings implements Serializable {
 	}
 	
 	public static void globalLoad() {
+		numBots = Integer.parseInt(
+				Settings.read(null, "numBots", "1"));
 		colorScheme = Byte.parseByte(
 				Settings.read(null, "colorScheme", "1"));
 		trigger = 	Settings.read(null, "trigger", "!");
