@@ -39,6 +39,9 @@ public class TextWindow extends JScrollPane {
 						}
 				}
 			});
+			setEditable(false);
+			setContentType("text/html");
+			setBackground(cs.getBackgroundColor());
 		}
 		
 		public void paintComponents(Graphics g) {
@@ -47,23 +50,20 @@ public class TextWindow extends JScrollPane {
 		}
 	}
 	
-	private ColorScheme cs = null;
-	private JEditorPane jep = null;
-	private String head = null;
-	private String foot = null;
-	private String html = null;
 	private Runnable scrollDown = null;
+	
+	private ColorScheme cs;
+	private JEditorPane jep;
+	private String head;
+	private String foot;
+	private String html;
 	private boolean disableRedraw = false;
 
 	public TextWindow(ColorScheme cs) {
 		super(VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_NEVER);
 		this.cs = cs;
 		jep = new myJEP();
-		jep.setEditable(false);
-		jep.setContentType("text/html");
-		jep.setBackground(cs.getBackgroundColor());
-		Container c = (Container)getComponent(0);
-		c.add(jep);
+		((Container)getComponent(0)).add(jep);
 		
 		head = "<html><head><style type=\"text/css\">";
 		head += " body	{font-family: verdana, courier, sans-serif; font-size: 10px;}";

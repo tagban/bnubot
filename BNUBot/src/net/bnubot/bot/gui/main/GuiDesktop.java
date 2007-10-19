@@ -53,17 +53,17 @@ public class GuiDesktop extends JFrame {
 				for(GuiEventHandler gui : guis) {
 					if(jp != gui.getFrame())
 						continue;
-
-					// Found the selected GUI
-					setTitle();
 					
 					// Swap out the menus
 					if(selectedGui != null)
 						selectedGui.getMenuBar().setVisible(false);
 					gui.getMenuBar().setVisible(true);
 					
-					// Store the selected gui
+					// Store the selected GUI
 					selectedGui = gui;
+					
+					// Set the title to the title for the selected GUI
+					setTitle();
 					
 					// Tell Out to direct info to the selected gui
 					Out.setOutputConnection(gui);
