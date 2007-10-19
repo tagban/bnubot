@@ -37,18 +37,21 @@ public class ChatQueue extends Thread {
 
 	public void run() {
 		while(true) {
+			yield();
+			try { sleep(10); } catch(Exception e) {}
+			
 			// If there's text in the queue to send
 			if(queue.size() > 0) {
 				// Iterate through the connecitons
 				for(Connection con : cons) {
 					// Check if the con can send text now
 					if(con.canSendChat()) {
-						if(!con.isOp()) {
-							//Find a string we can send
-							sendTextNonOp(con);
-						} else {
+						if(con.isOp()) {
 							// Write the text out
 							con.sendChatNow(queue.remove());
+						} else {
+							//Find a string we can send
+							sendTextNonOp(con);
 						}
 
 						// If the queue is empty, stop
@@ -57,9 +60,6 @@ public class ChatQueue extends Thread {
 					}
 				}
 			}
-
-			yield();
-			try { sleep(10); } catch(Exception e) {}
 		}
 	}
 
@@ -77,7 +77,7 @@ public class ChatQueue extends Thread {
 
 						// The commands /kick and /ban require ops
 						if(cmd.equals("kick")
-								|| cmd.equals("ban"))
+						|| cmd.equals("ban"))
 							continue;
 					}
 				}
