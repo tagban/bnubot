@@ -34,8 +34,8 @@ public class VersionNumber {
 			return VER_STRING;
 
 		VER_STRING = VER_MAJOR.toString() + '.' + VER_MINOR.toString() + '.' + VER_REVISION.toString();
-		if(VER_RELEASE != null)
-			VER_STRING += '.' + VER_RELEASE.toString();
+		if((VER_RELEASE != null) && (VER_RELEASE != 0))
+			VER_STRING += " Release " + VER_RELEASE.toString();
 		if(RELEASE_TYPE.isDevelopment())
 			VER_STRING += " Development";
 		else if(RELEASE_TYPE.isAlpha())
