@@ -68,7 +68,7 @@ public class ConnectionSettings implements Serializable {
 	
 	public String myRealm;
 	
-	private String lookAndFeel;
+	private static String lookAndFeel;
 	
 	public ConnectionSettings() {
 		
@@ -131,10 +131,12 @@ public class ConnectionSettings implements Serializable {
 		if(myRealm == null)
 			return "I don't know what realm I will be on";
 		
-		if(botNum == 1) {
-			if((trigger == null) || (trigger.length() != 1))
-				return "Trigger invalid";
-		}
+		return null;
+	}
+	
+	public static String isValidGlobal() {
+		if((trigger == null) || (trigger.length() != 1))
+			return "Trigger invalid";
 		
 		return null;
 	}
@@ -170,7 +172,7 @@ public class ConnectionSettings implements Serializable {
 		return null;
 	}
 	
-	public void setLookAndFeel(LookAndFeelInfo lafi) {
+	public static void setLookAndFeel(LookAndFeelInfo lafi) {
 		try {
 			UIManager.setLookAndFeel(lafi.getClassName());
 			lookAndFeel = lafi.getName();
@@ -179,7 +181,7 @@ public class ConnectionSettings implements Serializable {
 		}
 	}
 	
-	public String getLookAndFeel() {
+	public static String getLookAndFeel() {
 		return lookAndFeel;
 	}
 	
@@ -197,35 +199,34 @@ public class ConnectionSettings implements Serializable {
 		Settings.write(header, "cdkeyLOD", cdkeyLOD);
 		Settings.write(header, "cdkeyTFT", cdkeyTFT);
 		if(product != 0)
-		Settings.write(header, "product", org.jbls.util.Constants.prods[product-1]);
-		
-		if(true) {
-			header = null;
-			Settings.write(header, "antiidle", antiIdle);
-			Settings.write(header, "enableAntiidle", Boolean.toString(enableAntiIdle));
-			Settings.write(header, "enableGreetings", Boolean.toString(enableGreetings));
-			Settings.write(header, "antiIdleTimer", Integer.toString(antiIdleTimer));
-			Settings.write(header, "autoconnect", Boolean.toString(autoconnect));
-			Settings.write(header, "colorScheme", Byte.toString(colorScheme));
-			Settings.write(header, "trigger", trigger);
-			Settings.write(header, "enableCLI", Boolean.toString(enableCLI));
-			Settings.write(header, "enableGUI", Boolean.toString(enableGUI));
-			Settings.write(header, "enableLegacyIcons", Boolean.toString(enableLegacyIcons));
-			Settings.write(header, "enableCommands", Boolean.toString(enableCommands));
-			Settings.write(header, "enableTrivia", Boolean.toString(enableTrivia));
-			Settings.write(header, "triviaRoundLength", Long.toString(triviaRoundLength));
-			Settings.write(header, "enableFloodProtect", Boolean.toString(enableFloodProtect));
-			Settings.write(header, "packetLog", Boolean.toString(packetLog));
-			Settings.write(header, "whisperBack", Boolean.toString(whisperBack));
-			Settings.write(header, "recruitAccess", Long.toString(recruitAccess));
-			Settings.write(header, "recruitTagPrefix", recruitTagPrefix);
-			Settings.write(header, "recruitTagSuffix", recruitTagSuffix);
-			Settings.write(header, "lookAndFeel", lookAndFeel);
-			Settings.write(header, "tsFormat", TimeFormatter.tsFormat);
-			Settings.write(header, "releaseType", releaseType.toString());
-		}
+			Settings.write(header, "product", org.jbls.util.Constants.prods[product-1]);
 		
 		Settings.store();
+	}
+	
+	public static void globalSave() {
+		Settings.write(null, "antiidle", antiIdle);
+		Settings.write(null, "enableAntiidle", Boolean.toString(enableAntiIdle));
+		Settings.write(null, "enableGreetings", Boolean.toString(enableGreetings));
+		Settings.write(null, "antiIdleTimer", Integer.toString(antiIdleTimer));
+		Settings.write(null, "autoconnect", Boolean.toString(autoconnect));
+		Settings.write(null, "colorScheme", Byte.toString(colorScheme));
+		Settings.write(null, "trigger", trigger);
+		Settings.write(null, "enableCLI", Boolean.toString(enableCLI));
+		Settings.write(null, "enableGUI", Boolean.toString(enableGUI));
+		Settings.write(null, "enableLegacyIcons", Boolean.toString(enableLegacyIcons));
+		Settings.write(null, "enableCommands", Boolean.toString(enableCommands));
+		Settings.write(null, "enableTrivia", Boolean.toString(enableTrivia));
+		Settings.write(null, "triviaRoundLength", Long.toString(triviaRoundLength));
+		Settings.write(null, "enableFloodProtect", Boolean.toString(enableFloodProtect));
+		Settings.write(null, "packetLog", Boolean.toString(packetLog));
+		Settings.write(null, "whisperBack", Boolean.toString(whisperBack));
+		Settings.write(null, "recruitAccess", Long.toString(recruitAccess));
+		Settings.write(null, "recruitTagPrefix", recruitTagPrefix);
+		Settings.write(null, "recruitTagSuffix", recruitTagSuffix);
+		Settings.write(null, "lookAndFeel", lookAndFeel);
+		Settings.write(null, "tsFormat", TimeFormatter.tsFormat);
+		Settings.write(null, "releaseType", releaseType.toString());
 	}
 	
 	public void load(int botNum) {
@@ -254,59 +255,58 @@ public class ConnectionSettings implements Serializable {
 			}
 		}
 		
-		if(true) {
-			header = null;
-			colorScheme = Byte.parseByte(
-						Settings.read(header, "colorScheme", "1"));
-			trigger = 	Settings.read(header, "trigger", "!");
-			antiIdle = 	Settings.read(header, "antiidle", "/me is a BNU-Bot %version%");
-			enableAntiIdle = Boolean.parseBoolean(
-					Settings.read(header, "enableAntiidle", "false"));
-			enableGreetings = Boolean.parseBoolean(
-					Settings.read(header, "enableGreetings", "true"));
-			antiIdleTimer = Integer.parseInt(
-					Settings.read(header, "antiIdleTimer", "5"));
-			autoconnect = Boolean.parseBoolean(
-					Settings.read(header, "autoconnect", "true"));
-			enableCLI = Boolean.parseBoolean(
-						Settings.read(header, "enableCLI", "false"));
-			enableGUI = Boolean.parseBoolean(
-						Settings.read(header, "enableGUI", "true"));
-			enableLegacyIcons = Boolean.parseBoolean(
-					Settings.read(header, "enableLegacyIcons", "true"));
-			enableCommands = Boolean.parseBoolean(
-						Settings.read(header, "enableCommands", "false"));
-			enableTrivia = Boolean.parseBoolean(
-					Settings.read(header, "enableTrivia", "false"));
-			triviaRoundLength = Long.parseLong(
-					Settings.read(header, "triviaRoundLength", "100"));
-			enableFloodProtect = Boolean.parseBoolean(
-					Settings.read(header, "enableFloodProtect", "true"));
-			packetLog = Boolean.parseBoolean(
-						Settings.read(header, "packetLog", "false"));
-			whisperBack = Boolean.parseBoolean(
-						Settings.read(header, "whisperBack", "true"));
-			recruitAccess = Long.parseLong(
-					Settings.read(header, "recruitAccess", "10"));
-			recruitTagPrefix =	Settings.read(header, "recruitTagPrefix", "BNU-");
-			recruitTagSuffix =	Settings.read(header, "recruitTagSuffix", null);
-			if(enableGUI) {
-				String laf = Settings.read(header, "lookAndFeel", "Metal");
-				for(LookAndFeelInfo lafi : UIManager.getInstalledLookAndFeels())
-					if(lafi.getName().equals(laf))
-						setLookAndFeel(lafi);
-			}
-			TimeFormatter.tsFormat =
-					Settings.read(header, "tsFormat", TimeFormatter.tsFormat);
-			releaseType = Enum.valueOf(ReleaseType.class,
-					Settings.read(header, "releaseType", CurrentVersion.version().getReleaseType().name()));
-			
-			// Ensure that development builds check for development, and non-development builds don't
-			ReleaseType rt = CurrentVersion.version().getReleaseType();
-			if(rt.isDevelopment() || releaseType.isDevelopment())
-				releaseType = rt;
-		} else {
-			autoconnect = true;
+		globalLoad();
+	}
+	
+	public static void globalLoad() {
+		colorScheme = Byte.parseByte(
+				Settings.read(null, "colorScheme", "1"));
+		trigger = 	Settings.read(null, "trigger", "!");
+		antiIdle = 	Settings.read(null, "antiidle", "/me is a BNU-Bot %version%");
+		enableAntiIdle = Boolean.parseBoolean(
+				Settings.read(null, "enableAntiidle", "false"));
+		enableGreetings = Boolean.parseBoolean(
+				Settings.read(null, "enableGreetings", "true"));
+		antiIdleTimer = Integer.parseInt(
+				Settings.read(null, "antiIdleTimer", "5"));
+		autoconnect = Boolean.parseBoolean(
+				Settings.read(null, "autoconnect", "true"));
+		enableCLI = Boolean.parseBoolean(
+				Settings.read(null, "enableCLI", "false"));
+		enableGUI = Boolean.parseBoolean(
+				Settings.read(null, "enableGUI", "true"));
+		enableLegacyIcons = Boolean.parseBoolean(
+				Settings.read(null, "enableLegacyIcons", "true"));
+		enableCommands = Boolean.parseBoolean(
+				Settings.read(null, "enableCommands", "false"));
+		enableTrivia = Boolean.parseBoolean(
+				Settings.read(null, "enableTrivia", "false"));
+		triviaRoundLength = Long.parseLong(
+				Settings.read(null, "triviaRoundLength", "100"));
+		enableFloodProtect = Boolean.parseBoolean(
+				Settings.read(null, "enableFloodProtect", "true"));
+		packetLog = Boolean.parseBoolean(
+				Settings.read(null, "packetLog", "false"));
+		whisperBack = Boolean.parseBoolean(
+				Settings.read(null, "whisperBack", "true"));
+		recruitAccess = Long.parseLong(
+				Settings.read(null, "recruitAccess", "10"));
+		recruitTagPrefix =	Settings.read(null, "recruitTagPrefix", "BNU-");
+		recruitTagSuffix =	Settings.read(null, "recruitTagSuffix", null);
+		if(enableGUI) {
+			String laf = Settings.read(null, "lookAndFeel", "Metal");
+			for(LookAndFeelInfo lafi : UIManager.getInstalledLookAndFeels())
+				if(lafi.getName().equals(laf))
+					setLookAndFeel(lafi);
 		}
+		TimeFormatter.tsFormat =
+			Settings.read(null, "tsFormat", TimeFormatter.tsFormat);
+		releaseType = Enum.valueOf(ReleaseType.class,
+				Settings.read(null, "releaseType", CurrentVersion.version().getReleaseType().name()));
+
+		// Ensure that development builds check for development, and non-development builds don't
+		ReleaseType rt = CurrentVersion.version().getReleaseType();
+		if(rt.isDevelopment() || releaseType.isDevelopment())
+			releaseType = rt;
 	}
 }
