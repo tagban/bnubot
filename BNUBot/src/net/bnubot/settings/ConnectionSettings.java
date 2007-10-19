@@ -204,7 +204,7 @@ public class ConnectionSettings implements Serializable {
 		if(product != 0)
 			Settings.write(header, "product", org.jbls.util.Constants.prods[product-1]);
 		
-		Settings.store();
+		globalSave();
 	}
 	
 	public static void globalSave() {
@@ -231,6 +231,8 @@ public class ConnectionSettings implements Serializable {
 		Settings.write(null, "lookAndFeel", lookAndFeel);
 		Settings.write(null, "tsFormat", TimeFormatter.tsFormat);
 		Settings.write(null, "releaseType", releaseType.toString());
+		
+		Settings.store();
 	}
 	
 	public void load(int botNum) {
