@@ -29,6 +29,7 @@ public abstract class Connection extends Thread implements EventHandler {
 
 	protected ConnectionSettings cs;
 	protected ChatQueue chatQueue;
+	protected Profile profile;
 	protected LinkedList<EventHandler> eventHandlers = new LinkedList<EventHandler>();
 	protected LinkedList<EventHandler> eventHandlers2 = new LinkedList<EventHandler>();
 	protected BNetUser myUser = null;
@@ -42,6 +43,10 @@ public abstract class Connection extends Thread implements EventHandler {
 
 	private int eh_semaphore = 0;
 	private int eh2_semaphore = 0;
+	
+	public LinkedList<EventHandler> getEventHandlers() {
+		return eventHandlers;
+	}
 
 	private void waitForEHsemaphore() {
 		while(eh_semaphore > 0) {
@@ -57,11 +62,12 @@ public abstract class Connection extends Thread implements EventHandler {
 		}
 	}
 
-	public Connection(ConnectionSettings cs, ChatQueue cq) {
+	public Connection(ConnectionSettings cs, ChatQueue cq, Profile p) {
 		super(Connection.class.getSimpleName());
 
 		this.cs = cs;
 		this.chatQueue = cq;
+		this.profile = p;
 
 		if(cq != null)
 			cq.add(this);
@@ -648,5 +654,9 @@ public abstract class Connection extends Thread implements EventHandler {
 
 	public ChatQueue getChatQueue() {
 		return this.chatQueue;
+	}
+	
+	public Profile getProfile() {
+		return this.profile;
 	}
 }
