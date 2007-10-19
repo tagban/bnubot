@@ -21,6 +21,7 @@ import net.bnubot.util.Out;
 
 public class Profile {
 	private static LinkedList<Profile> profiles = new LinkedList<Profile>();
+	private static String[] plugins = null;
 
 	private static Profile findCreateProfile(String name) {
 		synchronized(profiles) {
@@ -31,8 +32,8 @@ public class Profile {
 		return new Profile(name);
 	}
 	
-	public static boolean add(ConnectionSettings cs, String[] plugins) throws Exception {
-		return findCreateProfile(cs.bncsServer).insertConnection(cs, plugins);
+	public static boolean add(ConnectionSettings cs) throws Exception {
+		return findCreateProfile(cs.profile).insertConnection(cs);
 	}
 
 	private LinkedList<Connection> cons = new LinkedList<Connection>();
@@ -50,7 +51,7 @@ public class Profile {
 		chatQueue.start();
 	}
 
-	private boolean insertConnection(ConnectionSettings cs, String[] plugins) throws Exception {
+	private boolean insertConnection(ConnectionSettings cs) throws Exception {
 		BNCSConnection con = new BNCSConnection(cs, chatQueue, this);
 		synchronized(cons) {
 			if(cons.size() > 0) {
@@ -122,12 +123,8 @@ public class Profile {
 			// Start the Connection thread
 			con.start();
 			
-			// Wait for the bot to connect
-			while(!con.canSendChat())
-				Thread.sleep(20);
-			
-			// Wait an additional 500ms
-			Thread.sleep(500);
+			// Wait 1000ms
+			Thread.sleep(1000);
 			
 			return cons.add(con);
 		}
@@ -135,5 +132,9 @@ public class Profile {
 
 	public String getName() {
 		return name;
+	}
+
+	public static void setPlugins(String[] plugins) {
+		Profile.plugins = plugins;
 	}
 }

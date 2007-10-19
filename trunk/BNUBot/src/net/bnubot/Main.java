@@ -11,6 +11,7 @@ import java.io.PrintStream;
 import javax.swing.JOptionPane;
 
 import net.bnubot.bot.gui.ConfigurationFrame;
+import net.bnubot.bot.gui.GlobalConfigurationFrame;
 import net.bnubot.core.Profile;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.settings.Settings;
@@ -33,18 +34,8 @@ public class Main {
 	}
 
 	public static void main(String[] args) throws Exception {
-		int numBots = 1;
-		try {
-			numBots = Integer.parseInt(
-				Settings.read("bnubot", "numBots", "1"));
-		} catch(Exception e) {}
-		Settings.write("bnubot", "numBots", Integer.toString(numBots));
-		
-		ConnectionSettings cs = new ConnectionSettings();
-		cs.load(1);
-		
 		boolean forceConfig = false;
-		String plugins[] = null;
+		ConnectionSettings.globalLoad();
 		
 		for(int i = 0; i < args.length; i++) {
 			if(args[i].charAt(0) == '-') {
@@ -89,7 +80,7 @@ public class Main {
 					break;
 				case 'p':
 					if(args[i].equals("-plugins")) {
-						plugins = args[++i].split(":");
+						Profile.setPlugins(args[++i].split(":"));
 						continue;
 					}
 					break;
@@ -100,14 +91,14 @@ public class Main {
 			System.exit(1);
 		}
 		
-		if((cs.isValid() != null) || forceConfig) {
-			ConfigurationFrame cf = null;
+		if((ConnectionSettings.isValidGlobal() != null) || forceConfig) {
+			GlobalConfigurationFrame cf = null;
 			try {
-				cf = new ConfigurationFrame(cs);
+				cf = new GlobalConfigurationFrame();
 				cf.setVisible(true);
 			} catch(Exception e) {
 				Out.exception(e);
-				String s = cs.isValid();
+				String s = ConnectionSettings.isValidGlobal();
 				String error = "There was an error initializing the configuraiton window, ";
 				if(s == null)
 					error += "but the configuration was valid.";
@@ -122,24 +113,35 @@ public class Main {
 				Thread.sleep(10);
 			}
 			
-			String reason = cs.isValid();
+			String reason = ConnectionSettings.isValidGlobal();
 			if(reason != null) {
 				JOptionPane.showMessageDialog(null, reason, "Invalid Configuration", JOptionPane.ERROR_MESSAGE);
 				System.exit(1);
 			}
 		}
 		
-		for(int i = 1; i <= numBots; i++) {
+		for(int i = 1; i <= ConnectionSettings.numBots; i++) {
 			//Start up the next connection
-			cs = new ConnectionSettings();
+			ConnectionSettings cs = new ConnectionSettings();
 			cs.load(i);
 			String valid = cs.isValid();
-			if(valid != null)
-				throw new Exception("Invalid configuration for bot " + i + ": " + valid);
+			try {
+				if(valid != null) {
+					ConfigurationFrame cf = new ConfigurationFrame(cs);
+					cf.setVisible(true);
+					while(cf.isVisible()) {
+						Thread.sleep(20);
+						Thread.yield();
+					}
+				}
+			} catch(Exception e) {}
 			
-			Profile.add(cs, plugins);
+			valid = cs.isValid();
+			if(valid == null)
+				Profile.add(cs);
+			else
+				throw new Exception("Invalid configuration for bot " + i + ": " + valid);
 		}
-		
 		
 		if(CurrentVersion.fromJar() && CurrentVersion.version().getReleaseType().isDevelopment())
 			Out.error(CurrentVersion.class, "WARNING: This is a development build, not for distribution!");

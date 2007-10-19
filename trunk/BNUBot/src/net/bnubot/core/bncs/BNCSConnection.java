@@ -1782,9 +1782,9 @@ public class BNCSConnection extends Connection {
 	}
 	
 	public String toString() {
-		String out = new String();
-		
 		if(myUser != null) {
+			String out = new String();
+			
 			if(myClanRank != null) {
 				out += "Clan ";
 				out += HexDump.DWordToPretty(myClan);
@@ -1792,13 +1792,16 @@ public class BNCSConnection extends Connection {
 				out += clanRanks[myClanRank];
 				out += " ";
 			}
+			
 			out += myUser.getShortLogonName();
+			
+			if(channelName != null)
+				out += " - [ #" + channelName + " ]";
+			
+			return out;
 		}
 		
-		if(channelName != null)
-			out += " - [ #" + channelName + " ]";
-		
-		return out;
+		return profile.getName();
 	}
 	
 	public void reconnect() {

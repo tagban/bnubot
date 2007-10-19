@@ -27,6 +27,8 @@ import net.bnubot.bot.gui.database.DatabaseAccountEditor;
 import net.bnubot.bot.gui.database.DatabaseRankEditor;
 import net.bnubot.bot.gui.icons.BNetIcon;
 import net.bnubot.bot.gui.icons.IconsDotBniReader;
+import net.bnubot.core.Profile;
+import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.util.Out;
 import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.VersionCheck;
@@ -63,11 +65,11 @@ public class GuiDesktop extends JFrame {
 					// Store the selected GUI
 					selectedGui = gui;
 					
-					// Set the title to the title for the selected GUI
-					setTitle();
-					
 					// Tell Out to direct info to the selected gui
 					Out.setOutputConnection(gui);
+					
+					// Set the title to the title for the selected GUI
+					setTitle();
 					
 					break;
 				}
@@ -78,7 +80,22 @@ public class GuiDesktop extends JFrame {
 		{
 			JMenu menu = new JMenu("File");
 			{
-				JMenuItem menuItem = new JMenuItem("Settings");
+				JMenuItem menuItem = new JMenuItem("New Profile");
+				menuItem.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						try {
+							ConnectionSettings cs = new ConnectionSettings();
+							ConnectionSettings.numBots++;
+							cs.load(ConnectionSettings.numBots);
+							Thread.yield();
+							Profile.add(cs);
+						} catch(Exception ex) {
+							Out.exception(ex);
+						}
+					} });
+				menu.add(menuItem);
+				
+				menuItem = new JMenuItem("Settings");
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						new GlobalConfigurationFrame().setVisible(true);

@@ -71,14 +71,6 @@ public abstract class Connection extends Thread implements EventHandler {
 
 		if(cq != null)
 			cq.add(this);
-
-		try {
-			String realm = cs.bncsServer;
-			int i = realm.indexOf('.');
-			if(i != -1)
-				realm = realm.substring(0, i);
-			myUser = new BNetUser(cs.username + "@" + realm);
-		} catch(Exception e) {}
 	}
 
 	public abstract void joinChannel(String channel) throws Exception;
