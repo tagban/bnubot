@@ -49,6 +49,7 @@ public class GuiEventHandler implements EventHandler {
 	private String channel = null;
 	private TrayIcon ti = null;
 	private JMenu menuBar = new JMenu();
+	private BNetUser lastWhisperFrom = null;
 	
 	public void initialize(Connection c) {
 		ColorScheme cs = ColorScheme.createColorScheme(ConnectionSettings.colorScheme);
@@ -230,6 +231,13 @@ public class GuiEventHandler implements EventHandler {
 							c.sendChat(element);
 					}
 					chatTextArea.setText(null);
+					return;
+				}
+				
+				if(lastWhisperFrom != null) {
+					String txt = chatTextArea.getText();
+					if("/r ".equals(txt) || "/rw ".equals(txt))
+						chatTextArea.setText("/w " + lastWhisperFrom.getShortLogonName() + " ");
 				}
 			}
 		});
@@ -339,6 +347,7 @@ public class GuiEventHandler implements EventHandler {
 	}
 
 	public void whisperRecieved(BNetUser user, String text) {
+		lastWhisperFrom = user;
 		mainTextArea.whisperRecieved(user, text);
 
 		if((ti != null) && !frame.isVisible()) {
