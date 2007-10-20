@@ -56,6 +56,10 @@ public class Diablo2ColorScheme extends ColorScheme {
 		return D2Beige2; //PRIORITY_NORMAL;
 	}
 	
+	public Color getSelfUserNameColor(int flags) {
+		return D2Cyan; //PRIORITY_NORMAL;
+	}
+	
 	public Color getUserNameListColor(int flags) {
 		if((flags & 0x20) != 0)	return D2Red;
 		if((flags & 0x01) != 0)	return D2Cyan; //PRIORITY_BLIZZARD_REP;

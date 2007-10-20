@@ -32,6 +32,7 @@ public abstract class ColorScheme {
 	public abstract Color getDebugColor();
 	
 	public abstract Color getUserNameColor(int flags);
+	public abstract Color getSelfUserNameColor(int flags);
 	public abstract Color getUserNameListColor(int flags);
 	public abstract Color getChatColor(int flags);
 	public abstract Color getEmoteColor(int flags);

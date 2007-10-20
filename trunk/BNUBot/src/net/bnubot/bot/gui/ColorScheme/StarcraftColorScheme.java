@@ -52,6 +52,10 @@ public class StarcraftColorScheme extends ColorScheme {
 		return SCYellow; //PRIORITY_NORMAL;
 	}
 	
+	public Color getSelfUserNameColor(int flags) {
+		return SCCyan; //PRIORITY_NORMAL;
+	}
+	
 	public Color getUserNameListColor(int flags) {
 		if((flags & 0x20) != 0)	return SCRed;
 		if((flags & 0x01) != 0)	return SCCyan; //PRIORITY_BLIZZARD_REP;

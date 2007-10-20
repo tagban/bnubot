@@ -190,10 +190,16 @@ public class TextWindow extends JScrollPane {
 		append(text, "debug");
 	}
 	
-	public void userChat(BNetUser user, String text) {
+	public void userChat(BNetUser user, String text, boolean isSelf) {
+		Color c;
+		if(isSelf)
+			c = cs.getSelfUserNameColor(user.getFlags());
+		else
+			c = cs.getUserNameColor(user.getFlags());
+		
 		append2(
 			"<" + user.getShortPrettyName() + "> ",
-			cs.getUserNameColor(user.getFlags()),
+			c,
 			text,
 			cs.getChatColor(user.getFlags()));
 	}

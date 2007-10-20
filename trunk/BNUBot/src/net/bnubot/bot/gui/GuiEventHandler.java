@@ -301,7 +301,7 @@ public class GuiEventHandler implements EventHandler {
 	}
 
 	public void recieveChat(BNetUser user, String text) {
-		mainTextArea.userChat(user, text);
+		mainTextArea.userChat(user, text, user.equals(c.getMyUser()));
 
 		if((ti != null) && !frame.isVisible()) {
 	        ti.displayMessage("User is chatting: " + user.getShortLogonName(), 
