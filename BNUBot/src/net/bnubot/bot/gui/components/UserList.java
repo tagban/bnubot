@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
@@ -48,6 +49,19 @@ public class UserList extends JPanel {
 	private ColorScheme cs = null;
 	private Connection c = null;
 	private GuiEventHandler geh = null;
+	
+	public String[] findUsers(String containing) {
+		containing = containing.toLowerCase();
+		
+		ArrayList<String> ret = new ArrayList<String>();
+		Enumeration<UserInfo> en = users.elements();
+		while(en.hasMoreElements()) {
+			String u = en.nextElement().user.getFullLogonName();
+			if(u.toLowerCase().contains(containing))
+				ret.add(u);
+		}
+		return ret.toArray(new String[ret.size()]);
+	}
 	
 	/**
 	 * Get UserInfo from JLabel
