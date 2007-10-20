@@ -225,13 +225,21 @@ public class GuiEventHandler implements EventHandler {
 			public void keyReleased(KeyEvent e) {}
 			public void keyTyped(KeyEvent e) {
 				if(e.getKeyChar() == '\n') {
-					String text[] = chatTextArea.getText().split("\n");
-					for(String element : text) {
-						if(element.trim().length() > 0)
-							c.sendChat(element);
+					try {
+						int cp = chatTextArea.getCaretPosition();
+						String txt = chatTextArea.getText(0, cp - 1);
+						txt += chatTextArea.getText(cp, chatTextArea.getText().length() - cp);
+						
+						String text[] = txt.split("\n");
+						for(String element : text) {
+							if(element.trim().length() > 0)
+								c.sendChat(element);
+						}
+						chatTextArea.setText(null);
+						return;
+					} catch(Exception ex) {
+						Out.exception(ex);
 					}
-					chatTextArea.setText(null);
-					return;
 				}
 				
 				if(e.getKeyChar() == '\t') {
