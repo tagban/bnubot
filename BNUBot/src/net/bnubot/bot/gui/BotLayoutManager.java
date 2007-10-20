@@ -13,7 +13,7 @@ import java.awt.LayoutManager;
 
 public class BotLayoutManager implements LayoutManager {
 	private static final int channelWidth = 200;
-	private static final int textHeight = 17;
+	private static final int textHeight = 19;
 	private static final int padding = 5;
 	private static final int paddingEdge = 2;
 	
