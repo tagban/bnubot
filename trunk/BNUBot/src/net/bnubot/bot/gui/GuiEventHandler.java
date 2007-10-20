@@ -234,6 +234,34 @@ public class GuiEventHandler implements EventHandler {
 					return;
 				}
 				
+				if(e.getKeyChar() == '\t') {
+					e.consume();
+					try {
+						int end = chatTextArea.getCaretPosition();
+						String text = chatTextArea.getText(0, end - 1);
+						int start = text.lastIndexOf(' ') + 1;
+						if(start != 0)
+							text = text.substring(start);
+						
+						String before = chatTextArea.getText(0, start);
+						String after = chatTextArea.getText(end, chatTextArea.getText().length() - end);
+						
+						String[] users = userList.findUsers(text);
+						if(users.length == 1) {
+							chatTextArea.setText(before + users[0] + after);
+							chatTextArea.setCaretPosition(before.length() + users[0].length());
+						} else {
+							chatTextArea.setText(before + text + after);
+							chatTextArea.setCaretPosition(before.length() + text.length());
+							
+							for(String user : users)
+								recieveDebug(user);
+						}
+					} catch(Exception ex) {
+						Out.exception(ex);
+					}
+				}
+				
 				if(lastWhisperFrom != null) {
 					String txt = chatTextArea.getText();
 					if("/r ".equals(txt) || "/rw ".equals(txt))
