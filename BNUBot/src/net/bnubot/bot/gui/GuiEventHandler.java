@@ -279,6 +279,7 @@ public class GuiEventHandler implements EventHandler {
 		});
 		//Channel text box (above userlist)
 		channelTextArea = new JTextArea();
+		channelTextArea.setEditable(false);
 		channelTextArea.setAlignmentX(SwingConstants.CENTER);
 		channelTextArea.setAlignmentY(SwingConstants.CENTER);
 		channelTextArea.setBackground(cs.getBackgroundColor());
