@@ -45,9 +45,9 @@ public class UserList extends JPanel {
 	}
 	
 	private Hashtable<BNetUser, UserInfo> users = null;
-	private Box b = null;
-	private ColorScheme cs = null;
-	private Connection c = null;
+	private Box box = null;
+	private ColorScheme colors = null;
+	private Connection con = null;
 	private GuiEventHandler geh = null;
 	
 	public String[] findUsers(String containing) {
@@ -93,19 +93,19 @@ public class UserList extends JPanel {
 		return null;
 	}
 	
-	public UserList(ColorScheme cs, Connection c, GuiEventHandler geh) {
+	public UserList(ColorScheme colors, Connection c, GuiEventHandler geh) {
 		super(new FlowLayout(FlowLayout.LEFT));
 		this.users = new Hashtable<BNetUser, UserInfo>();
-		this.cs = cs;
-		this.c = c;
+		this.colors = colors;
+		this.con = c;
 		this.geh = geh;
-		setBackground(cs.getBackgroundColor());
-		b = new Box(BoxLayout.Y_AXIS);
-		add(b);
+		setBackground(colors.getBackgroundColor());
+		box = new Box(BoxLayout.Y_AXIS);
+		add(box);
 	}
 	
 	public void clear() {
-		b.removeAll();
+		box.removeAll();
 		users.clear();
 		validate();
 	}
@@ -115,15 +115,15 @@ public class UserList extends JPanel {
 	}
 	
 	private int getInsertPosition(int priority) {
-		for(int i = 0; i < b.getComponentCount(); i++) {
-			JLabel lbl = (JLabel)b.getComponent(i);
+		for(int i = 0; i < box.getComponentCount(); i++) {
+			JLabel lbl = (JLabel)box.getComponent(i);
 			UserInfo ui = getUI(lbl);
 			int pCurrent = ChannelListPriority.getPrioByFlags(ui.user.getFlags());
 			
 			if(priority > pCurrent)
 				return i;
 		}
-		return b.getComponentCount();
+		return box.getComponentCount();
 	}
 	
 	private UserInfo getUserInfo(ActionEvent arg0) {
@@ -163,7 +163,7 @@ public class UserList extends JPanel {
 				public void actionPerformed(ActionEvent arg0) {
 					UserInfo ui = getUserInfo(arg0);
 					if(ui != null)
-						c.sendChat("/whois " + ui.user.getShortLogonName());
+						con.sendChat("/whois " + ui.user.getShortLogonName());
 				}});
 			ui.menu.add(menuItem);
 			menuItem = new JMenuItem("Profile");
@@ -171,15 +171,15 @@ public class UserList extends JPanel {
 				public void actionPerformed(ActionEvent arg0) {
 					UserInfo ui = getUserInfo(arg0);
 					if(ui != null)
-						try { c.sendProfile(ui.user); } catch(Exception e) { Out.exception(e); }
+						try { con.sendProfile(ui.user); } catch(Exception e) { Out.exception(e); }
 				}});
 			ui.menu.add(menuItem);
 			ui.menu.add(Box.createHorizontalGlue());
 		}
 		if(ui.label == null) {
 			ui.label = new JLabel(user.getFullLogonName());
-			ui.label.setForeground(cs.getUserNameListColor(user.getFlags()));
-			b.add(ui.label, getInsertPosition(ui.priority));
+			ui.label.setForeground(colors.getUserNameListColor(user.getFlags()));
+			box.add(ui.label, getInsertPosition(ui.priority));
 			
 			ui.label.addMouseListener(new MouseListener() {
 				public void mouseClicked(MouseEvent arg0) {
@@ -193,7 +193,7 @@ public class UserList extends JPanel {
 								// "Left clicked on " + ui.label.getText()
 								break;
 							case MouseEvent.BUTTON2:
-								try { c.sendProfile(ui.user); } catch(Exception e) { Out.exception(e); }
+								try { con.sendProfile(ui.user); } catch(Exception e) { Out.exception(e); }
 								break;
 							case MouseEvent.BUTTON3:
 								ui.menu.show(arg0.getComponent(), arg0.getX(), arg0.getY());
@@ -218,11 +218,11 @@ public class UserList extends JPanel {
 			int newPriority = ChannelListPriority.getPrioByFlags(ui.lastFlags);
 			if(ui.priority != newPriority) {
 				ui.priority = newPriority;
-				b.remove(ui.label);
-				b.add(ui.label, getInsertPosition(newPriority));
+				box.remove(ui.label);
+				box.add(ui.label, getInsertPosition(newPriority));
 			}
 			
-			ui.label.setForeground(cs.getUserNameListColor(ui.lastFlags));
+			ui.label.setForeground(colors.getUserNameListColor(ui.lastFlags));
 		}
 				
 		Icon icon = null;
@@ -318,7 +318,7 @@ public class UserList extends JPanel {
 		UserInfo ui = getUI(user);
 		
 		if(ui != null) {
-			b.remove(ui.label);
+			box.remove(ui.label);
 			ui.label = null;
 			users.remove(user);
 			validate();

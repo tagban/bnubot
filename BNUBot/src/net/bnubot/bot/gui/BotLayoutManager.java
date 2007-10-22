@@ -11,8 +11,9 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.LayoutManager;
 
+import javax.swing.JSplitPane;
+
 public class BotLayoutManager implements LayoutManager {
-	private static final int channelWidth = 200;
 	private static final int textHeight = 19;
 	private static final int padding = 5;
 	private static final int paddingEdge = 2;
@@ -29,26 +30,50 @@ public class BotLayoutManager implements LayoutManager {
 	}
 	
 	public void layoutContainer(Container parent) {
-		if(parent.getComponentCount() != 4) {
+		if(parent.getComponentCount() != 1) {
 			parent.setBackground(Color.RED);
 			return;
 		}
 		parent.setBackground(null);
 		
-		int height = parent.getHeight() - paddingEdge*2;
-		int width = parent.getWidth() - paddingEdge*2;
+		JSplitPane jsp = (JSplitPane)parent.getComponent(0);
+		jsp.setBounds(
+				paddingEdge,
+				paddingEdge,
+				parent.getWidth() - paddingEdge*2,
+				parent.getHeight() - paddingEdge*2);
 		
-		int col1x = paddingEdge;
-		int col2x = paddingEdge + width - channelWidth;
-		int row1y = paddingEdge;
-		int row2y = paddingEdge + textHeight + padding;
-		int row3y = paddingEdge + height - textHeight;
-		int mainw = width - padding - channelWidth;
-		int mainh = height - padding - textHeight;
+		{
+			Container leftSide = (Container)jsp.getLeftComponent();
+			int height = leftSide.getHeight() - paddingEdge*2;
+			int width = jsp.getDividerLocation() - paddingEdge*2;
+			
+			//int top1 = paddingEdge;
+			int height1 = height - textHeight - padding;
+			//int top2 = top1 + height1;
 
-		parent.getComponent(0).setBounds(col1x, row1y, mainw, mainh);
-		parent.getComponent(1).setBounds(col1x, row3y, mainw, textHeight);
-		parent.getComponent(2).setBounds(col2x, row1y, channelWidth, textHeight);
-		parent.getComponent(3).setBounds(col2x, row2y, channelWidth, mainh);
+			Dimension d0 = new Dimension(width, height1);
+			Dimension d1 = new Dimension(width, textHeight);
+			
+			leftSide.getComponent(0).setPreferredSize(d0);
+			leftSide.getComponent(1).setPreferredSize(d1);
+		}
+		
+		{
+			Container rightSide = (Container)jsp.getRightComponent();
+			int height = rightSide.getHeight() - paddingEdge*2;
+			int width = rightSide.getWidth() - paddingEdge*2;
+			
+			//int top1 = paddingEdge;
+			int height2 = height - textHeight - padding;
+			//int top2 = top1 + height2 + padding;
+			
+			Dimension d0 = new Dimension(width, textHeight);
+			Dimension d1 = new Dimension(width, height2);
+
+			rightSide.getComponent(0).setLocation(0, 0);
+			rightSide.getComponent(0).setPreferredSize(d0);
+			rightSide.getComponent(1).setPreferredSize(d1);
+		}
 	}
 }
