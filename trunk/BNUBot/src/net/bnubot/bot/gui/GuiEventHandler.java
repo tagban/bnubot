@@ -16,10 +16,13 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 
 import net.bnubot.bot.gui.ColorScheme.ColorScheme;
 import net.bnubot.bot.gui.components.ClanList;
@@ -38,7 +41,7 @@ import net.bnubot.util.Out;
 
 public class GuiEventHandler implements EventHandler {
 	private JPanel frame = null;
-	private Connection c = null;
+	private Connection con = null;
 	private TextWindow mainTextArea = null;
 	private JTextArea chatTextArea = null;
 	private JTextArea channelTextArea = null;
@@ -47,18 +50,18 @@ public class GuiEventHandler implements EventHandler {
 	private ClanList clanList = null;
 	private RealmWindow w = null;
 	private String channel = null;
-	private TrayIcon ti = null;
+	private TrayIcon tray = null;
 	private JMenu menuBar = new JMenu();
 	private BNetUser lastWhisperFrom = null;
 	
-	public void initialize(Connection c) {
-		ColorScheme cs = ColorScheme.createColorScheme(ConnectionSettings.colorScheme);
+	public void initialize(Connection con) {
+		ColorScheme colors = ColorScheme.createColorScheme(ConnectionSettings.colorScheme);
 		
-		if(c != null) {
-			this.c = c;
-			initializeGui(c.toString(), cs);
+		if(con != null) {
+			this.con = con;
+			initializeGui(con.toString(), colors);
 		} else {
-			initializeGui("BNU-Bot", cs);
+			initializeGui("BNU-Bot", colors);
 		}
 		Out.setOutputConnection(this);
 		
@@ -135,13 +138,13 @@ public class GuiEventHandler implements EventHandler {
 		});*/
 	}
 	
-	private void initializeGui(String title, ColorScheme cs) {
-		//Create the panel
-		frame = new JPanel(true);
+	private void initializeGui(String title, ColorScheme colors) {
+		// Create the panel
+		frame = new JPanel(new BotLayoutManager(), true);
 		
-		//Create the menu bar.
+		// Create the menu bar.
 		menuBar.setOpaque(true);
-		menuBar.setText(c.getConnectionSettings().bncsServer);
+		menuBar.setText(con.getConnectionSettings().bncsServer);
 		{
 			JMenu menu;
 			JMenuItem menuItem;
@@ -149,7 +152,7 @@ public class GuiEventHandler implements EventHandler {
 			menuItem = new JMenuItem("Settings");
 			menuItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					new ConfigurationFrame(c.getConnectionSettings()).setVisible(true);
+					new ConfigurationFrame(con.getConnectionSettings()).setVisible(true);
 				} });
 			menuBar.add(menuItem);
 			
@@ -160,24 +163,24 @@ public class GuiEventHandler implements EventHandler {
 				menuItem = new JMenuItem("Connect");
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						if(!c.isConnected())
-							c.setConnected(true);
+						if(!con.isConnected())
+							con.setConnected(true);
 					} });
 				menu.add(menuItem);
 				
 				menuItem = new JMenuItem("Reconnect");
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						if(c.isConnected())
-							c.reconnect();
+						if(con.isConnected())
+							con.reconnect();
 					} });
 				menu.add(menuItem);
 				
 				menuItem = new JMenuItem("Disconnect");
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						if(c.isConnected())
-							c.setConnected(false);
+						if(con.isConnected())
+							con.setConnected(false);
 					} });
 				menu.add(menuItem);
 			}
@@ -187,7 +190,7 @@ public class GuiEventHandler implements EventHandler {
 			menuItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent evt) {
 					try {
-						c.sendQueryRealms();
+						con.sendQueryRealms();
 					} catch (Exception e) {
 						Out.exception(e);
 					}
@@ -200,7 +203,7 @@ public class GuiEventHandler implements EventHandler {
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent event) {
 						try {
-							c.sendClanMOTD(new ClanMOTDEditor(c));
+							con.sendClanMOTD(new ClanMOTDEditor(con));
 						} catch(Exception e) {
 							Out.exception(e);
 						}
@@ -211,14 +214,11 @@ public class GuiEventHandler implements EventHandler {
 		}
 		//frame.setJMenuBar(menuBar);
 		
-		//Create a LayoutManager to organize the frame
-		frame.setLayout(new BotLayoutManager());
-		
-		//Main text area
-		mainTextArea = new TextWindow(cs);
-		//Send chat textbox
+		// Main text area
+		mainTextArea = new TextWindow(colors);
+		// Send chat textbox
 		chatTextArea = new JTextArea();
-		chatTextArea.setBackground(cs.getBackgroundColor());
+		chatTextArea.setBackground(colors.getBackgroundColor());
 		chatTextArea.setForeground(Color.LIGHT_GRAY);
 		chatTextArea.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent e) {}
@@ -233,7 +233,7 @@ public class GuiEventHandler implements EventHandler {
 						String text[] = txt.split("\n");
 						for(String element : text) {
 							if(element.trim().length() > 0)
-								c.sendChat(element);
+								con.sendChat(element);
 						}
 						chatTextArea.setText(null);
 						return;
@@ -277,35 +277,62 @@ public class GuiEventHandler implements EventHandler {
 				}
 			}
 		});
-		//Channel text box (above userlist)
+		// Channel text box (above userlist)
 		channelTextArea = new JTextArea();
 		channelTextArea.setEditable(false);
 		channelTextArea.setAlignmentX(SwingConstants.CENTER);
 		channelTextArea.setAlignmentY(SwingConstants.CENTER);
-		channelTextArea.setBackground(cs.getBackgroundColor());
+		channelTextArea.setBackground(colors.getBackgroundColor());
 		channelTextArea.setForeground(Color.LIGHT_GRAY);
 		
-		IconsDotBniReader.initialize(c.getConnectionSettings());
+		IconsDotBniReader.initialize(con.getConnectionSettings());
 		
-		//The userlist
-		userList = new UserList(cs, c, this);
-		//Friends list
-		friendList = new FriendList(cs);
-		//Clan list
-		clanList = new ClanList(cs);
+		// The userlist
+		userList = new UserList(colors, con, this);
+		// Friends list
+		friendList = new FriendList(colors);
+		// Clan list
+		clanList = new ClanList(colors);
 
 		JTabbedPane allLists = new JTabbedPane();
 		allLists.addTab("Channel", new JScrollPane(userList));
 		allLists.addTab("Friends", new JScrollPane(friendList));
 		allLists.addTab("Clan", new JScrollPane(clanList));
 		
-		//Add them to the frame
-		frame.add(mainTextArea);
-		frame.add(chatTextArea);
-		frame.add(channelTextArea);
-		frame.add(allLists);
+		JPanel leftSide = new JPanel();
+		leftSide.add(mainTextArea);
+		leftSide.add(chatTextArea);
 		
-		//Display the window
+		JPanel rightSide = new JPanel();
+		rightSide.add(channelTextArea);
+		rightSide.add(allLists);
+		
+		final Runnable redraw = new Runnable() {
+			public void run() {
+				// Tell the LayoutManager to reposition the components in the frame
+				frame.validate();
+			}
+		};
+		
+		// This listener can detect when the JSplitPane divider is moved
+		rightSide.addAncestorListener(new AncestorListener() {
+			public void ancestorAdded(AncestorEvent event) {}
+			public void ancestorMoved(AncestorEvent event) {
+				// Delay so the containers can resize
+				SwingUtilities.invokeLater(redraw);
+			}
+			public void ancestorRemoved(AncestorEvent event) {}
+		});
+		
+		JSplitPane jsp = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, leftSide, rightSide);
+		jsp.setDividerLocation(550);
+		jsp.setDividerSize(8);
+		jsp.setResizeWeight(1); // Make the left side expand when resizing
+		
+		// Add them to the frame
+		frame.add(jsp);
+		
+		// Display the window
 		GuiDesktop.add(this);
 	}
 
@@ -342,14 +369,14 @@ public class GuiEventHandler implements EventHandler {
 		mainTextArea.channelInfo("Joining channel " + channel + ".");
 		channelTextArea.setText(channel);
 		
-		GuiDesktop.setTitle(this, c.getProductID());
+		GuiDesktop.setTitle(this, con.getProductID());
 	}
 
 	public void recieveChat(BNetUser user, String text) {
-		mainTextArea.userChat(user, text, user.equals(c.getMyUser()));
+		mainTextArea.userChat(user, text, user.equals(con.getMyUser()));
 
-		if((ti != null) && !frame.isVisible()) {
-	        ti.displayMessage("User is chatting: " + user.getShortLogonName(), 
+		if((tray != null) && !frame.isVisible()) {
+	        tray.displayMessage("User is chatting: " + user.getShortLogonName(), 
 	            text,
 	            TrayIcon.MessageType.INFO);
 		}
@@ -387,8 +414,8 @@ public class GuiEventHandler implements EventHandler {
 		lastWhisperFrom = user;
 		mainTextArea.whisperRecieved(user, text);
 
-		if((ti != null) && !frame.isVisible()) {
-	        ti.displayMessage("Whisper from " + user.getShortLogonName(), 
+		if((tray != null) && !frame.isVisible()) {
+	        tray.displayMessage("Whisper from " + user.getShortLogonName(), 
 	            text,
 	            TrayIcon.MessageType.INFO);
 		}
@@ -411,19 +438,19 @@ public class GuiEventHandler implements EventHandler {
 	}
 
 	public void titleChanged() {
-		BNetUser user = c.getMyUser();
+		BNetUser user = con.getMyUser();
 		String name;
 		
 		if(user != null)
-			name = c.getMyUser().getFullAccountName();
+			name = con.getMyUser().getFullAccountName();
 		else
-			name = c.getConnectionSettings().bncsServer;
+			name = con.getConnectionSettings().bncsServer;
 		
 		menuBar.setText(name);
 		
-		GuiDesktop.setTitle(this, c.getProductID());
-		if(ti != null)
-			ti.setToolTip(c.toString());
+		GuiDesktop.setTitle(this, con.getProductID());
+		if(tray != null)
+			tray.setToolTip(con.toString());
 	}
 
 	public void friendsList(FriendEntry[] entries) {
@@ -476,7 +503,7 @@ public class GuiEventHandler implements EventHandler {
 		
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				c.addEventHandler(w);
+				con.addEventHandler(w);
 				w.setVisible(true);
 			} });
 	}
@@ -495,6 +522,6 @@ public class GuiEventHandler implements EventHandler {
 
 	@Override
 	public String toString() {
-		return c.toString();
+		return con.toString();
 	}
 }
