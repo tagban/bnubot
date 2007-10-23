@@ -7,6 +7,8 @@ package net.bnubot.bot.gui.main;
 
 import java.awt.AWTException;
 import java.awt.Image;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
 import java.awt.SystemTray;
@@ -14,13 +16,14 @@ import java.awt.Toolkit;
 import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowStateListener;
 import java.util.ArrayList;
 
-import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -49,7 +52,7 @@ public class GuiDesktop extends JFrame {
 	private static final long serialVersionUID = -7144648179041514994L;
 	private static final ArrayList<GuiEventHandler> guis = new ArrayList<GuiEventHandler>();
 	private static GuiEventHandler selectedGui = null;
-	private static final JTabbedPane desktop = new JTabbedPane();
+	private static final JTabbedPane tabs = new JTabbedPane();
 	private static final JMenuBar menuBar = new JMenuBar();
 	private static final GuiDesktop instance = new GuiDesktop();
 	private static TrayIcon tray = null;
@@ -65,11 +68,10 @@ public class GuiDesktop extends JFrame {
 	private void initializeGui() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		setContentPane(desktop);
+		setContentPane(tabs);
 		setSize(800, 500);
 		
-		desktop.setBorder(BorderFactory.createEmptyBorder());
-		desktop.addChangeListener(new ChangeListener() {
+		tabs.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
 				JTabbedPane jtp = (JTabbedPane)e.getSource();
 				JPanel jp = (JPanel)jtp.getSelectedComponent();
@@ -90,6 +92,36 @@ public class GuiDesktop extends JFrame {
 					
 					break;
 				}
+			}
+		});
+		
+		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
+			public boolean dispatchKeyEvent(KeyEvent e) {
+				if(e.getModifiers() != InputEvent.CTRL_MASK)
+					return false;
+				
+				if(e.getID() != KeyEvent.KEY_RELEASED)
+					return false;
+				
+				int idx;
+				switch(e.getKeyCode()) {
+				case KeyEvent.VK_LEFT:
+					idx = tabs.getSelectedIndex() - 1;
+					break;
+				case KeyEvent.VK_RIGHT:
+					idx = tabs.getSelectedIndex() + 1;
+					break;
+				default:
+					return false;
+				}
+				
+				if(idx < 0)
+					idx = tabs.getTabCount() - 1;
+				else if(idx >= tabs.getTabCount())
+					idx = 0;
+				
+				tabs.setSelectedIndex(idx);
+				return true;
 			}
 		});
         
@@ -296,7 +328,7 @@ public class GuiDesktop extends JFrame {
 		menuBar.add(geh.getMenuBar());
 		
 		guis.add(geh);
-		desktop.addTab(geh.toString(), geh.getFrame());
+		tabs.addTab(geh.toString(), geh.getFrame());
 	}
 	
 	private void setTitle() {
@@ -323,10 +355,10 @@ public class GuiDesktop extends JFrame {
 		}
 		
 		JPanel component = geh.getFrame();
-		for(int i = 0; i < desktop.getTabCount(); i++) {
-			if(component == desktop.getComponentAt(i)) {
-				desktop.setTitleAt(i, geh.toString());
-				desktop.setIconAt(i, icon);
+		for(int i = 0; i < tabs.getTabCount(); i++) {
+			if(component == tabs.getComponentAt(i)) {
+				tabs.setTitleAt(i, geh.toString());
+				tabs.setIconAt(i, icon);
 				geh.getMenuBar().setIcon(icon);
 				break;
 			}
