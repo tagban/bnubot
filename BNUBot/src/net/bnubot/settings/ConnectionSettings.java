@@ -207,8 +207,6 @@ public class ConnectionSettings implements Serializable {
 		Settings.write(header, "cdkeyTFT", cdkeyTFT);
 		if(product != 0)
 			Settings.write(header, "product", org.jbls.util.Constants.prods[product-1]);
-		
-		globalSave();
 	}
 	
 	public static void globalSave() {
@@ -264,8 +262,6 @@ public class ConnectionSettings implements Serializable {
 					product = (byte)(i+1);
 			}
 		}
-		
-		globalLoad();
 	}
 	
 	public static void globalLoad() {

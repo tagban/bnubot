@@ -103,25 +103,24 @@ public class GuiDesktop extends JFrame {
 				if(e.getID() != KeyEvent.KEY_RELEASED)
 					return false;
 				
-				int idx;
 				switch(e.getKeyCode()) {
-				case KeyEvent.VK_LEFT:
-					idx = tabs.getSelectedIndex() - 1;
-					break;
-				case KeyEvent.VK_RIGHT:
-					idx = tabs.getSelectedIndex() + 1;
-					break;
-				default:
-					return false;
+				case KeyEvent.VK_LEFT: {
+					int idx = tabs.getSelectedIndex() - 1;
+					if(idx < 0)
+						idx = tabs.getTabCount() - 1;
+					tabs.setSelectedIndex(idx);
+					return true;
+				}
+				case KeyEvent.VK_RIGHT: {
+					int idx = tabs.getSelectedIndex() + 1;
+					if(idx >= tabs.getTabCount())
+						idx = 0;
+					tabs.setSelectedIndex(idx);
+					return true;
+				}
 				}
 				
-				if(idx < 0)
-					idx = tabs.getTabCount() - 1;
-				else if(idx >= tabs.getTabCount())
-					idx = 0;
-				
-				tabs.setSelectedIndex(idx);
-				return true;
+				return false;
 			}
 		});
         
