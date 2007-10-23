@@ -15,7 +15,7 @@ import javax.swing.JSplitPane;
 
 public class BotLayoutManager implements LayoutManager {
 	private static final int textHeight = 19;
-	private static final int padding = 5;
+	private static final int padding = 10;
 	private static final int paddingEdge = 2;
 	
 	public void addLayoutComponent(String name, Component comp) {}
@@ -48,9 +48,7 @@ public class BotLayoutManager implements LayoutManager {
 			int height = leftSide.getHeight() - paddingEdge*2;
 			int width = jsp.getDividerLocation() - paddingEdge*2;
 			
-			//int top1 = paddingEdge;
 			int height1 = height - textHeight - padding;
-			//int top2 = top1 + height1;
 
 			Dimension d0 = new Dimension(width, height1);
 			Dimension d1 = new Dimension(width, textHeight);
@@ -64,9 +62,7 @@ public class BotLayoutManager implements LayoutManager {
 			int height = rightSide.getHeight() - paddingEdge*2;
 			int width = rightSide.getWidth() - paddingEdge*2;
 			
-			//int top1 = paddingEdge;
 			int height2 = height - textHeight - padding;
-			//int top2 = top1 + height2 + padding;
 			
 			Dimension d0 = new Dimension(width, textHeight);
 			Dimension d1 = new Dimension(width, height2);
