@@ -77,37 +77,34 @@ public class Profile {
 					con.addEventHandler(new ConsoleEventHandler());
 
 				// GUI
-				GuiEventHandler gui = null;
 				if(ConnectionSettings.enableGUI) {
-					gui = new GuiEventHandler();
+					GuiEventHandler gui = new GuiEventHandler();
 					con.addEventHandler(gui);
-					Out.setThreadOutputConnection(gui);
+					Out.setThreadOutputConnectionIfNone(gui);
 				}
 
 				// Commands
-				EventHandler cmd = null;
 				if(ConnectionSettings.enableCommands) {
-					DatabaseSettings ds = new DatabaseSettings();
-					ds.load();
-
-					if((ds.driver == null)
-							|| (ds.url == null)) {
-						String msg = "Database is not configured; disabling commands.";
-						if(gui != null)
-							con.recieveInfo(msg);
-						else
-							Out.info(Profile.class, msg);
+					if(Database.getInstance() != null) {
+						con.addEventHandler(new CommandEventHandler());
 					} else {
-						try {
-							new Database(ds);
-							cmd = new CommandEventHandler();
-							con.addEventHandler(cmd);
+						DatabaseSettings ds = new DatabaseSettings();
+						ds.load();
 
-							ds.save();
-						} catch(Exception e) {
-							Out.exception(e);
-							String msg = "Failed to initialize the database; commands disabled.\n" + e.getMessage();
-							Out.error(Profile.class, msg);
+						if((ds.driver == null)
+								|| (ds.url == null)) {
+							String msg = "Database is not configured; disabling commands.";
+							Out.info(Profile.class, msg);
+						} else {
+							try {
+								new Database(ds);
+								con.addEventHandler(new CommandEventHandler());
+								ds.save();
+							} catch(Exception e) {
+								Out.exception(e);
+								String msg = "Failed to initialize the database; commands disabled.\n" + e.getMessage();
+								Out.error(Profile.class, msg);
+							}
 						}
 					}
 				}

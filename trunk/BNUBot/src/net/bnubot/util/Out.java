@@ -157,6 +157,11 @@ public class Out {
 	public static void setThreadOutputConnection(GuiEventHandler g) {
 		outConnection.set(g);
 	}
+	
+	public static void setThreadOutputConnectionIfNone(GuiEventHandler g) {
+		if(outConnection.get() == null)
+			outConnection.set(g);
+	}
 
 	/**
 	 * Sets whether debugging messages should be shown
