@@ -5,10 +5,22 @@
 
 package net.bnubot.bot.gui.main;
 
+import java.awt.AWTException;
+import java.awt.Image;
+import java.awt.MenuItem;
+import java.awt.PopupMenu;
+import java.awt.SystemTray;
+import java.awt.Toolkit;
+import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowStateListener;
 import java.util.ArrayList;
 
+import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -40,15 +52,23 @@ public class GuiDesktop extends JFrame {
 	private static final JTabbedPane desktop = new JTabbedPane();
 	private static final JMenuBar menuBar = new JMenuBar();
 	private static final GuiDesktop instance = new GuiDesktop();
+	private static TrayIcon tray = null;
 	
 	private GuiDesktop() {
 		super();
 		setTitle();
+		initializeGui();
+		initializeSystemTray();
+        setVisible(true);
+	}
+	
+	private void initializeGui() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		setContentPane(desktop);
 		setSize(800, 500);
 		
+		desktop.setBorder(BorderFactory.createEmptyBorder());
 		desktop.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
 				JTabbedPane jtp = (JTabbedPane)e.getSource();
@@ -64,9 +84,6 @@ public class GuiDesktop extends JFrame {
 					
 					// Store the selected GUI
 					selectedGui = gui;
-					
-					// Tell Out to direct info to the selected gui
-					Out.setOutputConnection(gui);
 					
 					// Set the title to the title for the selected GUI
 					setTitle();
@@ -84,9 +101,8 @@ public class GuiDesktop extends JFrame {
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						try {
-							ConnectionSettings cs = new ConnectionSettings();
 							ConnectionSettings.numBots++;
-							cs.load(ConnectionSettings.numBots);
+							ConnectionSettings cs = new ConnectionSettings(ConnectionSettings.numBots);
 							Thread.yield();
 							Profile.add(cs);
 						} catch(Exception ex) {
@@ -190,12 +206,89 @@ public class GuiDesktop extends JFrame {
 			menuBar.add(menu);
 		}
 		setJMenuBar(menuBar);
+	}
+
+	private void initializeSystemTray() {
+		if(tray != null)
+			return;
 		
-        setVisible(true);
+		try {
+			if(!SystemTray.isSupported())
+				throw new NoClassDefFoundError();
+		} catch(NoClassDefFoundError e) {
+			Out.info(GuiEventHandler.class, "System tray is not supported");
+			return;
+		}
+		
+		Image image = Toolkit.getDefaultToolkit().getImage("tray.gif");
+		
+		PopupMenu pm = new PopupMenu("title");
+		{
+			MenuItem mi = new MenuItem("BNU-Bot " + CurrentVersion.version().toString());
+			mi.setEnabled(false);
+			pm.add(mi);
+			
+			pm.addSeparator();
+			
+			mi = new MenuItem("Hide/show");
+			mi.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					GuiDesktop f = GuiDesktop.getInstance();
+					f.setVisible(!f.isVisible());
+					if(f.isVisible())
+						f.toFront();
+				}
+			});
+			pm.add(mi);
+			
+			mi = new MenuItem("Exit");
+			mi.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					System.exit(0);
+				}
+			});
+			pm.add(mi);
+		}
+		
+		tray = new TrayIcon(image);
+		tray.setPopupMenu(pm);
+		tray.addMouseListener(new MouseListener() {
+			public void mouseClicked(MouseEvent e) {
+				if(e.getButton() == 1) {
+					instance.setVisible(!instance.isVisible());
+					if(instance.isVisible())
+						instance.toFront();
+				}
+			}
+			public void mouseEntered(MouseEvent e) {}
+			public void mouseExited(MouseEvent e) {}
+			public void mousePressed(MouseEvent e) {}
+			public void mouseReleased(MouseEvent e) {}
+		});
+		tray.setImageAutoSize(true);
+		
+		try {
+			SystemTray.getSystemTray().add(tray);
+		} catch(AWTException e) {
+			Out.exception(e);
+		}
+		
+		addWindowStateListener(new WindowStateListener() {
+			public void windowStateChanged(WindowEvent e) {
+				if((e.getNewState() & java.awt.Frame.ICONIFIED) != 0) {
+					instance.setVisible(false);
+					instance.setState(e.getNewState() & ~java.awt.Frame.ICONIFIED);
+				}
+			}
+		});
 	}
 	
 	public static GuiDesktop getInstance() {
 		return instance;
+	}
+	
+	public static TrayIcon getTray() {
+		return tray;
 	}
 	
 	public static void add(GuiEventHandler geh) {
@@ -213,6 +306,9 @@ public class GuiDesktop extends JFrame {
 			title += selectedGui.toString();
 		}
 		setTitle(title);
+		
+		if(tray != null)
+			tray.setToolTip(title);
 	}
 	
 	public static void setTitle(GuiEventHandler geh, int product) {

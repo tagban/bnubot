@@ -10,6 +10,7 @@ import java.io.Serializable;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
+import net.bnubot.bot.gui.icons.IconsDotBniReader;
 import net.bnubot.util.Out;
 import net.bnubot.util.TimeFormatter;
 import net.bnubot.vercheck.CurrentVersion;
@@ -72,8 +73,11 @@ public class ConnectionSettings implements Serializable {
 	
 	private static String lookAndFeel;
 	
-	public ConnectionSettings() {
-		
+	public ConnectionSettings(int botNum) {
+		this.botNum = botNum;
+		load();
+		if(botNum == 1)
+			IconsDotBniReader.initialize(this);
 	}
 	
 	public String isValid() {
@@ -235,10 +239,9 @@ public class ConnectionSettings implements Serializable {
 		Settings.store();
 	}
 	
-	public void load(int botNum) {
+	public void load() {
 		String header = Integer.toString(botNum);
 		
-		this.botNum = botNum;
 		profile = 	Settings.read(header, "profile", "Profile" + botNum);
 		bncsServer =Settings.read(header, "server", "useast.battle.net");
 		port = Integer.parseInt(

@@ -8,7 +8,6 @@ package net.bnubot.core;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-import net.bnubot.Main;
 import net.bnubot.bot.CommandEventHandler;
 import net.bnubot.bot.console.ConsoleEventHandler;
 import net.bnubot.bot.database.Database;
@@ -82,6 +81,7 @@ public class Profile {
 				if(ConnectionSettings.enableGUI) {
 					gui = new GuiEventHandler();
 					con.addEventHandler(gui);
+					Out.setThreadOutputConnection(gui);
 				}
 
 				// Commands
@@ -96,7 +96,7 @@ public class Profile {
 						if(gui != null)
 							con.recieveInfo(msg);
 						else
-							Out.info(Main.class, msg);
+							Out.info(Profile.class, msg);
 					} else {
 						try {
 							new Database(ds);
@@ -107,10 +107,7 @@ public class Profile {
 						} catch(Exception e) {
 							Out.exception(e);
 							String msg = "Failed to initialize the database; commands disabled.\n" + e.getMessage();
-							if(gui != null)
-								con.recieveError(msg);
-							else
-								Out.error(Main.class, msg);
+							Out.error(Profile.class, msg);
 						}
 					}
 				}

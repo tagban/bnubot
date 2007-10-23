@@ -122,8 +122,7 @@ public class Main {
 		
 		for(int i = 1; i <= ConnectionSettings.numBots; i++) {
 			//Start up the next connection
-			ConnectionSettings cs = new ConnectionSettings();
-			cs.load(i);
+			ConnectionSettings cs = new ConnectionSettings(i);
 			String valid = cs.isValid();
 			try {
 				if(valid != null) {

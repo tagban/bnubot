@@ -26,7 +26,7 @@ import net.bnubot.settings.Settings;
  */
 public class Out {
 	private static PrintStream outStream = System.out;
-	private static GuiEventHandler outConnection = null;
+	private static ThreadLocal<GuiEventHandler> outConnection = new ThreadLocal<GuiEventHandler>();
 	private static boolean globalDebug = Boolean.parseBoolean(Settings.read(null, "debug", "false"));
 	private static Properties debug = new SortedProperties();
 	private static File debugFile = new File("debug.properties");
@@ -71,7 +71,8 @@ public class Out {
 	 * @param e The exception source
 	 */
 	public static void exception(Exception e) {
-		if(outConnection != null)
+		GuiEventHandler oc = outConnection.get();
+		if(oc != null)
 			error(e.getClass(), e.getMessage());
 		if(outStream != null)
 			e.printStackTrace(outStream);
@@ -97,8 +98,9 @@ public class Out {
 	 * @param text text to show
 	 */
 	public static void error(Class<?> source, String text) {
-		if(outConnection != null)
-			outConnection.recieveError("(" + source.getSimpleName() + ") " + text);
+		GuiEventHandler oc = outConnection.get();
+		if(oc != null)
+			oc.recieveError("(" + source.getSimpleName() + ") " + text);
 		else if(outStream != null)
 			outStream.println("[" + TimeFormatter.getTimestamp() + "] (" + source.getSimpleName() + ") ERROR " + text);
 	}
@@ -119,8 +121,9 @@ public class Out {
 	 * @param text text to show
 	 */
 	public static void debugAlways(Class<?> source, String text) {
-		if(outConnection != null)
-			outConnection.recieveDebug("(" + source.getSimpleName() + ") " + text);
+		GuiEventHandler oc = outConnection.get();
+		if(oc != null)
+			oc.recieveDebug("(" + source.getSimpleName() + ") " + text);
 		else if(outStream != null)
 			outStream.println("[" + TimeFormatter.getTimestamp() + "] (" + source.getSimpleName() + ") DEBUG " + text);
 	}
@@ -131,8 +134,9 @@ public class Out {
 	 * @param text text to show
 	 */
 	public static void info(Class<?> source, String text) {
-		if(outConnection != null)
-			outConnection.recieveInfo("(" + source.getSimpleName() + ") " + text);
+		GuiEventHandler oc = outConnection.get();
+		if(oc != null)
+			oc.recieveInfo("(" + source.getSimpleName() + ") " + text);
 		else if(outStream != null)
 			outStream.println("[" + TimeFormatter.getTimestamp() + "] (" + source.getSimpleName() + ") INFO " + text);
 	}
@@ -147,11 +151,11 @@ public class Out {
 	}
 	
 	/**
-	 * Sets the GuiEventHandler for the information to be displayed to.
+	 * Sets the GuiEventHandler for the information to be displayed to for this thread.
 	 * @param g GuiEventHandler to send messages to
 	 */
-	public static void setOutputConnection(GuiEventHandler g) {
-		outConnection = g;
+	public static void setThreadOutputConnection(GuiEventHandler g) {
+		outConnection.set(g);
 	}
 
 	/**

@@ -29,7 +29,6 @@ import net.bnubot.bot.gui.components.ClanList;
 import net.bnubot.bot.gui.components.FriendList;
 import net.bnubot.bot.gui.components.TextWindow;
 import net.bnubot.bot.gui.components.UserList;
-import net.bnubot.bot.gui.icons.IconsDotBniReader;
 import net.bnubot.bot.gui.main.GuiDesktop;
 import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
@@ -50,92 +49,17 @@ public class GuiEventHandler implements EventHandler {
 	private ClanList clanList = null;
 	private RealmWindow w = null;
 	private String channel = null;
-	private TrayIcon tray = null;
 	private JMenu menuBar = new JMenu();
 	private BNetUser lastWhisperFrom = null;
 	
-	public void initialize(Connection con) {
-		ColorScheme colors = ColorScheme.createColorScheme(ConnectionSettings.colorScheme);
-		
-		if(con != null) {
-			this.con = con;
-			initializeGui(con.toString(), colors);
-		} else {
-			initializeGui("BNU-Bot", colors);
-		}
-		Out.setOutputConnection(this);
-		
-		initializeSystemTray();
+	public GuiEventHandler() {
+		initializeGui("BNU-Bot", ColorScheme.createColorScheme(ConnectionSettings.colorScheme));
 	}
-
-	private void initializeSystemTray() {
-	/*	try {
-			if(!SystemTray.isSupported())
-				throw new NoClassDefFoundError();
-		} catch(NoClassDefFoundError e) {
-			Out.info(getClass(), "System tray is not supported");
-			return;
-		}
-		
-		Image image = Toolkit.getDefaultToolkit().getImage("tray.gif");
-			
-		PopupMenu pm = new PopupMenu("title");
-		{
-			MenuItem mi = new MenuItem("BNU-Bot " + CurrentVersion.version().toString());
-			mi.setEnabled(false);
-			pm.add(mi);
-			
-			pm.addSeparator();
-			
-			mi = new MenuItem("Hide/show");
-			mi.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					frame.setVisible(!frame.isVisible());
-					if(frame.isVisible())
-						frame.toFront();
-				}
-			});
-			pm.add(mi);
-			
-			mi = new MenuItem("Exit");
-			mi.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					System.exit(0);
-				}
-			});
-			pm.add(mi);
-		}
-		
-		ti = new TrayIcon(image, c.toString(), pm);
-		ti.addMouseListener(new MouseListener() {
-			public void mouseClicked(MouseEvent e) {
-				if(e.getButton() == 1) {
-					frame.setVisible(!frame.isVisible());
-					if(frame.isVisible())
-						frame.toFront();
-				}
-			}
-			public void mouseEntered(MouseEvent e) {}
-			public void mouseExited(MouseEvent e) {}
-			public void mousePressed(MouseEvent e) {}
-			public void mouseReleased(MouseEvent e) {}
-		});
-		ti.setImageAutoSize(true);
-		
-		try {
-			SystemTray.getSystemTray().add(ti);
-		} catch(AWTException e) {
-			Out.exception(e);
-		}
-		
-		/*frame.addWindowStateListener(new WindowStateListener() {
-			public void windowStateChanged(WindowEvent e) {
-				if((e.getNewState() & java.awt.Frame.ICONIFIED) != 0) {
-					frame.setVisible(false);
-					frame.setState(e.getNewState() & ~java.awt.Frame.ICONIFIED);
-				}
-			}
-		});*/
+	
+	public void initialize(Connection con) {
+		this.con = con;
+		Out.setThreadOutputConnection(this);
+		GuiDesktop.setTitle(this, con.getProductID());
 	}
 	
 	private void initializeGui(String title, ColorScheme colors) {
@@ -144,7 +68,6 @@ public class GuiEventHandler implements EventHandler {
 		
 		// Create the menu bar.
 		menuBar.setOpaque(true);
-		menuBar.setText(con.getConnectionSettings().bncsServer);
 		{
 			JMenu menu;
 			JMenuItem menuItem;
@@ -285,8 +208,6 @@ public class GuiEventHandler implements EventHandler {
 		channelTextArea.setBackground(colors.getBackgroundColor());
 		channelTextArea.setForeground(Color.LIGHT_GRAY);
 		
-		IconsDotBniReader.initialize(con.getConnectionSettings());
-		
 		// The userlist
 		userList = new UserList(colors, con, this);
 		// Friends list
@@ -375,6 +296,7 @@ public class GuiEventHandler implements EventHandler {
 	public void recieveChat(BNetUser user, String text) {
 		mainTextArea.userChat(user, text, user.equals(con.getMyUser()));
 
+		TrayIcon tray = GuiDesktop.getTray();
 		if((tray != null) && !frame.isVisible()) {
 	        tray.displayMessage("User is chatting: " + user.getShortLogonName(), 
 	            text,
@@ -414,6 +336,7 @@ public class GuiEventHandler implements EventHandler {
 		lastWhisperFrom = user;
 		mainTextArea.whisperRecieved(user, text);
 
+		TrayIcon tray = GuiDesktop.getTray();
 		if((tray != null) && !frame.isVisible()) {
 	        tray.displayMessage("Whisper from " + user.getShortLogonName(), 
 	            text,
@@ -449,6 +372,7 @@ public class GuiEventHandler implements EventHandler {
 		menuBar.setText(name);
 		
 		GuiDesktop.setTitle(this, con.getProductID());
+		TrayIcon tray = GuiDesktop.getTray();
 		if(tray != null)
 			tray.setToolTip(con.toString());
 	}
@@ -522,6 +446,8 @@ public class GuiEventHandler implements EventHandler {
 
 	@Override
 	public String toString() {
+		if(con == null)
+			return null;
 		return con.toString();
 	}
 }
