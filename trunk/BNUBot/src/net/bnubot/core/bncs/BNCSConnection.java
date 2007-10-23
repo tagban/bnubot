@@ -23,6 +23,7 @@ import java.util.TimeZone;
 import net.bnubot.bot.CommandResponseCookie;
 import net.bnubot.core.ChatQueue;
 import net.bnubot.core.Connection;
+import net.bnubot.core.EventHandler;
 import net.bnubot.core.Profile;
 import net.bnubot.core.UnsupportedFeatureException;
 import net.bnubot.core.bnls.BNLSPacketId;
@@ -144,6 +145,12 @@ public class BNCSConnection extends Connection {
 	}
 
 	public void run() {
+		// We must initialize the EHs in the Connection thread
+		for(EventHandler eh : eventHandlers)
+			eh.initialize(this);
+		for(EventHandler eh : eventHandlers2)
+			eh.initialize(this);
+		
 		while(true) {
 			try {
 				if(cs.isValid() != null) {
