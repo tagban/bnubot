@@ -59,7 +59,7 @@ public class GuiEventHandler implements EventHandler {
 	public void initialize(Connection con) {
 		this.con = con;
 		Out.setThreadOutputConnection(this);
-		GuiDesktop.setTitle(this, con.getProductID());
+		titleChanged();
 	}
 	
 	private void initializeGui(String title, ColorScheme colors) {
@@ -365,9 +365,9 @@ public class GuiEventHandler implements EventHandler {
 		String name;
 		
 		if(user != null)
-			name = con.getMyUser().getFullAccountName();
+			name = user.getFullAccountName();
 		else
-			name = con.getConnectionSettings().bncsServer;
+			name = con.getProfile().getName();
 		
 		menuBar.setText(name);
 		
