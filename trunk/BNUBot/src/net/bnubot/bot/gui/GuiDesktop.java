@@ -3,7 +3,7 @@
  * $Id$
  */
 
-package net.bnubot.bot.gui.main;
+package net.bnubot.bot.gui;
 
 import java.awt.AWTException;
 import java.awt.Image;
@@ -35,9 +35,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import net.bnubot.bot.database.Database;
-import net.bnubot.bot.gui.AboutWindow;
-import net.bnubot.bot.gui.GlobalConfigurationFrame;
-import net.bnubot.bot.gui.GuiEventHandler;
 import net.bnubot.bot.gui.database.DatabaseAccountEditor;
 import net.bnubot.bot.gui.database.DatabaseRankEditor;
 import net.bnubot.bot.gui.icons.BNetIcon;
@@ -97,7 +94,8 @@ public class GuiDesktop extends JFrame {
 		
 		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
 			public boolean dispatchKeyEvent(KeyEvent e) {
-				if(e.getModifiers() != InputEvent.CTRL_MASK)
+				int mod = e.getModifiers();
+				if((mod != InputEvent.CTRL_MASK) && (mod != InputEvent.META_MASK))
 					return false;
 				
 				if(e.getID() != KeyEvent.KEY_RELEASED)

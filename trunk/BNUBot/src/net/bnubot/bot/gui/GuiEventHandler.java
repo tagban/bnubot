@@ -29,7 +29,6 @@ import net.bnubot.bot.gui.components.ClanList;
 import net.bnubot.bot.gui.components.FriendList;
 import net.bnubot.bot.gui.components.TextWindow;
 import net.bnubot.bot.gui.components.UserList;
-import net.bnubot.bot.gui.main.GuiDesktop;
 import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.clan.ClanMember;
