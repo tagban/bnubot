@@ -36,8 +36,6 @@ public class ConnectionSettings implements Serializable {
     public String profile;
 	public String bncsServer;
 	public int port;
-	public String bnlsServer;
-	public int bnlsPort;
 	public String username;
 	public String password;
 	public String email;
@@ -51,6 +49,8 @@ public class ConnectionSettings implements Serializable {
 	public static byte colorScheme;
 	public static String trigger;
 	public static String antiIdle;
+	public static String bnlsServer;
+	public static int bnlsPort;
 	public static boolean enableGreetings;
 	public static int antiIdleTimer;
 	public static boolean enableAntiIdle;
@@ -196,8 +196,6 @@ public class ConnectionSettings implements Serializable {
 		Settings.write(header, "profile", profile);
 		Settings.write(header, "server", bncsServer);
 		Settings.write(header, "port", Integer.toString(port));
-		Settings.write(header, "bnlsserver", bnlsServer);
-		Settings.write(header, "bnlsport", Integer.toString(bnlsPort));
 		Settings.write(header, "username", username);
 		Settings.write(header, "password", password);
 		Settings.write(header, "email", email);
@@ -207,11 +205,15 @@ public class ConnectionSettings implements Serializable {
 		Settings.write(header, "cdkeyTFT", cdkeyTFT);
 		if(product != 0)
 			Settings.write(header, "product", org.jbls.util.Constants.prods[product-1]);
+		
+		Settings.store();
 	}
 	
 	public static void globalSave() {
 		Settings.write(null, "numBots", Integer.toString(numBots));
 		Settings.write(null, "antiidle", antiIdle);
+		Settings.write(null, "bnlsserver", bnlsServer);
+		Settings.write(null, "bnlsport", Integer.toString(bnlsPort));
 		Settings.write(null, "enableAntiidle", Boolean.toString(enableAntiIdle));
 		Settings.write(null, "enableGreetings", Boolean.toString(enableGreetings));
 		Settings.write(null, "antiIdleTimer", Integer.toString(antiIdleTimer));
@@ -244,9 +246,6 @@ public class ConnectionSettings implements Serializable {
 		bncsServer =Settings.read(header, "server", "useast.battle.net");
 		port = Integer.parseInt(
 					Settings.read(header, "port", "6112"));
-		bnlsServer =Settings.read(header, "bnlsserver", "jbls.clanbnu.net");
-		bnlsPort = Integer.parseInt(
-					Settings.read(header, "bnlsport", "9367"));
 		username =	Settings.read(header, "username", null);
 		password =	Settings.read(header, "password", null);
 		email =		Settings.read(header, "email", null);
@@ -271,6 +270,9 @@ public class ConnectionSettings implements Serializable {
 				Settings.read(null, "colorScheme", "1"));
 		trigger = 	Settings.read(null, "trigger", "!");
 		antiIdle = 	Settings.read(null, "antiidle", "/me is a BNU-Bot %version%");
+		bnlsServer =Settings.read(null, "bnlsserver", "jbls.clanbnu.net");
+		bnlsPort = Integer.parseInt(
+					Settings.read(null, "bnlsport", "9367"));
 		enableAntiIdle = Boolean.parseBoolean(
 				Settings.read(null, "enableAntiidle", "false"));
 		enableGreetings = Boolean.parseBoolean(
