@@ -55,6 +55,7 @@ public class GlobalConfigurationFrame extends JDialog {
 	ConfigTextArea txtAntiIdleTimer = null;
 	ConfigTextArea txtTrigger = null;
 	ConfigComboBox cmbTSFormat = null;
+	ConfigTextArea txtBNLSServer = null;
 	ConfigComboBox cmbReleaseType = null;
 	ConfigComboBox cmbColorScheme = null;
 	ConfigComboBox cmbLookAndFeel = null;
@@ -138,6 +139,8 @@ public class GlobalConfigurationFrame extends JDialog {
 		{
 			Box boxSettings = new Box(BoxLayout.Y_AXIS);
 			{
+				txtBNLSServer = makeText("BNLS Server", ConnectionSettings.bnlsServer, boxSettings);
+				
 				txtTrigger = makeText("Trigger", ConnectionSettings.trigger, boxSettings);
 
 				Box boxLine = new Box(BoxLayout.X_AXIS);
@@ -393,11 +396,11 @@ public class GlobalConfigurationFrame extends JDialog {
 	}
 
 	private void save() {
+		ConnectionSettings.bnlsServer = txtBNLSServer.getText();
 		ConnectionSettings.trigger = txtTrigger.getText();
 		ConnectionSettings.antiIdle = txtAntiIdle.getText();
 		ConnectionSettings.antiIdleTimer = Integer.parseInt(txtAntiIdleTimer.getText());
 		ConnectionSettings.enableAntiIdle = chkAntiIdle.isSelected();
-
 		ConnectionSettings.colorScheme = (byte)(cmbColorScheme.getSelectedIndex() + 1);
 		TimeFormatter.tsFormat = (String)cmbTSFormat.getSelectedItem();
 		ConnectionSettings.releaseType = (ReleaseType)cmbReleaseType.getSelectedItem();
@@ -417,6 +420,7 @@ public class GlobalConfigurationFrame extends JDialog {
 
 	private void load() {
 		ConnectionSettings.globalLoad();
+		txtBNLSServer.setText(ConnectionSettings.bnlsServer);
 		txtTrigger.setText(ConnectionSettings.trigger);
 		txtAntiIdle.setText(ConnectionSettings.antiIdle);
 		txtAntiIdleTimer.setText(Integer.toString(ConnectionSettings.antiIdleTimer));

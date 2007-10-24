@@ -42,7 +42,6 @@ public class ConfigurationFrame extends JDialog {
 	ConfigComboBox cmbCDKeyLOD = null;
 	ConfigComboBox cmbCDKeyTFT = null;
 	ConfigTextArea txtBNCSServer = null;
-	ConfigTextArea txtBNLSServer = null;
 	ConfigTextArea txtChannel = null;
 	JButton btnLoad = null;
 	JButton btnOK = null;
@@ -176,7 +175,6 @@ public class ConfigurationFrame extends JDialog {
 				cmbCDKeyTFT.setSelectedItem(cs.cdkeyTFT);
 
 				txtBNCSServer = makeText("Battle.net Server", cs.bncsServer, boxSettings);
-				txtBNLSServer = makeText("BNLS Server", cs.bnlsServer, boxSettings);
 				txtChannel = makeText("Channel", cs.channel, boxSettings);
 
 				boxAll.add(Box.createVerticalGlue());
@@ -274,7 +272,6 @@ public class ConfigurationFrame extends JDialog {
 		if(kTFT != null)
 			cs.cdkeyTFT = formatCDKey(kTFT.getKey());
 		cs.bncsServer = txtBNCSServer.getText();
-		cs.bnlsServer = txtBNLSServer.getText();
 		cs.channel = txtChannel.getText();
 
 		cs.save();
@@ -291,7 +288,6 @@ public class ConfigurationFrame extends JDialog {
 		cmbCDKeyLOD.setSelectedItem(cs.cdkeyLOD);
 		cmbCDKeyTFT.setSelectedItem(cs.cdkeyTFT);
 		txtBNCSServer.setText(cs.bncsServer);
-		txtBNLSServer.setText(cs.bnlsServer);
 		txtChannel.setText(cs.channel);
 	}
 

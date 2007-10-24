@@ -115,9 +115,9 @@ public abstract class Connection extends Thread implements EventHandler {
 	public void setBNLSConnected(boolean c) throws IOException {
 		if(c) {
 			if(bnlsSocket == null) {
-				InetAddress address = MirrorSelector.getClosestMirror(cs.bnlsServer, cs.bnlsPort);
-				recieveInfo("Connecting to " + address + ":" + cs.bnlsPort + ".");
-				bnlsSocket = new Socket(address, cs.bnlsPort);
+				InetAddress address = MirrorSelector.getClosestMirror(ConnectionSettings.bnlsServer, ConnectionSettings.bnlsPort);
+				recieveInfo("Connecting to " + address + ":" + ConnectionSettings.bnlsPort + ".");
+				bnlsSocket = new Socket(address, ConnectionSettings.bnlsPort);
 				bnlsSocket.setKeepAlive(true);
 			}
 		} else {
