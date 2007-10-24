@@ -1,9 +1,9 @@
 How to write plugins:
 
-Create a class that implements net.bnubot.bot.EventHandler:
+Create a class that implements net.bnubot.core.EventHandler:
 	package net.bnubot.bot.custom;
 	import net.bnubot.core.Connection;
-	import net.bnubot.bot.EventHandler;
+	import net.bnubot.core.EventHandler;
 	public class CustomEventHandler implements EventHandler {
 		Connection c;
 		

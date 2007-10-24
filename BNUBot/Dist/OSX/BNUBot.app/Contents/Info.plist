@@ -21,7 +21,7 @@
 		<key>ClassPath</key>
 		<string>/System/Library/Java:$JAVAROOT/BNUBot.jar:$JAVAROOT/Derby.jar</string>
 		<key>JVMVersion</key>
-		<string>1.6+</string>
+		<string>1.5+</string>
 		<key>MainClass</key>
 		<string>net.bnubot.Main</string>
 		<key>WorkingDirectory</key>
