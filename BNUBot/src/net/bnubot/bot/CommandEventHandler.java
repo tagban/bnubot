@@ -1318,7 +1318,6 @@ public class CommandEventHandler implements EventHandler {
 							c.sendChat(user, "You need " + Long.toString(apRS - rs) + " more recruitment points to recieve a promotion!", false);
 						}
 					} else {
-						//TODO: Tell the user they need x more wins
 						String msg = "You need ";
 						switch(user.getStatString().getProduct()) {
 						case ProductIDs.PRODUCT_STAR:
