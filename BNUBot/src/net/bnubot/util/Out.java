@@ -27,6 +27,7 @@ import net.bnubot.settings.Settings;
 public class Out {
 	private static PrintStream outStream = System.out;
 	private static ThreadLocal<GuiEventHandler> outConnection = new ThreadLocal<GuiEventHandler>();
+	private static GuiEventHandler outConnectionDefault = null;
 	private static boolean globalDebug = Boolean.parseBoolean(Settings.read(null, "debug", "false"));
 	private static Properties debug = new SortedProperties();
 	private static File debugFile = new File("debug.properties");
@@ -66,12 +67,19 @@ public class Out {
 		return out;
 	}
 	
+	private static GuiEventHandler getOutConnection() {
+		final GuiEventHandler oc = outConnection.get();
+		if(oc != null)
+			return oc;
+		return outConnectionDefault;
+	}
+	
 	/**
 	 * Display the stack trace in an appropriate location
 	 * @param e The exception source
 	 */
 	public static void exception(Exception e) {
-		GuiEventHandler oc = outConnection.get();
+		final GuiEventHandler oc = getOutConnection();
 		if(oc != null)
 			error(e.getClass(), e.getMessage());
 		if(outStream != null)
@@ -98,7 +106,7 @@ public class Out {
 	 * @param text text to show
 	 */
 	public static void error(Class<?> source, String text) {
-		GuiEventHandler oc = outConnection.get();
+		final GuiEventHandler oc = getOutConnection();
 		if(oc != null)
 			oc.recieveError("(" + source.getSimpleName() + ") " + text);
 		else if(outStream != null)
@@ -121,7 +129,7 @@ public class Out {
 	 * @param text text to show
 	 */
 	public static void debugAlways(Class<?> source, String text) {
-		GuiEventHandler oc = outConnection.get();
+		final GuiEventHandler oc = getOutConnection();
 		if(oc != null)
 			oc.recieveDebug("(" + source.getSimpleName() + ") " + text);
 		else if(outStream != null)
@@ -134,7 +142,7 @@ public class Out {
 	 * @param text text to show
 	 */
 	public static void info(Class<?> source, String text) {
-		GuiEventHandler oc = outConnection.get();
+		final GuiEventHandler oc = getOutConnection();
 		if(oc != null)
 			oc.recieveInfo("(" + source.getSimpleName() + ") " + text);
 		else if(outStream != null)
@@ -157,10 +165,22 @@ public class Out {
 	public static void setThreadOutputConnection(GuiEventHandler g) {
 		outConnection.set(g);
 	}
-	
+
+	/**
+	 * Sets the GuiEventHandler for the information to be displayed to for this thread if none is already set.
+	 * @param g GuiEventHandler to send messages to
+	 */
 	public static void setThreadOutputConnectionIfNone(GuiEventHandler g) {
 		if(outConnection.get() == null)
 			outConnection.set(g);
+	}
+	
+	/**
+	 * Sets the GuiEventHandler for the information to be displayed to when none is specified for the thread
+	 * @param g GuiEventHandler to send messages to
+	 */
+	public static void setDefaultOutputConnection(GuiEventHandler g) {
+		outConnectionDefault = g;
 	}
 
 	/**
