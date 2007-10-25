@@ -303,6 +303,7 @@ public class BNCSConnection extends Connection {
 				myUser = null;
 				myClan = 0;
 				myClanRank = null;
+				productID = 0;
 				titleChanged();
 			} catch(SocketException e) {
 			} catch(Exception e) {
