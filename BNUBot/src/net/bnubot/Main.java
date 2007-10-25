@@ -14,6 +14,7 @@ import net.bnubot.bot.gui.ConfigurationFrame;
 import net.bnubot.bot.gui.GlobalConfigurationFrame;
 import net.bnubot.core.Profile;
 import net.bnubot.settings.ConnectionSettings;
+import net.bnubot.settings.GlobalSettings;
 import net.bnubot.settings.Settings;
 import net.bnubot.util.Out;
 import net.bnubot.vercheck.CurrentVersion;
@@ -35,14 +36,14 @@ public class Main {
 
 	public static void main(String[] args) throws Exception {
 		boolean forceConfig = false;
-		ConnectionSettings.globalLoad();
+		GlobalSettings.load();
 		
 		for(int i = 0; i < args.length; i++) {
 			if(args[i].charAt(0) == '-') {
 				switch(args[i].charAt(1)) {
 				case 'c':
 					if(args[i].equals("-cli")) {
-						ConnectionSettings.enableCLI = true;
+						GlobalSettings.enableCLI = true;
 						continue;
 					}
 					if(args[i].equals("-cfg")) {
@@ -58,7 +59,7 @@ public class Main {
 					break;
 				case 'g':
 					if(args[i].equals("-gui")) {
-						ConnectionSettings.enableGUI = true;
+						GlobalSettings.enableGUI = true;
 						continue;
 					}
 					break;
@@ -70,11 +71,11 @@ public class Main {
 					break;
 				case 'n':
 					if(args[i].equals("-nocli")) {
-						ConnectionSettings.enableCLI = false;
+						GlobalSettings.enableCLI = false;
 						continue;
 					}
 					if(args[i].equals("-nogui")) {
-						ConnectionSettings.enableGUI = false;
+						GlobalSettings.enableGUI = false;
 						continue;
 					}
 					break;
@@ -91,14 +92,14 @@ public class Main {
 			System.exit(1);
 		}
 		
-		if((ConnectionSettings.isValidGlobal() != null) || forceConfig) {
+		if((GlobalSettings.isValidGlobal() != null) || forceConfig) {
 			GlobalConfigurationFrame cf = null;
 			try {
 				cf = new GlobalConfigurationFrame();
 				cf.setVisible(true);
 			} catch(Exception e) {
 				Out.exception(e);
-				String s = ConnectionSettings.isValidGlobal();
+				String s = GlobalSettings.isValidGlobal();
 				String error = "There was an error initializing the configuraiton window, ";
 				if(s == null)
 					error += "but the configuration was valid.";
@@ -113,14 +114,14 @@ public class Main {
 				Thread.sleep(10);
 			}
 			
-			String reason = ConnectionSettings.isValidGlobal();
+			String reason = GlobalSettings.isValidGlobal();
 			if(reason != null) {
 				JOptionPane.showMessageDialog(null, reason, "Invalid Configuration", JOptionPane.ERROR_MESSAGE);
 				System.exit(1);
 			}
 		}
 		
-		for(int i = 1; i <= ConnectionSettings.numBots; i++) {
+		for(int i = 1; i <= GlobalSettings.numBots; i++) {
 			//Start up the next connection
 			ConnectionSettings cs = new ConnectionSettings(i);
 			String valid = cs.isValid();

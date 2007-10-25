@@ -10,7 +10,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import net.bnubot.settings.ConnectionSettings;
+import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetInputStream;
 import net.bnubot.util.BNetOutputStream;
 import net.bnubot.util.HexDump;
@@ -38,7 +38,7 @@ public class BNCSPacketReader {
 			data[i] = is.readByte();
 		}
 		
-		if(ConnectionSettings.packetLog) {
+		if(GlobalSettings.packetLog) {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			BNetOutputStream os = new BNetOutputStream(baos);
 			os.writeByte(0xFF);

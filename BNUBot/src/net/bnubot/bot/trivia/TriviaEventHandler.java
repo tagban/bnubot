@@ -20,7 +20,7 @@ import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
-import net.bnubot.settings.ConnectionSettings;
+import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.HexDump;
 import net.bnubot.util.Out;
@@ -139,8 +139,8 @@ public class TriviaEventHandler implements EventHandler {
 					try {
 						long max[] = d.getTriviaTopTwo();
 						if(max != null) {
-							long total = d.getTriviaSum();
-							long target = ConnectionSettings.triviaRoundLength;
+							final long total = d.getTriviaSum();
+							final long target = GlobalSettings.triviaRoundLength;
 							boolean condition = false;
 							// There are no questions left
 							condition |= (total >= target);

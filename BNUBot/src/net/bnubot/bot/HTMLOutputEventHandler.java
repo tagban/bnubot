@@ -24,7 +24,7 @@ import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
-import net.bnubot.settings.ConnectionSettings;
+import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.HexDump;
 import net.bnubot.util.Out;
@@ -104,7 +104,7 @@ public class HTMLOutputEventHandler implements EventHandler {
 			Out.fatalException(new Exception("Logs is not a directory!"));
 		}
 		
-		cs = ColorScheme.createColorScheme(ConnectionSettings.colorScheme);
+		cs = ColorScheme.createColorScheme(GlobalSettings.colorScheme);
 	}
 	
 	public void joinedChannel(String channel) {

@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.SocketException;
 
-import net.bnubot.settings.ConnectionSettings;
+import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetOutputStream;
 import net.bnubot.util.HexDump;
 import net.bnubot.util.Out;
@@ -51,7 +51,7 @@ public class BNCSPacket extends BNetOutputStream {
 
 		data = baos.toByteArray();
 
-		if(ConnectionSettings.packetLog) {
+		if(GlobalSettings.packetLog) {
 			if(Out.isDebug())
 				Out.debugAlways(getClass(), "SEND " + packetId.name() + "\n" + HexDump.hexDump(data));
 			else

@@ -10,7 +10,7 @@ import java.net.URL;
 
 import javax.swing.JOptionPane;
 
-import net.bnubot.settings.ConnectionSettings;
+import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.Out;
 import net.bnubot.util.SHA1Sum;
 import net.bnubot.util.URLDownloader;
@@ -22,7 +22,7 @@ public class VersionCheck {
 	protected static VersionNumber vnLatest = null;
 	
 	public static boolean checkVersion() throws Exception {
-		return checkVersion(false, ConnectionSettings.releaseType);
+		return checkVersion(false, GlobalSettings.releaseType);
 	}
 	
 	public static boolean checkVersion(boolean forceDownload, ReleaseType rt) throws Exception {

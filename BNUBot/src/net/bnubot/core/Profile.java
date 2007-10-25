@@ -16,6 +16,7 @@ import net.bnubot.bot.trivia.TriviaEventHandler;
 import net.bnubot.core.bncs.BNCSConnection;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.settings.DatabaseSettings;
+import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.Out;
 
 public class Profile {
@@ -73,18 +74,18 @@ public class Profile {
 				}
 
 				// CLI
-				if(ConnectionSettings.enableCLI)
+				if(GlobalSettings.enableCLI)
 					con.addEventHandler(new ConsoleEventHandler());
 
 				// GUI
-				if(ConnectionSettings.enableGUI) {
+				if(GlobalSettings.enableGUI) {
 					GuiEventHandler gui = new GuiEventHandler();
 					con.addEventHandler(gui);
 					Out.setThreadOutputConnectionIfNone(gui);
 				}
 
 				// Commands
-				if(ConnectionSettings.enableCommands) {
+				if(GlobalSettings.enableCommands) {
 					if(Database.getInstance() != null) {
 						con.addEventHandler(new CommandEventHandler());
 					} else {
@@ -110,7 +111,7 @@ public class Profile {
 				}
 
 				// Trivia
-				if(ConnectionSettings.enableTrivia)
+				if(GlobalSettings.enableTrivia)
 					con.addEventHandler(new TriviaEventHandler());
 			}
 			

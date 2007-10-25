@@ -37,8 +37,8 @@ import net.bnubot.bot.database.DriverShim;
 import net.bnubot.bot.gui.components.ConfigCheckBox;
 import net.bnubot.bot.gui.components.ConfigComboBox;
 import net.bnubot.bot.gui.components.ConfigTextArea;
-import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.settings.DatabaseSettings;
+import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.Out;
 import net.bnubot.util.TimeFormatter;
 import net.bnubot.vercheck.CurrentVersion;
@@ -139,9 +139,9 @@ public class GlobalConfigurationFrame extends JDialog {
 		{
 			Box boxSettings = new Box(BoxLayout.Y_AXIS);
 			{
-				txtBNLSServer = makeText("BNLS Server", ConnectionSettings.bnlsServer, boxSettings);
+				txtBNLSServer = makeText("BNLS Server", GlobalSettings.bnlsServer, boxSettings);
 				
-				txtTrigger = makeText("Trigger", ConnectionSettings.trigger, boxSettings);
+				txtTrigger = makeText("Trigger", GlobalSettings.trigger, boxSettings);
 
 				Box boxLine = new Box(BoxLayout.X_AXIS);
 				{
@@ -149,15 +149,15 @@ public class GlobalConfigurationFrame extends JDialog {
 					jl.setPreferredSize(maxSize);
 					boxLine.add(jl);
 
-					chkAntiIdle = new ConfigCheckBox("Enable", ConnectionSettings.enableAntiIdle);
+					chkAntiIdle = new ConfigCheckBox("Enable", GlobalSettings.enableAntiIdle);
 					boxLine.add(chkAntiIdle);
 
-					txtAntiIdle = new ConfigTextArea(ConnectionSettings.antiIdle);
+					txtAntiIdle = new ConfigTextArea(GlobalSettings.antiIdle);
 					boxLine.add(txtAntiIdle);
 				}
 				boxSettings.add(boxLine);
 
-				txtAntiIdleTimer = makeText("Anti-Idle Timer", Integer.toString(ConnectionSettings.antiIdleTimer), boxSettings);
+				txtAntiIdleTimer = makeText("Anti-Idle Timer", Integer.toString(GlobalSettings.antiIdleTimer), boxSettings);
 
 				Object[] values = { TimeFormatter.tsFormat, "%1$tH:%1$tM:%1$tS.%1$tL", "%1$tH:%1$tM:%1$tS", "%1$tH:%1$tM" };
 				cmbTSFormat = makeCombo("TimeStamp Format", values, true, boxSettings);
@@ -173,22 +173,22 @@ public class GlobalConfigurationFrame extends JDialog {
 						ReleaseType.Beta,
 						ReleaseType.Alpha };
 				cmbReleaseType = makeCombo("Version Check", values, false, boxSettings);
-				cmbReleaseType.setSelectedItem(ConnectionSettings.releaseType);
+				cmbReleaseType.setSelectedItem(GlobalSettings.releaseType);
 
 				values = new String[] { "Starcraft", "Diablo 2" };
 				cmbColorScheme = makeCombo("Color Scheme", values, false, boxSettings);
-				cmbColorScheme.setSelectedIndex(ConnectionSettings.colorScheme - 1);
+				cmbColorScheme.setSelectedIndex(GlobalSettings.colorScheme - 1);
 
 				ArrayList<String> lafs = new ArrayList<String>();
 				for(LookAndFeelInfo lafi : UIManager.getInstalledLookAndFeels())
 					lafs.add(lafi.getName());
 				cmbLookAndFeel = makeCombo("Look and Feel", lafs.toArray(), false, boxSettings);
-				cmbLookAndFeel.setSelectedItem(ConnectionSettings.getLookAndFeel());
+				cmbLookAndFeel.setSelectedItem(GlobalSettings.getLookAndFeel());
 				cmbLookAndFeel.addItemListener(new ItemListener() {
 					public void itemStateChanged(ItemEvent e) {
 						for(LookAndFeelInfo lafi : UIManager.getInstalledLookAndFeels())
 							if(lafi.getName().equals(cmbLookAndFeel.getSelectedItem()))
-								ConnectionSettings.setLookAndFeel(lafi);
+								GlobalSettings.setLookAndFeel(lafi);
 					}
 				});
 
@@ -198,37 +198,37 @@ public class GlobalConfigurationFrame extends JDialog {
 
 					Box boxCheckboxes = new Box(BoxLayout.Y_AXIS);
 					{
-						chkAutoConnect = new ConfigCheckBox("Auto Connect", ConnectionSettings.autoconnect);
+						chkAutoConnect = new ConfigCheckBox("Auto Connect", GlobalSettings.autoconnect);
 						boxCheckboxes.add(chkAutoConnect);
 
-						chkEnableGUI = new ConfigCheckBox("Enable GUI (requires restart)", ConnectionSettings.enableGUI);
+						chkEnableGUI = new ConfigCheckBox("Enable GUI (requires restart)", GlobalSettings.enableGUI);
 						boxCheckboxes.add(chkEnableGUI);
 
-						chkEnableLegacyIcons = new ConfigCheckBox("Enable Legacy Icons", ConnectionSettings.enableLegacyIcons);
+						chkEnableLegacyIcons = new ConfigCheckBox("Enable Legacy Icons", GlobalSettings.enableLegacyIcons);
 						boxCheckboxes.add(chkEnableLegacyIcons);
 
-						chkEnableCLI = new ConfigCheckBox("Enable CLI (requires restart)", ConnectionSettings.enableCLI);
+						chkEnableCLI = new ConfigCheckBox("Enable CLI (requires restart)", GlobalSettings.enableCLI);
 						boxCheckboxes.add(chkEnableCLI);
 
-						chkEnableTrivia = new ConfigCheckBox("Enable Trivia (requires restart)", ConnectionSettings.enableTrivia);
+						chkEnableTrivia = new ConfigCheckBox("Enable Trivia (requires restart)", GlobalSettings.enableTrivia);
 						boxCheckboxes.add(chkEnableTrivia);
 
 						JLabel jl = new JLabel("Trivia Round Length");
 						boxCheckboxes.add(jl);
 
-						txtTriviaRoundLength = new ConfigTextArea(Long.toString(ConnectionSettings.triviaRoundLength));
+						txtTriviaRoundLength = new ConfigTextArea(Long.toString(GlobalSettings.triviaRoundLength));
 						boxCheckboxes.add(txtTriviaRoundLength);
 
-						chkEnableCommands = new ConfigCheckBox("Enable Commands (requires restart)", ConnectionSettings.enableCommands);
+						chkEnableCommands = new ConfigCheckBox("Enable Commands (requires restart)", GlobalSettings.enableCommands);
 						boxCheckboxes.add(chkEnableCommands);
 
-						chkEnableFloodProtect = new ConfigCheckBox("Enable Flood Protect", ConnectionSettings.enableFloodProtect);
+						chkEnableFloodProtect = new ConfigCheckBox("Enable Flood Protect", GlobalSettings.enableFloodProtect);
 						boxCheckboxes.add(chkEnableFloodProtect);
 
-						chkPacketLog = new ConfigCheckBox("Packet Log", ConnectionSettings.packetLog);
+						chkPacketLog = new ConfigCheckBox("Packet Log", GlobalSettings.packetLog);
 						boxCheckboxes.add(chkPacketLog);
 
-						chkWhisperBack = new ConfigCheckBox("Whisper Commands", ConnectionSettings.whisperBack);
+						chkWhisperBack = new ConfigCheckBox("Whisper Commands", GlobalSettings.whisperBack);
 						boxCheckboxes.add(chkWhisperBack);
 					}
 					boxLine.add(boxCheckboxes);
@@ -396,48 +396,48 @@ public class GlobalConfigurationFrame extends JDialog {
 	}
 
 	private void save() {
-		ConnectionSettings.bnlsServer = txtBNLSServer.getText();
-		ConnectionSettings.trigger = txtTrigger.getText();
-		ConnectionSettings.antiIdle = txtAntiIdle.getText();
-		ConnectionSettings.antiIdleTimer = Integer.parseInt(txtAntiIdleTimer.getText());
-		ConnectionSettings.enableAntiIdle = chkAntiIdle.isSelected();
-		ConnectionSettings.colorScheme = (byte)(cmbColorScheme.getSelectedIndex() + 1);
+		GlobalSettings.bnlsServer = txtBNLSServer.getText();
+		GlobalSettings.trigger = txtTrigger.getText();
+		GlobalSettings.antiIdle = txtAntiIdle.getText();
+		GlobalSettings.antiIdleTimer = Integer.parseInt(txtAntiIdleTimer.getText());
+		GlobalSettings.enableAntiIdle = chkAntiIdle.isSelected();
+		GlobalSettings.colorScheme = (byte)(cmbColorScheme.getSelectedIndex() + 1);
 		TimeFormatter.tsFormat = (String)cmbTSFormat.getSelectedItem();
-		ConnectionSettings.releaseType = (ReleaseType)cmbReleaseType.getSelectedItem();
-		ConnectionSettings.autoconnect = chkAutoConnect.isSelected();
-		ConnectionSettings.enableGUI = chkEnableGUI.isSelected();
-		ConnectionSettings.enableLegacyIcons = chkEnableLegacyIcons.isSelected();
-		ConnectionSettings.enableCLI = chkEnableCLI.isSelected();
-		ConnectionSettings.enableTrivia = chkEnableTrivia.isSelected();
-		ConnectionSettings.triviaRoundLength = Integer.parseInt(txtTriviaRoundLength.getText());
-		ConnectionSettings.enableCommands = chkEnableCommands.isSelected();
-		ConnectionSettings.enableFloodProtect = chkEnableFloodProtect.isSelected();
-		ConnectionSettings.packetLog = chkPacketLog.isSelected();
-		ConnectionSettings.whisperBack = chkWhisperBack.isSelected();
+		GlobalSettings.releaseType = (ReleaseType)cmbReleaseType.getSelectedItem();
+		GlobalSettings.autoconnect = chkAutoConnect.isSelected();
+		GlobalSettings.enableGUI = chkEnableGUI.isSelected();
+		GlobalSettings.enableLegacyIcons = chkEnableLegacyIcons.isSelected();
+		GlobalSettings.enableCLI = chkEnableCLI.isSelected();
+		GlobalSettings.enableTrivia = chkEnableTrivia.isSelected();
+		GlobalSettings.triviaRoundLength = Integer.parseInt(txtTriviaRoundLength.getText());
+		GlobalSettings.enableCommands = chkEnableCommands.isSelected();
+		GlobalSettings.enableFloodProtect = chkEnableFloodProtect.isSelected();
+		GlobalSettings.packetLog = chkPacketLog.isSelected();
+		GlobalSettings.whisperBack = chkWhisperBack.isSelected();
 
-		ConnectionSettings.globalSave();
+		GlobalSettings.save();
 	}
 
 	private void load() {
-		ConnectionSettings.globalLoad();
-		txtBNLSServer.setText(ConnectionSettings.bnlsServer);
-		txtTrigger.setText(ConnectionSettings.trigger);
-		txtAntiIdle.setText(ConnectionSettings.antiIdle);
-		txtAntiIdleTimer.setText(Integer.toString(ConnectionSettings.antiIdleTimer));
-		chkAntiIdle.setSelected(ConnectionSettings.enableAntiIdle);
-		cmbColorScheme.setSelectedIndex(ConnectionSettings.colorScheme - 1);
+		GlobalSettings.load();
+		txtBNLSServer.setText(GlobalSettings.bnlsServer);
+		txtTrigger.setText(GlobalSettings.trigger);
+		txtAntiIdle.setText(GlobalSettings.antiIdle);
+		txtAntiIdleTimer.setText(Integer.toString(GlobalSettings.antiIdleTimer));
+		chkAntiIdle.setSelected(GlobalSettings.enableAntiIdle);
+		cmbColorScheme.setSelectedIndex(GlobalSettings.colorScheme - 1);
 		cmbTSFormat.setSelectedItem(TimeFormatter.tsFormat);
-		cmbReleaseType.setSelectedItem(ConnectionSettings.releaseType);
-		chkAutoConnect.setSelected(ConnectionSettings.autoconnect);
-		chkEnableGUI.setSelected(ConnectionSettings.enableGUI);
-		chkEnableLegacyIcons.setSelected(ConnectionSettings.enableLegacyIcons);
-		chkEnableCLI.setSelected(ConnectionSettings.enableCLI);
-		chkEnableTrivia.setSelected(ConnectionSettings.enableTrivia);
-		txtTriviaRoundLength.setText(Long.toString(ConnectionSettings.triviaRoundLength));
-		chkEnableCommands.setSelected(ConnectionSettings.enableCommands);
-		chkEnableFloodProtect.setSelected(ConnectionSettings.enableFloodProtect);
-		chkPacketLog.setSelected(ConnectionSettings.packetLog);
-		chkWhisperBack.setSelected(ConnectionSettings.whisperBack);
+		cmbReleaseType.setSelectedItem(GlobalSettings.releaseType);
+		chkAutoConnect.setSelected(GlobalSettings.autoconnect);
+		chkEnableGUI.setSelected(GlobalSettings.enableGUI);
+		chkEnableLegacyIcons.setSelected(GlobalSettings.enableLegacyIcons);
+		chkEnableCLI.setSelected(GlobalSettings.enableCLI);
+		chkEnableTrivia.setSelected(GlobalSettings.enableTrivia);
+		txtTriviaRoundLength.setText(Long.toString(GlobalSettings.triviaRoundLength));
+		chkEnableCommands.setSelected(GlobalSettings.enableCommands);
+		chkEnableFloodProtect.setSelected(GlobalSettings.enableFloodProtect);
+		chkPacketLog.setSelected(GlobalSettings.packetLog);
+		chkWhisperBack.setSelected(GlobalSettings.whisperBack);
 	}
 
 	private void cancel() {
@@ -446,7 +446,7 @@ public class GlobalConfigurationFrame extends JDialog {
 	}
 
 	private void close() {
-		String v = ConnectionSettings.isValidGlobal();
+		String v = GlobalSettings.isValidGlobal();
 		if(v == null) {
 			dispose();
 		} else {

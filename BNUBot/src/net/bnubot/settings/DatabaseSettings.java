@@ -5,7 +5,6 @@
 
 package net.bnubot.settings;
 
-
 public class DatabaseSettings {
 	private static final String header = "database";
 	public String driver;

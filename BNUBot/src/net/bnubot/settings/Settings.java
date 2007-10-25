@@ -15,17 +15,11 @@ import net.bnubot.util.SortedProperties;
 import net.bnubot.vercheck.CurrentVersion;
 
 public class Settings {
-	private static File propsFile = null;
-	private static Properties props = null;
+	private static final File propsFile = new File("settings.ini");
+	private static final Properties props = new SortedProperties();
 	private static Boolean anythingChanged = false;
 	
-	private static void init() {
-		if(props != null)
-			return;
-		
-		props = new SortedProperties();
-		propsFile = new File("settings.ini");
-		
+	static {
 		if(propsFile.exists()) try {
 			props.load(new FileInputStream(propsFile));
 		} catch(Exception e) {
@@ -40,8 +34,6 @@ public class Settings {
 	}
 	
 	public static String read(String Header, String Setting, String Default) {
-		init();
-		
 		String s = props.getProperty(getKey(Header, Setting));
 		if(s != null)
 			return s;
@@ -49,8 +41,6 @@ public class Settings {
 	}
 	
 	public static void write(String Header, String Setting, String Value) {
-		init();
-		
 		String key = getKey(Header, Setting);
 		if(Value == null)
 			Value = new String();
@@ -67,8 +57,6 @@ public class Settings {
 	public static void store() {
 		if(!anythingChanged)
 			return;
-		
-		init();
 		
 		Out.debug(Settings.class, "Writing settings.ini");
 		
