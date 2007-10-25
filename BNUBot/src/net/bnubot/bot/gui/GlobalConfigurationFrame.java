@@ -32,6 +32,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import net.bnubot.bot.database.DriverShim;
 import net.bnubot.bot.gui.components.ConfigCheckBox;
@@ -204,12 +206,33 @@ public class GlobalConfigurationFrame extends JDialog {
 						boxCheckboxes.add(chkAutoConnect);
 
 						chkEnableGUI = new ConfigCheckBox("Enable GUI (requires restart)", GlobalSettings.enableGUI);
+						chkEnableGUI.addChangeListener(new ChangeListener() {
+							public void stateChanged(ChangeEvent arg0) {
+								if(!chkEnableGUI.isSelected()) {
+									chkEnableTrayPopups.setSelected(false);
+									chkEnableTrayIcon.setSelected(false);
+								}
+							}});
 						boxCheckboxes.add(chkEnableGUI);
 
 						chkEnableTrayIcon = new ConfigCheckBox("Enable Tray Icon", GlobalSettings.enableTrayIcon);
+						chkEnableTrayIcon.addChangeListener(new ChangeListener() {
+							public void stateChanged(ChangeEvent arg0) {
+								if(chkEnableTrayIcon.isSelected())
+									chkEnableGUI.setSelected(true);
+								else
+									chkEnableTrayPopups.setSelected(false);
+							}});
 						boxCheckboxes.add(chkEnableTrayIcon);
 
 						chkEnableTrayPopups = new ConfigCheckBox("Enable Tray Popups", GlobalSettings.enableTrayPopups);
+						chkEnableTrayPopups.addChangeListener(new ChangeListener() {
+							public void stateChanged(ChangeEvent arg0) {
+								if(chkEnableTrayPopups.isSelected()) {
+									chkEnableGUI.setSelected(true);
+									chkEnableTrayIcon.setSelected(true);
+								}
+							}});
 						boxCheckboxes.add(chkEnableTrayPopups);
 
 						chkEnableLegacyIcons = new ConfigCheckBox("Enable Legacy Icons", GlobalSettings.enableLegacyIcons);
