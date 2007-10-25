@@ -27,18 +27,18 @@ import net.bnubot.util.Out;
 public class RealmWindow extends JDialog implements EventHandler, RealmEventHandler {
 	private static final long serialVersionUID = 3965057306231374646L;
 	
-	protected Connection c = null;
-	protected RealmConnection rc = null;
+	protected Connection con = null;
+	protected RealmConnection realmCon = null;
 	protected String[] realms = null;
 
 	protected Box b;
 	protected JList lstRealms;
 	protected JList lstCharactorTypes;
 	
-	public RealmWindow(String[] realms) {
+	public RealmWindow(String[] realms, Connection con) {
 		this.realms = realms;
 		initializeGUI();
-		setTitle("About BNU-Bot");
+		setTitle("Realms");
 		
 		pack();
 		setModal(true);
@@ -54,8 +54,7 @@ public class RealmWindow extends JDialog implements EventHandler, RealmEventHand
 			public void mouseClicked(MouseEvent arg0) {
 				String s = (String)lstRealms.getSelectedValue();
 				try {
-					if(c != null)
-						c.sendLogonRealmEx(s);
+					con.sendLogonRealmEx(s);
 				} catch (Exception e) {
 					Out.fatalException(e);
 				}
@@ -85,11 +84,11 @@ public class RealmWindow extends JDialog implements EventHandler, RealmEventHand
 	}
 	
 	public void initialize(Connection c) {
-		this.c = c;
+		this.con = c;
 	}
 
 	public void initialize(RealmConnection rc) {
-		this.rc = rc;
+		this.realmCon = rc;
 	}
 
 	public void bnetConnected() {}
