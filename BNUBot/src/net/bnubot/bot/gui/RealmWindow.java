@@ -35,26 +35,29 @@ public class RealmWindow extends JDialog implements EventHandler, RealmEventHand
 	protected JList lstRealms;
 	protected JList lstCharactorTypes;
 	
-	public RealmWindow(String[] realms, Connection con) {
+	public RealmWindow(String[] realms) {
 		this.realms = realms;
 		initializeGUI();
 		setTitle("Realms");
 		
 		pack();
 		setModal(true);
-		setVisible(true);
 	}
 	
 	public void initializeGUI() {
 		DefaultListModel lm = new DefaultListModel();
-		for(String s : realms)
-			lm.addElement(s);
+		for(String realm : realms)
+			lm.addElement(realm);
 		lstRealms = new JList(lm);
 		lstRealms.addMouseListener(new MouseListener() {
 			public void mouseClicked(MouseEvent arg0) {
-				String s = (String)lstRealms.getSelectedValue();
+				String realm = (String)lstRealms.getSelectedValue();
+				Out.debug(RealmWindow.class, "Logging on to realm " + realm);
 				try {
-					con.sendLogonRealmEx(s);
+					if(con != null)
+						con.sendLogonRealmEx(realm);
+					else
+						Out.error(RealmWindow.class, "No connection set.");
 				} catch (Exception e) {
 					Out.fatalException(e);
 				}
@@ -85,6 +88,7 @@ public class RealmWindow extends JDialog implements EventHandler, RealmEventHand
 	
 	public void initialize(Connection c) {
 		this.con = c;
+		Out.debug(getClass(), "Setting con to " + c.toString());
 	}
 
 	public void initialize(RealmConnection rc) {
