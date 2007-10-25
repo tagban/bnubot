@@ -64,20 +64,15 @@ public class ChatConnection extends Connection {
 
 	@Override
 	public boolean isOp() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public void joinChannel(String channel) throws Exception {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
 	public void reconnect() {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
