@@ -294,11 +294,13 @@ public class GuiEventHandler implements EventHandler {
 	public void recieveChat(BNetUser user, String text) {
 		mainTextArea.userChat(user, text, user.equals(con.getMyUser()));
 
-		TrayIcon tray = GuiDesktop.getTray();
-		if((tray != null) && !frame.isVisible()) {
-	        tray.displayMessage("User is chatting: " + user.getShortLogonName(), 
-	            text,
-	            TrayIcon.MessageType.INFO);
+		if(GlobalSettings.enableTrayPopups) {
+			TrayIcon tray = GuiDesktop.getTray();
+			if((tray != null) && !frame.isVisible()) {
+		        tray.displayMessage("User is chatting: " + user.getShortLogonName(), 
+		            text,
+		            TrayIcon.MessageType.INFO);
+			}
 		}
 	}
 
@@ -334,11 +336,13 @@ public class GuiEventHandler implements EventHandler {
 		lastWhisperFrom = user;
 		mainTextArea.whisperRecieved(user, text);
 
-		TrayIcon tray = GuiDesktop.getTray();
-		if((tray != null) && !frame.isVisible()) {
-	        tray.displayMessage("Whisper from " + user.getShortLogonName(), 
-	            text,
-	            TrayIcon.MessageType.INFO);
+		if(GlobalSettings.enableTrayPopups) {
+			TrayIcon tray = GuiDesktop.getTray();
+			if((tray != null) && !frame.isVisible()) {
+		        tray.displayMessage("Whisper from " + user.getShortLogonName(), 
+		            text,
+		            TrayIcon.MessageType.INFO);
+			}
 		}
 	}
 

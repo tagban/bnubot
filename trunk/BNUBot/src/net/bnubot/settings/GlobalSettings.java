@@ -23,9 +23,11 @@ public class GlobalSettings {
 	public static boolean enableGreetings;
 	public static int antiIdleTimer;
 	public static boolean enableAntiIdle;
-	public static boolean autoconnect;
+	public static boolean autoConnect;
 	public static boolean enableCLI;
 	public static boolean enableGUI;
+	public static boolean enableTrayIcon;
+	public static boolean enableTrayPopups;
 	public static boolean enableLegacyIcons;
 	public static boolean enableCommands;
 	public static boolean enableTrivia;
@@ -40,7 +42,7 @@ public class GlobalSettings {
 	
 	private static String lookAndFeel;
 	
-	public static String isValidGlobal() {
+	public static String isValid() {
 		if((trigger == null) || (trigger.length() != 1))
 			return "Trigger invalid";
 		
@@ -68,11 +70,13 @@ public class GlobalSettings {
 		Settings.write(null, "enableAntiidle", Boolean.toString(enableAntiIdle));
 		Settings.write(null, "enableGreetings", Boolean.toString(enableGreetings));
 		Settings.write(null, "antiIdleTimer", Integer.toString(antiIdleTimer));
-		Settings.write(null, "autoconnect", Boolean.toString(autoconnect));
+		Settings.write(null, "autoConnect", Boolean.toString(autoConnect));
 		Settings.write(null, "colorScheme", Byte.toString(colorScheme));
 		Settings.write(null, "trigger", trigger);
 		Settings.write(null, "enableCLI", Boolean.toString(enableCLI));
 		Settings.write(null, "enableGUI", Boolean.toString(enableGUI));
+		Settings.write(null, "enableTrayIcon", Boolean.toString(enableTrayIcon));
+		Settings.write(null, "enableTrayPopups", Boolean.toString(enableTrayPopups));
 		Settings.write(null, "enableLegacyIcons", Boolean.toString(enableLegacyIcons));
 		Settings.write(null, "enableCommands", Boolean.toString(enableCommands));
 		Settings.write(null, "enableTrivia", Boolean.toString(enableTrivia));
@@ -106,12 +110,16 @@ public class GlobalSettings {
 				Settings.read(null, "enableGreetings", "true"));
 		antiIdleTimer = Integer.parseInt(
 				Settings.read(null, "antiIdleTimer", "5"));
-		autoconnect = Boolean.parseBoolean(
-				Settings.read(null, "autoconnect", "true"));
+		autoConnect = Boolean.parseBoolean(
+				Settings.read(null, "autoConnect", "true"));
 		enableCLI = Boolean.parseBoolean(
 				Settings.read(null, "enableCLI", "false"));
 		enableGUI = Boolean.parseBoolean(
 				Settings.read(null, "enableGUI", "true"));
+		enableTrayIcon = Boolean.parseBoolean(
+				Settings.read(null, "enableTrayIcon", "true"));
+		enableTrayPopups = Boolean.parseBoolean(
+				Settings.read(null, "enableTrayPopups", "true"));
 		enableLegacyIcons = Boolean.parseBoolean(
 				Settings.read(null, "enableLegacyIcons", "true"));
 		enableCommands = Boolean.parseBoolean(

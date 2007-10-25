@@ -242,6 +242,8 @@ public class GuiDesktop extends JFrame {
 		if(tray != null)
 			return;
 		
+		if(!GlobalSettings.enableTrayIcon)
+		
 		try {
 			if(!SystemTray.isSupported())
 				throw new NoClassDefFoundError();

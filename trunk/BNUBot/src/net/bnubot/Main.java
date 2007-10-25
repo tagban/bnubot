@@ -92,14 +92,14 @@ public class Main {
 			System.exit(1);
 		}
 		
-		if((GlobalSettings.isValidGlobal() != null) || forceConfig) {
+		if((GlobalSettings.isValid() != null) || forceConfig) {
 			GlobalConfigurationFrame cf = null;
 			try {
 				cf = new GlobalConfigurationFrame();
 				cf.setVisible(true);
 			} catch(Exception e) {
 				Out.exception(e);
-				String s = GlobalSettings.isValidGlobal();
+				String s = GlobalSettings.isValid();
 				String error = "There was an error initializing the configuraiton window, ";
 				if(s == null)
 					error += "but the configuration was valid.";
@@ -114,7 +114,7 @@ public class Main {
 				Thread.sleep(10);
 			}
 			
-			String reason = GlobalSettings.isValidGlobal();
+			String reason = GlobalSettings.isValid();
 			if(reason != null) {
 				JOptionPane.showMessageDialog(null, reason, "Invalid Configuration", JOptionPane.ERROR_MESSAGE);
 				System.exit(1);
