@@ -61,6 +61,8 @@ public class GlobalConfigurationFrame extends JDialog {
 	ConfigComboBox cmbLookAndFeel = null;
 	ConfigCheckBox chkAutoConnect = null;
 	ConfigCheckBox chkEnableGUI = null;
+	ConfigCheckBox chkEnableTrayIcon = null;
+	ConfigCheckBox chkEnableTrayPopups = null;
 	ConfigCheckBox chkEnableLegacyIcons = null;
 	ConfigCheckBox chkEnableCLI = null;
 	ConfigCheckBox chkEnableTrivia = null;
@@ -98,7 +100,7 @@ public class GlobalConfigurationFrame extends JDialog {
 	}
 
 	private static final int lblWidth = 100;
-	private static Dimension maxSize = new Dimension(lblWidth, 0);
+	private static final Dimension maxSize = new Dimension(lblWidth, 0);
 
 	private ConfigTextArea makeText(String label, String value, Box parent) {
 		JLabel jl = new JLabel(label);
@@ -198,11 +200,17 @@ public class GlobalConfigurationFrame extends JDialog {
 
 					Box boxCheckboxes = new Box(BoxLayout.Y_AXIS);
 					{
-						chkAutoConnect = new ConfigCheckBox("Auto Connect", GlobalSettings.autoconnect);
+						chkAutoConnect = new ConfigCheckBox("Auto Connect", GlobalSettings.autoConnect);
 						boxCheckboxes.add(chkAutoConnect);
 
 						chkEnableGUI = new ConfigCheckBox("Enable GUI (requires restart)", GlobalSettings.enableGUI);
 						boxCheckboxes.add(chkEnableGUI);
+
+						chkEnableTrayIcon = new ConfigCheckBox("Enable Tray Icon", GlobalSettings.enableTrayIcon);
+						boxCheckboxes.add(chkEnableTrayIcon);
+
+						chkEnableTrayPopups = new ConfigCheckBox("Enable Tray Popups", GlobalSettings.enableTrayPopups);
+						boxCheckboxes.add(chkEnableTrayPopups);
 
 						chkEnableLegacyIcons = new ConfigCheckBox("Enable Legacy Icons", GlobalSettings.enableLegacyIcons);
 						boxCheckboxes.add(chkEnableLegacyIcons);
@@ -391,8 +399,8 @@ public class GlobalConfigurationFrame extends JDialog {
 		pack();
 
 		Dimension size = this.getSize();
-		if((size.height > 500) || (size.width > 400))
-			this.setSize(Math.min(400, size.width), Math.min(500, size.height));
+		if((size.height > 600) || (size.width > 400))
+			this.setSize(Math.min(400, size.width), Math.min(600, size.height));
 	}
 
 	private void save() {
@@ -404,8 +412,10 @@ public class GlobalConfigurationFrame extends JDialog {
 		GlobalSettings.colorScheme = (byte)(cmbColorScheme.getSelectedIndex() + 1);
 		TimeFormatter.tsFormat = (String)cmbTSFormat.getSelectedItem();
 		GlobalSettings.releaseType = (ReleaseType)cmbReleaseType.getSelectedItem();
-		GlobalSettings.autoconnect = chkAutoConnect.isSelected();
+		GlobalSettings.autoConnect = chkAutoConnect.isSelected();
 		GlobalSettings.enableGUI = chkEnableGUI.isSelected();
+		GlobalSettings.enableTrayIcon = chkEnableTrayIcon.isSelected();
+		GlobalSettings.enableTrayPopups = chkEnableTrayPopups.isSelected();
 		GlobalSettings.enableLegacyIcons = chkEnableLegacyIcons.isSelected();
 		GlobalSettings.enableCLI = chkEnableCLI.isSelected();
 		GlobalSettings.enableTrivia = chkEnableTrivia.isSelected();
@@ -428,10 +438,12 @@ public class GlobalConfigurationFrame extends JDialog {
 		cmbColorScheme.setSelectedIndex(GlobalSettings.colorScheme - 1);
 		cmbTSFormat.setSelectedItem(TimeFormatter.tsFormat);
 		cmbReleaseType.setSelectedItem(GlobalSettings.releaseType);
-		chkAutoConnect.setSelected(GlobalSettings.autoconnect);
+		chkAutoConnect.setSelected(GlobalSettings.autoConnect);
 		chkEnableGUI.setSelected(GlobalSettings.enableGUI);
 		chkEnableLegacyIcons.setSelected(GlobalSettings.enableLegacyIcons);
 		chkEnableCLI.setSelected(GlobalSettings.enableCLI);
+		chkEnableTrayIcon.setSelected(GlobalSettings.enableTrayIcon);
+		chkEnableTrayPopups.setSelected(GlobalSettings.enableTrayPopups);
 		chkEnableTrivia.setSelected(GlobalSettings.enableTrivia);
 		txtTriviaRoundLength.setText(Long.toString(GlobalSettings.triviaRoundLength));
 		chkEnableCommands.setSelected(GlobalSettings.enableCommands);
@@ -446,7 +458,7 @@ public class GlobalConfigurationFrame extends JDialog {
 	}
 
 	private void close() {
-		String v = GlobalSettings.isValidGlobal();
+		String v = GlobalSettings.isValid();
 		if(v == null) {
 			dispose();
 		} else {

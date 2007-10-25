@@ -167,7 +167,7 @@ public class BNCSConnection extends Connection {
 				if(forceReconnect) {
 					forceReconnect = false;
 				} else {
-					if(!GlobalSettings.autoconnect) {
+					if(!GlobalSettings.autoConnect) {
 						while(!isConnected()) {
 							yield();
 							sleep(10);
@@ -1612,7 +1612,7 @@ public class BNCSConnection extends Connection {
 			p.writeNTString(text);
 			p.SendPacket(bncsOutputStream);
 		} catch(SocketException e) {
-			if(GlobalSettings.autoconnect)
+			if(GlobalSettings.autoConnect)
 				reconnect();
 			else
 				setConnected(false);
