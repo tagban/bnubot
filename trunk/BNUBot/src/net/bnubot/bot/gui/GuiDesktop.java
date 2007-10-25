@@ -82,6 +82,9 @@ public class GuiDesktop extends JFrame {
 						selectedGui.getMenuBar().setVisible(false);
 					gui.getMenuBar().setVisible(true);
 					
+					// Set the default output window
+					Out.setDefaultOutputConnection(gui);
+					
 					// Store the selected GUI
 					selectedGui = gui;
 					
