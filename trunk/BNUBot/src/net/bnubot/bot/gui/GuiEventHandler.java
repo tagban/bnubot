@@ -46,7 +46,6 @@ public class GuiEventHandler implements EventHandler {
 	private UserList userList = null;
 	private FriendList friendList = null;
 	private ClanList clanList = null;
-	private RealmWindow realmWindow = null;
 	private String channel = null;
 	private JMenu menuBar = new JMenu();
 	private BNetUser lastWhisperFrom = null;
@@ -421,8 +420,7 @@ public class GuiEventHandler implements EventHandler {
 	}
 	
 	public void queryRealms2(String[] realms) {
-		if(realmWindow == null)
-			realmWindow = new RealmWindow(realms, con);
+		final RealmWindow realmWindow = new RealmWindow(realms);
 		
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
