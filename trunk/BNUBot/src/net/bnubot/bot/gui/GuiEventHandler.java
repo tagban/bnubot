@@ -33,7 +33,7 @@ import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
-import net.bnubot.settings.ConnectionSettings;
+import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.Out;
 
@@ -51,7 +51,7 @@ public class GuiEventHandler implements EventHandler {
 	private BNetUser lastWhisperFrom = null;
 	
 	public GuiEventHandler() {
-		initializeGui("BNU-Bot", ColorScheme.createColorScheme(ConnectionSettings.colorScheme));
+		initializeGui("BNU-Bot", ColorScheme.createColorScheme(GlobalSettings.colorScheme));
 	}
 	
 	public void initialize(Connection con) {

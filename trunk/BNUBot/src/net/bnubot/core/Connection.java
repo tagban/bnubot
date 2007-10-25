@@ -15,6 +15,7 @@ import java.util.LinkedList;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.settings.ConnectionSettings;
+import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.MirrorSelector;
 import net.bnubot.util.Out;
@@ -117,9 +118,9 @@ public abstract class Connection extends Thread implements EventHandler {
 	public void setBNLSConnected(boolean c) throws IOException {
 		if(c) {
 			if(bnlsSocket == null) {
-				InetAddress address = MirrorSelector.getClosestMirror(ConnectionSettings.bnlsServer, ConnectionSettings.bnlsPort);
-				recieveInfo("Connecting to " + address + ":" + ConnectionSettings.bnlsPort + ".");
-				bnlsSocket = new Socket(address, ConnectionSettings.bnlsPort);
+				InetAddress address = MirrorSelector.getClosestMirror(GlobalSettings.bnlsServer, GlobalSettings.bnlsPort);
+				recieveInfo("Connecting to " + address + ":" + GlobalSettings.bnlsPort + ".");
+				bnlsSocket = new Socket(address, GlobalSettings.bnlsPort);
 				bnlsSocket.setKeepAlive(true);
 			}
 		} else {
@@ -250,7 +251,7 @@ public abstract class Connection extends Thread implements EventHandler {
 
 				String first = text.substring(0, i);
 				String last = text.substring(i + 9);
-				text = first + ConnectionSettings.trigger + last;
+				text = first + GlobalSettings.trigger + last;
 			}
 
 			i = text.indexOf("%version%");
@@ -315,10 +316,10 @@ public abstract class Connection extends Thread implements EventHandler {
 		if(text.length() == 0)
 			return;
 
-		if(canSendChat() && !ConnectionSettings.enableFloodProtect) {
+		if(canSendChat() && !GlobalSettings.enableFloodProtect) {
 			sendChatNow(text);
 		} else {
-			chatQueue.enqueue(text, ConnectionSettings.enableFloodProtect);
+			chatQueue.enqueue(text, GlobalSettings.enableFloodProtect);
 		}
 	}
 
@@ -332,7 +333,7 @@ public abstract class Connection extends Thread implements EventHandler {
 			recieveInfo(text);
 		else {
 			String prefix;
-			if(ConnectionSettings.whisperBack || forceWhisper) {
+			if(GlobalSettings.whisperBack || forceWhisper) {
 				prefix = "/w " + to.getFullLogonName() + " [BNU";
 				ReleaseType rt = CurrentVersion.version().getReleaseType();
 				if(rt.isAlpha())

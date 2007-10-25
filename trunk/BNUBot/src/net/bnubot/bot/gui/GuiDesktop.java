@@ -41,6 +41,7 @@ import net.bnubot.bot.gui.icons.BNetIcon;
 import net.bnubot.bot.gui.icons.IconsDotBniReader;
 import net.bnubot.core.Profile;
 import net.bnubot.settings.ConnectionSettings;
+import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.Out;
 import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.VersionCheck;
@@ -130,8 +131,8 @@ public class GuiDesktop extends JFrame {
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						try {
-							ConnectionSettings.numBots++;
-							ConnectionSettings cs = new ConnectionSettings(ConnectionSettings.numBots);
+							GlobalSettings.numBots++;
+							ConnectionSettings cs = new ConnectionSettings(GlobalSettings.numBots);
 							Thread.yield();
 							Profile.add(cs);
 						} catch(Exception ex) {

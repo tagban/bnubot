@@ -26,14 +26,15 @@ import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.Profile;
 import net.bnubot.core.UnsupportedFeatureException;
-import net.bnubot.core.bnls.BNLSPacketId;
 import net.bnubot.core.bnls.BNLSPacket;
+import net.bnubot.core.bnls.BNLSPacketId;
 import net.bnubot.core.bnls.BNLSPacketReader;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.clan.ClanRankIDs;
 import net.bnubot.core.clan.ClanStatusIDs;
 import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.settings.ConnectionSettings;
+import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetInputStream;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.CookieUtility;
@@ -166,7 +167,7 @@ public class BNCSConnection extends Connection {
 				if(forceReconnect) {
 					forceReconnect = false;
 				} else {
-					if(!ConnectionSettings.autoconnect) {
+					if(!GlobalSettings.autoconnect) {
 						while(!isConnected()) {
 							yield();
 							sleep(10);
@@ -369,7 +370,7 @@ public class BNCSConnection extends Connection {
 		//grab one
 		int i = antiIdles.size();
 		if(i == 0)
-			return ConnectionSettings.antiIdle;
+			return GlobalSettings.antiIdle;
 		i = (int)Math.floor(Math.random() * i);
 		return antiIdles.get(i);
 	}
@@ -394,13 +395,13 @@ public class BNCSConnection extends Connection {
 			}
 			
 			//Send anti-idles every 5 minutes
-			if((channelName != null) && ConnectionSettings.enableAntiIdle) {
+			if((channelName != null) && GlobalSettings.enableAntiIdle) {
 				long timeSinceAntiIdle = timeNow - lastAntiIdle;
 				
 				//Wait 5 minutes
 				timeSinceAntiIdle /= 1000;
 				timeSinceAntiIdle /= 60;
-				if(timeSinceAntiIdle >= ConnectionSettings.antiIdleTimer) {
+				if(timeSinceAntiIdle >= GlobalSettings.antiIdleTimer) {
 					lastAntiIdle = timeNow;
 					sendChat(getAntiIdle());
 				}
@@ -1611,7 +1612,7 @@ public class BNCSConnection extends Connection {
 			p.writeNTString(text);
 			p.SendPacket(bncsOutputStream);
 		} catch(SocketException e) {
-			if(ConnectionSettings.autoconnect)
+			if(GlobalSettings.autoconnect)
 				reconnect();
 			else
 				setConnected(false);
