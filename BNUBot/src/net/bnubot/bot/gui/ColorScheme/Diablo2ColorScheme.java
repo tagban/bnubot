@@ -19,7 +19,7 @@ public class Diablo2ColorScheme extends ColorScheme {
 	//Const D2Orange = &H88CE&
 	public static final Color D2LtYellow = new Color(0xCECE51);
 	//Const D2Purple = &HCE008D
-	public static final Color D2Cyan = new Color(0x00FFFF); 
+	public static final Color D2Cyan = new Color(0x00D0D0); 
 	//Const D2MedBlue = &HE8AC2C
 	
 	public Color getBackgroundColor() {
