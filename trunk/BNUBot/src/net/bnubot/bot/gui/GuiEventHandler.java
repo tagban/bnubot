@@ -420,12 +420,24 @@ public class GuiEventHandler implements EventHandler {
 	}
 	
 	public void queryRealms2(String[] realms) {
+		if(realms.length == 0)
+			return;
+		
 		final RealmWindow realmWindow = new RealmWindow(realms);
+		final boolean showWindow = (realms.length > 1);
+		final String autoRealm = realms[0];
 		
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				con.addEventHandler(realmWindow);
-				realmWindow.setVisible(true);
+				if(showWindow)
+					realmWindow.setVisible(true);
+				else
+					try {
+						con.sendLogonRealmEx(autoRealm);
+					} catch (Exception e) {
+						Out.exception(e);
+					}
 			} });
 	}
 
