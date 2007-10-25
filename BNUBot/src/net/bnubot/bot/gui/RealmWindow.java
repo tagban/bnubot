@@ -51,13 +51,15 @@ public class RealmWindow extends JDialog implements EventHandler, RealmEventHand
 		lstRealms = new JList(lm);
 		lstRealms.addMouseListener(new MouseListener() {
 			public void mouseClicked(MouseEvent arg0) {
+				if(con == null) {
+					Out.error(RealmWindow.class, "No BNCS connection set.");
+					return;
+				}
 				String realm = (String)lstRealms.getSelectedValue();
 				Out.debug(RealmWindow.class, "Logging on to realm " + realm);
 				try {
-					if(con != null)
-						con.sendLogonRealmEx(realm);
-					else
-						Out.error(RealmWindow.class, "No connection set.");
+					con.sendLogonRealmEx(realm);
+					setVisible(false);
 				} catch (Exception e) {
 					Out.fatalException(e);
 				}
