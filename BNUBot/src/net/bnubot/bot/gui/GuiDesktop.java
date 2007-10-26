@@ -246,6 +246,7 @@ public class GuiDesktop extends JFrame {
 			return;
 		
 		if(!GlobalSettings.enableTrayIcon)
+			return;
 		
 		try {
 			if(!SystemTray.isSupported())
