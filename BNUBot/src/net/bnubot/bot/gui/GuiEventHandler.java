@@ -265,18 +265,21 @@ public class GuiEventHandler implements EventHandler {
 	
 	public void channelJoin(BNetUser user) {
 		userList.showUser(user);
-		mainTextArea.channelInfo(user + " has joined the channel" + user.getStatString().toString() + ".");
+		if(GlobalSettings.displayJoinParts)
+			mainTextArea.channelInfo(user + " has joined the channel" + user.getStatString().toString() + ".");
 		channelTextArea.setText(channel + " (" + userList.count() + ")");
 	}
 
 	public void channelLeave(BNetUser user) {
 		userList.removeUser(user);
-		mainTextArea.channelInfo(user + " has left the channel.");
+		if(GlobalSettings.displayJoinParts)
+			mainTextArea.channelInfo(user + " has left the channel.");
 		channelTextArea.setText(channel + " (" + userList.count() + ")");
 	}
 
 	public void channelUser(BNetUser user) {
-		mainTextArea.channelInfo(user + user.getStatString().toString() + ".");
+		if(GlobalSettings.displayChannelUsers)
+			mainTextArea.channelInfo(user + user.getStatString().toString() + ".");
 		userList.showUser(user);
 		channelTextArea.setText(channel + " (" + userList.count() + ")");
 	}

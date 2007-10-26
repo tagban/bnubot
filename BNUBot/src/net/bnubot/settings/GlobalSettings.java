@@ -24,6 +24,10 @@ public class GlobalSettings {
 	public static int antiIdleTimer;
 	public static boolean enableAntiIdle;
 	public static boolean autoConnect;
+	public static boolean displayBattleNetMOTD;
+	public static boolean displayBattleNetChannels;
+	public static boolean displayJoinParts;
+	public static boolean displayChannelUsers;
 	public static boolean enableCLI;
 	public static boolean enableGUI;
 	public static boolean enableTrayIcon;
@@ -71,6 +75,10 @@ public class GlobalSettings {
 		Settings.write(null, "enableGreetings", Boolean.toString(enableGreetings));
 		Settings.write(null, "antiIdleTimer", Integer.toString(antiIdleTimer));
 		Settings.write(null, "autoConnect", Boolean.toString(autoConnect));
+		Settings.write(null, "displayBattleNetMOTD", Boolean.toString(displayBattleNetMOTD));
+		Settings.write(null, "displayBattleNetChannels", Boolean.toString(displayBattleNetChannels));
+		Settings.write(null, "displayJoinParts", Boolean.toString(displayJoinParts));
+		Settings.write(null, "displayChannelUsers", Boolean.toString(displayChannelUsers));
 		Settings.write(null, "colorScheme", Byte.toString(colorScheme));
 		Settings.write(null, "trigger", trigger);
 		Settings.write(null, "enableCLI", Boolean.toString(enableCLI));
@@ -112,6 +120,14 @@ public class GlobalSettings {
 				Settings.read(null, "antiIdleTimer", "5"));
 		autoConnect = Boolean.parseBoolean(
 				Settings.read(null, "autoConnect", "true"));
+		displayBattleNetMOTD = Boolean.parseBoolean(
+				Settings.read(null, "displayBattleNetMOTD", "true"));
+		displayBattleNetChannels = Boolean.parseBoolean(
+				Settings.read(null, "displayBattleNetChannels", "false"));
+		displayJoinParts = Boolean.parseBoolean(
+				Settings.read(null, "displayJoinParts", "true"));
+		displayChannelUsers = Boolean.parseBoolean(
+				Settings.read(null, "displayChannelUsers", "false"));
 		enableCLI = Boolean.parseBoolean(
 				Settings.read(null, "enableCLI", "false"));
 		enableGUI = Boolean.parseBoolean(

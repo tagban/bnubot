@@ -62,6 +62,10 @@ public class GlobalConfigurationFrame extends JDialog {
 	ConfigComboBox cmbColorScheme = null;
 	ConfigComboBox cmbLookAndFeel = null;
 	ConfigCheckBox chkAutoConnect = null;
+	ConfigCheckBox chkDisplayBattleNetMOTD = null;
+	ConfigCheckBox chkDisplayBattleNetChannels = null;
+	ConfigCheckBox chkDisplayJoinParts = null;
+	ConfigCheckBox chkDisplayChannelUsers = null;
 	ConfigCheckBox chkEnableGUI = null;
 	ConfigCheckBox chkEnableTrayIcon = null;
 	ConfigCheckBox chkEnableTrayPopups = null;
@@ -204,6 +208,18 @@ public class GlobalConfigurationFrame extends JDialog {
 					{
 						chkAutoConnect = new ConfigCheckBox("Auto Connect", GlobalSettings.autoConnect);
 						boxCheckboxes.add(chkAutoConnect);
+
+						chkDisplayBattleNetMOTD = new ConfigCheckBox("Display Battle.net MOTD", GlobalSettings.displayBattleNetMOTD);
+						boxCheckboxes.add(chkDisplayBattleNetMOTD);
+
+						chkDisplayBattleNetChannels = new ConfigCheckBox("Display Battle.net Channels", GlobalSettings.displayBattleNetChannels);
+						boxCheckboxes.add(chkDisplayBattleNetChannels);
+
+						chkDisplayJoinParts = new ConfigCheckBox("Display Join/Part Messages", GlobalSettings.displayJoinParts);
+						boxCheckboxes.add(chkDisplayJoinParts);
+
+						chkDisplayChannelUsers = new ConfigCheckBox("Display Channel Users On Join", GlobalSettings.displayChannelUsers);
+						boxCheckboxes.add(chkDisplayChannelUsers);
 
 						chkEnableGUI = new ConfigCheckBox("Enable GUI (requires restart)", GlobalSettings.enableGUI);
 						chkEnableGUI.addChangeListener(new ChangeListener() {
@@ -436,6 +452,10 @@ public class GlobalConfigurationFrame extends JDialog {
 		TimeFormatter.tsFormat = (String)cmbTSFormat.getSelectedItem();
 		GlobalSettings.releaseType = (ReleaseType)cmbReleaseType.getSelectedItem();
 		GlobalSettings.autoConnect = chkAutoConnect.isSelected();
+		GlobalSettings.displayBattleNetMOTD = chkDisplayBattleNetMOTD.isSelected();
+		GlobalSettings.displayBattleNetChannels = chkDisplayBattleNetChannels.isSelected();
+		GlobalSettings.displayJoinParts = chkDisplayJoinParts.isSelected();
+		GlobalSettings.displayChannelUsers = chkDisplayChannelUsers.isSelected();
 		GlobalSettings.enableGUI = chkEnableGUI.isSelected();
 		GlobalSettings.enableTrayIcon = chkEnableTrayIcon.isSelected();
 		GlobalSettings.enableTrayPopups = chkEnableTrayPopups.isSelected();

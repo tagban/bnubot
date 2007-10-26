@@ -944,12 +944,14 @@ public class BNCSConnection extends Connection {
 					// We are officially logged in!
 					
 					// Get MOTD
-					BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_NEWS_INFO);
-					p.writeDWord((int)(new java.util.Date().getTime() / 1000)); // timestamp
-					p.SendPacket(bncsOutputStream);
+					if(GlobalSettings.displayBattleNetMOTD) {
+						BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_NEWS_INFO);
+						p.writeDWord((int)(new java.util.Date().getTime() / 1000)); // timestamp
+						p.SendPacket(bncsOutputStream);
+					}
 					
 					// Get friends list
-					p = new BNCSPacket(BNCSPacketId.SID_FRIENDSLIST);
+					BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_FRIENDSLIST);
 					p.SendPacket(bncsOutputStream);
 
 					// Join home channel
@@ -988,7 +990,9 @@ public class BNCSConnection extends Connection {
 						else
 							channelList += ", " + s;
 					} while(true);
-					recieveInfo("Channels: " + channelList + ".");
+
+					if(GlobalSettings.displayBattleNetChannels)
+						recieveInfo("Channels: " + channelList + ".");
 					break;
 				}
 				
