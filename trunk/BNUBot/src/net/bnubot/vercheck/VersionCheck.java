@@ -7,6 +7,7 @@ package net.bnubot.vercheck;
 
 import java.io.File;
 import java.net.URL;
+import java.net.UnknownHostException;
 
 import javax.swing.JOptionPane;
 
@@ -26,13 +27,16 @@ public class VersionCheck {
 	}
 	
 	public static boolean checkVersion(boolean forceDownload, ReleaseType rt) throws Exception {
-		{
-			String url = "http://www.clanbnu.ws/bnubot/version.php?";
+		try {
+			String url = "http://www.clanbnu.net/bnubot/version.php?";
 			if(!forceDownload && (CurrentVersion.version().revision() != null))
 				url += "svn=" + CurrentVersion.version().revision() + "&";
 			url += "release=" + rt.toString();
 			Out.debug(VersionCheck.class, "Requesting latest version from " + url);
 			elem = XMLElementDecorator.parse(url);
+		} catch(UnknownHostException e) {
+			Out.error(VersionCheck.class, "Couldn't connect to version check server.");
+			return false;
 		}
 
 		XMLElementDecorator error = elem.getChild("error");
