@@ -9,6 +9,7 @@ import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
+import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.Out;
 
@@ -25,14 +26,17 @@ public class ConsoleEventHandler implements EventHandler {
 	}
 
 	public void channelUser(BNetUser user) {
-		Out.info(getClass(), user.getShortPrettyName() + " (" + user.getPing() + "ms)" + user.getStatString().toString());
+		if(GlobalSettings.displayChannelUsers)
+			Out.info(getClass(), user.getShortPrettyName() + " (" + user.getPing() + "ms)" + user.getStatString().toString());
 	}
 	
 	public void channelJoin(BNetUser user) {
-		Out.info(getClass(), user + " has joined the channel" + user.getStatString().toString() + ".");
+		if(GlobalSettings.displayJoinParts)
+			Out.info(getClass(), user + " has joined the channel" + user.getStatString().toString() + ".");
 	}
 	public void channelLeave(BNetUser user) {
-		Out.info(getClass(), user + " has left the channel.");
+		if(GlobalSettings.displayJoinParts)
+			Out.info(getClass(), user + " has left the channel.");
 	}
 
 	public void recieveChat(BNetUser user, String text) {

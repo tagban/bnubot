@@ -35,7 +35,7 @@ public class VersionCheck {
 			Out.debug(VersionCheck.class, "Requesting latest version from " + url);
 			elem = XMLElementDecorator.parse(url);
 		} catch(UnknownHostException e) {
-			Out.error(VersionCheck.class, "Couldn't connect to version check server.");
+			Out.error(VersionCheck.class, "Failed to connect to server.");
 			return false;
 		}
 
