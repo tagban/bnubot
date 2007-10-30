@@ -380,8 +380,6 @@ public class BNCSConnection extends Connection {
 					break;
 				}
 				
-
-				
 				case SID_AUTH_INFO:
 				case SID_STARTVERSIONING: {
 					if(pr.packetId == BNCSPacketId.SID_AUTH_INFO) {
@@ -913,6 +911,11 @@ public class BNCSConnection extends Connection {
 					return true;
 				}
 				
+				case SID_GETCHANNELLIST: {
+					recieveGetChannelList(is);
+					break;
+				}
+				
 				case SID_CLANINFO: {
 					/* (BYTE)		 Unknown (0)
 					 * (DWORD)		 Clan tag
@@ -1016,19 +1019,7 @@ public class BNCSConnection extends Connection {
 				}
 				
 				case SID_GETCHANNELLIST: {
-					String channelList = null;
-					do {
-						String s = is.readNTString();
-						if(s.length() == 0)
-							break;
-						if(channelList == null)
-							channelList = s;
-						else
-							channelList += ", " + s;
-					} while(true);
-
-					if(GlobalSettings.displayBattleNetChannels)
-						recieveInfo("Channels: " + channelList + ".");
+					recieveGetChannelList(is);
 					break;
 				}
 				
@@ -1544,6 +1535,27 @@ public class BNCSConnection extends Connection {
 				yield();
 			}
 		}
+	}
+
+	/**
+	 * Recieve SID_GETCHANNELLIST
+	 * @param is
+	 * @throws IOException
+	 */
+	private void recieveGetChannelList(BNetInputStream is) throws IOException {
+		String channelList = null;
+		do {
+			String s = is.readNTString();
+			if(s.length() == 0)
+				break;
+			if(channelList == null)
+				channelList = s;
+			else
+				channelList += ", " + s;
+		} while(true);
+
+		if(GlobalSettings.displayBattleNetChannels)
+			recieveInfo("Channels: " + channelList + ".");
 	}
 
 	private static ArrayList<String> antiIdles = null;
