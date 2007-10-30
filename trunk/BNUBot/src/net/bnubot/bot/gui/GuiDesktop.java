@@ -5,15 +5,18 @@
 
 package net.bnubot.bot.gui;
 
+import java.awt.AWTEvent;
 import java.awt.AWTException;
 import java.awt.Image;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
+import java.awt.Rectangle;
 import java.awt.SystemTray;
 import java.awt.Toolkit;
 import java.awt.TrayIcon;
+import java.awt.event.AWTEventListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
@@ -42,6 +45,7 @@ import net.bnubot.bot.gui.icons.IconsDotBniReader;
 import net.bnubot.core.Profile;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.settings.GlobalSettings;
+import net.bnubot.settings.Settings;
 import net.bnubot.util.Out;
 import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.VersionCheck;
@@ -54,6 +58,7 @@ public class GuiDesktop extends JFrame {
 	private static final JMenuBar menuBar = new JMenuBar();
 	private static final GuiDesktop instance = new GuiDesktop();
 	private static TrayIcon tray = null;
+	private static Integer dividerLocation = null;
 	
 	private GuiDesktop() {
 		super();
@@ -68,6 +73,19 @@ public class GuiDesktop extends JFrame {
 		
 		setContentPane(tabs);
 		setSize(800, 500);
+		
+		loadPosition(this);
+		Toolkit.getDefaultToolkit().addAWTEventListener(
+				new AWTEventListener() {
+					public void eventDispatched(AWTEvent event) {
+						if(event.getID() == WindowEvent.WINDOW_CLOSING) {
+							WindowEvent wev = (WindowEvent)event;
+							GuiDesktop gd = (GuiDesktop)wev.getComponent();
+							gd.savePosition();
+						}
+					}},
+				AWTEvent.WINDOW_EVENT_MASK);
+
 		
 		tabs.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
@@ -241,6 +259,29 @@ public class GuiDesktop extends JFrame {
 		setJMenuBar(menuBar);
 	}
 
+	private static void loadPosition(GuiDesktop instance) {
+		Rectangle bounds = instance.getBounds();
+		String header = "gui";
+		bounds.height = Integer.valueOf(Settings.read(header, "height", Integer.toString(bounds.height)));
+		bounds.width = Integer.valueOf(Settings.read(header, "width", Integer.toString(bounds.width)));
+		bounds.x = Integer.valueOf(Settings.read(header, "x", Integer.toString(bounds.x)));
+		bounds.y = Integer.valueOf(Settings.read(header, "y", Integer.toString(bounds.y)));
+		instance.setBounds(bounds);
+		dividerLocation = Integer.valueOf(Settings.read(header, "dividerLocation", "550"));
+	}
+	
+	protected void savePosition() {
+		Rectangle bounds = getBounds();
+		String header = "gui";
+		Settings.write(header, "height", Integer.toString(bounds.height));
+		Settings.write(header, "width", Integer.toString(bounds.width));
+		Settings.write(header, "x", Integer.toString(bounds.x));
+		Settings.write(header, "y", Integer.toString(bounds.y));
+		if(selectedGui != null)
+			Settings.write(header, "dividerLocation", Integer.toString(selectedGui.getDividerLocation()));
+		Settings.store();
+	}
+
 	private void initializeSystemTray() {
 		if(tray != null)
 			return;
@@ -328,7 +369,11 @@ public class GuiDesktop extends JFrame {
 	}
 	
 	public static void add(GuiEventHandler geh) {
+		if(dividerLocation == null)
+			loadPosition(instance);
+			
 		geh.getMenuBar().setVisible(false);
+		geh.setDividerLocation(dividerLocation);
 		menuBar.add(geh.getMenuBar());
 		
 		guis.add(geh);

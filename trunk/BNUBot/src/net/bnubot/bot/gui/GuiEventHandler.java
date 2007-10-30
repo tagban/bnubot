@@ -49,6 +49,7 @@ public class GuiEventHandler implements EventHandler {
 	private String channel = null;
 	private JMenu menuBar = new JMenu();
 	private BNetUser lastWhisperFrom = null;
+	private JSplitPane jsp = null;
 	
 	public GuiEventHandler() {
 		initializeGui("BNU-Bot", ColorScheme.createColorScheme(GlobalSettings.colorScheme));
@@ -243,8 +244,7 @@ public class GuiEventHandler implements EventHandler {
 			public void ancestorRemoved(AncestorEvent event) {}
 		});
 		
-		JSplitPane jsp = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, leftSide, rightSide);
-		jsp.setDividerLocation(550);
+		jsp = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, leftSide, rightSide);
 		jsp.setDividerSize(8);
 		jsp.setResizeWeight(1); // Make the left side expand when resizing
 		
@@ -465,5 +465,13 @@ public class GuiEventHandler implements EventHandler {
 		if(con == null)
 			return null;
 		return con.toString();
+	}
+	
+	public void setDividerLocation(int arg0) {
+		jsp.setDividerLocation(arg0);
+	}
+	
+	public int getDividerLocation() {
+		return jsp.getDividerLocation();
 	}
 }
