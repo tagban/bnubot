@@ -148,9 +148,7 @@ public class GuiEventHandler implements EventHandler {
 			public void keyTyped(KeyEvent e) {
 				if(e.getKeyChar() == '\n') {
 					try {
-						String txt = chatTextArea.getText();
-						
-						String text[] = txt.split("\n");
+						String text[] = chatTextArea.getText().split("\n");
 						for(String element : text) {
 							if(element.trim().length() > 0)
 								con.queueChatHelper(element);
