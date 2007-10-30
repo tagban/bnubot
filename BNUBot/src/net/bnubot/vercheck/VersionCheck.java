@@ -48,7 +48,7 @@ public class VersionCheck {
 		if((motd != null) && (motd.getString() != null))
 			Out.info(VersionCheck.class, motd.getString());
 		
-		if(CurrentVersion.fromJar()) {
+		if(forceDownload || CurrentVersion.fromJar()) {
 			XMLElementDecorator downloads = elem.getPath("bnubot/downloads");
 			if(downloads != null) {
 				for(XMLElementDecorator file : downloads.getChildren("file")) {
