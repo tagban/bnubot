@@ -111,7 +111,7 @@ public class GuiEventHandler implements EventHandler {
 			menuItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent evt) {
 					try {
-						con.sendQueryRealms();
+						con.sendQueryRealms2();
 					} catch (Exception e) {
 						Out.exception(e);
 					}
@@ -154,7 +154,7 @@ public class GuiEventHandler implements EventHandler {
 						String text[] = txt.split("\n");
 						for(String element : text) {
 							if(element.trim().length() > 0)
-								con.sendChat(element);
+								con.queueChatHelper(element);
 						}
 						chatTextArea.setText(null);
 						return;
@@ -456,8 +456,8 @@ public class GuiEventHandler implements EventHandler {
 		chatTextArea.requestFocus();
 	}
 
-	public void parseCommand(BNetUser user, String command, String param, boolean wasWhispered) {
-		mainTextArea.recieveInfo(String.format("parseCommand(\"%1$s\", \"%2$s\", \"%3$s\")", user.getShortLogonName(), command, param));
+	public void parseCommand(BNetUser user, String command, String param, boolean whisperBack) {
+		//mainTextArea.recieveInfo(String.format("parseCommand(\"%1$s\", \"%2$s\", \"%3$s\")", user.getShortLogonName(), command, param));
 	}
 
 	@Override

@@ -163,7 +163,7 @@ public class UserList extends JPanel {
 				public void actionPerformed(ActionEvent arg0) {
 					UserInfo ui = getUserInfo(arg0);
 					if(ui != null)
-						con.sendChat("/whois " + ui.user.getShortLogonName());
+						con.queueChatHelper("/whois " + ui.user.getShortLogonName());
 				}});
 			ui.menu.add(menuItem);
 			menuItem = new JMenuItem("Profile");

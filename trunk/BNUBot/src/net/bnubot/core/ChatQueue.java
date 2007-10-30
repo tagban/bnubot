@@ -31,7 +31,7 @@ public class ChatQueue extends Thread {
 		// Flood protection disabled; send in round-robin pattern
 		if(lastCon >= cons.size())
 			lastCon = 0;
-		cons.get(lastCon++).sendChatNow(text);
+		cons.get(lastCon++).sendChatCommand(text);
 		return true;
 	}
 
@@ -48,7 +48,7 @@ public class ChatQueue extends Thread {
 					if(con.canSendChat()) {
 						if(con.isOp()) {
 							// Write the text out
-							con.sendChatNow(queue.remove());
+							con.sendChatCommand(queue.remove());
 						} else {
 							//Find a string we can send
 							sendTextNonOp(con);
@@ -84,7 +84,7 @@ public class ChatQueue extends Thread {
 			} catch(Exception e) {}
 
 			// Write the text out
-			con.sendChatNow(text);
+			con.sendChatCommand(text);
 			return queue.remove(text);
 		}
 		return false;

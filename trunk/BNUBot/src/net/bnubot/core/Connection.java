@@ -73,17 +73,17 @@ public abstract class Connection extends Thread implements EventHandler {
 			cq.add(this);
 	}
 
-	public abstract void joinChannel(String channel) throws Exception;
-	public abstract void sendQueryRealms() throws Exception;
+	public abstract void sendJoinChannel(String channel) throws Exception;
+	public abstract void sendQueryRealms2() throws Exception;
 	public abstract void sendLogonRealmEx(String realmTitle) throws Exception;
 	public abstract void sendClanInvitation(Object cookie, String user) throws Exception;
 	public abstract void sendClanRankChange(Object cookie, String user, int newRank) throws Exception;
 	public abstract void sendClanMOTD(Object cookie) throws Exception;
 	public abstract void sendClanSetMOTD(String text) throws Exception;
-	public abstract void sendProfile(String user) throws Exception;
+	public abstract void sendReadUserData(String user) throws Exception;
 
 	public void sendProfile(BNetUser user) throws Exception {
-		sendProfile(user.getFullAccountName());
+		sendReadUserData(user.getFullAccountName());
 	}
 
 	public abstract void reconnect();
@@ -208,7 +208,7 @@ public abstract class Connection extends Thread implements EventHandler {
 		return (checkDelay() <= 0);
 	}
 
-	public void sendChatNow(String text) {
+	public void sendChatCommand(String text) {
 		lastAntiIdle = System.currentTimeMillis();
 
 		if(canSendChat())
@@ -266,7 +266,7 @@ public abstract class Connection extends Thread implements EventHandler {
 		return text;
 	}
 
-	public void sendChat(String text) {
+	public void queueChatHelper(String text) {
 		if(text == null)
 			return;
 		if(text.length() == 0)
@@ -277,6 +277,20 @@ public abstract class Connection extends Thread implements EventHandler {
 		if(text.charAt(0) == '/') {
 			String[] command = text.substring(1).split(" ", 3);
 			switch(command[0].charAt(0)) {
+			case '/':
+				command = text.substring(2).split(" ", 2);
+				if(command.length > 0) {
+					String params = null;
+					if(command.length > 1)
+						params = command[1];
+	
+					for(EventHandler eh : eventHandlers)
+						eh.parseCommand(myUser, command[0], params, false);
+					
+					return;
+				}
+				break;
+				
 			case 'c':
 				if(command[0].equals("cmd")) {
 					if(command.length == 1)
@@ -287,7 +301,7 @@ public abstract class Connection extends Thread implements EventHandler {
 						params = command[2];
 
 					for(EventHandler eh : eventHandlers)
-						eh.parseCommand(myUser, command[1], params, false);
+						eh.parseCommand(myUser, command[1], params, true);
 
 					return;
 				}
@@ -298,7 +312,7 @@ public abstract class Connection extends Thread implements EventHandler {
 						if((command.length < 2) || (command[1].length() == 0))
 							sendProfile(myUser);
 						else
-							sendProfile(command[1]);
+							sendReadUserData(command[1]);
 					} catch(Exception e) {
 						Out.exception(e);
 					}
@@ -317,24 +331,29 @@ public abstract class Connection extends Thread implements EventHandler {
 			return;
 
 		if(canSendChat() && !GlobalSettings.enableFloodProtect) {
-			sendChatNow(text);
+			sendChatCommand(text);
 		} else {
 			chatQueue.enqueue(text, GlobalSettings.enableFloodProtect);
 		}
 	}
 
-	public void sendChat(BNetUser to, String text, boolean forceWhisper) {
+	public void sendChat(BNetUser to, String text, boolean whisperBack) {
 		if(text == null)
 			return;
 
 		text = cleanText(text);
 
-		if(myUser.equals(to))
+		if(whisperBack && myUser.equals(to))
 			recieveInfo(text);
 		else {
 			String prefix;
-			if(GlobalSettings.whisperBack || forceWhisper) {
-				prefix = "/w " + to.getFullLogonName() + " [BNU";
+			if(whisperBack || myUser.equals(to)) {
+				if(whisperBack)
+					prefix = "/w " + to.getFullLogonName() + " ";
+				else
+					prefix = "";
+				
+				prefix += "[BNU";
 				ReleaseType rt = CurrentVersion.version().getReleaseType();
 				if(rt.isAlpha())
 					prefix += " Alpha";
@@ -343,8 +362,9 @@ public abstract class Connection extends Thread implements EventHandler {
 				else if(rt.isReleaseCandidate())
 					prefix += " RC";
 				prefix += "] ";
-			} else
+			} else {
 				prefix = to.getShortPrettyName() + ": ";
+			}
 
 			//Split up the text in to appropriate sized pieces
 			int pieceSize = MAX_CHAT_LENGTH - prefix.length();
@@ -352,7 +372,7 @@ public abstract class Connection extends Thread implements EventHandler {
 				String piece = prefix + text.substring(i);
 				if(piece.length() > MAX_CHAT_LENGTH)
 					piece = piece.substring(0, MAX_CHAT_LENGTH);
-				sendChat(piece);
+				queueChatHelper(piece);
 			}
 		}
 	}
@@ -401,10 +421,10 @@ public abstract class Connection extends Thread implements EventHandler {
 		eh_semaphore--;
 	}
 
-	public void parseCommand(BNetUser user, String command, String param, boolean wasWhispered) {
+	public void parseCommand(BNetUser user, String command, String param, boolean whisperBack) {
 		eh_semaphore++;
 		for(EventHandler eh : eventHandlers)
-			eh.parseCommand(user, command, param, wasWhispered);
+			eh.parseCommand(user, command, param, whisperBack);
 		eh_semaphore--;
 	}
 
@@ -432,7 +452,7 @@ public abstract class Connection extends Thread implements EventHandler {
 				else
 					name = c.toString();
 				Out.info(getClass(), "[" + myUser.getFullLogonName() + "] Telling [" + name + "] to join " + channel);
-				c.joinChannel(channel);
+				c.sendJoinChannel(channel);
 			} catch (Exception e) {
 				Out.exception(e);
 			}
