@@ -7,7 +7,6 @@ package net.bnubot.vercheck;
 
 import java.io.File;
 import java.net.URL;
-import java.net.UnknownHostException;
 
 import javax.swing.JOptionPane;
 
@@ -34,8 +33,8 @@ public class VersionCheck {
 			url += "release=" + rt.toString();
 			Out.debug(VersionCheck.class, "Requesting latest version from " + url);
 			elem = XMLElementDecorator.parse(url);
-		} catch(UnknownHostException e) {
-			Out.error(VersionCheck.class, "Failed to connect to server.");
+		} catch(Exception e) {
+			Out.error(VersionCheck.class, "Failed to get latest version: " + e.getClass().getSimpleName() + ".");
 			return false;
 		}
 
