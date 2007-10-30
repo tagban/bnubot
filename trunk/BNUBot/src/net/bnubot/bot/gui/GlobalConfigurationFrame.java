@@ -438,8 +438,8 @@ public class GlobalConfigurationFrame extends JDialog {
 		pack();
 
 		Dimension size = this.getSize();
-		if((size.height > 600) || (size.width > 400))
-			this.setSize(Math.min(400, size.width), Math.min(600, size.height));
+		if((size.height > 650) || (size.width > 400))
+			this.setSize(Math.min(400, size.width), Math.min(650, size.height));
 	}
 
 	private void save() {
