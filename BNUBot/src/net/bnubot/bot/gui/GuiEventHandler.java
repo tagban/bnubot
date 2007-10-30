@@ -18,8 +18,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
-import javax.swing.JTextArea;
-import javax.swing.SwingConstants;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
@@ -41,8 +40,8 @@ public class GuiEventHandler implements EventHandler {
 	private JPanel frame = null;
 	private Connection con = null;
 	private TextWindow mainTextArea = null;
-	private JTextArea chatTextArea = null;
-	private JTextArea channelTextArea = null;
+	private JTextField chatTextArea = null;
+	private JTextField channelTextPane = null;
 	private UserList userList = null;
 	private FriendList friendList = null;
 	private ClanList clanList = null;
@@ -139,7 +138,8 @@ public class GuiEventHandler implements EventHandler {
 		// Main text area
 		mainTextArea = new TextWindow(colors);
 		// Send chat textbox
-		chatTextArea = new JTextArea();
+		chatTextArea = new JTextField();
+		chatTextArea.setBorder(null);
 		chatTextArea.setBackground(colors.getBackgroundColor());
 		chatTextArea.setForeground(Color.LIGHT_GRAY);
 		chatTextArea.addKeyListener(new KeyListener() {
@@ -200,12 +200,11 @@ public class GuiEventHandler implements EventHandler {
 			}
 		});
 		// Channel text box (above userlist)
-		channelTextArea = new JTextArea();
-		channelTextArea.setEditable(false);
-		channelTextArea.setAlignmentX(SwingConstants.CENTER);
-		channelTextArea.setAlignmentY(SwingConstants.CENTER);
-		channelTextArea.setBackground(colors.getBackgroundColor());
-		channelTextArea.setForeground(Color.LIGHT_GRAY);
+		channelTextPane = new JTextField();
+		channelTextPane.setHorizontalAlignment(JTextField.CENTER);
+		channelTextPane.setEditable(false);
+		channelTextPane.setBackground(colors.getBackgroundColor());
+		channelTextPane.setForeground(Color.LIGHT_GRAY);
 		
 		// The userlist
 		userList = new UserList(colors, con, this);
@@ -224,7 +223,7 @@ public class GuiEventHandler implements EventHandler {
 		leftSide.add(chatTextArea);
 		
 		JPanel rightSide = new JPanel();
-		rightSide.add(channelTextArea);
+		rightSide.add(channelTextPane);
 		rightSide.add(allLists);
 		
 		final Runnable redraw = new Runnable() {
@@ -267,21 +266,21 @@ public class GuiEventHandler implements EventHandler {
 		userList.showUser(user);
 		if(GlobalSettings.displayJoinParts)
 			mainTextArea.channelInfo(user + " has joined the channel" + user.getStatString().toString() + ".");
-		channelTextArea.setText(channel + " (" + userList.count() + ")");
+		channelTextPane.setText(channel + " (" + userList.count() + ")");
 	}
 
 	public void channelLeave(BNetUser user) {
 		userList.removeUser(user);
 		if(GlobalSettings.displayJoinParts)
 			mainTextArea.channelInfo(user + " has left the channel.");
-		channelTextArea.setText(channel + " (" + userList.count() + ")");
+		channelTextPane.setText(channel + " (" + userList.count() + ")");
 	}
 
 	public void channelUser(BNetUser user) {
 		if(GlobalSettings.displayChannelUsers)
 			mainTextArea.channelInfo(user + user.getStatString().toString() + ".");
 		userList.showUser(user);
-		channelTextArea.setText(channel + " (" + userList.count() + ")");
+		channelTextPane.setText(channel + " (" + userList.count() + ")");
 	}
 
 	public void joinedChannel(String channel) {
@@ -289,7 +288,7 @@ public class GuiEventHandler implements EventHandler {
 		userList.clear();
 		mainTextArea.addSeparator();
 		mainTextArea.channelInfo("Joining channel " + channel + ".");
-		channelTextArea.setText(channel);
+		channelTextPane.setText(channel);
 		
 		GuiDesktop.setTitle(this, con.getProductID());
 	}
@@ -355,12 +354,12 @@ public class GuiEventHandler implements EventHandler {
 
 	public void bnetConnected() {
 		userList.clear();
-		channelTextArea.setText(null);
+		channelTextPane.setText(null);
 	}
 
 	public void bnetDisconnected() {
 		userList.clear();
-		channelTextArea.setText(null);
+		channelTextPane.setText(null);
 		mainTextArea.recieveError("Disconnected from battle.net.");
 		mainTextArea.addSeparator();
 	}
