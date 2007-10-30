@@ -100,7 +100,13 @@ public class VersionCheck {
 		if(forceDownload) {
 			if(url == null)
 				return false;
-			URLDownloader.downloadURL(new URL(url), new File("BNUBot.jar"), null, true);
+			
+			XMLElementDecorator sha1Element = verLatest.getChild("sha1");
+			SHA1Sum sha1 = null;
+			if(sha1Element != null)
+				sha1 = new SHA1Sum(sha1Element.getString());
+			
+			URLDownloader.downloadURL(new URL(url), new File("BNUBot.jar"), sha1, true);
 			return true;
 		}
 			
