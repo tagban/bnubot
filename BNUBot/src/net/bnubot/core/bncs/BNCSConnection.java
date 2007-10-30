@@ -180,125 +180,19 @@ public class BNCSConnection extends Connection {
 				verByte = HashMain.getVerByte(cs.product);
 				
 				// Set up BNLS
-				setBNLSConnected(true);
-				bnlsInputStream = bnlsSocket.getInputStream();
-				bnlsOutputStream = bnlsSocket.getOutputStream();
-				
-				BNLS_REQUESTVERSIONBYTE: {
-					BNLSPacket vbPacket = new BNLSPacket(BNLSPacketId.BNLS_REQUESTVERSIONBYTE);
-					vbPacket.writeDWord(cs.product);
-					vbPacket.SendPacket(bnlsOutputStream);
-					
-					BNetInputStream vbInputStream = new BNLSPacketReader(bnlsInputStream).getInputStream();
-					int vbProduct = vbInputStream.readDWord();
-					if(vbProduct == 0) {
-						recieveError("BNLS_REQUESTVERSIONBYTE failed.");
-						break BNLS_REQUESTVERSIONBYTE;
-					}
-					int vb = vbInputStream.readWord();
-					
-					if(vb != verByte) {
-						recieveInfo("BNLS_REQUESTVERSIONBYTE: 0x" + Integer.toHexString(vb) + ".");
-						verByte = vb;
-					}
-				}
+				initializeBNLS();
 				
 				// Set up BNCS
-				setConnected(true);
-				bncsInputStream = socket.getInputStream();
-				bncsOutputStream = new DataOutputStream(socket.getOutputStream());
+				initializeBNCS();
 				
-				// Game
-				bncsOutputStream.writeByte(0x01);
+				// Begin login
+				sendInitialPackets();
 				
-				BNCSPacket p;
-				Locale loc = Locale.getDefault();
-				String prodLang = loc.getLanguage() + loc.getCountry();
-				int tzBias = TimeZone.getDefault().getOffset(System.currentTimeMillis()) / -60000;
 				
-				switch(cs.product) {
-				case ConnectionSettings.PRODUCT_STARCRAFT:
-				case ConnectionSettings.PRODUCT_BROODWAR:
-				case ConnectionSettings.PRODUCT_DIABLO2:
-				case ConnectionSettings.PRODUCT_LORDOFDESTRUCTION:
-				case ConnectionSettings.PRODUCT_WARCRAFT3:
-				case ConnectionSettings.PRODUCT_THEFROZENTHRONE: {
-					p = new BNCSPacket(BNCSPacketId.SID_AUTH_INFO);
-					p.writeDWord(0);							// Protocol ID (0)
-					p.writeDWord(PlatformIDs.PLATFORM_IX86);	// Platform ID (IX86)
-					p.writeDWord(productID);					// Product ID
-					p.writeDWord(verByte);						// Version byte
-					p.writeDWord(prodLang);						// Product language
-					p.writeDWord(0);							// Local IP
-					p.writeDWord(tzBias);						// TZ bias
-					p.writeDWord(0x409);						// Locale ID
-					p.writeDWord(0x409);						// Language ID
-					p.writeNTString(loc.getISO3Country());		// Country abreviation
-					p.writeNTString(loc.getDisplayCountry());	// Country
-					p.SendPacket(bncsOutputStream);
-					break;
-				}
-
-				case ConnectionSettings.PRODUCT_DIABLO:
-				case ConnectionSettings.PRODUCT_DIABLOSHAREWARE:
-				case ConnectionSettings.PRODUCT_STARCRAFTSHAREWARE:
-				case ConnectionSettings.PRODUCT_JAPANSTARCRAFT:
-				case ConnectionSettings.PRODUCT_WAR2BNE: {
-					if(cs.product == ConnectionSettings.PRODUCT_STARCRAFTSHAREWARE) {
-						p = new BNCSPacket(BNCSPacketId.SID_CLIENTID);
-						p.writeDWord(0);	// Registration Version
-						p.writeDWord(0);	// Registration Authority
-						p.writeDWord(0);	// Account Number
-						p.writeDWord(0);	// Registration Token
-						p.writeByte(0);		// LAN computer name
-						p.writeByte(0);		// LAN username
-						p.SendPacket(bncsOutputStream);
-					} else {
-						p = new BNCSPacket(BNCSPacketId.SID_CLIENTID2);
-						p.writeDWord(1);	// Server version
-						p.writeDWord(0);	// Registration Version
-						p.writeDWord(0);	// Registration Authority
-						p.writeDWord(0);	// Account Number
-						p.writeDWord(0);	// Registration Token
-						p.writeByte(0);		// LAN computer name
-						p.writeByte(0);		// LAN username
-						p.SendPacket(bncsOutputStream);
-					}
+				if(connectionLoop())
+					connectedLoop();
 					
-					p = new BNCSPacket(BNCSPacketId.SID_LOCALEINFO);
-					p.writeQWord(0);		// System time
-					p.writeQWord(0);		// Local time
-					p.writeDWord(tzBias);	// TZ bias
-					p.writeDWord(0x409);	// SystemDefaultLCID
-					p.writeDWord(0x409);	// UserDefaultLCID
-					p.writeDWord(0x409);	// UserDefaultLangID
-					p.writeNTString("ena");	// Abbreviated language name
-					p.writeNTString("1");	// Country code
-					p.writeNTString(loc.getISO3Country());	// Abbreviated country name
-					p.writeNTString(loc.getDisplayCountry());	// Country (English)
-					p.SendPacket(bncsOutputStream);
-					
-					// TODO: JSTR/SSHR: SID_SYSTEMINFO
-					
-					p = new BNCSPacket(BNCSPacketId.SID_STARTVERSIONING);
-					p.writeDWord(PlatformIDs.PLATFORM_IX86);	// Platform ID (IX86)
-					p.writeDWord(productID);					// Product ID
-					p.writeDWord(verByte);						// Version byte
-					p.writeDWord(0);							// Unknown (0)
-					p.SendPacket(bncsOutputStream);
-					break;
-				}
-					
-				default:
-					recieveError("Don't know how to connect with product " + productID);
-					setConnected(false);
-					break;
-				}
-				
-				//The connection loop
-				connectedLoop();
-					
-				//Connection closed; do cleanup
+				// Connection closed; do cleanup
 				BNetUser.clearCache();
 				myStatString = null;
 				myUser = null;
@@ -322,91 +216,146 @@ public class BNCSConnection extends Connection {
 			try { sleep(waitTime); } catch (InterruptedException e1) { }
 		}
 	}
-	
-	private static ArrayList<String> antiIdles = null;
-	private String getAntiIdle() {
-		if(antiIdles == null) {
-			antiIdles = new ArrayList<String>();
-			BufferedReader is = null;
-			try {
-				File f = new File("anti-idle.txt");
-				if(!f.exists()) {
-					f.createNewFile();
-					
-					FileWriter os = new FileWriter(f);
-					os.write("# Enter anti-idle messages in this file.\r\n");
-					os.write("# \r\n");
-					os.write("# Lines beginning with '#' are regarded as comments\r\n");
-					os.write("# \r\n");
-					os.write("\r\n");
-					os.close();
-				}
-				is = new BufferedReader(new FileReader(f));
-			} catch (Exception e) {
-				Out.fatalException(e);
+
+	/**
+	 * @throws IOException
+	 * @throws SocketException
+	 */
+	private void initializeBNLS() throws IOException, SocketException {
+		setBNLSConnected(true);
+		bnlsInputStream = bnlsSocket.getInputStream();
+		bnlsOutputStream = bnlsSocket.getOutputStream();
+		
+		BNLS_REQUESTVERSIONBYTE: {
+			BNLSPacket vbPacket = new BNLSPacket(BNLSPacketId.BNLS_REQUESTVERSIONBYTE);
+			vbPacket.writeDWord(cs.product);
+			vbPacket.SendPacket(bnlsOutputStream);
+			
+			BNetInputStream vbInputStream = new BNLSPacketReader(bnlsInputStream).getInputStream();
+			int vbProduct = vbInputStream.readDWord();
+			if(vbProduct == 0) {
+				recieveError("BNLS_REQUESTVERSIONBYTE failed.");
+				break BNLS_REQUESTVERSIONBYTE;
+			}
+			int vb = vbInputStream.readWord();
+			
+			if(vb != verByte) {
+				recieveInfo("BNLS_REQUESTVERSIONBYTE: 0x" + Integer.toHexString(vb) + ".");
+				verByte = vb;
+			}
+		}
+	}
+
+	/**
+	 * Send the initial set of packets
+	 * @throws Exception
+	 */
+	private void sendInitialPackets() throws Exception {
+		BNCSPacket p;
+		Locale loc = Locale.getDefault();
+		String prodLang = loc.getLanguage() + loc.getCountry();
+		int tzBias = TimeZone.getDefault().getOffset(System.currentTimeMillis()) / -60000;
+		
+		switch(cs.product) {
+		case ConnectionSettings.PRODUCT_STARCRAFT:
+		case ConnectionSettings.PRODUCT_BROODWAR:
+		case ConnectionSettings.PRODUCT_DIABLO2:
+		case ConnectionSettings.PRODUCT_LORDOFDESTRUCTION:
+		case ConnectionSettings.PRODUCT_WARCRAFT3:
+		case ConnectionSettings.PRODUCT_THEFROZENTHRONE: {
+			p = new BNCSPacket(BNCSPacketId.SID_AUTH_INFO);
+			p.writeDWord(0);							// Protocol ID (0)
+			p.writeDWord(PlatformIDs.PLATFORM_IX86);	// Platform ID (IX86)
+			p.writeDWord(productID);					// Product ID
+			p.writeDWord(verByte);						// Version byte
+			p.writeDWord(prodLang);						// Product language
+			p.writeDWord(0);							// Local IP
+			p.writeDWord(tzBias);						// TZ bias
+			p.writeDWord(0x409);						// Locale ID
+			p.writeDWord(0x409);						// Language ID
+			p.writeNTString(loc.getISO3Country());		// Country abreviation
+			p.writeNTString(loc.getDisplayCountry());	// Country
+			p.SendPacket(bncsOutputStream);
+			break;
+		}
+
+		case ConnectionSettings.PRODUCT_DIABLO:
+		case ConnectionSettings.PRODUCT_DIABLOSHAREWARE:
+		case ConnectionSettings.PRODUCT_STARCRAFTSHAREWARE:
+		case ConnectionSettings.PRODUCT_JAPANSTARCRAFT:
+		case ConnectionSettings.PRODUCT_WAR2BNE: {
+			if(cs.product == ConnectionSettings.PRODUCT_STARCRAFTSHAREWARE) {
+				p = new BNCSPacket(BNCSPacketId.SID_CLIENTID);
+				p.writeDWord(0);	// Registration Version
+				p.writeDWord(0);	// Registration Authority
+				p.writeDWord(0);	// Account Number
+				p.writeDWord(0);	// Registration Token
+				p.writeByte(0);		// LAN computer name
+				p.writeByte(0);		// LAN username
+				p.SendPacket(bncsOutputStream);
+			} else {
+				p = new BNCSPacket(BNCSPacketId.SID_CLIENTID2);
+				p.writeDWord(1);	// Server version
+				p.writeDWord(0);	// Registration Version
+				p.writeDWord(0);	// Registration Authority
+				p.writeDWord(0);	// Account Number
+				p.writeDWord(0);	// Registration Token
+				p.writeByte(0);		// LAN computer name
+				p.writeByte(0);		// LAN username
+				p.SendPacket(bncsOutputStream);
 			}
 			
-			do {
-				String line = null;
-				try {
-					line = is.readLine();
-				} catch (IOException e) {
-					Out.fatalException(e);
-				}
-				if(line == null)
-					break;
-				
-				line = line.trim();
-				if(line.length() == 0)
-					continue;
-				
-				if(line.charAt(0) != '#')
-					antiIdles.add(line);
-			} while(true);
+			p = new BNCSPacket(BNCSPacketId.SID_LOCALEINFO);
+			p.writeQWord(0);		// System time
+			p.writeQWord(0);		// Local time
+			p.writeDWord(tzBias);	// TZ bias
+			p.writeDWord(0x409);	// SystemDefaultLCID
+			p.writeDWord(0x409);	// UserDefaultLCID
+			p.writeDWord(0x409);	// UserDefaultLangID
+			p.writeNTString("ena");	// Abbreviated language name
+			p.writeNTString("1");	// Country code
+			p.writeNTString(loc.getISO3Country());	// Abbreviated country name
+			p.writeNTString(loc.getDisplayCountry());	// Country (English)
+			p.SendPacket(bncsOutputStream);
 			
-			try { is.close(); } catch (Exception e) {}
+			// TODO: JSTR/SSHR: SID_SYSTEMINFO
+			
+			p = new BNCSPacket(BNCSPacketId.SID_STARTVERSIONING);
+			p.writeDWord(PlatformIDs.PLATFORM_IX86);	// Platform ID (IX86)
+			p.writeDWord(productID);					// Product ID
+			p.writeDWord(verByte);						// Version byte
+			p.writeDWord(0);							// Unknown (0)
+			p.SendPacket(bncsOutputStream);
+			break;
 		}
+			
+		default:
+			recieveError("Don't know how to connect with product " + productID);
+			setConnected(false);
+			break;
+		}
+	}
+
+	/**
+	 * Initialize the connection, send game id
+	 * @throws Exception
+	 */
+	private void initializeBNCS() throws Exception {
+		// Set up BNCS
+		setConnected(true);
+		bncsInputStream = socket.getInputStream();
+		bncsOutputStream = new DataOutputStream(socket.getOutputStream());
 		
-		//grab one
-		int i = antiIdles.size();
-		if(i == 0)
-			return GlobalSettings.antiIdle;
-		i = (int)Math.floor(Math.random() * i);
-		return antiIdles.get(i);
+		// Game
+		bncsOutputStream.writeByte(0x01);
 	}
 	
-	private void connectedLoop() throws Exception  {
-		lastAntiIdle = System.currentTimeMillis();
-		lastNullPacket = System.currentTimeMillis();
-		
+	/**
+	 * Do the login work up to SID_ENTERCHAT
+	 * @throws Exception
+	 */
+	private boolean connectionLoop() throws Exception {
 		while(connected && !socket.isClosed()) {
-			long timeNow = System.currentTimeMillis();
-			
-			//Send null packets every 30 seconds
-			if(true) {
-				long timeSinceNullPacket = timeNow - lastNullPacket;
-				//Wait 30 seconds
-				timeSinceNullPacket /= 1000;
-				if(timeSinceNullPacket > 30) {
-					lastNullPacket = timeNow;
-					BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_NULL);
-					p.SendPacket(bncsOutputStream);
-				}
-			}
-			
-			//Send anti-idles every 5 minutes
-			if((channelName != null) && GlobalSettings.enableAntiIdle) {
-				long timeSinceAntiIdle = timeNow - lastAntiIdle;
-				
-				//Wait 5 minutes
-				timeSinceAntiIdle /= 1000;
-				timeSinceAntiIdle /= 60;
-				if(timeSinceAntiIdle >= GlobalSettings.antiIdleTimer) {
-					lastAntiIdle = timeNow;
-					sendChat(getAntiIdle());
-				}
-			}
-			
 			if(bncsInputStream.available() > 0) {
 				BNCSPacketReader pr;
 				pr = new BNCSPacketReader(bncsInputStream);
@@ -419,7 +368,6 @@ public class BNCSConnection extends Connection {
 					break;
 					
 				case SID_NULL: {
-					lastNullPacket = timeNow;
 					BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_NULL);
 					p.SendPacket(bncsOutputStream);
 					break;
@@ -431,6 +379,8 @@ public class BNCSConnection extends Connection {
 					p.SendPacket(bncsOutputStream);
 					break;
 				}
+				
+
 				
 				case SID_AUTH_INFO:
 				case SID_STARTVERSIONING: {
@@ -814,7 +764,7 @@ public class BNCSConnection extends Connection {
 						break;
 					case 0x0E:
 						recieveError("An email address should be registered for this account.");
-						registerEmail();
+						sendSetEmail();
 						break;
 					case 0x0F:
 						recieveError("Custom bnet error: " + additionalInfo);
@@ -845,7 +795,7 @@ public class BNCSConnection extends Connection {
 						recieveInfo("Login successful; entering chat.");
 						enterChat();
 						getChannelList();
-						joinChannel(cs.channel);
+						sendJoinChannel(cs.channel);
 						break;
 					case 0x01:	// Account doesn't exist
 						recieveInfo("Account doesn't exist; creating...");
@@ -928,7 +878,7 @@ public class BNCSConnection extends Connection {
 				
 				case SID_SETEMAIL: {
 					recieveError("An email address should be registered for this account.");
-					registerEmail();
+					sendSetEmail();
 					break;
 				}
 				
@@ -957,8 +907,94 @@ public class BNCSConnection extends Connection {
 					// Join home channel
 					if(nlsRevision != null) {
 						getChannelList();
-						joinChannel(cs.channel);
+						sendJoinChannel(cs.channel);
 					}
+					
+					return true;
+				}
+				
+				case SID_CLANINFO: {
+					/* (BYTE)		 Unknown (0)
+					 * (DWORD)		 Clan tag
+					 * (BYTE)		 Rank
+					 */
+					is.readByte();
+					myClan = is.readDWord();
+					myClanRank = is.readByte();
+					titleChanged();
+					
+					//TODO: clanInfo(myClan, myClanRank);
+					
+					// Get clan list
+					BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_CLANMEMBERLIST);
+					p.writeDWord(0);	// Cookie
+					p.SendPacket(bncsOutputStream);
+					break;
+				}
+				
+				default:
+					Out.debugAlways(getClass(), "Unexpected packet " + pr.packetId.name() + "\n" + HexDump.hexDump(pr.data));
+					break;
+				}
+			}
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * This method is the main loop after recieving SID_ENTERCHAT
+	 * @throws Exception
+	 */
+	private void connectedLoop() throws Exception {
+		lastAntiIdle = System.currentTimeMillis();
+		lastNullPacket = System.currentTimeMillis();
+		
+		while(connected && !socket.isClosed()) {
+			long timeNow = System.currentTimeMillis();
+			
+			//Send null packets every 30 seconds
+			if(true) {
+				long timeSinceNullPacket = timeNow - lastNullPacket;
+				//Wait 30 seconds
+				timeSinceNullPacket /= 1000;
+				if(timeSinceNullPacket > 30) {
+					lastNullPacket = timeNow;
+					BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_NULL);
+					p.SendPacket(bncsOutputStream);
+				}
+			}
+			
+			//Send anti-idles every 5 minutes
+			if((channelName != null) && GlobalSettings.enableAntiIdle) {
+				long timeSinceAntiIdle = timeNow - lastAntiIdle;
+				
+				//Wait 5 minutes
+				timeSinceAntiIdle /= 1000;
+				timeSinceAntiIdle /= 60;
+				if(timeSinceAntiIdle >= GlobalSettings.antiIdleTimer) {
+					lastAntiIdle = timeNow;
+					queueChatHelper(getAntiIdle());
+				}
+			}
+			
+			if(bncsInputStream.available() > 0) {
+				BNCSPacketReader pr;
+				pr = new BNCSPacketReader(bncsInputStream);
+				BNetInputStream is = pr.getData();
+				
+				switch(pr.packetId) {
+				case SID_NULL: {
+					lastNullPacket = timeNow;
+					BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_NULL);
+					p.SendPacket(bncsOutputStream);
+					break;
+				}
+				
+				case SID_PING: {
+					BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_PING);
+					p.writeDWord(is.readDWord());
+					p.SendPacket(bncsOutputStream);
 					break;
 				}
 				
@@ -1088,7 +1124,7 @@ public class BNCSConnection extends Connection {
 						break;
 					case EID_CHANNELRESTRICTED:
 						recieveError("Channel " + text + " is restricted; forcing entry");
-						joinChannel2(text);
+						sendJoinChannel2(text);
 						break;
 					case EID_CHANNELFULL:
 						recieveError("Channel " + text + " is full");
@@ -1324,25 +1360,6 @@ public class BNCSConnection extends Connection {
 				// SID_CLANDISBAND
 				// SID_CLANMAKECHIEFTAIN
 				
-				case SID_CLANINFO: {
-					/* (BYTE)		 Unknown (0)
-					 * (DWORD)		 Clan tag
-					 * (BYTE)		 Rank
-					 */
-					is.readByte();
-					myClan = is.readDWord();
-					myClanRank = is.readByte();
-					titleChanged();
-					
-					//TODO: clanInfo(myClan, myClanRank);
-					
-					// Get clan list
-					BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_CLANMEMBERLIST);
-					p.writeDWord(0);	// Cookie
-					p.SendPacket(bncsOutputStream);
-					break;
-				}
-				
 				// SID_CLANQUITNOTIFY
 				case SID_CLANINVITATION: {
 					Object cookie = CookieUtility.destroyCookie(is.readDWord());
@@ -1519,7 +1536,7 @@ public class BNCSConnection extends Connection {
 				// TODO: SID_CLANMEMBERINFORMATION
 				
 				default:
-					Out.debugAlways(getClass(), "Unknown packet " + pr.packetId.name() + "\n" + HexDump.hexDump(pr.data));
+					Out.debugAlways(getClass(), "Unexpected packet " + pr.packetId.name() + "\n" + HexDump.hexDump(pr.data));
 					break;
 				}
 			} else {
@@ -1528,7 +1545,58 @@ public class BNCSConnection extends Connection {
 			}
 		}
 	}
-	
+
+	private static ArrayList<String> antiIdles = null;
+	private String getAntiIdle() {
+		if(antiIdles == null) {
+			antiIdles = new ArrayList<String>();
+			BufferedReader is = null;
+			try {
+				File f = new File("anti-idle.txt");
+				if(!f.exists()) {
+					f.createNewFile();
+					
+					FileWriter os = new FileWriter(f);
+					os.write("# Enter anti-idle messages in this file.\r\n");
+					os.write("# \r\n");
+					os.write("# Lines beginning with '#' are regarded as comments\r\n");
+					os.write("# \r\n");
+					os.write("\r\n");
+					os.close();
+				}
+				is = new BufferedReader(new FileReader(f));
+			} catch (Exception e) {
+				Out.fatalException(e);
+			}
+			
+			do {
+				String line = null;
+				try {
+					line = is.readLine();
+				} catch (IOException e) {
+					Out.fatalException(e);
+				}
+				if(line == null)
+					break;
+				
+				line = line.trim();
+				if(line.length() == 0)
+					continue;
+				
+				if(line.charAt(0) != '#')
+					antiIdles.add(line);
+			} while(true);
+			
+			try { is.close(); } catch (Exception e) {}
+		}
+		
+		//grab one
+		int i = antiIdles.size();
+		if(i == 0)
+			return GlobalSettings.antiIdle;
+		i = (int)Math.floor(Math.random() * i);
+		return antiIdles.get(i);
+	}
 	public boolean isOp() {
 		Integer myFlags = myUser.getFlags();
 		if(myFlags == null)
@@ -1536,7 +1604,11 @@ public class BNCSConnection extends Connection {
 		return (myFlags & 0x02) == 0x02;
 	}
 	
-	private void registerEmail() throws Exception {
+	/**
+	 * Send SID_SETEMAIL
+	 * @throws Exception
+	 */
+	private void sendSetEmail() throws Exception {
 		if(cs.email == null)
 			return;
 		if(cs.email.length() == 0)
@@ -1547,43 +1619,52 @@ public class BNCSConnection extends Connection {
 		p.SendPacket(bncsOutputStream);
 	}
 
-	public void joinChannel(String channel) throws Exception {
+	/**
+	 * Send SID_JOINCHANNEL
+	 */
+	public void sendJoinChannel(String channel) throws Exception {
 		BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_JOINCHANNEL);
 		p.writeDWord(0); // nocreate join
 		p.writeNTString(channel);
 		p.SendPacket(bncsOutputStream);
 	}
 
-	public void joinChannel2(String channel) throws Exception {
+	/**
+	 * Send SID_JOINCHANNEL with create channel flag
+	 */
+	public void sendJoinChannel2(String channel) throws Exception {
 		BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_JOINCHANNEL);
 		p.writeDWord(2); // force join
 		p.writeNTString(channel);
 		p.SendPacket(bncsOutputStream);
 	}
 	
-	public void sendChat(String text) {
+	public void queueChatHelper(String text) {
 		text = cleanText(text);
 		
 		try {
 			if(text.substring(0, 3).equals("/j ")) {
-				joinChannel(text.substring(3));
+				sendJoinChannel(text.substring(3));
 				return;
 			}
 			if(text.substring(0, 6).equals("/join ")) {
-				joinChannel(text.substring(6));
+				sendJoinChannel(text.substring(6));
 				return;
 			}
 			if(text.substring(0, 6).equals("/join2 ")) {
-				joinChannel2(text.substring(6));
+				sendJoinChannel2(text.substring(6));
 				return;
 			}
 		} catch(Exception e) {}
 		
-		super.sendChat(text);
+		super.queueChatHelper(text);
 	}
 	
-	public void sendChatNow(String text) {
-		super.sendChatNow(text);
+	/**
+	 * Send SID_CHATCOMMAND
+	 */
+	public void sendChatCommand(String text) {
+		super.sendChatCommand(text);
 		
 
 		switch(productID) {
@@ -1629,6 +1710,9 @@ public class BNCSConnection extends Connection {
 			recieveChat(myUser, text);
 	}
 
+	/**
+	 * Send SID_CLANINVITATION 
+	 */
 	public void sendClanInvitation(Object cookie, String user) throws Exception {
 		switch(productID) {
 		case ProductIDs.PRODUCT_WAR3:
@@ -1648,7 +1732,10 @@ public class BNCSConnection extends Connection {
 		p.writeNTString(user);	//Username
 		p.SendPacket(bncsOutputStream);
 	}
-	
+
+	/**
+	 * Send SID_CLANRANKCHANGE 
+	 */
 	public void sendClanRankChange(Object cookie, String user, int newRank) throws Exception {
 		switch(productID) {
 		case ProductIDs.PRODUCT_WAR3:
@@ -1665,6 +1752,9 @@ public class BNCSConnection extends Connection {
 		p.SendPacket(bncsOutputStream);
 	}
 
+	/**
+	 * Send SID_CLANMOTD 
+	 */
 	public void sendClanMOTD(Object cookie) throws Exception {
 		switch(productID) {
 		case ProductIDs.PRODUCT_WAR3:
@@ -1678,7 +1768,10 @@ public class BNCSConnection extends Connection {
 		p.writeDWord(CookieUtility.createCookie(cookie));
 		p.SendPacket(bncsOutputStream);
 	}
-	
+
+	/**
+	 * Send SID_CLANSETMOTD 
+	 */
 	public void sendClanSetMOTD(String text) throws Exception {
 		switch(productID) {
 		case ProductIDs.PRODUCT_WAR3:
@@ -1693,8 +1786,11 @@ public class BNCSConnection extends Connection {
 		p.writeNTString(text);
 		p.SendPacket(bncsOutputStream);
 	}
-	
-	public void sendQueryRealms() throws Exception {
+
+	/**
+	 * Send SID_QUERYREALMS2 
+	 */
+	public void sendQueryRealms2() throws Exception {
 		switch(productID) {
 		case ProductIDs.PRODUCT_D2DV:
 		case ProductIDs.PRODUCT_D2XP:
@@ -1710,7 +1806,10 @@ public class BNCSConnection extends Connection {
 		BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_QUERYREALMS2);
 		p.SendPacket(bncsOutputStream);
 	}
-	
+
+	/**
+	 * Send SID_LOGONREALMEX 
+	 */
 	public void sendLogonRealmEx(String realmTitle) throws Exception {
 		switch(productID) {
 		case ProductIDs.PRODUCT_D2DV:
@@ -1756,7 +1855,11 @@ public class BNCSConnection extends Connection {
 		
 		return value;
 	}
-	public void sendProfile(String user) throws Exception {
+
+	/**
+	 * Send SID_READUSERDATA 
+	 */
+	public void sendReadUserData(String user) throws Exception {
 		/*BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_PROFILE);
 		p.writeDWord(CookieUtility.createCookie(user));
 		p.writeNTString(user);

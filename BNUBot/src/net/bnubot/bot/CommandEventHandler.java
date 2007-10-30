@@ -82,7 +82,7 @@ public class CommandEventHandler implements EventHandler {
 		}
 	}
 	
-	public void parseCommand(BNetUser user, String command, String param, boolean wasWhispered) {
+	public void parseCommand(BNetUser user, String command, String param, boolean whisperBack) {
 		try {
 			String[] params = null;
 			if(param != null)
@@ -119,8 +119,7 @@ public class CommandEventHandler implements EventHandler {
 			{
 				CommandResultSet rsCommand = d.getCommand(command);
 				if(!rsCommand.next()) {
-					if(!wasWhispered)
-						c.recieveError("Command " + command + " not found in database");
+					c.recieveError("Command " + command + " not found in database");
 					d.close(rsCommand);
 					return;
 				}
@@ -155,7 +154,7 @@ public class CommandEventHandler implements EventHandler {
 							rsSubjectCategory = d.getCommandCategory(params[0], commanderAccess);
 						
 						if((rsSubjectCategory == null) || !rsSubjectCategory.next()) {
-							c.sendChat(user, "The category [" + params[0] + "] does not exist!", wasWhispered);
+							c.sendChat(user, "The category [" + params[0] + "] does not exist!", whisperBack);
 							if(rsSubjectCategory != null)
 								d.close(rsSubjectCategory);							
 							break;
@@ -167,14 +166,14 @@ public class CommandEventHandler implements EventHandler {
 							result += ", " + rsSubjectCategory.getName() + " (" + rsSubjectCategory.getAccess() + ")";
 						
 						d.close(rsSubjectCategory);
-						c.sendChat(user, result, wasWhispered);
+						c.sendChat(user, result, whisperBack);
 					} catch(InvalidUseException e) {
 						String use = "Use: %trigger%access <category> -- Available categories for rank " + commanderAccess + ": all";
 						CommandResultSet rsCategories = d.getCommandCategories(commanderAccess);
 						while(rsCategories.next())
 							use += ", " + rsCategories.getCmdGroup();
 						d.close(rsCategories);
-						c.sendChat(user, use, wasWhispered);
+						c.sendChat(user, use, whisperBack);
 						break;
 					}
 					break;
@@ -206,9 +205,9 @@ public class CommandEventHandler implements EventHandler {
 						rsSubjectAccount.setLastRankChange(new Timestamp(System.currentTimeMillis()));
 						rsSubjectAccount.updateRow();
 						d.close(rsSubjectAccount);
-						c.sendChat(user, "Added user [" + subjectAccount + "] successfully with access " + targetAccess, wasWhispered);
+						c.sendChat(user, "Added user [" + subjectAccount + "] successfully with access " + targetAccess, whisperBack);
 					} catch(InvalidUseException e) {
-						c.sendChat(user, "Use: %trigger%add <account> <access>", wasWhispered);
+						c.sendChat(user, "Use: %trigger%add <account> <access>", whisperBack);
 						break;
 					}
 					break;
@@ -222,16 +221,16 @@ public class CommandEventHandler implements EventHandler {
 						
 						CommandResultSet rsSubectCommand = d.getCommand(params[0]);
 						if((rsSubectCommand == null) || !rsSubectCommand.next()) {
-							c.sendChat(user, "The command [" + params[0] + "] does not exist!", wasWhispered);
+							c.sendChat(user, "The command [" + params[0] + "] does not exist!", whisperBack);
 							break;
 						}
 						
 						params[0] = rsSubectCommand.getName();
 						long access = rsSubectCommand.getAccess();
 						
-						c.sendChat(user, "Authorization required for " + params[0] + " is " + access, wasWhispered);
+						c.sendChat(user, "Authorization required for " + params[0] + " is " + access, whisperBack);
 					} catch(InvalidUseException e) {
-						c.sendChat(user, "Use: %trigger%auth <command>", wasWhispered);
+						c.sendChat(user, "Use: %trigger%auth <command>", whisperBack);
 						break;
 					}
 					break;
@@ -305,7 +304,7 @@ public class CommandEventHandler implements EventHandler {
 								if(recruitScore > 0)
 									result += ", Recruit Score: " + recruitScore;
 								
-								c.sendChat(user, result, wasWhispered);
+								c.sendChat(user, result, whisperBack);
 							} else {
 								String result = "AutoPromotion Info for [" + rsSubjectAccount.getName() + "]: ";
 								result += "Days: " + timeElapsed + "/" + apDays;
@@ -318,7 +317,7 @@ public class CommandEventHandler implements EventHandler {
 										result += "/" + apRecruitScore;
 								}
 								
-								c.sendChat(user, result, wasWhispered);
+								c.sendChat(user, result, whisperBack);
 							}
 						} else {
 							String result = "Rank " + subjectRank + " was not found in the database; please contact the bot master and report this error. ";
@@ -328,12 +327,12 @@ public class CommandEventHandler implements EventHandler {
 							result += wins[1] + " D2 level, ";
 							result += wins[2] + " W3 level";
 							
-							c.sendChat(user, result, wasWhispered);
+							c.sendChat(user, result, whisperBack);
 						}
 						d.close(rsRank);
 						d.close(rsSubjectAccount);
 					} catch(InvalidUseException e) {
-						c.sendChat(user, "Use: %trigger%automaticpromotion [account]", wasWhispered);
+						c.sendChat(user, "Use: %trigger%automaticpromotion [account]", whisperBack);
 					}
 					break;
 				}
@@ -341,24 +340,24 @@ public class CommandEventHandler implements EventHandler {
 			case 'b':
 				if(command.equals("ban")) {
 					if((param == null) || (param.length() == 0)) {
-						c.sendChat(user, "Use: %trigger%ban <user>[@<realm>] [reason]", wasWhispered);
+						c.sendChat(user, "Use: %trigger%ban <user>[@<realm>] [reason]", whisperBack);
 						break;
 					}
-					c.sendChat("/ban " + param);
+					c.queueChatHelper("/ban " + param);
 					break;
 				}
 				break;
 			case 'c':
 				if(command.equals("createaccount")) {
 					if((params == null) || (params.length != 1)) {
-						c.sendChat(user, "Use: %trigger%createaccount <account>", wasWhispered);
+						c.sendChat(user, "Use: %trigger%createaccount <account>", whisperBack);
 						break;
 					}
 					
 					AccountResultSet rsAccount = d.getAccount(params[0]);
 					if(rsAccount.next()) {
 						d.close(rsAccount);
-						c.sendChat(user, "The account [" + params[0] + "] already exists", wasWhispered);
+						c.sendChat(user, "The account [" + params[0] + "] already exists", whisperBack);
 						break;
 					}
 					d.close(rsAccount);
@@ -366,12 +365,12 @@ public class CommandEventHandler implements EventHandler {
 					rsAccount = d.createAccount(params[0], 0L, commanderAccountID);
 					if(!rsAccount.next()) {
 						d.close(rsAccount);
-						c.sendChat(user, "Failed to create account [" + params[0] + "] for an unknown reason", wasWhispered);
+						c.sendChat(user, "Failed to create account [" + params[0] + "] for an unknown reason", whisperBack);
 						break;
 					}
 					d.close(rsAccount);
 					
-					c.sendChat(user, "The account [" + params[0] + "] has been created", wasWhispered);
+					c.sendChat(user, "The account [" + params[0] + "] has been created", whisperBack);
 					break;
 				}
 				break;
@@ -384,7 +383,7 @@ public class CommandEventHandler implements EventHandler {
 			case 'i':
 				if(command.equals("info")) {
 					Properties p = System.getProperties();
-					c.sendChat(user, "BNU-Bot " + CurrentVersion.version() + " running on " + p.getProperty("os.name") + " (" + p.getProperty("os.arch") + ")", wasWhispered);
+					c.sendChat(user, "BNU-Bot " + CurrentVersion.version() + " running on " + p.getProperty("os.name") + " (" + p.getProperty("os.arch") + ")", whisperBack);
 					break;
 				}
 				if(command.equals("invite")) {
@@ -394,10 +393,10 @@ public class CommandEventHandler implements EventHandler {
 						if(params.length != 1)
 							throw new InvalidUseException();
 
-						c.sendClanInvitation(new CommandResponseCookie(user, wasWhispered), params[0]);
+						c.sendClanInvitation(new CommandResponseCookie(user, whisperBack), params[0]);
 						break;
 					} catch(InvalidUseException e) {
-						c.sendChat(user, "Use: %trigger%invite <user>", wasWhispered);
+						c.sendChat(user, "Use: %trigger%invite <user>", whisperBack);
 						break;
 					}
 				}
@@ -405,17 +404,17 @@ public class CommandEventHandler implements EventHandler {
 			case 'k':
 				if(command.equals("kick")) {
 					if((param == null) || (param.length() == 0)) {
-						c.sendChat(user, "Use: %trigger%kick <user>[@<realm>] [reason]", wasWhispered);
+						c.sendChat(user, "Use: %trigger%kick <user>[@<realm>] [reason]", whisperBack);
 						break;
 					}
-					c.sendChat("/kick " + param);
+					c.queueChatHelper("/kick " + param);
 					break;
 				}
 				break;
 			case 'm':
 				if(command.equals("mail")) {
 					if(commanderAccountID == null) {
-						c.sendChat(user, "You must have an account to use mail.", wasWhispered);
+						c.sendChat(user, "You must have an account to use mail.", whisperBack);
 						break;
 					}
 					
@@ -438,7 +437,7 @@ public class CommandEventHandler implements EventHandler {
 							d.close(rsTargetAccount);
 							
 							d.sendMail(commanderAccountID, targetAccountID, params[2]);
-							c.sendChat(user, "Mail queued for delivery to " +  params[1], wasWhispered);
+							c.sendChat(user, "Mail queued for delivery to " +  params[1], whisperBack);
 						} else if(params[0].equals("read")
 								||params[0].equals("get")) {
 							//read [number]
@@ -483,7 +482,7 @@ public class CommandEventHandler implements EventHandler {
 								long mailCount = d.getMailCount(commanderAccountID);
 								if(mailCount > 0)
 									message += " To read your " + mailCount + " messages, type [ %trigger%mail read <number> ]";
-								c.sendChat(user, message, wasWhispered);
+								c.sendChat(user, message, whisperBack);
 							} else {
 								long mailNumber = 0;
 								while(rsMail.next()) {
@@ -509,7 +508,7 @@ public class CommandEventHandler implements EventHandler {
 									break COMMAND;
 								}
 								
-								c.sendChat(user, "You only have " + mailNumber + " messages!", wasWhispered);
+								c.sendChat(user, "You only have " + mailNumber + " messages!", whisperBack);
 							}
 							d.close(rsMail);
 							break;
@@ -521,16 +520,16 @@ public class CommandEventHandler implements EventHandler {
 								throw new InvalidUseException();
 							
 							if(d.getUnreadMailCount(commanderAccountID) > 0) {
-								c.sendChat(user, "You have unread mail!", wasWhispered);
+								c.sendChat(user, "You have unread mail!", whisperBack);
 								break;
 							}
 							
 							d.clearMail(commanderAccountID);
-							c.sendChat(user, "Mailbox cleaned!", wasWhispered);
+							c.sendChat(user, "Mailbox cleaned!", whisperBack);
 						} else
 							throw new InvalidUseException();
 					} catch(InvalidUseException e) {
-						c.sendChat(user, "Use: %trigger%mail (read [number] | empty | send <account> <message>)", wasWhispered);
+						c.sendChat(user, "Use: %trigger%mail (read [number] | empty | send <account> <message>)", whisperBack);
 					}
 					break;
 				}
@@ -559,25 +558,25 @@ public class CommandEventHandler implements EventHandler {
 							d.sendMail(commanderAccountID, targetAccountID, message);
 							numAccounts++;
 						}
-						c.sendChat(user, "Mail queued for delivery to " + numAccounts + " accounts", wasWhispered);
+						c.sendChat(user, "Mail queued for delivery to " + numAccounts + " accounts", whisperBack);
 					} catch(InvalidUseException e) {
-						c.sendChat(user, "Use: %trigger%mailall <minimum rank> <message>", wasWhispered);
+						c.sendChat(user, "Use: %trigger%mailall <minimum rank> <message>", whisperBack);
 					}
 				}
 				break;
 			case 'p':
 				if(command.equals("ping")) {
 					if((params == null) || (params.length != 1)) {
-						c.sendChat(user, "Use: %trigger%ping <user>[@<realm>]", wasWhispered);
+						c.sendChat(user, "Use: %trigger%ping <user>[@<realm>]", whisperBack);
 						break;
 					}
 					
 					BNetUser bnSubject = BNetUser.getBNetUser(params[0], user);
 					Integer ping = bnSubject.getPing();
 					if(ping == null)
-						c.sendChat(user, "I do not know the ping for " + bnSubject.getFullLogonName(), wasWhispered);
+						c.sendChat(user, "I do not know the ping for " + bnSubject.getFullLogonName(), whisperBack);
 					else
-						c.sendChat(user, "Ping for " + bnSubject.getFullLogonName() + ": " + ping, wasWhispered);
+						c.sendChat(user, "Ping for " + bnSubject.getFullLogonName() + ": " + ping, whisperBack);
 					
 					break;
 				}
@@ -594,7 +593,7 @@ public class CommandEventHandler implements EventHandler {
 				}
 				if(command.equals("recruit")) {
 					if((params == null) || (params.length != 2)) {
-						c.sendChat(user, "Use: %trigger%recruit <user>[@<realm>] <account>", wasWhispered);
+						c.sendChat(user, "Use: %trigger%recruit <user>[@<realm>] <account>", whisperBack);
 						break;
 					}
 					
@@ -602,7 +601,7 @@ public class CommandEventHandler implements EventHandler {
 					BNLoginResultSet rsSubject = d.getUser(bnSubject);
 					if(!rsSubject.next()) {
 						d.close(rsSubject);
-						c.sendChat(user, "I have never seen [" + bnSubject.getFullLogonName() + "] in the channel", wasWhispered);
+						c.sendChat(user, "I have never seen [" + bnSubject.getFullLogonName() + "] in the channel", whisperBack);
 						break;
 					}
 					
@@ -610,7 +609,7 @@ public class CommandEventHandler implements EventHandler {
 					Long subjectAccountId = rsSubject.getAccount();
 					if(subjectAccountId != null) {
 						d.close(rsSubject);
-						c.sendChat(user, "That user already has an account!", wasWhispered);
+						c.sendChat(user, "That user already has an account!", whisperBack);
 						break;
 					}
 
@@ -620,7 +619,7 @@ public class CommandEventHandler implements EventHandler {
 					if(requiredTagPrefix != null) {
 						if(bnSubject.getFullAccountName().substring(0, requiredTagPrefix.length()).compareToIgnoreCase(requiredTagPrefix) != 0) {
 							d.close(rsSubject);
-							c.sendChat(user, "That user must have the " + requiredTagPrefix + " tag!", wasWhispered);
+							c.sendChat(user, "That user must have the " + requiredTagPrefix + " tag!", whisperBack);
 							break;
 						}
 					}
@@ -633,7 +632,7 @@ public class CommandEventHandler implements EventHandler {
 						s = s.substring(s.length() - requiredTagSuffix.length());
 						if(s.compareToIgnoreCase(requiredTagSuffix) != 0) {
 							d.close(rsSubject);
-							c.sendChat(user, "That user must have the " + requiredTagSuffix + " tag!", wasWhispered);
+							c.sendChat(user, "That user must have the " + requiredTagSuffix + " tag!", whisperBack);
 							break;
 						}
 					}
@@ -642,14 +641,14 @@ public class CommandEventHandler implements EventHandler {
 					if(rsSubjectAccount.next()) {
 						d.close(rsSubjectAccount);
 						d.close(rsSubject);
-						c.sendChat(user, "That account already exists!", wasWhispered);
+						c.sendChat(user, "That account already exists!", whisperBack);
 						break;
 					}
 					d.close(rsSubjectAccount);
 					
 					if(commanderAccountID == null) {
 						d.close(rsSubject);
-						c.sendChat(user, "You must have an account to use recruit.", wasWhispered);
+						c.sendChat(user, "You must have an account to use recruit.", whisperBack);
 						break;
 					}
 					
@@ -657,7 +656,7 @@ public class CommandEventHandler implements EventHandler {
 					if(!rsSubjectAccount.next()) {
 						d.close(rsSubjectAccount);
 						d.close(rsSubject);
-						c.sendChat(user, "Failed to create account [" + params[1] + "] for an unknown reason", wasWhispered);
+						c.sendChat(user, "Failed to create account [" + params[1] + "] for an unknown reason", whisperBack);
 						break;
 					}
 					rsSubjectAccount.saveCursor();
@@ -673,7 +672,7 @@ public class CommandEventHandler implements EventHandler {
 					d.close(rsSubjectAccount);
 
 					bnSubject.resetPrettyName();
-					c.sendChat("Welcome to the clan, " + bnSubject.toString() + "!");
+					c.queueChatHelper("Welcome to the clan, " + bnSubject.toString() + "!");
 					break;
 				}
 				if(command.equals("recruits")) {
@@ -710,15 +709,15 @@ public class CommandEventHandler implements EventHandler {
 						d.close(rsRecruits);
 						
 						output = output.trim();
-						c.sendChat(user, output, wasWhispered);
+						c.sendChat(user, output, whisperBack);
 					} catch(InvalidUseException e) {
-						c.sendChat(user, "Use: %trigger%recruits [account]", wasWhispered);
+						c.sendChat(user, "Use: %trigger%recruits [account]", whisperBack);
 					}
 					break;
 				}
 				if(command.equals("renameaccount")) {
 					if((params == null) || (params.length != 2)) {
-						c.sendChat(user, "Use: %trigger%renameaccount <old account> <new account>", wasWhispered);
+						c.sendChat(user, "Use: %trigger%renameaccount <old account> <new account>", whisperBack);
 						break;
 					}
 					
@@ -731,23 +730,23 @@ public class CommandEventHandler implements EventHandler {
 						rsSubjectAccount.updateRow();
 					} catch(SQLException e) {
 						//TODO: Verify that the exception was actually caused by the UNIQUE restriction
-						c.sendChat(user, "The account [" + params[1] + "] already exists!", wasWhispered);
+						c.sendChat(user, "The account [" + params[1] + "] already exists!", whisperBack);
 						break;
 					}
 					
-					c.sendChat(user, "The account [" + params[0] + "] was successfully renamed to [" + params[1] + "]", wasWhispered);
+					c.sendChat(user, "The account [" + params[0] + "] was successfully renamed to [" + params[1] + "]", whisperBack);
 					
 					break;
 				}
 				break;
 			case 's':
 				if(command.equals("say")) {
-					c.sendChat(param);
+					c.queueChatHelper(param);
 					break;
 				}
 				if(command.equals("seen")) {
 					if((params == null) || (params.length != 1)) {
-						c.sendChat(user, "Use: %trigger%seen <account>", wasWhispered);
+						c.sendChat(user, "Use: %trigger%seen <account>", whisperBack);
 						break;
 					}
 					
@@ -763,7 +762,7 @@ public class CommandEventHandler implements EventHandler {
 						BNLoginResultSet rsSubject = d.getUser(bnSubject);
 						if(!rsSubject.next()) {
 							d.close(rsSubject);
-							c.sendChat(user, "I have never seen [" + bnSubject.getFullAccountName() + "]", wasWhispered);
+							c.sendChat(user, "I have never seen [" + bnSubject.getFullAccountName() + "]", whisperBack);
 							break;
 						}
 						
@@ -795,7 +794,7 @@ public class CommandEventHandler implements EventHandler {
 					}
 					
 					if(mostRecent == null) {
-						c.sendChat(user, "I have never seen [" + params[0] + "]", wasWhispered);
+						c.sendChat(user, "I have never seen [" + params[0] + "]", whisperBack);
 						break;
 					}
 					
@@ -803,12 +802,12 @@ public class CommandEventHandler implements EventHandler {
 					diff = "User [" + params[0] + "] was last seen " + diff + " ago";
 					if(mostRecentAction != null)
 						diff += " " + mostRecentAction;
-					c.sendChat(user, diff, wasWhispered);
+					c.sendChat(user, diff, whisperBack);
 					break;
 				}
 				if(command.equals("setaccount")) {
 					if((params == null) || (params.length < 1) || (params.length > 2)) {
-						c.sendChat(user, "Use: %trigger%setaccount <user>[@<realm>] [<account>]", wasWhispered);
+						c.sendChat(user, "Use: %trigger%setaccount <user>[@<realm>] [<account>]", whisperBack);
 						break;
 					}
 
@@ -816,7 +815,7 @@ public class CommandEventHandler implements EventHandler {
 					BNLoginResultSet rsSubject = d.getUser(bnSubject);
 					if(!rsSubject.next()) {
 						d.close(rsSubject);
-						c.sendChat(user, "I have never seen [" + bnSubject.getFullAccountName() + "] in the channel", wasWhispered);
+						c.sendChat(user, "I have never seen [" + bnSubject.getFullAccountName() + "] in the channel", whisperBack);
 						break;
 					}
 					rsSubject.saveCursor();
@@ -850,12 +849,12 @@ public class CommandEventHandler implements EventHandler {
 					}
 					
 					bnSubject.resetPrettyName();
-					c.sendChat(user, "User [" + subject + "] was added to account [" + params[1] + "] successfully.", wasWhispered);
+					c.sendChat(user, "User [" + subject + "] was added to account [" + params[1] + "] successfully.", whisperBack);
 					break;
 				}
 				if(command.equals("setbirthday")) {
 					if(commanderAccountID == null) {
-						c.sendChat(user, "You must have an account to use setbirthday.", wasWhispered);
+						c.sendChat(user, "You must have an account to use setbirthday.", whisperBack);
 						break;
 					}
 					
@@ -880,9 +879,9 @@ public class CommandEventHandler implements EventHandler {
 						rsAccount.updateRow();
 						d.close(rsAccount);
 						
-						c.sendChat(user, "Your birthday has been set to [ " + new SimpleDateFormat("M/d/y").format(bd) + " ]", wasWhispered);
+						c.sendChat(user, "Your birthday has been set to [ " + new SimpleDateFormat("M/d/y").format(bd) + " ]", whisperBack);
 					} catch(InvalidUseException e) {
-						c.sendChat(user, "Use: %trigger%setbirthday <date:MM/DD/YY>", wasWhispered);
+						c.sendChat(user, "Use: %trigger%setbirthday <date:MM/DD/YY>", whisperBack);
 					}
 					break;
 				}
@@ -910,18 +909,18 @@ public class CommandEventHandler implements EventHandler {
 						
 						// TODO: validate that params[0] is in the clan
 						c.sendClanRankChange(
-								CookieUtility.createCookie(new CommandResponseCookie(user, wasWhispered)),
+								CookieUtility.createCookie(new CommandResponseCookie(user, whisperBack)),
 								params[0],
 								newRank);
 						break;
 					} catch(InvalidUseException e) {
-						c.sendChat(user, "Use: %trigger%setrank <user> <rank(peon|grunt|shaman|1-3)>", wasWhispered);
+						c.sendChat(user, "Use: %trigger%setrank <user> <rank(peon|grunt|shaman|1-3)>", whisperBack);
 						break;
 					}
 				}
 				if(command.equals("setrecruiter")) {
 					if((params == null) || (params.length != 2)) {
-						c.sendChat(user, "Use: %trigger%setrecruiter <account> <account>", wasWhispered);
+						c.sendChat(user, "Use: %trigger%setrecruiter <account> <account>", whisperBack);
 						break;
 					}
 					
@@ -953,7 +952,7 @@ public class CommandEventHandler implements EventHandler {
 						
 						recursive += " -> " + rsTarget.getName();
 						if(id == subjectID) {
-							c.sendChat(user, "Recursion detected: " + recursive, wasWhispered);
+							c.sendChat(user, "Recursion detected: " + recursive, whisperBack);
 							break;
 						}
 
@@ -968,7 +967,7 @@ public class CommandEventHandler implements EventHandler {
 							rsSubject.refreshCursor();
 							rsSubject.setCreatedBy(targetID);
 							rsSubject.updateRow();
-							c.sendChat(user, "Successfully updated recruiter for [ " + params[0] + " ] to [ " + params[1] + " ]" , wasWhispered);
+							c.sendChat(user, "Successfully updated recruiter for [ " + params[0] + " ] to [ " + params[1] + " ]" , whisperBack);
 							break;
 						}
 						
@@ -982,12 +981,12 @@ public class CommandEventHandler implements EventHandler {
 				}
 				if(command.equals("sweepban")) {
 					if((params == null) || (params.length < 1)) {
-						c.sendChat(user, "Use: %trigger%sweepban <channel>", wasWhispered);
+						c.sendChat(user, "Use: %trigger%sweepban <channel>", whisperBack);
 						break;
 					}
 					sweepBanInProgress = true;
 					sweepBannedUsers = 0;
-					c.sendChat("/who " + param);
+					c.queueChatHelper("/who " + param);
 					break;
 				}
 				break;
@@ -997,23 +996,23 @@ public class CommandEventHandler implements EventHandler {
 					String output = "0000" + Integer.toString(trigger);
 					output = output.substring(output.length() - 4);
 					output = "Current trigger: " + trigger + " (alt+" + output + ")";
-					c.sendChat(user, output, wasWhispered);
+					c.sendChat(user, output, whisperBack);
 					break;
 				}
 				break;
 			case 'u':
 				if(command.equals("unban")) {
 					if((params == null) || (params.length != 1)) {
-						c.sendChat(user, "Use: %trigger%unban <user>[@<realm>]", wasWhispered);
+						c.sendChat(user, "Use: %trigger%unban <user>[@<realm>]", whisperBack);
 						break;
 					}
-					c.sendChat("/unban " + params[0]);
+					c.queueChatHelper("/unban " + params[0]);
 					break;
 				}
 				break;
 			case 'w':
 				if(command.equals("whoami")) {
-					parseCommand(user, "whois", user.getShortLogonName(), wasWhispered);
+					parseCommand(user, "whois", user.getShortLogonName(), whisperBack);
 					break;
 				}
 				if(command.equals("whois")) {
@@ -1032,7 +1031,7 @@ public class CommandEventHandler implements EventHandler {
 							BNLoginResultSet rsSubject = d.getUser(bnSubject);
 							
 							if((rsSubject == null) || (!rsSubject.next())) {
-								c.sendChat(user, "I have never seen [" + bnSubject.getFullLogonName() + "] in the channel", wasWhispered);
+								c.sendChat(user, "I have never seen [" + bnSubject.getFullLogonName() + "] in the channel", whisperBack);
 								break;
 							}
 							
@@ -1042,7 +1041,7 @@ public class CommandEventHandler implements EventHandler {
 							rsSubjectAccount = d.getAccount(bnSubject);
 							
 							if((rsSubjectAccount == null) || (!rsSubjectAccount.next())) {
-								c.sendChat(user, "User [" + params[0] + "] has no account", wasWhispered);
+								c.sendChat(user, "User [" + params[0] + "] has no account", whisperBack);
 								if(rsSubjectAccount != null)
 									d.close(rsSubjectAccount);
 								break;
@@ -1135,9 +1134,9 @@ public class CommandEventHandler implements EventHandler {
 						}
 						
 						d.close(rsSubjectAccount);
-						c.sendChat(user, result, wasWhispered);
+						c.sendChat(user, result, whisperBack);
 					} catch(InvalidUseException e) {
-						c.sendChat(user, "Use: %trigger%whois <user>[@realm]", wasWhispered);
+						c.sendChat(user, "Use: %trigger%whois <user>[@realm]", whisperBack);
 						break;
 					}
 					break;
@@ -1145,12 +1144,12 @@ public class CommandEventHandler implements EventHandler {
 				break;
 			}
 		} catch(AccountDoesNotExistException e) {
-			c.sendChat(user, "The account [" + e.getMessage() + "] does not exist!", wasWhispered);
+			c.sendChat(user, "The account [" + e.getMessage() + "] does not exist!", whisperBack);
 		} catch(InsufficientAccessException e) {
-			c.sendChat(user, "You have insufficient access " + e.getMessage(), wasWhispered);
+			c.sendChat(user, "You have insufficient access " + e.getMessage(), whisperBack);
 		} catch(Exception e) {
 			Out.exception(e);
-			c.sendChat(user, e.getClass().getSimpleName() + ": " + e.getMessage(), wasWhispered);
+			c.sendChat(user, e.getClass().getSimpleName() + ": " + e.getMessage(), whisperBack);
 		}
 	}
 
@@ -1254,7 +1253,7 @@ public class CommandEventHandler implements EventHandler {
 					int age = cal.get(Calendar.YEAR);
 					cal.setTime(today);
 					age = cal.get(Calendar.YEAR) - age;
-					c.sendChat("Happy birthday, " + user.getShortPrettyName() + "! Today, you are " + age + " years old!");
+					c.queueChatHelper("Happy birthday, " + user.getShortPrettyName() + "! Today, you are " + age + " years old!");
 				}
 			}
 
@@ -1266,7 +1265,7 @@ public class CommandEventHandler implements EventHandler {
 				String greeting = rsRank.getGreeting();
 				if(greeting != null) {
 					greeting = String.format(greeting, user.getShortPrettyName(), user.getPing(), user.getFullAccountName());
-					c.sendChat(greeting);
+					c.queueChatHelper(greeting);
 				}
 
 				//Autopromotions:
@@ -1310,7 +1309,7 @@ public class CommandEventHandler implements EventHandler {
 							rsAccount.setLastRankChange(new Timestamp(System.currentTimeMillis()));
 							rsAccount.updateRow();
 							user.resetPrettyName();	//Reset the presentable name
-							c.sendChat("Congratulations " + user.toString() + ", you just recieved a promotion! Your rank is now " + rank + ".");
+							c.queueChatHelper("Congratulations " + user.toString() + ", you just recieved a promotion! Your rank is now " + rank + ".");
 							String apMail = rsRank.getApMail();
 							if((apMail != null) && (apMail.length() > 0))
 								d.sendMail(id, id, apMail);
@@ -1373,7 +1372,7 @@ public class CommandEventHandler implements EventHandler {
 		char trigger = GlobalSettings.trigger.charAt(0);
 		
 		if(text.equals("?trigger"))
-			parseCommand(user, "trigger", null, false); //c.sendChat(user, "The bot's trigger is: " + trigger);
+			parseCommand(user, "trigger", null, GlobalSettings.whisperBack);
 		else
 			if(text.charAt(0) == trigger) {
 				String[] command = text.substring(1).split(" ", 2);
@@ -1381,7 +1380,7 @@ public class CommandEventHandler implements EventHandler {
 				if(command.length > 1)
 					params = command[1];
 			
-				parseCommand(user, command[0], params, false);
+				parseCommand(user, command[0], params, GlobalSettings.whisperBack);
 			}
 	}
 
@@ -1429,7 +1428,7 @@ public class CommandEventHandler implements EventHandler {
 				if(text.substring(0, 17).equals("Users in channel ")) {
 					if(sweepBannedUsers == 0) {
 						turnItOff = false;
-						c.sendChat("Sweepbanning channel " + text.substring(17, text.length() - 1));
+						c.queueChatHelper("Sweepbanning channel " + text.substring(17, text.length() - 1));
 					}
 				}
 			}
@@ -1438,15 +1437,15 @@ public class CommandEventHandler implements EventHandler {
 			if(users.length == 2) {
 				if(users[0].indexOf(' ') == -1) {
 					if(users[1].indexOf(' ') == -1) {
-						c.sendChat("/ban " + removeOpUserBrackets(users[0]));
-						c.sendChat("/ban " + removeOpUserBrackets(users[1]));
+						c.queueChatHelper("/ban " + removeOpUserBrackets(users[0]));
+						c.queueChatHelper("/ban " + removeOpUserBrackets(users[1]));
 						sweepBannedUsers += 2;
 						turnItOff = false;
 					}
 				}
 			} else {
 				if(text.indexOf(' ') == -1) {
-					c.sendChat("/ban " + removeOpUserBrackets(text));
+					c.queueChatHelper("/ban " + removeOpUserBrackets(text));
 					sweepBannedUsers++;
 					turnItOff = true;
 				}

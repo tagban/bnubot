@@ -19,7 +19,7 @@ public interface EventHandler {
 	public void titleChanged();
 	
 	//Workarounds
-	public void parseCommand(BNetUser user, String command, String param, boolean wasWhispered);
+	public void parseCommand(BNetUser user, String command, String param, boolean whisperBack);
 
 	//Channel events
 	public void joinedChannel(String channel);

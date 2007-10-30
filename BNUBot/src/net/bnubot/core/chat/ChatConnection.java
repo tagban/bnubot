@@ -68,7 +68,7 @@ public class ChatConnection extends Connection {
 	}
 
 	@Override
-	public void joinChannel(String channel) throws Exception {
+	public void sendJoinChannel(String channel) throws Exception {
 	}
 
 	@Override
@@ -108,12 +108,12 @@ public class ChatConnection extends Connection {
 	}
 
 	@Override
-	public void sendQueryRealms() throws Exception {
+	public void sendQueryRealms2() throws Exception {
 		throw new UnsupportedFeatureException("Chat clients can not use realms");
 	}
 
 	@Override
-	public void sendProfile(String user) throws Exception {
+	public void sendReadUserData(String user) throws Exception {
 		throw new UnsupportedFeatureException("Chat clients can not request profiles");
 	}
 
