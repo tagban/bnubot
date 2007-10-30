@@ -17,17 +17,22 @@ import net.bnubot.vercheck.ProgressBar;
 public class URLDownloader {
 	public static void downloadURL(URL url, File to, SHA1Sum sha1, boolean force) throws Exception {
 		// Don't download the file if it already exists
-		if(to.exists() && (force == false)) {
+		if(to.exists()) {
 			// If no MD5 sum was given
-			if(sha1 == null)
-				return;
-			
-			// If the MD5 sums match
-			SHA1Sum fSHA1 = new SHA1Sum(to);
-			if(fSHA1.equals(sha1))
-				return;
-			
-			Out.info(URLDownloader.class, "SHA1 mismatch for " + to.getName() + "\nExpected: " + sha1 + "\nCalculated: " + fSHA1);
+			if(sha1 == null) {
+				// Return if we're not forced to download the file
+				if(!force)
+					return;
+			} else {
+				// If the MD5 sums match
+				SHA1Sum fSHA1 = new SHA1Sum(to);
+				if(fSHA1.equals(sha1)) {
+					Out.info(URLDownloader.class, "SHA1 match for " + to.getName());
+					return;	
+				}
+				
+				Out.info(URLDownloader.class, "SHA1 mismatch for " + to.getName() + "\nExpected: " + sha1 + "\nCalculated: " + fSHA1);
+			}
 		}
 		
 		// Make sure the path to the file exists
@@ -54,14 +59,12 @@ public class URLDownloader {
 		URLConnection uc = url.openConnection();
 		DataInputStream is = new DataInputStream(new BufferedInputStream(uc.getInputStream()));
 		FileOutputStream os = new FileOutputStream(to);
-		byte[] b = new byte[0x100];
+		byte[] b = new byte[1024];
 		
 		int fileLength = uc.getHeaderFieldInt("Content-Length", 0) / b.length;
 		ProgressBar pb = null;
-		if(fileLength > 0) {
-			pb = new ProgressBar(url.toExternalForm(), fileLength);
-			pb.setVisible(true);
-		}
+		if(fileLength > 0)
+			pb = new ProgressBar(url.toExternalForm(), fileLength, "kB");
 		
 		do {
 			int c = is.read(b);
@@ -72,10 +75,8 @@ public class URLDownloader {
 				pb.updateProgress();
 		} while(true);
 		
-		if(pb != null) {
+		if(pb != null)
 			pb.dispose();
-			pb = null;
-		}
 		
 		os.close();
 		is.close();
