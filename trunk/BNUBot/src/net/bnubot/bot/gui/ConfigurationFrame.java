@@ -36,7 +36,6 @@ public class ConfigurationFrame extends JDialog {
 	//Connection
 	ConfigTextArea txtUsername = null;
 	JPasswordField txtPassword = null;
-	ConfigTextArea txtEmail = null;
 	ConfigComboBox cmbProduct = null;
 	ConfigComboBox cmbCDKey = null;
 	ConfigComboBox cmbCDKeyLOD = null;
@@ -111,7 +110,6 @@ public class ConfigurationFrame extends JDialog {
 			{
 				txtUsername = makeText("Username", cs.username, boxSettings);
 				txtPassword = makePass("Password", cs.password, boxSettings);
-				txtEmail = makeText("Email", cs.email, boxSettings);
 
 				cmbProduct = makeCombo("Product", Constants.prodsDisplay, false, boxSettings);
 				cmbProduct.addItemListener(new ItemListener() {
@@ -259,7 +257,6 @@ public class ConfigurationFrame extends JDialog {
 	private void save() {
 		cs.username = txtUsername.getText();
 		cs.password = new String(txtPassword.getPassword());
-		cs.email = txtEmail.getText();
 		cs.product = (byte)(cmbProduct.getSelectedIndex() + 1);
 		CDKey k = (CDKey)cmbCDKey.getSelectedItem();
 		CDKey kLOD = (CDKey)cmbCDKeyLOD.getSelectedItem();
@@ -282,7 +279,6 @@ public class ConfigurationFrame extends JDialog {
 		
 		txtUsername.setText(cs.username);
 		txtPassword.setText(cs.password);
-		txtEmail.setText(cs.email);
 		cmbProduct.setSelectedIndex(cs.product - 1);
 		cmbCDKey.setSelectedItem(cs.cdkey);
 		cmbCDKeyLOD.setSelectedItem(cs.cdkeyLOD);
