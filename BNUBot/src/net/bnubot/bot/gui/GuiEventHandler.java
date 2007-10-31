@@ -51,7 +51,7 @@ public class GuiEventHandler implements EventHandler {
 	private JSplitPane jsp = null;
 	
 	public GuiEventHandler() {
-		initializeGui("BNU-Bot", ColorScheme.createColorScheme(GlobalSettings.colorScheme));
+		initializeGui(ColorScheme.createColorScheme(GlobalSettings.colorScheme));
 	}
 	
 	public void initialize(Connection con) {
@@ -60,7 +60,7 @@ public class GuiEventHandler implements EventHandler {
 		titleChanged();
 	}
 	
-	private void initializeGui(String title, ColorScheme colors) {
+	private void initializeGui(ColorScheme colors) {
 		// Create the panel
 		frame = new JPanel(new BotLayoutManager(), true);
 		
