@@ -42,6 +42,8 @@ import net.bnubot.util.HexDump;
 import net.bnubot.util.Out;
 import net.bnubot.util.StatString;
 import net.bnubot.util.TimeFormatter;
+import net.bnubot.util.task.Task;
+import net.bnubot.util.task.TaskManager;
 
 import org.jbls.Hashing.BrokenSHA1;
 import org.jbls.Hashing.DoubleHash;
@@ -152,8 +154,12 @@ public class BNCSConnection extends Connection {
 		for(EventHandler eh : eventHandlers2)
 			eh.initialize(this);
 		
+		boolean firstConnection = true;
 		while(true) {
 			try {
+				Task connect = TaskManager.createTask("Connect to Battle.net");
+				connect.updateProgress("Verify connection settings validity");
+				
 				if(cs.isValid() != null) {
 					recieveError(cs.isValid());
 					int i = 1000;
@@ -163,14 +169,28 @@ public class BNCSConnection extends Connection {
 					}
 					continue;
 				}
-				
-				if(forceReconnect) {
-					forceReconnect = false;
+
+				if(firstConnection) {
+					firstConnection = false;
 				} else {
-					if(!GlobalSettings.autoConnect) {
-						while(!isConnected()) {
-							yield();
-							sleep(10);
+					//Wait a short time before allowing a reconnect
+					connect.updateProgress("Stalling to avoid flood");
+					
+					yield();
+
+					int waitTime = 15000;
+					if(forceReconnect)
+						waitTime = 2000;
+					try { sleep(waitTime); } catch (InterruptedException e1) { }
+					
+					if(forceReconnect) {
+						forceReconnect = false;
+					} else {
+						if(!GlobalSettings.autoConnect) {
+							while(!isConnected()) {
+								yield();
+								sleep(10);
+							}
 						}
 					}
 				}
@@ -179,15 +199,22 @@ public class BNCSConnection extends Connection {
 				productID = ProductIDs.ProductID[cs.product-1];
 				verByte = HashMain.getVerByte(cs.product);
 				
+				connect.updateProgress("Initialize BNLS");
+				
 				// Set up BNLS
 				initializeBNLS();
+				
+				connect.updateProgress("Initialize BNCS");
 				
 				// Set up BNCS
 				initializeBNCS();
 				
+				connect.updateProgress("Log in");
+				
 				// Begin login
 				sendInitialPackets();
 				
+				connect.complete();
 				
 				if(connectionLoop())
 					connectedLoop();
@@ -207,13 +234,6 @@ public class BNCSConnection extends Connection {
 			}
 
 			try { setConnected(false); } catch (Exception e) { }
-			yield();
-
-			//Wait a short time before allowing a reconnect
-			int waitTime = 15000;
-			if(forceReconnect)
-				waitTime = 2000;
-			try { sleep(waitTime); } catch (InterruptedException e1) { }
 		}
 	}
 

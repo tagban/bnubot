@@ -14,6 +14,8 @@ import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.Out;
 import net.bnubot.util.SHA1Sum;
 import net.bnubot.util.URLDownloader;
+import net.bnubot.util.task.Task;
+import net.bnubot.util.task.TaskManager;
 
 import org.jbls.util.Constants;
 
@@ -51,16 +53,22 @@ public class VersionCheck {
 		if(forceDownload || CurrentVersion.fromJar()) {
 			XMLElementDecorator downloads = elem.getPath("bnubot/downloads");
 			if(downloads != null) {
-				for(XMLElementDecorator file : downloads.getChildren("file")) {
-					XMLElementDecorator sha1Element = file.getChild("sha1");
-					SHA1Sum sha1 = null;
-					if(sha1Element != null)
-						sha1 = new SHA1Sum(sha1Element.getString());
-					URLDownloader.downloadURL(
-						new URL(file.getChild("from").getString()),
-						new File(file.getChild("to").getString()),
-						sha1,
-						false);
+				XMLElementDecorator[] files = downloads.getChildren("file");
+				if(files.length > 0) {
+					Task t = TaskManager.createTask("Download", files.length, "files");
+					for(XMLElementDecorator file : files) {
+						XMLElementDecorator sha1Element = file.getChild("sha1");
+						SHA1Sum sha1 = null;
+						if(sha1Element != null)
+							sha1 = new SHA1Sum(sha1Element.getString());
+						URLDownloader.downloadURL(
+							new URL(file.getChild("from").getString()),
+							new File(file.getChild("to").getString()),
+							sha1,
+							false);
+						t.advanceProgress();
+					}
+					t.complete();
 				}
 			}
 		}
