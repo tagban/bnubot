@@ -27,7 +27,6 @@ import net.bnubot.bot.gui.ColorScheme.ColorScheme;
 import net.bnubot.bot.gui.icons.BNetIcon;
 import net.bnubot.bot.gui.icons.IconsDotBniReader;
 import net.bnubot.core.ChannelListPriority;
-import net.bnubot.core.Connection;
 import net.bnubot.core.bncs.ProductIDs;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetUser;
@@ -47,7 +46,6 @@ public class UserList extends JPanel {
 	private Hashtable<BNetUser, UserInfo> users = null;
 	private Box box = null;
 	private ColorScheme colors = null;
-	private Connection con = null;
 	private GuiEventHandler geh = null;
 	
 	public String[] findUsers(String containing) {
@@ -93,11 +91,10 @@ public class UserList extends JPanel {
 		return null;
 	}
 	
-	public UserList(ColorScheme colors, Connection c, GuiEventHandler geh) {
+	public UserList(ColorScheme colors, GuiEventHandler geh) {
 		super(new FlowLayout(FlowLayout.LEFT));
 		this.users = new Hashtable<BNetUser, UserInfo>();
 		this.colors = colors;
-		this.con = c;
 		this.geh = geh;
 		setBackground(colors.getBackgroundColor());
 		box = new Box(BoxLayout.Y_AXIS);
@@ -163,7 +160,7 @@ public class UserList extends JPanel {
 				public void actionPerformed(ActionEvent arg0) {
 					UserInfo ui = getUserInfo(arg0);
 					if(ui != null)
-						con.queueChatHelper("/whois " + ui.user.getShortLogonName());
+						geh.getConnection().queueChatHelper("/whois " + ui.user.getShortLogonName());
 				}});
 			ui.menu.add(menuItem);
 			menuItem = new JMenuItem("Profile");
@@ -171,7 +168,7 @@ public class UserList extends JPanel {
 				public void actionPerformed(ActionEvent arg0) {
 					UserInfo ui = getUserInfo(arg0);
 					if(ui != null)
-						try { con.sendProfile(ui.user); } catch(Exception e) { Out.exception(e); }
+						try { geh.getConnection().sendProfile(ui.user); } catch(Exception e) { Out.exception(e); }
 				}});
 			ui.menu.add(menuItem);
 			ui.menu.add(Box.createHorizontalGlue());
@@ -193,7 +190,7 @@ public class UserList extends JPanel {
 								// "Left clicked on " + ui.label.getText()
 								break;
 							case MouseEvent.BUTTON2:
-								try { con.sendProfile(ui.user); } catch(Exception e) { Out.exception(e); }
+								try { geh.getConnection().sendProfile(ui.user); } catch(Exception e) { Out.exception(e); }
 								break;
 							case MouseEvent.BUTTON3:
 								ui.menu.show(arg0.getComponent(), arg0.getX(), arg0.getY());
