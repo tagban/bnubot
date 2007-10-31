@@ -15,11 +15,11 @@
         <javaElement handleIdentifier="=BNUBot/src&lt;net.bnubot.vercheck{XMLElementDecorator.java"/>
         <javaElement handleIdentifier="=BNUBot/src&lt;net.bnubot.util{SHA1Sum.java"/>
         <javaElement handleIdentifier="=BNUBot/src&lt;net.bnubot.util{SortedProperties.java"/>
-        <javaElement handleIdentifier="=BNUBot/src&lt;net.bnubot.util{TimeFormatter.java"/>
         <file path="/BNUBot/.project"/>
-        <javaElement handleIdentifier="=BNUBot/src&lt;net.bnubot.vercheck{ProgressBar.java"/>
+        <javaElement handleIdentifier="=BNUBot/src&lt;net.bnubot.util{TimeFormatter.java"/>
         <javaElement handleIdentifier="=BNUBot/src&lt;net.bnubot.vercheck{ReleaseType.java"/>
         <file path="/BNUBot/.classpath"/>
+        <javaElement handleIdentifier="=BNUBot/src&lt;net.bnubot.util.task"/>
         <javaElement handleIdentifier="=BNUBot/src&lt;net.bnubot.util{Out.java"/>
         <javaElement handleIdentifier="=BNUBot/src&lt;net.bnubot.vercheck{VersionCheck.java"/>
         <javaElement handleIdentifier="=BNUBot/src&lt;net.bnubot.util{URLDownloader.java"/>
