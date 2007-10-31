@@ -10,6 +10,8 @@ import java.awt.Frame;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 
+import net.bnubot.settings.GlobalSettings;
+
 public class TaskManager extends Frame {
 	private static final long serialVersionUID = 641763656953338296L;
 	private static final Box box = new Box(BoxLayout.Y_AXIS);
@@ -18,8 +20,6 @@ public class TaskManager extends Frame {
 	private TaskManager() {
 		super("Running Tasks");
 		add(box);
-		
-		setLocation(50, 50);
 		
 		setResizable(false);
 		setAlwaysOnTop(true);
@@ -33,7 +33,8 @@ public class TaskManager extends Frame {
 		Task t = new Task(title, max, units);
 		box.add(t.getProgressBar());
 		instance.pack();
-		instance.setVisible(true);
+		if(GlobalSettings.enableGUI)
+			instance.setVisible(true);
 		return t;
 	}
 	
