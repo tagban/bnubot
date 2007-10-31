@@ -16,6 +16,7 @@ public class TaskManager extends Frame {
 	private static final TaskManager instance = new TaskManager();
 	
 	private TaskManager() {
+		super("Running Tasks");
 		add(box);
 		
 		setLocation(50, 50);
