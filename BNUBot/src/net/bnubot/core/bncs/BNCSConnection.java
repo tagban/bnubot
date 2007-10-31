@@ -157,7 +157,7 @@ public class BNCSConnection extends Connection {
 		boolean firstConnection = true;
 		while(true) {
 			try {
-				Task connect = TaskManager.createTask("Connect to Battle.net");
+				Task connect = TaskManager.createTask("Connecting to Battle.net");
 				connect.updateProgress("Verify connection settings validity");
 				
 				if(cs.isValid() != null) {
@@ -199,23 +199,20 @@ public class BNCSConnection extends Connection {
 				productID = ProductIDs.ProductID[cs.product-1];
 				verByte = HashMain.getVerByte(cs.product);
 				
-				connect.updateProgress("Initialize BNLS");
-				
 				// Set up BNLS
+				connect.updateProgress("Initialize BNLS");
 				initializeBNLS();
 				
-				connect.updateProgress("Initialize BNCS");
-				
 				// Set up BNCS
+				connect.updateProgress("Initialize BNCS");
 				initializeBNCS();
 				
-				connect.updateProgress("Log in");
-				
 				// Begin login
+				connect.updateProgress("Log in");
 				sendInitialPackets();
 				
+				// Login complete
 				connect.complete();
-				
 				if(connectionLoop())
 					connectedLoop();
 					
