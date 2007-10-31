@@ -392,9 +392,11 @@ public class GuiDesktop extends JFrame {
 	}
 	
 	public static void add(GuiEventHandler geh) {
+		if(dividerLocation == null)
+			loadPosition(instance);
+		
 		geh.getMenuBar().setVisible(false);
-		if(dividerLocation != null)
-			geh.setDividerLocation(dividerLocation);
+		geh.setDividerLocation(dividerLocation);
 		menuBar.add(geh.getMenuBar());
 		
 		guis.add(geh);
