@@ -6,7 +6,6 @@
 package net.bnubot.junit.util.task;
 
 import junit.framework.TestCase;
-import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.task.Task;
 import net.bnubot.util.task.TaskManager;
 
@@ -17,7 +16,6 @@ import net.bnubot.util.task.TaskManager;
 public class TaskTest extends TestCase {
 
 	public void testTasks() throws Exception {
-		GlobalSettings.enableGUI = true;
 		Task ind = TaskManager.createTask("indeterminate task");
 		Task det = TaskManager.createTask("determinate task", 10, "steps");
 		for(int i = 0; i < 10; i++) {
