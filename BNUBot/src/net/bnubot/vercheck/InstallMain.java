@@ -31,7 +31,7 @@ public class InstallMain {
 		try {
 			int opt = JOptionPane.showConfirmDialog(null, "Install complete. Launch BNU-Bot?", "Installer", JOptionPane.YES_NO_OPTION);
 			if(opt == JOptionPane.NO_OPTION)
-				return;
+				System.exit(0);
 		} catch(Exception e) {}
 		
 		// Launch the program

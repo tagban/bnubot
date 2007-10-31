@@ -33,8 +33,12 @@ public class TaskManager extends Frame {
 		Task t = new Task(title, max, units);
 		box.add(t.getProgressBar());
 		instance.pack();
-		if(GlobalSettings.enableGUI)
+		try {
+			if(GlobalSettings.enableGUI)
+				instance.setVisible(true);
+		} catch(NoClassDefFoundError e) {
 			instance.setVisible(true);
+		}
 		return t;
 	}
 	
