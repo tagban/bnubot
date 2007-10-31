@@ -1638,13 +1638,14 @@ public class BNCSConnection extends Connection {
 	 * @throws Exception
 	 */
 	private void sendSetEmail() throws Exception {
-		if(cs.email == null)
+		String email = GlobalSettings.email;
+		if(email == null)
 			return;
-		if(cs.email.length() == 0)
+		if(email.length() == 0)
 			return;
-		recieveInfo("Register email address: " + cs.email);
+		recieveInfo("Register email address: " + email);
 		BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_SETEMAIL);
-		p.writeNTString(cs.email);
+		p.writeNTString(email);
 		p.SendPacket(bncsOutputStream);
 	}
 

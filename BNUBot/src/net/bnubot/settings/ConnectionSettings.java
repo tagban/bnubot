@@ -31,7 +31,6 @@ public class ConnectionSettings implements Serializable {
 	public int port;
 	public String username;
 	public String password;
-	public String email;
 	public String channel;
 	public String cdkey;
 	public String cdkeyLOD;
@@ -145,7 +144,6 @@ public class ConnectionSettings implements Serializable {
 		Settings.write(header, "port", Integer.toString(port));
 		Settings.write(header, "username", username);
 		Settings.write(header, "password", password);
-		Settings.write(header, "email", email);
 		Settings.write(header, "channel", channel);
 		Settings.write(header, "cdkey", cdkey);
 		Settings.write(header, "cdkeyLOD", cdkeyLOD);
@@ -165,7 +163,6 @@ public class ConnectionSettings implements Serializable {
 					Settings.read(header, "port", "6112"));
 		username =	Settings.read(header, "username", null);
 		password =	Settings.read(header, "password", null);
-		email =		Settings.read(header, "email", null);
 		channel =	Settings.read(header, "channel", "Clan BNU");
 		cdkey =		Settings.read(header, "cdkey", null);
 		cdkeyLOD =	Settings.read(header, "cdkeyLOD", null);

@@ -56,6 +56,7 @@ public class GlobalConfigurationFrame extends JDialog {
 	ConfigTextArea txtAntiIdle = null;
 	ConfigTextArea txtAntiIdleTimer = null;
 	ConfigTextArea txtTrigger = null;
+	ConfigTextArea txtEmail = null;
 	ConfigComboBox cmbTSFormat = null;
 	ConfigTextArea txtBNLSServer = null;
 	ConfigComboBox cmbReleaseType = null;
@@ -148,8 +149,8 @@ public class GlobalConfigurationFrame extends JDialog {
 			Box boxSettings = new Box(BoxLayout.Y_AXIS);
 			{
 				txtBNLSServer = makeText("BNLS Server", GlobalSettings.bnlsServer, boxSettings);
-				
 				txtTrigger = makeText("Trigger", GlobalSettings.trigger, boxSettings);
+				txtEmail = makeText("Email", GlobalSettings.email, boxSettings);
 
 				Box boxLine = new Box(BoxLayout.X_AXIS);
 				{
@@ -445,6 +446,7 @@ public class GlobalConfigurationFrame extends JDialog {
 	private void save() {
 		GlobalSettings.bnlsServer = txtBNLSServer.getText();
 		GlobalSettings.trigger = txtTrigger.getText();
+		GlobalSettings.email = txtEmail.getText();
 		GlobalSettings.antiIdle = txtAntiIdle.getText();
 		GlobalSettings.antiIdleTimer = Integer.parseInt(txtAntiIdleTimer.getText());
 		GlobalSettings.enableAntiIdle = chkAntiIdle.isSelected();
@@ -475,6 +477,7 @@ public class GlobalConfigurationFrame extends JDialog {
 		GlobalSettings.load();
 		txtBNLSServer.setText(GlobalSettings.bnlsServer);
 		txtTrigger.setText(GlobalSettings.trigger);
+		txtEmail.setText(GlobalSettings.email);
 		txtAntiIdle.setText(GlobalSettings.antiIdle);
 		txtAntiIdleTimer.setText(Integer.toString(GlobalSettings.antiIdleTimer));
 		chkAntiIdle.setSelected(GlobalSettings.enableAntiIdle);

@@ -17,6 +17,7 @@ public class GlobalSettings {
 	public static int numBots;
 	public static byte colorScheme;
 	public static String trigger;
+	public static String email;
 	public static String antiIdle;
 	public static String bnlsServer;
 	public static int bnlsPort;
@@ -73,18 +74,18 @@ public class GlobalSettings {
 	public static void save() {
 		Settings.write(null, "numBots", Integer.toString(numBots));
 		Settings.write(null, "antiidle", antiIdle);
-		Settings.write(null, "bnlsserver", bnlsServer);
-		Settings.write(null, "bnlsport", Integer.toString(bnlsPort));
-		Settings.write(null, "enableAntiidle", Boolean.toString(enableAntiIdle));
-		Settings.write(null, "enableGreetings", Boolean.toString(enableGreetings));
 		Settings.write(null, "antiIdleTimer", Integer.toString(antiIdleTimer));
 		Settings.write(null, "autoConnect", Boolean.toString(autoConnect));
+		Settings.write(null, "bnlsserver", bnlsServer);
+		Settings.write(null, "bnlsport", Integer.toString(bnlsPort));
+		Settings.write(null, "colorScheme", Byte.toString(colorScheme));
 		Settings.write(null, "displayBattleNetMOTD", Boolean.toString(displayBattleNetMOTD));
 		Settings.write(null, "displayBattleNetChannels", Boolean.toString(displayBattleNetChannels));
 		Settings.write(null, "displayJoinParts", Boolean.toString(displayJoinParts));
 		Settings.write(null, "displayChannelUsers", Boolean.toString(displayChannelUsers));
-		Settings.write(null, "colorScheme", Byte.toString(colorScheme));
-		Settings.write(null, "trigger", trigger);
+		Settings.write(null, "email", email);
+		Settings.write(null, "enableAntiidle", Boolean.toString(enableAntiIdle));
+		Settings.write(null, "enableGreetings", Boolean.toString(enableGreetings));
 		Settings.write(null, "enableCLI", Boolean.toString(enableCLI));
 		Settings.write(null, "enableGUI", Boolean.toString(enableGUI));
 		Settings.write(null, "enableTrayIcon", Boolean.toString(enableTrayIcon));
@@ -92,16 +93,17 @@ public class GlobalSettings {
 		Settings.write(null, "enableLegacyIcons", Boolean.toString(enableLegacyIcons));
 		Settings.write(null, "enableCommands", Boolean.toString(enableCommands));
 		Settings.write(null, "enableTrivia", Boolean.toString(enableTrivia));
-		Settings.write(null, "triviaRoundLength", Long.toString(triviaRoundLength));
 		Settings.write(null, "enableFloodProtect", Boolean.toString(enableFloodProtect));
+		Settings.write(null, "lookAndFeel", lookAndFeel);
 		Settings.write(null, "packetLog", Boolean.toString(packetLog));
-		Settings.write(null, "whisperBack", Boolean.toString(whisperBack));
 		Settings.write(null, "recruitAccess", Long.toString(recruitAccess));
 		Settings.write(null, "recruitTagPrefix", recruitTagPrefix);
 		Settings.write(null, "recruitTagSuffix", recruitTagSuffix);
-		Settings.write(null, "lookAndFeel", lookAndFeel);
-		Settings.write(null, "tsFormat", TimeFormatter.tsFormat);
 		Settings.write(null, "releaseType", releaseType.toString());
+		Settings.write(null, "trigger", trigger);
+		Settings.write(null, "triviaRoundLength", Long.toString(triviaRoundLength));
+		Settings.write(null, "tsFormat", TimeFormatter.tsFormat);
+		Settings.write(null, "whisperBack", Boolean.toString(whisperBack));
 		
 		Settings.store();
 	}
@@ -132,6 +134,7 @@ public class GlobalSettings {
 				Settings.read(null, "displayJoinParts", "true"));
 		displayChannelUsers = Boolean.parseBoolean(
 				Settings.read(null, "displayChannelUsers", "false"));
+		email =	Settings.read(null, "email", null);
 		enableCLI = Boolean.parseBoolean(
 				Settings.read(null, "enableCLI", "false"));
 		enableGUI = Boolean.parseBoolean(
