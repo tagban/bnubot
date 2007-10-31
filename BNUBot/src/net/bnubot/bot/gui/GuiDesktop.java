@@ -76,6 +76,14 @@ public class GuiDesktop extends JFrame {
 		setContentPane(tabs);
 		setSize(800, 500);
 		
+		// Make sure the window gets laid out when maximized/restored
+        addWindowStateListener(new WindowStateListener() {
+			public void windowStateChanged(WindowEvent e) {
+				if(e.getID() == WindowEvent.WINDOW_STATE_CHANGED)
+					((Window)e.getSource()).validate();
+			}});
+		
+        // Globally save/load window positions
 		Toolkit.getDefaultToolkit().addAWTEventListener(
 				new AWTEventListener() {
 					public void eventDispatched(AWTEvent event) {
