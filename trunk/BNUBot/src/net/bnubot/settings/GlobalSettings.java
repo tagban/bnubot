@@ -45,6 +45,10 @@ public class GlobalSettings {
 	public static ReleaseType releaseType;
 	
 	private static String lookAndFeel;
+
+	static {
+		load();
+	}
 	
 	public static String isValid() {
 		if((trigger == null) || (trigger.length() != 1))
