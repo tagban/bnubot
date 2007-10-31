@@ -12,7 +12,8 @@ import java.io.FileOutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
-import net.bnubot.vercheck.ProgressBar;
+import net.bnubot.util.task.Task;
+import net.bnubot.util.task.TaskManager;
 
 public class URLDownloader {
 	public static void downloadURL(URL url, File to, SHA1Sum sha1, boolean force) throws Exception {
@@ -62,21 +63,21 @@ public class URLDownloader {
 		byte[] b = new byte[1024];
 		
 		int fileLength = uc.getHeaderFieldInt("Content-Length", 0) / b.length;
-		ProgressBar pb = null;
+		Task task = null;
 		if(fileLength > 0)
-			pb = new ProgressBar(url.toExternalForm(), fileLength, "kB");
+			task = TaskManager.createTask(url.toExternalForm(), fileLength, "kB");
 		
 		do {
 			int c = is.read(b);
 			if(c == -1)
 				break;
 			os.write(b, 0, c);
-			if(pb != null)
-				pb.updateProgress();
+			if(task != null)
+				task.advanceProgress();
 		} while(true);
 		
-		if(pb != null)
-			pb.dispose();
+		if(task != null)
+			task.complete();
 		
 		os.close();
 		is.close();
