@@ -7,6 +7,7 @@ package net.bnubot.bot.gui;
 
 import java.awt.AWTEvent;
 import java.awt.AWTException;
+import java.awt.Frame;
 import java.awt.Image;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
@@ -16,6 +17,7 @@ import java.awt.Rectangle;
 import java.awt.SystemTray;
 import java.awt.Toolkit;
 import java.awt.TrayIcon;
+import java.awt.Window;
 import java.awt.event.AWTEventListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -74,14 +76,19 @@ public class GuiDesktop extends JFrame {
 		setContentPane(tabs);
 		setSize(800, 500);
 		
-		loadPosition(this);
 		Toolkit.getDefaultToolkit().addAWTEventListener(
 				new AWTEventListener() {
 					public void eventDispatched(AWTEvent event) {
-						if(event.getID() == WindowEvent.WINDOW_CLOSING) {
-							WindowEvent wev = (WindowEvent)event;
-							GuiDesktop gd = (GuiDesktop)wev.getComponent();
-							gd.savePosition();
+						WindowEvent wev = (WindowEvent)event;
+						Window window = (Window)wev.getComponent();
+						switch(event.getID()) {
+						case WindowEvent.WINDOW_CLOSING:
+						case WindowEvent.WINDOW_CLOSED:
+							savePosition(window);
+							break;
+						case WindowEvent.WINDOW_OPENED:
+							loadPosition(window);
+							break;
 						}
 					}},
 				AWTEvent.WINDOW_EVENT_MASK);
@@ -259,25 +266,30 @@ public class GuiDesktop extends JFrame {
 		setJMenuBar(menuBar);
 	}
 
-	private static void loadPosition(GuiDesktop instance) {
-		Rectangle bounds = instance.getBounds();
-		String header = "gui";
-		bounds.height = Integer.valueOf(Settings.read(header, "height", Integer.toString(bounds.height)));
-		bounds.width = Integer.valueOf(Settings.read(header, "width", Integer.toString(bounds.width)));
+	private static void loadPosition(Window w) {
+		String header = w.getClass().getSimpleName();
+		Rectangle bounds = w.getBounds();
+		if((w instanceof Frame) && ((Frame)w).isResizable()) {
+			bounds.height = Integer.valueOf(Settings.read(header, "height", Integer.toString(bounds.height)));
+			bounds.width = Integer.valueOf(Settings.read(header, "width", Integer.toString(bounds.width)));
+		}
 		bounds.x = Integer.valueOf(Settings.read(header, "x", Integer.toString(bounds.x)));
 		bounds.y = Integer.valueOf(Settings.read(header, "y", Integer.toString(bounds.y)));
-		instance.setBounds(bounds);
-		dividerLocation = Integer.valueOf(Settings.read(header, "dividerLocation", "550"));
+		w.setBounds(bounds);
+		if(w instanceof GuiDesktop)
+			dividerLocation = Integer.valueOf(Settings.read(header, "dividerLocation", "550"));
 	}
 	
-	protected void savePosition() {
-		Rectangle bounds = getBounds();
-		String header = "gui";
-		Settings.write(header, "height", Integer.toString(bounds.height));
-		Settings.write(header, "width", Integer.toString(bounds.width));
+	protected static void savePosition(Window w) {
+		String header = w.getClass().getSimpleName();
+		Rectangle bounds = w.getBounds();
+		if((w instanceof Frame) && ((Frame)w).isResizable()) {
+			Settings.write(header, "height", Integer.toString(bounds.height));
+			Settings.write(header, "width", Integer.toString(bounds.width));
+		}
 		Settings.write(header, "x", Integer.toString(bounds.x));
 		Settings.write(header, "y", Integer.toString(bounds.y));
-		if(selectedGui != null)
+		if((w instanceof GuiDesktop) && (selectedGui != null))
 			Settings.write(header, "dividerLocation", Integer.toString(selectedGui.getDividerLocation()));
 		Settings.store();
 	}
