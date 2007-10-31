@@ -203,7 +203,7 @@ public class GuiEventHandler implements EventHandler {
 		channelTextPane.setForeground(Color.LIGHT_GRAY);
 		
 		// The userlist
-		userList = new UserList(colors, con, this);
+		userList = new UserList(colors, this);
 		// Friends list
 		friendList = new FriendList(colors);
 		// Clan list
@@ -468,5 +468,9 @@ public class GuiEventHandler implements EventHandler {
 	
 	public int getDividerLocation() {
 		return jsp.getDividerLocation();
+	}
+
+	public Connection getConnection() {
+		return this.con;
 	}
 }
