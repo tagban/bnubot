@@ -9,6 +9,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 public class TimeFormatter {
 	public static String tsFormat = "%1$tH:%1$tM:%1$tS.%1$tL";
@@ -49,7 +50,7 @@ public class TimeFormatter {
 		}
 		return text.trim();
 	}
-	
+
 	/**
 	 * Converts a Windows FileTime structure to a Date
 	 * @param ft contains a 64-bit value representing the number of 100-nanosecond intervals since January 1, 1601 (UTC).
@@ -57,7 +58,9 @@ public class TimeFormatter {
 	 */
 	public static Date fileTime(long ft) {
 		// Date.parse("1/1/1601") == 11644455600000L
-		return new Date(ft / 10000 - 11644455600000L);
+		long date = ft / 10000 - 11644455600000L;
+		date += TimeZone.getDefault().getOffset(date);
+		return new Date(date);
 	}
 
 	private static DateFormat df = DateFormat.getDateInstance();
