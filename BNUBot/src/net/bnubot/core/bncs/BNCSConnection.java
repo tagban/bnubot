@@ -70,6 +70,8 @@ public class BNCSConnection extends Connection {
 	protected int myClan = 0;
 	protected Byte myClanRank = null; 
 	protected long lastNullPacket;
+	
+	private final ArrayList<Task> currentTasks = new ArrayList<Task>();
 
 	public BNCSConnection(ConnectionSettings cs, ChatQueue cq, Profile p) {
 		super(cs, cq, p);
@@ -157,10 +159,9 @@ public class BNCSConnection extends Connection {
 		boolean firstConnection = true;
 		while(true) {
 			try {
-				Task connect = TaskManager.createTask("Connecting to Battle.net");
+				Task connect = createTask("Connecting to Battle.net", "Verify connection settings validity");
 				
 				while(cs.isValid() != null) {
-					connect.updateProgress("Verify connection settings validity");
 					recieveError(cs.isValid());
 					int i = 1000;
 					while(--i > 0) {
@@ -207,11 +208,14 @@ public class BNCSConnection extends Connection {
 				boolean loggedIn = sendLoginPackets(connect);
 				
 				// Connection established
-				connect.complete();
+				completeTask(connect);
 				if(loggedIn)
 					connectedLoop();
 					
 				// Connection closed; do cleanup
+				for(Task t : currentTasks)
+					t.complete();
+				currentTasks.clear();
 				myStatString = null;
 				myUser = null;
 				myClan = 0;
@@ -1280,14 +1284,16 @@ public class BNCSConnection extends Connection {
 					int numAccounts = is.readDWord();
 					int numKeys = is.readDWord();
 					@SuppressWarnings("unchecked")
-					ArrayList<String> keys = (ArrayList<String>)CookieUtility.destroyCookie(is.readDWord());
+					ArrayList<Object> keys = (ArrayList<Object>)CookieUtility.destroyCookie(is.readDWord());
 					
 					if(numAccounts != 1)
 						throw new IllegalStateException("SID_READUSERDATA with numAccounts != 1");
+
+					completeTask((Task)keys.remove(0));
 					
-					recieveInfo("Profile for " + keys.remove(0));
+					recieveInfo("Profile for " + (String)keys.remove(0));
 					for(int i = 0; i < numKeys; i++) {
-						String key = keys.get(i);
+						String key = (String)keys.get(i);
 						String value = is.readNTStringUTF8();
 						if((key == null) || (key.length() == 0) || (value.length() == 0))
 							continue;
@@ -1926,7 +1932,8 @@ public class BNCSConnection extends Connection {
 		 * (STRING[])	 Requested Accounts
 		 * (STRING[])	 Requested Keys
 		 */
-		ArrayList<String> keys = new ArrayList<String>();
+		ArrayList<Object> keys = new ArrayList<Object>();
+		keys.add(createTask("Get profile", user));
 		keys.add(user);
 		keys.add("profile\\sex");
 		keys.add("profile\\age");
@@ -1944,11 +1951,11 @@ public class BNCSConnection extends Connection {
 		
 		BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_READUSERDATA);
 		p.writeDWord(1);
-		p.writeDWord(keys.size() - 1);
+		p.writeDWord(keys.size() - 2);
 		p.writeDWord(CookieUtility.createCookie(keys));
 		p.writeNTString(user);
-		for(int i = 1; i < keys.size(); i++)
-			p.writeNTString(keys.get(i));
+		for(int i = 2; i < keys.size(); i++)
+			p.writeNTString((String)keys.get(i));
 		p.SendPacket(bncsOutputStream);
 	 	
 	}
@@ -1983,5 +1990,16 @@ public class BNCSConnection extends Connection {
 
 	public int getProductID() {
 		return productID;
+	}
+	
+	private Task createTask(String title, String currentStep) {
+		Task t = TaskManager.createTask(title, currentStep);
+		currentTasks.add(t);
+		return t;
+	}
+	
+	private void completeTask(Task t) {
+		currentTasks.remove(t);
+		t.complete();
 	}
 }

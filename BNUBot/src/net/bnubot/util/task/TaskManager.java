@@ -28,6 +28,12 @@ public class TaskManager extends Frame {
 	public static Task createTask(String title) {
 		return createTask(title, 0, null);
 	}
+
+	public static Task createTask(String title, String currentStep) {
+		Task t = createTask(title);
+		t.updateProgress(currentStep);
+		return t;
+	}
 	
 	public static Task createTask(String title, int max, String units) {
 		Task t = new Task(title, max, units);
