@@ -158,16 +158,15 @@ public class BNCSConnection extends Connection {
 		while(true) {
 			try {
 				Task connect = TaskManager.createTask("Connecting to Battle.net");
-				connect.updateProgress("Verify connection settings validity");
 				
-				if(cs.isValid() != null) {
+				while(cs.isValid() != null) {
+					connect.updateProgress("Verify connection settings validity");
 					recieveError(cs.isValid());
 					int i = 1000;
 					while(--i > 0) {
 						yield();
 						sleep(10);
 					}
-					continue;
 				}
 
 				if(firstConnection) {
@@ -195,29 +194,24 @@ public class BNCSConnection extends Connection {
 					}
 				}
 				
-				nlsRevision = null;
-				productID = ProductIDs.ProductID[cs.product-1];
-				verByte = HashMain.getVerByte(cs.product);
-				
-				// Set up BNLS
-				connect.updateProgress("Initialize BNLS");
-				initializeBNLS();
+				// Set up BNLS, get verbyte
+				initializeBNLS(connect);
 				
 				// Set up BNCS
-				connect.updateProgress("Initialize BNCS");
-				initializeBNCS();
+				initializeBNCS(connect);
 				
 				// Begin login
-				connect.updateProgress("Log in");
-				sendInitialPackets();
+				sendInitialPackets(connect);
 				
-				// Login complete
+				// Log in to battle.net
+				boolean loggedIn = sendLoginPackets(connect);
+				
+				// Connection established
 				connect.complete();
-				if(connectionLoop())
+				if(loggedIn)
 					connectedLoop();
 					
 				// Connection closed; do cleanup
-				BNetUser.clearCache();
 				myStatString = null;
 				myUser = null;
 				myClan = 0;
@@ -235,15 +229,23 @@ public class BNCSConnection extends Connection {
 	}
 
 	/**
+	 * Connect to BNLS and get verbyte
 	 * @throws IOException
 	 * @throws SocketException
 	 */
-	private void initializeBNLS() throws IOException, SocketException {
+	private void initializeBNLS(Task connect) throws IOException, SocketException {
+		// Get the verbyte locally
+		verByte = HashMain.getVerByte(cs.product);
+		
+		// Connect to BNLS
+		connect.updateProgress("Connecting to BNLS");
 		setBNLSConnected(true);
 		bnlsInputStream = bnlsSocket.getInputStream();
 		bnlsOutputStream = bnlsSocket.getOutputStream();
 		
 		BNLS_REQUESTVERSIONBYTE: {
+			// Ask BNLS for the verbyte
+			connect.updateProgress("Getting verbyte from BNLS");
 			BNLSPacket vbPacket = new BNLSPacket(BNLSPacketId.BNLS_REQUESTVERSIONBYTE);
 			vbPacket.writeDWord(cs.product);
 			vbPacket.SendPacket(bnlsOutputStream);
@@ -267,7 +269,9 @@ public class BNCSConnection extends Connection {
 	 * Send the initial set of packets
 	 * @throws Exception
 	 */
-	private void sendInitialPackets() throws Exception {
+	private void sendInitialPackets(Task connect) throws Exception {
+		connect.updateProgress("Initializing BNCS");
+		
 		BNCSPacket p;
 		Locale loc = Locale.getDefault();
 		String prodLang = loc.getLanguage() + loc.getCountry();
@@ -280,6 +284,7 @@ public class BNCSConnection extends Connection {
 		case ConnectionSettings.PRODUCT_LORDOFDESTRUCTION:
 		case ConnectionSettings.PRODUCT_WARCRAFT3:
 		case ConnectionSettings.PRODUCT_THEFROZENTHRONE: {
+			// NLS
 			p = new BNCSPacket(BNCSPacketId.SID_AUTH_INFO);
 			p.writeDWord(0);							// Protocol ID (0)
 			p.writeDWord(PlatformIDs.PLATFORM_IX86);	// Platform ID (IX86)
@@ -301,6 +306,7 @@ public class BNCSConnection extends Connection {
 		case ConnectionSettings.PRODUCT_STARCRAFTSHAREWARE:
 		case ConnectionSettings.PRODUCT_JAPANSTARCRAFT:
 		case ConnectionSettings.PRODUCT_WAR2BNE: {
+			// OLS
 			if(cs.product == ConnectionSettings.PRODUCT_STARCRAFTSHAREWARE) {
 				p = new BNCSPacket(BNCSPacketId.SID_CLIENTID);
 				p.writeDWord(0);	// Registration Version
@@ -357,13 +363,18 @@ public class BNCSConnection extends Connection {
 	 * Initialize the connection, send game id
 	 * @throws Exception
 	 */
-	private void initializeBNCS() throws Exception {
+	private void initializeBNCS(Task connect) throws Exception {
+		nlsRevision = null;
+		productID = ProductIDs.ProductID[cs.product-1];
+		
 		// Set up BNCS
+		connect.updateProgress("Connecting to Battle.net");
 		setConnected(true);
 		bncsInputStream = socket.getInputStream();
 		bncsOutputStream = new DataOutputStream(socket.getOutputStream());
 		
 		// Game
+		connect.updateProgress("Connected");
 		bncsOutputStream.writeByte(0x01);
 	}
 	
@@ -371,7 +382,7 @@ public class BNCSConnection extends Connection {
 	 * Do the login work up to SID_ENTERCHAT
 	 * @throws Exception
 	 */
-	private boolean connectionLoop() throws Exception {
+	private boolean sendLoginPackets(Task connect) throws Exception {
 		while(connected && !socket.isClosed()) {
 			if(bncsInputStream.available() > 0) {
 				BNCSPacketReader pr;
@@ -489,6 +500,8 @@ public class BNCSConnection extends Connection {
 
 					// Respond
                 	if(nlsRevision != null) {
+                		connect.updateProgress("CheckRevision/CD Key challenge");
+                		
 						BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_AUTH_CHECK);
 						p.writeDWord(clientToken);
 						p.writeDWord(exeVersion);
@@ -514,6 +527,8 @@ public class BNCSConnection extends Connection {
 						p.writeNTString(cs.username);
 						p.SendPacket(bncsOutputStream);
                 	} else {
+                		connect.updateProgress("CheckRevision");
+                		
                 		/* (DWORD)		 Platform ID
                 		 * (DWORD)		 Product ID
                 		 * (DWORD)		 Version Byte
@@ -605,7 +620,8 @@ public class BNCSConnection extends Connection {
 						}
 						recieveInfo("Passed CheckRevision.");
 					}
-					
+
+            		connect.updateProgress("Logging in");
 					sendKeyOrPassword();
 					break;
 				}
@@ -647,6 +663,7 @@ public class BNCSConnection extends Connection {
 					}
 					
 					recieveInfo("CD key accepted.");
+            		connect.updateProgress("Logging in");
 					sendPassword();
 					break;
 				}
@@ -665,9 +682,11 @@ public class BNCSConnection extends Connection {
 					switch(status) {
 					case 0x00:
 						recieveInfo("Login accepted; requires proof.");
+	            		connect.updateProgress("Login accepted; proving");
 						break;
 					case 0x01:
 						recieveError("Account doesn't exist; creating...");
+	            		connect.updateProgress("Creating account");
 						
 						if(srp == null) {
 							recieveError("SRP is not initialized!");
@@ -742,7 +761,8 @@ public class BNCSConnection extends Connection {
 					int status = is.readDWord();
 					switch(status) {
 					case 0x00:
-						recieveInfo("Create account succeeded; logging in.");
+						recieveInfo("Account created; logging in.");
+	            		connect.updateProgress("Logging in");
 						sendKeyOrPassword();
 						break;
 					default:
@@ -779,6 +799,7 @@ public class BNCSConnection extends Connection {
 						break;
 					case 0x0E:
 						recieveError("An email address should be registered for this account.");
+	            		connect.updateProgress("Registering email address");
 						sendSetEmail();
 						break;
 					case 0x0F:
@@ -799,6 +820,7 @@ public class BNCSConnection extends Connection {
 					}
 
 					recieveInfo("Login successful; entering chat.");
+            		connect.updateProgress("Entering chat");
 					enterChat();
 					break;
 				}
@@ -808,12 +830,14 @@ public class BNCSConnection extends Connection {
 					switch(result) {
 					case 0x00:	// Success
 						recieveInfo("Login successful; entering chat.");
+	            		connect.updateProgress("Entering chat");
 						enterChat();
 						getChannelList();
 						sendJoinChannel(cs.channel);
 						break;
 					case 0x01:	// Account doesn't exist
 						recieveInfo("Account doesn't exist; creating...");
+	            		connect.updateProgress("Creating account");
 						
 						int[] passwordHash = BrokenSHA1.calcHashBuffer(cs.password.toLowerCase().getBytes());
 						
@@ -865,6 +889,7 @@ public class BNCSConnection extends Connection {
 					switch(status) {
 					case 0x00:
 						recieveInfo("Account created");
+	            		connect.updateProgress("Logging in");
 						sendKeyOrPassword();
 						break;
 					case 0x02:
@@ -893,6 +918,7 @@ public class BNCSConnection extends Connection {
 				
 				case SID_SETEMAIL: {
 					recieveError("An email address should be registered for this account.");
+            		connect.updateProgress("Registering email address");
 					sendSetEmail();
 					break;
 				}
