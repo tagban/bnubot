@@ -60,7 +60,7 @@ public class GuiDesktop extends JFrame {
 	private static final JMenuBar menuBar = new JMenuBar();
 	private static final GuiDesktop instance = new GuiDesktop();
 	private static TrayIcon tray = null;
-	private static Integer dividerLocation = null;
+	private static int dividerLocation = Integer.valueOf(Settings.read("GuiDesktop", "dividerLocation", "550"));;
 	
 	private GuiDesktop() {
 		super();
@@ -284,11 +284,6 @@ public class GuiDesktop extends JFrame {
 		bounds.x = Integer.valueOf(Settings.read(header, "x", Integer.toString(bounds.x)));
 		bounds.y = Integer.valueOf(Settings.read(header, "y", Integer.toString(bounds.y)));
 		w.setBounds(bounds);
-		if(w instanceof GuiDesktop) {
-			dividerLocation = Integer.valueOf(Settings.read(header, "dividerLocation", "550"));
-			for(GuiEventHandler gui : guis)
-				gui.setDividerLocation(dividerLocation);
-		}
 	}
 	
 	protected static void savePosition(Window w) {
@@ -392,9 +387,6 @@ public class GuiDesktop extends JFrame {
 	}
 	
 	public static void add(GuiEventHandler geh) {
-		if(dividerLocation == null)
-			loadPosition(instance);
-		
 		geh.getMenuBar().setVisible(false);
 		geh.setDividerLocation(dividerLocation);
 		menuBar.add(geh.getMenuBar());
