@@ -100,7 +100,6 @@ public class GuiDesktop extends JFrame {
 						}
 					}},
 				AWTEvent.WINDOW_EVENT_MASK);
-
 		
 		tabs.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {

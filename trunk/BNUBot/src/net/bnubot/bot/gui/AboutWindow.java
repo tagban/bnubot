@@ -28,9 +28,10 @@ public class AboutWindow extends JDialog {
 	public AboutWindow() {
 		initializeGUI();
 		setTitle("About BNU-Bot");
+		setModal(true);
+		setResizable(false);
 		
 		pack();
-		setModal(true);
 		setVisible(true);
 	}
 	
