@@ -60,7 +60,6 @@ public class GuiDesktop extends JFrame {
 	private static final JMenuBar menuBar = new JMenuBar();
 	private static final GuiDesktop instance = new GuiDesktop();
 	private static TrayIcon tray = null;
-	private static int dividerLocation = Integer.valueOf(Settings.read("GuiDesktop", "dividerLocation", "550"));;
 	
 	private GuiDesktop() {
 		super();
@@ -110,9 +109,13 @@ public class GuiDesktop extends JFrame {
 						continue;
 					
 					// Swap out the menus
-					if(selectedGui != null)
-						selectedGui.getMenuBar().setVisible(false);
 					gui.getMenuBar().setVisible(true);
+					if(selectedGui != null) {
+						selectedGui.getMenuBar().setVisible(false);
+						
+						// Set the divider to the same place the last one was
+						gui.setDividerLocation(selectedGui.getDividerLocation());
+					}
 					
 					// Set the default output window
 					Out.setDefaultOutputConnection(gui);
@@ -310,7 +313,8 @@ public class GuiDesktop extends JFrame {
 			if(!SystemTray.isSupported())
 				throw new NoClassDefFoundError();
 		} catch(NoClassDefFoundError e) {
-			Out.info(GuiEventHandler.class, "System tray is not supported");
+			Out.error(GuiEventHandler.class, "System tray is not supported");
+			GlobalSettings.enableTrayIcon = false;
 			return;
 		}
 		
@@ -386,12 +390,19 @@ public class GuiDesktop extends JFrame {
 	}
 	
 	public static void add(GuiEventHandler geh) {
-		geh.getMenuBar().setVisible(false);
-		geh.setDividerLocation(dividerLocation);
-		menuBar.add(geh.getMenuBar());
+		// If this is the first profile, set the divider location
+		if(selectedGui == null) {
+			int dl = Integer.valueOf(Settings.read("GuiDesktop", "dividerLocation", "550"));
+			geh.setDividerLocation(dl);
+		}
 		
+		// Add the components to the display
+		menuBar.add(geh.getMenuBar());
 		guis.add(geh);
 		tabs.addTab(geh.toString(), geh.getFrame());
+		
+		// Switch to the new tab
+		tabs.setSelectedComponent(geh.getFrame());
 	}
 	
 	private void setTitle() {

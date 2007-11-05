@@ -35,7 +35,15 @@ public class AboutWindow extends JDialog {
 		setVisible(true);
 	}
 	
-	private static class LinkLabel extends JLabel {
+	private static class ULabel extends JLabel {
+		private static final long serialVersionUID = -2808638250751879735L;
+		
+		public ULabel(String caption) {
+			super("<html><u>" + caption + "</u></html>");
+		}
+	}
+	
+	private static class LinkLabel extends ULabel {
 		private static final long serialVersionUID = -5801691479517417290L;
 
 		public LinkLabel(String url) {
@@ -72,12 +80,16 @@ public class AboutWindow extends JDialog {
 			b.add(new JLabel("Built " + vn.getBuildDate()));
 			b.add(new JLabel("Created by BNU-Camel"));
 			b.add(Box.createVerticalStrut(15));
-			b.add(new JLabel("Special thanks to:"));
+			b.add(new ULabel("Special thanks to:"));
 			b.add(new JLabel("Google: Project hosting"));
-			b.add(new JLabel("Fantasma, Sorceress: Alpha testing"));
 			b.add(new JLabel("Hdx: The JBLS project"));
 			b.add(new JLabel("iago: Canadian ambassador"));
 			b.add(new JLabel("Chavo: Mirror selector"));
+			b.add(Box.createVerticalStrut(15));
+			b.add(new ULabel("Alpha testers:"));
+			b.add(new JLabel("BNU-Fantasma"));
+			b.add(new JLabel("BNU-Sorceress"));
+			b.add(new JLabel("|3erzerk"));
 			b.add(Box.createVerticalStrut(15));
 			b.add(new JLabel("This project is distributed under the"));
 			b.add(new JLabel("GNU Public License, Version 2"));
