@@ -5,24 +5,25 @@
 
 package net.bnubot.util.task;
 
-import java.awt.Frame;
+import java.awt.Dialog;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 
+import net.bnubot.bot.gui.GuiDesktop;
 import net.bnubot.settings.GlobalSettings;
 
-public class TaskManager extends Frame {
+public class TaskManager extends Dialog {
 	private static final long serialVersionUID = 641763656953338296L;
 	private static final Box box = new Box(BoxLayout.Y_AXIS);
 	private static final TaskManager instance = new TaskManager();
 	
 	private TaskManager() {
-		super("Running Tasks");
+		super(GuiDesktop.getInstance());
+		setTitle("Running Tasks");
 		add(box);
 		
 		setResizable(false);
-		setAlwaysOnTop(true);
 	}
 
 	public static Task createTask(String title) {

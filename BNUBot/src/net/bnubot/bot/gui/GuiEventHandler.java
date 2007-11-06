@@ -447,7 +447,8 @@ public class GuiEventHandler implements EventHandler {
 
 	public void setChatText(String chatText) {
 		chatTextArea.setText(chatText);
-		chatTextArea.setSelectionStart(chatText.length());
+		if(chatText != null)
+			chatTextArea.setSelectionStart(chatText.length());
 		chatTextArea.requestFocus();
 	}
 
