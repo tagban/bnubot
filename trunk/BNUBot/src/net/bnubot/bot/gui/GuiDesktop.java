@@ -123,6 +123,9 @@ public class GuiDesktop extends JFrame {
 					// Store the selected GUI
 					selectedGui = gui;
 					
+					// Move cursor focus to the chat box
+					gui.setChatText(null);
+					
 					// Set the title to the title for the selected GUI
 					setTitle();
 					
@@ -352,10 +355,10 @@ public class GuiDesktop extends JFrame {
 		tray.setPopupMenu(pm);
 		tray.addMouseListener(new MouseListener() {
 			public void mouseClicked(MouseEvent e) {
-				if(e.getButton() == 1) {
-					instance.setVisible(!instance.isVisible());
-					if(instance.isVisible())
-						instance.toFront();
+				if(e.getButton() == MouseEvent.BUTTON1) {
+					setVisible(!isVisible());
+					if(isVisible())
+						toFront();
 				}
 			}
 			public void mouseEntered(MouseEvent e) {}
@@ -374,8 +377,8 @@ public class GuiDesktop extends JFrame {
 		addWindowStateListener(new WindowStateListener() {
 			public void windowStateChanged(WindowEvent e) {
 				if((e.getNewState() & java.awt.Frame.ICONIFIED) != 0) {
-					instance.setVisible(false);
-					instance.setState(e.getNewState() & ~java.awt.Frame.ICONIFIED);
+					setVisible(false);
+					setState(e.getNewState() & ~java.awt.Frame.ICONIFIED);
 				}
 			}
 		});
