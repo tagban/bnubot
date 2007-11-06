@@ -21,6 +21,7 @@ import java.util.Random;
 import java.util.TimeZone;
 
 import net.bnubot.bot.CommandResponseCookie;
+import net.bnubot.bot.gui.ConfigurationFrame;
 import net.bnubot.core.ChatQueue;
 import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
@@ -159,16 +160,20 @@ public class BNCSConnection extends Connection {
 		boolean firstConnection = true;
 		while(true) {
 			try {
+				for(Task t : currentTasks)
+					t.complete();
+				currentTasks.clear();
+				myStatString = null;
+				myUser = null;
+				myClan = 0;
+				myClanRank = null;
+				productID = 0;
+				titleChanged();
+				
 				Task connect = createTask("Connecting to Battle.net", "Verify connection settings validity");
 				
-				while(cs.isValid() != null) {
-					recieveError(cs.isValid());
-					int i = 1000;
-					while(--i > 0) {
-						yield();
-						sleep(10);
-					}
-				}
+				while(cs.isValid() != null)
+					new ConfigurationFrame(cs).setVisible(true);
 
 				if(firstConnection) {
 					firstConnection = false;
@@ -212,16 +217,7 @@ public class BNCSConnection extends Connection {
 				if(loggedIn)
 					connectedLoop();
 					
-				// Connection closed; do cleanup
-				for(Task t : currentTasks)
-					t.complete();
-				currentTasks.clear();
-				myStatString = null;
-				myUser = null;
-				myClan = 0;
-				myClanRank = null;
-				productID = 0;
-				titleChanged();
+				// Connection closed
 			} catch(SocketException e) {
 			} catch(Exception e) {
 				recieveError("Unhandled " + e.getClass().getSimpleName() + ": " + e.getMessage());
