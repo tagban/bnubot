@@ -21,7 +21,6 @@ import java.awt.Window;
 import java.awt.event.AWTEventListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -60,6 +59,7 @@ public class GuiDesktop extends JFrame {
 	private static final JMenuBar menuBar = new JMenuBar();
 	private static final GuiDesktop instance = new GuiDesktop();
 	private static TrayIcon tray = null;
+	private static final int KEYMASK = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
 	
 	private GuiDesktop() {
 		super();
@@ -137,7 +137,7 @@ public class GuiDesktop extends JFrame {
 		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
 			public boolean dispatchKeyEvent(KeyEvent e) {
 				int mod = e.getModifiers();
-				if((mod != InputEvent.CTRL_MASK) && (mod != InputEvent.META_MASK))
+				if(mod != KEYMASK)
 					return false;
 				
 				if(e.getID() != KeyEvent.KEY_RELEASED)
