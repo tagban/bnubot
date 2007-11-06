@@ -125,16 +125,8 @@ public class Main {
 			//Start up the next connection
 			ConnectionSettings cs = new ConnectionSettings(i);
 			String valid = cs.isValid();
-			try {
-				if(valid != null) {
-					ConfigurationFrame cf = new ConfigurationFrame(cs);
-					cf.setVisible(true);
-					while(cf.isVisible()) {
-						Thread.sleep(20);
-						Thread.yield();
-					}
-				}
-			} catch(Exception e) {}
+			if(valid != null)
+				new ConfigurationFrame(cs).setVisible(true);
 			
 			valid = cs.isValid();
 			if(valid == null)
