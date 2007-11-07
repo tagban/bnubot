@@ -77,78 +77,6 @@ public class BNCSConnection extends Connection {
 	public BNCSConnection(ConnectionSettings cs, ChatQueue cq, Profile p) {
 		super(cs, cq, p);
 	}
-	
-	private void sendKeyOrPassword() throws Exception {
-		BNCSPacket p;
-		
-		switch(productID) {
-		case ProductIDs.PRODUCT_JSTR:
-			p = new BNCSPacket(BNCSPacketId.SID_CDKEY);
-			p.writeDWord(0); //Spawn
-			p.writeNTString(cs.cdkey);
-			p.writeNTString(cs.username);
-			p.SendPacket(bncsOutputStream);
-			break;
-			
-		case ProductIDs.PRODUCT_W2BN:
-			byte[] keyHash = HashMain.hashW2Key(clientToken, serverToken, cs.cdkey).getBuffer();
-			if(keyHash.length != 40)
-				throw new Exception("Invalid keyHash length");
-			
-			p = new BNCSPacket(BNCSPacketId.SID_CDKEY2);
-			p.writeDWord(0); //Spawn
-			p.write(keyHash);
-			p.writeNTString(cs.username);
-			p.SendPacket(bncsOutputStream);
-			break;
-			
-		default:
-			sendPassword();
-			break;
-		}
-	}
-	
-	private void sendPassword() throws Exception {
-		if((nlsRevision == null) || (nlsRevision == 0)) {
-			int passwordHash[] = DoubleHash.doubleHash(cs.password.toLowerCase(), clientToken, serverToken);
-			
-			BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_LOGONRESPONSE2);
-			p.writeDWord(clientToken);
-			p.writeDWord(serverToken);
-			p.writeDWord(passwordHash[0]);
-			p.writeDWord(passwordHash[1]);
-			p.writeDWord(passwordHash[2]);
-			p.writeDWord(passwordHash[3]);
-			p.writeDWord(passwordHash[4]);
-			p.writeNTString(cs.username);
-			p.SendPacket(bncsOutputStream);
-		} else {
-			srp = new SRP(cs.username, cs.password);
-			srp.set_NLS(nlsRevision);
-			byte A[] = srp.get_A();
-			
-			if(A.length != 32)
-				throw new Exception("Invalid A length");
-			
-			BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_AUTH_ACCOUNTLOGON);
-			p.write(A);
-			p.writeNTString(cs.username);
-			p.SendPacket(bncsOutputStream);
-		}
-	}
-	
-	private void enterChat() throws Exception {
-		BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_ENTERCHAT);
-		p.writeNTString("");
-		p.writeNTString("");
-		p.SendPacket(bncsOutputStream);
-	}
-	
-	private void getChannelList() throws Exception {
-		BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_GETCHANNELLIST);
-		p.writeDWord(productID);
-		p.SendPacket(bncsOutputStream);
-	}
 
 	public void run() {
 		// We must initialize the EHs in the Connection thread
@@ -821,7 +749,7 @@ public class BNCSConnection extends Connection {
 
 					recieveInfo("Login successful; entering chat.");
             		connect.updateProgress("Entering chat");
-					enterChat();
+					sendEnterChat();
 					break;
 				}
 				
@@ -831,8 +759,8 @@ public class BNCSConnection extends Connection {
 					case 0x00:	// Success
 						recieveInfo("Login successful; entering chat.");
 	            		connect.updateProgress("Entering chat");
-						enterChat();
-						getChannelList();
+						sendEnterChat();
+						sendGetChannelList();
 						sendJoinChannel(cs.channel);
 						break;
 					case 0x01:	// Account doesn't exist
@@ -947,7 +875,7 @@ public class BNCSConnection extends Connection {
 
 					// Join home channel
 					if(nlsRevision != null) {
-						getChannelList();
+						sendGetChannelList();
 						sendJoinChannel(cs.channel);
 					}
 					
@@ -986,6 +914,96 @@ public class BNCSConnection extends Connection {
 		}
 		
 		return false;
+	}
+	
+	/**
+	 * JSTR: Send SID_CDKEY
+	 * W2BN: Send SID_CDKEY2
+	 * else: Call sendPassword()
+	 * @throws Exception
+	 */
+	private void sendKeyOrPassword() throws Exception {
+		BNCSPacket p;
+		
+		switch(productID) {
+		case ProductIDs.PRODUCT_JSTR:
+			p = new BNCSPacket(BNCSPacketId.SID_CDKEY);
+			p.writeDWord(0); //Spawn
+			p.writeNTString(cs.cdkey);
+			p.writeNTString(cs.username);
+			p.SendPacket(bncsOutputStream);
+			break;
+			
+		case ProductIDs.PRODUCT_W2BN:
+			byte[] keyHash = HashMain.hashW2Key(clientToken, serverToken, cs.cdkey).getBuffer();
+			if(keyHash.length != 40)
+				throw new Exception("Invalid keyHash length");
+			
+			p = new BNCSPacket(BNCSPacketId.SID_CDKEY2);
+			p.writeDWord(0); //Spawn
+			p.write(keyHash);
+			p.writeNTString(cs.username);
+			p.SendPacket(bncsOutputStream);
+			break;
+			
+		default:
+			sendPassword();
+			break;
+		}
+	}
+	
+	/**
+	 * Send SID_LOGONRESPONSE2 (OLS) or SID_AUTH_ACCOUNTLOGON (NLS)
+	 * @throws Exception
+	 */
+	private void sendPassword() throws Exception {
+		if((nlsRevision == null) || (nlsRevision == 0)) {
+			int passwordHash[] = DoubleHash.doubleHash(cs.password.toLowerCase(), clientToken, serverToken);
+			
+			BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_LOGONRESPONSE2);
+			p.writeDWord(clientToken);
+			p.writeDWord(serverToken);
+			p.writeDWord(passwordHash[0]);
+			p.writeDWord(passwordHash[1]);
+			p.writeDWord(passwordHash[2]);
+			p.writeDWord(passwordHash[3]);
+			p.writeDWord(passwordHash[4]);
+			p.writeNTString(cs.username);
+			p.SendPacket(bncsOutputStream);
+		} else {
+			srp = new SRP(cs.username, cs.password);
+			srp.set_NLS(nlsRevision);
+			byte A[] = srp.get_A();
+			
+			if(A.length != 32)
+				throw new Exception("Invalid A length");
+			
+			BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_AUTH_ACCOUNTLOGON);
+			p.write(A);
+			p.writeNTString(cs.username);
+			p.SendPacket(bncsOutputStream);
+		}
+	}
+	
+	/**
+	 * Send SID_ENTERCHAT
+	 * @throws Exception
+	 */
+	private void sendEnterChat() throws Exception {
+		BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_ENTERCHAT);
+		p.writeNTString("");
+		p.writeNTString("");
+		p.SendPacket(bncsOutputStream);
+	}
+	
+	/**
+	 * Send SID_GETCHANNELLIST
+	 * @throws Exception
+	 */
+	private void sendGetChannelList() throws Exception {
+		BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_GETCHANNELLIST);
+		p.writeDWord(productID);
+		p.SendPacket(bncsOutputStream);
 	}
 	
 	/**
