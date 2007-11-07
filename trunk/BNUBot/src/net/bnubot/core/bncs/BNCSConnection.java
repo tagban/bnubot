@@ -1719,17 +1719,19 @@ public class BNCSConnection extends Connection {
 		text = cleanText(text);
 		
 		try {
-			if(text.substring(0, 3).equals("/j ")) {
-				sendJoinChannel(text.substring(3));
-				return;
-			}
-			if(text.substring(0, 6).equals("/join ")) {
-				sendJoinChannel(text.substring(6));
-				return;
-			}
-			if(text.substring(0, 6).equals("/join2 ")) {
-				sendJoinChannel2(text.substring(6));
-				return;
+			if(text.charAt(0) == '/') {
+				if(text.substring(1, 3).equals("j ")) {
+					sendJoinChannel(text.substring(3));
+					return;
+				}
+				if(text.substring(1, 6).equals("join ")) {
+					sendJoinChannel(text.substring(6));
+					return;
+				}
+				if(text.substring(1, 7).equals("join2 ")) {
+					sendJoinChannel2(text.substring(6));
+					return;
+				}
 			}
 		} catch(Exception e) {}
 		

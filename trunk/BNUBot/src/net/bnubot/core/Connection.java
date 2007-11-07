@@ -284,9 +284,7 @@ public abstract class Connection extends Thread implements EventHandler {
 					if(command.length > 1)
 						params = command[1];
 	
-					for(EventHandler eh : eventHandlers)
-						eh.parseCommand(myUser, command[0], params, false);
-					
+					parseCommand(myUser, command[0], params, false);
 					return;
 				}
 				break;
@@ -300,9 +298,7 @@ public abstract class Connection extends Thread implements EventHandler {
 					if(command.length > 2)
 						params = command[2];
 
-					for(EventHandler eh : eventHandlers)
-						eh.parseCommand(myUser, command[1], params, true);
-
+					parseCommand(myUser, command[1], params, true);
 					return;
 				}
 				break;
