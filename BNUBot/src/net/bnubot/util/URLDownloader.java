@@ -11,12 +11,46 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.LinkedList;
 
 import net.bnubot.util.task.Task;
 import net.bnubot.util.task.TaskManager;
 
 public class URLDownloader {
-	public static void downloadURL(URL url, File to, SHA1Sum sha1, boolean force) throws Exception {
+	public static LinkedList<FileDownload> queue = new LinkedList<FileDownload>();
+	
+	private static class FileDownload {
+		URL url;
+		File to;
+		SHA1Sum sha1;
+		boolean force;
+		
+		public FileDownload(URL url, File to, SHA1Sum sha1, boolean force) {
+			this.url = url;
+			this.to = to;
+			this.sha1 = sha1;
+			this.force = force;
+		}
+	}
+	
+	public static void downloadURL(URL url, File to, SHA1Sum sha1, boolean force) {
+		queue.add(new FileDownload(url, to, sha1, force));
+	}
+	
+	public static void flush() throws Exception {
+		int num = queue.size();
+		if(num <= 0)
+			return;
+		
+		Task t = TaskManager.createTask("Download", num, "files");
+		for(FileDownload fd : queue) {
+			downloadURLNow(fd.url, fd.to, fd.sha1, fd.force);
+			t.advanceProgress();
+		}
+		t.complete();
+	}
+	
+	public static void downloadURLNow(URL url, File to, SHA1Sum sha1, boolean force) throws Exception {
 		// Don't download the file if it already exists
 		if(to.exists()) {
 			// If no MD5 sum was given

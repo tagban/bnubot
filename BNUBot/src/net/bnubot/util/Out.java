@@ -33,9 +33,8 @@ public class Out {
 	private static File debugFile = new File("debug.properties");
 	static {
 		try {
-			if(!debugFile.exists())
-				debugFile.createNewFile();
-			debug.load(new FileInputStream(debugFile));
+			if(debugFile.exists())
+				debug.load(new FileInputStream(debugFile));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
