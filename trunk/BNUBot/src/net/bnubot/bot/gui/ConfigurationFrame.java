@@ -236,7 +236,9 @@ public class ConfigurationFrame extends JDialog {
 		if(addConnectionStuff)
 			add(boxAll);
 		else {
+			// No CD keys, force GCF until there are
 			new GlobalConfigurationFrame().setVisible(true);
+			initializeGui();
 			return;
 		}
 		pack();
