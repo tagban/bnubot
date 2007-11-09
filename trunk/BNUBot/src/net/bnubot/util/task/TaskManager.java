@@ -6,11 +6,11 @@
 package net.bnubot.util.task;
 
 import java.awt.Dialog;
+import java.awt.Frame;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 
-import net.bnubot.bot.gui.GuiDesktop;
 import net.bnubot.settings.GlobalSettings;
 
 public class TaskManager extends Dialog {
@@ -19,7 +19,7 @@ public class TaskManager extends Dialog {
 	private static final TaskManager instance = new TaskManager();
 	
 	private TaskManager() {
-		super(GuiDesktop.getInstance());
+		super(new Frame());
 		setTitle("Running Tasks");
 		add(box);
 		

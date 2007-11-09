@@ -14,8 +14,6 @@ import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.Out;
 import net.bnubot.util.SHA1Sum;
 import net.bnubot.util.URLDownloader;
-import net.bnubot.util.task.Task;
-import net.bnubot.util.task.TaskManager;
 
 import org.jbls.util.Constants;
 
@@ -28,6 +26,16 @@ public class VersionCheck {
 	}
 	
 	public static boolean checkVersion(boolean forceDownload, ReleaseType rt) throws Exception {
+		return checkVersion(forceDownload, rt, "BNUBot.jar", null);
+	}
+
+	public static boolean checkVersion(boolean forceDownload, ReleaseType rt, String jarFileName, String downloadFolder) throws Exception {
+		boolean cv = doCheckVersion(forceDownload, rt, jarFileName, downloadFolder);
+		URLDownloader.flush();
+		return cv;
+	}
+	
+	public static boolean doCheckVersion(boolean forceDownload, ReleaseType rt, String jarFileName, String downloadFolder) throws Exception {
 		try {
 			String url = "http://www.clanbnu.net/bnubot/version.php?";
 			if(!forceDownload && (CurrentVersion.version().revision() != null))
@@ -54,21 +62,19 @@ public class VersionCheck {
 			XMLElementDecorator downloads = elem.getPath("bnubot/downloads");
 			if(downloads != null) {
 				XMLElementDecorator[] files = downloads.getChildren("file");
-				if(files.length > 0) {
-					Task t = TaskManager.createTask("Download", files.length, "files");
-					for(XMLElementDecorator file : files) {
-						XMLElementDecorator sha1Element = file.getChild("sha1");
-						SHA1Sum sha1 = null;
-						if(sha1Element != null)
-							sha1 = new SHA1Sum(sha1Element.getString());
-						URLDownloader.downloadURL(
-							new URL(file.getChild("from").getString()),
-							new File(file.getChild("to").getString()),
-							sha1,
-							false);
-						t.advanceProgress();
-					}
-					t.complete();
+				for(XMLElementDecorator file : files) {
+					XMLElementDecorator sha1Element = file.getChild("sha1");
+					SHA1Sum sha1 = null;
+					if(sha1Element != null)
+						sha1 = new SHA1Sum(sha1Element.getString());
+					String to = file.getChild("to").getString();
+					if(downloadFolder != null)
+						to = downloadFolder + "/" + to;
+					URLDownloader.downloadURL(
+						new URL(file.getChild("from").getString()),
+						new File(to),
+						sha1,
+						false);
 				}
 			}
 		}
@@ -105,16 +111,17 @@ public class VersionCheck {
 				verLatest.getChild("built").getString());
 
 		String url = verLatest.getChild("url").getString();
+		
+		XMLElementDecorator sha1Element = verLatest.getChild("sha1");
+		SHA1Sum sha1 = null;
+		if((sha1Element != null) && (sha1Element.getString() != null))
+			sha1 = new SHA1Sum(sha1Element.getString());
+		
 		if(forceDownload) {
 			if(url == null)
 				return false;
 			
-			XMLElementDecorator sha1Element = verLatest.getChild("sha1");
-			SHA1Sum sha1 = null;
-			if(sha1Element != null)
-				sha1 = new SHA1Sum(sha1Element.getString());
-			
-			URLDownloader.downloadURL(new URL(url), new File("BNUBot.jar"), sha1, true);
+			URLDownloader.downloadURL(new URL(url), new File(jarFileName), sha1, true);
 			return true;
 		}
 			
@@ -125,11 +132,11 @@ public class VersionCheck {
 		
 		if(url != null) {
 			try {
-				File thisJar = new File("BNUBot.jar");
+				File thisJar = new File(jarFileName);
 				if(thisJar.exists()) {
 					String msg = "There is an update to BNU-Bot avalable.\nWould you like to update to version " + vnLatest.toString() + "?";
 					if(JOptionPane.showConfirmDialog(null, msg, "Update?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
-						URLDownloader.downloadURL(new URL(url), new File("BNUBot.jar"), null, true);
+						URLDownloader.downloadURL(new URL(url), new File(jarFileName), sha1, true);
 						JOptionPane.showMessageDialog(null, "Update complete. Please restart BNU-Bot.");
 						System.exit(0);
 					}
