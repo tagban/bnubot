@@ -33,8 +33,7 @@ public class ConnectionSettings implements Serializable {
 	public String password;
 	public String channel;
 	public String cdkey;
-	public String cdkeyLOD;
-	public String cdkeyTFT;
+	public String cdkey2;
 	public byte product;
 	
 	public String myRealm;
@@ -80,6 +79,7 @@ public class ConnectionSettings implements Serializable {
 		}
 		
 		switch(product) {
+		case PRODUCT_DIABLO:
 		case PRODUCT_DIABLOSHAREWARE:
 		case PRODUCT_STARCRAFTSHAREWARE:
 			break;
@@ -89,14 +89,10 @@ public class ConnectionSettings implements Serializable {
 				break;
 		}
 		
-		if(product == PRODUCT_LORDOFDESTRUCTION) {
-			if((cdkeyLOD == null) || (cdkeyLOD.length() == 0))
-				return "LOD CD key not set";
-		}
-		
-		if(product == PRODUCT_THEFROZENTHRONE) {
-			if((cdkeyTFT == null) || (cdkeyTFT.length() == 0))
-				return "TFT CD key not set";
+		if((product == PRODUCT_LORDOFDESTRUCTION)
+		|| (product == PRODUCT_THEFROZENTHRONE)) {
+			if((cdkey2 == null) || (cdkey2.length() == 0))
+				return "CD key 2 not set";
 		}
 		
 		myRealm = getMyRealm();
@@ -146,8 +142,7 @@ public class ConnectionSettings implements Serializable {
 		Settings.write(header, "password", password);
 		Settings.write(header, "channel", channel);
 		Settings.write(header, "cdkey", cdkey);
-		Settings.write(header, "cdkeyLOD", cdkeyLOD);
-		Settings.write(header, "cdkeyTFT", cdkeyTFT);
+		Settings.write(header, "cdkey2", cdkey2);
 		if(product != 0)
 			Settings.write(header, "product", org.jbls.util.Constants.prods[product-1]);
 		
@@ -165,8 +160,7 @@ public class ConnectionSettings implements Serializable {
 		password =	Settings.read(header, "password", null);
 		channel =	Settings.read(header, "channel", "Clan BNU");
 		cdkey =		Settings.read(header, "cdkey", null);
-		cdkeyLOD =	Settings.read(header, "cdkeyLOD", null);
-		cdkeyTFT =	Settings.read(header, "cdkeyTFT", null);
+		cdkey2 =	Settings.read(header, "cdkey2", null);
 		String prod = Settings.read(header, "product", null);
 		product = 0;
 		if(prod != null) {

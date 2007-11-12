@@ -362,9 +362,9 @@ public class BNCSConnection extends Connection {
 					if(nlsRevision != null) {
 						keyHash = HashMain.hashKey(clientToken, serverToken, cs.cdkey).getBuffer();
 						if(cs.product == ConnectionSettings.PRODUCT_LORDOFDESTRUCTION)
-							keyHash2 = HashMain.hashKey(clientToken, serverToken, cs.cdkeyLOD).getBuffer();
+							keyHash2 = HashMain.hashKey(clientToken, serverToken, cs.cdkey2).getBuffer();
 						if(cs.product == ConnectionSettings.PRODUCT_THEFROZENTHRONE)
-							keyHash2 = HashMain.hashKey(clientToken, serverToken, cs.cdkeyTFT).getBuffer();
+							keyHash2 = HashMain.hashKey(clientToken, serverToken, cs.cdkey2).getBuffer();
 					}
 					
 					int exeHash = 0;
@@ -897,7 +897,7 @@ public class BNCSConnection extends Connection {
 					myClanRank = is.readByte();
 					titleChanged();
 					
-					//TODO: clanInfo(myClan, myClanRank);
+					// TODO: clanInfo(myClan, myClanRank);
 					
 					// Get clan list
 					BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_CLANMEMBERLIST);
