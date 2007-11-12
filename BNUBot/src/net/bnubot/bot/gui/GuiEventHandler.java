@@ -5,12 +5,16 @@
 
 package net.bnubot.bot.gui;
 
+import java.awt.AWTKeyStroke;
 import java.awt.Color;
+import java.awt.KeyboardFocusManager;
 import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.Collections;
+import java.util.Set;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -49,6 +53,8 @@ public class GuiEventHandler implements EventHandler {
 	private JMenu menuBar = new JMenu();
 	private BNetUser lastWhisperFrom = null;
 	private JSplitPane jsp = null;
+	
+	private static final Set<? extends AWTKeyStroke> EMPTY_SET = Collections.emptySet();
 	
 	public GuiEventHandler() {
 		initializeGui(ColorScheme.createColorScheme(GlobalSettings.colorScheme));
@@ -139,6 +145,9 @@ public class GuiEventHandler implements EventHandler {
 		mainTextArea = new TextWindow(colors);
 		// Send chat textbox
 		chatTextArea = new JTextField();
+		// Enable tab character
+		chatTextArea.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, EMPTY_SET);
+		chatTextArea.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, EMPTY_SET);
 		chatTextArea.setBorder(null);
 		chatTextArea.setBackground(colors.getBackgroundColor());
 		chatTextArea.setForeground(Color.LIGHT_GRAY);
@@ -177,6 +186,8 @@ public class GuiEventHandler implements EventHandler {
 							chatTextArea.setText(before + users[0] + after);
 							chatTextArea.setCaretPosition(before.length() + users[0].length());
 						} else {
+							// TODO: Add assumed characters
+							
 							chatTextArea.setText(before + text + after);
 							chatTextArea.setCaretPosition(before.length() + text.length());
 							
@@ -456,7 +467,6 @@ public class GuiEventHandler implements EventHandler {
 		//mainTextArea.recieveInfo(String.format("parseCommand(\"%1$s\", \"%2$s\", \"%3$s\")", user.getShortLogonName(), command, param));
 	}
 
-	@Override
 	public String toString() {
 		if(con == null)
 			return null;
