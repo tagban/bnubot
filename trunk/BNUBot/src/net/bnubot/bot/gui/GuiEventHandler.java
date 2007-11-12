@@ -164,7 +164,7 @@ public class GuiEventHandler implements EventHandler {
 					e.consume();
 					try {
 						int end = chatTextArea.getCaretPosition();
-						String text = chatTextArea.getText(0, end - 1);
+						String text = chatTextArea.getText(0, end);
 						int start = text.lastIndexOf(' ') + 1;
 						if(start != 0)
 							text = text.substring(start);
