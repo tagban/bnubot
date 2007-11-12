@@ -38,8 +38,7 @@ public class ConfigurationFrame extends JDialog {
 	JPasswordField txtPassword = null;
 	ConfigComboBox cmbProduct = null;
 	ConfigComboBox cmbCDKey = null;
-	ConfigComboBox cmbCDKeyLOD = null;
-	ConfigComboBox cmbCDKeyTFT = null;
+	ConfigComboBox cmbCDKey2 = null;
 	ConfigTextArea txtBNCSServer = null;
 	ConfigTextArea txtChannel = null;
 	JButton btnLoad = null;
@@ -134,6 +133,35 @@ public class ConfigurationFrame extends JDialog {
 							break;
 						}
 
+						CDKey[] CDKeys2 = null;
+						switch(cmbProduct.getSelectedIndex() + 1) {
+						case ConnectionSettings.PRODUCT_DIABLO:
+						case ConnectionSettings.PRODUCT_DIABLOSHAREWARE:
+						case ConnectionSettings.PRODUCT_STARCRAFTSHAREWARE:
+							cmbCDKey.setVisible(false);
+							cmbCDKey2.setVisible(false);
+							break;
+						case ConnectionSettings.PRODUCT_JAPANSTARCRAFT:
+						case ConnectionSettings.PRODUCT_STARCRAFT:
+						case ConnectionSettings.PRODUCT_BROODWAR:
+						case ConnectionSettings.PRODUCT_DIABLO2:
+						case ConnectionSettings.PRODUCT_WARCRAFT3:
+						case ConnectionSettings.PRODUCT_WAR2BNE:
+							cmbCDKey.setVisible(true);
+							cmbCDKey2.setVisible(false);
+							break;
+						case ConnectionSettings.PRODUCT_LORDOFDESTRUCTION:
+						case ConnectionSettings.PRODUCT_THEFROZENTHRONE:
+							cmbCDKey.setVisible(true);
+							cmbCDKey2.setVisible(true);
+							
+							if((cmbProduct.getSelectedIndex() + 1) == ConnectionSettings.PRODUCT_LORDOFDESTRUCTION)
+								CDKeys2 = KeyManager.getKeys(KeyManager.PRODUCT_D2XP);
+							if((cmbProduct.getSelectedIndex() + 1) == ConnectionSettings.PRODUCT_THEFROZENTHRONE)
+								CDKeys2 = KeyManager.getKeys(KeyManager.PRODUCT_W3XP);			
+							break;
+						}
+
 						DefaultComboBoxModel model = (DefaultComboBoxModel)cmbCDKey.getModel();
 						model.removeAllElements();
 						if(prod != KeyManager.PRODUCT_ALLNORMAL) {
@@ -145,7 +173,18 @@ public class ConfigurationFrame extends JDialog {
 									cmbCDKey.setSelectedIndex(i);
 							}
 						}
+						
 
+						DefaultComboBoxModel model2 = (DefaultComboBoxModel)cmbCDKey2.getModel();
+						model2.removeAllElements();
+						if(CDKeys2 != null) {
+							for(int i = 0; i < CDKeys2.length; i++) {
+								model2.addElement(CDKeys2[i]);
+
+								if(CDKeys2[i].getKey().equals(cs.cdkey2))
+									cmbCDKey2.setSelectedIndex(i);
+							}
+						}
 					}
 				});
 				//Initialize CD Keys combo box before setting product
@@ -160,18 +199,22 @@ public class ConfigurationFrame extends JDialog {
 					break ConnectionStuff;
 				}
 				cmbCDKey = makeCombo("CD key", CDKeys, false, boxSettings);
+				cmbCDKey2 = makeCombo("CD key 2", CDKeys, false, boxSettings);
 				
 				cmbProduct.setSelectedIndex(cs.product - 1);
 				cmbCDKey.setSelectedItem(cs.cdkey);
+				cmbCDKey2.setSelectedItem(cs.cdkey2);
 
-				CDKeys = KeyManager.getKeys(KeyManager.PRODUCT_D2XP);
-				cmbCDKeyLOD = makeCombo("LOD key", CDKeys, false, boxSettings);
-				cmbCDKeyLOD.setSelectedItem(cs.cdkeyLOD);
-
-				CDKeys = KeyManager.getKeys(KeyManager.PRODUCT_W3XP);
-				cmbCDKeyTFT = makeCombo("TFT key", CDKeys, false, boxSettings);
-				cmbCDKeyTFT.setSelectedItem(cs.cdkeyTFT);
-
+				CDKeys = null;
+				switch(cmbProduct.getSelectedIndex() + 1) {
+				case ConnectionSettings.PRODUCT_LORDOFDESTRUCTION:
+					CDKeys = KeyManager.getKeys(KeyManager.PRODUCT_D2XP);
+					break;
+				case ConnectionSettings.PRODUCT_THEFROZENTHRONE:
+					CDKeys = KeyManager.getKeys(KeyManager.PRODUCT_W3XP);
+					break;
+				}
+				
 				txtBNCSServer = makeText("Battle.net Server", cs.bncsServer, boxSettings);
 				txtChannel = makeText("Channel", cs.channel, boxSettings);
 
@@ -261,15 +304,12 @@ public class ConfigurationFrame extends JDialog {
 		cs.password = new String(txtPassword.getPassword());
 		cs.product = (byte)(cmbProduct.getSelectedIndex() + 1);
 		CDKey k = (CDKey)cmbCDKey.getSelectedItem();
-		CDKey kLOD = (CDKey)cmbCDKeyLOD.getSelectedItem();
-		CDKey kTFT = (CDKey)cmbCDKeyTFT.getSelectedItem();
+		CDKey k2 = (CDKey)cmbCDKey2.getSelectedItem();
 
 		if(k != null)
 			cs.cdkey = formatCDKey(k.getKey());
-		if(kLOD != null)
-			cs.cdkeyLOD = formatCDKey(kLOD.getKey());
-		if(kTFT != null)
-			cs.cdkeyTFT = formatCDKey(kTFT.getKey());
+		if(k2 != null)
+			cs.cdkey2 = formatCDKey(k2.getKey());
 		cs.bncsServer = txtBNCSServer.getText();
 		cs.channel = txtChannel.getText();
 
@@ -283,8 +323,7 @@ public class ConfigurationFrame extends JDialog {
 		txtPassword.setText(cs.password);
 		cmbProduct.setSelectedIndex(cs.product - 1);
 		cmbCDKey.setSelectedItem(cs.cdkey);
-		cmbCDKeyLOD.setSelectedItem(cs.cdkeyLOD);
-		cmbCDKeyTFT.setSelectedItem(cs.cdkeyTFT);
+		cmbCDKey2.setSelectedItem(cs.cdkey2);
 		txtBNCSServer.setText(cs.bncsServer);
 		txtChannel.setText(cs.channel);
 	}

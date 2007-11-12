@@ -32,9 +32,9 @@ public class VersionCheck {
 			if(!new File(path).exists())
 				throw new FileNotFoundException(path);
 			return checkVersion(forceDownload, rt, path, null);
-		} else {
-			return checkVersion(false, rt, null, null);
 		}
+		
+		return checkVersion(false, rt, null, null);
 	}
 
 	public static boolean checkVersion(boolean forceDownload, ReleaseType rt, String jarFileName, String downloadFolder) throws Exception {
