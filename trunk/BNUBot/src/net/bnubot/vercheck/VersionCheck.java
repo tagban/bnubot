@@ -6,6 +6,7 @@
 package net.bnubot.vercheck;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.net.URL;
 
 import javax.swing.JOptionPane;
@@ -26,7 +27,14 @@ public class VersionCheck {
 	}
 	
 	public static boolean checkVersion(boolean forceDownload, ReleaseType rt) throws Exception {
-		return checkVersion(forceDownload, rt, "BNUBot.jar", null);
+		if(CurrentVersion.fromJar()) {
+			String path = System.getProperty("net.bnubot.jarpath", "BNUBot.jar");
+			if(!new File(path).exists())
+				throw new FileNotFoundException(path);
+			return checkVersion(forceDownload, rt, path, null);
+		} else {
+			return checkVersion(false, rt, null, null);
+		}
 	}
 
 	public static boolean checkVersion(boolean forceDownload, ReleaseType rt, String jarFileName, String downloadFolder) throws Exception {
@@ -35,6 +43,9 @@ public class VersionCheck {
 		return cv;
 	}
 	
+	/**
+	 * @return whether an update is available
+	 */
 	public static boolean doCheckVersion(boolean forceDownload, ReleaseType rt, String jarFileName, String downloadFolder) throws Exception {
 		try {
 			String url = "http://www.clanbnu.net/bnubot/version.php?";
@@ -132,15 +143,18 @@ public class VersionCheck {
 		
 		if(url != null) {
 			try {
-				File thisJar = new File(jarFileName);
-				if(thisJar.exists()) {
-					String msg = "There is an update to BNU-Bot avalable.\nWould you like to update to version " + vnLatest.toString() + "?";
-					if(JOptionPane.showConfirmDialog(null, msg, "Update?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
-						URLDownloader.downloadURL(new URL(url), new File(jarFileName), sha1, true);
-						JOptionPane.showMessageDialog(null, "Update complete. Please restart BNU-Bot.");
-						System.exit(0);
+				if(jarFileName != null) {
+					File thisJar = new File(jarFileName);
+					if(thisJar.exists()) {
+						String msg = "There is an update to BNU-Bot avalable.\nWould you like to update to version " + vnLatest.toString() + "?";
+						if(JOptionPane.showConfirmDialog(null, msg, "Update?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+							URLDownloader.downloadURL(new URL(url), thisJar, sha1, true);
+							URLDownloader.flush();
+							JOptionPane.showMessageDialog(null, "Update complete. Please restart BNU-Bot.");
+							System.exit(0);
+						}
+						return true;
 					}
-					return true;
 				}
 			} catch(Exception e) {
 				Out.exception(e);
