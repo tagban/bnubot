@@ -85,6 +85,12 @@ public class Main {
 						continue;
 					}
 					break;
+				case 'v':
+					if(args[i].equals("-v") || args[i].equals("-version")) {
+						System.out.println(CurrentVersion.version().toString());
+						System.exit(0);
+					}
+					break;
 				}
 			}
 
