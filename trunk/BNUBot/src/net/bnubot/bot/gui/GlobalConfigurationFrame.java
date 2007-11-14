@@ -62,6 +62,7 @@ public class GlobalConfigurationFrame extends JDialog {
 	ConfigComboBox cmbReleaseType = null;
 	ConfigComboBox cmbColorScheme = null;
 	ConfigComboBox cmbLookAndFeel = null;
+	ConfigComboBox cmbPlasticTheme = null;
 	ConfigCheckBox chkAutoConnect = null;
 	ConfigCheckBox chkDisplayBattleNetMOTD = null;
 	ConfigCheckBox chkDisplayBattleNetChannels = null;
@@ -198,6 +199,14 @@ public class GlobalConfigurationFrame extends JDialog {
 						for(LookAndFeelInfo lafi : UIManager.getInstalledLookAndFeels())
 							if(lafi.getName().equals(cmbLookAndFeel.getSelectedItem()))
 								GlobalSettings.setLookAndFeel(lafi);
+					}
+				});
+				
+				cmbPlasticTheme = makeCombo("Plastic Theme", GlobalSettings.getLookAndFeelThemes(), false, boxSettings);
+				cmbPlasticTheme.setSelectedItem(GlobalSettings.getLookAndFeelTheme());
+				cmbPlasticTheme.addItemListener(new ItemListener() {
+					public void itemStateChanged(ItemEvent e) {
+						GlobalSettings.setLookAndFeelTheme(cmbPlasticTheme.getSelectedItem().toString());
 					}
 				});
 

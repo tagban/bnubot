@@ -6,6 +6,8 @@
 package net.bnubot.settings;
 
 import java.lang.reflect.Method;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.LookAndFeel;
 import javax.swing.UIManager;
@@ -50,11 +52,11 @@ public class GlobalSettings {
 	public static ReleaseType releaseType;
 	
 	private static String lookAndFeel;
-	private static String lookAndFeelTheme = "DarkStar";
+	private static String lookAndFeelTheme;
+	private static String[] lookAndFeelThemes;
+	private static Method setPlasticTheme = null;
 
 	static {
-		load();
-		
 		try {
 			// Initialize the JGoodies Look and Feels
 			String[] lafs = {
@@ -70,13 +72,29 @@ public class GlobalSettings {
 				UIManager.installLookAndFeel(laf.getName(), PlasticLookAndFeel.getName());
 			}
 			
+			// getInstalledThemes()
+			Method getInstalledThemes = PlasticLookAndFeel.getMethod("getInstalledThemes");
+			List<?> themes = (List<?>)getInstalledThemes.invoke(null);
+			LinkedList<String> themes2 = new LinkedList<String>();
+			for(Object theme : themes)
+				themes2.add(theme.getClass().getSimpleName());
+			lookAndFeelThemes = themes2.toArray(new String[themes2.size()]);
+			
+			// setPlasticTheme(PlasticTheme)
 			Class<?> PlasticTheme = JARLoader.forName("com.jgoodies.looks.plastic.PlasticTheme");
-			Class<?> Theme = JARLoader.forName("com.jgoodies.looks.plastic.theme." + lookAndFeelTheme);
-			Method setPlasticTheme = PlasticLookAndFeel.getMethod("setPlasticTheme", PlasticTheme);
-			setPlasticTheme.invoke(null, Theme.newInstance());
+			setPlasticTheme = PlasticLookAndFeel.getMethod("setPlasticTheme", PlasticTheme);
 		} catch(Exception e) {
 			Out.exception(e);
 		}
+		
+		load();
+	}
+	
+	/**
+	 * Called by main to force GlobalSettings' static initializers to run
+	 */
+	public static void touch() {
+		return;
 	}
 	
 	public static String isValid() {
@@ -113,6 +131,29 @@ public class GlobalSettings {
 		return lookAndFeel;
 	}
 	
+	public static void setLookAndFeelTheme(String laft) {
+		if(setPlasticTheme == null)
+			return;
+		
+		try {
+			Class<?> theme = JARLoader.forName("com.jgoodies.looks.plastic.theme." + laft);
+			setPlasticTheme.invoke(null, theme.newInstance());
+			lookAndFeelTheme = laft;
+		} catch(ClassNotFoundException e) {
+			Out.error(GlobalSettings.class, "Invalid Look and Feel Theme: " + laft);
+		} catch(Exception e) {
+			Out.exception(e);
+		}
+	}
+	
+	public static String getLookAndFeelTheme() {
+		return lookAndFeelTheme;
+	}
+
+	public static String[] getLookAndFeelThemes() {
+		return lookAndFeelThemes;
+	}
+	
 	public static void save() {
 		Settings.write(null, "numBots", Integer.toString(numBots));
 		Settings.write(null, "antiidle", antiIdle);
@@ -137,6 +178,7 @@ public class GlobalSettings {
 		Settings.write(null, "enableTrivia", Boolean.toString(enableTrivia));
 		Settings.write(null, "enableFloodProtect", Boolean.toString(enableFloodProtect));
 		Settings.write(null, "lookAndFeel", lookAndFeel);
+		Settings.write(null, "lookAndFeelTheme", lookAndFeelTheme);
 		Settings.write(null, "packetLog", Boolean.toString(packetLog));
 		Settings.write(null, "recruitAccess", Long.toString(recruitAccess));
 		Settings.write(null, "recruitTagPrefix", recruitTagPrefix);
@@ -204,6 +246,8 @@ public class GlobalSettings {
 		recruitTagPrefix =	Settings.read(null, "recruitTagPrefix", "BNU-");
 		recruitTagSuffix =	Settings.read(null, "recruitTagSuffix", null);
 		if(enableGUI) {
+			setLookAndFeelTheme(Settings.read(null, "lookAndFeelTheme", "DarkStar"));
+			
 			String laf = Settings.read(null, "lookAndFeel", "JGoodies Plastic XP");
 			for(LookAndFeelInfo lafi : UIManager.getInstalledLookAndFeels())
 				if(lafi.getName().equals(laf))
