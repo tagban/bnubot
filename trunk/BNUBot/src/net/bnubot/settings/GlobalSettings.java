@@ -5,9 +5,13 @@
 
 package net.bnubot.settings;
 
+import java.lang.reflect.Method;
+
+import javax.swing.LookAndFeel;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
+import net.bnubot.JARLoader;
 import net.bnubot.util.Out;
 import net.bnubot.util.TimeFormatter;
 import net.bnubot.vercheck.CurrentVersion;
@@ -46,9 +50,33 @@ public class GlobalSettings {
 	public static ReleaseType releaseType;
 	
 	private static String lookAndFeel;
+	private static String lookAndFeelTheme = "DarkStar";
 
 	static {
 		load();
+		
+		try {
+			// Initialize the JGoodies Look and Feels
+			String[] lafs = {
+					"com.jgoodies.looks.windows.WindowsLookAndFeel",
+					"com.jgoodies.looks.plastic.PlasticLookAndFeel",
+					"com.jgoodies.looks.plastic.Plastic3DLookAndFeel",
+					"com.jgoodies.looks.plastic.PlasticXPLookAndFeel",
+			};
+			Class<?> PlasticLookAndFeel = null;
+			for(String c : lafs) {
+				PlasticLookAndFeel = JARLoader.forName(c);
+				LookAndFeel laf = (LookAndFeel)PlasticLookAndFeel.newInstance();
+				UIManager.installLookAndFeel(laf.getName(), PlasticLookAndFeel.getName());
+			}
+			
+			Class<?> PlasticTheme = JARLoader.forName("com.jgoodies.looks.plastic.PlasticTheme");
+			Class<?> Theme = JARLoader.forName("com.jgoodies.looks.plastic.theme." + lookAndFeelTheme);
+			Method setPlasticTheme = PlasticLookAndFeel.getMethod("setPlasticTheme", PlasticTheme);
+			setPlasticTheme.invoke(null, Theme.newInstance());
+		} catch(Exception e) {
+			Out.exception(e);
+		}
 	}
 	
 	public static String isValid() {
@@ -58,9 +86,23 @@ public class GlobalSettings {
 		return null;
 	}
 	
+	/**
+	 * Set the Look and Feel to the proper LaF, and adjust the ClassLoader
+	 * @param lafi
+	 */
 	public static void setLookAndFeel(LookAndFeelInfo lafi) {
 		try {
-			UIManager.setLookAndFeel(lafi.getClassName());
+			try {
+				// Try to load the LaF from the class path
+				UIManager.setLookAndFeel(lafi.getClassName());
+				UIManager.getDefaults().put("ClassLoader", lafi.getClass().getClassLoader());
+			} catch(ClassNotFoundException ex) {
+				// Couldn't find it; check the JARLoader
+				LookAndFeel laf = (LookAndFeel)JARLoader.forName(lafi.getClassName()).newInstance();
+				UIManager.setLookAndFeel(laf);
+				UIManager.getDefaults().put("ClassLoader", JARLoader.getClassLoader());
+			}
+			
 			lookAndFeel = lafi.getName();
 		} catch(Exception ex) {
 			Out.exception(ex);
@@ -162,7 +204,7 @@ public class GlobalSettings {
 		recruitTagPrefix =	Settings.read(null, "recruitTagPrefix", "BNU-");
 		recruitTagSuffix =	Settings.read(null, "recruitTagSuffix", null);
 		if(enableGUI) {
-			String laf = Settings.read(null, "lookAndFeel", "Metal");
+			String laf = Settings.read(null, "lookAndFeel", "JGoodies Plastic XP");
 			for(LookAndFeelInfo lafi : UIManager.getInstalledLookAndFeels())
 				if(lafi.getName().equals(laf))
 					setLookAndFeel(lafi);
