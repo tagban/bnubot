@@ -57,4 +57,8 @@ public class JARLoader {
 			throw e;
 		}
 	}
+
+	public static ClassLoader getClassLoader() {
+		return loader;
+	}
 }
