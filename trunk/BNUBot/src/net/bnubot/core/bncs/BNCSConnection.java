@@ -122,12 +122,20 @@ public class BNCSConnection extends Connection {
 
 				if(!firstConnection && connectNow) {
 					// Wait a short time before allowing a reconnect
-					connect.updateProgress("Stalling to avoid flood");
+					String status = "Stalling to avoid flood: ";
 					
-					try {
+					long waitUntil = System.currentTimeMillis();
+					waitUntil += (forceReconnect ? 2000 : 15000); 
+					while(true) {
+						long timeLeft = waitUntil - System.currentTimeMillis();
+						if(timeLeft <= 0)
+							break;
+						
+						connect.updateProgress(status + TimeFormatter.formatTime(timeLeft, false));
+						
+						try { sleep(100); } catch (InterruptedException e1) {}
 						yield();
-						sleep(forceReconnect ? 2000 : 15000);
-					} catch (InterruptedException e1) {}
+					}
 				}
 				
 				// Clear the forceReconnect and firstConnection flags
