@@ -27,10 +27,33 @@ public class TimeFormatter {
 	 * @return A String with the formatted length of time
 	 */
 	public static String formatTime(long time) {
+		return formatTime(time, true);
+	}
+
+	/**
+	 * Display a formatted length of time
+	 * @param time The time, in milliseconds
+	 * @param ms Whether to display milliseconds
+	 * @return A String with the formatted length of time
+	 */
+	public static String formatTime(long time, boolean ms) {
+		if(time < 0)
+			throw new IllegalArgumentException("formatTime does not format negative numbers");
+
+		if(time == 0)
+			return ms ? "0ms" : "0s";
+		
 		String text = "";
-		if(time < 1000*60) // 60 seconds
-			text = Long.toString(time % 1000) + "ms";
-		time /= 1000;
+		if(ms) {
+			if(time < 1000*60) // 60 seconds
+				text = Long.toString(time % 1000) + "ms";
+			time /= 1000;
+		} else {
+			time--;
+			time /= 1000;
+			time++;
+		}
+		
 		if(time > 0) {
 			if(time < 60*60) // 60 minutes
 				text = Long.toString(time % 60) + "s " + text;
@@ -48,6 +71,7 @@ public class TimeFormatter {
 				}
 			}
 		}
+		
 		return text.trim();
 	}
 

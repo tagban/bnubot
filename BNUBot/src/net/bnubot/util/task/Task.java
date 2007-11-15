@@ -46,7 +46,7 @@ public class Task {
 	 */
 	public void updateProgress(String currentStep) {
 		if(complete) {
-			pb.setString(title + " Complete");
+			setString(title + " Complete");
 		} else {
 			String s = title;
 			if(isDeterminant()) {
@@ -62,10 +62,18 @@ public class Task {
 			}
 			if(currentStep != null)
 				s += " (" + currentStep + ")";
-			pb.setString(s);
+			setString(s);
 		}
-		
-		pb.repaint();
+	}
+
+	/**
+	 * Set the progressbar string and repaint
+	 */
+	private void setString(String s) {
+		if(!s.equals(pb.getString())) {
+			pb.setString(s);
+			pb.repaint();
+		}
 	}
 
 	/**
