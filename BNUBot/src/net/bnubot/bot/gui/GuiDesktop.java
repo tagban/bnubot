@@ -66,6 +66,7 @@ public class GuiDesktop extends JFrame {
 		setTitle();
 		initializeGui();
 		initializeSystemTray();
+		loadPosition(this);
         setVisible(true);
 	}
 	
@@ -393,11 +394,8 @@ public class GuiDesktop extends JFrame {
 	}
 	
 	public static void add(GuiEventHandler geh) {
-		// If this is the first profile, set the divider location
-		if(selectedGui == null) {
-			int dl = Integer.valueOf(Settings.read("GuiDesktop", "dividerLocation", "550"));
-			geh.setDividerLocation(dl);
-		}
+		// Set the divider location
+		geh.setDividerLocation(getDividerLocation());
 		
 		// Add the components to the display
 		menuBar.add(geh.getMenuBar());
@@ -440,5 +438,14 @@ public class GuiDesktop extends JFrame {
 				break;
 			}
 		}
+	}
+
+	/**
+	 * Get the desired divider location
+	 */
+	public static int getDividerLocation() {
+		if(selectedGui != null)
+			return selectedGui.getDividerLocation();
+		return Integer.valueOf(Settings.read("GuiDesktop", "dividerLocation", Integer.toString(instance.getWidth() - 200)));
 	}
 }

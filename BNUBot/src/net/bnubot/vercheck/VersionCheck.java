@@ -40,6 +40,8 @@ public class VersionCheck {
 	public static boolean checkVersion(boolean forceDownload, ReleaseType rt, String jarFileName, String downloadFolder) throws Exception {
 		boolean cv = doCheckVersion(forceDownload, rt, jarFileName, downloadFolder);
 		URLDownloader.flush();
+		if(!cv)
+			Out.debug(VersionCheck.class, "No update available.");
 		return cv;
 	}
 	
