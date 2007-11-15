@@ -224,6 +224,7 @@ public class GuiEventHandler implements EventHandler {
 		allLists.addTab("Channel", new JScrollPane(userList));
 		allLists.addTab("Friends", new JScrollPane(friendList));
 		allLists.addTab("Clan", new JScrollPane(clanList));
+		allLists.setTabPlacement(JTabbedPane.BOTTOM);
 		
 		JPanel leftSide = new JPanel();
 		leftSide.add(mainTextArea);
