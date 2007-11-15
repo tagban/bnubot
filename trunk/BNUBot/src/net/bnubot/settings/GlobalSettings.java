@@ -127,6 +127,19 @@ public class GlobalSettings {
 		}
 	}
 	
+	/**
+	 * Set the Look and Feel to the named LaF, and adjust the ClassLoader
+	 * @param laf The name of the Look and Feel to swithc to
+	 */
+	private static void setLookAndFeel(String laf) {
+		for(LookAndFeelInfo lafi : UIManager.getInstalledLookAndFeels())
+			if(lafi.getName().equals(laf)) {
+				setLookAndFeel(lafi);
+				return;
+			}
+		throw new IllegalArgumentException(laf);
+	}
+	
 	public static String getLookAndFeel() {
 		return lookAndFeel;
 	}
@@ -246,12 +259,8 @@ public class GlobalSettings {
 		recruitTagPrefix =	Settings.read(null, "recruitTagPrefix", "BNU-");
 		recruitTagSuffix =	Settings.read(null, "recruitTagSuffix", null);
 		if(enableGUI) {
-			setLookAndFeelTheme(Settings.read(null, "lookAndFeelTheme", "DarkStar"));
-			
-			String laf = Settings.read(null, "lookAndFeel", "JGoodies Plastic XP");
-			for(LookAndFeelInfo lafi : UIManager.getInstalledLookAndFeels())
-				if(lafi.getName().equals(laf))
-					setLookAndFeel(lafi);
+			setLookAndFeelTheme(Settings.read(null, "lookAndFeelTheme", "SkyKrupp"));
+			setLookAndFeel(Settings.read(null, "lookAndFeel", "JGoodies Plastic XP"));
 		}
 		TimeFormatter.tsFormat =
 			Settings.read(null, "tsFormat", TimeFormatter.tsFormat);
