@@ -39,7 +39,7 @@ public class ConfigurationFrame extends JDialog {
 	ConfigComboBox cmbProduct = null;
 	ConfigComboBox cmbCDKey = null;
 	ConfigComboBox cmbCDKey2 = null;
-	ConfigTextArea txtBNCSServer = null;
+	ConfigComboBox cmbBNCSServer = null;
 	ConfigTextArea txtChannel = null;
 	JButton btnLoad = null;
 	JButton btnOK = null;
@@ -215,7 +215,14 @@ public class ConfigurationFrame extends JDialog {
 					break;
 				}
 				
-				txtBNCSServer = makeText("Battle.net Server", cs.bncsServer, boxSettings);
+				cmbBNCSServer = makeCombo("Battle.net Server", new String[] {
+					"useast.battle.net",
+					"uswest.battle.net",
+					"europe.battle.net",
+					"asia.battle.net",
+					}, false, boxSettings);
+				cmbBNCSServer.setSelectedItem(cs.bncsServer);
+				
 				txtChannel = makeText("Channel", cs.channel, boxSettings);
 
 				boxAll.add(Box.createVerticalGlue());
@@ -310,7 +317,7 @@ public class ConfigurationFrame extends JDialog {
 			cs.cdkey = formatCDKey(k.getKey());
 		if(k2 != null)
 			cs.cdkey2 = formatCDKey(k2.getKey());
-		cs.bncsServer = txtBNCSServer.getText();
+		cs.bncsServer = (String)cmbBNCSServer.getSelectedItem();
 		cs.channel = txtChannel.getText();
 
 		cs.save();
@@ -324,7 +331,7 @@ public class ConfigurationFrame extends JDialog {
 		cmbProduct.setSelectedIndex(cs.product - 1);
 		cmbCDKey.setSelectedItem(cs.cdkey);
 		cmbCDKey2.setSelectedItem(cs.cdkey2);
-		txtBNCSServer.setText(cs.bncsServer);
+		cmbBNCSServer.setSelectedItem(cs.bncsServer);
 		txtChannel.setText(cs.channel);
 	}
 
