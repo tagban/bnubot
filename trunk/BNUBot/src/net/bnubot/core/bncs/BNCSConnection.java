@@ -78,6 +78,7 @@ public class BNCSConnection extends Connection {
 		super(cs, cq, p);
 	}
 
+	private static boolean firstConnection = true;
 	public void run() {
 		// We must initialize the EHs in the Connection thread
 		for(EventHandler eh : eventHandlers)
@@ -85,7 +86,6 @@ public class BNCSConnection extends Connection {
 		for(EventHandler eh : eventHandlers2)
 			eh.initialize(this);
 		
-		boolean firstConnection = true;
 		while(true) {
 			try {
 				for(Task t : currentTasks)
@@ -98,35 +98,41 @@ public class BNCSConnection extends Connection {
 				productID = 0;
 				titleChanged();
 				
+				boolean connectNow = (forceReconnect || GlobalSettings.autoConnect);
+				
+				// Wait until we're supposed to connect
+				if(!connectNow) {
+					while(!isConnected()) {
+						// Check if autoConnect was enabled
+						if(GlobalSettings.autoConnect) {
+							connectNow = true;
+							break;
+						}
+						
+						yield();
+						sleep(10);
+					}
+				}
+				
 				Task connect = createTask("Connecting to Battle.net", "Verify connection settings validity");
 				
+				// Check if CS is valid
 				while(cs.isValid() != null)
 					new ConfigurationFrame(cs).setVisible(true);
 
-				if(firstConnection) {
-					firstConnection = false;
-				} else {
-					//Wait a short time before allowing a reconnect
+				if(!firstConnection && connectNow) {
+					// Wait a short time before allowing a reconnect
 					connect.updateProgress("Stalling to avoid flood");
 					
-					yield();
-
-					int waitTime = 15000;
-					if(forceReconnect)
-						waitTime = 2000;
-					try { sleep(waitTime); } catch (InterruptedException e1) { }
-					
-					if(forceReconnect) {
-						forceReconnect = false;
-					} else {
-						if(!GlobalSettings.autoConnect) {
-							while(!isConnected()) {
-								yield();
-								sleep(10);
-							}
-						}
-					}
+					try {
+						yield();
+						sleep(forceReconnect ? 2000 : 15000);
+					} catch (InterruptedException e1) {}
 				}
+				
+				// Clear the forceReconnect and firstConnection flags
+				forceReconnect = false;
+				firstConnection = false;
 				
 				// Set up BNLS, get verbyte
 				initializeBNLS(connect);
@@ -1775,10 +1781,7 @@ public class BNCSConnection extends Connection {
 			p.writeNTString(text);
 			p.SendPacket(bncsOutputStream);
 		} catch(SocketException e) {
-			if(GlobalSettings.autoConnect)
-				reconnect();
-			else
-				setConnected(false);
+			setConnected(false);
 			return;
 		} catch (IOException e) {
 			Out.fatalException(e);
@@ -2009,7 +2012,7 @@ public class BNCSConnection extends Connection {
 	}
 	
 	private Task createTask(String title, String currentStep) {
-		Task t = TaskManager.createTask(title, currentStep);
+		Task t = TaskManager.createTask(profile.getName() + ": " + title, currentStep);
 		currentTasks.add(t);
 		return t;
 	}
