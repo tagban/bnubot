@@ -1161,18 +1161,19 @@ public class CommandEventHandler implements EventHandler {
 		String osVersion = p.getProperty("os.version");
 		
 		if(osName.equals("Mac OS X")) {
+			osName += " " + osVersion;
 			if(osVersion.startsWith("10.0"))
-				osName += osVersion + " Cheetah";
+				osName += " Cheetah";
 			else if(osVersion.startsWith("10.1"))
-				osName += osVersion + " Puma";
+				osName += " Puma";
 			else if(osVersion.startsWith("10.2"))
-				osName += osVersion + " Jaguar";
+				osName += " Jaguar";
 			else if(osVersion.startsWith("10.3"))
-				osName += osVersion + " Panther";
+				osName += " Panther";
 			else if(osVersion.startsWith("10.4"))
-				osName += osVersion + " Tiger";
+				osName += " Tiger";
 			else if(osVersion.startsWith("10.5"))
-				osName += osVersion + " Leopard";
+				osName += " Leopard";
 		} else if(osName.startsWith("Windows ")) {
 			osName += " " + p.getProperty("sun.os.patch.level");
 		}
