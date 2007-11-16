@@ -382,8 +382,7 @@ public class CommandEventHandler implements EventHandler {
 				break;
 			case 'i':
 				if(command.equals("info")) {
-					Properties p = System.getProperties();
-					c.sendChat(user, "BNU-Bot " + CurrentVersion.version() + " running on " + p.getProperty("os.name") + " (" + p.getProperty("os.arch") + ")", whisperBack);
+					c.sendChat(user, "BNU-Bot " + CurrentVersion.version() + " running on " + osVersion() + " with " + javaVersion(), whisperBack);
 					break;
 				}
 				if(command.equals("invite")) {
@@ -1151,6 +1150,38 @@ public class CommandEventHandler implements EventHandler {
 			Out.exception(e);
 			c.sendChat(user, e.getClass().getSimpleName() + ": " + e.getMessage(), whisperBack);
 		}
+	}
+
+	/**
+	 * Get a displayable operating system version
+	 */
+	public static String osVersion() {
+		Properties p = System.getProperties();
+		String osName = p.getProperty("os.name");
+		String osVersion = p.getProperty("os.version");
+		
+		if(osName.equals("Mac OS X")) {
+			if(osVersion.startsWith("10.0"))
+				osName += osVersion + " Cheetah";
+			else if(osVersion.startsWith("10.1"))
+				osName += osVersion + " Puma";
+			else if(osVersion.startsWith("10.2"))
+				osName += osVersion + " Jaguar";
+			else if(osVersion.startsWith("10.3"))
+				osName += osVersion + " Panther";
+			else if(osVersion.startsWith("10.4"))
+				osName += osVersion + " Tiger";
+			else if(osVersion.startsWith("10.5"))
+				osName += osVersion + " Leopard";
+		} else if(osName.startsWith("Windows ")) {
+			osName += " " + p.getProperty("sun.os.patch.level");
+		}
+		osName += " (" + p.getProperty("os.arch") + ")";
+		return osName;
+	}
+	
+	public static String javaVersion() {
+		return "Java " + System.getProperties().getProperty("java.version");
 	}
 
 	public void channelJoin(BNetUser user) {
