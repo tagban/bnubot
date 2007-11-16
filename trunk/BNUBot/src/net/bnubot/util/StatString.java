@@ -16,6 +16,8 @@ public class StatString {
 	private boolean parsed = false;
 	private String[] statString = null;
 	private String[] statString2 = null;
+	private String prettyStart = null;
+	private String prettyEnd = null;
 	private String pretty = null;
 	private int product = 0;
 	private int icon = 0;
@@ -148,54 +150,55 @@ public class StatString {
 				product = HexDump.StringToDWord(statString[0]);
 				icon = product;
 			} catch(Exception e) {
-				pretty = e.getMessage();
+				prettyEnd = e.getMessage();
 				return;
 			}
 		} else {
 			try {
 				product = is.readDWord();
 			} catch(EOFException e) {
+				prettyEnd = e.getMessage();
 				return;
 			}
 		}
 
-		pretty = " using ";
+		prettyStart = " using ";
 		switch(product) {
 		case ProductIDs.PRODUCT_DRTL:
-			pretty += "Diablo";
+			prettyStart += "Diablo";
 			break;
 		case ProductIDs.PRODUCT_DSHR:
-			pretty += "Diablo Shareware";
+			prettyStart += "Diablo Shareware";
 			break;
 		case ProductIDs.PRODUCT_STAR:
-			pretty += "Starcraft";
+			prettyStart += "Starcraft";
 			break;
 		case ProductIDs.PRODUCT_SEXP:
-			pretty += "Starcraft: Brood War";
+			prettyStart += "Starcraft: Brood War";
 			break;
 		case ProductIDs.PRODUCT_JSTR:
-			pretty += "Starcraft Japanese";
+			prettyStart += "Starcraft Japanese";
 			break;
 		case ProductIDs.PRODUCT_SSHR:
-			pretty += "Starcraft Shareware";
+			prettyStart += "Starcraft Shareware";
 			break;
 		case ProductIDs.PRODUCT_W2BN:
-			pretty += "Warcraft II";
+			prettyStart += "Warcraft II";
 			break;
 		case ProductIDs.PRODUCT_D2DV:
-			pretty += "Diablo II";
+			prettyStart += "Diablo II";
 			break;
 		case ProductIDs.PRODUCT_D2XP:
-			pretty += "Diablo II: Lord of Destruction";
+			prettyStart += "Diablo II: Lord of Destruction";
 			break;
 		case ProductIDs.PRODUCT_WAR3:
-			pretty += "Warcraft III";
+			prettyStart += "Warcraft III";
 			break;
 		case ProductIDs.PRODUCT_W3XP:
-			pretty += "Warcraft III: The Frozen Throne";
+			prettyStart += "Warcraft III: The Frozen Throne";
 			break;
 		default:
-			pretty += HexDump.DWordToPretty(product);
+			prettyStart += HexDump.DWordToPretty(product);
 			break;
 		}
 
@@ -228,7 +231,7 @@ public class StatString {
 				}
 				
 				if(statString2.length != 9) {
-					pretty += "\ninvalid length " + statString2.length;
+					prettyEnd = "\ninvalid length " + statString2.length;
 					return;
 				}
 	
@@ -246,23 +249,23 @@ public class StatString {
 					} catch(Exception e) {}
 		
 					if(ladderRating != 0)
-						pretty += ", Ladder rating " + ladderRating;
+						prettyEnd += ", Ladder rating " + ladderRating;
 					if(ladderRank != 0)
-						pretty += ", Ladder rank " + ladderRank;
+						prettyEnd += ", Ladder rank " + ladderRank;
 					if(wins != 0)
-						pretty += ", " + wins + " wins";
+						prettyEnd += ", " + wins + " wins";
 					if(spawn)
-						pretty += ", Spawn";
+						prettyEnd += ", Spawn";
 					if(unknown5 != 0)
-						pretty += ", unknown5=" + unknown5;
+						prettyEnd += ", unknown5=" + unknown5;
 					if((highLadderRating != 0) && (highLadderRating != ladderRating))
-						pretty += ", Ladder highest ever rating " + highLadderRating;
+						prettyEnd += ", Ladder highest ever rating " + highLadderRating;
 					if(unknown7 != 0)
-						pretty += ", unknown7=" + unknown7;
+						prettyEnd += ", unknown7=" + unknown7;
 					if(unknown8 != 0)
-						pretty += ", unknown8=" + unknown8;
+						prettyEnd += ", unknown8=" + unknown8;
 					if((icon != 0) && (icon != product))
-						pretty += ", " + HexDump.DWordToPretty(icon) + " icon";
+						prettyEnd += ", " + HexDump.DWordToPretty(icon) + " icon";
 				} catch(Exception e) {
 					Out.exception(e);
 				}
@@ -277,7 +280,7 @@ public class StatString {
 					data = statString2[2].getBytes();
 
 					if(statString2.length != 3) {
-						pretty += "unknown statstr2 len: " + statString2.length;
+						prettyEnd = "unknown statstr2 len: " + statString2.length;
 						break;
 					}
 				} else {
@@ -298,9 +301,9 @@ public class StatString {
 				//PX2DUSEast,EsO-SILenTNiGhT,'S
 				//PX2DUSEast,getoutof_myway ,?++T
 				
-				pretty += ", Realm " + statString2[0];
+				prettyStart += ", Realm " + statString2[0];
 				//TODO: Prefix
-				pretty += ", ";
+				prettyStart += ", ";
 				
 			    //                                       CC                                  CL FL AC
 			    //84 80 53 02 02 02 02 0F FF 50 02 02 FF 02 FF FF FF FF FF 4C FF FF FF FF FF 14 E8 84 FF FF 01 FF FF - ?S.....P...L..
@@ -338,48 +341,49 @@ public class StatString {
 			    	actsCompleted = (byte)((actsCompleted % 45) + 1);
 			    }
 			    
+			    prettyEnd = "";
 			    if(expansion) {
 			        switch(difficulty) {
 			        case 0: break;
-		            case 1: pretty += hardcore ? "Destroyer " : "Slayer "; break;
-		            case 2: pretty += hardcore ? "Conquer " : "Champion " ; break;
-		            case 3: pretty += hardcore ? "Guardian " : (female ? "Matriarch " : "Patriarch "); break;
-		            default: pretty += "?d=" + difficulty; break;
+		            case 1: prettyEnd = hardcore ? "Destroyer " : "Slayer "; break;
+		            case 2: prettyEnd = hardcore ? "Conquer " : "Champion " ; break;
+		            case 3: prettyEnd = hardcore ? "Guardian " : (female ? "Matriarch " : "Patriarch "); break;
+		            default: prettyEnd = "?d=" + difficulty; break;
 			        }
 			    } else {
 			        switch(difficulty) {
 		        	case 0: break;
-		            case 1: pretty += (female ? (hardcore ? "Countess " : "Dame ") : (hardcore ? "Count " : "Sir ")); break;
-		            case 2: pretty += (female ? (hardcore ? "Duchess " : "Lady ") : (hardcore ? "Duke " : "Lord ")); break;
-		            case 3: pretty += (female ? (hardcore ? "Queen " : "Baroness ") : (hardcore ? "King " : "Baron ")); break;
-		            default: pretty += "??d=" + difficulty; break;
+		            case 1: prettyEnd = (female ? (hardcore ? "Countess " : "Dame ") : (hardcore ? "Count " : "Sir ")); break;
+		            case 2: prettyEnd = (female ? (hardcore ? "Duchess " : "Lady ") : (hardcore ? "Duke " : "Lord ")); break;
+		            case 3: prettyEnd = (female ? (hardcore ? "Queen " : "Baroness ") : (hardcore ? "King " : "Baron ")); break;
+		            default: prettyEnd = "??d=" + difficulty; break;
 			        }
 			    }
 			    
-			    pretty += statString2[1];
+			    prettyEnd += statString2[1];
 			    
-			    pretty += ", a ";
+			    prettyEnd += ", a ";
 			    
 			    if(dead)
-			    	pretty += "dead ";
+			    	prettyEnd += "dead ";
 			    if(hardcore)
-			    	pretty += "hardcore ";
+			    	prettyEnd += "hardcore ";
 			    if(ladder)
-			    	pretty += "ladder ";
+			    	prettyEnd += "ladder ";
 			    
-			    pretty += "level " + charLevel + " " + D2Classes[charClass] + " (" + (expansion ? "Expansion" : "Classic") + ")";
+			    prettyEnd += "level " + charLevel + " " + D2Classes[charClass] + " (" + (expansion ? "Expansion" : "Classic") + ")";
 			    
 			    if(difficulty < 3) {
-			    	pretty += " currently in ";
+			    	prettyEnd += " currently in ";
 			        switch(difficulty) {
-			            case 0: pretty += "Normal"; break;
-			            case 1: pretty += "Nightmare"; break;
-			            case 2: pretty += "Hell"; break;
-			            default: pretty += "?"; break;
+			            case 0: prettyEnd += "Normal"; break;
+			            case 1: prettyEnd += "Nightmare"; break;
+			            case 2: prettyEnd += "Hell"; break;
+			            default: prettyEnd += "?"; break;
 			        }
-			        pretty += " act " + actsCompleted;
+			        prettyEnd += " act " + actsCompleted;
 			    } else {
-			        pretty += " who has beaten the game";
+			    	prettyEnd += " who has beaten the game";
 			    }
 				
 				
@@ -399,9 +403,9 @@ public class StatString {
 					level = Integer.parseInt(statString2[1]);
 	
 					if(icon != 0)
-						pretty += ", " + getIconName(product, icon) + " icon";
+						prettyEnd += ", " + getIconName(product, icon) + " icon";
 					if(level != 0)
-						pretty += ", Level " + level;
+						prettyEnd += ", Level " + level;
 					
 					if(statString2.length >= 3) {
 						byte[] bytes = statString2[2].getBytes();
@@ -409,20 +413,20 @@ public class StatString {
 						for(int j = bytes.length-1; j >= 0; j--)
 							clan += (char)bytes[j];
 							
-						pretty += ", in Clan " + clan;
+						prettyEnd += ", in Clan " + clan;
 					}
 				} else {
-					pretty += "\n";
-					pretty += statString[1];
+					prettyEnd += "\n";
+					prettyEnd += statString[1];
 				}
 				break;
 				
 			default:
-				pretty += ", statstr = ";
+				prettyEnd += ", statstr = ";
 				if(is == null) {
-					pretty += statString[1];
+					prettyEnd += statString[1];
 				} else {
-					pretty += is.readNTString();
+					prettyEnd += is.readNTString();
 				}
 				break;
 			}
@@ -430,9 +434,29 @@ public class StatString {
 	}
 
 	public String toString() {
+		if(pretty != null)
+			return pretty;
+		
+		pretty = prettyStart;
+		
+		if(pretty == null) {
+			pretty = prettyEnd;
+		} else {
+			if(prettyEnd != null)
+				pretty += prettyEnd;
+		}
+		
 		if(pretty == null)
-			return new String();
+			pretty = new String();
+		
 		return pretty;
+	}
+
+	public String toString2() {
+		if(prettyEnd != null)
+			return prettyEnd;
+		
+		return new String();
 	}
 	
 	public Integer getWins() {
