@@ -17,7 +17,7 @@ public class StatString {
 	private String[] statString = null;
 	private String[] statString2 = null;
 	private String prettyStart = null;
-	private String prettyEnd = null;
+	private String prettyEnd = "";
 	private String pretty = null;
 	private int product = 0;
 	private int icon = 0;
@@ -341,7 +341,6 @@ public class StatString {
 			    	actsCompleted = (byte)((actsCompleted % 45) + 1);
 			    }
 			    
-			    prettyEnd = "";
 			    if(expansion) {
 			        switch(difficulty) {
 			        case 0: break;
