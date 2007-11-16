@@ -118,24 +118,31 @@ public class MCPConnection extends RealmConnection {
 						String maxCharname = null;
 						
 						for(int i = 0; i < numChars; i++) {
-							int secs = is.readDWord();
+							long time = (1000L * is.readDWord()) - System.currentTimeMillis();
+							
 							String charname = is.readNTString();
 							
 							ByteArrayOutputStream baos = new ByteArrayOutputStream();
 							BNetOutputStream bos = new BNetOutputStream(baos);
-							bos.write(("PX2D[Realm]," + charname + ",").getBytes());
 							byte[] data = new byte[33];
 							is.read(data);
-							bos.write(data);
 							if(is.readByte() != 0)
 								throw new Exception("invalid statstr format\n" + HexDump.hexDump(baos.toByteArray()));
-							bos.writeByte(0);
-							StatString statstr = new StatString(new BNetInputStream(new ByteArrayInputStream(baos.toByteArray())));
 							
-							long time = System.currentTimeMillis();
-							time = (((long)secs) * 1000) - time;
-							
-							recieveRealmInfo(TimeFormatter.formatTime(time) + " - " + charname + " - " + statstr.toString());
+							if(Out.isDebug(getClass())) {
+								bos.write(("PX2D[Realm]," + charname + ",").getBytes());
+								bos.write(data);
+								bos.writeByte(0);
+								StatString statstr = new StatString(new BNetInputStream(new ByteArrayInputStream(baos.toByteArray())));
+								
+								String str;
+								if(time < 0)
+									str = "Expired";
+								else
+									str = TimeFormatter.formatTime(time);
+								str += ": " + statstr.toString2();
+								Out.debugAlways(getClass(), str);
+							}
 							
 							if(((minTime > time) || (minTime == 0)) && (time >= 0)) {
 								minTime = time;
