@@ -27,7 +27,7 @@ public final class CurrentVersion {
 	private static boolean VER_SVN_SET = false;
 	protected static Integer VER_SVN_REVISION = null;
 	private static VersionNumber VER = null;
-	private static String BUILD_DATE = null;
+	private static Date BUILD_DATE = null;
 	private static boolean fromJar = false; 
 
 	private static final String sReleaseType = "RELEASE_TYPE";
@@ -184,11 +184,11 @@ public final class CurrentVersion {
 			if(versionprops.containsKey(sVerSVNRevision))
 				VER_SVN_REVISION_FILE = Integer.parseInt((String)versionprops.get(sVerSVNRevision));
 			
-			if(f == null)
-				BUILD_DATE = versionprops.getProperty(sBuildDate);
+			if(fromJar)
+				BUILD_DATE = new Date(Long.parseLong(versionprops.getProperty(sBuildDate)));
 			else {
-				BUILD_DATE = new Date().toString();
-				versionprops.setProperty(sBuildDate, BUILD_DATE);
+				BUILD_DATE = new Date();
+				versionprops.setProperty(sBuildDate, Long.toString(BUILD_DATE.getTime()));
 			}
 			
 			if(revision() == null) {

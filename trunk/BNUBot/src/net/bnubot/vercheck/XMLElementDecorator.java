@@ -5,7 +5,11 @@
 
 package net.bnubot.vercheck;
 
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
+
+import net.bnubot.util.TimeFormatter;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
@@ -131,6 +135,20 @@ public class XMLElementDecorator {
 			return Integer.parseInt(contents);
 		if(contents.matches("0x[a-fA-F0-9]+"))
 			return Integer.parseInt(contents.substring(2), 16);
+		throw new NumberFormatException(contents);
+	}
+	
+	public Date getDate() {
+		if(contents == null)
+			return null;
+
+		if(contents.matches("[0-9]+"))
+			return new Date(Long.parseLong(contents));
+		
+		try {
+			return new Date(TimeFormatter.parseDate(contents));
+		} catch(ParseException e) {}
+		
 		throw new NumberFormatException(contents);
 	}
 	

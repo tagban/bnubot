@@ -5,6 +5,8 @@
 
 package net.bnubot.vercheck;
 
+import java.util.Date;
+
 public class VersionNumber {
 	private ReleaseType RELEASE_TYPE = null;
 	private Integer VER_MAJOR = null;
@@ -13,7 +15,7 @@ public class VersionNumber {
 	private Integer VER_RELEASE = null;
 	private Integer VER_SVN_REVISION = null;
 	private String VER_STRING = null;
-	private String BUILD_DATE = null;
+	private Date BUILD_DATE = null;
 
 	public VersionNumber(ReleaseType rt, Integer major, Integer minor, Integer revision, Integer release) {
 		RELEASE_TYPE = rt;
@@ -23,7 +25,7 @@ public class VersionNumber {
 		VER_RELEASE = release;
 	}
 
-	public VersionNumber(ReleaseType rt, Integer major, Integer minor, Integer revision, Integer release, Integer svn, String builddate) {
+	public VersionNumber(ReleaseType rt, Integer major, Integer minor, Integer revision, Integer release, Integer svn, Date builddate) {
 		this(rt, major, minor, revision, release);
 		VER_SVN_REVISION = svn;
 		BUILD_DATE = builddate;
@@ -51,7 +53,7 @@ public class VersionNumber {
 		return VER_STRING;
 	}
 
-	public String getBuildDate() {
+	public Date getBuildDate() {
 		return BUILD_DATE;
 	}
 
