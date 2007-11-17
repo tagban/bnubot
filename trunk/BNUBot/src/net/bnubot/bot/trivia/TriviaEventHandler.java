@@ -199,7 +199,7 @@ public class TriviaEventHandler implements EventHandler {
 							numHints++;
 						}
 						
-						Thread.sleep(10);
+						Thread.sleep(200);
 						Thread.yield();
 					} while((timeElapsed < 30) && triviaEnabled);
 

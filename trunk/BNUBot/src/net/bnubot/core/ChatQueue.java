@@ -38,26 +38,27 @@ public class ChatQueue extends Thread {
 	public void run() {
 		while(true) {
 			yield();
-			try { sleep(10); } catch(Exception e) {}
+			try { sleep(200); } catch(Exception e) {}
 			
 			// If there's text in the queue to send
 			if(queue.size() > 0) {
 				// Iterate through the connecitons
 				for(Connection con : cons) {
 					// Check if the con can send text now
-					if(con.canSendChat()) {
-						if(con.isOp()) {
-							// Write the text out
-							con.sendChatCommand(queue.remove());
-						} else {
-							//Find a string we can send
-							sendTextNonOp(con);
-						}
-
-						// If the queue is empty, stop
-						if(queue.size() == 0)
-							break;
+					if(!con.canSendChat())
+						continue;
+					
+					if(con.isOp()) {
+						// Write the text out
+						con.sendChatCommand(queue.remove());
+					} else {
+						//Find a string we can send
+						sendTextNonOp(con);
 					}
+
+					// If the queue is empty, stop
+					if(queue.size() == 0)
+						break;
 				}
 			}
 		}

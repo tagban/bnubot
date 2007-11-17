@@ -50,7 +50,7 @@ public class ChatConnection extends Connection {
 					Out.info(getClass(), Character.toString((char)b));
 				} else {
 					yield();
-					sleep(10);
+					sleep(200);
 				}
 			}
 			

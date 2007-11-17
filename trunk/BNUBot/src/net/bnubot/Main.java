@@ -117,7 +117,7 @@ public class Main {
 			
 			while(cf.isVisible()) {
 				Thread.yield();
-				Thread.sleep(10);
+				Thread.sleep(200);
 			}
 			
 			String reason = GlobalSettings.isValid();

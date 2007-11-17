@@ -50,14 +50,14 @@ public abstract class Connection extends Thread implements EventHandler {
 
 	private void waitForEHsemaphore() {
 		while(eh_semaphore > 0) {
-			try {Thread.sleep(10);} catch (InterruptedException e) {Out.exception(e);}
+			try {Thread.sleep(50);} catch (InterruptedException e) {Out.exception(e);}
 			Thread.yield();
 		}
 	}
 
 	private void waitForEH2semaphore() {
 		while(eh2_semaphore > 0) {
-			try {Thread.sleep(10);} catch (InterruptedException e) {Out.exception(e);}
+			try {Thread.sleep(50);} catch (InterruptedException e) {Out.exception(e);}
 			Thread.yield();
 		}
 	}
