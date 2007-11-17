@@ -137,7 +137,7 @@ public class GlobalSettings {
 				setLookAndFeel(lafi);
 				return;
 			}
-		throw new IllegalArgumentException(laf);
+		Out.error(GlobalSettings.class, "Invalid Look and Feel: " + laf);
 	}
 	
 	public static String getLookAndFeel() {
