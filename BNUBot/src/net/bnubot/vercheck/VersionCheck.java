@@ -121,7 +121,7 @@ public class VersionCheck {
 				verLatest.getChild("revision").getInt(),
 				verLatest.getChild("release").getInt(),
 				verLatest.getChild("svn").getInt(),
-				verLatest.getChild("built").getString());
+				verLatest.getChild("built").getDate());
 
 		String url = verLatest.getChild("url").getString();
 		
