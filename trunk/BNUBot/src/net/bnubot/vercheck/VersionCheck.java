@@ -148,8 +148,8 @@ public class VersionCheck {
 				if(jarFileName != null) {
 					File thisJar = new File(jarFileName);
 					if(thisJar.exists()) {
-						String msg = "There is an update to BNU-Bot avalable.\nWould you like to update to version " + vnLatest.toString() + "?";
-						if(JOptionPane.showConfirmDialog(null, msg, "Update?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+						String msg = "BNU-Bot version " + vnLatest.toString() + " is available.\nWould you like to update?";
+						if(JOptionPane.showConfirmDialog(null, msg, "BNU-Bot update available", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
 							URLDownloader.downloadURL(new URL(url), thisJar, sha1, true);
 							URLDownloader.flush();
 							JOptionPane.showMessageDialog(null, "Update complete. Please restart BNU-Bot.");
