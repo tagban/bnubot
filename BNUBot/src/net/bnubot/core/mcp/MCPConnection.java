@@ -193,7 +193,7 @@ public class MCPConnection extends RealmConnection {
 						break;
 					}
 				} else {
-					sleep(10);
+					sleep(200);
 					yield();
 				}
 			}

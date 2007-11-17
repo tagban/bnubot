@@ -110,7 +110,7 @@ public class BNCSConnection extends Connection {
 						}
 						
 						yield();
-						sleep(10);
+						sleep(200);
 					}
 				}
 				
@@ -398,7 +398,7 @@ public class BNCSConnection extends Connection {
                 		InputStream bnlsInputStream = bnlsSocket.getInputStream();
                 		long startTime = System.currentTimeMillis();
                 		while(bnlsInputStream.available() < 3) {
-                			Thread.sleep(10);
+                			Thread.sleep(200);
                 			Thread.yield();
 
                 			long timeElapsed = System.currentTimeMillis() - startTime;
@@ -1608,7 +1608,7 @@ public class BNCSConnection extends Connection {
 					break;
 				}
 			} else {
-				sleep(10);
+				sleep(200);
 				yield();
 			}
 		}
