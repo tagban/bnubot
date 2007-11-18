@@ -9,7 +9,7 @@ import java.awt.Dimension;
 
 import javax.swing.JProgressBar;
 
-public class Task {
+public class TaskGui extends Task {
 	private static final long serialVersionUID = -5561830539661899515L;
 	private final JProgressBar pb;
 	private int count = 0;
@@ -18,7 +18,7 @@ public class Task {
 	private final String title;
 	private boolean complete = false;
 
-	protected Task(String title, int max, String units) {
+	protected TaskGui(String title, int max, String units) {
 		this.max = max;
 		this.units = units;
 		this.title = title;
