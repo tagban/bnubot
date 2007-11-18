@@ -24,9 +24,12 @@ import net.bnubot.util.BrowserLauncher;
 import net.bnubot.util.Out;
 import net.bnubot.util.TimeFormatter;
 
-@SuppressWarnings("serial")
 public class TextWindow extends JScrollPane {
+	private static final long serialVersionUID = -8607940925721829314L;
+
 	private class myJEP extends JEditorPane {
+		private static final long serialVersionUID = 7313639261308578778L;
+
 		public myJEP() {
 			super();
 			addHyperlinkListener(new HyperlinkListener() {
@@ -124,7 +127,7 @@ public class TextWindow extends JScrollPane {
 	private static Pattern pattern = null;
 	public String safeHtml(String in) {
 		if(pattern == null)
-			pattern = Pattern.compile("((.|\n)*?)\\b((([a-zA-Z]{3,6}://)|(www.)){1}([a-zA-Z0-9-.]+)([^-]\\.[a-zA-Z]{2,5}){1}((/\\S+){1}|\\s*?))((.|\n)*)");
+			pattern = Pattern.compile("((.|\n)*?)\\b((([a-zA-Z]{3,6}://)|(www.)){1}([a-zA-Z0-9-.]+)([^-]\\.[a-zA-Z]{2,5}){1}((/\\S+){1}|\\s*?)/?)((.|\n)*)");
 		
 		try {
 			Matcher matcher = pattern.matcher(in); 
