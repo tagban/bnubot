@@ -19,6 +19,7 @@ import javax.swing.JLabel;
 
 import net.bnubot.core.BNFTPConnection;
 import net.bnubot.settings.ConnectionSettings;
+import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetInputStream;
 import net.bnubot.util.HexDump;
 import net.bnubot.util.Out;
@@ -77,6 +78,9 @@ public class IconsDotBniReader {
 		if(initialized)
 			return;
 		initialized = true;
+		
+		if(!GlobalSettings.enableGUI)
+			return;
 		
 		File f;
 		

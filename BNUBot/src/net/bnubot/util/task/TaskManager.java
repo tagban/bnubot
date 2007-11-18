@@ -13,17 +13,19 @@ import javax.swing.BoxLayout;
 
 import net.bnubot.settings.GlobalSettings;
 
-public class TaskManager extends Dialog {
+public class TaskManager {
 	private static final long serialVersionUID = 641763656953338296L;
-	private static final Box box = new Box(BoxLayout.Y_AXIS);
-	private static final TaskManager instance = new TaskManager();
+	private static Box box = null;
+	private static Dialog d = null;
 	
-	private TaskManager() {
-		super(new Frame());
-		setTitle("Running Tasks");
-		add(box);
-		
-		setResizable(false);
+	static {
+		if(GlobalSettings.enableGUI) {
+			d = new Dialog(new Frame());
+			d.setTitle("Running Tasks");
+			box = new Box(BoxLayout.Y_AXIS);
+			d.add(box);
+			d.setResizable(false);
+		}
 	}
 
 	public static Task createTask(String title) {
@@ -37,23 +39,28 @@ public class TaskManager extends Dialog {
 	}
 	
 	public static Task createTask(String title, int max, String units) {
-		Task t = new Task(title, max, units);
+		if(d == null)
+			return new Task();
+		
+		TaskGui t = new TaskGui(title, max, units);
 		box.add(t.getProgressBar());
-		instance.pack();
+		d.pack();
 		try {
 			if(GlobalSettings.enableGUI)
-				instance.setVisible(true);
+				d.setVisible(true);
 		} catch(NoClassDefFoundError e) {
-			instance.setVisible(true);
+			d.setVisible(true);
 		}
 		return t;
 	}
 	
-	protected static void complete(Task t) {
-		box.remove(t.getProgressBar());
-		if(box.getComponentCount() == 0)
-			instance.setVisible(false);
-		else
-			instance.pack();
+	protected static void complete(TaskGui t) {
+		if(d != null) {
+			box.remove(t.getProgressBar());
+			if(box.getComponentCount() == 0)
+				d.setVisible(false);
+			else
+				d.pack();
+		}
 	}
 }
