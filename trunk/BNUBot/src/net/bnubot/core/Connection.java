@@ -340,11 +340,15 @@ public abstract class Connection extends Thread implements EventHandler {
 
 		text = cleanText(text);
 
-		if(whisperBack && myUser.equals(to))
+		boolean isMyUser = false;
+		if(myUser != null)
+			isMyUser = myUser.equals(to);
+		
+		if(whisperBack && isMyUser)
 			recieveInfo(text);
 		else {
 			String prefix;
-			if(whisperBack || myUser.equals(to)) {
+			if(whisperBack || isMyUser) {
 				if(whisperBack)
 					prefix = "/w " + to.getFullLogonName() + " ";
 				else
