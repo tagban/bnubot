@@ -19,7 +19,14 @@ public class TaskManager {
 	private static Dialog d = null;
 	
 	static {
-		if(GlobalSettings.enableGUI) {
+		boolean enableGUI;
+		try {
+			enableGUI = GlobalSettings.enableGUI;
+		} catch(NoClassDefFoundError e) {
+			enableGUI = true;
+		}
+		
+		if(enableGUI) {
 			d = new Dialog(new Frame());
 			d.setTitle("Running Tasks");
 			box = new Box(BoxLayout.Y_AXIS);
