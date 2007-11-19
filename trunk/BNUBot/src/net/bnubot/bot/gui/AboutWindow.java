@@ -5,7 +5,6 @@
 
 package net.bnubot.bot.gui;
 
-import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.FlowLayout;
 import java.awt.event.MouseEvent;
@@ -43,21 +42,20 @@ public class AboutWindow extends JDialog {
 		}
 	}
 	
-	private static class LinkLabel extends ULabel {
+	private static class LinkLabel extends JLabel {
 		private static final long serialVersionUID = -5801691479517417290L;
 
 		public LinkLabel(String url) {
 			this(url, url);
 		}
 		
-		public LinkLabel(String caption, String url) {
-			super(caption);
-			setForeground(Color.BLUE);
+		public LinkLabel(String caption, final String url) {
+			super("<html><a href=" + url + ">" + caption + "</a></html>");
 			setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			addMouseListener(new MouseListener() {
 				public void mouseClicked(MouseEvent e) {
 					try {
-						BrowserLauncher.openURL("http://bnubot.net/");
+						BrowserLauncher.openURL(url);
 					} catch (IOException ex) {
 						Out.exception(ex);
 					}
@@ -66,7 +64,7 @@ public class AboutWindow extends JDialog {
 				public void mouseExited(MouseEvent e) {}
 				public void mousePressed(MouseEvent e) {}
 				public void mouseReleased(MouseEvent e) {}
-				});
+			});
 		}
 	}
 
