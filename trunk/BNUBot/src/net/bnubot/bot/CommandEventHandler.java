@@ -65,7 +65,7 @@ public class CommandEventHandler implements EventHandler {
 	}
 	
 	public void initialize(Connection c) {
-		if(c == null)
+		if(this.c == null)
 			this.c = c;
 	}
 	
