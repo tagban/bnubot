@@ -1117,8 +1117,7 @@ public class CommandEventHandler implements EventHandler {
 						}
 						
 						boolean andHasAliases = false;
-						for(int i = 0; i < aliases.size(); i++) {
-							String l = aliases.get(i);
+						for(String l : aliases) {
 							
 							if((bnSubject != null) && (bnSubject.equals(l)))
 								continue;

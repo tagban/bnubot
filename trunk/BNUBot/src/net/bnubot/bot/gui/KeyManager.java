@@ -10,13 +10,14 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.jbls.util.Buffer;
 
 import net.bnubot.util.Out;
-
 
 public class KeyManager {
 	public static final int PRODUCT_ALLNORMAL = -1;
@@ -27,7 +28,7 @@ public class KeyManager {
 	public static final int PRODUCT_WAR3 = 14;
 	public static final int PRODUCT_W3XP = 18;
 	
-	private static LinkedList<CDKey> cdkeys = new LinkedList<CDKey>();
+	private static List<CDKey> cdkeys = new ArrayList<CDKey>();
 	private static boolean initialized = false;
 	
 	public static class CDKey {
@@ -133,7 +134,7 @@ public class KeyManager {
 	public static CDKey[] getKeys(int product) {
 		initialize();
 		
-		LinkedList<CDKey> prodKeys = new LinkedList<CDKey>();
+		List<CDKey> prodKeys = new LinkedList<CDKey>();
 		Iterator<CDKey> it = cdkeys.iterator();
 		while(it.hasNext()) {
 			CDKey k = it.next();

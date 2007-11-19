@@ -8,6 +8,8 @@ package net.bnubot.vercheck;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 import net.bnubot.util.TimeFormatter;
 
@@ -23,7 +25,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 public class XMLElementDecorator {
 	private String name = null;
 	private XMLElementDecorator parent = null;
-	private ArrayList<XMLElementDecorator> children = new ArrayList<XMLElementDecorator>();
+	private List<XMLElementDecorator> children = new LinkedList<XMLElementDecorator>();
 	private String contents = null;
 	private static XMLElementDecorator elem = null; 
 	

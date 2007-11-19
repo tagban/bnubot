@@ -13,6 +13,7 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -51,7 +52,7 @@ public class UserList extends JPanel {
 	public String[] findUsers(String containing) {
 		containing = containing.toLowerCase();
 		
-		ArrayList<String> ret = new ArrayList<String>();
+		List<String> ret = new ArrayList<String>(users.size());
 		Enumeration<UserInfo> en = users.elements();
 		while(en.hasMoreElements()) {
 			String u = en.nextElement().user.getFullLogonName();

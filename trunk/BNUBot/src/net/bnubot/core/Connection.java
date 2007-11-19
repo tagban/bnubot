@@ -10,7 +10,8 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
@@ -30,11 +31,11 @@ public abstract class Connection extends Thread implements EventHandler {
 	protected ConnectionSettings cs;
 	protected ChatQueue chatQueue;
 	protected Profile profile;
-	protected LinkedList<EventHandler> eventHandlers = new LinkedList<EventHandler>();
-	protected LinkedList<EventHandler> eventHandlers2 = new LinkedList<EventHandler>();
+	protected List<EventHandler> eventHandlers = new ArrayList<EventHandler>();
+	protected List<EventHandler> eventHandlers2 = new ArrayList<EventHandler>();
 	protected BNetUser myUser = null;
 	protected boolean connected = false;
-	protected LinkedList<Connection> slaves = new LinkedList<Connection>();
+	protected List<Connection> slaves = new ArrayList<Connection>();
 	protected String channelName = null;
 	protected long lastAntiIdle;
 	protected boolean forceReconnect = false;
@@ -45,7 +46,7 @@ public abstract class Connection extends Thread implements EventHandler {
 	private int eh_semaphore = 0;
 	private int eh2_semaphore = 0;
 	
-	public LinkedList<EventHandler> getEventHandlers() {
+	public List<EventHandler> getEventHandlers() {
 		return eventHandlers;
 	}
 

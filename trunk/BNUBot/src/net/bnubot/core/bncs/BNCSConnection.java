@@ -17,6 +17,8 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 import java.util.TimeZone;
@@ -73,7 +75,7 @@ public class BNCSConnection extends Connection {
 	protected Byte myClanRank = null; 
 	protected long lastNullPacket;
 	
-	private final ArrayList<Task> currentTasks = new ArrayList<Task>();
+	private final List<Task> currentTasks = new LinkedList<Task>();
 
 	public BNCSConnection(ConnectionSettings cs, ChatQueue cq, Profile p) {
 		super(cs, cq, p);
@@ -1329,7 +1331,7 @@ public class BNCSConnection extends Connection {
 					int numAccounts = is.readDWord();
 					int numKeys = is.readDWord();
 					@SuppressWarnings("unchecked")
-					ArrayList<Object> keys = (ArrayList<Object>)CookieUtility.destroyCookie(is.readDWord());
+					List<Object> keys = (List<Object>)CookieUtility.destroyCookie(is.readDWord());
 					
 					if(numAccounts != 1)
 						throw new IllegalStateException("SID_READUSERDATA with numAccounts != 1");
@@ -1652,7 +1654,7 @@ public class BNCSConnection extends Connection {
 			recieveInfo("Channels: " + channelList + ".");
 	}
 
-	private static ArrayList<String> antiIdles = null;
+	private static List<String> antiIdles = null;
 	private String getAntiIdle() {
 		if(antiIdles == null) {
 			antiIdles = new ArrayList<String>();
@@ -1976,7 +1978,7 @@ public class BNCSConnection extends Connection {
 		 * (STRING[])	 Requested Accounts
 		 * (STRING[])	 Requested Keys
 		 */
-		ArrayList<Object> keys = new ArrayList<Object>();
+		List<Object> keys = new ArrayList<Object>(8);
 		keys.add(createTask("Get profile", user));
 		keys.add(user);
 		keys.add("profile\\sex");

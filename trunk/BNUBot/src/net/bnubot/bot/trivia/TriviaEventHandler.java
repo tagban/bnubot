@@ -12,7 +12,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 import net.bnubot.bot.database.AccountResultSet;
 import net.bnubot.bot.database.Database;
@@ -27,7 +28,7 @@ import net.bnubot.util.Out;
 
 public class TriviaEventHandler implements EventHandler {
 	private boolean triviaEnabled = false;
-	private ArrayList<TriviaItem> trivia = new ArrayList<TriviaItem>();
+	private List<TriviaItem> trivia = new LinkedList<TriviaItem>();
 	private Connection c = null;
 	private String triviaAnswers[] = null;
 	private boolean gotAnswer = false;
