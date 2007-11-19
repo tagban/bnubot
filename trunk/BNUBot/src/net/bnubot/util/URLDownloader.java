@@ -34,24 +34,7 @@ public class URLDownloader {
 		}
 	}
 	
-	public static void downloadURL(URL url, File to, SHA1Sum sha1, boolean force) {
-		queue.add(new FileDownload(url, to, sha1, force));
-	}
-	
-	public static void flush() throws Exception {
-		int num = queue.size();
-		if(num <= 0)
-			return;
-		
-		Task t = TaskManager.createTask("Download", num, "files");
-		for(FileDownload fd : queue) {
-			downloadURLNow(fd.url, fd.to, fd.sha1, fd.force);
-			t.advanceProgress();
-		}
-		t.complete();
-	}
-	
-	public static void downloadURLNow(URL url, File to, SHA1Sum sha1, boolean force) throws Exception {
+	public static void downloadURL(URL url, File to, SHA1Sum sha1, boolean force) throws Exception {
 		// Don't download the file if it already exists
 		if(to.exists()) {
 			// If no MD5 sum was given
@@ -71,6 +54,23 @@ public class URLDownloader {
 			}
 		}
 		
+		queue.add(new FileDownload(url, to, sha1, force));
+	}
+	
+	public static void flush() throws Exception {
+		int num = queue.size();
+		if(num <= 0)
+			return;
+		
+		Task t = TaskManager.createTask("Download", num, "files");
+		for(FileDownload fd : queue) {
+			downloadURLNow(fd.url, fd.to, fd.sha1, fd.force);
+			t.advanceProgress();
+		}
+		t.complete();
+	}
+	
+	public static void downloadURLNow(URL url, File to, SHA1Sum sha1, boolean force) throws Exception {
 		// Make sure the path to the file exists
 		{
 			String sep = System.getProperty("file.separator");
