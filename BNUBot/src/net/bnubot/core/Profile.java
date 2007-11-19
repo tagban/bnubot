@@ -119,8 +119,10 @@ public class Profile {
 			con.start();
 			
 			// Wait for the Connection thread to initialize
-			while(!con.isInitialized())
+			while(!con.isInitialized()) {
 				Thread.sleep(10);
+				Thread.yield();
+			}
 			
 			// Add it to the list of connections
 			return cons.add(con);
