@@ -1,5 +1,5 @@
 /**
- * This file is distributed under the GPL 
+ * This file is distributed under the GPL
  * $Id$
  */
 
@@ -11,15 +11,15 @@ public class Diablo2ColorScheme extends ColorScheme {
 	public static final Color D2White = new Color(0xD0D0D0);
 	public static final Color D2Red = new Color(0xCE3E3E);
 	public static final Color D2Green = new Color(0x00CE00);
-	public static final Color D2Blue = new Color(0x44409C); 
+	public static final Color D2Blue = new Color(0x44409C);
 	//Const D2Beige1 = &H6091A1
-	public static final Color D2Gray = new Color(0x555555); 
+	public static final Color D2Gray = new Color(0x555555);
 	public static final Color D2Black = new Color(0x080808);
 	public static final Color D2Beige2 = new Color(0xA89D65);
 	//Const D2Orange = &H88CE&
 	public static final Color D2LtYellow = new Color(0xCECE51);
 	//Const D2Purple = &HCE008D
-	public static final Color D2Cyan = new Color(0x00D0D0); 
+	public static final Color D2Cyan = new Color(0x00D0D0);
 	//Const D2MedBlue = &HE8AC2C
 	
 	public Color getBackgroundColor() {

@@ -1,5 +1,5 @@
 /**
- * This file is distributed under the GPL 
+ * This file is distributed under the GPL
  * $Id$
  */
 
@@ -12,7 +12,6 @@ import javax.swing.JOptionPane;
 
 import net.bnubot.util.Out;
 import net.bnubot.util.URLDownloader;
-
 
 /**
  * @author sanderson

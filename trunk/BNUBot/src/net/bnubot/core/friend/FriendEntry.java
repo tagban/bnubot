@@ -1,5 +1,5 @@
 /**
- * This file is distributed under the GPL 
+ * This file is distributed under the GPL
  * $Id$
  */
 
@@ -36,7 +36,7 @@ public class FriendEntry {
 		if(account == null)
 			out = entry.toString();
 
-		ArrayList<String> attributes = new ArrayList<String>(5); 
+		ArrayList<String> attributes = new ArrayList<String>(5);
 		
 		switch(location) {
 		case FriendLocationIDs.FRIENDLOCATION_OFFLINE:

@@ -1,5 +1,5 @@
 /**
- * This file is distributed under the GPL 
+ * This file is distributed under the GPL
  * $Id$
  */
 
@@ -12,7 +12,7 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 
 public class ExtendableResultSet {
-	private ResultSet parent;
+	private final ResultSet parent;
 	private Integer savedCursor = null;
 	
 	protected ExtendableResultSet(ResultSet parent) {

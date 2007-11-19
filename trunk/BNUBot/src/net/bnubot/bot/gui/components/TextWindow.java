@@ -1,5 +1,5 @@
 /**
- * This file is distributed under the GPL 
+ * This file is distributed under the GPL
  * $Id$
  */
 
@@ -55,10 +55,10 @@ public class TextWindow extends JScrollPane {
 	
 	private Runnable scrollDown = null;
 	
-	private ColorScheme cs;
-	private JEditorPane jep;
+	private final ColorScheme cs;
+	private final JEditorPane jep;
 	private String head;
-	private String foot;
+	private final String foot;
 	private String html;
 	private boolean disableRedraw = false;
 
@@ -130,7 +130,7 @@ public class TextWindow extends JScrollPane {
 			pattern = Pattern.compile("((.|\n)*?)\\b((([a-zA-Z]{3,6}://)|(www.)){1}([a-zA-Z0-9-.]+)([^-]\\.[a-zA-Z]{2,5}){1}((/\\S+){1}|\\s*?)/?)((.|\n)*)");
 		
 		try {
-			Matcher matcher = pattern.matcher(in); 
+			Matcher matcher = pattern.matcher(in);
 			
 			if(matcher.matches())
 				return safeHtml(matcher.group(1))

@@ -1,5 +1,5 @@
 /**
- * This file is distributed under the GPL 
+ * This file is distributed under the GPL
  * $Id$
  */
 
@@ -19,7 +19,7 @@ import java.util.Properties;
  * http://www.kfu.com/~nsayer/Java/dyn-jdbc.html
  */
 public class DriverShim implements Driver {
-	private Driver driver;
+	private final Driver driver;
 	
 	DriverShim(Driver d) {
 		this.driver = d;

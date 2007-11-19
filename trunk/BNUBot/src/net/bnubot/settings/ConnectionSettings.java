@@ -1,5 +1,5 @@
 /**
- * This file is distributed under the GPL 
+ * This file is distributed under the GPL
  * $Id$
  */
 
@@ -75,7 +75,7 @@ public class ConnectionSettings implements Serializable {
 		case PRODUCT_STARCRAFTSHAREWARE:
 			break;
 		default:
-			return "Unsupported product";	
+			return "Unsupported product";
 		}
 		
 		switch(product) {

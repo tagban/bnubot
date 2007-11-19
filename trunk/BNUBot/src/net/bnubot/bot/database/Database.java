@@ -1,5 +1,5 @@
 /**
- * This file is distributed under the GPL 
+ * This file is distributed under the GPL
  * $Id$
  */
 
@@ -31,10 +31,10 @@ public class Database {
 	private static final long databaseVersion = 2;		// Current schema version
 	private static final long compatibleVersion = 2;	// Minimum version compatible
 	private static Database instance;
-	private Connection conn;
+	private final Connection conn;
 
-	private List<Statement> openStatements = new LinkedList<Statement>();
-	private List<Exception> openStmtExcept = new LinkedList<Exception>();
+	private final List<Statement> openStatements = new LinkedList<Statement>();
+	private final List<Exception> openStmtExcept = new LinkedList<Exception>();
 	
 	static {
 		for(String driver : new String[] {"org.apache.derby.jdbc.EmbeddedDriver", "com.mysql.jdbc.Driver"}) {
@@ -600,7 +600,7 @@ public class Database {
 	/**
 	 * Check whether or not the database schema is valid
 	 * @return boolean indicating if database is up to date
-	 * @throws SQLException 
+	 * @throws SQLException
 	 */
 	private boolean checkSchema() {
 		ResultSet rs = null;
@@ -650,7 +650,7 @@ public class Database {
 				if(query.length() == 0)
 					query = fr.readLine();
 				else
-					query += '\n' + fr.readLine(); 
+					query += '\n' + fr.readLine();
 						
 				if(query.length() == 0)
 					continue;

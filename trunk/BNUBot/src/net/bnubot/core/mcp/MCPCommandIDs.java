@@ -1,12 +1,12 @@
 /**
- * This file is distributed under the GPL 
+ * This file is distributed under the GPL
  * $Id$
  */
 
 package net.bnubot.core.mcp;
 
 public interface MCPCommandIDs {
-	public static final byte MCP_STARTUP			= (byte)0x01;  
+	public static final byte MCP_STARTUP			= (byte)0x01;
 	public static final byte MCP_CHARCREATE			= (byte)0x02;
 	public static final byte MCP_CREATEGAME			= (byte)0x03;
 	public static final byte MCP_JOINGAME			= (byte)0x04;

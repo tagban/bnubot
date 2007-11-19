@@ -1,5 +1,5 @@
 /**
- * This file is distributed under the GPL 
+ * This file is distributed under the GPL
  * $Id$
  */
 
@@ -10,8 +10,8 @@ import java.util.List;
 
 public class CookieUtility {
 	private static class Cookie {
-		private int id;
-		private Object obj;
+		private final int id;
+		private final Object obj;
 		
 		public Cookie(int id, Object obj) {
 			this.id = id;
@@ -27,7 +27,7 @@ public class CookieUtility {
 		}
 	}
 
-	private static List<Cookie> cookies = new LinkedList<Cookie>(); 
+	private static final List<Cookie> cookies = new LinkedList<Cookie>();
 	private static int currentCookieNumber = 0;
 	
 	/**

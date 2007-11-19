@@ -1,5 +1,5 @@
 /**
- * This file is distributed under the GPL 
+ * This file is distributed under the GPL
  * $Id$
  */
 
@@ -10,8 +10,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class ChatQueue extends Thread {
-	private List<Connection> cons = new ArrayList<Connection>();
-	private List<String> queue = new LinkedList<String>();
+	private final List<Connection> cons = new ArrayList<Connection>();
+	private final List<String> queue = new LinkedList<String>();
 	private int lastCon = 0;
 
 	public ChatQueue() {

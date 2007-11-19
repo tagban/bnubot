@@ -1,5 +1,5 @@
 /**
- * This file is distributed under the GPL 
+ * This file is distributed under the GPL
  * $Id$
  */
 
@@ -22,7 +22,7 @@ public class TimeFormatter {
 	}
 
 	/**
-	 * Display a formatted length of time 
+	 * Display a formatted length of time
 	 * @param time The time, in milliseconds
 	 * @return A String with the formatted length of time
 	 */

@@ -1,5 +1,5 @@
 /**
- * This file is distributed under the GPL 
+ * This file is distributed under the GPL
  * $Id$
  */
 
@@ -50,7 +50,7 @@ public class GuiEventHandler implements EventHandler {
 	private FriendList friendList = null;
 	private ClanList clanList = null;
 	private String channel = null;
-	private JMenu menuBar = new JMenu();
+	private final JMenu menuBar = new JMenu();
 	private BNetUser lastWhisperFrom = null;
 	private JSplitPane jsp = null;
 	
@@ -86,7 +86,7 @@ public class GuiEventHandler implements EventHandler {
 			menuBar.addSeparator();
 
 			menu = new JMenu("Battle.net");
-			{	
+			{
 				menuItem = new JMenuItem("Connect");
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
@@ -307,7 +307,7 @@ public class GuiEventHandler implements EventHandler {
 		if(GlobalSettings.enableTrayPopups) {
 			TrayIcon tray = GuiDesktop.getTray();
 			if((tray != null) && !frame.isVisible()) {
-		        tray.displayMessage("User is chatting: " + user.getShortLogonName(), 
+		        tray.displayMessage("User is chatting: " + user.getShortLogonName(),
 		            text,
 		            TrayIcon.MessageType.INFO);
 			}
@@ -349,7 +349,7 @@ public class GuiEventHandler implements EventHandler {
 		if(GlobalSettings.enableTrayPopups) {
 			TrayIcon tray = GuiDesktop.getTray();
 			if((tray != null) && !frame.isVisible()) {
-		        tray.displayMessage("Whisper from " + user.getShortLogonName(), 
+		        tray.displayMessage("Whisper from " + user.getShortLogonName(),
 		            text,
 		            TrayIcon.MessageType.INFO);
 			}

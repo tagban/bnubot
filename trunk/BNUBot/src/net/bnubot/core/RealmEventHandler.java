@@ -1,10 +1,9 @@
 /**
- * This file is distributed under the GPL 
+ * This file is distributed under the GPL
  * $Id$
  */
 
 package net.bnubot.core;
-
 
 public interface RealmEventHandler {
 	//Initialization

@@ -1,5 +1,5 @@
 /**
- * This file is distributed under the GPL 
+ * This file is distributed under the GPL
  * $Id$
  */
 
@@ -12,11 +12,11 @@ public class StarcraftColorScheme extends ColorScheme {
 	public static final Color SCRed = Color.RED;
 	public static final Color SCGreen = Color.GREEN;
 	public static final Color SCBlue = Color.BLUE;
-	public static final Color SCLtGray = Color.LIGHT_GRAY; 
-	public static final Color SCGray = Color.GRAY; 
+	public static final Color SCLtGray = Color.LIGHT_GRAY;
+	public static final Color SCGray = Color.GRAY;
 	public static final Color SCBlack = Color.BLACK;
-	public static final Color SCCyan = Color.CYAN; 
-	public static final Color SCYellow = Color.YELLOW; 
+	public static final Color SCCyan = Color.CYAN;
+	public static final Color SCYellow = Color.YELLOW;
 
 	public Color getBackgroundColor() {
 		return SCBlack;

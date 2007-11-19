@@ -1,5 +1,5 @@
 /**
- * This file is distributed under the GPL 
+ * This file is distributed under the GPL
  * $Id$
  */
 
@@ -43,7 +43,7 @@ public class MCPConnection extends RealmConnection {
 	public void run() {
 		try {
 			if((MCPChunk1.length != 4) || (MCPChunk2.length != 12))
-				throw new Exception("Assertion failed: ((MCPChunk1.length != 4) || (MCPChunk2.length != 12))"); 
+				throw new Exception("Assertion failed: ((MCPChunk1.length != 4) || (MCPChunk2.length != 12))");
 			
 			Out.info(MCPConnection.class, "Connecting to MCP server " + server + ":" + port);
 			
@@ -160,7 +160,7 @@ public class MCPConnection extends RealmConnection {
 					}
 					
 					case MCPCommandIDs.MCP_CHARLOGON: {
-						/* (DWORD) Result 
+						/* (DWORD) Result
 						 * 
 						 * 0x00: Success
 						 * 0x46: Player not found

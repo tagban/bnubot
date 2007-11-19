@@ -1,5 +1,5 @@
 /**
- * This file is distributed under the GPL 
+ * This file is distributed under the GPL
  * $Id$
  */
 
@@ -64,7 +64,7 @@ public class URLDownloader {
 				SHA1Sum fSHA1 = new SHA1Sum(to);
 				if(fSHA1.equals(sha1)) {
 					Out.debug(URLDownloader.class, "SHA1 match for " + to.getName());
-					return;	
+					return;
 				}
 				
 				Out.error(URLDownloader.class, "SHA1 mismatch for " + to.getName() + "\nExpected: " + sha1 + "\nCalculated: " + fSHA1);

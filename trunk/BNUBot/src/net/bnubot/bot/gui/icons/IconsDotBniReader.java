@@ -1,5 +1,5 @@
 /**
- * This file is distributed under the GPL 
+ * This file is distributed under the GPL
  * $Id$
  */
 
@@ -23,7 +23,6 @@ import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetInputStream;
 import net.bnubot.util.HexDump;
 import net.bnubot.util.Out;
-
 
 public class IconsDotBniReader {
 	private static boolean initialized = false;
@@ -161,7 +160,7 @@ public class IconsDotBniReader {
 				int numProducts;
 				int products[] = new int[32];
 				
-				//Read in up to 32 products; stop if we see a null 
+				//Read in up to 32 products; stop if we see a null
 				for(numProducts = 0; numProducts < 32; numProducts++) {
 					products[numProducts] = is.readDWord();
 					if(products[numProducts] == 0)

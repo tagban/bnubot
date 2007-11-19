@@ -1,5 +1,5 @@
 /**
- * This file is distributed under the GPL 
+ * This file is distributed under the GPL
  * $Id$
  */
 
@@ -218,10 +218,10 @@ public class StatString {
 				2 	Ladder rank 	The player's rank on the ladder.
 				3 	Wins 	The number of wins the user has in normal games.
 				4 	Spawned 	This field is 1 if the user's client is spawned, 0 otherwise.
-				5 	Unknown 	
+				5 	Unknown
 				6 	High Ladder Rating 	This is the user's 'highest ever' ladder rating.
-				7 	Unknown 	
-				8 	Unknown 	
+				7 	Unknown
+				8 	Unknown
 				9 	Icon 	This value should be matched against the product values of each icon in each Battle.net Icon file that is loaded. If a match is found, the client should use this icon when displaying the user.
 				*/
 				if(is != null) {

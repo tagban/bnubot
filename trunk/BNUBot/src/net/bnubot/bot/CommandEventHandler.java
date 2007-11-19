@@ -1,5 +1,5 @@
 /**
- * This file is distributed under the GPL 
+ * This file is distributed under the GPL
  * $Id$
  */
 
@@ -89,9 +89,9 @@ public class CommandEventHandler implements EventHandler {
 			if(param != null)
 				params = param.split(" ");
 			
-			Long commanderAccess = null; 
+			Long commanderAccess = null;
 			String commanderAccount = null;
-			Long commanderAccountID = null; 
+			Long commanderAccountID = null;
 	
 			//Don't ask questions if they are a super-user
 			boolean superUser = user.equals(c.getMyUser());
@@ -157,7 +157,7 @@ public class CommandEventHandler implements EventHandler {
 						if((rsSubjectCategory == null) || !rsSubjectCategory.next()) {
 							c.sendChat(user, "The category [" + params[0] + "] does not exist!", whisperBack);
 							if(rsSubjectCategory != null)
-								d.close(rsSubjectCategory);							
+								d.close(rsSubjectCategory);
 							break;
 						}
 						
@@ -776,7 +776,7 @@ public class CommandEventHandler implements EventHandler {
 						d.close(rsSubjectAccount);
 						if(!rsSubjectUsers.next()) {
 						} else {
-							//Check the user's accounts						
+							//Check the user's accounts
 							do {
 								Timestamp nt = rsSubjectUsers.getLastSeen();
 								if(mostRecent == null) {
@@ -1446,7 +1446,7 @@ public class CommandEventHandler implements EventHandler {
 	private String removeOpUserBrackets(String name) {
 		if(name.charAt(0) == '[') {
 			if(name.charAt(name.length() - 1) == ']') {
-				return name.substring(1, name.length() - 1); 
+				return name.substring(1, name.length() - 1);
 			}
 		}
 		return name;
