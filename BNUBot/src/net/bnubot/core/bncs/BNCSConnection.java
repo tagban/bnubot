@@ -16,6 +16,7 @@ import java.io.OutputStream;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.Locale;
 import java.util.Random;
 import java.util.TimeZone;
@@ -66,7 +67,7 @@ public class BNCSConnection extends Connection {
 	private int clientToken = Math.abs(new Random().nextInt());
 	private SRP srp = null;
 	private byte proof_M2[] = null;
-	private boolean forceReconnect = false;
+	private boolean manualReconnect = false;
 	protected StatString myStatString = null;
 	protected int myClan = 0;
 	protected Byte myClanRank = null; 
@@ -78,7 +79,6 @@ public class BNCSConnection extends Connection {
 		super(cs, cq, p);
 	}
 
-	private static boolean firstConnection = true;
 	public void run() {
 		// We must initialize the EHs in the Connection thread
 		for(EventHandler eh : eventHandlers)
@@ -98,7 +98,7 @@ public class BNCSConnection extends Connection {
 				productID = 0;
 				titleChanged();
 				
-				boolean connectNow = (forceReconnect || GlobalSettings.autoConnect);
+				boolean connectNow = (manualReconnect || GlobalSettings.autoConnect);
 				
 				// Wait until we're supposed to connect
 				if(!connectNow) {
@@ -120,27 +120,11 @@ public class BNCSConnection extends Connection {
 				while(cs.isValid() != null)
 					new ConfigurationFrame(cs).setVisible(true);
 
-				if(!firstConnection && connectNow) {
-					// Wait a short time before allowing a reconnect
-					String status = "Stalling to avoid flood: ";
-					
-					long waitUntil = System.currentTimeMillis();
-					waitUntil += (forceReconnect ? 2000 : 15000); 
-					while(true) {
-						long timeLeft = waitUntil - System.currentTimeMillis();
-						if(timeLeft <= 0)
-							break;
-						
-						connect.updateProgress(status + TimeFormatter.formatTime(timeLeft, false));
-						
-						try { sleep(100); } catch (InterruptedException e1) {}
-						yield();
-					}
-				}
+				// Wait a short time before allowing a reconnect
+				waitUntilConnectionSafe(connect);
 				
-				// Clear the forceReconnect and firstConnection flags
-				forceReconnect = false;
-				firstConnection = false;
+				// Clear the forceReconnect flag
+				manualReconnect = false;
 				
 				// Set up BNLS, get verbyte
 				initializeBNLS(connect);
@@ -167,6 +151,37 @@ public class BNCSConnection extends Connection {
 			}
 
 			try { setConnected(false); } catch (Exception e) { }
+		}
+	}
+
+	private static Hashtable<String, Long> connectionTimes = new Hashtable<String, Long>();
+	/**
+	 * Wait until it is safe to connect to the server
+	 */
+	private void waitUntilConnectionSafe(Task connect) {
+		long waitUntil;
+		synchronized(connectionTimes) {
+			Long lastConnectionTime = connectionTimes.get(cs.bncsServer);
+			if(lastConnectionTime == null) {
+				connectionTimes.put(cs.bncsServer, System.currentTimeMillis());
+				return;
+			}
+			
+			// Manual reconnects wait 2s; server-disconnect waits 15
+			waitUntil = lastConnectionTime + (manualReconnect ? 2000 : 15000); 
+			connectionTimes.put(cs.bncsServer, waitUntil);
+		}
+
+		final String status = "Stalling to avoid flood: ";
+		while(true) {
+			long timeLeft = waitUntil - System.currentTimeMillis();
+			if(timeLeft <= 0)
+				break;
+			
+			connect.updateProgress(status + TimeFormatter.formatTime(timeLeft, false));
+			
+			try { sleep(100); } catch (InterruptedException e1) {}
+			yield();
 		}
 	}
 
@@ -2011,7 +2026,7 @@ public class BNCSConnection extends Connection {
 	}
 	
 	public void reconnect() {
-		forceReconnect = true;
+		manualReconnect = true;
 		setConnected(false);
 	}
 
