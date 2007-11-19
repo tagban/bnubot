@@ -65,7 +65,8 @@ public class CommandEventHandler implements EventHandler {
 	}
 	
 	public void initialize(Connection c) {
-		this.c = c;
+		if(c == null)
+			this.c = c;
 	}
 	
 	public void touchUser(BNetUser user, String action) {
