@@ -36,18 +36,6 @@ public class Database {
 	private final List<Statement> openStatements = new LinkedList<Statement>();
 	private final List<Exception> openStmtExcept = new LinkedList<Exception>();
 	
-	static {
-		for(String driver : new String[] {"org.apache.derby.jdbc.EmbeddedDriver", "com.mysql.jdbc.Driver"}) {
-			try {
-				Driver d = (Driver)JARLoader.forName(driver).newInstance();
-				DriverManager.registerDriver(new DriverShim(d));
-			} catch(ClassNotFoundException e) {
-			} catch(Exception e) {
-				Out.exception(e);
-			}
-		}
-	}
-	
 	public Database(DatabaseSettings settings) throws Exception {
 		try {
 			DriverManager.getDriver(settings.url);

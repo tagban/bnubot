@@ -11,7 +11,17 @@ import java.io.FilenameFilter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.util.Enumeration;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
+import javax.swing.LookAndFeel;
+import javax.swing.UIManager;
+
+import net.bnubot.bot.database.DriverShim;
+import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.Out;
 
 /**
@@ -45,6 +55,53 @@ public class JARLoader {
 			}
 		
 		loader = new URLClassLoader(urls);
+		
+		// Look at each JAR
+		for(URL url : urls) {
+			try {
+				File file = new File(url.toExternalForm().substring(5));
+				JarFile jf = new JarFile(file);
+				// Look at each class inside the jar
+				Enumeration<JarEntry> en = jf.entries();
+				while(en.hasMoreElements()) {
+					try {
+						JarEntry je = en.nextElement();
+						String name = je.getName();
+						if(name.endsWith(".class")) {
+							// Convert the filename to an FQ class name
+							name = name.substring(0, name.length() - 6);
+							name = name.replace('/', '.');
+							
+							// Get a Class for it
+							Class<?> clazz = JARLoader.forName(name);
+							
+							// Check if it's a JDBC driver
+							for(Class<?> cif : clazz.getInterfaces()) {
+								if(cif.equals(Driver.class)) {
+									DriverManager.registerDriver(new DriverShim((Driver)clazz.newInstance()));
+									break;
+								}
+							}
+
+							// Check if it's a look and feel
+							if(GlobalSettings.enableGUI)
+								for(Class<?> superClazz = clazz; superClazz != null; superClazz = superClazz.getSuperclass()) {
+									if(superClazz.equals(LookAndFeel.class)) {
+										LookAndFeel laf = (LookAndFeel)clazz.newInstance();
+										UIManager.installLookAndFeel(laf.getName(), name);
+										break;
+									}
+								}
+						}
+					} catch(NoClassDefFoundError e) {
+					} catch(InstantiationException e) {
+					}
+					
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	public static Class<?> forName(String name) throws ClassNotFoundException {
