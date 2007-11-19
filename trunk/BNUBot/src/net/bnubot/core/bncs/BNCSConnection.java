@@ -86,6 +86,8 @@ public class BNCSConnection extends Connection {
 		for(EventHandler eh : eventHandlers2)
 			eh.initialize(this);
 		
+		initialized = true;
+		
 		while(true) {
 			try {
 				for(Task t : currentTasks)

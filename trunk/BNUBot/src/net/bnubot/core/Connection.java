@@ -38,6 +38,7 @@ public abstract class Connection extends Thread implements EventHandler {
 	protected String channelName = null;
 	protected long lastAntiIdle;
 	protected boolean forceReconnect = false;
+	protected boolean initialized = false;
 
 	public static final int MAX_CHAT_LENGTH = 242;
 
@@ -391,6 +392,10 @@ public abstract class Connection extends Thread implements EventHandler {
 	
 	public Profile getProfile() {
 		return this.profile;
+	}
+	
+	public boolean isInitialized() {
+		return initialized;
 	}
 
 	/*
