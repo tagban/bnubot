@@ -5,11 +5,13 @@
 
 package net.bnubot.core;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 public class ChatQueue extends Thread {
-	private LinkedList<Connection> cons = new LinkedList<Connection>();
-	private LinkedList<String> queue = new LinkedList<String>();
+	private List<Connection> cons = new ArrayList<Connection>();
+	private List<String> queue = new LinkedList<String>();
 	private int lastCon = 0;
 
 	public ChatQueue() {
@@ -55,7 +57,7 @@ public class ChatQueue extends Thread {
 				
 				if(con.isOp()) {
 					// Write the text out
-					con.sendChatCommand(queue.remove());
+					con.sendChatCommand(queue.remove(0));
 				} else {
 					//Find a string we can send
 					sendTextNonOp(con);
