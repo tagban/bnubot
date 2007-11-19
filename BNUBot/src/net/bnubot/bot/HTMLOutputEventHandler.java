@@ -10,11 +10,12 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.SwingUtilities;
 
@@ -44,7 +45,7 @@ public class HTMLOutputEventHandler implements EventHandler {
 	private Runnable writeUserListRunnable = null;
 	private ColorScheme cs = null;
 	
-	private ArrayList<BNetUser> users;
+	private List<BNetUser> users;
 	
 	private BNetUser get(BNetUser u) {
 		for(BNetUser ui : users.toArray(new BNetUser[users.size()])) {
@@ -55,7 +56,7 @@ public class HTMLOutputEventHandler implements EventHandler {
 	}
 
 	public void bnetConnected() {
-		users = new ArrayList<BNetUser>();
+		users = new LinkedList<BNetUser>();
 		File f = new File("html");
 		f.mkdir();
 	}

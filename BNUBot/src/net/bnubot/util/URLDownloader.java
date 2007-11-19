@@ -12,12 +12,13 @@ import java.io.FileOutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.LinkedList;
+import java.util.List;
 
 import net.bnubot.util.task.Task;
 import net.bnubot.util.task.TaskManager;
 
 public class URLDownloader {
-	public static LinkedList<FileDownload> queue = new LinkedList<FileDownload>();
+	public static List<FileDownload> queue = new LinkedList<FileDownload>();
 	
 	private static class FileDownload {
 		URL url;

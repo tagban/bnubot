@@ -5,8 +5,8 @@
 
 package net.bnubot.util;
 
-import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 public class CookieUtility {
 	private static class Cookie {
@@ -27,7 +27,7 @@ public class CookieUtility {
 		}
 	}
 
-	private static LinkedList<Cookie> cookies = new LinkedList<Cookie>(); 
+	private static List<Cookie> cookies = new LinkedList<Cookie>(); 
 	private static int currentCookieNumber = 0;
 	
 	/**
@@ -36,8 +36,7 @@ public class CookieUtility {
 	 * @return		Cookie ID
 	 */
 	public static int createCookie(Object obj) {
-		Cookie c = new Cookie(currentCookieNumber, obj);
-		cookies.add(c);
+		cookies.add(new Cookie(currentCookieNumber, obj));
 		return currentCookieNumber++;
 	}
 	
@@ -47,9 +46,7 @@ public class CookieUtility {
 	 * @return		The Object associated with the cookie
 	 */
 	public static Object destroyCookie(int id) {
-		Iterator<Cookie> it = cookies.iterator();
-		while(it.hasNext()) {
-			Cookie c = it.next();
+		for(Cookie c : cookies) {
 			if(c.getId() == id) {
 				cookies.remove(c);
 				return c.getObj();

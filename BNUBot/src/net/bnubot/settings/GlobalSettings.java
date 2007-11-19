@@ -6,7 +6,7 @@
 package net.bnubot.settings;
 
 import java.lang.reflect.Method;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.LookAndFeel;
@@ -79,7 +79,7 @@ public class GlobalSettings {
 				// getInstalledThemes()
 				Method getInstalledThemes = PlasticLookAndFeel.getMethod("getInstalledThemes");
 				List<?> themes = (List<?>)getInstalledThemes.invoke(null);
-				LinkedList<String> themes2 = new LinkedList<String>();
+				List<String> themes2 = new ArrayList<String>(themes.size());
 				for(Object theme : themes)
 					themes2.add(theme.getClass().getSimpleName());
 				lookAndFeelThemes = themes2.toArray(new String[themes2.size()]);

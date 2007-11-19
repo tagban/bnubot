@@ -6,7 +6,7 @@
 package net.bnubot.core;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.List;
 
 import net.bnubot.bot.CommandEventHandler;
 import net.bnubot.bot.console.ConsoleEventHandler;
@@ -20,7 +20,7 @@ import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.Out;
 
 public class Profile {
-	private static LinkedList<Profile> profiles = new LinkedList<Profile>();
+	private static List<Profile> profiles = new ArrayList<Profile>();
 	private static String[] plugins = null;
 
 	private static Profile findCreateProfile(String name) {
@@ -36,7 +36,7 @@ public class Profile {
 		return findCreateProfile(cs.profile).insertConnection(cs);
 	}
 
-	private LinkedList<Connection> cons = new LinkedList<Connection>();
+	private List<Connection> cons = new ArrayList<Connection>();
 	private ChatQueue chatQueue;
 	private String name;
 

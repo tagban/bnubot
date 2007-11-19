@@ -18,8 +18,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.LinkedList;
+import java.util.List;
 
 import net.bnubot.JARLoader;
 import net.bnubot.settings.DatabaseSettings;
@@ -32,8 +33,8 @@ public class Database {
 	private static Database instance;
 	private Connection conn;
 
-	private ArrayList<Statement> openStatements = new ArrayList<Statement>();
-	private ArrayList<Exception> openStmtExcept = new ArrayList<Exception>();
+	private List<Statement> openStatements = new LinkedList<Statement>();
+	private List<Exception> openStmtExcept = new LinkedList<Exception>();
 	
 	static {
 		for(String driver : new String[] {"org.apache.derby.jdbc.EmbeddedDriver", "com.mysql.jdbc.Driver"}) {

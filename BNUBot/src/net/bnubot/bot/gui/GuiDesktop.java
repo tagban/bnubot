@@ -27,6 +27,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowStateListener;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.Icon;
 import javax.swing.JFrame;
@@ -53,7 +54,7 @@ import net.bnubot.vercheck.VersionCheck;
 
 public class GuiDesktop extends JFrame {
 	private static final long serialVersionUID = -7144648179041514994L;
-	private static final ArrayList<GuiEventHandler> guis = new ArrayList<GuiEventHandler>();
+	private static final List<GuiEventHandler> guis = new ArrayList<GuiEventHandler>();
 	private static GuiEventHandler selectedGui = null;
 	private static final JTabbedPane tabs = new JTabbedPane();
 	private static final JMenuBar menuBar = new JMenuBar();

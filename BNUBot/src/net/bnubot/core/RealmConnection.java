@@ -5,12 +5,12 @@
 
 package net.bnubot.core;
 
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
-
+import java.util.List;
 
 public abstract class RealmConnection extends Thread implements RealmEventHandler {
-	protected LinkedList<RealmEventHandler> realmEventHandlers = new LinkedList<RealmEventHandler>();
+	protected List<RealmEventHandler> realmEventHandlers = new ArrayList<RealmEventHandler>();
 	protected boolean connected = false;
 	
 	public void addRealmEventHandler(RealmEventHandler e) {

@@ -5,7 +5,8 @@
 
 package net.bnubot.bot.trivia;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 import net.bnubot.util.HexDump;
 
@@ -18,7 +19,7 @@ public class TriviaItem {
 	private String hint2;
 	
 	private String scrambleWord(String word) {
-		ArrayList<Character> bytes = new ArrayList<Character>();
+		List<Character> bytes = new LinkedList<Character>();
 		for(int i = 0; i < word.length(); i++)
 			bytes.add(word.charAt(i));
 		
