@@ -373,17 +373,16 @@ public class GuiEventHandler implements EventHandler {
 	}
 
 	public void titleChanged() {
-		BNetUser user = con.getMyUser();
-		String name;
-		
-		if(user != null)
-			name = user.getFullAccountName();
+		// Set the menu text to profile name or logon name
+		if(con.getMyUser() == null)
+			menuBar.setText(con.getProfile().getName());
 		else
-			name = con.getProfile().getName();
+			menuBar.setText(con.getMyUser().getFullLogonName());
 		
-		menuBar.setText(name);
-		
+		// Update the desktop window
 		GuiDesktop.setTitle(this, con.getProductID());
+		
+		// Update the tray icon
 		TrayIcon tray = GuiDesktop.getTray();
 		if(tray != null)
 			tray.setToolTip(con.toString());
