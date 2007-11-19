@@ -13,10 +13,10 @@ package org.jbls.util;
  * This is a class to take care of inserting or getting the value of an int in
  * an array of bytes.
  * 
- * @author Ron - Home
+ * @author iago
  */
 public class IntFromByteArray {
-	private boolean littleEndian;
+	private final boolean littleEndian;
 
 	public static final IntFromByteArray LITTLEENDIAN = new IntFromByteArray(
 			true);

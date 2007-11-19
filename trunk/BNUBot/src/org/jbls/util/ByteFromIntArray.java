@@ -13,10 +13,10 @@ package org.jbls.util;
  * This is a class to take care of treating an array of ints like a an array of
  * bytes. Note that this always works in Little Endian
  * 
- * @author Ron - Home
+ * @author iago
  */
 public class ByteFromIntArray {
-	private boolean littleEndian;
+	private final boolean littleEndian;
 
 	public static final ByteFromIntArray LITTLEENDIAN = new ByteFromIntArray(
 			true);

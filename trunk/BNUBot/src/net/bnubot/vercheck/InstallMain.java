@@ -14,8 +14,7 @@ import net.bnubot.util.Out;
 import net.bnubot.util.URLDownloader;
 
 /**
- * @author sanderson
- *
+ * @author scotta
  */
 public class InstallMain {
 	/**

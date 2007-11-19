@@ -17,7 +17,7 @@ import java.io.Serializable;
  * This is a pretty standard buffer in terms of everything else. I've used it
  * extensively and have complete confidence in it.
  * 
- * @author Ron
+ * @author iago
  */
 
 public class Buffer implements Serializable {

@@ -15,7 +15,7 @@ import net.bnubot.bot.database.RankResultSet;
 /**
  * A class responsible for formatting Battle.net usernames.
  * Now it includes support for the database, which will make toString() quite pretty.
- * @author Scott Anderson
+ * @author scotta
  */
 public class BNetUser {
 	private static Hashtable<String, BNetUser> bnCache = new Hashtable<String, BNetUser>();

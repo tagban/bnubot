@@ -9,8 +9,7 @@ import junit.framework.TestCase;
 import net.bnubot.util.Base64;
 
 /**
- * @author sanderson
- *
+ * @author scotta
  */
 public class Base64Test extends TestCase {
 

@@ -10,8 +10,7 @@ import net.bnubot.util.task.Task;
 import net.bnubot.util.task.TaskManager;
 
 /**
- * @author sanderson
- *
+ * @author scotta
  */
 public class TaskTest extends TestCase {
 
