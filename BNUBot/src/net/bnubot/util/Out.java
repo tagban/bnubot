@@ -62,7 +62,7 @@ public class Out {
 				ellipsis = true;
 				out += "\n...";
 			}
-		}	
+		}
 		return out;
 	}
 	

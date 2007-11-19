@@ -1,5 +1,5 @@
 /**
- * This file is distributed under the GPL 
+ * This file is distributed under the GPL
  * $Id$
  */
 
@@ -66,13 +66,13 @@ public class BNCSConnection extends Connection {
 	private int verByte;
 	private Integer nlsRevision = null;
 	private int serverToken = 0;
-	private int clientToken = Math.abs(new Random().nextInt());
+	private final int clientToken = Math.abs(new Random().nextInt());
 	private SRP srp = null;
 	private byte proof_M2[] = null;
 	private boolean manualReconnect = false;
 	protected StatString myStatString = null;
 	protected int myClan = 0;
-	protected Byte myClanRank = null; 
+	protected Byte myClanRank = null;
 	protected long lastNullPacket;
 	
 	private final List<Task> currentTasks = new LinkedList<Task>();
@@ -172,7 +172,7 @@ public class BNCSConnection extends Connection {
 			}
 			
 			// Manual reconnects wait 2s; server-disconnect waits 15
-			waitUntil = lastConnectionTime + (manualReconnect ? 2000 : 15000); 
+			waitUntil = lastConnectionTime + (manualReconnect ? 2000 : 15000);
 			connectionTimes.put(cs.bncsServer, waitUntil);
 		}
 
@@ -596,7 +596,7 @@ public class BNCSConnection extends Connection {
 					 * 0x02: Invalid key
 					 * 0x03: Bad product
 					 * 0x04: Banned
-					 * 0x05: In use 
+					 * 0x05: In use
 					 */
 					int result = is.readDWord();
 					String keyOwner = is.readNTString();
@@ -707,7 +707,7 @@ public class BNCSConnection extends Connection {
 				}
 				
 				case SID_AUTH_ACCOUNTCREATE: {
-					/* 
+					/*
 					 * (DWORD)		 Status
 					 * 0x00: Successfully created account name.
 					 * 0x04: Name already exists.
@@ -1485,7 +1485,7 @@ public class BNCSConnection extends Connection {
 					/* (DWORD) Cookie
 					 * (DWORD) Clan tag
 					 * (STRING) Clan name
-					 * (STRING) Inviter 
+					 * (STRING) Inviter
 					 */
 					int cookie = is.readDWord();
 					int clanTag = is.readDWord();
@@ -1819,7 +1819,7 @@ public class BNCSConnection extends Connection {
 	}
 
 	/**
-	 * Send SID_CLANINVITATION 
+	 * Send SID_CLANINVITATION
 	 */
 	public void sendClanInvitation(Object cookie, String user) throws Exception {
 		switch(productID) {
@@ -1842,7 +1842,7 @@ public class BNCSConnection extends Connection {
 	}
 
 	/**
-	 * Send SID_CLANRANKCHANGE 
+	 * Send SID_CLANRANKCHANGE
 	 */
 	public void sendClanRankChange(Object cookie, String user, int newRank) throws Exception {
 		switch(productID) {
@@ -1861,7 +1861,7 @@ public class BNCSConnection extends Connection {
 	}
 
 	/**
-	 * Send SID_CLANMOTD 
+	 * Send SID_CLANMOTD
 	 */
 	public void sendClanMOTD(Object cookie) throws Exception {
 		switch(productID) {
@@ -1878,7 +1878,7 @@ public class BNCSConnection extends Connection {
 	}
 
 	/**
-	 * Send SID_CLANSETMOTD 
+	 * Send SID_CLANSETMOTD
 	 */
 	public void sendClanSetMOTD(String text) throws Exception {
 		switch(productID) {
@@ -1896,7 +1896,7 @@ public class BNCSConnection extends Connection {
 	}
 
 	/**
-	 * Send SID_QUERYREALMS2 
+	 * Send SID_QUERYREALMS2
 	 */
 	public void sendQueryRealms2() throws Exception {
 		switch(productID) {
@@ -1916,7 +1916,7 @@ public class BNCSConnection extends Connection {
 	}
 
 	/**
-	 * Send SID_LOGONREALMEX 
+	 * Send SID_LOGONREALMEX
 	 */
 	public void sendLogonRealmEx(String realmTitle) throws Exception {
 		switch(productID) {
@@ -1965,7 +1965,7 @@ public class BNCSConnection extends Connection {
 	}
 
 	/**
-	 * Send SID_READUSERDATA 
+	 * Send SID_READUSERDATA
 	 */
 	public void sendReadUserData(String user) throws Exception {
 		/*BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_PROFILE);

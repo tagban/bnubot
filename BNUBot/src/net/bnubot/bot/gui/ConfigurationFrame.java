@@ -1,5 +1,5 @@
 /**
- * This file is distributed under the GPL 
+ * This file is distributed under the GPL
  * $Id$
  */
 
@@ -158,7 +158,7 @@ public class ConfigurationFrame extends JDialog {
 							if((cmbProduct.getSelectedIndex() + 1) == ConnectionSettings.PRODUCT_LORDOFDESTRUCTION)
 								CDKeys2 = KeyManager.getKeys(KeyManager.PRODUCT_D2XP);
 							if((cmbProduct.getSelectedIndex() + 1) == ConnectionSettings.PRODUCT_THEFROZENTHRONE)
-								CDKeys2 = KeyManager.getKeys(KeyManager.PRODUCT_W3XP);			
+								CDKeys2 = KeyManager.getKeys(KeyManager.PRODUCT_W3XP);
 							break;
 						}
 

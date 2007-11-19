@@ -1,5 +1,5 @@
 /**
- * This file is distributed under the GPL 
+ * This file is distributed under the GPL
  * $Id$
  */
 
@@ -9,7 +9,7 @@ public enum ReleaseType {
 	Stable,
 	ReleaseCandidate,
 	Beta,
-	Alpha, 
+	Alpha,
 	Development;
 	
 	public boolean isDevelopment() {

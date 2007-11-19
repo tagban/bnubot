@@ -1,5 +1,5 @@
 /**
- * This file is distributed under the GPL 
+ * This file is distributed under the GPL
  * $Id$
  */
 
@@ -36,9 +36,9 @@ public class Profile {
 		return findCreateProfile(cs.profile).insertConnection(cs);
 	}
 
-	private List<Connection> cons = new ArrayList<Connection>();
-	private ChatQueue chatQueue;
-	private String name;
+	private final List<Connection> cons = new ArrayList<Connection>();
+	private final ChatQueue chatQueue;
+	private final String name;
 
 	public Profile(String name) {
 		this.name = name;

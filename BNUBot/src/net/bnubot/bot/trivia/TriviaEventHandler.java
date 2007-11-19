@@ -1,5 +1,5 @@
 /**
- * This file is distributed under the GPL 
+ * This file is distributed under the GPL
  * $Id$
  */
 
@@ -28,7 +28,7 @@ import net.bnubot.util.Out;
 
 public class TriviaEventHandler implements EventHandler {
 	private boolean triviaEnabled = false;
-	private List<TriviaItem> trivia = new LinkedList<TriviaItem>();
+	private final List<TriviaItem> trivia = new LinkedList<TriviaItem>();
 	private Connection c = null;
 	private String triviaAnswers[] = null;
 	private boolean gotAnswer = false;
@@ -209,7 +209,7 @@ public class TriviaEventHandler implements EventHandler {
 						String extra = "!";
 
 						try {
-							if(d != null) { 
+							if(d != null) {
 								AccountResultSet rsAccount = d.getAccount(answerUser);
 								if(rsAccount.next()) {
 									long score = rsAccount.getTriviaCorrect();

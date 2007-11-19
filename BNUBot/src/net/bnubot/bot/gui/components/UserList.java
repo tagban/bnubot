@@ -1,5 +1,5 @@
 /**
- * This file is distributed under the GPL 
+ * This file is distributed under the GPL
  * $Id$
  */
 
@@ -232,7 +232,7 @@ public class UserList extends JPanel {
 		BNetIcon[] icons = IconsDotBniReader.getIcons();
 		boolean keepThisIcon = false;
 		for(BNetIcon element : icons) {
-			//Look for 
+			//Look for
 			if(element.useFor(ui.user.getFlags(), specialIcon)) {
 				keepThisIcon = true;
 				icon = element.getIcon();

@@ -1,5 +1,5 @@
 /**
- * This file is distributed under the GPL 
+ * This file is distributed under the GPL
  * $Id$
  */
 
@@ -18,11 +18,11 @@ import net.bnubot.bot.database.RankResultSet;
  * @author Scott Anderson
  */
 public class BNetUser {
-	private static Hashtable<String, BNetUser> bnCache = new Hashtable<String, BNetUser>(); 
+	private static Hashtable<String, BNetUser> bnCache = new Hashtable<String, BNetUser>();
 	
 	private String shortLogonName;	// #=yes, realm=only if different from "myRealm"
 	private String fullLogonName;	// #=yes, realm=yes
-	private String fullAccountName;	// #=no, realm=yes
+	private final String fullAccountName;	// #=no, realm=yes
 	private String shortPrettyName = null;
 	private String prettyName = null;
 	private Integer flags = null;

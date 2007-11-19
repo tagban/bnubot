@@ -1,5 +1,5 @@
 /**
- * This file is distributed under the GPL 
+ * This file is distributed under the GPL
  * $Id$
  */
 
@@ -25,9 +25,9 @@ import org.xml.sax.helpers.XMLReaderFactory;
 public class XMLElementDecorator {
 	private String name = null;
 	private XMLElementDecorator parent = null;
-	private List<XMLElementDecorator> children = new LinkedList<XMLElementDecorator>();
+	private final List<XMLElementDecorator> children = new LinkedList<XMLElementDecorator>();
 	private String contents = null;
-	private static XMLElementDecorator elem = null; 
+	private static XMLElementDecorator elem = null;
 	
 	public synchronized static XMLElementDecorator parse(String url) throws Exception {
 		elem = new XMLElementDecorator("root", null);

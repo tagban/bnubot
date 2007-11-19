@@ -1,5 +1,5 @@
 /**
- * This file is distributed under the GPL 
+ * This file is distributed under the GPL
  * $Id$
  */
 
@@ -21,7 +21,7 @@ import java.net.UnknownHostException;
  * @author scotta
  */
 public class MirrorSelector {
-	private static int MAX_TIME = 1000; // timeout time in ms
+	private static final int MAX_TIME = 1000; // timeout time in ms
 
 	public static InetAddress selectMirror(InetAddress[] mirrors, int port) {
 		Socket s = new Socket();
@@ -64,7 +64,7 @@ public class MirrorSelector {
 		return bestHost;
 	}
 
-	public static InetAddress getClosestMirror(String hostname, int port) 
+	public static InetAddress getClosestMirror(String hostname, int port)
 			throws UnknownHostException {
 		InetAddress hosts[] = InetAddress.getAllByName(hostname);
 		if (hosts.length == 1) {

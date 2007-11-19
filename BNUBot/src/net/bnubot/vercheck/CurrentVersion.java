@@ -1,5 +1,5 @@
 /**
- * This file is distributed under the GPL 
+ * This file is distributed under the GPL
  * $Id$
  */
 
@@ -28,7 +28,7 @@ public final class CurrentVersion {
 	protected static Integer VER_SVN_REVISION = null;
 	private static VersionNumber VER = null;
 	private static Date BUILD_DATE = null;
-	private static boolean fromJar = false; 
+	private static boolean fromJar = false;
 
 	private static final String sReleaseType = "RELEASE_TYPE";
 	private static final String sVerMajor = "VER_MAJOR";
@@ -69,7 +69,7 @@ public final class CurrentVersion {
 						break;
 					}
 					
-					// Search for "$Id: " 
+					// Search for "$Id: "
 					if(i != '$')
 						continue;
 					if(fr.read() != 'I')
@@ -97,7 +97,7 @@ public final class CurrentVersion {
 					
 					// Read in the revision as a String
 					String rev = "";
-					do { 
+					do {
 						int c = fr.read();
 						if(c < '0')
 							break;

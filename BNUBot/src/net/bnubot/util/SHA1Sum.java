@@ -1,5 +1,5 @@
 /**
- * This file is distributed under the GPL 
+ * This file is distributed under the GPL
  * $Id$
  */
 
@@ -11,7 +11,7 @@ import java.io.InputStream;
 import java.security.MessageDigest;
 
 public class SHA1Sum {
-	private byte[] sha1sum;
+	private final byte[] sha1sum;
 	
 	public SHA1Sum(String hexStr) throws Exception {
 		if(!hexStr.matches("[0-9a-fA-F]{40}"))
@@ -25,7 +25,7 @@ public class SHA1Sum {
 	
 	public SHA1Sum(File f) throws Exception {
 		MessageDigest digest = MessageDigest.getInstance("SHA1");
-		InputStream is = new FileInputStream(f);				
+		InputStream is = new FileInputStream(f);
 		byte[] buffer = new byte[8192];
 		do {
 			int read = is.read(buffer);
