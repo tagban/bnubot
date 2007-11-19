@@ -62,20 +62,8 @@ public class GlobalSettings {
 		
 		if(enableGUI)
 			try {
-				// Initialize the JGoodies Look and Feels
-				String[] lafs = {
-						"com.jgoodies.looks.windows.WindowsLookAndFeel",
-						"com.jgoodies.looks.plastic.PlasticLookAndFeel",
-						"com.jgoodies.looks.plastic.Plastic3DLookAndFeel",
-						"com.jgoodies.looks.plastic.PlasticXPLookAndFeel",
-				};
-				Class<?> PlasticLookAndFeel = null;
-				for(String c : lafs) {
-					PlasticLookAndFeel = JARLoader.forName(c);
-					LookAndFeel laf = (LookAndFeel)PlasticLookAndFeel.newInstance();
-					UIManager.installLookAndFeel(laf.getName(), PlasticLookAndFeel.getName());
-				}
-
+				Class<?> PlasticLookAndFeel = JARLoader.forName("com.jgoodies.looks.plastic.PlasticLookAndFeel");
+				
 				// getInstalledThemes()
 				Method getInstalledThemes = PlasticLookAndFeel.getMethod("getInstalledThemes");
 				List<?> themes = (List<?>)getInstalledThemes.invoke(null);
