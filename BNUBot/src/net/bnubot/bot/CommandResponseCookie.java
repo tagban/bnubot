@@ -8,8 +8,7 @@ package net.bnubot.bot;
 import net.bnubot.util.BNetUser;
 
 /**
- * @author sanderson
- *
+ * @author scotta
  */
 public class CommandResponseCookie {
 	BNetUser source;

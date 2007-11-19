@@ -16,7 +16,7 @@ import org.jbls.util.IntFromByteArray;
 
 /**
  * 
- * @author Ron - Home
+ * @author iago
  */
 public class War3Decode extends SCKeyDecode // extending this so I can store it
 											// in the same variables, but I
@@ -177,9 +177,9 @@ public class War3Decode extends SCKeyDecode // extending this so I can store it
 	public static final int W3_KEYLEN = 26;
 	public static final int W3_BUFLEN = (W3_KEYLEN * 2);
 
-	private int val1;
-	private byte[] val2;
-	private int product;
+	private final int val1;
+	private final byte[] val2;
+	private final int product;
 
 	/** Creates a new instance of War3Decode */
 	public War3Decode(String cdkey) {
