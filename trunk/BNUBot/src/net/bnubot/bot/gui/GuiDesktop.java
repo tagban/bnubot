@@ -398,12 +398,10 @@ public class GuiDesktop extends JFrame {
 		geh.setDividerLocation(getDividerLocation());
 		
 		// Add the components to the display
+		geh.getMenuBar().setVisible(false);
 		menuBar.add(geh.getMenuBar());
 		guis.add(geh);
 		tabs.addTab(geh.toString(), geh.getFrame());
-		
-		// Switch to the new tab
-		tabs.setSelectedComponent(geh.getFrame());
 	}
 	
 	private void setTitle() {
