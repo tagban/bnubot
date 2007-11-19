@@ -131,10 +131,11 @@ public class Main {
 			//Start up the next connection
 			ConnectionSettings cs = new ConnectionSettings(i);
 			String valid = cs.isValid();
-			if(valid != null)
+			if(GlobalSettings.enableGUI && (valid != null)) {
 				new ConfigurationFrame(cs).setVisible(true);
+				valid = cs.isValid();
+			}
 			
-			valid = cs.isValid();
 			if(valid == null)
 				Profile.add(cs);
 			else
