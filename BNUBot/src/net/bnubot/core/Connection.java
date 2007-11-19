@@ -447,13 +447,10 @@ public abstract class Connection extends Thread implements EventHandler {
 		eh2_semaphore++;
 		for(Connection c : slaves)
 			try {
-				String name;
-				if(c.myUser != null)
-					name = c.myUser.getFullLogonName();
-				else
-					name = c.toString();
-				Out.info(getClass(), "[" + myUser.getFullLogonName() + "] Telling [" + name + "] to join " + channel);
-				c.sendJoinChannel(channel);
+				if(c.myUser != null) {
+					Out.info(getClass(), "[" + myUser.getFullLogonName() + "] Telling [" + c.myUser.getFullLogonName() + "] to join " + channel);
+					c.sendJoinChannel(channel);
+				}
 			} catch (Exception e) {
 				Out.exception(e);
 			}
