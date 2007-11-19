@@ -36,7 +36,7 @@ public class ChatQueue extends Thread {
 	}
 
 	public void run() {
-		mainLoop: while(true) {
+		while(true) {
 			yield();
 			try { sleep(200); } catch(Exception e) {}
 			
@@ -44,7 +44,7 @@ public class ChatQueue extends Thread {
 			while(queue.size() > 0) {
 				if(lastCon >= cons.size()) {
 					lastCon = 0;
-					continue mainLoop;
+					break;
 				}
 				
 				Connection con = cons.get(lastCon++);
