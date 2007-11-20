@@ -172,7 +172,7 @@ public final class CurrentVersion {
 			
 			Integer VER_SVN_REVISION_FILE = null;
 			if(versionprops.containsKey(sReleaseType))
-				RELEASE_TYPE = Enum.valueOf(ReleaseType.class, (String)versionprops.get(sReleaseType));
+				RELEASE_TYPE = ReleaseType.valueOf((String)versionprops.get(sReleaseType));
 			if(versionprops.containsKey(sVerMajor))
 				VER_MAJOR = Integer.parseInt((String)versionprops.get(sVerMajor));
 			if(versionprops.containsKey(sVerMinor))
@@ -184,37 +184,33 @@ public final class CurrentVersion {
 			if(versionprops.containsKey(sVerSVNRevision))
 				VER_SVN_REVISION_FILE = Integer.parseInt((String)versionprops.get(sVerSVNRevision));
 			
-			if(fromJar)
-				BUILD_DATE = new Date(Long.parseLong(versionprops.getProperty(sBuildDate)));
-			else {
-				BUILD_DATE = new Date();
-				versionprops.setProperty(sBuildDate, Long.toString(BUILD_DATE.getTime()));
-			}
+			// From a JAR has no src folder; from Eclipse has no JAR
+			if(fromJar != (revision() == null))
+				throw new IllegalStateException();
 			
-			if(revision() == null) {
+			if(fromJar) {
+				BUILD_DATE = new Date(Long.parseLong(versionprops.getProperty(sBuildDate)));
 				VER_SVN_REVISION = VER_SVN_REVISION_FILE;
 			} else {
+				BUILD_DATE = new Date();
+				versionprops.setProperty(sBuildDate, Long.toString(BUILD_DATE.getTime()));
+
 				if((VER_SVN_REVISION_FILE == null) || (VER_SVN_REVISION > VER_SVN_REVISION_FILE)) {
-					if((f != null) && (f.exists())) {
-						Out.info(CurrentVersion.class, "File version (" + VER_SVN_REVISION_FILE + ") updating to " + VER_SVN_REVISION + ".");
+					Out.info(CurrentVersion.class, "File version (" + VER_SVN_REVISION_FILE + ") does not match calculated (" + VER_SVN_REVISION + ").");
 						
-						RELEASE_TYPE = ReleaseType.Development;
-						versionprops.setProperty(sReleaseType, RELEASE_TYPE.name());
-						versionprops.setProperty(sVerSVNRevision, Integer.toString(VER_SVN_REVISION));
-						versionprops.store(new FileOutputStream(f), null);
-					} else {
-						Out.error(CurrentVersion.class, "File version (" + VER_SVN_REVISION_FILE + ") does not match calculated (" + VER_SVN_REVISION + ").");
-						Out.error(CurrentVersion.class, "Additionally, this condition should never occur.");
-					}
+					RELEASE_TYPE = ReleaseType.Development;
+					versionprops.setProperty(sReleaseType, RELEASE_TYPE.name());
+					versionprops.setProperty(sVerSVNRevision, Integer.toString(VER_SVN_REVISION));
 				}
 			}
 			
-			VER = new VersionNumber(RELEASE_TYPE, VER_MAJOR, VER_MINOR, VER_REVISION, VER_RELEASE, revision(), BUILD_DATE);
+			VER = new VersionNumber(RELEASE_TYPE, VER_MAJOR, VER_MINOR, VER_REVISION, VER_RELEASE, VER_SVN_REVISION, BUILD_DATE);
+			if(!fromJar)
+				versionprops.store(new FileOutputStream(f), VER.toString());
 			return VER;
 		} catch(Exception e) {
 			Out.exception(e);
+			throw new IllegalStateException(e.getMessage(), e);
 		}
-		
-		throw new NullPointerException();
 	}
 }
