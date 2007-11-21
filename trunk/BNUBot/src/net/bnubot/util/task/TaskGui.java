@@ -77,13 +77,25 @@ public class TaskGui extends Task {
 	}
 
 	/**
-	 * Update the count and then update the progress indicator.
+	 * Increment the count and then update the progress indicator.
 	 */
 	public void advanceProgress() {
-		pb.setValue(++count);
+		setProgress(++count);
+	}
+
+
+	/**
+	 * Update the count and then update the progress indicator.
+	 */
+	public void setProgress(int step) {
+		count = step;
 		updateProgress(null);
-		if(count >= max)
+		if(count >= max) {
+			pb.setValue(max);
 			complete();
+		} else {
+			pb.setValue(count);
+		}
 	}
 	
 	public void complete() {

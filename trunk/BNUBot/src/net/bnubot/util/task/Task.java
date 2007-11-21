@@ -8,5 +8,6 @@ package net.bnubot.util.task;
 public class Task {
 	public void updateProgress(String currentStep) {}
 	public void advanceProgress() {}
+	public void setProgress(int step) {}
 	public void complete() {}
 }
