@@ -38,10 +38,10 @@ public class BNLSPacketReader {
 			os.writeByte(packetId);
 			os.write(data);
 			
+			String msg = "RECV 0x" + Integer.toHexString(packetId);
 			if(Out.isDebug())
-				Out.debugAlways(getClass(), "RECV\n" + HexDump.hexDump(baos.toByteArray()));
-			else
-				Out.debugAlways(getClass(), "RECV 0x" + Integer.toHexString(packetId));
+				msg += "\n" + HexDump.hexDump(baos.toByteArray());
+			Out.debugAlways(getClass(), msg);
 		}
 	}
 	

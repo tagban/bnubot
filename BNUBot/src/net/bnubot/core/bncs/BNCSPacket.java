@@ -52,10 +52,10 @@ public class BNCSPacket extends BNetOutputStream {
 		data = baos.toByteArray();
 
 		if(GlobalSettings.packetLog) {
+			String msg = "SEND " + packetId.name();
 			if(Out.isDebug())
-				Out.debugAlways(getClass(), "SEND " + packetId.name() + "\n" + HexDump.hexDump(data));
-			else
-				Out.debugAlways(getClass(), "SEND " + packetId.name());
+				msg += "\n" + HexDump.hexDump(data);
+			Out.debugAlways(getClass(), msg);
 		}
 
 		out.write(data);

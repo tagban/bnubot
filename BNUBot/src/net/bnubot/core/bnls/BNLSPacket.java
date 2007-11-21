@@ -38,10 +38,10 @@ public class BNLSPacket extends BNetOutputStream {
 		data = baos.toByteArray();
 		
 		if(GlobalSettings.packetLog) {
+			String msg = "SEND " + packetId.name();
 			if(Out.isDebug())
-				Out.debugAlways(getClass(), "SEND\n" + HexDump.hexDump(data));
-			else
-				Out.debugAlways(getClass(), "SEND " + packetId);
+				msg += "\n" + HexDump.hexDump(data);
+			Out.debugAlways(getClass(), msg);
 		}
 		
 		out.write(data);

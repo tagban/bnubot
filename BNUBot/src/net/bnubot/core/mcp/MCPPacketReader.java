@@ -17,7 +17,7 @@ import net.bnubot.util.HexDump;
 import net.bnubot.util.Out;
 
 public class MCPPacketReader {
-	int packetId;
+	MCPPacketID packetId;
 	int packetLength;
 	byte data[];
 	
@@ -25,7 +25,7 @@ public class MCPPacketReader {
 		BNetInputStream is = new BNetInputStream(rawis);
 		
 		packetLength = is.readWord() & 0x0000FFFF;
-		packetId = is.readByte() & 0x000000FF;
+		packetId = MCPPacketID.values()[is.readByte() & 0x000000FF];
 		assert(packetLength >= 3);
 		
 		data = new byte[packetLength-3];
@@ -36,14 +36,14 @@ public class MCPPacketReader {
 		if(GlobalSettings.packetLog) {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			BNetOutputStream os = new BNetOutputStream(baos);
-			os.writeByte(packetId);
+			os.writeByte(packetId.ordinal());
 			os.writeWord(packetLength);
 			os.write(data);
 			
+			String msg = "RECV " + packetId.name();
 			if(Out.isDebug())
-				Out.debugAlways(getClass(), "RECV\n" + HexDump.hexDump(baos.toByteArray()));
-			else
-				Out.debugAlways(getClass(), "RECV 0x" + Integer.toHexString(packetId));
+				msg += "\n" + HexDump.hexDump(baos.toByteArray());
+			Out.debugAlways(getClass(), msg);
 		}
 	}
 	
