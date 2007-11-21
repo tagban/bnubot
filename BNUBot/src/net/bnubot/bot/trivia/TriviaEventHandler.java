@@ -270,6 +270,9 @@ public class TriviaEventHandler implements EventHandler {
 	}
 	
 	public void initialize(final Connection c) {
+		if(this.c != null)
+			return;
+		
 		this.c = c;
 		
 		new Thread() {
