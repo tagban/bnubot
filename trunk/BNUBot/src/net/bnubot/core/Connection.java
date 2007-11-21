@@ -118,18 +118,16 @@ public abstract class Connection extends Thread implements EventHandler {
 	}
 
 	public void setBNLSConnected(boolean c) throws IOException {
+		if(bnlsSocket != null) {
+			bnlsSocket.close();
+			bnlsSocket = null;
+		}
+		
 		if(c) {
-			if(bnlsSocket == null) {
-				InetAddress address = MirrorSelector.getClosestMirror(GlobalSettings.bnlsServer, GlobalSettings.bnlsPort);
-				recieveInfo("Connecting to " + address + ":" + GlobalSettings.bnlsPort + ".");
-				bnlsSocket = new Socket(address, GlobalSettings.bnlsPort);
-				bnlsSocket.setKeepAlive(true);
-			}
-		} else {
-			if(bnlsSocket != null) {
-				bnlsSocket.close();
-				bnlsSocket = null;
-			}
+			InetAddress address = MirrorSelector.getClosestMirror(GlobalSettings.bnlsServer, GlobalSettings.bnlsPort);
+			recieveInfo("Connecting to " + address + ":" + GlobalSettings.bnlsPort + ".");
+			bnlsSocket = new Socket(address, GlobalSettings.bnlsPort);
+			bnlsSocket.setKeepAlive(true);
 		}
 	}
 
@@ -138,6 +136,11 @@ public abstract class Connection extends Thread implements EventHandler {
 			return;
 
 		try {
+			if(socket != null) {
+				socket.close();
+				socket = null;
+			}
+			
 			if(c) {
 				String v = cs.isValid();
 				if(v != null) {
@@ -145,16 +148,10 @@ public abstract class Connection extends Thread implements EventHandler {
 					return;
 				}
 
-				if(socket == null) {
-					InetAddress address = MirrorSelector.getClosestMirror(cs.bncsServer, cs.port);
-					recieveInfo("Connecting to " + address + ":" + cs.port + ".");
-					socket = new Socket(address, cs.port);
-				}
-			} else {
-				if(socket != null) {
-					socket.close();
-					socket = null;
-				}
+				InetAddress address = MirrorSelector.getClosestMirror(cs.bncsServer, cs.port);
+				recieveInfo("Connecting to " + address + ":" + cs.port + ".");
+				socket = new Socket(address, cs.port);
+				socket.setKeepAlive(true);
 			}
 		} catch(IOException e) {
 			Out.fatalException(e);
