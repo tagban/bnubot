@@ -46,10 +46,10 @@ public class BNCSPacketReader {
 			os.writeWord(packetLength);
 			os.write(data);
 			
+			String msg = "RECV " + packetId.name();
 			if(Out.isDebug())
-				Out.debugAlways(getClass(), "RECV " + packetId.name() + "\n" + HexDump.hexDump(baos.toByteArray()));
-			else
-				Out.debugAlways(getClass(), "RECV " + packetId.name());
+				msg += "\n" + HexDump.hexDump(baos.toByteArray());
+			Out.debugAlways(getClass(), msg);
 		}
 	}
 	

@@ -56,7 +56,7 @@ public class MCPConnection extends RealmConnection {
 			//MCP
 			dos.writeByte(1);
 			
-			MCPPacket p = new MCPPacket(MCPCommandIDs.MCP_STARTUP);
+			MCPPacket p = new MCPPacket(MCPPacketID.MCP_STARTUP);
 			for(int i = 0; i < 4; i++)
 				p.writeDWord(MCPChunk1[i]);
 			for(int i = 0; i < 12; i++)
@@ -69,7 +69,7 @@ public class MCPConnection extends RealmConnection {
 					MCPPacketReader pr = new MCPPacketReader(dis);
 					BNetInputStream is = pr.getData();
 					switch(pr.packetId) {
-					case MCPCommandIDs.MCP_STARTUP: {
+					case MCP_STARTUP: {
 						/* (DWORD)		 Result
 						 * 
 						 * 0x00: Success
@@ -83,7 +83,7 @@ public class MCPConnection extends RealmConnection {
 						case 0:
 							recieveRealmInfo("Realm logon success");
 							
-							p = new MCPPacket(MCPCommandIDs.MCP_CHARLIST2);
+							p = new MCPPacket(MCPPacketID.MCP_CHARLIST2);
 							p.writeDWord(8);	//Nubmer of chars to list
 							p.SendPacket(dos);
 							break;
@@ -99,7 +99,7 @@ public class MCPConnection extends RealmConnection {
 						break;
 					}
 					
-					case MCPCommandIDs.MCP_CHARLIST2: {
+					case MCP_CHARLIST2: {
 						/* (WORD)		 Number of characters requested
 						 * (DWORD)		 Number of characters that exist on this account
 						 * (WORD)		 Number of characters returned
@@ -151,7 +151,7 @@ public class MCPConnection extends RealmConnection {
 						}
 						
 						if(maxCharname != null) {
-							p = new MCPPacket(MCPCommandIDs.MCP_CHARLOGON);
+							p = new MCPPacket(MCPPacketID.MCP_CHARLOGON);
 							p.writeNTString(maxCharname);
 							p.SendPacket(dos);
 						}
@@ -159,7 +159,7 @@ public class MCPConnection extends RealmConnection {
 						break;
 					}
 					
-					case MCPCommandIDs.MCP_CHARLOGON: {
+					case MCP_CHARLOGON: {
 						/* (DWORD) Result
 						 * 
 						 * 0x00: Success
@@ -189,7 +189,7 @@ public class MCPConnection extends RealmConnection {
 					}
 					
 					default:
-						recieveRealmError("Unknown MCP packet 0x" + Integer.toHexString(pr.packetId) + "\n" + HexDump.hexDump(pr.data));
+						recieveRealmError("Unknown packet " + pr.packetId.name() + "\n" + HexDump.hexDump(pr.data));
 						break;
 					}
 				} else {

@@ -15,9 +15,9 @@ import net.bnubot.util.HexDump;
 import net.bnubot.util.Out;
 
 public class MCPPacket extends BNetOutputStream {
-	byte packetId;
+	MCPPacketID packetId;
 
-	public MCPPacket(byte packetId) {
+	public MCPPacket(MCPPacketID packetId) {
 		super(new ByteArrayOutputStream());
 		this.packetId = packetId;
 	}
@@ -29,7 +29,7 @@ public class MCPPacket extends BNetOutputStream {
 		
 		try {
 			sckout.writeWord(data.length + 3);
-			sckout.writeByte(packetId);
+			sckout.writeByte(packetId.ordinal());
 			sckout.write(data);
 		} catch(IOException e) {
 			Out.fatalException(e);
@@ -38,10 +38,10 @@ public class MCPPacket extends BNetOutputStream {
 		data = baos.toByteArray();
 
 		if(GlobalSettings.packetLog) {
+			String msg = "SEND " + packetId.name();
 			if(Out.isDebug())
-				Out.debugAlways(getClass(), "SEND\n" + HexDump.hexDump(data));
-			else
-				Out.debugAlways(getClass(), "SEND 0x" + Integer.toHexString(packetId));
+				msg += "\n" + HexDump.hexDump(data);
+			Out.debugAlways(getClass(), msg);
 		}
 		
 		try {
