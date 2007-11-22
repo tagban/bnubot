@@ -231,10 +231,21 @@ public class IconsDotBniReader {
 			
 			for(int i = 0; i < numIcons; i++) {
 				BNetIcon bni = icons[i];
-				bni.icon = new ImageIcon(
-						util.createImage(
-								new MemoryImageSource(bni.xSize, bni.ySize, pixelData, currentPixel, bni.xSize)));
-				currentPixel += bni.xSize * bni.ySize;
+				int imgSize = bni.xSize * bni.ySize;
+				bni.icon = new ImageIcon(util.createImage(new MemoryImageSource(bni.xSize, bni.ySize, pixelData, currentPixel, bni.xSize)));
+				
+				/*if(bni.products != null) {
+					BufferedImage img2 = new BufferedImage(bni.xSize, bni.ySize, BufferedImage.TYPE_INT_RGB);
+					img2.setRGB(0, 0, bni.xSize, bni.ySize, pixelData, currentPixel, bni.xSize);
+					
+					JPEGImageEncoder jie =  JPEGCodec.createJPEGEncoder(new FileOutputStream(
+							"html/images/" + 
+							HexDump.DWordToPretty(bni.products[0]) +
+							".jpg"));
+					jie.encode(img2);
+				}*/
+				
+				currentPixel += imgSize;
 			}
 			
 			return icons;
