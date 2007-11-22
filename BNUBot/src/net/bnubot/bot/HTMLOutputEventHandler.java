@@ -127,7 +127,9 @@ public class HTMLOutputEventHandler implements EventHandler {
 		
 		if((flags & 0x20) != 0)	return "squelch";
 		
-		return HexDump.DWordToPretty((icon == 0) ? icon : product);
+		if(icon != 0)
+			return HexDump.DWordToPretty(icon);
+		return HexDump.DWordToPretty(product);
 	}
 	
 	private void writeUserList() {
