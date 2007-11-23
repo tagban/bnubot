@@ -126,8 +126,9 @@ public class IconsDotBniReader {
 	
 	private static int getRealPixelPosition(int i, int height, int width) {
 		int x = i % width;
-		int y = (i - x) / width;
-		return ((height - y - 1) * width) + x;
+		//int y = (i - x) / width;
+		//return ((height - y - 1) * width) + x;
+		return ((height - 1) * width) - i + (x * 2);
 	}
 
 	private static BNetIcon[] readIconsDotBni(File f) {
