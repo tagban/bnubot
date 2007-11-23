@@ -61,6 +61,11 @@ public class TextWindow extends JScrollPane {
 	private final String foot;
 	private String html;
 	private boolean disableRedraw = false;
+	
+	/**
+	 * When set, a separator will be added before the next line of information
+	 */
+	private boolean addSeparator = false;
 
 	public TextWindow(ColorScheme cs) {
 		super(VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_NEVER);
@@ -119,6 +124,11 @@ public class TextWindow extends JScrollPane {
 	}
 	
 	public void appendDate() {
+		if(addSeparator) {
+			html += "<hr>\n";
+			addSeparator = false;
+		}
+		
 		html += "<font class=\"timestamp\">[";
 		html += TimeFormatter.getTimestamp();
 		html += "] </font>";
@@ -174,7 +184,7 @@ public class TextWindow extends JScrollPane {
 	}
 	
 	public void addSeparator() {
-		html += "<hr>\n";
+		addSeparator = true;
 	}
 	
 	public void channelInfo(String text) {
