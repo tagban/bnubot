@@ -155,7 +155,9 @@ public class GuiEventHandler implements EventHandler {
 			public void keyPressed(KeyEvent e) {}
 			public void keyReleased(KeyEvent e) {}
 			public void keyTyped(KeyEvent e) {
-				if(e.getKeyChar() == '\n') {
+				switch(e.getKeyChar()) {
+				case '\n': {
+					e.consume();
 					try {
 						String text[] = chatTextArea.getText().split("\n");
 						for(String element : text) {
@@ -167,9 +169,9 @@ public class GuiEventHandler implements EventHandler {
 					} catch(Exception ex) {
 						Out.exception(ex);
 					}
+					break;
 				}
-				
-				if(e.getKeyChar() == '\t') {
+				case '\t': {
 					e.consume();
 					try {
 						int end = chatTextArea.getCaretPosition();
@@ -190,19 +192,27 @@ public class GuiEventHandler implements EventHandler {
 							
 							chatTextArea.setText(before + text + after);
 							chatTextArea.setCaretPosition(before.length() + text.length());
-							
+
+							mainTextArea.addSeparator();
 							for(String user : users)
 								recieveDebug(user);
+							mainTextArea.addSeparator();
 						}
 					} catch(Exception ex) {
 						Out.exception(ex);
 					}
+					break;
 				}
-				
-				if(lastWhisperFrom != null) {
-					String txt = chatTextArea.getText();
-					if("/r ".equals(txt) || "/rw ".equals(txt))
-						chatTextArea.setText("/w " + lastWhisperFrom.getShortLogonName() + " ");
+				case ' ': {
+					if(lastWhisperFrom != null) {
+						String txt = chatTextArea.getText();
+						if("/r ".equals(txt) || "/rw ".equals(txt))
+							chatTextArea.setText("/w " + lastWhisperFrom.getShortLogonName() + " ");
+					}
+					break;
+				}
+				default:
+					break;
 				}
 			}
 		});
