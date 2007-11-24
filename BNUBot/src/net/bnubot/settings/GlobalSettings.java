@@ -82,13 +82,6 @@ public class GlobalSettings {
 		load();
 	}
 	
-	/**
-	 * Called by main to force GlobalSettings' static initializers to run
-	 */
-	public static void touch() {
-		return;
-	}
-	
 	public static String isValid() {
 		if((trigger == null) || (trigger.length() != 1))
 			return "Trigger invalid";

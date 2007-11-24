@@ -36,8 +36,6 @@ public class Main {
 
 	public static void main(String[] args) throws Exception {
 		boolean forceConfig = false;
-		GlobalSettings.touch();
-		
 		for(int i = 0; i < args.length; i++) {
 			if(args[i].charAt(0) == '-') {
 				switch(args[i].charAt(1)) {
