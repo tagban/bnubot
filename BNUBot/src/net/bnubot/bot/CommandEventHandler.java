@@ -381,6 +381,12 @@ public class CommandEventHandler implements EventHandler {
 					break;
 				}
 				break;
+			case 'h':
+				if(command.equals("home")) {
+					c.sendJoinChannel(c.getConnectionSettings().channel);
+					break;
+				}
+				break;
 			case 'i':
 				if(command.equals("info")) {
 					c.sendChat(user, "BNU-Bot " + CurrentVersion.version() + " running on " + osVersion() + " with " + javaVersion(), whisperBack);
@@ -578,6 +584,14 @@ public class CommandEventHandler implements EventHandler {
 					else
 						c.sendChat(user, "Ping for " + bnSubject.getFullLogonName() + ": " + ping, whisperBack);
 					
+					break;
+				}
+				if(command.equals("pingme")) {
+					Integer ping = user.getPing();
+					if(ping == null)
+						c.sendChat(user, "I do not know the ping for " + user.getFullLogonName(), whisperBack);
+					else
+						c.sendChat(user, "Your ping is: " + ping, whisperBack);
 					break;
 				}
 				break;
