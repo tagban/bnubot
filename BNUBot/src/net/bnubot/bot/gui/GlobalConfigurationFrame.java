@@ -71,6 +71,7 @@ public class GlobalConfigurationFrame extends JDialog {
 	ConfigCheckBox chkEnableGUI = null;
 	ConfigCheckBox chkEnableTrayIcon = null;
 	ConfigCheckBox chkEnableTrayPopups = null;
+	ConfigCheckBox chkEnableTrayPopupsAlways = null;
 	ConfigCheckBox chkEnableLegacyIcons = null;
 	ConfigCheckBox chkEnableCLI = null;
 	ConfigCheckBox chkEnableTrivia = null;
@@ -235,6 +236,7 @@ public class GlobalConfigurationFrame extends JDialog {
 						chkEnableGUI.addChangeListener(new ChangeListener() {
 							public void stateChanged(ChangeEvent arg0) {
 								if(!chkEnableGUI.isSelected()) {
+									chkEnableTrayPopupsAlways.setSelected(false);
 									chkEnableTrayPopups.setSelected(false);
 									chkEnableTrayIcon.setSelected(false);
 								}
@@ -246,8 +248,10 @@ public class GlobalConfigurationFrame extends JDialog {
 							public void stateChanged(ChangeEvent arg0) {
 								if(chkEnableTrayIcon.isSelected())
 									chkEnableGUI.setSelected(true);
-								else
+								else {
+									chkEnableTrayPopupsAlways.setSelected(false);
 									chkEnableTrayPopups.setSelected(false);
+								}
 							}});
 						boxCheckboxes.add(chkEnableTrayIcon);
 
@@ -257,9 +261,22 @@ public class GlobalConfigurationFrame extends JDialog {
 								if(chkEnableTrayPopups.isSelected()) {
 									chkEnableGUI.setSelected(true);
 									chkEnableTrayIcon.setSelected(true);
+								} else {
+									chkEnableTrayPopupsAlways.setSelected(false);
 								}
 							}});
 						boxCheckboxes.add(chkEnableTrayPopups);
+
+						chkEnableTrayPopupsAlways = new ConfigCheckBox("Enable Tray Popups When Focused", GlobalSettings.enableTrayPopupsAlways);
+						chkEnableTrayPopupsAlways.addChangeListener(new ChangeListener() {
+							public void stateChanged(ChangeEvent arg0) {
+								if(chkEnableTrayPopups.isSelected()) {
+									chkEnableGUI.setSelected(true);
+									chkEnableTrayIcon.setSelected(true);
+									chkEnableTrayPopups.setSelected(true);
+								}
+							}});
+						boxCheckboxes.add(chkEnableTrayPopupsAlways);
 
 						chkEnableLegacyIcons = new ConfigCheckBox("Enable Legacy Icons", GlobalSettings.enableLegacyIcons);
 						boxCheckboxes.add(chkEnableLegacyIcons);
@@ -470,6 +487,7 @@ public class GlobalConfigurationFrame extends JDialog {
 		GlobalSettings.enableGUI = chkEnableGUI.isSelected();
 		GlobalSettings.enableTrayIcon = chkEnableTrayIcon.isSelected();
 		GlobalSettings.enableTrayPopups = chkEnableTrayPopups.isSelected();
+		GlobalSettings.enableTrayPopupsAlways = chkEnableTrayPopupsAlways.isSelected();
 		GlobalSettings.enableLegacyIcons = chkEnableLegacyIcons.isSelected();
 		GlobalSettings.enableCLI = chkEnableCLI.isSelected();
 		GlobalSettings.enableTrivia = chkEnableTrivia.isSelected();
@@ -499,6 +517,7 @@ public class GlobalConfigurationFrame extends JDialog {
 		chkEnableCLI.setSelected(GlobalSettings.enableCLI);
 		chkEnableTrayIcon.setSelected(GlobalSettings.enableTrayIcon);
 		chkEnableTrayPopups.setSelected(GlobalSettings.enableTrayPopups);
+		chkEnableTrayPopupsAlways.setSelected(GlobalSettings.enableTrayPopupsAlways);
 		chkEnableTrivia.setSelected(GlobalSettings.enableTrivia);
 		txtTriviaRoundLength.setText(Long.toString(GlobalSettings.triviaRoundLength));
 		chkEnableCommands.setSelected(GlobalSettings.enableCommands);

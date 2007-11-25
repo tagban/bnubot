@@ -39,6 +39,7 @@ public class GlobalSettings {
 	public static boolean enableGUI;
 	public static boolean enableTrayIcon;
 	public static boolean enableTrayPopups;
+	public static boolean enableTrayPopupsAlways;
 	public static boolean enableLegacyIcons;
 	public static boolean enableCommands;
 	public static boolean enableTrivia;
@@ -171,6 +172,7 @@ public class GlobalSettings {
 		Settings.write(null, "enableGUI", Boolean.toString(enableGUI));
 		Settings.write(null, "enableTrayIcon", Boolean.toString(enableTrayIcon));
 		Settings.write(null, "enableTrayPopups", Boolean.toString(enableTrayPopups));
+		Settings.write(null, "enableTrayPopupsAlways", Boolean.toString(enableTrayPopupsAlways));
 		Settings.write(null, "enableLegacyIcons", Boolean.toString(enableLegacyIcons));
 		Settings.write(null, "enableCommands", Boolean.toString(enableCommands));
 		Settings.write(null, "enableTrivia", Boolean.toString(enableTrivia));
@@ -225,6 +227,8 @@ public class GlobalSettings {
 				Settings.read(null, "enableTrayIcon", "true"));
 		enableTrayPopups = Boolean.parseBoolean(
 				Settings.read(null, "enableTrayPopups", "true"));
+		enableTrayPopupsAlways = Boolean.parseBoolean(
+				Settings.read(null, "enableTrayPopupsAlways", "false"));
 		enableLegacyIcons = Boolean.parseBoolean(
 				Settings.read(null, "enableLegacyIcons", "true"));
 		enableCommands = Boolean.parseBoolean(
