@@ -59,10 +59,10 @@ public class GuiDesktop extends JFrame {
 	private static GuiEventHandler selectedGui = null;
 	private static final JTabbedPane tabs = new JTabbedPane();
 	private static final JMenuBar menuBar = new JMenuBar();
-	private static final GuiDesktop instance = new GuiDesktop();
 	private static TrayIcon tray = null;
 	private static Growl growl = null;
 	private static final int KEYMASK = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+	private static final GuiDesktop instance = new GuiDesktop();
 	
 	private GuiDesktop() {
 		super();

@@ -19,6 +19,7 @@ import java.lang.reflect.Method;
 public class Growl {
 	public static final String BNET_CONNECT = "Battle.net: Connected";
 	public static final String BNET_DISCONNECT = "Battle.net: Disconnected";
+	public static final String CHANNEL = "Channel";
 	public static final String CHANNEL_USER_JOIN = "Channel: User Join";
 	public static final String CHANNEL_USER_PART = "Channel: User Part";
 	public static final String CHANNEL_USER_CHAT = "Channel: User Chat";
@@ -27,8 +28,14 @@ public class Growl {
 	private static final Object[] growlNotifications = new Object[] {
 		BNET_CONNECT,
 		BNET_DISCONNECT,
+		CHANNEL,
 		CHANNEL_USER_JOIN,
 		CHANNEL_USER_PART,
+		CHANNEL_USER_CHAT,
+		CHANNEL_WHISPER_RECIEVED,
+		CHANNEL_WHISPER_SENT,
+		};
+	private static final Object[] growlDefaults = new Object[] {
 		CHANNEL_USER_CHAT,
 		CHANNEL_WHISPER_RECIEVED,
 		CHANNEL_WHISPER_SENT,
@@ -198,6 +205,7 @@ public class Growl {
 		if(growlNotifications == null)
 			throw new IllegalStateException("growlNotifications == null");
 		setAllowedNotifications(growlNotifications);
+		setDefaultNotifications(growlDefaults);
 
 		if (registerNow)
 			register();
@@ -531,13 +539,9 @@ public class Growl {
 	 *                   allowedNotifications
 	 *
 	 */
-	/*public void setDefaultNotifications(String [] inDefNotes) throws Exception {
-		for(String note : inDefNotes) {
-			if (! allNotes.containsObject(note)) {
-				throw new Exception("Array Element not in Allowed Notifications");
-			}
-		} 
-
-		defNotes = new NSArray(inDefNotes);
-	}*/
+	public void setDefaultNotifications(Object [] inDefNotes) throws Exception {
+		Constructor<?> constructor = NSArray.getConstructor(inDefNotes.getClass());
+		Object[] objects = new Object[] {inDefNotes};
+		defNotes = constructor.newInstance(objects);
+	}
 }

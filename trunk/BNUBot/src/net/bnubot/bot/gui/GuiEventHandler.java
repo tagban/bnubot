@@ -394,33 +394,35 @@ public class GuiEventHandler implements EventHandler {
 		mainTextArea.addSeparator();
 		mainTextArea.channelInfo("Joining channel " + channel + ".");
 		channelTextPane.setText(channel);
+		notifySystemTray(
+				Growl.CHANNEL,
+				"Channel",
+				channel);
 		
 		GuiDesktop.setTitle(this, con.getProductID());
 	}
 
 	public void recieveChat(BNetUser user, String text) {
 		mainTextArea.userChat(user, text, user.equals(con.getMyUser()));
+		notifySystemTray(
+				Growl.CHANNEL_USER_CHAT,
+				user.toString(),
+				text);
+	}
 
-		if(GlobalSettings.enableTrayPopups && !frame.isVisible()) {
+	private void notifySystemTray(String gt, String headline, String text) {
+		if(GlobalSettings.enableTrayPopups && !GuiDesktop.getInstance().hasFocus()) {
 			TrayIcon tray = GuiDesktop.getTray();
-			if(tray != null) {
-		        tray.displayMessage(
-		        	"User is chatting: " + user.getShortLogonName(),
-		            text,
-		            TrayIcon.MessageType.INFO);
-			}
+			if(tray != null)
+		        tray.displayMessage(headline, text, TrayIcon.MessageType.INFO);
 			
 			Growl growl = GuiDesktop.getGrowl();
-			if(growl != null) {
+			if(growl != null)
 				try {
-					growl.notifyGrowlOf(
-							Growl.CHANNEL_USER_CHAT,
-				        	"User is chatting: " + user.getShortLogonName(),
-							text);
+					growl.notifyGrowlOf(gt, headline, text);
 				} catch (Exception e) {
 					Out.exception(e);
 				}
-			}
 		}
 	}
 
@@ -455,37 +457,27 @@ public class GuiEventHandler implements EventHandler {
 	public void whisperRecieved(BNetUser user, String text) {
 		lastWhisperFrom = user;
 		mainTextArea.whisperRecieved(user, text);
-
-		if(GlobalSettings.enableTrayPopups) {
-			TrayIcon tray = GuiDesktop.getTray();
-			if((tray != null) && !frame.isVisible()) {
-		        tray.displayMessage(
-		        		"Whisper from " + user.getShortLogonName(),
-			            text,
-			            TrayIcon.MessageType.INFO);
-			}
-			
-			Growl growl = GuiDesktop.getGrowl();
-			if(growl != null) {
-				try {
-					growl.notifyGrowlOf(
-							Growl.CHANNEL_WHISPER_RECIEVED,
-							"Whisper from " + user.getShortLogonName(),
-							text);
-				} catch (Exception e) {
-					Out.exception(e);
-				}
-			}
-		}
+		notifySystemTray(
+				Growl.CHANNEL_WHISPER_RECIEVED,
+				user.toString(),
+				text);
 	}
 
 	public void whisperSent(BNetUser user, String text) {
 		mainTextArea.whisperSent(user, text);
+		notifySystemTray(
+				Growl.CHANNEL_WHISPER_SENT,
+				user.toString(),
+				text);
 	}
 
 	public void bnetConnected() {
 		userList.clear();
 		channelTextPane.setText(null);
+		notifySystemTray(
+				Growl.BNET_CONNECT,
+				"Connected",
+				con.toString());
 	}
 
 	public void bnetDisconnected() {
@@ -493,6 +485,10 @@ public class GuiEventHandler implements EventHandler {
 		channelTextPane.setText(null);
 		mainTextArea.recieveError("Disconnected from battle.net.");
 		mainTextArea.addSeparator();
+		notifySystemTray(
+				Growl.BNET_DISCONNECT,
+				"Disconnected",
+				con.toString());
 	}
 
 	public void titleChanged() {
