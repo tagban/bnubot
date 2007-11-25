@@ -6,16 +6,25 @@
 package net.bnubot.bot.gui;
 
 import java.awt.AWTKeyStroke;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.KeyboardFocusManager;
+import java.awt.Point;
 import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
 import java.util.Collections;
 import java.util.Set;
 
+import javax.swing.BorderFactory;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -55,6 +64,10 @@ public class GuiEventHandler implements EventHandler {
 	private BNetUser lastWhisperFrom = null;
 	private JSplitPane jsp = null;
 	private boolean tabComplete = false;
+	private JFrame tcPopupWindow;
+	private JList tcList = new JList();
+	private String tcBefore = null;
+	private String tcAfter = null;
 	
 	private static final Set<? extends AWTKeyStroke> EMPTY_SET = Collections.emptySet();
 	
@@ -66,6 +79,31 @@ public class GuiEventHandler implements EventHandler {
 		this.con = con;
 		Out.setThreadOutputConnection(this);
 		titleChanged();
+	}
+	
+	/**
+	 * Exit TC mode
+	 */
+	private void tcCancel() {
+    	// Exit TC mode
+		tcPopupWindow.setVisible(tabComplete = false);
+	}
+	
+	/**
+	 * Exit TC mode by selecting a username
+	 * @param selection The selected username
+	 */
+	private void tcSelect(String selection) {
+		if((tcBefore.length() == 0) && (tcAfter.length() == 0)) {
+			chatTextArea.setText(selection + ": ");
+			chatTextArea.setCaretPosition(chatTextArea.getText().length());
+		} else {
+			chatTextArea.setText(tcBefore + selection + tcAfter);
+			chatTextArea.setCaretPosition(tcBefore.length() + selection.length());
+		}
+
+    	// Exit TC mode
+		tcPopupWindow.setVisible(tabComplete = false);
 	}
 	
 	private void initializeGui(ColorScheme colors) {
@@ -156,9 +194,6 @@ public class GuiEventHandler implements EventHandler {
 		chatTextArea.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent e) {}
 			public void keyTyped(KeyEvent e) {
-				if(tabComplete)
-					return;
-
 				switch(e.getKeyChar()) {
 				case '\n': {
 					e.consume();
@@ -203,26 +238,20 @@ public class GuiEventHandler implements EventHandler {
 					if(start != 0)
 						text = text.substring(start);
 
-					String before = chatTextArea.getText(0, start);
-					String after = chatTextArea.getText(end, chatTextArea.getText().length() - end);
+					tcBefore = chatTextArea.getText(0, start);
+					tcAfter = chatTextArea.getText(end, chatTextArea.getText().length() - end);
 
 					String[] users = userList.findUsers(text);
 					if(users.length == 1) {
-						chatTextArea.setText(before + users[0] + after);
-						chatTextArea.setCaretPosition(before.length() + users[0].length());
-
-						tabComplete = false;
-						userList.disableHighlight();
+						tcSelect(users[0]);
+					} else if(users.length == 0) {
+						tcCancel();
 					} else {
-						// TODO: Add assumed characters
-
-						chatTextArea.setText(before + text + after);
-						chatTextArea.setCaretPosition(before.length() + text.length());
-
-						mainTextArea.addSeparator();
-						for(String user : users)
-							recieveDebug(user);
-						mainTextArea.addSeparator();
+						tcList.setModel(new DefaultComboBoxModel(users));
+						tcPopupWindow.pack();
+						tcPopupWindow.setVisible(true);
+						tcList.setSelectedIndex(0);
+						tcList.requestFocus();
 					}
 				} catch(Exception ex) {
 					Out.exception(ex);
@@ -280,6 +309,55 @@ public class GuiEventHandler implements EventHandler {
 		
 		// Add them to the frame
 		frame.add(jsp);
+		
+		// Initialize the TC popup window
+		tcPopupWindow = new JFrame();
+		tcPopupWindow.setUndecorated(true);
+		tcPopupWindow.addWindowFocusListener(new WindowFocusListener() {
+        	public void windowGainedFocus(WindowEvent e) {
+        		SwingUtilities.invokeLater(new Runnable() {
+        			public void run() {
+						// Set location relative to chatTextArea
+						Point location = chatTextArea.getLocation();
+						SwingUtilities.convertPointToScreen(location, chatTextArea.getParent());
+						location.translate(0, chatTextArea.getHeight()
+								+ (chatTextArea.getBorder() == null ? 0
+										: chatTextArea.getBorder().getBorderInsets(chatTextArea).bottom));
+						tcPopupWindow.setLocation(location);
+        			}
+        		});
+        	}
+        	public void windowLostFocus(WindowEvent e) {
+				tcPopupWindow.setVisible(tabComplete = false);
+        	}
+        });
+		tcPopupWindow.getContentPane().setLayout(new BorderLayout());
+		((JComponent)tcPopupWindow.getContentPane()).setBorder(BorderFactory.createEtchedBorder());
+		tcPopupWindow.getContentPane().add(tcList);
+		
+		// Initialize TC list
+		tcList.addKeyListener(new KeyListener() {
+			public void keyPressed(KeyEvent e) {}
+			public void keyTyped(KeyEvent e) {}
+			public void keyReleased(KeyEvent e) {
+				switch(e.getKeyCode()) {
+				case KeyEvent.VK_TAB:
+				case KeyEvent.VK_ENTER:
+					tcSelect(tcList.getSelectedValue().toString());
+					break;
+
+				case KeyEvent.VK_ESCAPE:
+					tcCancel();
+					break;
+					
+				default:
+					Out.info(GuiEventHandler.class, "0x" + Integer.toHexString(e.getKeyChar()));
+				}
+			}
+		});
+		// Enable tab character
+		tcList.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, EMPTY_SET);
+		tcList.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, EMPTY_SET);
 		
 		// Display the window
 		GuiDesktop.add(this);
