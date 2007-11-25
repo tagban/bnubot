@@ -416,21 +416,27 @@ public class BNCSConnection extends Connection {
 
                 		InputStream bnlsInputStream = bnlsSocket.getInputStream();
                 		long startTime = System.currentTimeMillis();
+                		Task bnlsTask = createTask("BNLS_VERSIONCHECKEX2", 5000, "ms");
                 		while(bnlsInputStream.available() < 3) {
-                			Thread.sleep(200);
+                			Thread.sleep(50);
                 			Thread.yield();
 
                 			long timeElapsed = System.currentTimeMillis() - startTime;
-                			if(timeElapsed > 5000)
-                				throw new Exception("BNLS_VERSIONCHECKEX2 timeout");
+                			if(timeElapsed > 5000) {
+                				setBNLSConnected(false);
+                				throw new Exception("BNLS_VERSIONCHECKEX2 timed out");
+                			}
+                			bnlsTask.setProgress((int)timeElapsed);
                 		}
+                		completeTask(bnlsTask);
 
                 		BNLSPacketReader bpr = new BNLSPacketReader(bnlsInputStream);
                 		BNetInputStream bnlsIn = bpr.getInputStream();
                 		int success = bnlsIn.readDWord();
                 		if(success != 1) {
                 			Out.error(getClass(), "BNLS_VERSIONCHECKEX2 Failed\n" + HexDump.hexDump(bpr.getData()));
-                			throw new Exception("BNLS failed to complete BNLS_VERSIONCHECKEX2 sucessfully");
+            				setBNLSConnected(false);
+                			throw new Exception("BNLS_VERSIONCHECKEX2 failed");
                 		}
                 		exeVersion = bnlsIn.readDWord();
                 		exeHash = bnlsIn.readDWord();
@@ -2040,6 +2046,12 @@ public class BNCSConnection extends Connection {
 	
 	private Task createTask(String title, String currentStep) {
 		Task t = TaskManager.createTask(profile.getName() + ": " + title, currentStep);
+		currentTasks.add(t);
+		return t;
+	}
+	
+	private Task createTask(String title, int max, String units) {
+		Task t = TaskManager.createTask(title, max, units);
 		currentTasks.add(t);
 		return t;
 	}
