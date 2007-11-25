@@ -25,6 +25,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
 import java.awt.event.WindowStateListener;
 import java.util.ArrayList;
 import java.util.List;
@@ -85,6 +86,15 @@ public class GuiDesktop extends JFrame {
 				if(e.getID() == WindowEvent.WINDOW_STATE_CHANGED)
 					((Window)e.getSource()).validate();
 			}});
+        
+        // When recieving focus, select the chat box
+        addWindowFocusListener(new WindowFocusListener() {
+			public void windowGainedFocus(WindowEvent e) {
+				if(selectedGui != null)
+					selectedGui.getFrame().requestFocus();
+			}
+			public void windowLostFocus(WindowEvent e) {}
+		});
 		
         // Globally save/load window positions
 		Toolkit.getDefaultToolkit().addAWTEventListener(
