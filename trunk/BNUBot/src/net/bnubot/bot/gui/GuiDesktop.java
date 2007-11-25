@@ -326,6 +326,7 @@ public class GuiDesktop extends JFrame {
 			
 			try {
 				growl = new Growl("BNU-Bot", "Contents/Resources/Icon.icns");
+				growl.register();
 			} catch(Exception ex) {
 				Out.exception(ex);
 				Out.error(GuiEventHandler.class, "Growl is not supported either");

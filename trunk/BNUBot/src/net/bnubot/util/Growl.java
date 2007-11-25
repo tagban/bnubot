@@ -508,8 +508,6 @@ public class Growl {
 		Constructor<?> constructor = NSArray.getConstructor(inAllNotes.getClass());
 		Object[] objects = new Object[] {inAllNotes};
 		allNotes = constructor.newInstance(objects);
-		if(!registered)
-			defNotes = allNotes;
 	}
 
 	/**
