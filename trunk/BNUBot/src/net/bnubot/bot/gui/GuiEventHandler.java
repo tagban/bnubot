@@ -13,6 +13,8 @@ import java.awt.Point;
 import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
@@ -109,6 +111,14 @@ public class GuiEventHandler implements EventHandler {
 	private void initializeGui(ColorScheme colors) {
 		// Create the panel
 		frame = new JPanel(new BotLayoutManager(), true);
+		
+		// When gained focus, select the chat box
+		frame.addFocusListener(new FocusListener() {
+			public void focusGained(FocusEvent e) {
+				chatTextArea.requestFocus();
+			}
+			public void focusLost(FocusEvent e) {}
+		});
 		
 		// Create the menu bar.
 		menuBar.setOpaque(true);
@@ -598,6 +608,10 @@ public class GuiEventHandler implements EventHandler {
 		chatTextArea.setText(chatText);
 		if(chatText != null)
 			chatTextArea.setSelectionStart(chatText.length());
+		focusChat();
+	}
+
+	public void focusChat() {
 		chatTextArea.requestFocus();
 	}
 
