@@ -107,11 +107,9 @@ public class JARLoader {
 	
 	public static Class<?> forName(String name) throws ClassNotFoundException {
 		try {
-			Class<?> c = loader.loadClass(name);
-			Out.debug(JARLoader.class, "Loaded " + name);
-			return c;
+			return loader.loadClass(name);
 		} catch(ClassNotFoundException e) {
-			Out.debug(JARLoader.class, "Failed to load " + name);
+			Out.error(JARLoader.class, "Failed to load " + name);
 			throw e;
 		} catch(UnsupportedClassVersionError e) {
 			String msg = "Unsupported class version " + name;
