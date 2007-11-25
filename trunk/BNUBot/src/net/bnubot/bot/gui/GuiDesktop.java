@@ -326,15 +326,12 @@ public class GuiDesktop extends JFrame {
 			
 			try {
 				growl = new Growl("BNU-Bot", "Contents/Resources/Icon.icns");
-				return;
 			} catch(Exception ex) {
 				Out.exception(ex);
-				growl = null;
-				
 				Out.error(GuiEventHandler.class, "Growl is not supported either");
 				GlobalSettings.enableTrayIcon = false;
-				return;
 			}
+			return;
 		}
 		
 		Image image = Toolkit.getDefaultToolkit().getImage("tray.gif");
