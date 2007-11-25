@@ -23,7 +23,7 @@ import java.util.Set;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComponent;
-import javax.swing.JFrame;
+import javax.swing.JDialog;
 import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -64,7 +64,7 @@ public class GuiEventHandler implements EventHandler {
 	private BNetUser lastWhisperFrom = null;
 	private JSplitPane jsp = null;
 	private boolean tabComplete = false;
-	private JFrame tcPopupWindow;
+	private JDialog tcPopupWindow;
 	private JList tcList = new JList();
 	private String tcBefore = null;
 	private String tcAfter = null;
@@ -85,7 +85,7 @@ public class GuiEventHandler implements EventHandler {
 	 * Exit TC mode
 	 */
 	private void tcCancel() {
-    	// Exit TC mode
+		// Exit TC mode
 		tcPopupWindow.setVisible(tabComplete = false);
 	}
 	
@@ -102,7 +102,7 @@ public class GuiEventHandler implements EventHandler {
 			chatTextArea.setCaretPosition(tcBefore.length() + selection.length());
 		}
 
-    	// Exit TC mode
+		// Exit TC mode
 		tcPopupWindow.setVisible(tabComplete = false);
 	}
 	
@@ -302,21 +302,21 @@ public class GuiEventHandler implements EventHandler {
 			}
 			public void ancestorRemoved(AncestorEvent event) {}
 		});
-		
+
 		jsp = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, leftSide, rightSide);
 		jsp.setDividerSize(8);
 		jsp.setResizeWeight(1); // Make the left side expand when resizing
 		
 		// Add them to the frame
 		frame.add(jsp);
-		
+
 		// Initialize the TC popup window
-		tcPopupWindow = new JFrame();
+		tcPopupWindow = new JDialog();
 		tcPopupWindow.setUndecorated(true);
 		tcPopupWindow.addWindowFocusListener(new WindowFocusListener() {
-        	public void windowGainedFocus(WindowEvent e) {
-        		SwingUtilities.invokeLater(new Runnable() {
-        			public void run() {
+			public void windowGainedFocus(WindowEvent e) {
+				SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
 						// Set location relative to chatTextArea
 						Point location = chatTextArea.getLocation();
 						SwingUtilities.convertPointToScreen(location, chatTextArea.getParent());
@@ -324,13 +324,13 @@ public class GuiEventHandler implements EventHandler {
 								+ (chatTextArea.getBorder() == null ? 0
 										: chatTextArea.getBorder().getBorderInsets(chatTextArea).bottom));
 						tcPopupWindow.setLocation(location);
-        			}
-        		});
-        	}
-        	public void windowLostFocus(WindowEvent e) {
+					}
+				});
+			}
+			public void windowLostFocus(WindowEvent e) {
 				tcPopupWindow.setVisible(tabComplete = false);
-        	}
-        });
+			}
+		});
 		tcPopupWindow.getContentPane().setLayout(new BorderLayout());
 		((JComponent)tcPopupWindow.getContentPane()).setBorder(BorderFactory.createEtchedBorder());
 		tcPopupWindow.getContentPane().add(tcList);
@@ -379,7 +379,7 @@ public class GuiEventHandler implements EventHandler {
 		
 		TrayIcon tray = GuiDesktop.getTray();
 		if(tray != null)
-	        tray.displayMessage(headline, text, TrayIcon.MessageType.INFO);
+			tray.displayMessage(headline, text, TrayIcon.MessageType.INFO);
 		
 		Growl growl = GuiDesktop.getGrowl();
 		if(growl != null)
