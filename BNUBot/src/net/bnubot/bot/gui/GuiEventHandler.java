@@ -201,6 +201,7 @@ public class GuiEventHandler implements EventHandler {
 		chatTextArea.setBorder(null);
 		chatTextArea.setBackground(colors.getBackgroundColor());
 		chatTextArea.setForeground(Color.LIGHT_GRAY);
+		chatTextArea.setCaretColor(Color.LIGHT_GRAY);
 		chatTextArea.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent e) {}
 			public void keyTyped(KeyEvent e) {
