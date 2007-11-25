@@ -54,6 +54,7 @@ public class GuiEventHandler implements EventHandler {
 	private final JMenu menuBar = new JMenu();
 	private BNetUser lastWhisperFrom = null;
 	private JSplitPane jsp = null;
+	private boolean tabComplete = false;
 	
 	private static final Set<? extends AWTKeyStroke> EMPTY_SET = Collections.emptySet();
 	
@@ -154,8 +155,10 @@ public class GuiEventHandler implements EventHandler {
 		chatTextArea.setForeground(Color.LIGHT_GRAY);
 		chatTextArea.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent e) {}
-			public void keyReleased(KeyEvent e) {}
 			public void keyTyped(KeyEvent e) {
+				if(tabComplete)
+					return;
+
 				switch(e.getKeyChar()) {
 				case '\n': {
 					e.consume();
@@ -174,34 +177,7 @@ public class GuiEventHandler implements EventHandler {
 				}
 				case '\t': {
 					e.consume();
-					try {
-						int end = chatTextArea.getCaretPosition();
-						String text = chatTextArea.getText(0, end);
-						int start = text.lastIndexOf(' ') + 1;
-						if(start != 0)
-							text = text.substring(start);
-						
-						String before = chatTextArea.getText(0, start);
-						String after = chatTextArea.getText(end, chatTextArea.getText().length() - end);
-						
-						String[] users = userList.findUsers(text);
-						if(users.length == 1) {
-							chatTextArea.setText(before + users[0] + after);
-							chatTextArea.setCaretPosition(before.length() + users[0].length());
-						} else {
-							// TODO: Add assumed characters
-							
-							chatTextArea.setText(before + text + after);
-							chatTextArea.setCaretPosition(before.length() + text.length());
-
-							mainTextArea.addSeparator();
-							for(String user : users)
-								recieveDebug(user);
-							mainTextArea.addSeparator();
-						}
-					} catch(Exception ex) {
-						Out.exception(ex);
-					}
+					tabComplete = true;
 					break;
 				}
 				case ' ': {
@@ -214,6 +190,42 @@ public class GuiEventHandler implements EventHandler {
 				}
 				default:
 					break;
+				}
+			}
+			public void keyReleased(KeyEvent e) {
+				if(!tabComplete)
+					return;
+
+				try {
+					int end = chatTextArea.getCaretPosition();
+					String text = chatTextArea.getText(0, end);
+					int start = text.lastIndexOf(' ') + 1;
+					if(start != 0)
+						text = text.substring(start);
+
+					String before = chatTextArea.getText(0, start);
+					String after = chatTextArea.getText(end, chatTextArea.getText().length() - end);
+
+					String[] users = userList.findUsers(text);
+					if(users.length == 1) {
+						chatTextArea.setText(before + users[0] + after);
+						chatTextArea.setCaretPosition(before.length() + users[0].length());
+
+						tabComplete = false;
+						userList.disableHighlight();
+					} else {
+						// TODO: Add assumed characters
+
+						chatTextArea.setText(before + text + after);
+						chatTextArea.setCaretPosition(before.length() + text.length());
+
+						mainTextArea.addSeparator();
+						for(String user : users)
+							recieveDebug(user);
+						mainTextArea.addSeparator();
+					}
+				} catch(Exception ex) {
+					Out.exception(ex);
 				}
 			}
 		});
