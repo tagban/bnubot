@@ -38,6 +38,7 @@ import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetUser;
+import net.bnubot.util.Growl;
 import net.bnubot.util.Out;
 
 public class GuiEventHandler implements EventHandler {
@@ -314,12 +315,25 @@ public class GuiEventHandler implements EventHandler {
 	public void recieveChat(BNetUser user, String text) {
 		mainTextArea.userChat(user, text, user.equals(con.getMyUser()));
 
-		if(GlobalSettings.enableTrayPopups) {
+		if(GlobalSettings.enableTrayPopups && !frame.isVisible()) {
 			TrayIcon tray = GuiDesktop.getTray();
-			if((tray != null) && !frame.isVisible()) {
-		        tray.displayMessage("User is chatting: " + user.getShortLogonName(),
+			if(tray != null) {
+		        tray.displayMessage(
+		        	"User is chatting: " + user.getShortLogonName(),
 		            text,
 		            TrayIcon.MessageType.INFO);
+			}
+			
+			Growl growl = GuiDesktop.getGrowl();
+			if(growl != null) {
+				try {
+					growl.notifyGrowlOf(
+							Growl.CHANNEL_USER_CHAT,
+				        	"User is chatting: " + user.getShortLogonName(),
+							text);
+				} catch (Exception e) {
+					Out.exception(e);
+				}
 			}
 		}
 	}
@@ -359,9 +373,22 @@ public class GuiEventHandler implements EventHandler {
 		if(GlobalSettings.enableTrayPopups) {
 			TrayIcon tray = GuiDesktop.getTray();
 			if((tray != null) && !frame.isVisible()) {
-		        tray.displayMessage("Whisper from " + user.getShortLogonName(),
-		            text,
-		            TrayIcon.MessageType.INFO);
+		        tray.displayMessage(
+		        		"Whisper from " + user.getShortLogonName(),
+			            text,
+			            TrayIcon.MessageType.INFO);
+			}
+			
+			Growl growl = GuiDesktop.getGrowl();
+			if(growl != null) {
+				try {
+					growl.notifyGrowlOf(
+							Growl.CHANNEL_WHISPER_RECIEVED,
+							"Whisper from " + user.getShortLogonName(),
+							text);
+				} catch (Exception e) {
+					Out.exception(e);
+				}
 			}
 		}
 	}

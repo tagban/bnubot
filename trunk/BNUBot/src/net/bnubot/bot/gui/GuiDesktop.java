@@ -48,6 +48,7 @@ import net.bnubot.core.Profile;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.settings.Settings;
+import net.bnubot.util.Growl;
 import net.bnubot.util.Out;
 import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.VersionCheck;
@@ -60,6 +61,7 @@ public class GuiDesktop extends JFrame {
 	private static final JMenuBar menuBar = new JMenuBar();
 	private static final GuiDesktop instance = new GuiDesktop();
 	private static TrayIcon tray = null;
+	private static Growl growl = null;
 	private static final int KEYMASK = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
 	
 	private GuiDesktop() {
@@ -310,6 +312,8 @@ public class GuiDesktop extends JFrame {
 	private void initializeSystemTray() {
 		if(tray != null)
 			return;
+		if(growl != null)
+			return;
 		
 		if(!GlobalSettings.enableTrayIcon)
 			return;
@@ -318,9 +322,19 @@ public class GuiDesktop extends JFrame {
 			if(!SystemTray.isSupported())
 				throw new NoClassDefFoundError();
 		} catch(NoClassDefFoundError e) {
-			Out.error(GuiEventHandler.class, "System tray is not supported");
-			GlobalSettings.enableTrayIcon = false;
-			return;
+			Out.error(GuiEventHandler.class, "System tray is not supported; trying growl");
+			
+			try {
+				growl = new Growl("BNU-Bot", "Contents/Resources/Icon.icns");
+				return;
+			} catch(Exception ex) {
+				Out.exception(ex);
+				growl = null;
+				
+				Out.error(GuiEventHandler.class, "Growl is not supported either");
+				GlobalSettings.enableTrayIcon = false;
+				return;
+			}
 		}
 		
 		Image image = Toolkit.getDefaultToolkit().getImage("tray.gif");
@@ -392,6 +406,10 @@ public class GuiDesktop extends JFrame {
 	
 	public static TrayIcon getTray() {
 		return tray;
+	}
+	
+	public static Growl getGrowl() {
+		return growl;
 	}
 	
 	public static void add(GuiEventHandler geh) {
