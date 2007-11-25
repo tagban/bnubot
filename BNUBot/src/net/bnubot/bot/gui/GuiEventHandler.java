@@ -394,6 +394,10 @@ public class GuiEventHandler implements EventHandler {
 		userList.showUser(user);
 		if(GlobalSettings.displayJoinParts)
 			mainTextArea.channelInfo(user + " has joined the channel" + user.getStatString().toString() + ".");
+		notifySystemTray(
+				Growl.CHANNEL_USER_JOIN,
+				user.toString(),
+				"joined the channel" + user.getStatString().toString());
 		channelTextPane.setText(channel + " (" + userList.count() + ")");
 	}
 
@@ -401,6 +405,10 @@ public class GuiEventHandler implements EventHandler {
 		userList.removeUser(user);
 		if(GlobalSettings.displayJoinParts)
 			mainTextArea.channelInfo(user + " has left the channel.");
+		notifySystemTray(
+				Growl.CHANNEL_USER_PART,
+				user.toString(),
+				"left the channel");
 		channelTextPane.setText(channel + " (" + userList.count() + ")");
 	}
 
