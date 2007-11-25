@@ -368,19 +368,26 @@ public class GuiEventHandler implements EventHandler {
 	}
 
 	private void notifySystemTray(String gt, String headline, String text) {
-		if(GlobalSettings.enableTrayPopups && !GuiDesktop.getInstance().isFocused()) {
-			TrayIcon tray = GuiDesktop.getTray();
-			if(tray != null)
-		        tray.displayMessage(headline, text, TrayIcon.MessageType.INFO);
-			
-			Growl growl = GuiDesktop.getGrowl();
-			if(growl != null)
-				try {
-					growl.notifyGrowlOf(gt, headline, text);
-				} catch (Exception e) {
-					Out.exception(e);
-				}
-		}
+		// Require that enableTrayPopups is set
+		if(!GlobalSettings.enableTrayPopups)
+			return;
+		
+		// If popups are not always enabled, require that the window is defocused
+		if(!GlobalSettings.enableTrayPopupsAlways)
+			if(GuiDesktop.getInstance().isFocused())
+				return;
+		
+		TrayIcon tray = GuiDesktop.getTray();
+		if(tray != null)
+	        tray.displayMessage(headline, text, TrayIcon.MessageType.INFO);
+		
+		Growl growl = GuiDesktop.getGrowl();
+		if(growl != null)
+			try {
+				growl.notifyGrowlOf(gt, headline, text);
+			} catch (Exception e) {
+				Out.exception(e);
+			}
 	}
 	
 	public void channelJoin(BNetUser user) {
