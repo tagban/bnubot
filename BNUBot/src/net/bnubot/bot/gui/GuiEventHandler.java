@@ -345,13 +345,9 @@ public class GuiEventHandler implements EventHandler {
 				case KeyEvent.VK_ENTER:
 					tcSelect(tcList.getSelectedValue().toString());
 					break;
-
 				case KeyEvent.VK_ESCAPE:
 					tcCancel();
 					break;
-					
-				default:
-					Out.info(GuiEventHandler.class, "0x" + Integer.toHexString(e.getKeyChar()));
 				}
 			}
 		});
