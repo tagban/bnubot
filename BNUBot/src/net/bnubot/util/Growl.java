@@ -23,6 +23,7 @@ public class Growl {
 	public static final String CHANNEL_USER_JOIN = "Channel: User Join";
 	public static final String CHANNEL_USER_PART = "Channel: User Part";
 	public static final String CHANNEL_USER_CHAT = "Channel: User Chat";
+	public static final String CHANNEL_USER_EMOTE = "Channel: User Emote";
 	public static final String CHANNEL_WHISPER_RECIEVED = "Channel: Whisper Recieved";
 	public static final String CHANNEL_WHISPER_SENT = "Channel: Whisper Sent";
 	private static final Object[] growlNotifications = new Object[] {
@@ -32,11 +33,13 @@ public class Growl {
 		CHANNEL_USER_JOIN,
 		CHANNEL_USER_PART,
 		CHANNEL_USER_CHAT,
+		CHANNEL_USER_EMOTE,
 		CHANNEL_WHISPER_RECIEVED,
 		CHANNEL_WHISPER_SENT,
 		};
 	private static final Object[] growlDefaults = new Object[] {
 		CHANNEL_USER_CHAT,
+		CHANNEL_USER_EMOTE,
 		CHANNEL_WHISPER_RECIEVED,
 		CHANNEL_WHISPER_SENT,
 		};

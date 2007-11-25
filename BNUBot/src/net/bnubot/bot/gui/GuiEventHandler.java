@@ -366,6 +366,22 @@ public class GuiEventHandler implements EventHandler {
 	public JMenu getMenuBar() {
 		return menuBar;
 	}
+
+	private void notifySystemTray(String gt, String headline, String text) {
+		if(GlobalSettings.enableTrayPopups && !GuiDesktop.getInstance().isFocused()) {
+			TrayIcon tray = GuiDesktop.getTray();
+			if(tray != null)
+		        tray.displayMessage(headline, text, TrayIcon.MessageType.INFO);
+			
+			Growl growl = GuiDesktop.getGrowl();
+			if(growl != null)
+				try {
+					growl.notifyGrowlOf(gt, headline, text);
+				} catch (Exception e) {
+					Out.exception(e);
+				}
+		}
+	}
 	
 	public void channelJoin(BNetUser user) {
 		userList.showUser(user);
@@ -410,24 +426,12 @@ public class GuiEventHandler implements EventHandler {
 				text);
 	}
 
-	private void notifySystemTray(String gt, String headline, String text) {
-		if(GlobalSettings.enableTrayPopups && !GuiDesktop.getInstance().hasFocus()) {
-			TrayIcon tray = GuiDesktop.getTray();
-			if(tray != null)
-		        tray.displayMessage(headline, text, TrayIcon.MessageType.INFO);
-			
-			Growl growl = GuiDesktop.getGrowl();
-			if(growl != null)
-				try {
-					growl.notifyGrowlOf(gt, headline, text);
-				} catch (Exception e) {
-					Out.exception(e);
-				}
-		}
-	}
-
 	public void recieveEmote(BNetUser user, String text) {
 		mainTextArea.userEmote(user, text);
+		notifySystemTray(
+				Growl.CHANNEL_USER_EMOTE,
+				user.toString(),
+				text);
 	}
 
 	private static long lastInfoRecieved = 0;
