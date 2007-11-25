@@ -41,13 +41,13 @@ import net.bnubot.bot.gui.components.ClanList;
 import net.bnubot.bot.gui.components.FriendList;
 import net.bnubot.bot.gui.components.TextWindow;
 import net.bnubot.bot.gui.components.UserList;
+import net.bnubot.bot.gui.notifications.Growl;
 import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetUser;
-import net.bnubot.util.Growl;
 import net.bnubot.util.Out;
 
 public class GuiEventHandler implements EventHandler {

@@ -44,11 +44,11 @@ import net.bnubot.bot.gui.database.DatabaseAccountEditor;
 import net.bnubot.bot.gui.database.DatabaseRankEditor;
 import net.bnubot.bot.gui.icons.BNetIcon;
 import net.bnubot.bot.gui.icons.IconsDotBniReader;
+import net.bnubot.bot.gui.notifications.Growl;
 import net.bnubot.core.Profile;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.settings.Settings;
-import net.bnubot.util.Growl;
 import net.bnubot.util.Out;
 import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.VersionCheck;
@@ -326,7 +326,6 @@ public class GuiDesktop extends JFrame {
 			
 			try {
 				growl = new Growl("BNU-Bot", "Contents/Resources/Icon.icns");
-				growl.register();
 			} catch(Exception ex) {
 				Out.exception(ex);
 				Out.error(GuiEventHandler.class, "Growl is not supported either");
