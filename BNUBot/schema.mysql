@@ -181,6 +181,8 @@ INSERT INTO command (access, name, description, cmdgroup) VALUES
 (1,		'whois', NULL, 'accounts');
 
 INSERT INTO command_alias (alias, name) VALUES
+('commands', 'access'),
+('help', 'access'),
 ('ap', 'autopromotion'),
 ('apinfo', 'autopromotion'),
 ('ca', 'createaccount'),
