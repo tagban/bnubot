@@ -13,6 +13,8 @@ import java.awt.Point;
 import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
@@ -37,6 +39,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
+import javax.swing.plaf.basic.BasicSplitPaneUI;
 
 import net.bnubot.bot.gui.ColorScheme.ColorScheme;
 import net.bnubot.bot.gui.components.ClanList;
@@ -325,6 +328,13 @@ public class GuiEventHandler implements EventHandler {
 		jsp = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, leftSide, rightSide);
 		jsp.setDividerSize(8);
 		jsp.setResizeWeight(1); // Make the left side expand when resizing
+		// Add a listener for when the divider moves
+		((BasicSplitPaneUI)jsp.getUI()).getDivider().addComponentListener(new ComponentAdapter() {
+			public void componentMoved(ComponentEvent e) {
+				// Save the divider location
+				GuiDesktop.savePosition(GuiDesktop.getInstance());
+			}
+		});
 		
 		// Add them to the frame
 		frame.add(jsp);
