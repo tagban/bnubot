@@ -228,7 +228,7 @@ public class GuiEventHandler implements EventHandler {
 				}
 				case ' ': {
 					if(lastWhisperFrom != null) {
-						String txt = chatTextArea.getText();
+						String txt = chatTextArea.getText().trim();
 						if("/r".equals(txt) || "/rw".equals(txt))
 							chatTextArea.setText("/w " + lastWhisperFrom.getShortLogonName());
 					}
