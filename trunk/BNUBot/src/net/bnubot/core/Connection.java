@@ -641,4 +641,8 @@ public abstract class Connection extends Thread implements EventHandler {
 			eh.clanMemberStatusChange(member);
 		eh_semaphore--;
 	}
+
+	public String getChannel() {
+		return channelName;
+	}
 }

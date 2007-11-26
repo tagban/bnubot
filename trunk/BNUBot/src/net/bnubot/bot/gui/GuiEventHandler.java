@@ -407,8 +407,8 @@ public class GuiEventHandler implements EventHandler {
 			mainTextArea.channelInfo(user + " has joined the channel" + user.getStatString().toString() + ".");
 		notifySystemTray(
 				Growl.CHANNEL_USER_JOIN,
-				user.toString(),
-				"joined the channel" + user.getStatString().toString());
+				con.getChannel(),
+				user.getShortPrettyName() + " joined");
 		channelTextPane.setText(channel + " (" + userList.count() + ")");
 	}
 
@@ -418,8 +418,8 @@ public class GuiEventHandler implements EventHandler {
 			mainTextArea.channelInfo(user + " has left the channel.");
 		notifySystemTray(
 				Growl.CHANNEL_USER_PART,
-				user.toString(),
-				"left the channel");
+				con.getChannel(),
+				user.getShortPrettyName() + " left");
 		channelTextPane.setText(channel + " (" + userList.count() + ")");
 	}
 
@@ -448,16 +448,16 @@ public class GuiEventHandler implements EventHandler {
 		mainTextArea.userChat(user, text, user.equals(con.getMyUser()));
 		notifySystemTray(
 				Growl.CHANNEL_USER_CHAT,
-				user.toString(),
-				text);
+				con.getChannel(),
+				"<" + user.getShortPrettyName() + "> " + text);
 	}
 
 	public void recieveEmote(BNetUser user, String text) {
 		mainTextArea.userEmote(user, text);
 		notifySystemTray(
 				Growl.CHANNEL_USER_EMOTE,
-				user.toString(),
-				text);
+				con.getChannel(),
+				"<" + user.getShortPrettyName() + " " + text + ">");
 	}
 
 	private static long lastInfoRecieved = 0;
@@ -489,16 +489,16 @@ public class GuiEventHandler implements EventHandler {
 		mainTextArea.whisperRecieved(user, text);
 		notifySystemTray(
 				Growl.CHANNEL_WHISPER_RECIEVED,
-				user.toString(),
-				text);
+				con.getChannel(),
+				"<From: " + user.getShortPrettyName() + "> " + text);
 	}
 
 	public void whisperSent(BNetUser user, String text) {
 		mainTextArea.whisperSent(user, text);
 		notifySystemTray(
 				Growl.CHANNEL_WHISPER_SENT,
-				user.toString(),
-				text);
+				con.getChannel(),
+				"<To: " + user.getShortPrettyName() + "> " + text);
 	}
 
 	public void bnetConnected() {
