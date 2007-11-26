@@ -52,6 +52,7 @@ import net.bnubot.core.EventHandler;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.settings.GlobalSettings;
+import net.bnubot.settings.Settings;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.Out;
 
@@ -332,7 +333,8 @@ public class GuiEventHandler implements EventHandler {
 		((BasicSplitPaneUI)jsp.getUI()).getDivider().addComponentListener(new ComponentAdapter() {
 			public void componentMoved(ComponentEvent e) {
 				// Save the divider location
-				GuiDesktop.savePosition(GuiDesktop.getInstance());
+				Settings.write("GuiDesktop", "dividerLocation", Integer.toString(jsp.getDividerLocation()));
+				Settings.store();
 			}
 		});
 		
