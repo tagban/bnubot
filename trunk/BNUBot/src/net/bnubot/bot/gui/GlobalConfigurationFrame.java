@@ -83,8 +83,9 @@ public class GlobalConfigurationFrame extends JDialog {
 
 	//Connection
 	JButton btnLoad = null;
-	JButton btnOK = null;
 	JButton btnCancel = null;
+	JButton btnOK = null;
+	JButton btnApply = null;
 
 	//CDKeys
 	ConfigTextArea txtCDKeys = null;
@@ -141,278 +142,215 @@ public class GlobalConfigurationFrame extends JDialog {
 	}
 
 	private void initializeGui() {
-		int lblWidth = 100;
-		Dimension maxSize = new Dimension(lblWidth, 0);
+		Box boxTabsAndButtons = new Box(BoxLayout.Y_AXIS);
+		add(boxTabsAndButtons);
 
 		tabs = new JTabbedPane();
-
-		Box boxAll = new Box(BoxLayout.Y_AXIS);
+		boxTabsAndButtons.add(tabs);
+		
+		Box boxButtons = new Box(BoxLayout.X_AXIS);
 		{
-			Box boxSettings = new Box(BoxLayout.Y_AXIS);
-			{
-				txtBNLSServer = makeText("BNLS Server", GlobalSettings.bnlsServer, boxSettings);
-				txtTrigger = makeText("Trigger", GlobalSettings.trigger, boxSettings);
-				txtEmail = makeText("Email", GlobalSettings.email, boxSettings);
-
-				Box boxLine = new Box(BoxLayout.X_AXIS);
-				{
-					JLabel jl = new JLabel("Anti-Idle");
-					jl.setPreferredSize(maxSize);
-					boxLine.add(jl);
-
-					chkAntiIdle = new ConfigCheckBox("Enable", GlobalSettings.enableAntiIdle);
-					boxLine.add(chkAntiIdle);
-
-					txtAntiIdle = new ConfigTextArea(GlobalSettings.antiIdle);
-					boxLine.add(txtAntiIdle);
+			btnLoad = new JButton("Undo");
+			btnLoad.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent act) {
+					SwingUtilities.invokeLater(new Runnable() {
+						public void run() {
+							load();
+						}
+					});
 				}
-				boxSettings.add(boxLine);
+			});
 
-				txtAntiIdleTimer = makeText("Anti-Idle Timer", Integer.toString(GlobalSettings.antiIdleTimer), boxSettings);
-
-				Object[] values = { TimeFormatter.tsFormat, "%1$tH:%1$tM:%1$tS.%1$tL", "%1$tH:%1$tM:%1$tS", "%1$tH:%1$tM" };
-				cmbTSFormat = makeCombo("TimeStamp Format", values, true, boxSettings);
-				cmbTSFormat.setSelectedItem(TimeFormatter.tsFormat);
-
-				if(CurrentVersion.version().getReleaseType().isDevelopment())
-					values = new ReleaseType[] {
-						ReleaseType.Development };
-				else
-					values = new ReleaseType[] {
-						ReleaseType.Stable,
-						ReleaseType.ReleaseCandidate,
-						ReleaseType.Beta,
-						ReleaseType.Alpha };
-				cmbReleaseType = makeCombo("Version Check", values, false, boxSettings);
-				cmbReleaseType.setSelectedItem(GlobalSettings.releaseType);
-
-				values = new String[] { "Starcraft", "Diablo 2" };
-				cmbColorScheme = makeCombo("Color Scheme", values, false, boxSettings);
-				cmbColorScheme.setSelectedIndex(GlobalSettings.colorScheme - 1);
-
-				ArrayList<String> lafs = new ArrayList<String>();
-				for(LookAndFeelInfo lafi : UIManager.getInstalledLookAndFeels())
-					lafs.add(lafi.getName());
-				cmbLookAndFeel = makeCombo("Look and Feel", lafs.toArray(), false, boxSettings);
-				cmbLookAndFeel.setSelectedItem(GlobalSettings.getLookAndFeel());
-				cmbLookAndFeel.addItemListener(new ItemListener() {
-					public void itemStateChanged(ItemEvent e) {
-						for(LookAndFeelInfo lafi : UIManager.getInstalledLookAndFeels())
-							if(lafi.getName().equals(cmbLookAndFeel.getSelectedItem()))
-								GlobalSettings.setLookAndFeel(lafi);
-					}
-				});
-				
-				cmbPlasticTheme = makeCombo("Plastic Theme", GlobalSettings.getLookAndFeelThemes(), false, boxSettings);
-				cmbPlasticTheme.setSelectedItem(GlobalSettings.getLookAndFeelTheme());
-				cmbPlasticTheme.addItemListener(new ItemListener() {
-					public void itemStateChanged(ItemEvent e) {
-						GlobalSettings.setLookAndFeelTheme(cmbPlasticTheme.getSelectedItem().toString());
-					}
-				});
-
-				boxLine = new Box(BoxLayout.X_AXIS);
-				{
-					boxLine.add(Box.createRigidArea(maxSize));
-
-					Box boxCheckboxes = new Box(BoxLayout.Y_AXIS);
-					{
-						chkAutoConnect = new ConfigCheckBox("Auto Connect", GlobalSettings.autoConnect);
-						boxCheckboxes.add(chkAutoConnect);
-
-						chkDisplayBattleNetMOTD = new ConfigCheckBox("Display Battle.net MOTD", GlobalSettings.displayBattleNetMOTD);
-						boxCheckboxes.add(chkDisplayBattleNetMOTD);
-
-						chkDisplayBattleNetChannels = new ConfigCheckBox("Display Battle.net Channels", GlobalSettings.displayBattleNetChannels);
-						boxCheckboxes.add(chkDisplayBattleNetChannels);
-
-						chkDisplayJoinParts = new ConfigCheckBox("Display Join/Part Messages", GlobalSettings.displayJoinParts);
-						boxCheckboxes.add(chkDisplayJoinParts);
-
-						chkDisplayChannelUsers = new ConfigCheckBox("Display Channel Users On Join", GlobalSettings.displayChannelUsers);
-						boxCheckboxes.add(chkDisplayChannelUsers);
-
-						chkEnableGUI = new ConfigCheckBox("Enable GUI (requires restart)", GlobalSettings.enableGUI);
-						chkEnableGUI.addChangeListener(new ChangeListener() {
-							public void stateChanged(ChangeEvent arg0) {
-								if(!chkEnableGUI.isSelected()) {
-									chkEnableTrayPopupsAlways.setSelected(false);
-									chkEnableTrayPopups.setSelected(false);
-									chkEnableTrayIcon.setSelected(false);
-								}
-							}});
-						boxCheckboxes.add(chkEnableGUI);
-
-						chkEnableTrayIcon = new ConfigCheckBox("Enable Tray Icon", GlobalSettings.enableTrayIcon);
-						chkEnableTrayIcon.addChangeListener(new ChangeListener() {
-							public void stateChanged(ChangeEvent arg0) {
-								if(chkEnableTrayIcon.isSelected())
-									chkEnableGUI.setSelected(true);
-								else {
-									chkEnableTrayPopupsAlways.setSelected(false);
-									chkEnableTrayPopups.setSelected(false);
-								}
-							}});
-						boxCheckboxes.add(chkEnableTrayIcon);
-
-						chkEnableTrayPopups = new ConfigCheckBox("Enable Tray Popups", GlobalSettings.enableTrayPopups);
-						chkEnableTrayPopups.addChangeListener(new ChangeListener() {
-							public void stateChanged(ChangeEvent arg0) {
-								if(chkEnableTrayPopups.isSelected()) {
-									chkEnableGUI.setSelected(true);
-									chkEnableTrayIcon.setSelected(true);
-								} else {
-									chkEnableTrayPopupsAlways.setSelected(false);
-								}
-							}});
-						boxCheckboxes.add(chkEnableTrayPopups);
-
-						chkEnableTrayPopupsAlways = new ConfigCheckBox("Enable Tray Popups When Focused", GlobalSettings.enableTrayPopupsAlways);
-						chkEnableTrayPopupsAlways.addChangeListener(new ChangeListener() {
-							public void stateChanged(ChangeEvent arg0) {
-								if(chkEnableTrayPopups.isSelected()) {
-									chkEnableGUI.setSelected(true);
-									chkEnableTrayIcon.setSelected(true);
-									chkEnableTrayPopups.setSelected(true);
-								}
-							}});
-						boxCheckboxes.add(chkEnableTrayPopupsAlways);
-
-						chkEnableLegacyIcons = new ConfigCheckBox("Enable Legacy Icons", GlobalSettings.enableLegacyIcons);
-						boxCheckboxes.add(chkEnableLegacyIcons);
-
-						chkEnableCLI = new ConfigCheckBox("Enable CLI (requires restart)", GlobalSettings.enableCLI);
-						boxCheckboxes.add(chkEnableCLI);
-
-						chkEnableTrivia = new ConfigCheckBox("Enable Trivia (requires restart)", GlobalSettings.enableTrivia);
-						boxCheckboxes.add(chkEnableTrivia);
-
-						JLabel jl = new JLabel("Trivia Round Length");
-						boxCheckboxes.add(jl);
-
-						txtTriviaRoundLength = new ConfigTextArea(Long.toString(GlobalSettings.triviaRoundLength));
-						boxCheckboxes.add(txtTriviaRoundLength);
-
-						chkEnableCommands = new ConfigCheckBox("Enable Commands (requires restart)", GlobalSettings.enableCommands);
-						boxCheckboxes.add(chkEnableCommands);
-
-						chkEnableFloodProtect = new ConfigCheckBox("Enable Flood Protect", GlobalSettings.enableFloodProtect);
-						boxCheckboxes.add(chkEnableFloodProtect);
-
-						chkPacketLog = new ConfigCheckBox("Packet Log", GlobalSettings.packetLog);
-						boxCheckboxes.add(chkPacketLog);
-
-						chkWhisperBack = new ConfigCheckBox("Whisper Commands", GlobalSettings.whisperBack);
-						boxCheckboxes.add(chkWhisperBack);
-					}
-					boxLine.add(boxCheckboxes);
-
-					boxLine.add(Box.createHorizontalGlue());
-				}
-				boxSettings.add(boxLine);
-				boxAll.add(Box.createVerticalGlue());
-			}
-			boxAll.add(boxSettings);
-			boxAll.add(Box.createVerticalStrut(10));
-
-			Box boxButtons = new Box(BoxLayout.X_AXIS);
-			{
-				btnLoad = new JButton("Undo");
-				btnLoad.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent act) {
-						SwingUtilities.invokeLater(new Runnable() {
-							public void run() {
-								load();
-							}
-						});
-					}
-				});
-
-				btnOK = new JButton("OK");
-				btnOK.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent act) {
-						SwingUtilities.invokeLater(new Runnable() {
-							public void run() {
-								try {
-									save();
-									close();
-								} catch(Exception e) {
-									JOptionPane.showMessageDialog(
-											null,
-											e.getClass().getName() + "\n" + e.getMessage(),
-											"The configuration is invalid",
-											JOptionPane.ERROR_MESSAGE);
-								}
-							}
-						});
-					}
-				});
-
-				btnCancel = new JButton("Cancel");
-				btnCancel.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent act) {
-						SwingUtilities.invokeLater(new Runnable() {
-							public void run() {
-								cancel();
-							}
-						});
-					}
-				});
-
-				boxButtons.add(Box.createHorizontalGlue());
-				boxButtons.add(btnLoad);
-				boxButtons.add(Box.createHorizontalStrut(50));
-				boxButtons.add(btnOK);
-				boxButtons.add(btnCancel);
-			}
-			boxAll.add(boxButtons);
-		}
-		tabs.addTab("Settings", boxAll);
-
-		boxAll = new Box(BoxLayout.Y_AXIS);
-		{
-			String keys = null;
-			try {
-				File f = new File("cdkeys.txt");
-				BufferedReader br = new BufferedReader(new FileReader(f));
-				while(true) {
-					String l = br.readLine();
-					if(l == null)
-						break;
-					if(keys == null)
-						keys = l;
-					else
-						keys += "\n" + l;
-				}
-			} catch (Exception e) {
-				Out.exception(e);
-			}
-
-			txtCDKeys = new ConfigTextArea(keys);
-			boxAll.add(new JScrollPane(txtCDKeys));
-
-			btnSaveKeys = new JButton("Save");
-			btnSaveKeys.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent arg0) {
+			btnOK = new JButton("OK");
+			btnOK.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent act) {
 					SwingUtilities.invokeLater(new Runnable() {
 						public void run() {
 							try {
-								FileWriter fw = new FileWriter(new File("cdkeys.txt"));
-								fw.write(txtCDKeys.getText());
-								fw.close();
-
-								KeyManager.resetInitialized();
-								remove(tabs);
-								initializeGui();
-								validate();
-							} catch (IOException e) {
-								Out.exception(e);
+								save();
+								close();
+							} catch(Exception e) {
+								JOptionPane.showMessageDialog(
+										null,
+										e.getClass().getName() + "\n" + e.getMessage(),
+										"The configuration is invalid",
+										JOptionPane.ERROR_MESSAGE);
 							}
 						}
 					});
 				}
 			});
-			boxAll.add(btnSaveKeys);
+
+			btnCancel = new JButton("Cancel");
+			btnCancel.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent act) {
+					SwingUtilities.invokeLater(new Runnable() {
+						public void run() {
+							cancel();
+						}
+					});
+				}
+			});
+
+			btnApply = new JButton("Apply");
+			btnApply.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent act) {
+					SwingUtilities.invokeLater(new Runnable() {
+						public void run() {
+							save();
+						}
+					});
+				}
+			});
+
+			boxButtons.add(Box.createHorizontalGlue());
+			boxButtons.add(btnLoad);
+			boxButtons.add(Box.createHorizontalStrut(50));
+			boxButtons.add(btnCancel);
+			boxButtons.add(btnOK);
+			boxButtons.add(btnApply);
+		}
+		boxTabsAndButtons.add(boxButtons);
+
+		Box boxAll = new Box(BoxLayout.Y_AXIS);
+		{
+			txtBNLSServer = makeText("BNLS Server", GlobalSettings.bnlsServer, boxAll);
+			txtTrigger = makeText("Trigger", GlobalSettings.trigger, boxAll);
+			txtEmail = makeText("Email", GlobalSettings.email, boxAll);
+
+			Box boxLine = new Box(BoxLayout.X_AXIS);
+			{
+				JLabel jl = new JLabel("Anti-Idle");
+				jl.setPreferredSize(maxSize);
+				boxLine.add(jl);
+				boxLine.add(chkAntiIdle = new ConfigCheckBox("Enable", GlobalSettings.enableAntiIdle));
+				boxLine.add(txtAntiIdle = new ConfigTextArea(GlobalSettings.antiIdle));
+			}
+			boxAll.add(boxLine);
+
+			txtAntiIdleTimer = makeText("Anti-Idle Timer", Integer.toString(GlobalSettings.antiIdleTimer), boxAll);
+
+			Object[] values;
+			if(CurrentVersion.version().getReleaseType().isDevelopment())
+				values = new ReleaseType[] {
+					ReleaseType.Development };
+			else
+				values = new ReleaseType[] {
+					ReleaseType.Stable,
+					ReleaseType.ReleaseCandidate,
+					ReleaseType.Beta,
+					ReleaseType.Alpha };
+			cmbReleaseType = makeCombo("Version Check", values, false, boxAll);
+			cmbReleaseType.setSelectedItem(GlobalSettings.releaseType);
+
+			boxAll.add(chkAutoConnect = new ConfigCheckBox("Auto Connect", GlobalSettings.autoConnect));
+			boxAll.add(chkEnableFloodProtect = new ConfigCheckBox("Enable Flood Protect", GlobalSettings.enableFloodProtect));
+			boxAll.add(chkPacketLog = new ConfigCheckBox("Packet Log", GlobalSettings.packetLog));
+			boxAll.add(chkWhisperBack = new ConfigCheckBox("Whisper Commands", GlobalSettings.whisperBack));
+			boxAll.add(Box.createVerticalGlue());
+		}
+		tabs.addTab("Settings", boxAll);
+
+		boxAll = new Box(BoxLayout.Y_AXIS);
+		{
+			boxAll.add(chkEnableTrivia = new ConfigCheckBox("Enable Trivia (requires restart)", GlobalSettings.enableTrivia));
+			txtTriviaRoundLength = makeText("Trivia Round Length", Long.toString(GlobalSettings.triviaRoundLength), boxAll);
+			boxAll.add(chkEnableCLI = new ConfigCheckBox("Enable CLI (requires restart)", GlobalSettings.enableCLI));
+			boxAll.add(chkEnableCommands = new ConfigCheckBox("Enable Commands (requires restart)", GlobalSettings.enableCommands));
+		}
+		tabs.addTab("Plugins", boxAll);
+
+		boxAll = new Box(BoxLayout.Y_AXIS);
+		{
+			Object[] values = { TimeFormatter.tsFormat, "%1$tH:%1$tM:%1$tS.%1$tL", "%1$tH:%1$tM:%1$tS", "%1$tH:%1$tM" };
+			cmbTSFormat = makeCombo("TimeStamp Format", values, true, boxAll);
+			cmbTSFormat.setSelectedItem(TimeFormatter.tsFormat);
+
+			values = new String[] { "Starcraft", "Diablo 2" };
+			cmbColorScheme = makeCombo("Color Scheme", values, false, boxAll);
+			cmbColorScheme.setSelectedIndex(GlobalSettings.colorScheme - 1);
+
+			ArrayList<String> lafs = new ArrayList<String>();
+			for(LookAndFeelInfo lafi : UIManager.getInstalledLookAndFeels())
+				lafs.add(lafi.getName());
+			cmbLookAndFeel = makeCombo("Look and Feel", lafs.toArray(), false, boxAll);
+			cmbLookAndFeel.setSelectedItem(GlobalSettings.getLookAndFeel());
+			cmbLookAndFeel.addItemListener(new ItemListener() {
+				public void itemStateChanged(ItemEvent e) {
+					for(LookAndFeelInfo lafi : UIManager.getInstalledLookAndFeels())
+						if(lafi.getName().equals(cmbLookAndFeel.getSelectedItem()))
+							GlobalSettings.setLookAndFeel(lafi);
+				}
+			});
+			
+			cmbPlasticTheme = makeCombo("Plastic Theme", GlobalSettings.getLookAndFeelThemes(), false, boxAll);
+			cmbPlasticTheme.setSelectedItem(GlobalSettings.getLookAndFeelTheme());
+			cmbPlasticTheme.addItemListener(new ItemListener() {
+				public void itemStateChanged(ItemEvent e) {
+					GlobalSettings.setLookAndFeelTheme(cmbPlasticTheme.getSelectedItem().toString());
+				}
+			});
+
+			boxAll.add(chkDisplayBattleNetMOTD = new ConfigCheckBox("Display Battle.net MOTD", GlobalSettings.displayBattleNetMOTD));
+			boxAll.add(chkDisplayBattleNetChannels = new ConfigCheckBox("Display Battle.net Channels", GlobalSettings.displayBattleNetChannels));
+			boxAll.add(chkDisplayJoinParts = new ConfigCheckBox("Display Join/Part Messages", GlobalSettings.displayJoinParts));
+			boxAll.add(chkDisplayChannelUsers = new ConfigCheckBox("Display Channel Users On Join", GlobalSettings.displayChannelUsers));
+
+			chkEnableGUI = new ConfigCheckBox("Enable GUI (requires restart)", GlobalSettings.enableGUI);
+			chkEnableGUI.addChangeListener(new ChangeListener() {
+				public void stateChanged(ChangeEvent arg0) {
+					if(!chkEnableGUI.isSelected()) {
+						chkEnableTrayPopupsAlways.setSelected(false);
+						chkEnableTrayPopups.setSelected(false);
+						chkEnableTrayIcon.setSelected(false);
+					}
+				}});
+			boxAll.add(chkEnableGUI);
+
+			chkEnableTrayIcon = new ConfigCheckBox("Enable Tray Icon", GlobalSettings.enableTrayIcon);
+			chkEnableTrayIcon.addChangeListener(new ChangeListener() {
+				public void stateChanged(ChangeEvent arg0) {
+					if(chkEnableTrayIcon.isSelected())
+						chkEnableGUI.setSelected(true);
+					else {
+						chkEnableTrayPopupsAlways.setSelected(false);
+						chkEnableTrayPopups.setSelected(false);
+					}
+				}});
+			boxAll.add(chkEnableTrayIcon);
+
+			chkEnableTrayPopups = new ConfigCheckBox("Enable Tray Popups", GlobalSettings.enableTrayPopups);
+			chkEnableTrayPopups.addChangeListener(new ChangeListener() {
+				public void stateChanged(ChangeEvent arg0) {
+					if(chkEnableTrayPopups.isSelected()) {
+						chkEnableGUI.setSelected(true);
+						chkEnableTrayIcon.setSelected(true);
+					} else {
+						chkEnableTrayPopupsAlways.setSelected(false);
+					}
+				}});
+			boxAll.add(chkEnableTrayPopups);
+
+			chkEnableTrayPopupsAlways = new ConfigCheckBox("Enable Tray Popups When Focused", GlobalSettings.enableTrayPopupsAlways);
+			chkEnableTrayPopupsAlways.addChangeListener(new ChangeListener() {
+				public void stateChanged(ChangeEvent arg0) {
+					if(chkEnableTrayPopups.isSelected()) {
+						chkEnableGUI.setSelected(true);
+						chkEnableTrayIcon.setSelected(true);
+						chkEnableTrayPopups.setSelected(true);
+					}
+				}});
+			boxAll.add(chkEnableTrayPopupsAlways);
+			
+			boxAll.add(chkEnableLegacyIcons = new ConfigCheckBox("Enable Legacy Icons", GlobalSettings.enableLegacyIcons));
+		}
+		tabs.addTab("Display", boxAll);
+
+		boxAll = new Box(BoxLayout.Y_AXIS);
+		{
+			txtCDKeys = new ConfigTextArea(null);
+			loadCDKeys();
+			boxAll.add(new JScrollPane(txtCDKeys));
 		}
 		tabs.addTab("CD Keys", boxAll);
 
@@ -445,31 +383,26 @@ public class GlobalConfigurationFrame extends JDialog {
 			txtDriverUsername = makeText("Username", dbSettings.username, boxAll);
 			txtDriverPassword = makeText("Password", dbSettings.password, boxAll);
 			txtDriverSchema = makeText("Schema", dbSettings.schema, boxAll);
-
-			btnSaveDatabase = new JButton("Save");
-			btnSaveDatabase.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent arg0) {
-					dbSettings.driver = (String)cmbDrivers.getSelectedItem();
-					dbSettings.url = txtDriverURL.getText();
-					dbSettings.username = txtDriverUsername.getText();
-					dbSettings.password = txtDriverPassword.getText();
-					dbSettings.schema = txtDriverSchema.getText();
-					dbSettings.save();
-				}
-			});
-			boxAll.add(btnSaveDatabase);
 		}
 		tabs.addTab("Database", boxAll);
-
-		add(tabs);
+		
 		pack();
 
 		Dimension size = this.getSize();
-		if((size.height > 650) || (size.width > 400))
-			this.setSize(Math.min(400, size.width), Math.min(650, size.height));
+		if((size.height > 350) || (size.width > 400))
+			this.setSize(Math.min(400, size.width), Math.min(350, size.height));
 	}
 
 	private void save() {
+		// Save database info
+		dbSettings.driver = (String)cmbDrivers.getSelectedItem();
+		dbSettings.url = txtDriverURL.getText();
+		dbSettings.username = txtDriverUsername.getText();
+		dbSettings.password = txtDriverPassword.getText();
+		dbSettings.schema = txtDriverSchema.getText();
+		dbSettings.save();
+		
+		// Save global settings
 		GlobalSettings.bnlsServer = txtBNLSServer.getText();
 		GlobalSettings.trigger = txtTrigger.getText();
 		GlobalSettings.email = txtEmail.getText();
@@ -496,11 +429,55 @@ public class GlobalConfigurationFrame extends JDialog {
 		GlobalSettings.enableFloodProtect = chkEnableFloodProtect.isSelected();
 		GlobalSettings.packetLog = chkPacketLog.isSelected();
 		GlobalSettings.whisperBack = chkWhisperBack.isSelected();
-
 		GlobalSettings.save();
+		
+		// Save CD keys
+		try {
+			FileWriter fw = new FileWriter(new File("cdkeys.txt"));
+			fw.write(txtCDKeys.getText());
+			fw.close();
+
+			KeyManager.resetInitialized();
+			remove(tabs);
+			initializeGui();
+			validate();
+		} catch (IOException e) {
+			Out.exception(e);
+		}
+	}
+
+	private void loadCDKeys() {
+		String keys = null;
+		try {
+			File f = new File("cdkeys.txt");
+			BufferedReader br = new BufferedReader(new FileReader(f));
+			while(true) {
+				String l = br.readLine();
+				if(l == null)
+					break;
+				if(keys == null)
+					keys = l;
+				else
+					keys += "\n" + l;
+			}
+		} catch (Exception e) {
+			Out.exception(e);
+		}
+		txtCDKeys.setText(keys);
 	}
 
 	private void load() {
+		loadCDKeys();
+		
+		// Load database info
+		dbSettings.load();
+		cmbDrivers.setSelectedItem(dbSettings.driver);
+		txtDriverURL.setText(dbSettings.url);
+		txtDriverUsername.setText(dbSettings.username);
+		txtDriverPassword.setText(dbSettings.password);
+		txtDriverSchema.setText(dbSettings.schema);
+		
+		// Load global settings
 		GlobalSettings.load();
 		txtBNLSServer.setText(GlobalSettings.bnlsServer);
 		txtTrigger.setText(GlobalSettings.trigger);
