@@ -37,6 +37,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -118,7 +119,7 @@ public class GuiDesktop extends JFrame {
 			public void stateChanged(ChangeEvent e) {
 				JTabbedPane jtp = (JTabbedPane)e.getSource();
 				JPanel jp = (JPanel)jtp.getSelectedComponent();
-				for(GuiEventHandler gui : guis) {
+				for(final GuiEventHandler gui : guis) {
 					if(jp != gui.getFrame())
 						continue;
 					
@@ -137,11 +138,15 @@ public class GuiDesktop extends JFrame {
 					// Store the selected GUI
 					selectedGui = gui;
 					
-					// Move cursor focus to the chat box
-					gui.setChatText(null);
-					
 					// Set the title to the title for the selected GUI
 					setTitle();
+					
+					// Move cursor focus to the chat box
+					SwingUtilities.invokeLater(new Runnable() {
+						public void run() {
+							gui.setChatText(null);
+						}
+					});
 					
 					break;
 				}
