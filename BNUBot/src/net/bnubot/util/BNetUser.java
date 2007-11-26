@@ -21,6 +21,7 @@ public class BNetUser {
 	private static Hashtable<String, BNetUser> bnCache = new Hashtable<String, BNetUser>();
 	
 	private String shortLogonName;	// #=yes, realm=only if different from "myRealm"
+	private String shortShortLogonName;	// #=yes, realm=no
 	private String fullLogonName;	// #=yes, realm=yes
 	private final String fullAccountName;	// #=no, realm=yes
 	private String shortPrettyName = null;
@@ -132,10 +133,12 @@ public class BNetUser {
 		
 		
 		// ...
-		shortLogonName = uAccount;
+		shortShortLogonName = uAccount;
 		if(uNumber != 0)
-			shortLogonName += "#" + uNumber;
-		shortLogonName += "@" + uRealm;
+			shortShortLogonName += "#" + uNumber;
+		
+		// ...
+		shortLogonName = shortShortLogonName + "@" + uRealm;
 		
 		// ...
 		fullLogonName = uAccount;
@@ -186,9 +189,12 @@ public class BNetUser {
 		Boolean onMyRealm = uRealm.equals(myRealm);
 		
 		// ...
-		shortLogonName = uAccount;
+		shortShortLogonName = uAccount;
 		if(uNumber != 0)
-			shortLogonName += "#" + uNumber;
+			shortShortLogonName += "#" + uNumber;
+		
+		// ...
+		shortLogonName = shortShortLogonName;
 		if(!onMyRealm)
 			shortLogonName += "@" + uRealm;
 		
@@ -208,6 +214,14 @@ public class BNetUser {
 	 */
 	public String getShortLogonName() {
 		return shortLogonName;
+	}
+	
+	/**
+	 * Gets the shortest possible logon name and omit the realm
+	 * @return User[#N]
+	 */
+	public String getShortShortLogonName() {
+		return shortShortLogonName;
 	}
 	
 	/**

@@ -55,7 +55,7 @@ public class UserList extends JPanel {
 		List<String> ret = new ArrayList<String>(users.size());
 		Enumeration<UserInfo> en = users.elements();
 		while(en.hasMoreElements()) {
-			String u = en.nextElement().user.getFullLogonName();
+			String u = en.nextElement().user.getShortShortLogonName();
 			if(u.toLowerCase().contains(containing))
 				ret.add(u);
 		}
