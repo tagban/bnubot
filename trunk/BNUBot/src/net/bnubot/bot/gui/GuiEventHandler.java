@@ -67,7 +67,7 @@ public class GuiEventHandler implements EventHandler {
 	private JSplitPane jsp = null;
 	private boolean tabComplete = false;
 	private JDialog tcPopupWindow;
-	private JList tcList = new JList();
+	private final JList tcList = new JList();
 	private String tcBefore = null;
 	private String tcUser = null;
 	private String tcAfter = null;
