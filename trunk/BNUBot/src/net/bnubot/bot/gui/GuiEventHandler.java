@@ -69,6 +69,7 @@ public class GuiEventHandler implements EventHandler {
 	private JDialog tcPopupWindow;
 	private JList tcList = new JList();
 	private String tcBefore = null;
+	private String tcUser = null;
 	private String tcAfter = null;
 	
 	private static final Set<? extends AWTKeyStroke> EMPTY_SET = Collections.emptySet();
@@ -81,6 +82,24 @@ public class GuiEventHandler implements EventHandler {
 		this.con = con;
 		Out.setThreadOutputConnection(this);
 		titleChanged();
+	}
+	
+	/**
+	 * Update the list of the TC popup
+	 */
+	private void tcUpdate() {
+		String[] users = userList.findUsers(tcUser);
+		if(users.length == 1) {
+			tcSelect(users[0]);
+		} else if(users.length == 0) {
+			tcCancel();
+		} else {
+			tcList.setModel(new DefaultComboBoxModel(users));
+			tcPopupWindow.pack();
+			tcPopupWindow.setVisible(true);
+			tcList.setSelectedIndex(0);
+			tcList.requestFocus();
+		}
 	}
 	
 	/**
@@ -244,26 +263,15 @@ public class GuiEventHandler implements EventHandler {
 
 				try {
 					int end = chatTextArea.getCaretPosition();
-					String text = chatTextArea.getText(0, end);
-					int start = text.lastIndexOf(' ') + 1;
+					tcUser = chatTextArea.getText(0, end);
+					int start = tcUser.lastIndexOf(' ') + 1;
 					if(start != 0)
-						text = text.substring(start);
+						tcUser = tcUser.substring(start);
 
 					tcBefore = chatTextArea.getText(0, start);
 					tcAfter = chatTextArea.getText(end, chatTextArea.getText().length() - end);
 
-					String[] users = userList.findUsers(text);
-					if(users.length == 1) {
-						tcSelect(users[0]);
-					} else if(users.length == 0) {
-						tcCancel();
-					} else {
-						tcList.setModel(new DefaultComboBoxModel(users));
-						tcPopupWindow.pack();
-						tcPopupWindow.setVisible(true);
-						tcList.setSelectedIndex(0);
-						tcList.requestFocus();
-					}
+					tcUpdate();
 				} catch(Exception ex) {
 					Out.exception(ex);
 				}
@@ -352,12 +360,40 @@ public class GuiEventHandler implements EventHandler {
 			public void keyTyped(KeyEvent e) {}
 			public void keyReleased(KeyEvent e) {
 				switch(e.getKeyCode()) {
+				case KeyEvent.VK_SHIFT:
+				case KeyEvent.VK_ALT:
+				case KeyEvent.VK_CONTROL:
+				case KeyEvent.VK_META:
+					// Throw away modifier keystrokes
+					break;
 				case KeyEvent.VK_TAB:
 				case KeyEvent.VK_ENTER:
 					tcSelect(tcList.getSelectedValue().toString());
 					break;
 				case KeyEvent.VK_ESCAPE:
 					tcCancel();
+					break;
+				default:
+					// Pass the keystroke to the TC strings
+					if(e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
+						// If there's nothing left in the user string, cancel TC mode
+						if(tcUser.length() == 0) {
+							tcCancel();
+							break;
+						}
+						// Remove the last char from the string
+						tcUser = tcUser.substring(0, tcUser.length() - 1);
+					} else {
+						// Append the char to the string
+						tcUser += e.getKeyChar();
+					}
+					
+					// Update the TextArea with the new strings
+					chatTextArea.setText(tcBefore + tcUser + tcAfter);
+					chatTextArea.setCaretPosition(tcBefore.length() + tcUser.length());
+					
+					// Redraw the TC list
+					tcUpdate();
 					break;
 				}
 			}
