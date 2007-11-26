@@ -21,6 +21,8 @@ import java.awt.Window;
 import java.awt.event.AWTEventListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -56,6 +58,12 @@ import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.VersionCheck;
 
 public class GuiDesktop extends JFrame {
+	private static final ComponentAdapter windowSaver = new ComponentAdapter() {
+							    public void componentMoved(ComponentEvent evt) {
+							    	Window window = (Window)evt.getSource();
+							    	savePosition(window);
+							    }
+							};
 	private static final long serialVersionUID = -7144648179041514994L;
 	private static final List<GuiEventHandler> guis = new ArrayList<GuiEventHandler>();
 	private static GuiEventHandler selectedGui = null;
@@ -101,17 +109,11 @@ public class GuiDesktop extends JFrame {
 		Toolkit.getDefaultToolkit().addAWTEventListener(
 				new AWTEventListener() {
 					public void eventDispatched(AWTEvent event) {
-						WindowEvent wev = (WindowEvent)event;
-						Window window = (Window)wev.getComponent();
-						switch(event.getID()) {
-						case WindowEvent.WINDOW_CLOSING:
-						case WindowEvent.WINDOW_CLOSED:
-							savePosition(window);
-							break;
-						case WindowEvent.WINDOW_OPENED:
-							loadPosition(window);
-							break;
-						}
+						if(event.getID() != WindowEvent.WINDOW_OPENED)
+							return;
+						Window window = (Window)event.getSource();
+						loadPosition(window);
+						window.addComponentListener(windowSaver);
 					}},
 				AWTEvent.WINDOW_EVENT_MASK);
 		
@@ -310,7 +312,7 @@ public class GuiDesktop extends JFrame {
 		w.setBounds(bounds);
 	}
 	
-	protected static void savePosition(Window w) {
+	public static void savePosition(Window w) {
 		String header = w.getClass().getSimpleName();
 		Rectangle bounds = w.getBounds();
 		if((w instanceof Frame) && ((Frame)w).isResizable()) {
