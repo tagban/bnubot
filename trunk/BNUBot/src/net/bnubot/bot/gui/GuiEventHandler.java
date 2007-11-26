@@ -364,7 +364,12 @@ public class GuiEventHandler implements EventHandler {
 				case KeyEvent.VK_ALT:
 				case KeyEvent.VK_CONTROL:
 				case KeyEvent.VK_META:
-					// Throw away modifier keystrokes
+					// Throw away modifiers
+				case KeyEvent.VK_UP:
+				case KeyEvent.VK_DOWN:
+				case KeyEvent.VK_LEFT:
+				case KeyEvent.VK_RIGHT:
+					// Throw away arrow keys
 					break;
 				case KeyEvent.VK_TAB:
 				case KeyEvent.VK_ENTER:
