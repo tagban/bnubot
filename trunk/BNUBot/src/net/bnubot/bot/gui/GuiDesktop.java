@@ -312,7 +312,7 @@ public class GuiDesktop extends JFrame {
 		w.setBounds(bounds);
 	}
 	
-	public static void savePosition(Window w) {
+	protected static void savePosition(Window w) {
 		String header = w.getClass().getSimpleName();
 		Rectangle bounds = w.getBounds();
 		if((w instanceof Frame) && ((Frame)w).isResizable()) {
@@ -321,8 +321,6 @@ public class GuiDesktop extends JFrame {
 		}
 		Settings.write(header, "x", Integer.toString(bounds.x));
 		Settings.write(header, "y", Integer.toString(bounds.y));
-		if((w instanceof GuiDesktop) && (selectedGui != null))
-			Settings.write(header, "dividerLocation", Integer.toString(selectedGui.getDividerLocation()));
 		Settings.store();
 	}
 
