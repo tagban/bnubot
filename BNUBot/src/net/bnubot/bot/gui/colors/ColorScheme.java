@@ -6,14 +6,12 @@
 package net.bnubot.bot.gui.colors;
 
 import java.awt.Color;
-import java.awt.Font;
 
 import net.bnubot.util.Out;
 
 public abstract class ColorScheme {
 	public static final byte COLORSCHEME_STARCRAFT = (byte)0x01;
 	public static final byte COLORSCHEME_DIABLO2 = (byte)0x02;
-	private static final Font font = new Font("Verdana", Font.PLAIN, 12);
 	
 	public static ColorScheme createColorScheme(byte colorScheme) {
 		switch(colorScheme) {
@@ -24,10 +22,6 @@ public abstract class ColorScheme {
 		}
 		Out.error(ColorScheme.class, "Unknown ColorScheme id " + Byte.toString(colorScheme));
 		return null;
-	}
-
-	public Font getFont() {
-		return font;
 	}
 	
 	public abstract Color getBackgroundColor();

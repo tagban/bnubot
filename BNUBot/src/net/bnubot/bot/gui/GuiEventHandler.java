@@ -42,6 +42,7 @@ import javax.swing.plaf.basic.BasicSplitPaneUI;
 
 import net.bnubot.bot.gui.colors.ColorScheme;
 import net.bnubot.bot.gui.components.ClanList;
+import net.bnubot.bot.gui.components.ColoredTextField;
 import net.bnubot.bot.gui.components.FriendList;
 import net.bnubot.bot.gui.components.TextWindow;
 import net.bnubot.bot.gui.components.UserList;
@@ -216,17 +217,10 @@ public class GuiEventHandler implements EventHandler {
 		// Main text area
 		mainTextArea = new TextWindow(colors);
 		// Send chat textbox
-		chatTextArea = new JTextField();
+		chatTextArea = new ColoredTextField(colors);
 		// Enable tab character
 		chatTextArea.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, EMPTY_SET);
 		chatTextArea.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, EMPTY_SET);
-		chatTextArea.setBorder(null);
-		chatTextArea.setBackground(colors.getBackgroundColor());
-		chatTextArea.setForeground(colors.getForegroundColor());
-		chatTextArea.setCaretColor(colors.getForegroundColor());
-		System.out.println(chatTextArea.getFont().toString());
-		chatTextArea.setFont(colors.getFont());
-		System.out.println(chatTextArea.getFont().toString());
 		chatTextArea.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent e) {}
 			public void keyTyped(KeyEvent e) {
@@ -284,12 +278,9 @@ public class GuiEventHandler implements EventHandler {
 			}
 		});
 		// Channel text box (above userlist)
-		channelTextPane = new JTextField();
+		channelTextPane = new ColoredTextField(colors);
 		channelTextPane.setHorizontalAlignment(JTextField.CENTER);
 		channelTextPane.setEditable(false);
-		channelTextPane.setBackground(colors.getBackgroundColor());
-		channelTextPane.setForeground(colors.getForegroundColor());
-		channelTextPane.setFont(colors.getFont());
 		
 		// The userlist
 		userList = new UserList(colors, this);
