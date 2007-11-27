@@ -225,6 +225,9 @@ public class GuiEventHandler implements EventHandler {
 		chatTextArea.setBackground(colors.getBackgroundColor());
 		chatTextArea.setForeground(Color.LIGHT_GRAY);
 		chatTextArea.setCaretColor(Color.LIGHT_GRAY);
+		System.out.println(chatTextArea.getFont().toString());
+		chatTextArea.setFont(colors.getFont());
+		System.out.println(chatTextArea.getFont().toString());
 		chatTextArea.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent e) {}
 			public void keyTyped(KeyEvent e) {
@@ -287,6 +290,7 @@ public class GuiEventHandler implements EventHandler {
 		channelTextPane.setEditable(false);
 		channelTextPane.setBackground(colors.getBackgroundColor());
 		channelTextPane.setForeground(Color.LIGHT_GRAY);
+		channelTextPane.setFont(colors.getFont());
 		
 		// The userlist
 		userList = new UserList(colors, this);
