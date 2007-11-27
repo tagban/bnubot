@@ -18,7 +18,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
-import net.bnubot.bot.gui.ColorScheme.ColorScheme;
+import net.bnubot.bot.gui.colors.ColorScheme;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.BrowserLauncher;
 import net.bnubot.util.Out;
@@ -75,7 +75,7 @@ public class TextWindow extends JScrollPane {
 		
 		head = "<html><head><style type=\"text/css\">";
 		head += " body	{font-family: verdana, courier, sans-serif; font-size: 10px;}";
-		head += " .timestamp	{color: #" + makeColor(cs.getTimeStampColor()) + ";}";
+		head += " .timestamp	{color: #" + makeColor(cs.getForegroundColor()) + ";}";
 		head += " .channel	{color: #" + makeColor(cs.getChannelColor()) + ";}";
 		head += " .info	{color: #" + makeColor(cs.getInfoColor()) + ";}";
 		head += " .error	{color: #" + makeColor(cs.getErrorColor()) + ";}";
