@@ -24,7 +24,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
 import net.bnubot.bot.gui.GuiEventHandler;
-import net.bnubot.bot.gui.ColorScheme.ColorScheme;
+import net.bnubot.bot.gui.colors.ColorScheme;
 import net.bnubot.bot.gui.icons.BNetIcon;
 import net.bnubot.bot.gui.icons.IconsDotBniReader;
 import net.bnubot.core.ChannelListPriority;

@@ -3,7 +3,7 @@
  * $Id$
  */
 
-package net.bnubot.bot.gui.ColorScheme;
+package net.bnubot.bot.gui.colors;
 
 import java.awt.Color;
 
@@ -26,7 +26,7 @@ public class Diablo2ColorScheme extends ColorScheme {
 		return D2Black;
 	}
 	
-	public Color getTimeStampColor() {
+	public Color getForegroundColor() {
 		return D2White;
 	}
 	

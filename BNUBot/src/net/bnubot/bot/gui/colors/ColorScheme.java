@@ -3,7 +3,7 @@
  * $Id$
  */
 
-package net.bnubot.bot.gui.ColorScheme;
+package net.bnubot.bot.gui.colors;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -31,7 +31,7 @@ public abstract class ColorScheme {
 	}
 	
 	public abstract Color getBackgroundColor();
-	public abstract Color getTimeStampColor();
+	public abstract Color getForegroundColor();
 	public abstract Color getChannelColor();
 	public abstract Color getInfoColor();
 	public abstract Color getErrorColor();

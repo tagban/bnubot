@@ -14,7 +14,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import net.bnubot.bot.gui.ColorScheme.ColorScheme;
+import net.bnubot.bot.gui.colors.ColorScheme;
 import net.bnubot.bot.gui.icons.BNetIcon;
 import net.bnubot.bot.gui.icons.IconsDotBniReader;
 import net.bnubot.core.friend.FriendEntry;

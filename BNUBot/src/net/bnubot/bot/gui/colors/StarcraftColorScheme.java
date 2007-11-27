@@ -3,7 +3,7 @@
  * $Id$
  */
 
-package net.bnubot.bot.gui.ColorScheme;
+package net.bnubot.bot.gui.colors;
 
 import java.awt.Color;
 
@@ -22,7 +22,7 @@ public class StarcraftColorScheme extends ColorScheme {
 		return SCBlack;
 	}
 
-	public Color getTimeStampColor() {
+	public Color getForegroundColor() {
 		return SCLtGray;
 	}
 	

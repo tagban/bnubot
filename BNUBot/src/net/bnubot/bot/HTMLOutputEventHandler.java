@@ -19,7 +19,7 @@ import java.util.List;
 
 import javax.swing.SwingUtilities;
 
-import net.bnubot.bot.gui.ColorScheme.ColorScheme;
+import net.bnubot.bot.gui.colors.ColorScheme;
 import net.bnubot.core.ChannelListPriority;
 import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
@@ -210,7 +210,7 @@ public class HTMLOutputEventHandler implements EventHandler {
 	}
 	
 	private String getDate() {
-		return getColor(cs.getTimeStampColor()) + String.format("[%1$tH:%1$tM:%1$tS] ", new GregorianCalendar());
+		return getColor(cs.getForegroundColor()) + String.format("[%1$tH:%1$tM:%1$tS] ", new GregorianCalendar());
 	}
 	
 	private String getColor(Color col) {

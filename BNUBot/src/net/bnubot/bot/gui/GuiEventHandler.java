@@ -7,7 +7,6 @@ package net.bnubot.bot.gui;
 
 import java.awt.AWTKeyStroke;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.KeyboardFocusManager;
 import java.awt.Point;
 import java.awt.TrayIcon;
@@ -41,7 +40,7 @@ import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
 
-import net.bnubot.bot.gui.ColorScheme.ColorScheme;
+import net.bnubot.bot.gui.colors.ColorScheme;
 import net.bnubot.bot.gui.components.ClanList;
 import net.bnubot.bot.gui.components.FriendList;
 import net.bnubot.bot.gui.components.TextWindow;
@@ -223,8 +222,8 @@ public class GuiEventHandler implements EventHandler {
 		chatTextArea.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, EMPTY_SET);
 		chatTextArea.setBorder(null);
 		chatTextArea.setBackground(colors.getBackgroundColor());
-		chatTextArea.setForeground(Color.LIGHT_GRAY);
-		chatTextArea.setCaretColor(Color.LIGHT_GRAY);
+		chatTextArea.setForeground(colors.getForegroundColor());
+		chatTextArea.setCaretColor(colors.getForegroundColor());
 		System.out.println(chatTextArea.getFont().toString());
 		chatTextArea.setFont(colors.getFont());
 		System.out.println(chatTextArea.getFont().toString());
@@ -289,7 +288,7 @@ public class GuiEventHandler implements EventHandler {
 		channelTextPane.setHorizontalAlignment(JTextField.CENTER);
 		channelTextPane.setEditable(false);
 		channelTextPane.setBackground(colors.getBackgroundColor());
-		channelTextPane.setForeground(Color.LIGHT_GRAY);
+		channelTextPane.setForeground(colors.getForegroundColor());
 		channelTextPane.setFont(colors.getFont());
 		
 		// The userlist
