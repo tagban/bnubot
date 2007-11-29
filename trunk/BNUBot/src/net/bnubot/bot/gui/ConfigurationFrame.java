@@ -5,7 +5,6 @@
 
 package net.bnubot.bot.gui;
 
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -139,6 +138,8 @@ public class ConfigurationFrame extends JDialog {
 									cmbCDKey2.setSelectedIndex(i);
 							}
 						}
+						
+						pack();
 					}
 				});
 				//Initialize CD Keys combo box before setting product
@@ -245,11 +246,8 @@ public class ConfigurationFrame extends JDialog {
 			initializeGui();
 			return;
 		}
+		
 		pack();
-
-		Dimension size = this.getSize();
-		if((size.height > 300) || (size.width > 400))
-			this.setSize(Math.min(400, size.width), Math.min(300, size.height));
 	}
 
 	private String formatCDKey(String in) {
