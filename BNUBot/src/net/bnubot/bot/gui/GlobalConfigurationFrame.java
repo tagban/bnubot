@@ -25,7 +25,6 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -189,11 +188,10 @@ public class GlobalConfigurationFrame extends JDialog {
 
 			Box boxLine = new Box(BoxLayout.X_AXIS);
 			{
-				JLabel jl = new JLabel("Anti-Idle");
-				jl.setPreferredSize(ConfigFactory.getMaxSize());
-				boxLine.add(jl);
+				boxLine.add(ConfigFactory.makeLabel("Anti-Idle"));
 				boxLine.add(chkAntiIdle = new ConfigCheckBox("Enable", GlobalSettings.enableAntiIdle));
 				boxLine.add(txtAntiIdle = new ConfigTextArea(GlobalSettings.antiIdle));
+				txtAntiIdle.setMaximumSize(ConfigFactory.getMaxComponentSize());
 			}
 			boxAll.add(boxLine);
 
@@ -318,6 +316,7 @@ public class GlobalConfigurationFrame extends JDialog {
 		boxAll = new Box(BoxLayout.Y_AXIS);
 		{
 			txtCDKeys = new ConfigTextArea(null);
+			txtCDKeys.setPreferredSize(new Dimension(350, 350));
 			loadCDKeys();
 			boxAll.add(new JScrollPane(txtCDKeys));
 		}
@@ -349,10 +348,6 @@ public class GlobalConfigurationFrame extends JDialog {
 		tabs.addTab("Database", boxAll);
 		
 		pack();
-
-		Dimension size = this.getSize();
-		if((size.height > 450) || (size.width > 400))
-			this.setSize(Math.min(400, size.width), Math.min(450, size.height));
 	}
 
 	private void save() {
