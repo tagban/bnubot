@@ -19,10 +19,10 @@ import java.sql.Driver;
 import java.sql.DriverManager;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -132,6 +132,7 @@ public class GlobalConfigurationFrame extends JDialog {
 
 		ConfigComboBox cmb = new ConfigComboBox(values);
 		cmb.setEditable(editable);
+		cmb.setBorder(null);
 
 		Box boxLine = new Box(BoxLayout.X_AXIS);
 		boxLine.add(jl);
@@ -263,7 +264,7 @@ public class GlobalConfigurationFrame extends JDialog {
 		boxAll = new Box(BoxLayout.Y_AXIS);
 		{
 			Object[] values = { TimeFormatter.tsFormat, "%1$tH:%1$tM:%1$tS.%1$tL", "%1$tH:%1$tM:%1$tS", "%1$tH:%1$tM" };
-			cmbTSFormat = makeCombo("TimeStamp Format", values, true, boxAll);
+			cmbTSFormat = makeCombo("TimeStamp", values, true, boxAll);
 			cmbTSFormat.setSelectedItem(TimeFormatter.tsFormat);
 
 			values = new String[] { "Starcraft", "Diablo 2" };
@@ -359,26 +360,19 @@ public class GlobalConfigurationFrame extends JDialog {
 			dbSettings = new DatabaseSettings();
 			dbSettings.load();
 
-			Box boxLine = new Box(BoxLayout.X_AXIS);
-			{
-				JLabel jl = new JLabel("Driver");
-				jl.setPreferredSize(maxSize);
-				boxLine.add(jl);
-
-				DefaultComboBoxModel model = new DefaultComboBoxModel();
-				Enumeration<Driver> drivers = DriverManager.getDrivers();
-				while(drivers.hasMoreElements()) {
-					Driver d = drivers.nextElement();
-					if(d instanceof DriverShim)
-						model.addElement(((DriverShim)d).getDriverClass().getName());
-				}
-
-				cmbDrivers = new ConfigComboBox(model);
-				cmbDrivers.setSelectedItem(dbSettings.driver);
-				boxLine.add(cmbDrivers);
+			// Get a list of the avalable drivers
+			List<Object> driverList = new ArrayList<Object>();
+			Enumeration<Driver> drivers = DriverManager.getDrivers();
+			while(drivers.hasMoreElements()) {
+				Driver d = drivers.nextElement();
+				if(d instanceof DriverShim)
+					driverList.add(((DriverShim)d).getDriverClass().getName());
+				else
+					driverList.add(d.getClass().getName());
 			}
-			boxAll.add(boxLine);
-
+			
+			cmbDrivers = makeCombo("Driver", driverList.toArray(), false, boxAll);
+			cmbDrivers.setSelectedItem(dbSettings.driver);
 			txtDriverURL = makeText("URL", dbSettings.url, boxAll);
 			txtDriverUsername = makeText("Username", dbSettings.username, boxAll);
 			txtDriverPassword = makeText("Password", dbSettings.password, boxAll);
@@ -389,8 +383,8 @@ public class GlobalConfigurationFrame extends JDialog {
 		pack();
 
 		Dimension size = this.getSize();
-		if((size.height > 350) || (size.width > 400))
-			this.setSize(Math.min(400, size.width), Math.min(350, size.height));
+		if((size.height > 450) || (size.width > 400))
+			this.setSize(Math.min(400, size.width), Math.min(450, size.height));
 	}
 
 	private void save() {
