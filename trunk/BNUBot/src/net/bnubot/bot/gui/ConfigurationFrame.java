@@ -16,13 +16,13 @@ import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.SwingUtilities;
 
 import net.bnubot.bot.gui.KeyManager.CDKey;
 import net.bnubot.bot.gui.components.ConfigComboBox;
+import net.bnubot.bot.gui.components.ConfigFactory;
 import net.bnubot.bot.gui.components.ConfigTextArea;
 import net.bnubot.settings.ConnectionSettings;
 
@@ -55,62 +55,16 @@ public class ConfigurationFrame extends JDialog {
 		setModal(true);
 	}
 
-	private static final int lblWidth = 100;
-	private static Dimension maxSize = new Dimension(lblWidth, 0);
-
-	private ConfigTextArea makeText(String label, String value, Box parent) {
-		JLabel jl = new JLabel(label);
-		jl.setPreferredSize(maxSize);
-
-		ConfigTextArea txt = new ConfigTextArea(value);
-
-		Box boxLine = new Box(BoxLayout.X_AXIS);
-		boxLine.add(jl);
-		boxLine.add(txt);
-		parent.add(boxLine);
-
-		return txt;
-	}
-
-	private JPasswordField makePass(String label, String value, Box parent) {
-		JLabel jl = new JLabel(label);
-		jl.setPreferredSize(maxSize);
-
-		JPasswordField pass = new JPasswordField(value);
-
-		Box boxLine = new Box(BoxLayout.X_AXIS);
-		boxLine.add(jl);
-		boxLine.add(pass);
-		parent.add(boxLine);
-
-		return pass;
-	}
-
-	private ConfigComboBox makeCombo(String label, Object[] values, boolean editable, Box parent) {
-		JLabel jl = new JLabel(label);
-		jl.setPreferredSize(maxSize);
-
-		ConfigComboBox cmb = new ConfigComboBox(values);
-		cmb.setEditable(editable);
-
-		Box boxLine = new Box(BoxLayout.X_AXIS);
-		boxLine.add(jl);
-		boxLine.add(cmb);
-		parent.add(boxLine);
-
-		return cmb;
-	}
-
 	private void initializeGui() {
 		Box boxAll = new Box(BoxLayout.Y_AXIS);
 		boolean addConnectionStuff = true;
 		ConnectionStuff: {
 			Box boxSettings = new Box(BoxLayout.Y_AXIS);
 			{
-				txtUsername = makeText("Username", cs.username, boxSettings);
-				txtPassword = makePass("Password", cs.password, boxSettings);
+				txtUsername = ConfigFactory.makeText("Username", cs.username, boxSettings);
+				txtPassword = ConfigFactory.makePass("Password", cs.password, boxSettings);
 
-				cmbProduct = makeCombo("Product", Constants.prodsDisplay, false, boxSettings);
+				cmbProduct = ConfigFactory.makeCombo("Product", Constants.prodsDisplay, false, boxSettings);
 				cmbProduct.addItemListener(new ItemListener() {
 					public void itemStateChanged(ItemEvent e) {
 						int prod = KeyManager.PRODUCT_ALLNORMAL;
@@ -198,8 +152,8 @@ public class ConfigurationFrame extends JDialog {
 					addConnectionStuff = false;
 					break ConnectionStuff;
 				}
-				cmbCDKey = makeCombo("CD key", CDKeys, false, boxSettings);
-				cmbCDKey2 = makeCombo("CD key 2", CDKeys, false, boxSettings);
+				cmbCDKey = ConfigFactory.makeCombo("CD key", CDKeys, false, boxSettings);
+				cmbCDKey2 = ConfigFactory.makeCombo("CD key 2", CDKeys, false, boxSettings);
 				
 				cmbProduct.setSelectedIndex(cs.product - 1);
 				cmbCDKey.setSelectedItem(cs.cdkey);
@@ -215,7 +169,7 @@ public class ConfigurationFrame extends JDialog {
 					break;
 				}
 				
-				cmbBNCSServer = makeCombo("Battle.net Server", new String[] {
+				cmbBNCSServer = ConfigFactory.makeCombo("Battle.net Server", new String[] {
 					"useast.battle.net",
 					"uswest.battle.net",
 					"europe.battle.net",
@@ -223,7 +177,7 @@ public class ConfigurationFrame extends JDialog {
 					}, false, boxSettings);
 				cmbBNCSServer.setSelectedItem(cs.bncsServer);
 				
-				txtChannel = makeText("Channel", cs.channel, boxSettings);
+				txtChannel = ConfigFactory.makeText("Channel", cs.channel, boxSettings);
 
 				boxAll.add(Box.createVerticalGlue());
 			}

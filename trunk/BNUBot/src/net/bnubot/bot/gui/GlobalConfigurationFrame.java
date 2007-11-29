@@ -38,6 +38,7 @@ import javax.swing.event.ChangeListener;
 import net.bnubot.bot.database.DriverShim;
 import net.bnubot.bot.gui.components.ConfigCheckBox;
 import net.bnubot.bot.gui.components.ConfigComboBox;
+import net.bnubot.bot.gui.components.ConfigFactory;
 import net.bnubot.bot.gui.components.ConfigTextArea;
 import net.bnubot.settings.DatabaseSettings;
 import net.bnubot.settings.GlobalSettings;
@@ -107,39 +108,6 @@ public class GlobalConfigurationFrame extends JDialog {
 		initializeGui();
 
 		setModal(true);
-	}
-
-	private static final int lblWidth = 100;
-	private static final Dimension maxSize = new Dimension(lblWidth, 0);
-
-	private ConfigTextArea makeText(String label, String value, Box parent) {
-		JLabel jl = new JLabel(label);
-		jl.setPreferredSize(maxSize);
-
-		ConfigTextArea txt = new ConfigTextArea(value);
-
-		Box boxLine = new Box(BoxLayout.X_AXIS);
-		boxLine.add(jl);
-		boxLine.add(txt);
-		parent.add(boxLine);
-
-		return txt;
-	}
-
-	private ConfigComboBox makeCombo(String label, Object[] values, boolean editable, Box parent) {
-		JLabel jl = new JLabel(label);
-		jl.setPreferredSize(maxSize);
-
-		ConfigComboBox cmb = new ConfigComboBox(values);
-		cmb.setEditable(editable);
-		cmb.setBorder(null);
-
-		Box boxLine = new Box(BoxLayout.X_AXIS);
-		boxLine.add(jl);
-		boxLine.add(cmb);
-		parent.add(boxLine);
-
-		return cmb;
 	}
 
 	private void initializeGui() {
@@ -215,21 +183,21 @@ public class GlobalConfigurationFrame extends JDialog {
 
 		Box boxAll = new Box(BoxLayout.Y_AXIS);
 		{
-			txtBNLSServer = makeText("BNLS Server", GlobalSettings.bnlsServer, boxAll);
-			txtTrigger = makeText("Trigger", GlobalSettings.trigger, boxAll);
-			txtEmail = makeText("Email", GlobalSettings.email, boxAll);
+			txtBNLSServer = ConfigFactory.makeText("BNLS Server", GlobalSettings.bnlsServer, boxAll);
+			txtTrigger = ConfigFactory.makeText("Trigger", GlobalSettings.trigger, boxAll);
+			txtEmail = ConfigFactory.makeText("Email", GlobalSettings.email, boxAll);
 
 			Box boxLine = new Box(BoxLayout.X_AXIS);
 			{
 				JLabel jl = new JLabel("Anti-Idle");
-				jl.setPreferredSize(maxSize);
+				jl.setPreferredSize(ConfigFactory.getMaxSize());
 				boxLine.add(jl);
 				boxLine.add(chkAntiIdle = new ConfigCheckBox("Enable", GlobalSettings.enableAntiIdle));
 				boxLine.add(txtAntiIdle = new ConfigTextArea(GlobalSettings.antiIdle));
 			}
 			boxAll.add(boxLine);
 
-			txtAntiIdleTimer = makeText("Anti-Idle Timer", Integer.toString(GlobalSettings.antiIdleTimer), boxAll);
+			txtAntiIdleTimer = ConfigFactory.makeText("Anti-Idle Timer", Integer.toString(GlobalSettings.antiIdleTimer), boxAll);
 
 			Object[] values;
 			if(CurrentVersion.version().getReleaseType().isDevelopment())
@@ -241,7 +209,7 @@ public class GlobalConfigurationFrame extends JDialog {
 					ReleaseType.ReleaseCandidate,
 					ReleaseType.Beta,
 					ReleaseType.Alpha };
-			cmbReleaseType = makeCombo("Version Check", values, false, boxAll);
+			cmbReleaseType = ConfigFactory.makeCombo("Version Check", values, false, boxAll);
 			cmbReleaseType.setSelectedItem(GlobalSettings.releaseType);
 
 			boxAll.add(chkAutoConnect = new ConfigCheckBox("Auto Connect", GlobalSettings.autoConnect));
@@ -255,7 +223,7 @@ public class GlobalConfigurationFrame extends JDialog {
 		boxAll = new Box(BoxLayout.Y_AXIS);
 		{
 			boxAll.add(chkEnableTrivia = new ConfigCheckBox("Enable Trivia (requires restart)", GlobalSettings.enableTrivia));
-			txtTriviaRoundLength = makeText("Trivia Round Length", Long.toString(GlobalSettings.triviaRoundLength), boxAll);
+			txtTriviaRoundLength = ConfigFactory.makeText("Trivia Round Length", Long.toString(GlobalSettings.triviaRoundLength), boxAll);
 			boxAll.add(chkEnableCLI = new ConfigCheckBox("Enable CLI (requires restart)", GlobalSettings.enableCLI));
 			boxAll.add(chkEnableCommands = new ConfigCheckBox("Enable Commands (requires restart)", GlobalSettings.enableCommands));
 		}
@@ -264,17 +232,17 @@ public class GlobalConfigurationFrame extends JDialog {
 		boxAll = new Box(BoxLayout.Y_AXIS);
 		{
 			Object[] values = { TimeFormatter.tsFormat, "%1$tH:%1$tM:%1$tS.%1$tL", "%1$tH:%1$tM:%1$tS", "%1$tH:%1$tM" };
-			cmbTSFormat = makeCombo("TimeStamp", values, true, boxAll);
+			cmbTSFormat = ConfigFactory.makeCombo("TimeStamp", values, true, boxAll);
 			cmbTSFormat.setSelectedItem(TimeFormatter.tsFormat);
 
 			values = new String[] { "Starcraft", "Diablo 2" };
-			cmbColorScheme = makeCombo("Color Scheme", values, false, boxAll);
+			cmbColorScheme = ConfigFactory.makeCombo("Color Scheme", values, false, boxAll);
 			cmbColorScheme.setSelectedIndex(GlobalSettings.colorScheme - 1);
 
 			ArrayList<String> lafs = new ArrayList<String>();
 			for(LookAndFeelInfo lafi : UIManager.getInstalledLookAndFeels())
 				lafs.add(lafi.getName());
-			cmbLookAndFeel = makeCombo("Look and Feel", lafs.toArray(), false, boxAll);
+			cmbLookAndFeel = ConfigFactory.makeCombo("Look and Feel", lafs.toArray(), false, boxAll);
 			cmbLookAndFeel.setSelectedItem(GlobalSettings.getLookAndFeel());
 			cmbLookAndFeel.addItemListener(new ItemListener() {
 				public void itemStateChanged(ItemEvent e) {
@@ -284,7 +252,7 @@ public class GlobalConfigurationFrame extends JDialog {
 				}
 			});
 			
-			cmbPlasticTheme = makeCombo("Plastic Theme", GlobalSettings.getLookAndFeelThemes(), false, boxAll);
+			cmbPlasticTheme = ConfigFactory.makeCombo("Plastic Theme", GlobalSettings.getLookAndFeelThemes(), false, boxAll);
 			cmbPlasticTheme.setSelectedItem(GlobalSettings.getLookAndFeelTheme());
 			cmbPlasticTheme.addItemListener(new ItemListener() {
 				public void itemStateChanged(ItemEvent e) {
@@ -371,12 +339,12 @@ public class GlobalConfigurationFrame extends JDialog {
 					driverList.add(d.getClass().getName());
 			}
 			
-			cmbDrivers = makeCombo("Driver", driverList.toArray(), false, boxAll);
+			cmbDrivers = ConfigFactory.makeCombo("Driver", driverList.toArray(), false, boxAll);
 			cmbDrivers.setSelectedItem(dbSettings.driver);
-			txtDriverURL = makeText("URL", dbSettings.url, boxAll);
-			txtDriverUsername = makeText("Username", dbSettings.username, boxAll);
-			txtDriverPassword = makeText("Password", dbSettings.password, boxAll);
-			txtDriverSchema = makeText("Schema", dbSettings.schema, boxAll);
+			txtDriverURL = ConfigFactory.makeText("URL", dbSettings.url, boxAll);
+			txtDriverUsername = ConfigFactory.makeText("Username", dbSettings.username, boxAll);
+			txtDriverPassword = ConfigFactory.makeText("Password", dbSettings.password, boxAll);
+			txtDriverSchema = ConfigFactory.makeText("Schema", dbSettings.schema, boxAll);
 		}
 		tabs.addTab("Database", boxAll);
 		
