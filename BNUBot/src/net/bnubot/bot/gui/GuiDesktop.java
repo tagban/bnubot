@@ -56,8 +56,23 @@ import net.bnubot.settings.Settings;
 import net.bnubot.util.Out;
 import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.VersionCheck;
+import net.roydesign.mac.MRJAdapter;
 
 public class GuiDesktop extends JFrame {
+	static {
+		if(MRJAdapter.mrjVersion != -1.0f) {
+			MRJAdapter.addAboutListener(new ActionListener() {
+				public void actionPerformed(ActionEvent event) {
+					new AboutWindow().setVisible(true);
+				}});
+			MRJAdapter.addPreferencesListener(new ActionListener() {
+				public void actionPerformed(ActionEvent event) {
+					new GlobalConfigurationFrame().setVisible(true);
+				}});
+			
+		}
+	}
+	
 	private static final ComponentAdapter windowSaver = new ComponentAdapter() {
 							    public void componentMoved(ComponentEvent evt) {
 							    	Window window = (Window)evt.getSource();
@@ -86,7 +101,7 @@ public class GuiDesktop extends JFrame {
 	private void initializeGui() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		setContentPane(tabs);
+		getContentPane().add(tabs);
 		setSize(800, 500);
 		
 		// Make sure the window gets laid out when maximized/restored
