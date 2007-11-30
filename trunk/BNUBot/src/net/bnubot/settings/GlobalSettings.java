@@ -20,6 +20,20 @@ import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.ReleaseType;
 
 public class GlobalSettings {
+	public static enum TrayIconMode {
+		Disabled,
+		Enabled,
+		AlwaysDisplayPopups;
+		
+		public boolean enableTray() {
+			return(this != Disabled);
+		}
+		
+		public boolean alwaysDisplay() {
+			return(this == AlwaysDisplayPopups);
+		}
+	}
+	
 	public static int numBots;
 	public static byte colorScheme;
 	public static String trigger;
@@ -37,9 +51,7 @@ public class GlobalSettings {
 	public static boolean displayChannelUsers;
 	public static boolean enableCLI;
 	public static boolean enableGUI;
-	public static boolean enableTrayIcon;
-	public static boolean enableTrayPopups;
-	public static boolean enableTrayPopupsAlways;
+	public static TrayIconMode enableTrayIconMode;
 	public static boolean enableLegacyIcons;
 	public static boolean enableCommands;
 	public static boolean enableTrivia;
@@ -170,9 +182,7 @@ public class GlobalSettings {
 		Settings.write(null, "enableGreetings", Boolean.toString(enableGreetings));
 		Settings.write(null, "enableCLI", Boolean.toString(enableCLI));
 		Settings.write(null, "enableGUI", Boolean.toString(enableGUI));
-		Settings.write(null, "enableTrayIcon", Boolean.toString(enableTrayIcon));
-		Settings.write(null, "enableTrayPopups", Boolean.toString(enableTrayPopups));
-		Settings.write(null, "enableTrayPopupsAlways", Boolean.toString(enableTrayPopupsAlways));
+		Settings.write(null, "enableTrayIconMode", enableTrayIconMode.name());
 		Settings.write(null, "enableLegacyIcons", Boolean.toString(enableLegacyIcons));
 		Settings.write(null, "enableCommands", Boolean.toString(enableCommands));
 		Settings.write(null, "enableTrivia", Boolean.toString(enableTrivia));
@@ -223,12 +233,8 @@ public class GlobalSettings {
 				Settings.read(null, "enableCLI", "false"));
 		enableGUI = Boolean.parseBoolean(
 				Settings.read(null, "enableGUI", "true"));
-		enableTrayIcon = Boolean.parseBoolean(
-				Settings.read(null, "enableTrayIcon", "true"));
-		enableTrayPopups = Boolean.parseBoolean(
-				Settings.read(null, "enableTrayPopups", "true"));
-		enableTrayPopupsAlways = Boolean.parseBoolean(
-				Settings.read(null, "enableTrayPopupsAlways", "false"));
+		enableTrayIconMode = TrayIconMode.valueOf(
+				Settings.read(null, "enableTrayIconMode", TrayIconMode.Enabled.name()));
 		enableLegacyIcons = Boolean.parseBoolean(
 				Settings.read(null, "enableLegacyIcons", "true"));
 		enableCommands = Boolean.parseBoolean(

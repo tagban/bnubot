@@ -41,6 +41,7 @@ import net.bnubot.bot.gui.components.ConfigFactory;
 import net.bnubot.bot.gui.components.ConfigTextArea;
 import net.bnubot.settings.DatabaseSettings;
 import net.bnubot.settings.GlobalSettings;
+import net.bnubot.settings.GlobalSettings.TrayIconMode;
 import net.bnubot.util.Out;
 import net.bnubot.util.TimeFormatter;
 import net.bnubot.vercheck.CurrentVersion;
@@ -69,9 +70,7 @@ public class GlobalConfigurationFrame extends JDialog {
 	ConfigCheckBox chkDisplayJoinParts = null;
 	ConfigCheckBox chkDisplayChannelUsers = null;
 	ConfigCheckBox chkEnableGUI = null;
-	ConfigCheckBox chkEnableTrayIcon = null;
-	ConfigCheckBox chkEnableTrayPopups = null;
-	ConfigCheckBox chkEnableTrayPopupsAlways = null;
+	ConfigComboBox cmbEnableTrayIcon = null;
 	ConfigCheckBox chkEnableLegacyIcons = null;
 	ConfigCheckBox chkEnableCLI = null;
 	ConfigCheckBox chkEnableTrivia = null;
@@ -263,51 +262,22 @@ public class GlobalConfigurationFrame extends JDialog {
 			boxAll.add(chkDisplayJoinParts = new ConfigCheckBox("Display Join/Part Messages", GlobalSettings.displayJoinParts));
 			boxAll.add(chkDisplayChannelUsers = new ConfigCheckBox("Display Channel Users On Join", GlobalSettings.displayChannelUsers));
 
-			chkEnableGUI = new ConfigCheckBox("Enable GUI (requires restart)", GlobalSettings.enableGUI);
+			boxAll.add(chkEnableGUI = new ConfigCheckBox("Enable GUI (requires restart)", GlobalSettings.enableGUI));
 			chkEnableGUI.addChangeListener(new ChangeListener() {
 				public void stateChanged(ChangeEvent arg0) {
 					if(!chkEnableGUI.isSelected()) {
-						chkEnableTrayPopupsAlways.setSelected(false);
-						chkEnableTrayPopups.setSelected(false);
-						chkEnableTrayIcon.setSelected(false);
+						cmbEnableTrayIcon.setSelectedItem(TrayIconMode.Disabled);
 					}
 				}});
-			boxAll.add(chkEnableGUI);
 
-			chkEnableTrayIcon = new ConfigCheckBox("Enable Tray Icon", GlobalSettings.enableTrayIcon);
-			chkEnableTrayIcon.addChangeListener(new ChangeListener() {
-				public void stateChanged(ChangeEvent arg0) {
-					if(chkEnableTrayIcon.isSelected())
+			cmbEnableTrayIcon = ConfigFactory.makeCombo("Tray Icon", TrayIconMode.values(), false, boxAll);
+			cmbEnableTrayIcon.setSelectedItem(GlobalSettings.enableTrayIconMode);
+			cmbEnableTrayIcon.addItemListener(new ItemListener() {
+				public void itemStateChanged(ItemEvent e) {
+					TrayIconMode selection = (TrayIconMode)cmbEnableTrayIcon.getSelectedItem();
+					if(selection.enableTray())
 						chkEnableGUI.setSelected(true);
-					else {
-						chkEnableTrayPopupsAlways.setSelected(false);
-						chkEnableTrayPopups.setSelected(false);
-					}
 				}});
-			boxAll.add(chkEnableTrayIcon);
-
-			chkEnableTrayPopups = new ConfigCheckBox("Enable Tray Popups", GlobalSettings.enableTrayPopups);
-			chkEnableTrayPopups.addChangeListener(new ChangeListener() {
-				public void stateChanged(ChangeEvent arg0) {
-					if(chkEnableTrayPopups.isSelected()) {
-						chkEnableGUI.setSelected(true);
-						chkEnableTrayIcon.setSelected(true);
-					} else {
-						chkEnableTrayPopupsAlways.setSelected(false);
-					}
-				}});
-			boxAll.add(chkEnableTrayPopups);
-
-			chkEnableTrayPopupsAlways = new ConfigCheckBox("Enable Tray Popups When Focused", GlobalSettings.enableTrayPopupsAlways);
-			chkEnableTrayPopupsAlways.addChangeListener(new ChangeListener() {
-				public void stateChanged(ChangeEvent arg0) {
-					if(chkEnableTrayPopups.isSelected()) {
-						chkEnableGUI.setSelected(true);
-						chkEnableTrayIcon.setSelected(true);
-						chkEnableTrayPopups.setSelected(true);
-					}
-				}});
-			boxAll.add(chkEnableTrayPopupsAlways);
 			
 			boxAll.add(chkEnableLegacyIcons = new ConfigCheckBox("Enable Legacy Icons", GlobalSettings.enableLegacyIcons));
 		}
@@ -375,9 +345,7 @@ public class GlobalConfigurationFrame extends JDialog {
 		GlobalSettings.displayJoinParts = chkDisplayJoinParts.isSelected();
 		GlobalSettings.displayChannelUsers = chkDisplayChannelUsers.isSelected();
 		GlobalSettings.enableGUI = chkEnableGUI.isSelected();
-		GlobalSettings.enableTrayIcon = chkEnableTrayIcon.isSelected();
-		GlobalSettings.enableTrayPopups = chkEnableTrayPopups.isSelected();
-		GlobalSettings.enableTrayPopupsAlways = chkEnableTrayPopupsAlways.isSelected();
+		GlobalSettings.enableTrayIconMode = (TrayIconMode)cmbEnableTrayIcon.getSelectedItem();
 		GlobalSettings.enableLegacyIcons = chkEnableLegacyIcons.isSelected();
 		GlobalSettings.enableCLI = chkEnableCLI.isSelected();
 		GlobalSettings.enableTrivia = chkEnableTrivia.isSelected();
@@ -449,9 +417,7 @@ public class GlobalConfigurationFrame extends JDialog {
 		chkEnableGUI.setSelected(GlobalSettings.enableGUI);
 		chkEnableLegacyIcons.setSelected(GlobalSettings.enableLegacyIcons);
 		chkEnableCLI.setSelected(GlobalSettings.enableCLI);
-		chkEnableTrayIcon.setSelected(GlobalSettings.enableTrayIcon);
-		chkEnableTrayPopups.setSelected(GlobalSettings.enableTrayPopups);
-		chkEnableTrayPopupsAlways.setSelected(GlobalSettings.enableTrayPopupsAlways);
+		cmbEnableTrayIcon.setSelectedItem(GlobalSettings.enableTrayIconMode);
 		chkEnableTrivia.setSelected(GlobalSettings.enableTrivia);
 		txtTriviaRoundLength.setText(Long.toString(GlobalSettings.triviaRoundLength));
 		chkEnableCommands.setSelected(GlobalSettings.enableCommands);
