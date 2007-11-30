@@ -331,7 +331,7 @@ public class GuiDesktop extends JFrame {
 		if(growl != null)
 			return;
 		
-		if(!GlobalSettings.enableTrayIconMode.enableTray())
+		if(!GlobalSettings.trayIconMode.enableTray())
 			return;
 		
 		try {
@@ -345,7 +345,7 @@ public class GuiDesktop extends JFrame {
 			} catch(Exception ex) {
 				Out.exception(ex);
 				Out.error(GuiEventHandler.class, "Growl is not supported either");
-				GlobalSettings.enableTrayIconMode = TrayIconMode.Disabled;
+				GlobalSettings.trayIconMode = TrayIconMode.DISABLED;
 			}
 			return;
 		}

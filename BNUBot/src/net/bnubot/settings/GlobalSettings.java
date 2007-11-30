@@ -21,16 +21,30 @@ import net.bnubot.vercheck.ReleaseType;
 
 public class GlobalSettings {
 	public static enum TrayIconMode {
-		Disabled,
-		Enabled,
-		AlwaysDisplayPopups;
+		DISABLED,
+		ENABLED,
+		ALWAYS_DISPLAY_POPUPS;
 		
 		public boolean enableTray() {
-			return(this != Disabled);
+			return(this != DISABLED);
 		}
 		
-		public boolean alwaysDisplay() {
-			return(this == AlwaysDisplayPopups);
+		public boolean alwaysDisplayPopups() {
+			return(this == ALWAYS_DISPLAY_POPUPS);
+		}
+	}
+	
+	public static enum TabCompleteMode {
+		DISABLED,
+		CONTAINS_STRING,
+		STARTS_WITH_STRING;
+		
+		public boolean enableTC() {
+			return(this != DISABLED);
+		}
+		
+		public boolean beginsWithMode() {
+			return(this == STARTS_WITH_STRING);
 		}
 	}
 	
@@ -51,7 +65,8 @@ public class GlobalSettings {
 	public static boolean displayChannelUsers;
 	public static boolean enableCLI;
 	public static boolean enableGUI;
-	public static TrayIconMode enableTrayIconMode;
+	public static TrayIconMode trayIconMode;
+	public static TabCompleteMode tabCompleteMode;
 	public static boolean enableLegacyIcons;
 	public static boolean enableCommands;
 	public static boolean enableTrivia;
@@ -182,7 +197,8 @@ public class GlobalSettings {
 		Settings.write(null, "enableGreetings", Boolean.toString(enableGreetings));
 		Settings.write(null, "enableCLI", Boolean.toString(enableCLI));
 		Settings.write(null, "enableGUI", Boolean.toString(enableGUI));
-		Settings.write(null, "enableTrayIconMode", enableTrayIconMode.name());
+		Settings.write(null, "trayIconMode", trayIconMode.name());
+		Settings.write(null, "tabCompleteMode", tabCompleteMode.name());
 		Settings.write(null, "enableLegacyIcons", Boolean.toString(enableLegacyIcons));
 		Settings.write(null, "enableCommands", Boolean.toString(enableCommands));
 		Settings.write(null, "enableTrivia", Boolean.toString(enableTrivia));
@@ -233,8 +249,10 @@ public class GlobalSettings {
 				Settings.read(null, "enableCLI", "false"));
 		enableGUI = Boolean.parseBoolean(
 				Settings.read(null, "enableGUI", "true"));
-		enableTrayIconMode = TrayIconMode.valueOf(
-				Settings.read(null, "enableTrayIconMode", TrayIconMode.Enabled.name()));
+		trayIconMode = TrayIconMode.valueOf(
+				Settings.read(null, "trayIconMode", TrayIconMode.ENABLED.name()));
+		tabCompleteMode = TabCompleteMode.valueOf(
+				Settings.read(null, "tabCompleteMode", TabCompleteMode.STARTS_WITH_STRING.name()));
 		enableLegacyIcons = Boolean.parseBoolean(
 				Settings.read(null, "enableLegacyIcons", "true"));
 		enableCommands = Boolean.parseBoolean(

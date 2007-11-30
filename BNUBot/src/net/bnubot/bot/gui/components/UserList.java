@@ -56,8 +56,13 @@ public class UserList extends JPanel {
 		Enumeration<UserInfo> en = users.elements();
 		while(en.hasMoreElements()) {
 			String u = en.nextElement().user.getShortLogonName();
-			if(u.toLowerCase().contains(containing))
-				ret.add(u);
+			if(GlobalSettings.tabCompleteMode.beginsWithMode()) {
+				if(u.toLowerCase().startsWith(containing))
+					ret.add(u);
+			} else {
+				if(u.toLowerCase().contains(containing))
+					ret.add(u);
+			}
 		}
 		return ret.toArray(new String[ret.size()]);
 	}
