@@ -242,7 +242,8 @@ public class GuiEventHandler implements EventHandler {
 				}
 				case '\t': {
 					e.consume();
-					tabComplete = true;
+					if(GlobalSettings.tabCompleteMode.enableTC())
+						tabComplete = true;
 					break;
 				}
 				case ' ': {
@@ -427,11 +428,11 @@ public class GuiEventHandler implements EventHandler {
 
 	private void notifySystemTray(String gt, String headline, String text) {
 		// Require that enableTrayPopups is set
-		if(!GlobalSettings.enableTrayIconMode.enableTray())
+		if(!GlobalSettings.trayIconMode.enableTray())
 			return;
 		
 		// If popups are not always enabled, require that the window is defocused
-		if(!GlobalSettings.enableTrayIconMode.alwaysDisplay())
+		if(!GlobalSettings.trayIconMode.alwaysDisplayPopups())
 			if(GuiDesktop.getInstance().isFocused())
 				return;
 		
