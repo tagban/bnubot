@@ -53,6 +53,7 @@ import net.bnubot.core.Profile;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.settings.Settings;
+import net.bnubot.settings.GlobalSettings.TrayIconMode;
 import net.bnubot.util.Out;
 import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.VersionCheck;
@@ -330,7 +331,7 @@ public class GuiDesktop extends JFrame {
 		if(growl != null)
 			return;
 		
-		if(!GlobalSettings.enableTrayIcon)
+		if(!GlobalSettings.enableTrayIconMode.enableTray())
 			return;
 		
 		try {
@@ -344,7 +345,7 @@ public class GuiDesktop extends JFrame {
 			} catch(Exception ex) {
 				Out.exception(ex);
 				Out.error(GuiEventHandler.class, "Growl is not supported either");
-				GlobalSettings.enableTrayIcon = false;
+				GlobalSettings.enableTrayIconMode = TrayIconMode.Disabled;
 			}
 			return;
 		}
