@@ -233,9 +233,8 @@ public class GlobalConfigurationFrame extends JDialog {
 			boxAll.add(chkEnableGUI = new ConfigCheckBox("Enable GUI (requires restart)", GlobalSettings.enableGUI));
 			chkEnableGUI.addChangeListener(new ChangeListener() {
 				public void stateChanged(ChangeEvent arg0) {
-					if(!chkEnableGUI.isSelected()) {
+					if(!chkEnableGUI.isSelected())
 						cmbTrayIconMode.setSelectedItem(TrayIconMode.DISABLED);
-					}
 				}});
 
 			cmbTrayIconMode = ConfigFactory.makeCombo("Tray Icon", TrayIconMode.values(), false, boxAll);
@@ -248,7 +247,7 @@ public class GlobalConfigurationFrame extends JDialog {
 				}});
 
 			cmbTabCompleteMode = ConfigFactory.makeCombo("Tab Complete", TabCompleteMode.values(), false, boxAll);
-			cmbTabCompleteMode.setSelectedItem(GlobalSettings.trayIconMode);
+			cmbTabCompleteMode.setSelectedItem(GlobalSettings.tabCompleteMode);
 			
 			Object[] values = { TimeFormatter.tsFormat, "%1$tH:%1$tM:%1$tS.%1$tL", "%1$tH:%1$tM:%1$tS", "%1$tH:%1$tM" };
 			cmbTSFormat = ConfigFactory.makeCombo("TimeStamp", values, true, boxAll);
