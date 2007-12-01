@@ -121,7 +121,7 @@ public class TriviaEventHandler implements EventHandler {
 			}
 			d.close(rsLeaders);
 			out += "Total=" + d.getTriviaSum();
-			c.queueChatHelper(out);
+			c.queueChatHelper(out, false);
 		} catch (SQLException e) {
 			Out.exception(e);
 		}
@@ -132,7 +132,7 @@ public class TriviaEventHandler implements EventHandler {
 			try {
 				if(triviaEnabled && c.canSendChat()) {
 					if(trivia.size() == 0) {
-						c.queueChatHelper("There are no trivia questions left; game over.");
+						c.queueChatHelper("There are no trivia questions left; game over.", false);
 						triviaEnabled = false;
 						continue;
 					}
@@ -157,7 +157,7 @@ public class TriviaEventHandler implements EventHandler {
 								String out = "The trivia round is over! Congratulations to ";
 								out += d.resetTrivia();
 								out += " for winning the round!";
-								c.queueChatHelper(out);
+								c.queueChatHelper(out, false);
 							}
 						}
 					} catch (SQLException e) {
@@ -172,7 +172,7 @@ public class TriviaEventHandler implements EventHandler {
 							q += " - Category: " + ti.getCategory();
 						q += " - Question: " + ti.getQuestion();
 						q += " - Hint: " + ti.getHint0();
-						c.queueChatHelper(q);
+						c.queueChatHelper(q, false);
 						//c.recieveInfo("Answer: " + ti.getAnswer());
 					}
 					
@@ -191,12 +191,12 @@ public class TriviaEventHandler implements EventHandler {
 						timeElapsed /= 1000;
 
 						if((timeElapsed > 10) && (numHints < 1)) {
-							c.queueChatHelper("/me - 20 seconds left! Hint: " + ti.getHint1());
+							c.queueChatHelper("/me - 20 seconds left! Hint: " + ti.getHint1(), false);
 							numHints++;
 						}
 						
 						if((timeElapsed > 20) && (numHints < 2)) {
-							c.queueChatHelper("/me - 10 seconds left! Hint: " + ti.getHint2());
+							c.queueChatHelper("/me - 10 seconds left! Hint: " + ti.getHint2(), false);
 							numHints++;
 						}
 						
@@ -238,7 +238,7 @@ public class TriviaEventHandler implements EventHandler {
 							}
 						}
 						
-						c.queueChatHelper("/me - \"" + answerUsed + "\" is correct, " + answerUser.getShortPrettyName() + extra);
+						c.queueChatHelper("/me - \"" + answerUsed + "\" is correct, " + answerUser.getShortPrettyName() + extra, false);
 						
 						showLeaderBoard();
 					} else {
@@ -248,17 +248,17 @@ public class TriviaEventHandler implements EventHandler {
 						
 						if(triviaEnabled) {
 							unanswered++;
-							c.queueChatHelper("/me - Time's up!" + correct);
+							c.queueChatHelper("/me - Time's up!" + correct, false);
 						} else {
-							c.queueChatHelper("/me - Game over!" + correct);
+							c.queueChatHelper("/me - Game over!" + correct, false);
 							continue;
 						}
 					}
 
 					if(unanswered == 9)
-						c.queueChatHelper("Trivia will automaticly shut off after the next question. To extend trivia, type [ trivia on ]");
+						c.queueChatHelper("Trivia will automaticly shut off after the next question. To extend trivia, type [ trivia on ]", false);
 					if(unanswered >= 10) {
-						c.queueChatHelper("Auto-disabling trivia.");
+						c.queueChatHelper("Auto-disabling trivia.", false);
 						triviaEnabled = false;
 					}
 				}
@@ -331,7 +331,7 @@ public class TriviaEventHandler implements EventHandler {
 	public void logonRealmEx(int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName) {}
 	public void queryRealms2(String[] realms) {}
 
-	public void parseCommand(BNetUser user, String command, String param, boolean whisperBack) {}
+	public boolean parseCommand(BNetUser user, String command, String param, boolean whisperBack) {return false;}
 
 	public void clanMOTD(Object cookie, String text) {}
 	public void clanMemberList(ClanMember[] members) {}
