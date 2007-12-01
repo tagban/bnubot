@@ -16,7 +16,9 @@ import java.util.Properties;
 
 import javax.swing.JOptionPane;
 
+import net.bnubot.bot.gui.GuiDesktop;
 import net.bnubot.bot.gui.GuiEventHandler;
+import net.bnubot.settings.GlobalSettings;
 import net.bnubot.settings.Settings;
 
 /**
@@ -187,8 +189,12 @@ public class Out {
 	 * @param debug true means debugging messages will be shown
 	 */
 	public static void setDebug(boolean debug) {
+		if(globalDebug == debug)
+			return;
 		globalDebug = debug;
-		info(Out.class, "Debug logging " + (debug ? "en" : "dis") + "abled");
+		if(GlobalSettings.enableGUI)
+			GuiDesktop.updateDebugMenuText();
+		debug(Out.class, "Debug logging " + (debug ? "en" : "dis") + "abled");
 		Settings.write(null, "debug", Boolean.toString(debug));
 		Settings.store();
 	}
@@ -197,14 +203,16 @@ public class Out {
 	 * Sets whether debugging messages should be shown for a given class
 	 * @param debug true means debugging messages will be shown
 	 */
-	public static void setDebug(Class<?> c, boolean debug) {
-		Out.debug.setProperty(c.getName(), Boolean.toString(debug));
+	public static void setDebug(String clazz, boolean debug) {
+		if(isDebug(clazz) == debug)
+			return;
+		Out.debug.setProperty(clazz, Boolean.toString(debug));
+		debug(Out.class, "Debug logging {" + clazz + "} " + (debug ? "en" : "dis") + "abled");
 		try {
 			Out.debug.store(new FileOutputStream(debugFile), null);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		info(Out.class, "Debug logging {" + c.getName() + "} " + (debug ? "en" : "dis") + "abled");
 	}
 
 	/**
@@ -219,12 +227,20 @@ public class Out {
 	 * Gets whether debugging messages should be shown for a given class
 	 * @return true when debugging messages will be shown
 	 */
-	public static boolean isDebug(Class<?> c) {
+	public static boolean isDebug(Class<?> clazz) {
+		return(isDebug(clazz.getName()));
+	}
+
+	/**
+	 * Gets whether debugging messages should be shown for a given class
+	 * @return true when debugging messages will be shown
+	 */
+	public static boolean isDebug(String clazz) {
 		if(!globalDebug)
 			return false;
-		if(debug.containsKey(c.getName()))
-			return Boolean.parseBoolean(debug.getProperty(c.getName()));
-		setDebug(c, true);
+		if(debug.containsKey(clazz))
+			return Boolean.parseBoolean(debug.getProperty(clazz));
+		setDebug(clazz, true);
 		return true;
 	}
 

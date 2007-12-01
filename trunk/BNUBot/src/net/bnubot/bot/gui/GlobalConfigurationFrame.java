@@ -20,6 +20,7 @@ import java.sql.DriverManager;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Properties;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -100,6 +101,10 @@ public class GlobalConfigurationFrame extends JDialog {
 	ConfigTextArea txtDriverPassword = null;
 	ConfigTextArea txtDriverSchema = null;
 	JButton btnSaveDatabase = null;
+	
+	// Debug
+	ConfigCheckBox chkEnableDebug = null;
+	List<ConfigCheckBox> chkDebug = null;
 
 	public GlobalConfigurationFrame() {
 		super();
@@ -320,6 +325,23 @@ public class GlobalConfigurationFrame extends JDialog {
 			txtDriverSchema = ConfigFactory.makeText("Schema", dbSettings.schema, boxAll);
 		}
 		tabs.addTab("Database", boxAll);
+
+		boxAll = new Box(BoxLayout.Y_AXIS);
+		{
+			chkEnableDebug = new ConfigCheckBox("Enable debug logging", Out.isDebug());
+			boxAll.add(chkEnableDebug);
+			
+			Properties props = Out.getProperties();
+			chkDebug = new ArrayList<ConfigCheckBox>(props.size());
+			for(Object key : props.keySet()) {
+				String clazz = key.toString();
+				boolean chkEnabled = Boolean.parseBoolean(props.getProperty(clazz));
+				ConfigCheckBox chk = new ConfigCheckBox(clazz, chkEnabled);
+				chkDebug.add(chk);
+				boxAll.add(chk);
+			}
+		}
+		tabs.addTab("Debug", boxAll);
 		
 		pack();
 	}
@@ -360,6 +382,11 @@ public class GlobalConfigurationFrame extends JDialog {
 		GlobalSettings.packetLog = chkPacketLog.isSelected();
 		GlobalSettings.whisperBack = chkWhisperBack.isSelected();
 		GlobalSettings.save();
+		
+		// Save debug
+		Out.setDebug(chkEnableDebug.isSelected());
+		for(ConfigCheckBox chk : chkDebug)
+			Out.setDebug(chk.getText(), chk.isSelected());
 		
 		// Save CD keys
 		try {
@@ -430,6 +457,11 @@ public class GlobalConfigurationFrame extends JDialog {
 		chkEnableFloodProtect.setSelected(GlobalSettings.enableFloodProtect);
 		chkPacketLog.setSelected(GlobalSettings.packetLog);
 		chkWhisperBack.setSelected(GlobalSettings.whisperBack);
+		
+		// Load debug
+		chkEnableDebug.setSelected(Out.isDebug());
+		for(ConfigCheckBox chk : chkDebug)
+			chk.setSelected(Out.isDebug(chk.getText()));
 	}
 
 	private void cancel() {
