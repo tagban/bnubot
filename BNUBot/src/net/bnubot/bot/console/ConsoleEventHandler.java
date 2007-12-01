@@ -67,7 +67,7 @@ public class ConsoleEventHandler implements EventHandler {
 	public void bnetDisconnected() {}
 	public void titleChanged() {}
 
-	public void parseCommand(BNetUser user, String command, String param, boolean whisperBack) {}
+	public boolean parseCommand(BNetUser user, String command, String param, boolean whisperBack) {return false;}
 
 	public void friendsList(FriendEntry[] entries) {}
 	public void friendsUpdate(FriendEntry friend) {}

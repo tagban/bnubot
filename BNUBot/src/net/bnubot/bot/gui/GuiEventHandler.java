@@ -231,7 +231,7 @@ public class GuiEventHandler implements EventHandler {
 						String text[] = chatTextArea.getText().split("\n");
 						for(String element : text) {
 							if(element.trim().length() > 0)
-								con.queueChatHelper(element);
+								con.queueChatHelper(element, true);
 						}
 						chatTextArea.setText(null);
 						return;
@@ -664,8 +664,9 @@ public class GuiEventHandler implements EventHandler {
 		chatTextArea.requestFocus();
 	}
 
-	public void parseCommand(BNetUser user, String command, String param, boolean whisperBack) {
+	public boolean parseCommand(BNetUser user, String command, String param, boolean whisperBack) {
 		//mainTextArea.recieveInfo(String.format("parseCommand(\"%1$s\", \"%2$s\", \"%3$s\")", user.getShortLogonName(), command, param));
+		return false;
 	}
 
 	public String toString() {

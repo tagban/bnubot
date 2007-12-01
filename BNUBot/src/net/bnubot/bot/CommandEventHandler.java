@@ -83,7 +83,7 @@ public class CommandEventHandler implements EventHandler {
 		}
 	}
 	
-	public void parseCommand(BNetUser user, String command, String param, boolean whisperBack) {
+	public boolean parseCommand(BNetUser user, String command, String param, boolean whisperBack) {
 		try {
 			String[] params = null;
 			if(param != null)
@@ -102,7 +102,7 @@ public class CommandEventHandler implements EventHandler {
 						d.close(rsAccount);
 					if(superUser)
 						throw new InvalidUseException();
-					return;
+					return false;
 				}
 					
 				commanderAccess = rsAccount.getAccess();
@@ -110,7 +110,7 @@ public class CommandEventHandler implements EventHandler {
 				commanderAccountID = rsAccount.getId();
 				d.close(rsAccount);
 				if(commanderAccess <= 0)
-					return;
+					return false;
 			} catch(InvalidUseException e) {
 				d.close(d.getCreateUser(user));
 			}
@@ -120,9 +120,10 @@ public class CommandEventHandler implements EventHandler {
 			{
 				CommandResultSet rsCommand = d.getCommand(command);
 				if(!rsCommand.next()) {
-					c.recieveError("Command " + command + " not found in database");
+					if(!whisperBack)
+						c.recieveError("Command " + command + " not found in database");
 					d.close(rsCommand);
-					return;
+					return false;
 				}
 				command = rsCommand.getName();
 				if(!superUser) {
@@ -130,7 +131,7 @@ public class CommandEventHandler implements EventHandler {
 					if(commanderAccess < requiredAccess) {
 						c.recieveError("Insufficient access (" + commanderAccess + "/" + requiredAccess + ")");
 						d.close(rsCommand);
-						return;
+						return false;
 					}
 				}
 				d.close(rsCommand);
@@ -344,7 +345,7 @@ public class CommandEventHandler implements EventHandler {
 						c.sendChat(user, "Use: %trigger%ban <user>[@<realm>] [reason]", whisperBack);
 						break;
 					}
-					c.queueChatHelper("/ban " + param);
+					c.queueChatHelper("/ban " + param, false);
 					break;
 				}
 				break;
@@ -413,7 +414,7 @@ public class CommandEventHandler implements EventHandler {
 						c.sendChat(user, "Use: %trigger%kick <user>[@<realm>] [reason]", whisperBack);
 						break;
 					}
-					c.queueChatHelper("/kick " + param);
+					c.queueChatHelper("/kick " + param, false);
 					break;
 				}
 				break;
@@ -686,7 +687,7 @@ public class CommandEventHandler implements EventHandler {
 					d.close(rsSubjectAccount);
 
 					bnSubject.resetPrettyName();
-					c.queueChatHelper("Welcome to the clan, " + bnSubject.toString() + "!");
+					c.queueChatHelper("Welcome to the clan, " + bnSubject.toString() + "!", false);
 					break;
 				}
 				if(command.equals("recruits")) {
@@ -755,7 +756,7 @@ public class CommandEventHandler implements EventHandler {
 				break;
 			case 's':
 				if(command.equals("say")) {
-					c.queueChatHelper(param);
+					c.queueChatHelper(param, false);
 					break;
 				}
 				if(command.equals("seen")) {
@@ -1000,7 +1001,7 @@ public class CommandEventHandler implements EventHandler {
 					}
 					sweepBanInProgress = true;
 					sweepBannedUsers = 0;
-					c.queueChatHelper("/who " + param);
+					c.queueChatHelper("/who " + param, false);
 					break;
 				}
 				break;
@@ -1020,7 +1021,7 @@ public class CommandEventHandler implements EventHandler {
 						c.sendChat(user, "Use: %trigger%unban <user>[@<realm>]", whisperBack);
 						break;
 					}
-					c.queueChatHelper("/unban " + params[0]);
+					c.queueChatHelper("/unban " + params[0], false);
 					break;
 				}
 				break;
@@ -1164,6 +1165,7 @@ public class CommandEventHandler implements EventHandler {
 			Out.exception(e);
 			c.sendChat(user, e.getClass().getSimpleName() + ": " + e.getMessage(), whisperBack);
 		}
+		return true;
 	}
 
 	/**
@@ -1299,7 +1301,7 @@ public class CommandEventHandler implements EventHandler {
 					int age = cal.get(Calendar.YEAR);
 					cal.setTime(today);
 					age = cal.get(Calendar.YEAR) - age;
-					c.queueChatHelper("Happy birthday, " + user.getShortPrettyName() + "! Today, you are " + age + " years old!");
+					c.queueChatHelper("Happy birthday, " + user.getShortPrettyName() + "! Today, you are " + age + " years old!", false);
 				}
 			}
 
@@ -1311,7 +1313,7 @@ public class CommandEventHandler implements EventHandler {
 				String greeting = rsRank.getGreeting();
 				if(greeting != null) {
 					greeting = String.format(greeting, user.getShortPrettyName(), user.getPing(), user.getFullAccountName());
-					c.queueChatHelper(greeting);
+					c.queueChatHelper(greeting, false);
 				}
 
 				//Autopromotions:
@@ -1355,7 +1357,7 @@ public class CommandEventHandler implements EventHandler {
 							rsAccount.setLastRankChange(new Timestamp(System.currentTimeMillis()));
 							rsAccount.updateRow();
 							user.resetPrettyName();	//Reset the presentable name
-							c.queueChatHelper("Congratulations " + user.toString() + ", you just recieved a promotion! Your rank is now " + rank + ".");
+							c.queueChatHelper("Congratulations " + user.toString() + ", you just recieved a promotion! Your rank is now " + rank + ".", false);
 							String apMail = rsRank.getApMail();
 							if((apMail != null) && (apMail.length() > 0))
 								d.sendMail(id, id, apMail);
@@ -1474,7 +1476,7 @@ public class CommandEventHandler implements EventHandler {
 				if(text.substring(0, 17).equals("Users in channel ")) {
 					if(sweepBannedUsers == 0) {
 						turnItOff = false;
-						c.queueChatHelper("Sweepbanning channel " + text.substring(17, text.length() - 1));
+						c.queueChatHelper("Sweepbanning channel " + text.substring(17, text.length() - 1), false);
 					}
 				}
 			}
@@ -1483,15 +1485,15 @@ public class CommandEventHandler implements EventHandler {
 			if(users.length == 2) {
 				if(users[0].indexOf(' ') == -1) {
 					if(users[1].indexOf(' ') == -1) {
-						c.queueChatHelper("/ban " + removeOpUserBrackets(users[0]));
-						c.queueChatHelper("/ban " + removeOpUserBrackets(users[1]));
+						c.queueChatHelper("/ban " + removeOpUserBrackets(users[0]), false);
+						c.queueChatHelper("/ban " + removeOpUserBrackets(users[1]), false);
 						sweepBannedUsers += 2;
 						turnItOff = false;
 					}
 				}
 			} else {
 				if(text.indexOf(' ') == -1) {
-					c.queueChatHelper("/ban " + removeOpUserBrackets(text));
+					c.queueChatHelper("/ban " + removeOpUserBrackets(text), false);
 					sweepBannedUsers++;
 					turnItOff = true;
 				}

@@ -265,55 +265,73 @@ public abstract class Connection extends Thread implements EventHandler {
 		return text;
 	}
 
-	public void queueChatHelper(String text) {
+	public void queueChatHelper(String text, boolean allowCommands) {
 		if(text == null)
 			return;
 		if(text.length() == 0)
 			return;
 		if(!isConnected())
 			return;
-
-		if(text.charAt(0) == '/') {
-			String[] command = text.substring(1).split(" ", 3);
-			switch(command[0].charAt(0)) {
-			case '/':
-				command = text.substring(2).split(" ", 2);
+		
+		ALLOWCOMMANDS: if(allowCommands) {
+			if(text.charAt(0) == '/') {
+				String[] command = text.substring(1).split(" ", 3);
+				switch(command[0].charAt(0)) {
+				case '/':
+					command = text.substring(2).split(" ", 2);
+					if(command.length > 0) {
+						String params = null;
+						if(command.length > 1)
+							params = command[1];
+		
+						parseCommand(myUser, command[0], params, false);
+						return;
+					}
+					break;
+				case 'c':
+					if(command[0].equals("cmd")) {
+						if(command.length == 1)
+							break;
+	
+						String params = null;
+						if(command.length > 2)
+							params = command[2];
+	
+						parseCommand(myUser, command[1], params, true);
+						return;
+					}
+					break;
+				case 'p':
+					if(command[0].equals("profile")) {
+						try {
+							if((command.length < 2) || (command[1].length() == 0))
+								sendProfile(myUser);
+							else
+								sendReadUserData(command[1]);
+						} catch(Exception e) {
+							Out.exception(e);
+						}
+						return;
+					}
+					break;
+				case 'w':
+					if(command[0].equals("whoami"))
+						break ALLOWCOMMANDS;
+					if(command[0].equals("whois"))
+						break ALLOWCOMMANDS;
+					break;
+				default:
+				}
+				
+				command = text.substring(1).split(" ", 2);
 				if(command.length > 0) {
 					String params = null;
 					if(command.length > 1)
 						params = command[1];
 	
-					parseCommand(myUser, command[0], params, false);
-					return;
+					if(parseCommand(myUser, command[0], params, true))
+						return;
 				}
-				break;
-				
-			case 'c':
-				if(command[0].equals("cmd")) {
-					if(command.length == 1)
-						break;
-
-					String params = null;
-					if(command.length > 2)
-						params = command[2];
-
-					parseCommand(myUser, command[1], params, true);
-					return;
-				}
-				break;
-			case 'p':
-				if(command[0].equals("profile")) {
-					try {
-						if((command.length < 2) || (command[1].length() == 0))
-							sendProfile(myUser);
-						else
-							sendReadUserData(command[1]);
-					} catch(Exception e) {
-						Out.exception(e);
-					}
-					return;
-				}
-				break;
 			}
 		}
 
@@ -371,7 +389,7 @@ public abstract class Connection extends Thread implements EventHandler {
 				String piece = prefix + text.substring(i);
 				if(piece.length() > MAX_CHAT_LENGTH)
 					piece = piece.substring(0, MAX_CHAT_LENGTH);
-				queueChatHelper(piece);
+				queueChatHelper(piece, false);
 			}
 		}
 	}
@@ -424,11 +442,15 @@ public abstract class Connection extends Thread implements EventHandler {
 		eh_semaphore--;
 	}
 
-	public void parseCommand(BNetUser user, String command, String param, boolean whisperBack) {
+	public boolean parseCommand(BNetUser user, String command, String param, boolean whisperBack) {
+		boolean ret = false;
 		eh_semaphore++;
-		for(EventHandler eh : eventHandlers)
-			eh.parseCommand(user, command, param, whisperBack);
+		for(EventHandler eh : eventHandlers) {
+			if(ret = eh.parseCommand(user, command, param, whisperBack))
+				break;
+		}
 		eh_semaphore--;
+		return ret;
 	}
 
 	public synchronized void titleChanged() {

@@ -166,7 +166,7 @@ public class UserList extends JPanel {
 				public void actionPerformed(ActionEvent arg0) {
 					UserInfo ui = getUserInfo(arg0);
 					if(ui != null)
-						geh.getConnection().queueChatHelper("/whois " + ui.user.getShortLogonName());
+						geh.getConnection().queueChatHelper("/whois " + ui.user.getShortLogonName(), false);
 				}});
 			ui.menu.add(menuItem);
 			menuItem = new JMenuItem("Profile");

@@ -1077,7 +1077,7 @@ public class BNCSConnection extends Connection {
 				timeSinceAntiIdle /= 60;
 				if(timeSinceAntiIdle >= GlobalSettings.antiIdleTimer) {
 					lastAntiIdle = timeNow;
-					queueChatHelper(getAntiIdle());
+					queueChatHelper(getAntiIdle(), false);
 				}
 			}
 			
@@ -1754,7 +1754,7 @@ public class BNCSConnection extends Connection {
 		p.SendPacket(bncsOutputStream);
 	}
 	
-	public void queueChatHelper(String text) {
+	public void queueChatHelper(String text, boolean allowCommands) {
 		text = cleanText(text);
 		
 		try {
@@ -1774,7 +1774,7 @@ public class BNCSConnection extends Connection {
 			}
 		} catch(Exception e) {}
 		
-		super.queueChatHelper(text);
+		super.queueChatHelper(text, allowCommands);
 	}
 	
 	/**
