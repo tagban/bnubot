@@ -204,8 +204,11 @@ public class Out {
 	 * @param debug true means debugging messages will be shown
 	 */
 	public static void setDebug(String clazz, boolean debug) {
-		if(isDebug(clazz) == debug)
-			return;
+		if(Out.debug.containsKey(clazz)) {
+			boolean current = Boolean.parseBoolean(Out.debug.getProperty(clazz));
+			if(current == debug)
+				return;
+		}
 		Out.debug.setProperty(clazz, Boolean.toString(debug));
 		debug(Out.class, "Debug logging {" + clazz + "} " + (debug ? "en" : "dis") + "abled");
 		try {
