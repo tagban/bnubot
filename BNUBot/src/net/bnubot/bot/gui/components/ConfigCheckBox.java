@@ -33,4 +33,8 @@ public class ConfigCheckBox extends Box {
 	public void addChangeListener(ChangeListener l) {
 		theBox.addChangeListener(l);
 	}
+	
+	public String getText() {
+		return theBox.getText();
+	}
 }

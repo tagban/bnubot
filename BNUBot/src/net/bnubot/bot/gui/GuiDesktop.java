@@ -72,6 +72,9 @@ public class GuiDesktop extends JFrame {
 	private static TrayIcon tray = null;
 	private static Growl growl = null;
 	private static final int KEYMASK = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+	private static final JMenuItem mnuDebug = new JMenuItem();
+	
+	// This must be the last thing to initialize
 	private static final GuiDesktop instance = new GuiDesktop();
 	
 	private GuiDesktop() {
@@ -254,15 +257,12 @@ public class GuiDesktop extends JFrame {
 					} });
 				menu.add(menuItem);
 				
-				menuItem = new JMenuItem((Out.isDebug() ? "Dis" : "En") + "able debug logging");
-				menuItem.addActionListener(new ActionListener() {
+				updateDebugMenuText();
+				mnuDebug.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent event) {
 						Out.setDebug(!Out.isDebug());
-						
-						JMenuItem jmi = (JMenuItem)event.getSource();
-						jmi.setText((Out.isDebug() ? "Dis" : "En") + "able debug logging");
-					} });
-				menu.add(menuItem);
+					}});
+				menu.add(mnuDebug);
 			}
 			menuBar.add(menu);
 			
@@ -468,6 +468,13 @@ public class GuiDesktop extends JFrame {
 			}
 		}
 	}
+
+	/**
+	 * Set the debug menu item text
+	 */
+	public static void updateDebugMenuText() {
+		mnuDebug.setText((Out.isDebug() ? "Dis" : "En") + "able debug logging");
+	} 
 
 	/**
 	 * Get the desired divider location
