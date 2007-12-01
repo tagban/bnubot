@@ -63,8 +63,7 @@ public class GuiDesktop extends JFrame {
 							    public void componentMoved(ComponentEvent evt) {
 							    	Window window = (Window)evt.getSource();
 							    	savePosition(window);
-							    }
-							};
+							    }};
 	private static final long serialVersionUID = -7144648179041514994L;
 	private static final List<GuiEventHandler> guis = new ArrayList<GuiEventHandler>();
 	private static GuiEventHandler selectedGui = null;
