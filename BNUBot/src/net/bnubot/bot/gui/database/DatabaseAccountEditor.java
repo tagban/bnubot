@@ -20,12 +20,13 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JTextArea;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import net.bnubot.bot.database.AccountResultSet;
 import net.bnubot.bot.database.Database;
+import net.bnubot.bot.gui.components.ConfigFactory;
+import net.bnubot.bot.gui.components.ConfigTextArea;
 import net.bnubot.util.Out;
 import net.bnubot.util.TimeFormatter;
 
@@ -36,15 +37,15 @@ public class DatabaseAccountEditor extends JDialog {
 	
 	private DefaultListModel lm;
 	private JList lstAccounts;
-	private JTextArea txtID;
-	private JTextArea txtAccess;
-	private JTextArea txtName;
-	private JTextArea txtCreated;
-	private JTextArea txtLastRankChange;
-	private JTextArea txtCreatedBy;
-	private JTextArea txtTriviaCorrect;
-	private JTextArea txtTriviaWin;
-	private JTextArea txtBirthday;
+	private ConfigTextArea txtID;
+	private ConfigTextArea txtAccess;
+	private ConfigTextArea txtName;
+	private ConfigTextArea txtCreated;
+	private ConfigTextArea txtLastRankChange;
+	private ConfigTextArea txtCreatedBy;
+	private ConfigTextArea txtTriviaCorrect;
+	private ConfigTextArea txtTriviaWin;
+	private ConfigTextArea txtBirthday;
 	private JButton cmdNew;
 	private JButton cmdDelete;
 	private JButton cmdApply;
@@ -91,232 +92,169 @@ public class DatabaseAccountEditor extends JDialog {
 			
 			majorRows = new Box(BoxLayout.Y_AXIS);
 			{
-				Box boxLine = new Box(BoxLayout.X_AXIS);
-				{
-					boxLine.add(new JLabel("ID"));
-					
-					txtID = new JTextArea();
-					txtID.addFocusListener(new FocusListener() {
-						public void focusGained(FocusEvent arg0) {}
-						public void focusLost(FocusEvent arg0) {
-							if(rsAccount != null) {
-								String txt = txtID.getText();
-								Long value = null;
-								try {value = Long.parseLong(txt);} catch(Exception e) {}
-								try {
-									if(value != null)
-										rsAccount.setId(value);
-								} catch (SQLException e) {
-									Out.exception(e);
-								}
+				txtID = ConfigFactory.makeText("ID", null, majorRows);
+				txtID.addFocusListener(new FocusListener() {
+					public void focusGained(FocusEvent arg0) {}
+					public void focusLost(FocusEvent arg0) {
+						if(rsAccount != null) {
+							String txt = txtID.getText();
+							Long value = null;
+							try {value = Long.parseLong(txt);} catch(Exception e) {}
+							try {
+								if(value != null)
+									rsAccount.setId(value);
+							} catch (SQLException e) {
+								Out.exception(e);
 							}
 						}
-					});
-					boxLine.add(txtID);
-				}
-				majorRows.add(boxLine);
-				
-				boxLine = new Box(BoxLayout.X_AXIS);
-				{
-					boxLine.add(new JLabel("Access"));
-					
-					txtAccess = new JTextArea();
-					txtAccess.addFocusListener(new FocusListener() {
-						public void focusGained(FocusEvent arg0) {}
-						public void focusLost(FocusEvent arg0) {
-							if(rsAccount != null) {
-								String txt = txtAccess.getText();
-								Long value = null;
-								try {value = Long.parseLong(txt);} catch(Exception e) {}
-								try {
-									if(value != null)
-										rsAccount.setAccess(value);
-								} catch (SQLException e) {
-									Out.exception(e);
-								}
-							}
-						}
-					});
-					boxLine.add(txtAccess);
-				}
-				majorRows.add(boxLine);
-				
-				boxLine = new Box(BoxLayout.X_AXIS);
-				{
-					boxLine.add(new JLabel("Name"));
-					
-					txtName = new JTextArea();
-					txtName.addFocusListener(new FocusListener() {
-						public void focusGained(FocusEvent arg0) {}
-						public void focusLost(FocusEvent arg0) {
-							if(rsAccount != null) {
-								String txt = txtName.getText();
-								try {
-									if((txt == null) || (txt.length() == 0))
-										rsAccount.setName(null);
-									else
-										rsAccount.setName(txt);
-								} catch (SQLException e) {
-									Out.exception(e);
-								}
-							}
-						}
-					});
-					boxLine.add(txtName);
-				}
-				majorRows.add(boxLine);
-				
-				boxLine = new Box(BoxLayout.X_AXIS);
-				{
-					boxLine.add(new JLabel("Created"));
-					
-					txtCreated = new JTextArea();
-					txtCreated.addFocusListener(new FocusListener() {
-						public void focusGained(FocusEvent arg0) {}
-						public void focusLost(FocusEvent arg0) {
-							if(rsAccount != null) {
-								String txt = txtCreated.getText();
-								Timestamp value = null;
-								try {value = new Timestamp(TimeFormatter.parseDateTime(txt));} catch(Exception e) {}
-								try {
-									if(value != null)
-										rsAccount.setCreated(value);
-								} catch (SQLException e) {
-									Out.exception(e);
-								}
-							}
-						}
-					});
-					boxLine.add(txtCreated);
-				}
-				majorRows.add(boxLine);
-				
-				boxLine = new Box(BoxLayout.X_AXIS);
-				{
-					boxLine.add(new JLabel("Last Rank Change"));
-					
-					txtLastRankChange = new JTextArea();
-					txtLastRankChange.addFocusListener(new FocusListener() {
-						public void focusGained(FocusEvent arg0) {}
-						public void focusLost(FocusEvent arg0) {
-							if(rsAccount != null) {
-								String txt = txtLastRankChange.getText();
-								Timestamp value = null;
-								try {value = new Timestamp(TimeFormatter.parseDateTime(txt));} catch(Exception e) {}
-								try {
-									if(value != null)
-										rsAccount.setLastRankChange(value);
-								} catch (SQLException e) {
-									Out.exception(e);
-								}
-							}
-						}
-					});
-					boxLine.add(txtLastRankChange);
-				}
-				majorRows.add(boxLine);
-				
-				boxLine = new Box(BoxLayout.X_AXIS);
-				{
-					boxLine.add(new JLabel("Created By"));
-					
-					txtCreatedBy = new JTextArea();
-					txtCreatedBy.addFocusListener(new FocusListener() {
-						public void focusGained(FocusEvent arg0) {}
-						public void focusLost(FocusEvent arg0) {
-							if(rsAccount != null) {
-								String txt = txtCreatedBy.getText();
-								Long value = null;
-								try {value = Long.parseLong(txt);} catch(Exception e) {}
-								try {
-									if(value != null)
-										rsAccount.setCreatedBy(value);
-								} catch (SQLException e) {
-									Out.exception(e);
-								}
-							}
-						}
-					});
-					boxLine.add(txtCreatedBy);
-				}
-				majorRows.add(boxLine);
-				
-				boxLine = new Box(BoxLayout.X_AXIS);
-				{
-					boxLine.add(new JLabel("Trivia Correct"));
-					
-					txtTriviaCorrect = new JTextArea();
-					txtTriviaCorrect.addFocusListener(new FocusListener() {
-						public void focusGained(FocusEvent arg0) {}
-						public void focusLost(FocusEvent arg0) {
-							if(rsAccount != null) {
-								String txt = txtTriviaCorrect.getText();
-								Long value = null;
-								try {value = Long.parseLong(txt);} catch(Exception e) {}
-								try {
-									if(value != null)
-										rsAccount.setTriviaCorrect(value);
-								} catch (SQLException e) {
-									Out.exception(e);
-								}
-							}
-						}
-					});
-					boxLine.add(txtTriviaCorrect);
-				}
-				majorRows.add(boxLine);
-				
-				boxLine = new Box(BoxLayout.X_AXIS);
-				{
-					boxLine.add(new JLabel("Trivia Win"));
-					
-					txtTriviaWin = new JTextArea();
-					txtTriviaWin.addFocusListener(new FocusListener() {
-						public void focusGained(FocusEvent arg0) {}
-						public void focusLost(FocusEvent arg0) {
-							if(rsAccount != null) {
-								String txt = txtTriviaWin.getText();
-								Long value = null;
-								try {value = Long.parseLong(txt);} catch(Exception e) {}
-								try {
-									if(value != null)
-										rsAccount.setTriviaWin(value);
-								} catch (SQLException e) {
-									Out.exception(e);
-								}
-							}
-						}
-					});
-					boxLine.add(txtTriviaWin);
-				}
-				majorRows.add(boxLine);
-				
-				boxLine = new Box(BoxLayout.X_AXIS);
-				{
-					boxLine.add(new JLabel("Birthday"));
-					
-					txtBirthday = new JTextArea();
-					txtBirthday.addFocusListener(new FocusListener() {
-						public void focusGained(FocusEvent arg0) {}
-						public void focusLost(FocusEvent arg0) {
-							if(rsAccount != null) {
-								String txt = txtBirthday.getText();
-								java.sql.Date value = null;
-								try {value = new java.sql.Date(TimeFormatter.parseDate(txt));} catch(Exception e) {}
-								try {
-									if(value != null)
-										rsAccount.setBirthday(value);
-								} catch (SQLException e) {
-									Out.exception(e);
-								}
-							}
-						}
-					});
-					boxLine.add(txtBirthday);
-				}
-				majorRows.add(boxLine);
+					}
+				});
 
-				boxLine = new Box(BoxLayout.X_AXIS);
+				txtAccess = ConfigFactory.makeText("Access", null, majorRows);
+				txtAccess.addFocusListener(new FocusListener() {
+					public void focusGained(FocusEvent arg0) {}
+					public void focusLost(FocusEvent arg0) {
+						if(rsAccount != null) {
+							String txt = txtAccess.getText();
+							Long value = null;
+							try {value = Long.parseLong(txt);} catch(Exception e) {}
+							try {
+								if(value != null)
+									rsAccount.setAccess(value);
+							} catch (SQLException e) {
+								Out.exception(e);
+							}
+						}
+					}
+				});
+
+				txtName = ConfigFactory.makeText("Name", null, majorRows);
+				txtName.addFocusListener(new FocusListener() {
+					public void focusGained(FocusEvent arg0) {}
+					public void focusLost(FocusEvent arg0) {
+						if(rsAccount != null) {
+							String txt = txtName.getText();
+							try {
+								if((txt == null) || (txt.length() == 0))
+									rsAccount.setName(null);
+								else
+									rsAccount.setName(txt);
+							} catch (SQLException e) {
+								Out.exception(e);
+							}
+						}
+					}
+				});
+
+				txtCreated = ConfigFactory.makeText("Created", null, majorRows);
+				txtCreated.addFocusListener(new FocusListener() {
+					public void focusGained(FocusEvent arg0) {}
+					public void focusLost(FocusEvent arg0) {
+						if(rsAccount != null) {
+							String txt = txtCreated.getText();
+							Timestamp value = null;
+							try {value = new Timestamp(TimeFormatter.parseDateTime(txt));} catch(Exception e) {}
+							try {
+								if(value != null)
+									rsAccount.setCreated(value);
+							} catch (SQLException e) {
+								Out.exception(e);
+							}
+						}
+					}
+				});
+
+				txtLastRankChange = ConfigFactory.makeText("Last Rank Change", null, majorRows);
+				txtLastRankChange.addFocusListener(new FocusListener() {
+					public void focusGained(FocusEvent arg0) {}
+					public void focusLost(FocusEvent arg0) {
+						if(rsAccount != null) {
+							String txt = txtLastRankChange.getText();
+							Timestamp value = null;
+							try {value = new Timestamp(TimeFormatter.parseDateTime(txt));} catch(Exception e) {}
+							try {
+								if(value != null)
+									rsAccount.setLastRankChange(value);
+							} catch (SQLException e) {
+								Out.exception(e);
+							}
+						}
+					}
+				});
+
+				txtCreatedBy = ConfigFactory.makeText("Created By", null, majorRows);
+				txtCreatedBy.addFocusListener(new FocusListener() {
+					public void focusGained(FocusEvent arg0) {}
+					public void focusLost(FocusEvent arg0) {
+						if(rsAccount != null) {
+							String txt = txtCreatedBy.getText();
+							Long value = null;
+							try {value = Long.parseLong(txt);} catch(Exception e) {}
+							try {
+								if(value != null)
+									rsAccount.setCreatedBy(value);
+							} catch (SQLException e) {
+								Out.exception(e);
+							}
+						}
+					}
+				});
+
+				txtTriviaCorrect = ConfigFactory.makeText("Trivia Correct", null, majorRows);
+				txtTriviaCorrect.addFocusListener(new FocusListener() {
+					public void focusGained(FocusEvent arg0) {}
+					public void focusLost(FocusEvent arg0) {
+						if(rsAccount != null) {
+							String txt = txtTriviaCorrect.getText();
+							Long value = null;
+							try {value = Long.parseLong(txt);} catch(Exception e) {}
+							try {
+								if(value != null)
+									rsAccount.setTriviaCorrect(value);
+							} catch (SQLException e) {
+								Out.exception(e);
+							}
+						}
+					}
+				});
+
+				txtTriviaWin = ConfigFactory.makeText("Trivia Win", null, majorRows);
+				txtTriviaWin.addFocusListener(new FocusListener() {
+					public void focusGained(FocusEvent arg0) {}
+					public void focusLost(FocusEvent arg0) {
+						if(rsAccount != null) {
+							String txt = txtTriviaWin.getText();
+							Long value = null;
+							try {value = Long.parseLong(txt);} catch(Exception e) {}
+							try {
+								if(value != null)
+									rsAccount.setTriviaWin(value);
+							} catch (SQLException e) {
+								Out.exception(e);
+							}
+						}
+					}
+				});
+
+				txtBirthday = ConfigFactory.makeText("Birthday", null, majorRows);
+				txtBirthday.addFocusListener(new FocusListener() {
+					public void focusGained(FocusEvent arg0) {}
+					public void focusLost(FocusEvent arg0) {
+						if(rsAccount != null) {
+							String txt = txtBirthday.getText();
+							java.sql.Date value = null;
+							try {value = new java.sql.Date(TimeFormatter.parseDate(txt));} catch(Exception e) {}
+							try {
+								if(value != null)
+									rsAccount.setBirthday(value);
+							} catch (SQLException e) {
+								Out.exception(e);
+							}
+						}
+					}
+				});
+
+				Box boxLine = new Box(BoxLayout.X_AXIS);
 				{
 					cmdNew = new JButton("New");
 					cmdNew.addActionListener(new ActionListener() {
