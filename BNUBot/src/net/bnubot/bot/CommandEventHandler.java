@@ -1182,9 +1182,10 @@ public class CommandEventHandler implements EventHandler {
 			return;
 		}
 		
+		int numSkipped = 0;
 		for(BNetUser u : users) {
 			if((u.getFlags() & 0x02) != 0) {
-				//c.sendChat(user, "Skipping " + u.getFullLogonName(), whisperBack);
+				numSkipped++;
 				continue;
 			}
 			
@@ -1196,6 +1197,11 @@ public class CommandEventHandler implements EventHandler {
 			
 			// Send the command
 			c.queueChatHelper(out, false);
+		}
+		
+		if(numSkipped > 0) {
+			c.sendChat(user, "Skipped " + numSkipped + " users with operator status.", whisperBack);
+			return;
 		}
 	}
 
