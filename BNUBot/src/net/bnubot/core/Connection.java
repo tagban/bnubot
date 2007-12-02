@@ -11,6 +11,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import net.bnubot.core.clan.ClanMember;
@@ -34,6 +35,7 @@ public abstract class Connection extends Thread implements EventHandler {
 	protected List<EventHandler> eventHandlers = new ArrayList<EventHandler>();
 	protected List<EventHandler> eventHandlers2 = new ArrayList<EventHandler>();
 	protected BNetUser myUser = null;
+	protected final List<BNetUser> users = new LinkedList<BNetUser>();
 	protected boolean connected = false;
 	protected List<Connection> slaves = new ArrayList<Connection>();
 	protected String channelName = null;
@@ -48,6 +50,35 @@ public abstract class Connection extends Thread implements EventHandler {
 	
 	public List<EventHandler> getEventHandlers() {
 		return eventHandlers;
+	}
+	
+	public List<BNetUser> getUsers() {
+		return users;
+	}
+	
+	private BNetUser getUser(BNetUser u) {
+		for(BNetUser ui : users) {
+			if(u.equals(ui))
+				return ui;
+		}
+		return null;
+	}
+	
+	public List<String> findUsersForTabComplete(String containing) {
+		containing = containing.toLowerCase();
+		
+		List<String> ret = new ArrayList<String>(users.size());
+		for(BNetUser user : users) {
+			String u = user.getShortLogonName();
+			if(GlobalSettings.tabCompleteMode.beginsWithMode()) {
+				if(u.toLowerCase().startsWith(containing))
+					ret.add(u);
+			} else {
+				if(u.toLowerCase().contains(containing))
+					ret.add(u);
+			}
+		}
+		return ret;
 	}
 
 	private void waitForEHsemaphore() {
@@ -95,13 +126,11 @@ public abstract class Connection extends Thread implements EventHandler {
 	public void addSlave(Connection c) {
 		slaves.add(c);
 	}
-
 	public void addEventHandler(EventHandler e) {
 		waitForEHsemaphore();
 		eventHandlers.add(e);
 		e.initialize(this);
 	}
-
 	public void addSecondaryEventHandler(EventHandler e) {
 		waitForEH2semaphore();
 		eventHandlers2.add(e);
@@ -130,7 +159,6 @@ public abstract class Connection extends Thread implements EventHandler {
 			bnlsSocket.setKeepAlive(true);
 		}
 	}
-
 	public void setConnected(boolean c) {
 		if(connected == c)
 			return;
@@ -349,7 +377,6 @@ public abstract class Connection extends Thread implements EventHandler {
 			chatQueue.enqueue(text, GlobalSettings.enableFloodProtect);
 		}
 	}
-
 	public void sendChat(BNetUser to, String text, boolean whisperBack) {
 		if(text == null)
 			return;
@@ -422,18 +449,20 @@ public abstract class Connection extends Thread implements EventHandler {
 	 * EventHandler methods follow
 	 * 
 	 */
-
 	public void initialize(Connection c) {
 		new UnsupportedOperationException();
 	}
 
 	public synchronized void bnetConnected() {
+		users.clear();
+		
 		for(EventHandler eh : eventHandlers)
 			eh.bnetConnected();
 	}
 
 	public synchronized void bnetDisconnected() {
 		channelName = null;
+		users.clear();
 		myUser = null;
 
 		eh_semaphore++;
@@ -462,6 +491,7 @@ public abstract class Connection extends Thread implements EventHandler {
 
 	public synchronized void joinedChannel(String channel) {
 		channelName = channel;
+		users.clear();
 
 		eh_semaphore++;
 		for(EventHandler eh : eventHandlers)
@@ -482,6 +512,11 @@ public abstract class Connection extends Thread implements EventHandler {
 	}
 
 	public synchronized void channelUser(BNetUser user) {
+		if(getUser(user) == null) {
+			users.add(user);
+			ChannelListPriority.sort(users);
+		}
+		
 		eh_semaphore++;
 		for(EventHandler eh : eventHandlers)
 			eh.channelUser(user);
@@ -489,6 +524,11 @@ public abstract class Connection extends Thread implements EventHandler {
 	}
 
 	public synchronized void channelJoin(BNetUser user) {
+		if(getUser(user) == null) {
+			users.add(user);
+			ChannelListPriority.sort(users);
+		}
+		
 		eh_semaphore++;
 		for(EventHandler eh : eventHandlers)
 			eh.channelJoin(user);
@@ -496,6 +536,9 @@ public abstract class Connection extends Thread implements EventHandler {
 	}
 
 	public synchronized void channelLeave(BNetUser user) {
+		if(!users.remove(getUser(user)))
+			Out.error(getClass(), "Tried to remove a user that was not in the list: " + user.toString());
+		
 		eh_semaphore++;
 		for(EventHandler eh : eventHandlers)
 			eh.channelLeave(user);

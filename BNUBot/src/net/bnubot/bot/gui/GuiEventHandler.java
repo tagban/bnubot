@@ -21,6 +21,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
@@ -92,13 +93,13 @@ public class GuiEventHandler implements EventHandler {
 	 * Update the list of the TC popup
 	 */
 	private void tcUpdate() {
-		String[] users = userList.findUsers(tcUser);
-		if(users.length == 1) {
-			tcSelect(users[0]);
-		} else if(users.length == 0) {
+		List<String> users = con.findUsersForTabComplete(tcUser);
+		if(users.size() == 1) {
+			tcSelect(users.get(0));
+		} else if(users.size() == 0) {
 			tcCancel();
 		} else {
-			tcList.setModel(new DefaultComboBoxModel(users));
+			tcList.setModel(new DefaultComboBoxModel(users.toArray()));
 			tcPopupWindow.pack();
 			tcPopupWindow.setVisible(true);
 			tcList.setSelectedIndex(0);

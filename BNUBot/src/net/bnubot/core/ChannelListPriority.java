@@ -5,6 +5,12 @@
 
 package net.bnubot.core;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+import net.bnubot.util.BNetUser;
+
 public enum ChannelListPriority {
 	PRIORITY_BLIZZARD_REP (5, 0x01),
 	PRIORITY_BNET_REP (4, 0x08),
@@ -25,5 +31,17 @@ public enum ChannelListPriority {
 			if((p.flags & flags) != 0)
 				return p.priority;
 		return PRIORITY_NORMAL.priority;
+	}
+
+	private static final Comparator<BNetUser> bnetSorter = new Comparator<BNetUser>() {
+		public int compare(BNetUser arg0, BNetUser arg1) {
+			int prio0 = ChannelListPriority.getPrioByFlags(arg0.getFlags());
+			int prio1 = ChannelListPriority.getPrioByFlags(arg0.getFlags());
+			return new Integer(prio0).compareTo(prio1);
+		}
+	};
+	
+	public static void sort(List<BNetUser> users) {
+		Collections.sort(users, bnetSorter);
 	}
 };

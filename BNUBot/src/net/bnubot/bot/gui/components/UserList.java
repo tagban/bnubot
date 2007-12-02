@@ -10,10 +10,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -44,28 +42,10 @@ public class UserList extends JPanel {
 		JPopupMenu menu;
 	}
 	
-	private Hashtable<BNetUser, UserInfo> users = null;
-	private Box box = null;
-	private ColorScheme colors = null;
-	private GuiEventHandler geh = null;
-	
-	public String[] findUsers(String containing) {
-		containing = containing.toLowerCase();
-		
-		List<String> ret = new ArrayList<String>(users.size());
-		Enumeration<UserInfo> en = users.elements();
-		while(en.hasMoreElements()) {
-			String u = en.nextElement().user.getShortLogonName();
-			if(GlobalSettings.tabCompleteMode.beginsWithMode()) {
-				if(u.toLowerCase().startsWith(containing))
-					ret.add(u);
-			} else {
-				if(u.toLowerCase().contains(containing))
-					ret.add(u);
-			}
-		}
-		return ret.toArray(new String[ret.size()]);
-	}
+	private final Hashtable<BNetUser, UserInfo> users = new Hashtable<BNetUser, UserInfo>();
+	private final Box box = new Box(BoxLayout.Y_AXIS);
+	private final ColorScheme colors;
+	private final GuiEventHandler geh;
 	
 	/**
 	 * Get UserInfo from JLabel
@@ -99,11 +79,9 @@ public class UserList extends JPanel {
 	
 	public UserList(ColorScheme colors, GuiEventHandler geh) {
 		super(new FlowLayout(FlowLayout.LEFT));
-		this.users = new Hashtable<BNetUser, UserInfo>();
 		this.colors = colors;
 		this.geh = geh;
 		setBackground(colors.getBackgroundColor());
-		box = new Box(BoxLayout.Y_AXIS);
 		add(box);
 	}
 	
