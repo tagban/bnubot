@@ -1172,7 +1172,7 @@ public class CommandEventHandler implements EventHandler {
 		
 		// Extract the reason
 		String[] params = param.split(" ", 2);
-		String reason = null;
+		String reason = params[0];
 		if(params.length > 1)
 			reason = params[1];
 		
@@ -1191,9 +1191,7 @@ public class CommandEventHandler implements EventHandler {
 			
 			// Build the command
 			String out = (isBan) ? "/ban " : "/kick ";
-			out += u.getFullLogonName();
-			if(reason != null)
-				out += " " + reason + "";
+			out += u.getFullLogonName() + " " + reason;
 			
 			// Send the command
 			c.queueChatHelper(out, false);
