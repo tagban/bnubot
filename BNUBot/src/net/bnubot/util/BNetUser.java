@@ -23,6 +23,7 @@ public class BNetUser {
 	private String shortLogonName;	// #=yes, realm=only if different from "myRealm"
 	private String fullLogonName;	// #=yes, realm=yes
 	private final String fullAccountName;	// #=no, realm=yes
+	private String realm = null;
 	private String shortPrettyName = null;
 	private String prettyName = null;
 	private Integer flags = null;
@@ -105,7 +106,6 @@ public class BNetUser {
 	 */
 	public BNetUser(String user) {
 		String uAccount;
-		String uRealm;
 		int uNumber = 0;
 		
 		int i = user.indexOf('#');
@@ -114,8 +114,8 @@ public class BNetUser {
 			int j = num.indexOf('@');
 			if(j != -1) {
 				num = num.substring(0, j);
-				uRealm = user.substring(i + j + 2);
-				user = user.substring(0, i) + '@' + uRealm;
+				this.realm = user.substring(i + j + 2);
+				user = user.substring(0, i) + '@' + this.realm;
 			} else {
 				throw new IllegalStateException("User [" + user + "] is not a valid bnet user; no realm");
 			}
@@ -126,7 +126,7 @@ public class BNetUser {
 		String up[] = user.split("@", 2);
 		uAccount = up[0];
 		if(up.length == 2)
-			uRealm = up[1];
+			this.realm = up[1];
 		else
 			throw new IllegalStateException("User [" + user + "] is not a valid bnet user; no realm");
 		
@@ -135,16 +135,16 @@ public class BNetUser {
 		shortLogonName = uAccount;
 		if(uNumber != 0)
 			shortLogonName += "#" + uNumber;
-		shortLogonName += "@" + uRealm;
+		shortLogonName += "@" + this.realm;
 		
 		// ...
 		fullLogonName = uAccount;
 		if(uNumber != 0)
 			fullLogonName += "#" + uNumber;
-		fullLogonName += "@" + uRealm;
+		fullLogonName += "@" + this.realm;
 		
 		// ...
-		fullAccountName = uAccount + "@" + uRealm;
+		fullAccountName = uAccount + "@" + this.realm;
 	}
 	
 	/**
@@ -154,7 +154,6 @@ public class BNetUser {
 	 */
 	public BNetUser(String user, String myRealm) {
 		String uAccount;
-		String uRealm;
 		int uNumber = 0;
 		
 		int i = myRealm.indexOf('@');
@@ -167,8 +166,8 @@ public class BNetUser {
 			int j = num.indexOf('@');
 			if(j != -1) {
 				num = num.substring(0, j);
-				uRealm = user.substring(i + j + 2);
-				user = user.substring(0, i) + '@' + uRealm;
+				this.realm = user.substring(i + j + 2);
+				user = user.substring(0, i) + '@' + this.realm;
 			} else {
 				user = user.substring(0, i);
 			}
@@ -179,35 +178,45 @@ public class BNetUser {
 		String up[] = user.split("@", 2);
 		uAccount = up[0];
 		if(up.length == 2)
-			uRealm = up[1];
+			this.realm = up[1];
 		else
-			uRealm = myRealm;
+			this.realm = myRealm;
 		
-		Boolean onMyRealm = uRealm.equals(myRealm);
+		Boolean onMyRealm = this.realm.equals(myRealm);
 		
 		// ...
 		shortLogonName = uAccount;
 		if(uNumber != 0)
 			shortLogonName += "#" + uNumber;
 		if(!onMyRealm)
-			shortLogonName += "@" + uRealm;
+			shortLogonName += "@" + this.realm;
 		
 		// ...
 		fullLogonName = uAccount;
 		if(uNumber != 0)
 			fullLogonName += "#" + uNumber;
-		fullLogonName += "@" + uRealm;
+		fullLogonName += "@" + this.realm;
 		
 		// ...
-		fullAccountName = uAccount + "@" + uRealm;
+		fullAccountName = uAccount + "@" + this.realm;
 	}
-	
+
 	/**
 	 * Gets the shortest possible logon name
 	 * @return User[#N][@Realm]
 	 */
 	public String getShortLogonName() {
 		return shortLogonName;
+	}
+
+	/**
+	 * Gets the shortest possible logon name
+	 * @return User[#N][@Realm]
+	 */
+	public String getShortLogonName(BNetUser perspective) {
+		if(this.realm.equals(perspective.realm))
+			return shortLogonName;
+		return fullLogonName;
 	}
 	
 	/**

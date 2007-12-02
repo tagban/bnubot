@@ -22,6 +22,7 @@ import net.bnubot.util.BNetUser;
 import net.bnubot.util.MirrorSelector;
 import net.bnubot.util.Out;
 import net.bnubot.util.TimeFormatter;
+import net.bnubot.util.Wildcard;
 import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.ReleaseType;
 
@@ -64,6 +65,9 @@ public abstract class Connection extends Thread implements EventHandler {
 		return null;
 	}
 	
+	/**
+	 * Find users according to TC rules
+	 */
 	public List<String> findUsersForTabComplete(String containing) {
 		containing = containing.toLowerCase();
 		
@@ -77,6 +81,21 @@ public abstract class Connection extends Thread implements EventHandler {
 				if(u.toLowerCase().contains(containing))
 					ret.add(u);
 			}
+		}
+		return ret;
+	}
+	
+	/**
+	 * Find users according to wildcard rules
+	 */
+	public List<BNetUser> findUsersWildcard(String pattern, BNetUser perspective) {
+		pattern = pattern.toLowerCase();
+		
+		List<BNetUser> ret = new ArrayList<BNetUser>(users.size());
+		for(BNetUser user : users) {
+			String u = user.getShortLogonName(perspective).toLowerCase();
+			if(Wildcard.matches(pattern, u))
+				ret.add(user);
 		}
 		return ret;
 	}

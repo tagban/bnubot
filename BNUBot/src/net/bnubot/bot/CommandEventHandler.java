@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 
 import net.bnubot.bot.database.AccountResultSet;
@@ -341,11 +342,7 @@ public class CommandEventHandler implements EventHandler {
 				break;
 			case 'b':
 				if(command.equals("ban")) {
-					if((param == null) || (param.length() == 0)) {
-						c.sendChat(user, "Use: %trigger%ban <user>[@<realm>] [reason]", whisperBack);
-						break;
-					}
-					c.queueChatHelper("/ban " + param, false);
+					doKickBan(user, param, true, whisperBack);
 					break;
 				}
 				break;
@@ -410,11 +407,7 @@ public class CommandEventHandler implements EventHandler {
 				break;
 			case 'k':
 				if(command.equals("kick")) {
-					if((param == null) || (param.length() == 0)) {
-						c.sendChat(user, "Use: %trigger%kick <user>[@<realm>] [reason]", whisperBack);
-						break;
-					}
-					c.queueChatHelper("/kick " + param, false);
+					doKickBan(user, param, false, whisperBack);
 					break;
 				}
 				break;
@@ -1166,6 +1159,44 @@ public class CommandEventHandler implements EventHandler {
 			c.sendChat(user, e.getClass().getSimpleName() + ": " + e.getMessage(), whisperBack);
 		}
 		return true;
+	}
+
+	private void doKickBan(BNetUser user, String param, boolean isBan, boolean whisperBack) {
+		if((param == null) || (param.length() == 0)) {
+			if(isBan)
+				c.sendChat(user, "Use: %trigger%ban ( <user>[@<realm>] | pattern ) [reason]", whisperBack);
+			else
+				c.sendChat(user, "Use: %trigger%kick ( <user>[@<realm>] | pattern ) [reason]", whisperBack);
+			return;
+		}
+		
+		// Extract the reason
+		String[] params = param.split(" ", 2);
+		String reason = null;
+		if(params.length > 1)
+			reason = params[1];
+		
+		List<BNetUser> users = c.findUsersWildcard(params[0], user);
+		if(users.size() == 0) {
+			c.sendChat(user, "That pattern did not match any users.", whisperBack);
+			return;
+		}
+		
+		for(BNetUser u : users) {
+			if((u.getFlags() & 0x02) != 0) {
+				//c.sendChat(user, "Skipping " + u.getFullLogonName(), whisperBack);
+				continue;
+			}
+			
+			// Build the command
+			String out = (isBan) ? "/ban " : "/kick ";
+			out += u.getFullLogonName();
+			if(reason != null)
+				out += " " + reason + "";
+			
+			// Send the command
+			c.queueChatHelper(out, false);
+		}
 	}
 
 	/**
