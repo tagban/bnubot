@@ -31,6 +31,8 @@ public class SortedProperties extends Properties {
 	}
 
 	public synchronized Enumeration<Object> keys() {
-		return new Vector<Object>(keySet()).elements();
+		Vector<Object> keyList = new Vector<Object>(super.keySet());
+		Collections.sort(keyList, comparator);
+		return keyList.elements();
 	}
 }
