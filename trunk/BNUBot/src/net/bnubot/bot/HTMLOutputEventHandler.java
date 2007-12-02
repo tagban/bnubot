@@ -10,17 +10,13 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.SwingUtilities;
 
 import net.bnubot.bot.gui.colors.ColorScheme;
-import net.bnubot.core.ChannelListPriority;
 import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.clan.ClanMember;
@@ -32,45 +28,25 @@ import net.bnubot.util.Out;
 import net.bnubot.util.StatString;
 
 public class HTMLOutputEventHandler implements EventHandler {
-	private class SortOrderComparator implements Comparator<BNetUser> {
-		public int compare(BNetUser arg0, BNetUser arg1) {
-			int prio0 = ChannelListPriority.getPrioByFlags(arg0.getFlags());
-			int prio1 = ChannelListPriority.getPrioByFlags(arg0.getFlags());
-			return new Integer(prio0).compareTo(prio1);
-		}
-	}
-	
 	private String channel = null;
 	private boolean generationNeeded = false;
 	private Runnable writeUserListRunnable = null;
 	private ColorScheme cs = null;
 	
-	private List<BNetUser> users;
-	
-	private BNetUser get(BNetUser u) {
-		for(BNetUser ui : users.toArray(new BNetUser[users.size()])) {
-			if(u.equals(ui))
-				return ui;
-		}
-		return null;
-	}
+	private List<BNetUser> users = null;
 
 	public void bnetConnected() {
-		users = new LinkedList<BNetUser>();
 		File f = new File("html");
 		f.mkdir();
 	}
 	
 	public void bnetDisconnected() {
-		users.clear();
 		writeUserList();
 	}
 
 	public void titleChanged() {}
 
 	public void channelJoin(BNetUser user) {
-		users.add(user);
-		
 		writeUserList();
 		
 		append(user + " has joined the channel" + user.getStatString().toString() + ".",
@@ -78,9 +54,6 @@ public class HTMLOutputEventHandler implements EventHandler {
 	}
 	
 	public void channelLeave(BNetUser user) {
-		if(!users.remove(get(user)))
-			Out.error(getClass(), "Tried to remove a user that was not in the list: " + user.toString());
-		
 		writeUserList();
 		
 		append(user + " has left the channel.",
@@ -88,9 +61,6 @@ public class HTMLOutputEventHandler implements EventHandler {
 	}
 	
 	public void channelUser(BNetUser user) {
-		if(get(user) == null)
-			users.add(user);
-		
 		writeUserList();
 		
 		append(user + user.getStatString().toString() + ".",
@@ -98,6 +68,8 @@ public class HTMLOutputEventHandler implements EventHandler {
 	}
 	
 	public void initialize(Connection c) {
+		users = c.getUsers();
+		
 		File f = new File("Logs");
 		if(!f.exists())
 			f.mkdir();
@@ -110,7 +82,6 @@ public class HTMLOutputEventHandler implements EventHandler {
 	
 	public void joinedChannel(String channel) {
 		this.channel = channel;
-		users.clear();
 		
 		append("Joining channel " + channel + ".",
 				cs.getChannelColor());
@@ -150,10 +121,8 @@ public class HTMLOutputEventHandler implements EventHandler {
 						fos.write("</b> (".getBytes());
 						fos.write(Integer.toString(users.size()).getBytes());
 						fos.write(")</td></tr>".getBytes());
-						
-						Collections.sort(users, new SortOrderComparator());
 
-						for(BNetUser ui : users.toArray(new BNetUser[users.size()])) {
+						for(BNetUser ui : users) {
 							StatString ss = ui.getStatString();
 							String product = getIcon(ss.getProduct(), ss.getIcon(), ui.getFlags());
 							
