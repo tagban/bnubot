@@ -5,15 +5,11 @@
 
 package net.bnubot.bot.gui;
 
-import java.awt.AWTEvent;
 import java.awt.Frame;
 import java.awt.Rectangle;
-import java.awt.Toolkit;
 import java.awt.Window;
-import java.awt.event.AWTEventListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.WindowEvent;
 
 import net.bnubot.settings.Settings;
 
@@ -23,23 +19,8 @@ import net.bnubot.settings.Settings;
 public class WindowPosition {
 	private static final ComponentAdapter windowSaver = new ComponentAdapter() {
 		public void componentMoved(ComponentEvent event) {
-			Window window = ((WindowEvent)event).getWindow();
-			WindowPosition.save(window);
+			save((Window)event.getSource());
 		}};
-	
-	static {
-		// Globally save/load window positions
-		Toolkit.getDefaultToolkit().addAWTEventListener(
-				new AWTEventListener() {
-					public void eventDispatched(AWTEvent event) {
-						if(event.getID() != WindowEvent.WINDOW_OPENED)
-							return;
-						Window window = ((WindowEvent)event).getWindow();
-						load(window);
-						window.addComponentListener(windowSaver);
-					}},
-					AWTEvent.WINDOW_EVENT_MASK);
-	}
 
 	public static void load(Window w) {
 		String header = w.getClass().getSimpleName();
@@ -51,6 +32,7 @@ public class WindowPosition {
 		bounds.x = Integer.valueOf(Settings.read(header, "x", Integer.toString(bounds.x)));
 		bounds.y = Integer.valueOf(Settings.read(header, "y", Integer.toString(bounds.y)));
 		w.setBounds(bounds);
+		w.addComponentListener(windowSaver);
 	}
 	
 	public static void save(Window w) {
