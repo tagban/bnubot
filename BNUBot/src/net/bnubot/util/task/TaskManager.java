@@ -11,28 +11,17 @@ import java.awt.Frame;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 
+import net.bnubot.bot.gui.GuiDesktop;
+import net.bnubot.bot.gui.WindowPosition;
 import net.bnubot.settings.GlobalSettings;
 
-public class TaskManager {
+public class TaskManager extends Dialog {
 	private static final long serialVersionUID = 641763656953338296L;
 	private static Box box = null;
-	private static Dialog d = null;
+	private static TaskManager tm = null;
 	
-	static {
-		boolean enableGUI;
-		try {
-			enableGUI = GlobalSettings.enableGUI;
-		} catch(NoClassDefFoundError e) {
-			enableGUI = true;
-		}
-		
-		if(enableGUI) {
-			d = new Dialog(new Frame());
-			d.setTitle("Running Tasks");
-			box = new Box(BoxLayout.Y_AXIS);
-			d.add(box);
-			d.setResizable(false);
-		}
+	private TaskManager(Frame owner) {
+		super(owner);
 	}
 
 	public static Task createTask(String title) {
@@ -46,28 +35,44 @@ public class TaskManager {
 	}
 	
 	public static Task createTask(String title, int max, String units) {
-		if(d == null)
+		boolean enableGUI;
+		Frame owner;
+		try {
+			enableGUI = GlobalSettings.enableGUI;
+			owner = GuiDesktop.getInstance();
+		} catch(NoClassDefFoundError e) {
+			enableGUI = true;
+			owner = new Frame();
+		}
+		
+		if(enableGUI && (tm == null)) {
+			tm = new TaskManager(owner);
+			WindowPosition.load(tm);
+			tm.setTitle("Running Tasks");
+			box = new Box(BoxLayout.Y_AXIS);
+			tm.add(box);
+			tm.setResizable(false);
+		}
+		
+		if(tm == null)
 			return new Task();
 		
 		TaskGui t = new TaskGui(title, max, units);
 		box.add(t.getProgressBar());
-		d.pack();
-		try {
-			if(GlobalSettings.enableGUI)
-				d.setVisible(true);
-		} catch(NoClassDefFoundError e) {
-			d.setVisible(true);
-		}
+		tm.pack();
+		tm.setVisible(true);
 		return t;
 	}
 	
 	protected static void complete(TaskGui t) {
-		if(d != null) {
+		if(tm != null) {
 			box.remove(t.getProgressBar());
-			if(box.getComponentCount() == 0)
-				d.setVisible(false);
-			else
-				d.pack();
+			if(box.getComponentCount() == 0) {
+				tm.setVisible(false);
+				tm.dispose();
+				tm = null;
+			} else
+				tm.pack();
 		}
 	}
 }
