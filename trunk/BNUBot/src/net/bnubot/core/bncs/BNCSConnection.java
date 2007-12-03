@@ -1660,10 +1660,9 @@ public class BNCSConnection extends Connection {
 			recieveInfo("Channels: " + channelList + ".");
 	}
 
-	private static List<String> antiIdles = null;
+	private static List<String> antiIdles = new ArrayList<String>();
 	private String getAntiIdle() {
-		if(antiIdles == null) {
-			antiIdles = new ArrayList<String>();
+		if(antiIdles.size() == 0) {
 			BufferedReader is = null;
 			try {
 				File f = new File("anti-idle.txt");
@@ -1709,7 +1708,7 @@ public class BNCSConnection extends Connection {
 		if(i == 0)
 			return GlobalSettings.antiIdle;
 		i = (int)Math.floor(Math.random() * i);
-		return antiIdles.get(i);
+		return antiIdles.remove(i);
 	}
 	public boolean isOp() {
 		Integer myFlags = myUser.getFlags();
