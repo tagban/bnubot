@@ -52,6 +52,8 @@ public class ConfigurationFrame extends JDialog {
 		initializeGui();
 
 		setModal(true);
+		WindowPosition.load(this);
+		setVisible(true);
 	}
 
 	private void initializeGui() {
@@ -242,7 +244,7 @@ public class ConfigurationFrame extends JDialog {
 			add(boxAll);
 		else {
 			// No CD keys, force GCF until there are
-			new GlobalConfigurationFrame().setVisible(true);
+			new GlobalConfigurationFrame();
 			initializeGui();
 			return;
 		}

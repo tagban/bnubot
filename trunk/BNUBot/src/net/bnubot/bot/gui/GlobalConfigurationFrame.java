@@ -113,6 +113,8 @@ public class GlobalConfigurationFrame extends JDialog {
 		initializeGui();
 
 		setModal(true);
+		WindowPosition.load(this);
+		setVisible(true);
 	}
 
 	private void initializeGui() {

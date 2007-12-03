@@ -5,7 +5,6 @@
 
 package net.bnubot.bot.gui;
 
-import java.awt.AWTEvent;
 import java.awt.AWTException;
 import java.awt.Frame;
 import java.awt.Image;
@@ -13,16 +12,12 @@ import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
-import java.awt.Rectangle;
 import java.awt.SystemTray;
 import java.awt.Toolkit;
 import java.awt.TrayIcon;
 import java.awt.Window;
-import java.awt.event.AWTEventListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -59,11 +54,6 @@ import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.VersionCheck;
 
 public class GuiDesktop extends JFrame {
-	private static final ComponentAdapter windowSaver = new ComponentAdapter() {
-		public void componentMoved(ComponentEvent evt) {
-			Window window = (Window)evt.getSource();
-			savePosition(window);
-		}};
 	private static final long serialVersionUID = -7144648179041514994L;
 	private static final List<GuiEventHandler> guis = new ArrayList<GuiEventHandler>();
 	private static GuiEventHandler selectedGui = null;
@@ -82,7 +72,7 @@ public class GuiDesktop extends JFrame {
 		setTitle();
 		initializeGui();
 		initializeSystemTray();
-		loadPosition(this);
+		WindowPosition.load(this);
         setVisible(true);
 	}
 	
@@ -107,18 +97,6 @@ public class GuiDesktop extends JFrame {
 			}
 			public void windowLostFocus(WindowEvent e) {}
 		});
-		
-        // Globally save/load window positions
-		Toolkit.getDefaultToolkit().addAWTEventListener(
-				new AWTEventListener() {
-					public void eventDispatched(AWTEvent event) {
-						if(event.getID() != WindowEvent.WINDOW_OPENED)
-							return;
-						Window window = (Window)event.getSource();
-						loadPosition(window);
-						window.addComponentListener(windowSaver);
-					}},
-				AWTEvent.WINDOW_EVENT_MASK);
 		
 		tabs.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
@@ -209,7 +187,7 @@ public class GuiDesktop extends JFrame {
 				menuItem = new JMenuItem("Settings");
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						new GlobalConfigurationFrame().setVisible(true);
+						new GlobalConfigurationFrame();
 					} });
 				menu.add(menuItem);
 				
@@ -300,30 +278,6 @@ public class GuiDesktop extends JFrame {
 		setJMenuBar(menuBar);
 	}
 
-	private static void loadPosition(Window w) {
-		String header = w.getClass().getSimpleName();
-		Rectangle bounds = w.getBounds();
-		if((w instanceof Frame) && ((Frame)w).isResizable()) {
-			bounds.height = Integer.valueOf(Settings.read(header, "height", Integer.toString(bounds.height)));
-			bounds.width = Integer.valueOf(Settings.read(header, "width", Integer.toString(bounds.width)));
-		}
-		bounds.x = Integer.valueOf(Settings.read(header, "x", Integer.toString(bounds.x)));
-		bounds.y = Integer.valueOf(Settings.read(header, "y", Integer.toString(bounds.y)));
-		w.setBounds(bounds);
-	}
-	
-	protected static void savePosition(Window w) {
-		String header = w.getClass().getSimpleName();
-		Rectangle bounds = w.getBounds();
-		if((w instanceof Frame) && ((Frame)w).isResizable()) {
-			Settings.write(header, "height", Integer.toString(bounds.height));
-			Settings.write(header, "width", Integer.toString(bounds.width));
-		}
-		Settings.write(header, "x", Integer.toString(bounds.x));
-		Settings.write(header, "y", Integer.toString(bounds.y));
-		Settings.store();
-	}
-
 	private void initializeSystemTray() {
 		if(tray != null)
 			return;
@@ -362,10 +316,9 @@ public class GuiDesktop extends JFrame {
 			mi = new MenuItem("Hide/show");
 			mi.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					GuiDesktop f = GuiDesktop.getInstance();
-					f.setVisible(!f.isVisible());
-					if(f.isVisible())
-						f.toFront();
+					setVisible(!isVisible());
+					if(isVisible())
+						toFront();
 				}
 			});
 			pm.add(mi);
@@ -404,9 +357,9 @@ public class GuiDesktop extends JFrame {
 		
 		addWindowStateListener(new WindowStateListener() {
 			public void windowStateChanged(WindowEvent e) {
-				if((e.getNewState() & java.awt.Frame.ICONIFIED) != 0) {
+				if((e.getNewState() & Frame.ICONIFIED) != 0) {
 					setVisible(false);
-					setState(e.getNewState() & ~java.awt.Frame.ICONIFIED);
+					setState(e.getNewState() & ~Frame.ICONIFIED);
 				}
 			}
 		});
@@ -474,7 +427,7 @@ public class GuiDesktop extends JFrame {
 	 */
 	public static void updateDebugMenuText() {
 		mnuDebug.setText((Out.isDebug() ? "Dis" : "En") + "able debug logging");
-	} 
+	}
 
 	/**
 	 * Get the desired divider location

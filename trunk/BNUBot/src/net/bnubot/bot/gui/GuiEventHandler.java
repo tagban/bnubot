@@ -153,7 +153,7 @@ public class GuiEventHandler implements EventHandler {
 			menuItem = new JMenuItem("Settings");
 			menuItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					new ConfigurationFrame(con.getConnectionSettings()).setVisible(true);
+					new ConfigurationFrame(con.getConnectionSettings());
 				} });
 			menuBar.add(menuItem);
 			
