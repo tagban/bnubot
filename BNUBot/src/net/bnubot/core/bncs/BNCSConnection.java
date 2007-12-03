@@ -1050,7 +1050,7 @@ public class BNCSConnection extends Connection {
 	 * @throws Exception
 	 */
 	private void connectedLoop() throws Exception {
-		lastAntiIdle = System.currentTimeMillis();
+		profile.lastAntiIdle = System.currentTimeMillis();
 		lastNullPacket = System.currentTimeMillis();
 		
 		while(connected && !socket.isClosed()) {
@@ -1070,13 +1070,13 @@ public class BNCSConnection extends Connection {
 			
 			//Send anti-idles every 5 minutes
 			if((channelName != null) && GlobalSettings.enableAntiIdle) {
-				long timeSinceAntiIdle = timeNow - lastAntiIdle;
+				long timeSinceAntiIdle = timeNow - profile.lastAntiIdle;
 				
 				//Wait 5 minutes
 				timeSinceAntiIdle /= 1000;
 				timeSinceAntiIdle /= 60;
 				if(timeSinceAntiIdle >= GlobalSettings.antiIdleTimer) {
-					lastAntiIdle = timeNow;
+					profile.lastAntiIdle = timeNow;
 					queueChatHelper(getAntiIdle(), false);
 				}
 			}

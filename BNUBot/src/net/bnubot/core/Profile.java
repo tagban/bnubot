@@ -22,6 +22,8 @@ import net.bnubot.util.Out;
 public class Profile {
 	private static List<Profile> profiles = new ArrayList<Profile>();
 	private static String[] plugins = null;
+	
+	public long lastAntiIdle;
 
 	private static Profile findCreateProfile(String name) {
 		synchronized(profiles) {
