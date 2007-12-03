@@ -40,7 +40,6 @@ public abstract class Connection extends Thread implements EventHandler {
 	protected boolean connected = false;
 	protected List<Connection> slaves = new ArrayList<Connection>();
 	protected String channelName = null;
-	protected long lastAntiIdle;
 	protected boolean forceReconnect = false;
 	protected boolean initialized = false;
 
@@ -255,7 +254,7 @@ public abstract class Connection extends Thread implements EventHandler {
 	}
 
 	public void sendChatCommand(String text) {
-		lastAntiIdle = System.currentTimeMillis();
+		profile.lastAntiIdle = System.currentTimeMillis();
 
 		if(canSendChat())
 			increaseDelay(text.length());
