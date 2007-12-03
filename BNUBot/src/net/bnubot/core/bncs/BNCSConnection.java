@@ -122,7 +122,7 @@ public class BNCSConnection extends Connection {
 				
 				// Check if CS is valid
 				while(cs.isValid() != null)
-					new ConfigurationFrame(cs).setVisible(true);
+					new ConfigurationFrame(cs);
 
 				// Wait a short time before allowing a reconnect
 				waitUntilConnectionSafe(connect);

@@ -31,6 +31,7 @@ public class AboutWindow extends JDialog {
 		setResizable(false);
 		
 		pack();
+		WindowPosition.load(this);
 		setVisible(true);
 	}
 	

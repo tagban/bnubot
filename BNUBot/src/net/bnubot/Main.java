@@ -97,10 +97,8 @@ public class Main {
 		}
 		
 		if((GlobalSettings.isValid() != null) || forceConfig) {
-			GlobalConfigurationFrame cf = null;
 			try {
-				cf = new GlobalConfigurationFrame();
-				cf.setVisible(true);
+				new GlobalConfigurationFrame();
 			} catch(Exception e) {
 				Out.exception(e);
 				String s = GlobalSettings.isValid();
@@ -111,11 +109,6 @@ public class Main {
 					error += "and the configuration was invalid: " + s;
 				Out.error(Main.class, error);
 				System.exit(1);
-			}
-			
-			while(cf.isVisible()) {
-				Thread.yield();
-				Thread.sleep(200);
 			}
 			
 			String reason = GlobalSettings.isValid();
@@ -130,7 +123,7 @@ public class Main {
 			ConnectionSettings cs = new ConnectionSettings(i);
 			String valid = cs.isValid();
 			if(GlobalSettings.enableGUI && (valid != null)) {
-				new ConfigurationFrame(cs).setVisible(true);
+				new ConfigurationFrame(cs);
 				valid = cs.isValid();
 			}
 			

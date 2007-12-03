@@ -25,6 +25,7 @@ import javax.swing.event.ListSelectionListener;
 
 import net.bnubot.bot.database.Database;
 import net.bnubot.bot.database.RankResultSet;
+import net.bnubot.bot.gui.WindowPosition;
 import net.bnubot.bot.gui.components.ConfigFactory;
 import net.bnubot.bot.gui.components.ConfigTextArea;
 import net.bnubot.util.Out;
@@ -63,6 +64,7 @@ public class DatabaseRankEditor extends JDialog {
 		
 		pack();
 		setModal(true);
+		WindowPosition.load(this);
 		setVisible(true);
 	}
 	
