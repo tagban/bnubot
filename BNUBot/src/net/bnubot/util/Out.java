@@ -31,6 +31,7 @@ public class Out {
 	private static ThreadLocal<GuiEventHandler> outConnection = new ThreadLocal<GuiEventHandler>();
 	private static GuiEventHandler outConnectionDefault = null;
 	private static boolean globalDebug = Boolean.parseBoolean(Settings.read(null, "debug", "false"));
+	private static boolean debugToGui = Boolean.parseBoolean(Settings.read(null, "debugToGui", "true"));
 	private static Properties debug = new SortedProperties();
 	private static File debugFile = new File("debug.properties");
 	static {
@@ -131,7 +132,7 @@ public class Out {
 	 */
 	public static void debugAlways(Class<?> source, String text) {
 		final GuiEventHandler oc = getOutConnection();
-		if(oc != null)
+		if(debugToGui && (oc != null))
 			oc.recieveDebug("(" + source.getSimpleName() + ") " + text);
 		else if(outStream != null)
 			outStream.println("[" + TimeFormatter.getTimestamp() + "] (" + source.getSimpleName() + ") DEBUG " + text);
@@ -224,6 +225,26 @@ public class Out {
 	 */
 	public static boolean isDebug() {
 		return globalDebug;
+	}
+
+	/**
+	 * Sets whether debugging messages should be shown on the GUI
+	 * @param debug true means debugging messages will be shown on the GUI
+	 */
+	public static void setDebugToGui(boolean debug) {
+		if(debugToGui == debug)
+			return;
+		debugToGui = debug;
+		Settings.write(null, "debugToGui", Boolean.toString(debugToGui));
+		Settings.store();
+	}
+
+	/**
+	 * Gets whether debugging messages should be shown on the GUI
+	 * @return true when debugging messages will be shown on the GUI
+	 */
+	public static boolean isDebugToGui() {
+		return debugToGui;
 	}
 
 	/**

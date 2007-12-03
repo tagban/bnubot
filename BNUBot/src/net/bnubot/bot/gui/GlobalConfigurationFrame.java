@@ -104,6 +104,7 @@ public class GlobalConfigurationFrame extends JDialog {
 	
 	// Debug
 	ConfigCheckBox chkEnableDebug = null;
+	ConfigCheckBox chkDebugToGui = null;
 	List<ConfigCheckBox> chkDebug = null;
 
 	public GlobalConfigurationFrame() {
@@ -330,8 +331,8 @@ public class GlobalConfigurationFrame extends JDialog {
 
 		boxAll = new Box(BoxLayout.Y_AXIS);
 		{
-			chkEnableDebug = new ConfigCheckBox("Enable debug logging", Out.isDebug());
-			boxAll.add(chkEnableDebug);
+			boxAll.add(chkEnableDebug = new ConfigCheckBox("Enable debug logging", Out.isDebug()));
+			boxAll.add(chkDebugToGui = new ConfigCheckBox("Log debug messages on the GUI", Out.isDebugToGui()));
 			
 			Properties props = Out.getProperties();
 			chkDebug = new ArrayList<ConfigCheckBox>(props.size());
@@ -383,12 +384,15 @@ public class GlobalConfigurationFrame extends JDialog {
 		GlobalSettings.enableFloodProtect = chkEnableFloodProtect.isSelected();
 		GlobalSettings.packetLog = chkPacketLog.isSelected();
 		GlobalSettings.whisperBack = chkWhisperBack.isSelected();
-		GlobalSettings.save();
 		
 		// Save debug
 		Out.setDebug(chkEnableDebug.isSelected());
+		Out.setDebugToGui(chkDebugToGui.isSelected());
 		for(ConfigCheckBox chk : chkDebug)
 			Out.setDebug(chk.getText(), chk.isSelected());
+
+		// Save
+		GlobalSettings.save();
 		
 		// Save CD keys
 		try {
@@ -461,6 +465,7 @@ public class GlobalConfigurationFrame extends JDialog {
 		chkWhisperBack.setSelected(GlobalSettings.whisperBack);
 		
 		// Load debug
+		chkDebugToGui.setSelected(Out.isDebugToGui());
 		chkEnableDebug.setSelected(Out.isDebug());
 		for(ConfigCheckBox chk : chkDebug)
 			chk.setSelected(Out.isDebug(chk.getText()));
