@@ -1,0 +1,15 @@
+2.0.1.5 ReleaseCandidate:
+* Started the change log
+* Added a tab to the settings window to configure debug logging
+* Allow / commands to be passed through parseCommand()
+* Switched the DB editor to use ConfigTextAreas
+* Fixed a bug where profiles with multiple connections would connect out of order
+* Improved the SortedProperties class to use safer operations, and to include sorting of the keySet() method
+* Moved the responsibility of maintaining a List<BNetUser> to the core package
+* Added wildcard support to the kick and ban commands; very useful combined with direct / commands
+* Fixed a bug where anti-idles would function independantly of profiles
+* Modified anti-idles to use each message before resetting the list from anti-idle.txt
+* Improved window position saving logic
+* Dispose TaskManager window when not in use (may help alleviate Spaces bug in Leopard) 
+* Setting expireDays=0 now means never expires
+* Fixed case sensitivity of commands when using a Derby database
