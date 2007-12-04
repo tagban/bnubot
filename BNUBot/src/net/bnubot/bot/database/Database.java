@@ -443,7 +443,7 @@ public class Database {
 
 	public CommandResultSet getCommand(String command) throws SQLException {
 		command = resolveCommandAlias(command);
-		PreparedStatement ps = prepareStatement("SELECT * FROM command WHERE name=?");
+		PreparedStatement ps = prepareStatement("SELECT * FROM command WHERE LOWER(name)=LOWER(?)");
 		ps.setString(1, command);
 		return new CommandResultSet(ps.executeQuery());
 	}
@@ -455,7 +455,7 @@ public class Database {
 	}
 	
 	public CommandResultSet getCommandCategory(String category, long access) throws SQLException {
-		PreparedStatement ps = prepareStatement("SELECT * FROM command WHERE cmdgroup=? AND access<=?");
+		PreparedStatement ps = prepareStatement("SELECT * FROM command WHERE LOWER(cmdgroup)=LOWER(?) AND access<=?");
 		ps.setString(1, category);
 		ps.setLong(2, access);
 		return new CommandResultSet(ps.executeQuery());
