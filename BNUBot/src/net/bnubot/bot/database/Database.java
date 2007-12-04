@@ -160,8 +160,10 @@ public class Database {
 	
 		ResultSet rsOld = createStatement().executeQuery(SQL);
 		while(rsOld.next()) {
-			long dss = rsOld.getLong("dss");
 			long expireDays = rsOld.getLong("expireDays");
+			if(expireDays == 0)
+				continue;
+			long dss = rsOld.getLong("dss");
 			if(dss > expireDays) {
 				String login = rsOld.getString("login");
 	
