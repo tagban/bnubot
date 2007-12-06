@@ -1070,14 +1070,16 @@ public class BNCSConnection extends Connection {
 			
 			//Send anti-idles every 5 minutes
 			if((channelName != null) && GlobalSettings.enableAntiIdle) {
-				long timeSinceAntiIdle = timeNow - profile.lastAntiIdle;
-				
-				//Wait 5 minutes
-				timeSinceAntiIdle /= 1000;
-				timeSinceAntiIdle /= 60;
-				if(timeSinceAntiIdle >= GlobalSettings.antiIdleTimer) {
-					profile.lastAntiIdle = timeNow;
-					queueChatHelper(getAntiIdle(), false);
+				synchronized(profile) {
+					long timeSinceAntiIdle = timeNow - profile.lastAntiIdle;
+					
+					//Wait 5 minutes
+					timeSinceAntiIdle /= 1000;
+					timeSinceAntiIdle /= 60;
+					if(timeSinceAntiIdle >= GlobalSettings.antiIdleTimer) {
+						profile.lastAntiIdle = timeNow;
+						queueChatHelper(getAntiIdle(), false);
+					}
 				}
 			}
 			
