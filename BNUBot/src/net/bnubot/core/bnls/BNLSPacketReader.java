@@ -16,7 +16,7 @@ import net.bnubot.util.HexDump;
 import net.bnubot.util.Out;
 
 public class BNLSPacketReader {
-	int packetId;
+	BNLSPacketId packetId;
 	int packetLength;
 	byte data[];
 	
@@ -24,7 +24,7 @@ public class BNLSPacketReader {
 		BNetInputStream is = new BNetInputStream(rawis);
 		
 		packetLength = is.readWord() & 0x0000FFFF;
-		packetId = is.readByte() & 0x000000FF;
+		packetId = BNLSPacketId.values()[is.readByte() & 0x000000FF];
 		assert(packetLength >= 3);
 		
 		data = new byte[packetLength-3];
@@ -35,10 +35,10 @@ public class BNLSPacketReader {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			BNetOutputStream os = new BNetOutputStream(baos);
 			os.writeWord(packetLength);
-			os.writeByte(packetId);
+			os.writeByte(packetId.ordinal());
 			os.write(data);
 			
-			String msg = "RECV 0x" + Integer.toHexString(packetId);
+			String msg = "RECV " + packetId.name();
 			if(Out.isDebug())
 				msg += "\n" + HexDump.hexDump(baos.toByteArray());
 			Out.debugAlways(getClass(), msg);
