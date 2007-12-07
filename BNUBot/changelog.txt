@@ -1,4 +1,4 @@
-2.0.1.5 ReleaseCandidate:
+2.0.2.0 ReleaseCandidate:
 * Started the change log
 * Added a tab to the settings window to configure debug logging
 * Allow / commands to be passed through parseCommand()
@@ -7,9 +7,15 @@
 * Improved the SortedProperties class to use safer operations, and to include sorting of the keySet() method
 * Moved the responsibility of maintaining a List<BNetUser> to the core package
 * Added wildcard support to the kick and ban commands; very useful combined with direct / commands
-* Fixed a bug where anti-idles would function independantly of profiles
+* Fixed a bug where anti-idles would function independently of profiles
 * Modified anti-idles to use each message before resetting the list from anti-idle.txt
 * Improved window position saving logic
 * Dispose TaskManager window when not in use (may help alleviate Spaces bug in Leopard) 
 * Setting expireDays=0 now means never expires
 * Fixed case sensitivity of commands when using a Derby database
+* Replaced the outdated BotLayoutManager
+* Save window position on resize
+* Fixed packet logging messages; added EID message types to SID_CHATEVENT
+* Fixed a bug where the bot would crash if a clan member's rank changed before SID_CLANLIST was received
+* Do not save maximized windows positions
+* Added an option to disable the mirror selector
