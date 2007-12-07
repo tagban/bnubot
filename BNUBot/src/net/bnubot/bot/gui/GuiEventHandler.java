@@ -8,6 +8,7 @@ package net.bnubot.bot.gui;
 import java.awt.AWTKeyStroke;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.KeyboardFocusManager;
 import java.awt.Point;
 import java.awt.TrayIcon;
@@ -317,6 +318,9 @@ public class GuiEventHandler implements EventHandler {
 		// Add a listener for when the divider moves
 		((BasicSplitPaneUI)jsp.getUI()).getDivider().addComponentListener(new ComponentAdapter() {
 			public void componentMoved(ComponentEvent e) {
+				// If the window is maximized, skip this
+				if(GuiDesktop.getInstance().getExtendedState() == Frame.MAXIMIZED_BOTH)
+					return;
 				// Save the divider location
 				Settings.write("GuiDesktop", "dividerLocation", Integer.toString(jsp.getDividerLocation()));
 				Settings.store();
