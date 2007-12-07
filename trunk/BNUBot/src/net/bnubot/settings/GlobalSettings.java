@@ -57,6 +57,7 @@ public class GlobalSettings {
 	public static int bnlsPort;
 	public static boolean enableGreetings;
 	public static int antiIdleTimer;
+	public static boolean enableMirrorSelector;
 	public static boolean enableAntiIdle;
 	public static boolean autoConnect;
 	public static boolean displayBattleNetMOTD;
@@ -194,6 +195,7 @@ public class GlobalSettings {
 		Settings.write(null, "displayChannelUsers", Boolean.toString(displayChannelUsers));
 		Settings.write(null, "email", email);
 		Settings.write(null, "enableAntiidle", Boolean.toString(enableAntiIdle));
+		Settings.write(null, "enableMirrorSelector", Boolean.toString(enableMirrorSelector));
 		Settings.write(null, "enableGreetings", Boolean.toString(enableGreetings));
 		Settings.write(null, "enableCLI", Boolean.toString(enableCLI));
 		Settings.write(null, "enableGUI", Boolean.toString(enableGUI));
@@ -230,6 +232,8 @@ public class GlobalSettings {
 					Settings.read(null, "bnlsport", "9367"));
 		enableAntiIdle = Boolean.parseBoolean(
 				Settings.read(null, "enableAntiidle", "false"));
+		enableMirrorSelector = Boolean.parseBoolean(
+				Settings.read(null, "enableMirrorSelector", "true"));
 		enableGreetings = Boolean.parseBoolean(
 				Settings.read(null, "enableGreetings", "true"));
 		antiIdleTimer = Integer.parseInt(

@@ -14,6 +14,8 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
+import net.bnubot.settings.GlobalSettings;
+
 /**
  * A class for picking the fastest address
  * http://www.x86labs.org/forum/index.php/topic,10225.0.html
@@ -23,7 +25,7 @@ import java.net.UnknownHostException;
 public class MirrorSelector {
 	private static final int MAX_TIME = 1000; // timeout time in ms
 
-	public static InetAddress selectMirror(InetAddress[] mirrors, int port) {
+	private static InetAddress selectMirror(InetAddress[] mirrors, int port) {
 		Socket s = new Socket();
 		long bestTime = MAX_TIME;
 		InetAddress bestHost = null;
@@ -67,10 +69,13 @@ public class MirrorSelector {
 	public static InetAddress getClosestMirror(String hostname, int port)
 			throws UnknownHostException {
 		InetAddress hosts[] = InetAddress.getAllByName(hostname);
-		if (hosts.length == 1) {
-			Out.debug(MirrorSelector.class, "There was only one host: " + hosts[0]);
+		
+		if(!GlobalSettings.enableMirrorSelector)
+			return hosts[(int)(Math.random() * hosts.length)];
+		
+		if (hosts.length == 1)
 			return hosts[0];
-		}
+		
 		Out.info(MirrorSelector.class, "Searching for fastest of " + hosts.length + " hosts for " + hostname);
 		return selectMirror(hosts, port);
 	}
