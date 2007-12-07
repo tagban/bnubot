@@ -67,6 +67,7 @@ public class GlobalConfigurationFrame extends JDialog {
 	ConfigComboBox cmbLookAndFeel = null;
 	ConfigComboBox cmbPlasticTheme = null;
 	ConfigCheckBox chkAutoConnect = null;
+	ConfigCheckBox chkEnableMirrorSelector = null;
 	ConfigCheckBox chkDisplayBattleNetMOTD = null;
 	ConfigCheckBox chkDisplayBattleNetChannels = null;
 	ConfigCheckBox chkDisplayJoinParts = null;
@@ -220,6 +221,7 @@ public class GlobalConfigurationFrame extends JDialog {
 			cmbReleaseType.setSelectedItem(GlobalSettings.releaseType);
 
 			boxAll.add(chkAutoConnect = new ConfigCheckBox("Auto Connect", GlobalSettings.autoConnect));
+			boxAll.add(chkEnableMirrorSelector = new ConfigCheckBox("Enable Mirror Selector", GlobalSettings.enableMirrorSelector));
 			boxAll.add(chkEnableFloodProtect = new ConfigCheckBox("Enable Flood Protect", GlobalSettings.enableFloodProtect));
 			boxAll.add(chkPacketLog = new ConfigCheckBox("Packet Log", GlobalSettings.packetLog));
 			boxAll.add(chkWhisperBack = new ConfigCheckBox("Whisper Commands", GlobalSettings.whisperBack));
@@ -369,6 +371,7 @@ public class GlobalConfigurationFrame extends JDialog {
 		TimeFormatter.tsFormat = (String)cmbTSFormat.getSelectedItem();
 		GlobalSettings.releaseType = (ReleaseType)cmbReleaseType.getSelectedItem();
 		GlobalSettings.autoConnect = chkAutoConnect.isSelected();
+		GlobalSettings.enableMirrorSelector = chkEnableMirrorSelector.isSelected();
 		GlobalSettings.displayBattleNetMOTD = chkDisplayBattleNetMOTD.isSelected();
 		GlobalSettings.displayBattleNetChannels = chkDisplayBattleNetChannels.isSelected();
 		GlobalSettings.displayJoinParts = chkDisplayJoinParts.isSelected();
@@ -452,6 +455,7 @@ public class GlobalConfigurationFrame extends JDialog {
 		cmbTSFormat.setSelectedItem(TimeFormatter.tsFormat);
 		cmbReleaseType.setSelectedItem(GlobalSettings.releaseType);
 		chkAutoConnect.setSelected(GlobalSettings.autoConnect);
+		chkEnableMirrorSelector.setSelected(GlobalSettings.enableMirrorSelector);
 		chkEnableGUI.setSelected(GlobalSettings.enableGUI);
 		chkEnableLegacyIcons.setSelected(GlobalSettings.enableLegacyIcons);
 		chkEnableCLI.setSelected(GlobalSettings.enableCLI);
