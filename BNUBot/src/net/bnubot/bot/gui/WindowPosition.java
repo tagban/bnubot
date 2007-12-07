@@ -20,6 +20,9 @@ public class WindowPosition {
 	private static final ComponentAdapter windowSaver = new ComponentAdapter() {
 		public void componentMoved(ComponentEvent event) {
 			save((Window)event.getSource());
+		}
+		public void componentResized(ComponentEvent event) {
+			save((Window)event.getSource());
 		}};
 
 	public static void load(Window w) {
