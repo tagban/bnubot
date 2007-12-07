@@ -36,10 +36,11 @@ public class TaskManager extends Dialog {
 	
 	public static Task createTask(String title, int max, String units) {
 		boolean enableGUI;
-		Frame owner;
+		Frame owner = null;
 		try {
 			enableGUI = GlobalSettings.enableGUI;
-			owner = GuiDesktop.getInstance();
+			if(enableGUI)
+				owner = GuiDesktop.getInstance();
 		} catch(NoClassDefFoundError e) {
 			enableGUI = true;
 			owner = new Frame();
