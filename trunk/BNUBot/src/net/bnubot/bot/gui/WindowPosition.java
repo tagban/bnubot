@@ -41,9 +41,15 @@ public class WindowPosition {
 	public static void save(Window w) {
 		String header = w.getClass().getSimpleName();
 		Rectangle bounds = w.getBounds();
-		if((w instanceof Frame) && ((Frame)w).isResizable()) {
-			Settings.write(header, "height", Integer.toString(bounds.height));
-			Settings.write(header, "width", Integer.toString(bounds.width));
+		if(w instanceof Frame) {
+			Frame f = (Frame)w;
+			if(f.getExtendedState() == Frame.MAXIMIZED_BOTH)
+				return;
+			
+			if(f.isResizable()) {
+				Settings.write(header, "height", Integer.toString(bounds.height));
+				Settings.write(header, "width", Integer.toString(bounds.width));
+			}
 		}
 		Settings.write(header, "x", Integer.toString(bounds.x));
 		Settings.write(header, "y", Integer.toString(bounds.y));
