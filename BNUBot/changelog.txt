@@ -1,4 +1,4 @@
-2.0.2.0 ReleaseCandidate:
+2.0.2 (r975):
 * Started the change log
 * Added a tab to the settings window to configure debug logging
 * Allow / commands to be passed through parseCommand()
