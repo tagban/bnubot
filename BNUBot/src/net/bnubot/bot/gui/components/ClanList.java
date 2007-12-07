@@ -190,6 +190,8 @@ public class ClanList extends JPanel {
 	
 	public void rankChange(byte oldRank, byte newRank, String user) {
 		ClanMemberInfo cmi = get(user);
+		if(cmi == null)
+			return;
 		cmi.entry.setRank(newRank);
 		cmi.label.setText(cmi.entry.toString());
 		setIcon(cmi);
