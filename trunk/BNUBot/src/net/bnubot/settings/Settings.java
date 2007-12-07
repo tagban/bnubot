@@ -40,6 +40,22 @@ public class Settings {
 		return Default;
 	}
 	
+	public static boolean readBoolean(String Header, String Setting, boolean Default) {
+		return Boolean.parseBoolean(read(Header, Setting, Boolean.toString(Default)));
+	}
+	
+	public static int readInt(String Header, String Setting, int Default) {
+		return Integer.parseInt(read(Header, Setting, Integer.toString(Default)));
+	}
+	
+	public static long readLong(String Header, String Setting, long Default) {
+		return Long.parseLong(read(Header, Setting, Long.toString(Default)));
+	}
+	
+	public static <T extends Enum<T>> T readEnum(Class<T> enumType, String Header, String Setting, T Default) {
+		return Enum.valueOf(enumType, read(Header, Setting, Default.name()));
+	}
+	
 	public static void write(String Header, String Setting, String Value) {
 		String key = getKey(Header, Setting);
 		if(Value == null)
@@ -52,6 +68,22 @@ public class Settings {
 		anythingChanged = true;
 		Out.debug(Settings.class, "Setting " + key + "=" + Value);
 		props.setProperty(key, Value);
+	}
+	
+	public static void writeBoolean(String Header, String Setting, boolean Value) {
+		write(Header, Setting, Boolean.toString(Value));
+	}
+	
+	public static void writeInt(String Header, String Setting, int Value) {
+		write(Header, Setting, Integer.toString(Value));
+	}
+	
+	public static void writeLong(String Header, String Setting, long Value) {
+		write(Header, Setting, Long.toString(Value));
+	}
+	
+	public static <T extends Enum<T>> void writeEnum(String Header, String Setting, T Value) {
+		write(Header, Setting, Value.name());
 	}
 
 	public static void store() {

@@ -28,12 +28,12 @@ import net.bnubot.settings.Settings;
  */
 public class Out {
 	private static PrintStream outStream = System.out;
-	private static ThreadLocal<GuiEventHandler> outConnection = new ThreadLocal<GuiEventHandler>();
+	private static final ThreadLocal<GuiEventHandler> outConnection = new ThreadLocal<GuiEventHandler>();
 	private static GuiEventHandler outConnectionDefault = null;
-	private static boolean globalDebug = Boolean.parseBoolean(Settings.read(null, "debug", "false"));
-	private static boolean debugToGui = Boolean.parseBoolean(Settings.read(null, "debugToGui", "true"));
-	private static Properties debug = new SortedProperties();
-	private static File debugFile = new File("debug.properties");
+	private static boolean globalDebug = Settings.readBoolean(null, "debug", false);
+	private static boolean debugToGui = Settings.readBoolean(null, "debugToGui", true);
+	private static final Properties debug = new SortedProperties();
+	private static final File debugFile = new File("debug.properties");
 	static {
 		try {
 			if(debugFile.exists())
@@ -196,7 +196,7 @@ public class Out {
 		if(GlobalSettings.enableGUI)
 			GuiDesktop.updateDebugMenuText();
 		debug(Out.class, "Debug logging " + (debug ? "en" : "dis") + "abled");
-		Settings.write(null, "debug", Boolean.toString(debug));
+		Settings.writeBoolean(null, "debug", debug);
 		Settings.store();
 	}
 
@@ -235,7 +235,7 @@ public class Out {
 		if(debugToGui == debug)
 			return;
 		debugToGui = debug;
-		Settings.write(null, "debugToGui", Boolean.toString(debugToGui));
+		Settings.writeBoolean(null, "debugToGui", debugToGui);
 		Settings.store();
 	}
 

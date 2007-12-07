@@ -435,6 +435,6 @@ public class GuiDesktop extends JFrame {
 	public static int getDividerLocation() {
 		if(selectedGui != null)
 			return selectedGui.getDividerLocation();
-		return Integer.valueOf(Settings.read("GuiDesktop", "dividerLocation", Integer.toString(instance.getWidth() - 200)));
+		return Settings.readInt("GuiDesktop", "dividerLocation", instance.getWidth() - 200);
 	}
 }
