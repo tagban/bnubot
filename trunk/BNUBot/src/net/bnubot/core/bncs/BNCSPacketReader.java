@@ -47,6 +47,8 @@ public class BNCSPacketReader {
 			os.write(data);
 			
 			String msg = "RECV " + packetId.name();
+			if(packetId == BNCSPacketId.SID_CHATEVENT)
+				msg += " " + BNCSChatEventId.values()[BNetInputStream.readDWord(data, 0)].name();
 			if(Out.isDebug())
 				msg += "\n" + HexDump.hexDump(baos.toByteArray());
 			Out.debugAlways(getClass(), msg);

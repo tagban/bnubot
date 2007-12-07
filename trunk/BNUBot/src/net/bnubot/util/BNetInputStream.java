@@ -28,6 +28,13 @@ public class BNetInputStream extends DataInputStream {
 				((readByte() << 24) & 0xFF000000);
 	}
 
+	public static int readDWord(byte[] data, int off) throws IOException {
+        return	((data[0 + off] << 0) & 0x000000FF) |
+				((data[1 + off] << 8) & 0x0000FF00) |
+				((data[2 + off] << 16) & 0x00FF0000) |
+				((data[3 + off] << 24) & 0xFF000000);
+	}
+
 	public long readQWord() throws IOException {
 		long qw = readDWord() & 0xFFFFFFFFl;
 		long qw2 = readDWord() & 0xFFFFFFFFl;
