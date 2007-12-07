@@ -137,7 +137,7 @@ public class ConnectionSettings implements Serializable {
 		String header = Integer.toString(botNum);
 		Settings.write(header, "profile", profile);
 		Settings.write(header, "server", bncsServer);
-		Settings.write(header, "port", Integer.toString(port));
+		Settings.writeInt(header, "port", port);
 		Settings.write(header, "username", username);
 		Settings.write(header, "password", password);
 		Settings.write(header, "channel", channel);
@@ -154,8 +154,7 @@ public class ConnectionSettings implements Serializable {
 		
 		profile = 	Settings.read(header, "profile", "Profile" + botNum);
 		bncsServer =Settings.read(header, "server", "useast.battle.net");
-		port = Integer.parseInt(
-					Settings.read(header, "port", "6112"));
+		port =		Settings.readInt(header, "port", 6112);
 		username =	Settings.read(header, "username", null);
 		password =	Settings.read(header, "password", null);
 		channel =	Settings.read(header, "channel", "Clan BNU");

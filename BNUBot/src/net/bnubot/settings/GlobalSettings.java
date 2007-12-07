@@ -86,8 +86,7 @@ public class GlobalSettings {
 	private static Method setPlasticTheme = null;
 
 	static {
-		enableGUI = Boolean.parseBoolean(
-				Settings.read(null, "enableGUI", "true"));
+		enableGUI = Settings.readBoolean(null, "enableGUI", true);
 		
 		if(enableGUI)
 			try {
@@ -182,107 +181,81 @@ public class GlobalSettings {
 	}
 	
 	public static void save() {
-		Settings.write(null, "numBots", Integer.toString(numBots));
+		Settings.writeInt(null, "numBots", numBots);
 		Settings.write(null, "antiidle", antiIdle);
-		Settings.write(null, "antiIdleTimer", Integer.toString(antiIdleTimer));
-		Settings.write(null, "autoConnect", Boolean.toString(autoConnect));
+		Settings.writeInt(null, "antiIdleTimer", antiIdleTimer);
+		Settings.writeBoolean(null, "autoConnect", autoConnect);
 		Settings.write(null, "bnlsserver", bnlsServer);
-		Settings.write(null, "bnlsport", Integer.toString(bnlsPort));
-		Settings.write(null, "colorScheme", Byte.toString(colorScheme));
-		Settings.write(null, "displayBattleNetMOTD", Boolean.toString(displayBattleNetMOTD));
-		Settings.write(null, "displayBattleNetChannels", Boolean.toString(displayBattleNetChannels));
-		Settings.write(null, "displayJoinParts", Boolean.toString(displayJoinParts));
-		Settings.write(null, "displayChannelUsers", Boolean.toString(displayChannelUsers));
+		Settings.writeInt(null, "bnlsport", bnlsPort);
+		Settings.writeInt(null, "colorScheme", colorScheme);
+		Settings.writeBoolean(null, "displayBattleNetMOTD", displayBattleNetMOTD);
+		Settings.writeBoolean(null, "displayBattleNetChannels", displayBattleNetChannels);
+		Settings.writeBoolean(null, "displayJoinParts", displayJoinParts);
+		Settings.writeBoolean(null, "displayChannelUsers", displayChannelUsers);
 		Settings.write(null, "email", email);
-		Settings.write(null, "enableAntiidle", Boolean.toString(enableAntiIdle));
-		Settings.write(null, "enableMirrorSelector", Boolean.toString(enableMirrorSelector));
-		Settings.write(null, "enableGreetings", Boolean.toString(enableGreetings));
-		Settings.write(null, "enableCLI", Boolean.toString(enableCLI));
-		Settings.write(null, "enableGUI", Boolean.toString(enableGUI));
-		Settings.write(null, "trayIconMode", trayIconMode.name());
-		Settings.write(null, "tabCompleteMode", tabCompleteMode.name());
-		Settings.write(null, "enableLegacyIcons", Boolean.toString(enableLegacyIcons));
-		Settings.write(null, "enableCommands", Boolean.toString(enableCommands));
-		Settings.write(null, "enableTrivia", Boolean.toString(enableTrivia));
-		Settings.write(null, "enableFloodProtect", Boolean.toString(enableFloodProtect));
+		Settings.writeBoolean(null, "enableAntiidle", enableAntiIdle);
+		Settings.writeBoolean(null, "enableMirrorSelector", enableMirrorSelector);
+		Settings.writeBoolean(null, "enableGreetings", enableGreetings);
+		Settings.writeBoolean(null, "enableCLI", enableCLI);
+		Settings.writeBoolean(null, "enableGUI", enableGUI);
+		Settings.writeEnum(null, "trayIconMode", trayIconMode);
+		Settings.writeEnum(null, "tabCompleteMode", tabCompleteMode);
+		Settings.writeBoolean(null, "enableLegacyIcons", enableLegacyIcons);
+		Settings.writeBoolean(null, "enableCommands", enableCommands);
+		Settings.writeBoolean(null, "enableTrivia", enableTrivia);
+		Settings.writeBoolean(null, "enableFloodProtect", enableFloodProtect);
 		Settings.write(null, "lookAndFeel", lookAndFeel);
 		Settings.write(null, "lookAndFeelTheme", lookAndFeelTheme);
-		Settings.write(null, "packetLog", Boolean.toString(packetLog));
-		Settings.write(null, "recruitAccess", Long.toString(recruitAccess));
+		Settings.writeBoolean(null, "packetLog", packetLog);
+		Settings.writeLong(null, "recruitAccess", recruitAccess);
 		Settings.write(null, "recruitTagPrefix", recruitTagPrefix);
 		Settings.write(null, "recruitTagSuffix", recruitTagSuffix);
-		Settings.write(null, "releaseType", releaseType.toString());
+		Settings.writeEnum(null, "releaseType", releaseType);
 		Settings.write(null, "trigger", trigger);
-		Settings.write(null, "triviaRoundLength", Long.toString(triviaRoundLength));
+		Settings.writeLong(null, "triviaRoundLength", triviaRoundLength);
 		Settings.write(null, "tsFormat", TimeFormatter.tsFormat);
-		Settings.write(null, "whisperBack", Boolean.toString(whisperBack));
+		Settings.writeBoolean(null, "whisperBack", whisperBack);
 		
 		Settings.store();
 	}
 	
 	public static void load() {
-		numBots = Integer.parseInt(
-				Settings.read(null, "numBots", "1"));
-		colorScheme = Byte.parseByte(
-				Settings.read(null, "colorScheme", "1"));
+		numBots = Settings.readInt(null, "numBots", 1);
+		colorScheme = (byte)Settings.readInt(null, "colorScheme", 1);
 		trigger = 	Settings.read(null, "trigger", "!");
 		antiIdle = 	Settings.read(null, "antiidle", "/me is a BNU-Bot %version%");
 		bnlsServer =Settings.read(null, "bnlsserver", "jbls.clanbnu.net");
-		bnlsPort = Integer.parseInt(
-					Settings.read(null, "bnlsport", "9367"));
-		enableAntiIdle = Boolean.parseBoolean(
-				Settings.read(null, "enableAntiidle", "false"));
-		enableMirrorSelector = Boolean.parseBoolean(
-				Settings.read(null, "enableMirrorSelector", "true"));
-		enableGreetings = Boolean.parseBoolean(
-				Settings.read(null, "enableGreetings", "true"));
-		antiIdleTimer = Integer.parseInt(
-				Settings.read(null, "antiIdleTimer", "5"));
-		autoConnect = Boolean.parseBoolean(
-				Settings.read(null, "autoConnect", "true"));
-		displayBattleNetMOTD = Boolean.parseBoolean(
-				Settings.read(null, "displayBattleNetMOTD", "true"));
-		displayBattleNetChannels = Boolean.parseBoolean(
-				Settings.read(null, "displayBattleNetChannels", "false"));
-		displayJoinParts = Boolean.parseBoolean(
-				Settings.read(null, "displayJoinParts", "true"));
-		displayChannelUsers = Boolean.parseBoolean(
-				Settings.read(null, "displayChannelUsers", "false"));
+		bnlsPort = Settings.readInt(null, "bnlsport", 9367);
+		enableAntiIdle = Settings.readBoolean(null, "enableAntiidle", false);
+		enableMirrorSelector = Settings.readBoolean(null, "enableMirrorSelector", true);
+		enableGreetings = Settings.readBoolean(null, "enableGreetings", true);
+		antiIdleTimer = Settings.readInt(null, "antiIdleTimer", 5);
+		autoConnect = Settings.readBoolean(null, "autoConnect", true);
+		displayBattleNetMOTD = Settings.readBoolean(null, "displayBattleNetMOTD", true);
+		displayBattleNetChannels = Settings.readBoolean(null, "displayBattleNetChannels", false);
+		displayJoinParts = Settings.readBoolean(null, "displayJoinParts", true);
+		displayChannelUsers = Settings.readBoolean(null, "displayChannelUsers", false);
 		email =	Settings.read(null, "email", null);
-		enableCLI = Boolean.parseBoolean(
-				Settings.read(null, "enableCLI", "false"));
-		enableGUI = Boolean.parseBoolean(
-				Settings.read(null, "enableGUI", "true"));
-		trayIconMode = TrayIconMode.valueOf(
-				Settings.read(null, "trayIconMode", TrayIconMode.ENABLED.name()));
-		tabCompleteMode = TabCompleteMode.valueOf(
-				Settings.read(null, "tabCompleteMode", TabCompleteMode.STARTS_WITH_STRING.name()));
-		enableLegacyIcons = Boolean.parseBoolean(
-				Settings.read(null, "enableLegacyIcons", "true"));
-		enableCommands = Boolean.parseBoolean(
-				Settings.read(null, "enableCommands", "false"));
-		enableTrivia = Boolean.parseBoolean(
-				Settings.read(null, "enableTrivia", "false"));
-		triviaRoundLength = Long.parseLong(
-				Settings.read(null, "triviaRoundLength", "100"));
-		enableFloodProtect = Boolean.parseBoolean(
-				Settings.read(null, "enableFloodProtect", "true"));
-		packetLog = Boolean.parseBoolean(
-				Settings.read(null, "packetLog", "false"));
-		whisperBack = Boolean.parseBoolean(
-				Settings.read(null, "whisperBack", "true"));
-		recruitAccess = Long.parseLong(
-				Settings.read(null, "recruitAccess", "10"));
+		enableCLI = Settings.readBoolean(null, "enableCLI", false);
+		enableGUI = Settings.readBoolean(null, "enableGUI", true);
+		trayIconMode = Settings.readEnum(TrayIconMode.class, null, "trayIconMode", TrayIconMode.ENABLED);
+		tabCompleteMode = Settings.readEnum(TabCompleteMode.class, null, "tabCompleteMode", TabCompleteMode.STARTS_WITH_STRING);
+		enableLegacyIcons = Settings.readBoolean(null, "enableLegacyIcons", true);
+		enableCommands = Settings.readBoolean(null, "enableCommands", false);
+		enableTrivia = Settings.readBoolean(null, "enableTrivia", false);
+		triviaRoundLength = Settings.readLong(null, "triviaRoundLength", 100);
+		enableFloodProtect = Settings.readBoolean(null, "enableFloodProtect", true);
+		packetLog = Settings.readBoolean(null, "packetLog", false);
+		whisperBack = Settings.readBoolean(null, "whisperBack", true);
+		recruitAccess = Settings.readLong(null, "recruitAccess", 10);
 		recruitTagPrefix =	Settings.read(null, "recruitTagPrefix", "BNU-");
 		recruitTagSuffix =	Settings.read(null, "recruitTagSuffix", null);
 		if(enableGUI) {
 			setLookAndFeelTheme(Settings.read(null, "lookAndFeelTheme", "SkyKrupp"));
 			setLookAndFeel(Settings.read(null, "lookAndFeel", "JGoodies Plastic XP"));
 		}
-		TimeFormatter.tsFormat =
-			Settings.read(null, "tsFormat", TimeFormatter.tsFormat);
-		releaseType = Enum.valueOf(ReleaseType.class,
-				Settings.read(null, "releaseType", CurrentVersion.version().getReleaseType().name()));
+		TimeFormatter.tsFormat = Settings.read(null, "tsFormat", TimeFormatter.tsFormat);
+		releaseType = Settings.readEnum(ReleaseType.class, null, "releaseType", CurrentVersion.version().getReleaseType());
 
 		// Ensure that development builds check for development, and non-development builds don't
 		ReleaseType rt = CurrentVersion.version().getReleaseType();

@@ -322,7 +322,7 @@ public class GuiEventHandler implements EventHandler {
 				if(GuiDesktop.getInstance().getExtendedState() == Frame.MAXIMIZED_BOTH)
 					return;
 				// Save the divider location
-				Settings.write("GuiDesktop", "dividerLocation", Integer.toString(jsp.getDividerLocation()));
+				Settings.writeInt("GuiDesktop", "dividerLocation", jsp.getDividerLocation());
 				Settings.store();
 			}
 		});
