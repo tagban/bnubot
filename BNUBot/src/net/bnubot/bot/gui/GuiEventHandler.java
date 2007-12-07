@@ -7,6 +7,7 @@ package net.bnubot.bot.gui;
 
 import java.awt.AWTKeyStroke;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.KeyboardFocusManager;
 import java.awt.Point;
 import java.awt.TrayIcon;
@@ -25,6 +26,8 @@ import java.util.List;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -37,8 +40,6 @@ import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
-import javax.swing.event.AncestorEvent;
-import javax.swing.event.AncestorListener;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
 
 import net.bnubot.bot.gui.colors.ColorScheme;
@@ -76,6 +77,8 @@ public class GuiEventHandler implements EventHandler {
 	private String tcBefore = null;
 	private String tcUser = null;
 	private String tcAfter = null;
+	private static final int textHeight = 23;
+	private static final int paddingHeight = 4;
 	
 	private static final Set<? extends AWTKeyStroke> EMPTY_SET = Collections.emptySet();
 	
@@ -134,7 +137,7 @@ public class GuiEventHandler implements EventHandler {
 	
 	private void initializeGui(ColorScheme colors) {
 		// Create the panel
-		frame = new JPanel(new BotLayoutManager(), true);
+		frame = new JPanel(new BorderLayout());
 		
 		// When gained focus, select the chat box
 		frame.addFocusListener(new FocusListener() {
@@ -219,6 +222,7 @@ public class GuiEventHandler implements EventHandler {
 		mainTextArea = new TextWindow(colors);
 		// Send chat textbox
 		chatTextArea = new ColoredTextField(colors);
+		chatTextArea.setMaximumSize(new Dimension(Integer.MAX_VALUE, textHeight));
 		// Enable tab character
 		chatTextArea.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, EMPTY_SET);
 		chatTextArea.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, EMPTY_SET);
@@ -281,6 +285,7 @@ public class GuiEventHandler implements EventHandler {
 		});
 		// Channel text box (above userlist)
 		channelTextPane = new ColoredTextField(colors);
+		channelTextPane.setMaximumSize(new Dimension(Integer.MAX_VALUE, textHeight));
 		channelTextPane.setHorizontalAlignment(JTextField.CENTER);
 		channelTextPane.setEditable(false);
 		
@@ -291,36 +296,20 @@ public class GuiEventHandler implements EventHandler {
 		// Clan list
 		clanList = new ClanList(colors);
 
-		JTabbedPane allLists = new JTabbedPane();
+		JTabbedPane allLists = new JTabbedPane(JTabbedPane.BOTTOM);
 		allLists.addTab("Channel", new JScrollPane(userList));
 		allLists.addTab("Friends", new JScrollPane(friendList));
 		allLists.addTab("Clan", new JScrollPane(clanList));
-		allLists.setTabPlacement(JTabbedPane.BOTTOM);
 		
-		JPanel leftSide = new JPanel();
+		Box leftSide = new Box(BoxLayout.Y_AXIS);
 		leftSide.add(mainTextArea);
+		leftSide.add(Box.createVerticalStrut(paddingHeight));
 		leftSide.add(chatTextArea);
 		
-		JPanel rightSide = new JPanel();
+		Box rightSide = new Box(BoxLayout.Y_AXIS);
 		rightSide.add(channelTextPane);
+		rightSide.add(Box.createVerticalStrut(paddingHeight));
 		rightSide.add(allLists);
-		
-		final Runnable redraw = new Runnable() {
-			public void run() {
-				// Tell the LayoutManager to reposition the components in the frame
-				frame.validate();
-			}
-		};
-		
-		// This listener can detect when the JSplitPane divider is moved
-		rightSide.addAncestorListener(new AncestorListener() {
-			public void ancestorAdded(AncestorEvent event) {}
-			public void ancestorMoved(AncestorEvent event) {
-				// Delay so the containers can resize
-				SwingUtilities.invokeLater(redraw);
-			}
-			public void ancestorRemoved(AncestorEvent event) {}
-		});
 
 		jsp = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, leftSide, rightSide);
 		jsp.setDividerSize(8);
