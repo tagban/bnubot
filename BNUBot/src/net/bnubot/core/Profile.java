@@ -120,8 +120,8 @@ public class Profile {
 			// Start the Connection thread
 			con.start();
 			
-			// Wait for the Connection thread to initialize and connect
-			while(!con.isInitialized() || !con.isConnected()) {
+			// Wait for the Connection thread to initialize
+			while(!con.isInitialized()) {
 				Thread.sleep(10);
 				Thread.yield();
 			}
