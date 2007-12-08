@@ -1,4 +1,13 @@
-2.0.2 (r975):
+2.0.2.1:
+* Extended Settings read/write methods
+* Fixed a bug where the CLI would cause 100% CPU use
+* Added an option to change the profile in the GUI
+* Fixed a bug where plugins would recieve initialize() twice
+* Add settings menu items for each connection of a profile
+* Secondary EHs now recieve titleChanged()
+* Better discovery of JDBC drivers
+
+2.0.2 (r978):
 * Started the change log
 * Added a tab to the settings window to configure debug logging
 * Allow / commands to be passed through parseCommand()
@@ -9,13 +18,11 @@
 * Added wildcard support to the kick and ban commands; very useful combined with direct / commands
 * Fixed a bug where anti-idles would function independently of profiles
 * Modified anti-idles to use each message before resetting the list from anti-idle.txt
-* Improved window position saving logic
+* Improved window position saving logic; save on resize, ignore maximized windows
 * Dispose TaskManager window when not in use (may help alleviate Spaces bug in Leopard) 
 * Setting expireDays=0 now means never expires
 * Fixed case sensitivity of commands when using a Derby database
 * Replaced the outdated BotLayoutManager
-* Save window position on resize
 * Fixed packet logging messages; added EID message types to SID_CHATEVENT
 * Fixed a bug where the bot would crash if a clan member's rank changed before SID_CLANLIST was received
-* Do not save maximized windows positions
 * Added an option to disable the mirror selector
