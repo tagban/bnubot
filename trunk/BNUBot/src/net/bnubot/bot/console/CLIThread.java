@@ -27,6 +27,8 @@ public class CLIThread extends Thread {
 					} else {
 						text += (char)b;
 					}
+				} else {
+					sleep(200);
 				}
 				yield();
 			}
