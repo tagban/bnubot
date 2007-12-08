@@ -66,17 +66,6 @@ public class GuiDesktop extends JFrame {
 	
 	// This must be the last thing to initialize
 	private static final GuiDesktop instance = new GuiDesktop();
-	protected Runnable newProfile = new Runnable() {
-		public void run() {
-			try {
-				GlobalSettings.numBots++;
-				ConnectionSettings cs = new ConnectionSettings(GlobalSettings.numBots);
-				Thread.yield();
-				Profile.add(cs);
-			} catch(Exception ex) {
-				Out.exception(ex);
-			}
-		}};
 	
 	private GuiDesktop() {
 		super();
@@ -184,7 +173,14 @@ public class GuiDesktop extends JFrame {
 				JMenuItem menuItem = new JMenuItem("New Profile");
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						SwingUtilities.invokeLater(newProfile);
+						try {
+							GlobalSettings.numBots++;
+							ConnectionSettings cs = new ConnectionSettings(GlobalSettings.numBots);
+							Thread.yield();
+							Profile.add(cs);
+						} catch(Exception ex) {
+							Out.exception(ex);
+						}
 					} });
 				menu.add(menuItem);
 				
