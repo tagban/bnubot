@@ -13,6 +13,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.sql.Driver;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -21,6 +22,7 @@ import javax.swing.LookAndFeel;
 import javax.swing.UIManager;
 
 import net.bnubot.bot.database.DriverShim;
+import net.bnubot.core.EventHandler;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.Out;
 
@@ -72,26 +74,7 @@ public class JARLoader {
 							name = name.substring(0, name.length() - 6);
 							name = name.replace('/', '.');
 							
-							// Get a Class for it
-							Class<?> clazz = JARLoader.forName(name);
-							
-							// Check if it's a JDBC driver
-							for(Class<?> cif : clazz.getInterfaces()) {
-								if(cif.equals(Driver.class)) {
-									DriverManager.registerDriver(new DriverShim((Driver)clazz.newInstance()));
-									break;
-								}
-							}
-
-							// Check if it's a look and feel
-							if(GlobalSettings.enableGUI)
-								for(Class<?> superClazz = clazz; superClazz != null; superClazz = superClazz.getSuperclass()) {
-									if(superClazz.equals(LookAndFeel.class)) {
-										LookAndFeel laf = (LookAndFeel)clazz.newInstance();
-										UIManager.installLookAndFeel(laf.getName(), name);
-										break;
-									}
-								}
+							checkClass(name);
 						}
 					} catch(NoClassDefFoundError e) {
 					} catch(ClassNotFoundException e) {
@@ -100,7 +83,41 @@ public class JARLoader {
 					
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				Out.exception(e);
+			}
+		}
+	}
+
+	/**
+	 * Check if a class is a JDBC driver, a Look and Feel, or a plugin
+	 * @param name The fully qualified class name
+	 */
+	private static void checkClass(String name) throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
+		// Get a Class for it
+		Class<?> clazz = JARLoader.forName(name);
+		
+		for(Class<?> superClazz = clazz; superClazz != null; superClazz = superClazz.getSuperclass()) {
+			// Check if it's a look and feel
+			if(GlobalSettings.enableGUI && superClazz.equals(LookAndFeel.class)) {
+				LookAndFeel laf = (LookAndFeel)clazz.newInstance();
+				UIManager.installLookAndFeel(laf.getName(), name);
+				break;
+			}
+			
+			// Check the interfaces
+			for(Class<?> cif : superClazz.getInterfaces()) {
+				// Check if it's a JDBC driver
+				if(cif.equals(Driver.class)) {
+					Driver d = (Driver)clazz.newInstance();
+					if(d.jdbcCompliant())
+						DriverManager.registerDriver(new DriverShim(d));
+					break;
+				}
+				
+				// Check if it's a plugin
+				if(cif.equals(EventHandler.class)) {
+					// TODO: Enable use of this plugin
+				}
 			}
 		}
 	}
