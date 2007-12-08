@@ -33,6 +33,7 @@ public class ConfigurationFrame extends JDialog {
 	ConnectionSettings cs;
 
 	//Connection
+	ConfigTextArea txtProfile = null;
 	ConfigTextArea txtUsername = null;
 	JPasswordField txtPassword = null;
 	ConfigComboBox cmbProduct = null;
@@ -62,6 +63,7 @@ public class ConfigurationFrame extends JDialog {
 		ConnectionStuff: {
 			Box boxSettings = new Box(BoxLayout.Y_AXIS);
 			{
+				txtProfile = ConfigFactory.makeText("Profile", cs.profile, boxSettings);
 				txtUsername = ConfigFactory.makeText("Username", cs.username, boxSettings);
 				txtPassword = ConfigFactory.makePass("Password", cs.password, boxSettings);
 
@@ -261,6 +263,7 @@ public class ConfigurationFrame extends JDialog {
 	}
 
 	private void save() {
+		cs.profile = txtProfile.getText();
 		cs.username = txtUsername.getText();
 		cs.password = new String(txtPassword.getPassword());
 		cs.product = (byte)(cmbProduct.getSelectedIndex() + 1);
@@ -280,6 +283,7 @@ public class ConfigurationFrame extends JDialog {
 	private void load() {
 		cs.load();
 		
+		txtProfile.setText(cs.profile);
 		txtUsername.setText(cs.username);
 		txtPassword.setText(cs.password);
 		cmbProduct.setSelectedIndex(cs.product - 1);
