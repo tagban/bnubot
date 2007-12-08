@@ -507,6 +507,11 @@ public abstract class Connection extends Thread implements EventHandler {
 		for(EventHandler eh : eventHandlers)
 			eh.titleChanged();
 		eh_semaphore--;
+		
+		eh2_semaphore++;
+		for(EventHandler eh : eventHandlers2)
+			eh.titleChanged();
+		eh2_semaphore--;
 	}
 
 	public synchronized void joinedChannel(String channel) {
