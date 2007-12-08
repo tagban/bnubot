@@ -147,12 +147,14 @@ public abstract class Connection extends Thread implements EventHandler {
 	public void addEventHandler(EventHandler e) {
 		waitForEHsemaphore();
 		eventHandlers.add(e);
-		e.initialize(this);
+		if(initialized)
+			e.initialize(this);
 	}
 	public void addSecondaryEventHandler(EventHandler e) {
 		waitForEH2semaphore();
 		eventHandlers2.add(e);
-		e.initialize(this);
+		if(initialized)
+			e.initialize(this);
 	}
 
 	public void removeEventHandler(EventHandler e) {
