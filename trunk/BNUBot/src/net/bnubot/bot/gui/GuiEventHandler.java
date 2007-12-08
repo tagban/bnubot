@@ -23,8 +23,11 @@ import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -41,6 +44,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.JPopupMenu.Separator;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
 
 import net.bnubot.bot.gui.colors.ColorScheme;
@@ -87,9 +91,27 @@ public class GuiEventHandler implements EventHandler {
 		initializeGui(ColorScheme.createColorScheme(GlobalSettings.colorScheme));
 	}
 	
-	public void initialize(Connection con) {
-		this.con = con;
-		Out.setThreadOutputConnection(this);
+	private static Map<Connection, JMenuItem> settingsMenuItems = new HashMap<Connection, JMenuItem>();
+	public void initialize(final Connection con) {
+		if(this.con == null) {
+			this.con = con;
+			Out.setThreadOutputConnection(this);
+		}
+		
+		JMenuItem settings = new JMenuItem("Settings");
+		settings.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				new ConfigurationFrame(con.getConnectionSettings());
+			}});
+		settingsMenuItems.put(con, settings);
+		
+		for(int i = 0; i < menuBar.getMenuComponentCount(); i++) {
+			Object x = menuBar.getMenuComponent(i);
+			if(x instanceof Separator) {
+				menuBar.add(settings, i);
+				break;
+			}
+		}
 		titleChanged();
 	}
 	
@@ -153,13 +175,6 @@ public class GuiEventHandler implements EventHandler {
 		{
 			JMenu menu;
 			JMenuItem menuItem;
-			
-			menuItem = new JMenuItem("Settings");
-			menuItem.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					new ConfigurationFrame(con.getConnectionSettings());
-				} });
-			menuBar.add(menuItem);
 			
 			menuBar.addSeparator();
 
@@ -569,6 +584,17 @@ public class GuiEventHandler implements EventHandler {
 			menuBar.setText(con.getProfile().getName());
 		else
 			menuBar.setText(con.getMyUser().getFullLogonName());
+		
+		// Update the settings menu items
+		for (Entry<Connection, JMenuItem> item : settingsMenuItems.entrySet()) {
+			Connection key = item.getKey();
+			JMenuItem value = item.getValue();
+			String description = key.getProfile().getName();
+			if(key.getMyUser() != null)
+				description = key.getMyUser().getFullLogonName();
+			System.out.println(description);
+			value.setText("Settings (" + description + ")");
+		}
 		
 		// Update the desktop window
 		GuiDesktop.setTitle(this, con.getProductID());
