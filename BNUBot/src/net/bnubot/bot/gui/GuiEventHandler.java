@@ -589,10 +589,9 @@ public class GuiEventHandler implements EventHandler {
 		for (Entry<Connection, JMenuItem> item : settingsMenuItems.entrySet()) {
 			Connection key = item.getKey();
 			JMenuItem value = item.getValue();
-			String description = key.getProfile().getName();
-			if(key.getMyUser() != null)
-				description = key.getMyUser().getFullLogonName();
-			System.out.println(description);
+			String description = (key.getMyUser() == null)
+					? key.getProfile().getName() 
+					: key.getMyUser().getFullLogonName();
 			value.setText("Settings (" + description + ")");
 		}
 		
