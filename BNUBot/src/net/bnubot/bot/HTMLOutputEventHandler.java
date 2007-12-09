@@ -49,22 +49,25 @@ public class HTMLOutputEventHandler implements EventHandler {
 	public void channelJoin(Connection source, BNetUser user) {
 		writeUserList();
 		
-		append(user + " has joined the channel" + user.getStatString().toString() + ".",
+		append(source,
+			user + " has joined the channel" + user.getStatString().toString() + ".",
 			cs.getChannelColor());
 	}
 	
 	public void channelLeave(Connection source, BNetUser user) {
 		writeUserList();
 		
-		append(user + " has left the channel.",
-				cs.getChannelColor());
+		append(source,
+			user + " has left the channel.",
+			cs.getChannelColor());
 	}
 	
 	public void channelUser(Connection source, BNetUser user) {
 		writeUserList();
 		
-		append(user + user.getStatString().toString() + ".",
-				cs.getChannelColor());
+		append(source,
+			user + user.getStatString().toString() + ".",
+			cs.getChannelColor());
 	}
 	
 	public void initialize(Connection c) {
@@ -83,8 +86,8 @@ public class HTMLOutputEventHandler implements EventHandler {
 	public void joinedChannel(Connection source, String channel) {
 		this.channel = channel;
 		
-		append("Joining channel " + channel + ".",
-				cs.getChannelColor());
+		append(source,
+			"Joining channel " + channel + ".", cs.getChannelColor());
 	}
 	public void recieveError(Connection source, String text) {}
 	public void recieveInfo(Connection source, String text) {}
@@ -162,8 +165,8 @@ public class HTMLOutputEventHandler implements EventHandler {
 	public void clanMemberStatusChange(Connection source, ClanMember member) {}
 	public void clanMemberRankChange(Connection source, byte oldRank, byte newRank, String user) {}
 
-	private void logChat(String text) {
-		String fName = "Logs/";
+	private void logChat(Connection source, String text) {
+		String fName = "Logs/" + source.getProfile().getName() + "/";
 		fName += new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 		fName += ".log";
 		File f = new File(fName);
@@ -191,15 +194,15 @@ public class HTMLOutputEventHandler implements EventHandler {
 		return out;
 	}
 	
-	private void append(String text, Color col) {
+	private void append(Connection source, String text, Color col) {
 		String out = "\n";
 		out += getDate();
 		out += getColor(col);
 		out += text;
-		logChat(out);
+		logChat(source, out);
 	}
 	
-	private void append2(String text, Color col, String text2, Color col2) {
+	private void append2(Connection source, String text, Color col, String text2, Color col2) {
 		String out = "\n";
 		out += getDate();
 		out += getColor(col);
@@ -207,33 +210,32 @@ public class HTMLOutputEventHandler implements EventHandler {
 		if(!col.equals(col2))
 			out += getColor(col2);
 		out += text2;
-		logChat(out);
+		logChat(source, out);
 	}
 	
 	public void recieveChat(Connection source, BNetUser user, String text) {
-		append2(
-				"<" + user + "> ",
-				cs.getUserNameColor(user.getFlags()),
-				text,
-				cs.getChatColor(user.getFlags()));
+		append2(source,
+			"<" + user + "> ",
+			cs.getUserNameColor(user.getFlags()),
+			text,
+			cs.getChatColor(user.getFlags()));
 	}
-	
+
 	public void recieveEmote(Connection source, BNetUser user, String text) {
-		append(
-				"<" + user + " " + text + "> ",
-				cs.getEmoteColor(user.getFlags()));
+		append(source,
+			"<" + user + " " + text + "> ", cs.getEmoteColor(user.getFlags()));
 	}
-	
+
 	public void whisperSent(Connection source, BNetUser user, String text) {
-		append2(
+		append2(source,
 			"<To: " + user + "> ",
 			cs.getUserNameColor(user.getFlags()),
 			text,
 			cs.getWhisperColor(user.getFlags()));
 	}
-	
+
 	public void whisperRecieved(Connection source, BNetUser user, String text) {
-		append2(
+		append2(source,
 			"<From: " + user + "> ",
 			cs.getUserNameColor(user.getFlags()),
 			text,
