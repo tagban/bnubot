@@ -26,6 +26,7 @@ import net.bnubot.bot.gui.colors.ColorScheme;
 import net.bnubot.bot.gui.icons.BNetIcon;
 import net.bnubot.bot.gui.icons.IconsDotBniReader;
 import net.bnubot.core.ChannelListPriority;
+import net.bnubot.core.Connection;
 import net.bnubot.core.bncs.ProductIDs;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetUser;
@@ -122,7 +123,7 @@ public class UserList extends JPanel {
 		return null;
 	}
 	
-	public void showUser(BNetUser user) {
+	public void showUser(final Connection source, BNetUser user) {
 		UserInfo ui = getUI(user);
 		if(ui == null) {
 			ui = new UserInfo();
@@ -144,7 +145,7 @@ public class UserList extends JPanel {
 				public void actionPerformed(ActionEvent arg0) {
 					UserInfo ui = getUserInfo(arg0);
 					if(ui != null)
-						geh.getConnection().queueChatHelper("/whois " + ui.user.getShortLogonName(), false);
+						source.queueChatHelper("/whois " + ui.user.getShortLogonName(), false);
 				}});
 			ui.menu.add(menuItem);
 			menuItem = new JMenuItem("Profile");
@@ -152,7 +153,7 @@ public class UserList extends JPanel {
 				public void actionPerformed(ActionEvent arg0) {
 					UserInfo ui = getUserInfo(arg0);
 					if(ui != null)
-						try { geh.getConnection().sendProfile(ui.user); } catch(Exception e) { Out.exception(e); }
+						try { source.sendProfile(ui.user); } catch(Exception e) { Out.exception(e); }
 				}});
 			ui.menu.add(menuItem);
 			ui.menu.add(Box.createHorizontalGlue());
@@ -174,7 +175,7 @@ public class UserList extends JPanel {
 								// "Left clicked on " + ui.label.getText()
 								break;
 							case MouseEvent.BUTTON2:
-								try { geh.getConnection().sendProfile(ui.user); } catch(Exception e) { Out.exception(e); }
+								try { source.sendProfile(ui.user); } catch(Exception e) { Out.exception(e); }
 								break;
 							case MouseEvent.BUTTON3:
 								ui.menu.show(arg0.getComponent(), arg0.getX(), arg0.getY());

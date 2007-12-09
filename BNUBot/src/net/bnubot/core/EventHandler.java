@@ -11,44 +11,45 @@ import net.bnubot.util.BNetUser;
 
 public interface EventHandler {
 	//Initialization
-	public void initialize(Connection c);
+	public void initialize(Connection source);
 	
 	//Connection
-	public void bnetConnected();
-	public void bnetDisconnected();
-	public void titleChanged();
+	public void bnetConnected(Connection source);
+	public void bnetDisconnected(Connection source);
+	public void titleChanged(Connection source);
 	
 	//Workarounds
-	public boolean parseCommand(BNetUser user, String command, String param, boolean whisperBack);
+	public boolean parseCommand(Connection source, BNetUser user, String command, String param, boolean whisperBack);
 
 	//Channel events
-	public void joinedChannel(String channel);
-	public void channelUser(BNetUser user);
-	public void channelJoin(BNetUser user);
-	public void channelLeave(BNetUser user);
-	public void recieveChat(BNetUser user, String text);
-	public void recieveEmote(BNetUser user, String text);
-	public void recieveInfo(String text);
-	public void recieveError(String text);
-	public void whisperSent(BNetUser user, String text);
-	public void whisperRecieved(BNetUser user, String text);
+	public void joinedChannel(Connection source, String channel);
+	public void channelUser(Connection source, BNetUser user);
+	public void channelJoin(Connection source, BNetUser user);
+	public void channelLeave(Connection source, BNetUser user);
+	public void recieveChat(Connection source, BNetUser user, String text);
+	public void recieveEmote(Connection source, BNetUser user, String text);
+	public void recieveDebug(Connection source, String text);
+	public void recieveInfo(Connection source, String text);
+	public void recieveError(Connection source, String text);
+	public void whisperSent(Connection source, BNetUser user, String text);
+	public void whisperRecieved(Connection source, BNetUser user, String text);
 	
 	//Realms
-	public void queryRealms2(String[] realms);
-	public void logonRealmEx(int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName);
+	public void queryRealms2(Connection source, String[] realms);
+	public void logonRealmEx(Connection source, int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName);
 	
 	//Friends
-	public void friendsList(FriendEntry[] entries);
-	public void friendsUpdate(FriendEntry friend);
-	public void friendsAdd(FriendEntry friend);
-	public void friendsRemove(byte entry);
-	public void friendsPosition(byte oldPosition, byte newPosition);
+	public void friendsList(Connection source, FriendEntry[] entries);
+	public void friendsUpdate(Connection source, FriendEntry friend);
+	public void friendsAdd(Connection source, FriendEntry friend);
+	public void friendsRemove(Connection source, byte entry);
+	public void friendsPosition(Connection source, byte oldPosition, byte newPosition);
 	
 	//Clan
-	public void clanMOTD(Object cookie, String text);
-	public void clanMemberList(ClanMember[] members);
-	public void clanMemberRemoved(String username);
-	public void clanMemberStatusChange(ClanMember member);
-	public void clanMemberRankChange(byte oldRank, byte newRank, String user);
+	public void clanMOTD(Connection source, Object cookie, String text);
+	public void clanMemberList(Connection source, ClanMember[] members);
+	public void clanMemberRemoved(Connection source, String username);
+	public void clanMemberStatusChange(Connection source, ClanMember member);
+	public void clanMemberRankChange(Connection source, byte oldRank, byte newRank, String user);
 	//CLANMEMBERINFORMATION
 }
