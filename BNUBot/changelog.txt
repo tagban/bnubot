@@ -2,12 +2,13 @@
 * Extended Settings read/write methods
 * Fixed a bug where the CLI would cause 100% CPU use
 * Added an option to change the profile in the GUI
-* Fixed a bug where plugins would recieve initialize() twice
+* Fixed a bug where plugins would receive initialize() twice
 * Add settings menu items for each connection of a profile
-* Secondary EHs now recieve titleChanged()
+* Secondary EHs now receive titleChanged()
 * Better discovery of JDBC drivers
 * Fixed a bug with 'new profile'
 * Added a <Connection> field to plugin events
+* Changed HTMLOutputEventHandler to use profile-specific userlists/logs
 
 2.0.2 (r978):
 * Started the change log
