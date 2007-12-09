@@ -32,8 +32,6 @@ public class HTMLOutputEventHandler implements EventHandler {
 	private boolean generationNeeded = false;
 	private Runnable writeUserListRunnable = null;
 	private ColorScheme cs = null;
-	
-	private List<BNetUser> users = null;
 
 	public void bnetConnected(Connection source) {
 		File f = new File("html");
@@ -71,7 +69,6 @@ public class HTMLOutputEventHandler implements EventHandler {
 	}
 	
 	public void initialize(Connection source) {
-		users = source.getUsers();
 		cs = ColorScheme.createColorScheme(GlobalSettings.colorScheme);
 		checkFolder("logs");
 		checkFolder("logs/" + source.getProfile().getName());
@@ -120,6 +117,7 @@ public class HTMLOutputEventHandler implements EventHandler {
 					try {
 						File f = new File("html/userlist_" + source.getProfile().getName() + ".html");
 						DataOutputStream fos = new DataOutputStream(new FileOutputStream(f));
+						List<BNetUser> users = source.getUsers();
 						
 						fos.write("<table><tr><td colspan=\"4\"><b>".getBytes());
 						if(channel != null)
