@@ -1069,14 +1069,14 @@ public class BNCSConnection extends Connection {
 			}
 			
 			//Send anti-idles every 5 minutes
-			if((channelName != null) && GlobalSettings.enableAntiIdle) {
+			if((channelName != null) && cs.enableAntiIdle) {
 				synchronized(profile) {
 					long timeSinceAntiIdle = timeNow - profile.lastAntiIdle;
 					
 					//Wait 5 minutes
 					timeSinceAntiIdle /= 1000;
 					timeSinceAntiIdle /= 60;
-					if(timeSinceAntiIdle >= GlobalSettings.antiIdleTimer) {
+					if(timeSinceAntiIdle >= cs.antiIdleTimer) {
 						profile.lastAntiIdle = timeNow;
 						queueChatHelper(getAntiIdle(), false);
 					}
@@ -1708,7 +1708,7 @@ public class BNCSConnection extends Connection {
 		//grab one
 		int i = antiIdles.size();
 		if(i == 0)
-			return GlobalSettings.antiIdle;
+			return cs.antiIdle;
 		i = (int)Math.floor(Math.random() * i);
 		return antiIdles.remove(i);
 	}

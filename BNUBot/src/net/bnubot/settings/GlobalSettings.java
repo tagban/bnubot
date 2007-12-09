@@ -50,15 +50,10 @@ public class GlobalSettings {
 	
 	public static int numBots;
 	public static byte colorScheme;
-	public static String trigger;
 	public static String email;
-	public static String antiIdle;
 	public static String bnlsServer;
 	public static int bnlsPort;
-	public static boolean enableGreetings;
-	public static int antiIdleTimer;
 	public static boolean enableMirrorSelector;
-	public static boolean enableAntiIdle;
 	public static boolean autoConnect;
 	public static boolean displayBattleNetMOTD;
 	public static boolean displayBattleNetChannels;
@@ -108,13 +103,6 @@ public class GlobalSettings {
 			}
 		
 		load();
-	}
-	
-	public static String isValid() {
-		if((trigger == null) || (trigger.length() != 1))
-			return "Trigger invalid";
-		
-		return null;
 	}
 	
 	/**
@@ -182,8 +170,6 @@ public class GlobalSettings {
 	
 	public static void save() {
 		Settings.writeInt(null, "numBots", numBots);
-		Settings.write(null, "antiidle", antiIdle);
-		Settings.writeInt(null, "antiIdleTimer", antiIdleTimer);
 		Settings.writeBoolean(null, "autoConnect", autoConnect);
 		Settings.write(null, "bnlsserver", bnlsServer);
 		Settings.writeInt(null, "bnlsport", bnlsPort);
@@ -193,9 +179,7 @@ public class GlobalSettings {
 		Settings.writeBoolean(null, "displayJoinParts", displayJoinParts);
 		Settings.writeBoolean(null, "displayChannelUsers", displayChannelUsers);
 		Settings.write(null, "email", email);
-		Settings.writeBoolean(null, "enableAntiidle", enableAntiIdle);
 		Settings.writeBoolean(null, "enableMirrorSelector", enableMirrorSelector);
-		Settings.writeBoolean(null, "enableGreetings", enableGreetings);
 		Settings.writeBoolean(null, "enableCLI", enableCLI);
 		Settings.writeBoolean(null, "enableGUI", enableGUI);
 		Settings.writeEnum(null, "trayIconMode", trayIconMode);
@@ -211,7 +195,6 @@ public class GlobalSettings {
 		Settings.write(null, "recruitTagPrefix", recruitTagPrefix);
 		Settings.write(null, "recruitTagSuffix", recruitTagSuffix);
 		Settings.writeEnum(null, "releaseType", releaseType);
-		Settings.write(null, "trigger", trigger);
 		Settings.writeLong(null, "triviaRoundLength", triviaRoundLength);
 		Settings.write(null, "tsFormat", TimeFormatter.tsFormat);
 		Settings.writeBoolean(null, "whisperBack", whisperBack);
@@ -222,14 +205,9 @@ public class GlobalSettings {
 	public static void load() {
 		numBots = Settings.readInt(null, "numBots", 1);
 		colorScheme = (byte)Settings.readInt(null, "colorScheme", 1);
-		trigger = 	Settings.read(null, "trigger", "!");
-		antiIdle = 	Settings.read(null, "antiidle", "/me is a BNU-Bot %version%");
 		bnlsServer =Settings.read(null, "bnlsserver", "jbls.clanbnu.net");
 		bnlsPort = Settings.readInt(null, "bnlsport", 9367);
-		enableAntiIdle = Settings.readBoolean(null, "enableAntiidle", false);
 		enableMirrorSelector = Settings.readBoolean(null, "enableMirrorSelector", true);
-		enableGreetings = Settings.readBoolean(null, "enableGreetings", true);
-		antiIdleTimer = Settings.readInt(null, "antiIdleTimer", 5);
 		autoConnect = Settings.readBoolean(null, "autoConnect", true);
 		displayBattleNetMOTD = Settings.readBoolean(null, "displayBattleNetMOTD", true);
 		displayBattleNetChannels = Settings.readBoolean(null, "displayBattleNetChannels", false);

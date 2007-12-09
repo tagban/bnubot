@@ -298,7 +298,7 @@ public abstract class Connection extends Thread {
 
 				String first = text.substring(0, i);
 				String last = text.substring(i + 9);
-				text = first + GlobalSettings.trigger + last;
+				text = first + cs.trigger + last;
 			}
 
 			i = text.indexOf("%version%");

@@ -20,6 +20,7 @@ import javax.swing.JPasswordField;
 import javax.swing.SwingUtilities;
 
 import net.bnubot.bot.gui.KeyManager.CDKey;
+import net.bnubot.bot.gui.components.ConfigCheckBox;
 import net.bnubot.bot.gui.components.ConfigComboBox;
 import net.bnubot.bot.gui.components.ConfigFactory;
 import net.bnubot.bot.gui.components.ConfigTextArea;
@@ -44,6 +45,13 @@ public class ConfigurationFrame extends JDialog {
 	JButton btnLoad = null;
 	JButton btnOK = null;
 	JButton btnCancel = null;
+	
+	// Profile
+	ConfigCheckBox chkAntiIdle = null;
+	ConfigTextArea txtAntiIdle = null;
+	ConfigTextArea txtAntiIdleTimer = null;
+	ConfigTextArea txtTrigger = null;
+	ConfigCheckBox chkGreetings = null;
 
 	public ConfigurationFrame(ConnectionSettings cs) {
 		super();
@@ -183,8 +191,21 @@ public class ConfigurationFrame extends JDialog {
 				cmbBNCSServer.setSelectedItem(cs.bncsServer);
 				
 				txtChannel = ConfigFactory.makeText("Channel", cs.channel, boxSettings);
-
-				boxAll.add(Box.createVerticalGlue());
+				txtTrigger = ConfigFactory.makeText("Trigger", cs.trigger, boxSettings);
+				
+				Box boxLine = new Box(BoxLayout.X_AXIS);
+				{
+					boxLine.add(ConfigFactory.makeLabel("Anti-Idle"));
+					boxLine.add(chkAntiIdle = new ConfigCheckBox("Enable", cs.enableAntiIdle));
+					boxLine.add(txtAntiIdle = new ConfigTextArea(cs.antiIdle));
+					txtAntiIdle.setMaximumSize(ConfigFactory.getMaxComponentSize());
+				}
+				boxSettings.add(boxLine);
+				
+				txtAntiIdleTimer = ConfigFactory.makeText("Anti-Idle Timer", Integer.toString(cs.antiIdleTimer), boxSettings);
+				boxSettings.add(chkGreetings = new ConfigCheckBox("Enable Greetings", cs.enableGreetings));
+				
+				boxSettings.add(Box.createVerticalGlue());
 			}
 			boxAll.add(boxSettings);
 
@@ -276,6 +297,13 @@ public class ConfigurationFrame extends JDialog {
 			cs.cdkey2 = formatCDKey(k2.getKey());
 		cs.bncsServer = (String)cmbBNCSServer.getSelectedItem();
 		cs.channel = txtChannel.getText();
+		
+		// Profile
+		cs.trigger = txtTrigger.getText();
+		cs.antiIdle = txtAntiIdle.getText();
+		cs.antiIdleTimer = Integer.parseInt(txtAntiIdleTimer.getText());
+		cs.enableAntiIdle = chkAntiIdle.isSelected();
+		cs.enableGreetings = chkGreetings.isSelected();
 
 		cs.save();
 	}
@@ -291,6 +319,13 @@ public class ConfigurationFrame extends JDialog {
 		cmbCDKey2.setSelectedItem(cs.cdkey2);
 		cmbBNCSServer.setSelectedItem(cs.bncsServer);
 		txtChannel.setText(cs.channel);
+		
+		// Profile
+		txtTrigger.setText(cs.trigger);
+		txtAntiIdle.setText(cs.antiIdle);
+		txtAntiIdleTimer.setText(Integer.toString(cs.antiIdleTimer));
+		chkAntiIdle.setSelected(cs.enableAntiIdle);
+		chkGreetings.setSelected(cs.enableGreetings);
 	}
 
 	private void cancel() {

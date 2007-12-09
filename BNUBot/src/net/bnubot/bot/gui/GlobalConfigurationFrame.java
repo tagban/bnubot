@@ -55,10 +55,6 @@ public class GlobalConfigurationFrame extends JDialog {
 	JTabbedPane tabs = null;
 
 	//Settings
-	ConfigCheckBox chkAntiIdle = null;
-	ConfigTextArea txtAntiIdle = null;
-	ConfigTextArea txtAntiIdleTimer = null;
-	ConfigTextArea txtTrigger = null;
 	ConfigTextArea txtEmail = null;
 	ConfigComboBox cmbTSFormat = null;
 	ConfigTextArea txtBNLSServer = null;
@@ -193,20 +189,8 @@ public class GlobalConfigurationFrame extends JDialog {
 		Box boxAll = new Box(BoxLayout.Y_AXIS);
 		{
 			txtBNLSServer = ConfigFactory.makeText("BNLS Server", GlobalSettings.bnlsServer, boxAll);
-			txtTrigger = ConfigFactory.makeText("Trigger", GlobalSettings.trigger, boxAll);
 			txtEmail = ConfigFactory.makeText("Email", GlobalSettings.email, boxAll);
-
-			Box boxLine = new Box(BoxLayout.X_AXIS);
-			{
-				boxLine.add(ConfigFactory.makeLabel("Anti-Idle"));
-				boxLine.add(chkAntiIdle = new ConfigCheckBox("Enable", GlobalSettings.enableAntiIdle));
-				boxLine.add(txtAntiIdle = new ConfigTextArea(GlobalSettings.antiIdle));
-				txtAntiIdle.setMaximumSize(ConfigFactory.getMaxComponentSize());
-			}
-			boxAll.add(boxLine);
-
-			txtAntiIdleTimer = ConfigFactory.makeText("Anti-Idle Timer", Integer.toString(GlobalSettings.antiIdleTimer), boxAll);
-
+			
 			Object[] values;
 			if(CurrentVersion.version().getReleaseType().isDevelopment())
 				values = new ReleaseType[] {
@@ -362,11 +346,7 @@ public class GlobalConfigurationFrame extends JDialog {
 		
 		// Save global settings
 		GlobalSettings.bnlsServer = txtBNLSServer.getText();
-		GlobalSettings.trigger = txtTrigger.getText();
 		GlobalSettings.email = txtEmail.getText();
-		GlobalSettings.antiIdle = txtAntiIdle.getText();
-		GlobalSettings.antiIdleTimer = Integer.parseInt(txtAntiIdleTimer.getText());
-		GlobalSettings.enableAntiIdle = chkAntiIdle.isSelected();
 		GlobalSettings.colorScheme = (byte)(cmbColorScheme.getSelectedIndex() + 1);
 		TimeFormatter.tsFormat = (String)cmbTSFormat.getSelectedItem();
 		GlobalSettings.releaseType = (ReleaseType)cmbReleaseType.getSelectedItem();
@@ -446,11 +426,7 @@ public class GlobalConfigurationFrame extends JDialog {
 		// Load global settings
 		GlobalSettings.load();
 		txtBNLSServer.setText(GlobalSettings.bnlsServer);
-		txtTrigger.setText(GlobalSettings.trigger);
 		txtEmail.setText(GlobalSettings.email);
-		txtAntiIdle.setText(GlobalSettings.antiIdle);
-		txtAntiIdleTimer.setText(Integer.toString(GlobalSettings.antiIdleTimer));
-		chkAntiIdle.setSelected(GlobalSettings.enableAntiIdle);
 		cmbColorScheme.setSelectedIndex(GlobalSettings.colorScheme - 1);
 		cmbTSFormat.setSelectedItem(TimeFormatter.tsFormat);
 		cmbReleaseType.setSelectedItem(GlobalSettings.releaseType);
@@ -481,7 +457,7 @@ public class GlobalConfigurationFrame extends JDialog {
 	}
 
 	private void close() {
-		String v = GlobalSettings.isValid();
+		/*String v = GlobalSettings.isValid();
 		if(v == null) {
 			dispose();
 		} else {
@@ -490,6 +466,7 @@ public class GlobalConfigurationFrame extends JDialog {
 					v,
 					"The configuration is invalid",
 					JOptionPane.ERROR_MESSAGE);
-		}
+		}*/
+		dispose();
 	}
 }
