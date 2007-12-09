@@ -25,6 +25,7 @@ public class ConnectionSettings implements Serializable {
     public static final byte PRODUCT_DIABLOSHAREWARE   = (byte)0x0A; //Fully Supported
     public static final byte PRODUCT_STARCRAFTSHAREWARE= (byte)0x0B; //Fully Supported
 
+    // Connection-specific stuff
     public int botNum;
     public String profile;
 	public String bncsServer;
@@ -35,6 +36,13 @@ public class ConnectionSettings implements Serializable {
 	public String cdkey;
 	public String cdkey2;
 	public byte product;
+	
+	// Profile-specific stuff
+	public boolean enableAntiIdle;
+	public String antiIdle;
+	public String trigger;
+	public boolean enableGreetings;
+	public int antiIdleTimer;
 	
 	public String myRealm;
 	
@@ -99,6 +107,9 @@ public class ConnectionSettings implements Serializable {
 		if(myRealm == null)
 			return "I don't know what realm I will be on";
 		
+		if((trigger == null) || (trigger.length() != 1))
+			return "Trigger invalid";
+		
 		return null;
 	}
 	
@@ -145,6 +156,13 @@ public class ConnectionSettings implements Serializable {
 		Settings.write(header, "cdkey2", cdkey2);
 		if(product != 0)
 			Settings.write(header, "product", org.jbls.util.Constants.prods[product-1]);
+
+		header = "Profile_" + profile;
+		Settings.write(header, "antiidle", antiIdle);
+		Settings.writeBoolean(header, "enableAntiidle", enableAntiIdle);
+		Settings.writeBoolean(header, "enableGreetings", enableGreetings);
+		Settings.write(header, "trigger", trigger);
+		Settings.writeInt(header, "antiIdleTimer", antiIdleTimer);
 		
 		Settings.store();
 	}
@@ -168,5 +186,12 @@ public class ConnectionSettings implements Serializable {
 					product = (byte)(i+1);
 			}
 		}
+
+		header = "Profile_" + profile;
+		trigger = 	Settings.read(header, "trigger", "!");
+		antiIdle = 	Settings.read(header, "antiidle", "/me is a BNU-Bot %version%");
+		enableAntiIdle = Settings.readBoolean(header, "enableAntiidle", false);
+		enableGreetings = Settings.readBoolean(header, "enableGreetings", true);
+		antiIdleTimer = Settings.readInt(header, "antiIdleTimer", 5);
 	}
 }

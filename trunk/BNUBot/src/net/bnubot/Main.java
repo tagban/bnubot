@@ -8,8 +8,6 @@ package net.bnubot;
 import java.io.File;
 import java.io.PrintStream;
 
-import javax.swing.JOptionPane;
-
 import net.bnubot.bot.gui.ConfigurationFrame;
 import net.bnubot.bot.gui.GlobalConfigurationFrame;
 import net.bnubot.core.Profile;
@@ -35,7 +33,7 @@ public class Main {
 	}
 
 	public static void main(String[] args) throws Exception {
-		boolean forceConfig = false;
+		boolean forceConfig = !new File("settings.ini").exists();
 		for(int i = 0; i < args.length; i++) {
 			if(args[i].charAt(0) == '-') {
 				switch(args[i].charAt(1)) {
@@ -96,24 +94,13 @@ public class Main {
 			System.exit(1);
 		}
 		
-		if((GlobalSettings.isValid() != null) || forceConfig) {
+		if(forceConfig) {
 			try {
 				new GlobalConfigurationFrame();
 			} catch(Exception e) {
 				Out.exception(e);
-				String s = GlobalSettings.isValid();
-				String error = "There was an error initializing the configuraiton window, ";
-				if(s == null)
-					error += "but the configuration was valid.";
-				else
-					error += "and the configuration was invalid: " + s;
+				String error = "There was an error initializing the configuraiton window";
 				Out.error(Main.class, error);
-				System.exit(1);
-			}
-			
-			String reason = GlobalSettings.isValid();
-			if(reason != null) {
-				JOptionPane.showMessageDialog(null, reason, "Invalid Configuration", JOptionPane.ERROR_MESSAGE);
 				System.exit(1);
 			}
 		}

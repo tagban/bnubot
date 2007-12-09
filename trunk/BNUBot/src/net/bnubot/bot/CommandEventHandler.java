@@ -996,7 +996,7 @@ public class CommandEventHandler implements EventHandler {
 				break;
 			case 't':
 				if(command.equals("trigger")) {
-					char trigger = GlobalSettings.trigger.charAt(0);
+					char trigger = getTrigger(source);
 					String output = "0000" + Integer.toString(trigger);
 					output = output.substring(output.length() - 4);
 					output = "Current trigger: " + trigger + " (alt+" + output + ")";
@@ -1157,6 +1157,10 @@ public class CommandEventHandler implements EventHandler {
 		return true;
 	}
 
+	private char getTrigger(Connection source) {
+		return source.getConnectionSettings().trigger.charAt(0);
+	}
+
 	private void doKickBan(Connection source, BNetUser user, String param, boolean isBan, boolean whisperBack) {
 		if((param == null) || (param.length() == 0)) {
 			if(isBan)
@@ -1233,7 +1237,7 @@ public class CommandEventHandler implements EventHandler {
 	}
 
 	public void channelJoin(Connection source, BNetUser user) {
-		if(!GlobalSettings.enableGreetings)
+		if(!source.getConnectionSettings().enableGreetings)
 			return;
 		
 		touchUser(source, user, "joining the channel");
@@ -1448,12 +1452,10 @@ public class CommandEventHandler implements EventHandler {
 		
 		touchUser(source, user, "chatting in the channel");
 		
-		char trigger = GlobalSettings.trigger.charAt(0);
-		
 		if(text.equals("?trigger"))
 			parseCommand(source, user, "trigger", null, GlobalSettings.whisperBack);
 		else
-			if(text.charAt(0) == trigger) {
+			if(text.charAt(0) == getTrigger(source)) {
 				String[] command = text.substring(1).split(" ", 2);
 				String params = null;
 				if(command.length > 1)
@@ -1552,8 +1554,7 @@ public class CommandEventHandler implements EventHandler {
 		if(text.length() == 0)
 			return;
 		
-		char trigger = GlobalSettings.trigger.charAt(0);
-		if(text.charAt(0) == trigger)
+		if(text.charAt(0) == getTrigger(source))
 			text = text.substring(1);
 		
 		int i = text.indexOf(' ');
