@@ -70,17 +70,23 @@ public class HTMLOutputEventHandler implements EventHandler {
 			cs.getChannelColor());
 	}
 	
-	public void initialize(Connection c) {
-		users = c.getUsers();
+	public void initialize(Connection source) {
+		users = source.getUsers();
 		
-		File f = new File("Logs");
+		String fName = "logs";
+		checkFolder(fName);
+		checkFolder(fName + "/" + source.getProfile().getName());
+		
+		cs = ColorScheme.createColorScheme(GlobalSettings.colorScheme);
+	}
+
+	private void checkFolder(String fName) {
+		File f = new File(fName);
 		if(!f.exists())
 			f.mkdir();
 		if(!f.isDirectory()) {
 			Out.fatalException(new Exception("Logs is not a directory!"));
 		}
-		
-		cs = ColorScheme.createColorScheme(GlobalSettings.colorScheme);
 	}
 	
 	public void joinedChannel(Connection source, String channel) {
@@ -166,7 +172,7 @@ public class HTMLOutputEventHandler implements EventHandler {
 	public void clanMemberRankChange(Connection source, byte oldRank, byte newRank, String user) {}
 
 	private void logChat(Connection source, String text) {
-		String fName = "Logs/" + source.getProfile().getName() + "/";
+		String fName = "logs/" + source.getProfile().getName() + "/";
 		fName += new SimpleDateFormat("yyyy-MM-dd").format(new Date());
 		fName += ".log";
 		File f = new File(fName);
