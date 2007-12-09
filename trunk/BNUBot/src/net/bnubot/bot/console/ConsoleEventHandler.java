@@ -11,76 +11,76 @@ import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetUser;
-import net.bnubot.util.Out;
 
 public class ConsoleEventHandler implements EventHandler {
-	Connection c = null;
-	
-	public synchronized void initialize(Connection c) {
-		this.c = c;
-		new CLIThread(c).start();
+	public synchronized void initialize(Connection source) {
+		new CLIThread(source).start();
 	}
 
-	public void joinedChannel(String channel) {
-		Out.info(getClass(), "Joining channel " + channel);
+	public void joinedChannel(Connection source, String channel) {
+		System.out.println("Joining channel " + channel);
 	}
 
-	public void channelUser(BNetUser user) {
+	public void channelUser(Connection source, BNetUser user) {
 		if(GlobalSettings.displayChannelUsers)
-			Out.info(getClass(), user.getShortPrettyName() + " (" + user.getPing() + "ms)" + user.getStatString().toString());
+			System.out.println(user.getShortPrettyName() + " (" + user.getPing() + "ms)" + user.getStatString().toString());
 	}
 	
-	public void channelJoin(BNetUser user) {
+	public void channelJoin(Connection source, BNetUser user) {
 		if(GlobalSettings.displayJoinParts)
-			Out.info(getClass(), user + " has joined the channel" + user.getStatString().toString() + ".");
+			System.out.println(user + " has joined the channel" + user.getStatString().toString() + ".");
 	}
-	public void channelLeave(BNetUser user) {
+	public void channelLeave(Connection source, BNetUser user) {
 		if(GlobalSettings.displayJoinParts)
-			Out.info(getClass(), user + " has left the channel.");
+			System.out.println(user + " has left the channel.");
 	}
 
-	public void recieveChat(BNetUser user, String text) {
-		Out.info(getClass(), "<" + user.getShortPrettyName() + "> " + text);
+	public void recieveChat(Connection source, BNetUser user, String text) {
+		System.out.println("<" + user.getShortPrettyName() + "> " + text);
 	}
 
-	public void recieveEmote(BNetUser user, String text) {
-		Out.info(getClass(), "<" + user.getShortPrettyName() + " " + text + ">");
+	public void recieveEmote(Connection source, BNetUser user, String text) {
+		System.out.println("<" + user.getShortPrettyName() + " " + text + ">");
 	}
 
-	public void whisperRecieved(BNetUser user, String text) {
-		Out.info(getClass(), "<From: " + user.getShortPrettyName() + "> " + text);
+	public void whisperRecieved(Connection source, BNetUser user, String text) {
+		System.out.println("<From: " + user.getShortPrettyName() + "> " + text);
 	}
 
-	public void whisperSent(BNetUser user, String text) {
-		Out.info(getClass(), "<To: " + user.getShortPrettyName() + "> " + text);
+	public void whisperSent(Connection source, BNetUser user, String text) {
+		System.out.println("<To: " + user.getShortPrettyName() + "> " + text);
+	}
+	
+	public void recieveDebug(Connection source, String text) {
+		System.out.println("(DEBUG) " + text);
 	}
 
-	public void recieveInfo(String text) {
-		Out.info(getClass(), text);
+	public void recieveInfo(Connection source, String text) {
+		System.out.println("(INFO) " + text);
 	}
 
-	public void recieveError(String text) {
-		Out.error(getClass(), text);
+	public void recieveError(Connection source, String text) {
+		System.out.println("(ERROR) " + text);
 	}
 
-	public void bnetConnected() {}
-	public void bnetDisconnected() {}
-	public void titleChanged() {}
+	public void bnetConnected(Connection source) {}
+	public void bnetDisconnected(Connection source) {}
+	public void titleChanged(Connection source) {}
 
-	public boolean parseCommand(BNetUser user, String command, String param, boolean whisperBack) {return false;}
+	public boolean parseCommand(Connection source, BNetUser user, String command, String param, boolean whisperBack) {return false;}
 
-	public void friendsList(FriendEntry[] entries) {}
-	public void friendsUpdate(FriendEntry friend) {}
-	public void friendsAdd(FriendEntry friend) {}
-	public void friendsPosition(byte oldPosition, byte newPosition) {}
-	public void friendsRemove(byte entry) {}
+	public void friendsList(Connection source, FriendEntry[] entries) {}
+	public void friendsUpdate(Connection source, FriendEntry friend) {}
+	public void friendsAdd(Connection source, FriendEntry friend) {}
+	public void friendsPosition(Connection source, byte oldPosition, byte newPosition) {}
+	public void friendsRemove(Connection source, byte entry) {}
 
-	public void clanMOTD(Object cookie, String text) {}
-	public void clanMemberList(ClanMember[] members) {}
-	public void clanMemberRemoved(String username) {}
-	public void clanMemberStatusChange(ClanMember member) {}
-	public void clanMemberRankChange(byte oldRank, byte newRank, String user) {}
+	public void clanMOTD(Connection source, Object cookie, String text) {}
+	public void clanMemberList(Connection source, ClanMember[] members) {}
+	public void clanMemberRemoved(Connection source, String username) {}
+	public void clanMemberStatusChange(Connection source, ClanMember member) {}
+	public void clanMemberRankChange(Connection source, byte oldRank, byte newRank, String user) {}
 
-	public void logonRealmEx(int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName) {}
-	public void queryRealms2(String[] realms) {}
+	public void logonRealmEx(Connection source, int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName) {}
+	public void queryRealms2(Connection source, String[] realms) {}
 }

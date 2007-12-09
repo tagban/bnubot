@@ -6,6 +6,8 @@
 * Add settings menu items for each connection of a profile
 * Secondary EHs now recieve titleChanged()
 * Better discovery of JDBC drivers
+* Fixed a bug with 'new profile'
+* Added a <Connection> field to plugin events
 
 2.0.2 (r978):
 * Started the change log

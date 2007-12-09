@@ -26,7 +26,7 @@ import net.bnubot.util.Wildcard;
 import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.ReleaseType;
 
-public abstract class Connection extends Thread implements EventHandler {
+public abstract class Connection extends Thread {
 	protected Socket bnlsSocket = null;
 	protected Socket socket = null;
 
@@ -469,15 +469,11 @@ public abstract class Connection extends Thread implements EventHandler {
 	 * EventHandler methods follow
 	 * 
 	 */
-	public void initialize(Connection c) {
-		new UnsupportedOperationException();
-	}
-
 	public synchronized void bnetConnected() {
 		users.clear();
 		
 		for(EventHandler eh : eventHandlers)
-			eh.bnetConnected();
+			eh.bnetConnected(this);
 	}
 
 	public synchronized void bnetDisconnected() {
@@ -487,7 +483,7 @@ public abstract class Connection extends Thread implements EventHandler {
 
 		eh_semaphore++;
 		for(EventHandler eh : eventHandlers)
-			eh.bnetDisconnected();
+			eh.bnetDisconnected(this);
 		eh_semaphore--;
 	}
 
@@ -495,7 +491,7 @@ public abstract class Connection extends Thread implements EventHandler {
 		boolean ret = false;
 		eh_semaphore++;
 		for(EventHandler eh : eventHandlers) {
-			if(ret = eh.parseCommand(user, command, param, whisperBack))
+			if(ret = eh.parseCommand(this, user, command, param, whisperBack))
 				break;
 		}
 		eh_semaphore--;
@@ -505,12 +501,12 @@ public abstract class Connection extends Thread implements EventHandler {
 	public synchronized void titleChanged() {
 		eh_semaphore++;
 		for(EventHandler eh : eventHandlers)
-			eh.titleChanged();
+			eh.titleChanged(this);
 		eh_semaphore--;
 		
 		eh2_semaphore++;
 		for(EventHandler eh : eventHandlers2)
-			eh.titleChanged();
+			eh.titleChanged(this);
 		eh2_semaphore--;
 	}
 
@@ -520,7 +516,7 @@ public abstract class Connection extends Thread implements EventHandler {
 
 		eh_semaphore++;
 		for(EventHandler eh : eventHandlers)
-			eh.joinedChannel(channel);
+			eh.joinedChannel(this, channel);
 		eh_semaphore--;
 
 		eh2_semaphore++;
@@ -544,7 +540,7 @@ public abstract class Connection extends Thread implements EventHandler {
 		
 		eh_semaphore++;
 		for(EventHandler eh : eventHandlers)
-			eh.channelUser(user);
+			eh.channelUser(this, user);
 		eh_semaphore--;
 	}
 
@@ -556,7 +552,7 @@ public abstract class Connection extends Thread implements EventHandler {
 		
 		eh_semaphore++;
 		for(EventHandler eh : eventHandlers)
-			eh.channelJoin(user);
+			eh.channelJoin(this, user);
 		eh_semaphore--;
 	}
 
@@ -566,22 +562,39 @@ public abstract class Connection extends Thread implements EventHandler {
 		
 		eh_semaphore++;
 		for(EventHandler eh : eventHandlers)
-			eh.channelLeave(user);
+			eh.channelLeave(this, user);
 		eh_semaphore--;
 	}
 
 	public synchronized void recieveChat(BNetUser user, String text) {
 		eh_semaphore++;
 		for(EventHandler eh : eventHandlers)
-			eh.recieveChat(user, text);
+			eh.recieveChat(this, user, text);
 		eh_semaphore--;
 	}
 
 	public synchronized void recieveEmote(BNetUser user, String text) {
 		eh_semaphore++;
 		for(EventHandler eh : eventHandlers)
-			eh.recieveEmote(user, text);
+			eh.recieveEmote(this, user, text);
 		eh_semaphore--;
+	}
+
+	public synchronized void recieveDebug(String text) {
+		if(text == null)
+			return;
+		if(text.length() == 0)
+			return;
+
+		eh_semaphore++;
+		for(EventHandler eh : eventHandlers)
+			eh.recieveDebug(this, text);
+		eh_semaphore--;
+
+		eh2_semaphore++;
+		for(EventHandler eh : eventHandlers2)
+			eh.recieveDebug(this, text);
+		eh2_semaphore--;
 	}
 
 	public synchronized void recieveInfo(String text) {
@@ -592,12 +605,12 @@ public abstract class Connection extends Thread implements EventHandler {
 
 		eh_semaphore++;
 		for(EventHandler eh : eventHandlers)
-			eh.recieveInfo(text);
+			eh.recieveInfo(this, text);
 		eh_semaphore--;
 
 		eh2_semaphore++;
 		for(EventHandler eh : eventHandlers2)
-			eh.recieveInfo(text);
+			eh.recieveInfo(this, text);
 		eh2_semaphore--;
 	}
 
@@ -609,36 +622,36 @@ public abstract class Connection extends Thread implements EventHandler {
 
 		eh_semaphore++;
 		for(EventHandler eh : eventHandlers)
-			eh.recieveError(text);
+			eh.recieveError(this, text);
 		eh_semaphore--;
 
 		eh2_semaphore++;
 		for(EventHandler eh : eventHandlers2)
-			eh.recieveError(text);
+			eh.recieveError(this, text);
 		eh2_semaphore--;
 	}
 
 	public synchronized void whisperSent(BNetUser user, String text) {
 		eh_semaphore++;
 		for(EventHandler eh : eventHandlers)
-			eh.whisperSent(user, text);
+			eh.whisperSent(this, user, text);
 		eh_semaphore--;
 
 		eh2_semaphore++;
 		for(EventHandler eh : eventHandlers2)
-			eh.whisperSent(user, text);
+			eh.whisperSent(this, user, text);
 		eh2_semaphore--;
 	}
 
 	public synchronized void whisperRecieved(BNetUser user, String text) {
 		eh_semaphore++;
 		for(EventHandler eh : eventHandlers)
-			eh.whisperRecieved(user, text);
+			eh.whisperRecieved(this, user, text);
 		eh_semaphore--;
 
 		eh2_semaphore++;
 		for(EventHandler eh : eventHandlers2)
-			eh.whisperRecieved(user, text);
+			eh.whisperRecieved(this, user, text);
 		eh2_semaphore--;
 	}
 
@@ -647,14 +660,14 @@ public abstract class Connection extends Thread implements EventHandler {
 	public synchronized void queryRealms2(String[] realms) {
 		eh_semaphore++;
 		for(EventHandler eh : eventHandlers)
-			eh.queryRealms2(realms);
+			eh.queryRealms2(this, realms);
 		eh_semaphore--;
 	}
 
 	public synchronized void logonRealmEx(int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName) {
 		eh_semaphore++;
 		for(EventHandler eh : eventHandlers)
-			eh.logonRealmEx(MCPChunk1, ip, port, MCPChunk2, uniqueName);
+			eh.logonRealmEx(this, MCPChunk1, ip, port, MCPChunk2, uniqueName);
 		eh_semaphore--;
 	}
 
@@ -663,35 +676,35 @@ public abstract class Connection extends Thread implements EventHandler {
 	public synchronized void friendsList(FriendEntry[] entries) {
 		eh_semaphore++;
 		for(EventHandler eh : eventHandlers)
-			eh.friendsList(entries);
+			eh.friendsList(this, entries);
 		eh_semaphore--;
 	}
 
 	public synchronized void friendsUpdate(FriendEntry friend) {
 		eh_semaphore++;
 		for(EventHandler eh : eventHandlers)
-			eh.friendsUpdate(friend);
+			eh.friendsUpdate(this, friend);
 		eh_semaphore--;
 	}
 
 	public synchronized void friendsAdd(FriendEntry friend) {
 		eh_semaphore++;
 		for(EventHandler eh : eventHandlers)
-			eh.friendsAdd(friend);
+			eh.friendsAdd(this, friend);
 		eh_semaphore--;
 	}
 
 	public void friendsRemove(byte entry) {
 		eh_semaphore++;
 		for(EventHandler eh : eventHandlers)
-			eh.friendsRemove(entry);
+			eh.friendsRemove(this, entry);
 		eh_semaphore--;
 	}
 
 	public void friendsPosition(byte oldPosition, byte newPosition) {
 		eh_semaphore++;
 		for(EventHandler eh : eventHandlers)
-			eh.friendsPosition(oldPosition, newPosition);
+			eh.friendsPosition(this, oldPosition, newPosition);
 		eh_semaphore--;
 	}
 
@@ -700,35 +713,35 @@ public abstract class Connection extends Thread implements EventHandler {
 	public synchronized void clanMOTD(Object cookie, String text) {
 		eh_semaphore++;
 		for(EventHandler eh : eventHandlers)
-			eh.clanMOTD(cookie, text);
+			eh.clanMOTD(this, cookie, text);
 		eh_semaphore--;
 	}
 
 	public synchronized void clanMemberList(ClanMember[] members) {
 		eh_semaphore++;
 		for(EventHandler eh : eventHandlers)
-			eh.clanMemberList(members);
+			eh.clanMemberList(this, members);
 		eh_semaphore--;
 	}
 
 	public synchronized void clanMemberRemoved(String username) {
 		eh_semaphore++;
 		for(EventHandler eh : eventHandlers)
-			eh.clanMemberRemoved(username);
+			eh.clanMemberRemoved(this, username);
 		eh_semaphore--;
 	}
 
 	public synchronized void clanMemberRankChange(byte oldRank, byte newRank, String user) {
 		eh_semaphore++;
 		for(EventHandler eh : eventHandlers)
-			eh.clanMemberRankChange(oldRank, newRank, user);
+			eh.clanMemberRankChange(this, oldRank, newRank, user);
 		eh_semaphore--;
 	}
 
 	public synchronized void clanMemberStatusChange(ClanMember member) {
 		eh_semaphore++;
 		for(EventHandler eh : eventHandlers)
-			eh.clanMemberStatusChange(member);
+			eh.clanMemberStatusChange(this, member);
 		eh_semaphore--;
 	}
 

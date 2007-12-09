@@ -35,32 +35,32 @@ public class HTMLOutputEventHandler implements EventHandler {
 	
 	private List<BNetUser> users = null;
 
-	public void bnetConnected() {
+	public void bnetConnected(Connection source) {
 		File f = new File("html");
 		f.mkdir();
 	}
 	
-	public void bnetDisconnected() {
+	public void bnetDisconnected(Connection source) {
 		writeUserList();
 	}
 
-	public void titleChanged() {}
+	public void titleChanged(Connection source) {}
 
-	public void channelJoin(BNetUser user) {
+	public void channelJoin(Connection source, BNetUser user) {
 		writeUserList();
 		
 		append(user + " has joined the channel" + user.getStatString().toString() + ".",
 			cs.getChannelColor());
 	}
 	
-	public void channelLeave(BNetUser user) {
+	public void channelLeave(Connection source, BNetUser user) {
 		writeUserList();
 		
 		append(user + " has left the channel.",
 				cs.getChannelColor());
 	}
 	
-	public void channelUser(BNetUser user) {
+	public void channelUser(Connection source, BNetUser user) {
 		writeUserList();
 		
 		append(user + user.getStatString().toString() + ".",
@@ -80,14 +80,15 @@ public class HTMLOutputEventHandler implements EventHandler {
 		cs = ColorScheme.createColorScheme(GlobalSettings.colorScheme);
 	}
 	
-	public void joinedChannel(String channel) {
+	public void joinedChannel(Connection source, String channel) {
 		this.channel = channel;
 		
 		append("Joining channel " + channel + ".",
 				cs.getChannelColor());
 	}
-	public void recieveError(String text) {}
-	public void recieveInfo(String text) {}
+	public void recieveError(Connection source, String text) {}
+	public void recieveInfo(Connection source, String text) {}
+	public void recieveDebug(Connection source, String text) {}
 	
 	private String getIcon(int product, int icon, int flags) {
 		if((flags & 0x01) != 0)	return "blizrep";
@@ -144,22 +145,22 @@ public class HTMLOutputEventHandler implements EventHandler {
 		SwingUtilities.invokeLater(writeUserListRunnable);
 	}
 
-	public void friendsList(FriendEntry[] entries) {}
-	public void friendsUpdate(FriendEntry friend) {}
-	public void friendsAdd(FriendEntry friend) {}
-	public void friendsPosition(byte oldPosition, byte newPosition) {}
-	public void friendsRemove(byte entry) {}
+	public void friendsList(Connection source, FriendEntry[] entries) {}
+	public void friendsUpdate(Connection source, FriendEntry friend) {}
+	public void friendsAdd(Connection source, FriendEntry friend) {}
+	public void friendsPosition(Connection source, byte oldPosition, byte newPosition) {}
+	public void friendsRemove(Connection source, byte entry) {}
 	
-	public void logonRealmEx(int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName) {}
-	public void queryRealms2(String[] realms) {}
+	public void logonRealmEx(Connection source, int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName) {}
+	public void queryRealms2(Connection source, String[] realms) {}
 
-	public boolean parseCommand(BNetUser user, String command, String param, boolean wasWhispered) {return false;}
+	public boolean parseCommand(Connection source, BNetUser user, String command, String param, boolean wasWhispered) {return false;}
 
-	public void clanMOTD(Object cookie, String text) {}
-	public void clanMemberList(ClanMember[] members) {}
-	public void clanMemberRemoved(String username) {}
-	public void clanMemberStatusChange(ClanMember member) {}
-	public void clanMemberRankChange(byte oldRank, byte newRank, String user) {}
+	public void clanMOTD(Connection source, Object cookie, String text) {}
+	public void clanMemberList(Connection source, ClanMember[] members) {}
+	public void clanMemberRemoved(Connection source, String username) {}
+	public void clanMemberStatusChange(Connection source, ClanMember member) {}
+	public void clanMemberRankChange(Connection source, byte oldRank, byte newRank, String user) {}
 
 	private void logChat(String text) {
 		String fName = "Logs/";
@@ -209,7 +210,7 @@ public class HTMLOutputEventHandler implements EventHandler {
 		logChat(out);
 	}
 	
-	public void recieveChat(BNetUser user, String text) {
+	public void recieveChat(Connection source, BNetUser user, String text) {
 		append2(
 				"<" + user + "> ",
 				cs.getUserNameColor(user.getFlags()),
@@ -217,13 +218,13 @@ public class HTMLOutputEventHandler implements EventHandler {
 				cs.getChatColor(user.getFlags()));
 	}
 	
-	public void recieveEmote(BNetUser user, String text) {
+	public void recieveEmote(Connection source, BNetUser user, String text) {
 		append(
 				"<" + user + " " + text + "> ",
 				cs.getEmoteColor(user.getFlags()));
 	}
 	
-	public void whisperSent(BNetUser user, String text) {
+	public void whisperSent(Connection source, BNetUser user, String text) {
 		append2(
 			"<To: " + user + "> ",
 			cs.getUserNameColor(user.getFlags()),
@@ -231,7 +232,7 @@ public class HTMLOutputEventHandler implements EventHandler {
 			cs.getWhisperColor(user.getFlags()));
 	}
 	
-	public void whisperRecieved(BNetUser user, String text) {
+	public void whisperRecieved(Connection source, BNetUser user, String text) {
 		append2(
 			"<From: " + user + "> ",
 			cs.getUserNameColor(user.getFlags()),

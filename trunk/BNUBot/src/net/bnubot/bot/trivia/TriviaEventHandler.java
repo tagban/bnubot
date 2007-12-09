@@ -29,13 +29,13 @@ import net.bnubot.util.Out;
 public class TriviaEventHandler implements EventHandler {
 	private boolean triviaEnabled = false;
 	private final List<TriviaItem> trivia = new LinkedList<TriviaItem>();
-	private Connection c = null;
 	private String triviaAnswers[] = null;
 	private boolean gotAnswer = false;
 	private BNetUser answerUser = null;
 	private String answerUsed = null;
 	private Database d = null;
 	private int unanswered = 0;
+	private boolean initialized = false;
 	
 	public TriviaEventHandler() {
 		this.d = Database.getInstance();
@@ -86,24 +86,24 @@ public class TriviaEventHandler implements EventHandler {
 		try { is.close(); } catch (Exception e) {}
 	}
 	
-	private void reloadTrivia() {
+	private void reloadTrivia(Connection source) {
 		File f = new File("trivia");
 		if(f.isDirectory())
 			for(String fname : f.list())
 				readFile(f.getPath() + System.getProperty("file.separator") + fname);
 		
-		c.recieveInfo("Trivia initialized with " + trivia.size() + " questions");
+		source.recieveInfo("Trivia initialized with " + trivia.size() + " questions");
 	}
 
-	public void bnetConnected() {}
-	public void bnetDisconnected() {}
-	public void titleChanged() {}
+	public void bnetConnected(Connection source) {}
+	public void bnetDisconnected(Connection source) {}
+	public void titleChanged(Connection source) {}
 
-	public void channelJoin(BNetUser user) {}
-	public void channelLeave(BNetUser user) {}
-	public void channelUser(BNetUser user) {}
+	public void channelJoin(Connection source, BNetUser user) {}
+	public void channelLeave(Connection source, BNetUser user) {}
+	public void channelUser(Connection source, BNetUser user) {}
 	
-	private void showLeaderBoard() {
+	private void showLeaderBoard(Connection source) {
 		try {
 			if(d == null)
 				return;
@@ -121,18 +121,18 @@ public class TriviaEventHandler implements EventHandler {
 			}
 			d.close(rsLeaders);
 			out += "Total=" + d.getTriviaSum();
-			c.queueChatHelper(out, false);
+			source.queueChatHelper(out, false);
 		} catch (SQLException e) {
 			Out.exception(e);
 		}
 	}
 	
-	private void triviaLoop() {
+	private void triviaLoop(Connection source) {
 		while(true) {
 			try {
-				if(triviaEnabled && c.canSendChat()) {
+				if(triviaEnabled && source.canSendChat()) {
 					if(trivia.size() == 0) {
-						c.queueChatHelper("There are no trivia questions left; game over.", false);
+						source.queueChatHelper("There are no trivia questions left; game over.", false);
 						triviaEnabled = false;
 						continue;
 					}
@@ -157,7 +157,7 @@ public class TriviaEventHandler implements EventHandler {
 								String out = "The trivia round is over! Congratulations to ";
 								out += d.resetTrivia();
 								out += " for winning the round!";
-								c.queueChatHelper(out, false);
+								source.queueChatHelper(out, false);
 							}
 						}
 					} catch (SQLException e) {
@@ -172,7 +172,7 @@ public class TriviaEventHandler implements EventHandler {
 							q += " - Category: " + ti.getCategory();
 						q += " - Question: " + ti.getQuestion();
 						q += " - Hint: " + ti.getHint0();
-						c.queueChatHelper(q, false);
+						source.queueChatHelper(q, false);
 						//c.recieveInfo("Answer: " + ti.getAnswer());
 					}
 					
@@ -191,12 +191,12 @@ public class TriviaEventHandler implements EventHandler {
 						timeElapsed /= 1000;
 
 						if((timeElapsed > 10) && (numHints < 1)) {
-							c.queueChatHelper("/me - 20 seconds left! Hint: " + ti.getHint1(), false);
+							source.queueChatHelper("/me - 20 seconds left! Hint: " + ti.getHint1(), false);
 							numHints++;
 						}
 						
 						if((timeElapsed > 20) && (numHints < 2)) {
-							c.queueChatHelper("/me - 10 seconds left! Hint: " + ti.getHint2(), false);
+							source.queueChatHelper("/me - 10 seconds left! Hint: " + ti.getHint2(), false);
 							numHints++;
 						}
 						
@@ -238,9 +238,9 @@ public class TriviaEventHandler implements EventHandler {
 							}
 						}
 						
-						c.queueChatHelper("/me - \"" + answerUsed + "\" is correct, " + answerUser.getShortPrettyName() + extra, false);
+						source.queueChatHelper("/me - \"" + answerUsed + "\" is correct, " + answerUser.getShortPrettyName() + extra, false);
 						
-						showLeaderBoard();
+						showLeaderBoard(source);
 					} else {
 						String correct = " The correct answer was \"" + triviaAnswers[0] + "\"";
 						for(int i = 1; i < triviaAnswers.length; i++)
@@ -248,17 +248,17 @@ public class TriviaEventHandler implements EventHandler {
 						
 						if(triviaEnabled) {
 							unanswered++;
-							c.queueChatHelper("/me - Time's up!" + correct, false);
+							source.queueChatHelper("/me - Time's up!" + correct, false);
 						} else {
-							c.queueChatHelper("/me - Game over!" + correct, false);
+							source.queueChatHelper("/me - Game over!" + correct, false);
 							continue;
 						}
 					}
 
 					if(unanswered == 9)
-						c.queueChatHelper("Trivia will automaticly shut off after the next question. To extend trivia, type [ trivia on ]", false);
+						source.queueChatHelper("Trivia will automaticly shut off after the next question. To extend trivia, type [ trivia on ]", false);
 					if(unanswered >= 10) {
-						c.queueChatHelper("Auto-disabling trivia.", false);
+						source.queueChatHelper("Auto-disabling trivia.", false);
 						triviaEnabled = false;
 					}
 				}
@@ -269,22 +269,22 @@ public class TriviaEventHandler implements EventHandler {
 		}
 	}
 	
-	public void initialize(final Connection c) {
-		if(this.c != null)
+	public void initialize(final Connection source) {
+		if(initialized )
 			return;
 		
-		this.c = c;
+		initialized = true;
 		
 		new Thread() {
 			public void run() {
-				triviaLoop();
+				triviaLoop(source);
 			}
 		}.start();
 	}
 	
-	public void triviaOn() {
+	public void triviaOn(Connection source) {
 		if(trivia.size() == 0)
-			reloadTrivia();
+			reloadTrivia(source);
 			
 		unanswered = 0;
 		triviaEnabled = true;
@@ -294,15 +294,15 @@ public class TriviaEventHandler implements EventHandler {
 		triviaEnabled = false;
 	}
 	
-	public void joinedChannel(String channel) {}
-	public void recieveChat(BNetUser user, String text) {
+	public void joinedChannel(Connection source, String channel) {}
+	public void recieveChat(Connection source, BNetUser user, String text) {
 		if("trivia on".equals(text)) {
-			triviaOn();
+			triviaOn(source);
 		} else if("trivia off".equals(text)) {
 			triviaOff();
 		} else if("trivia score".equals(text)) {
 			if(!triviaEnabled)
-				showLeaderBoard();
+				showLeaderBoard(source);
 		} else {
 			if(triviaAnswers != null) {
 				text = HexDump.getAlphaNumerics(text);
@@ -316,26 +316,27 @@ public class TriviaEventHandler implements EventHandler {
 			}
 		}
 	}
-	public void recieveEmote(BNetUser user, String text) {}
-	public void recieveError(String text) {}
-	public void recieveInfo(String text) {}
-	public void whisperRecieved(BNetUser user, String text) {}
-	public void whisperSent(BNetUser user, String text) {}
+	public void recieveEmote(Connection source, BNetUser user, String text) {}
+	public void recieveError(Connection source, String text) {}
+	public void recieveInfo(Connection source, String text) {}
+	public void recieveDebug(Connection source, String text) {}
+	public void whisperRecieved(Connection source, BNetUser user, String text) {}
+	public void whisperSent(Connection source, BNetUser user, String text) {}
 
-	public void friendsList(FriendEntry[] entries) {}
-	public void friendsUpdate(FriendEntry friend) {}
-	public void friendsAdd(FriendEntry friend) {}
-	public void friendsPosition(byte oldPosition, byte newPosition) {}
-	public void friendsRemove(byte entry) {}
+	public void friendsList(Connection source, FriendEntry[] entries) {}
+	public void friendsUpdate(Connection source, FriendEntry friend) {}
+	public void friendsAdd(Connection source, FriendEntry friend) {}
+	public void friendsPosition(Connection source, byte oldPosition, byte newPosition) {}
+	public void friendsRemove(Connection source, byte entry) {}
 	
-	public void logonRealmEx(int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName) {}
-	public void queryRealms2(String[] realms) {}
+	public void logonRealmEx(Connection source, int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName) {}
+	public void queryRealms2(Connection source, String[] realms) {}
 
-	public boolean parseCommand(BNetUser user, String command, String param, boolean whisperBack) {return false;}
+	public boolean parseCommand(Connection source, BNetUser user, String command, String param, boolean whisperBack) {return false;}
 
-	public void clanMOTD(Object cookie, String text) {}
-	public void clanMemberList(ClanMember[] members) {}
-	public void clanMemberRemoved(String username) {}
-	public void clanMemberStatusChange(ClanMember member) {}
-	public void clanMemberRankChange(byte oldRank, byte newRank, String user) {}
+	public void clanMOTD(Connection source, Object cookie, String text) {}
+	public void clanMemberList(Connection source, ClanMember[] members) {}
+	public void clanMemberRemoved(Connection source, String username) {}
+	public void clanMemberStatusChange(Connection source, ClanMember member) {}
+	public void clanMemberRankChange(Connection source, byte oldRank, byte newRank, String user) {}
 }

@@ -17,7 +17,7 @@ import java.util.Properties;
 import javax.swing.JOptionPane;
 
 import net.bnubot.bot.gui.GuiDesktop;
-import net.bnubot.bot.gui.GuiEventHandler;
+import net.bnubot.core.Connection;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.settings.Settings;
 
@@ -28,8 +28,8 @@ import net.bnubot.settings.Settings;
  */
 public class Out {
 	private static PrintStream outStream = System.out;
-	private static final ThreadLocal<GuiEventHandler> outConnection = new ThreadLocal<GuiEventHandler>();
-	private static GuiEventHandler outConnectionDefault = null;
+	private static final ThreadLocal<Connection> outConnection = new ThreadLocal<Connection>();
+	private static Connection outConnectionDefault = null;
 	private static boolean globalDebug = Settings.readBoolean(null, "debug", false);
 	private static boolean debugToGui = Settings.readBoolean(null, "debugToGui", true);
 	private static final Properties debug = new SortedProperties();
@@ -69,8 +69,8 @@ public class Out {
 		return out;
 	}
 	
-	private static GuiEventHandler getOutConnection() {
-		final GuiEventHandler oc = outConnection.get();
+	private static Connection getOutConnection() {
+		final Connection oc = outConnection.get();
 		if(oc != null)
 			return oc;
 		return outConnectionDefault;
@@ -81,7 +81,7 @@ public class Out {
 	 * @param e The exception source
 	 */
 	public static void exception(Exception e) {
-		final GuiEventHandler oc = getOutConnection();
+		final Connection oc = getOutConnection();
 		if(oc != null)
 			error(e.getClass(), e.getMessage());
 		if(outStream != null)
@@ -108,7 +108,7 @@ public class Out {
 	 * @param text text to show
 	 */
 	public static void error(Class<?> source, String text) {
-		final GuiEventHandler oc = getOutConnection();
+		final Connection oc = getOutConnection();
 		if(oc != null)
 			oc.recieveError("(" + source.getSimpleName() + ") " + text);
 		else if(outStream != null)
@@ -131,7 +131,7 @@ public class Out {
 	 * @param text text to show
 	 */
 	public static void debugAlways(Class<?> source, String text) {
-		final GuiEventHandler oc = getOutConnection();
+		final Connection oc = getOutConnection();
 		if(debugToGui && (oc != null))
 			oc.recieveDebug("(" + source.getSimpleName() + ") " + text);
 		else if(outStream != null)
@@ -144,7 +144,7 @@ public class Out {
 	 * @param text text to show
 	 */
 	public static void info(Class<?> source, String text) {
-		final GuiEventHandler oc = getOutConnection();
+		final Connection oc = getOutConnection();
 		if(oc != null)
 			oc.recieveInfo("(" + source.getSimpleName() + ") " + text);
 		else if(outStream != null)
@@ -161,27 +161,27 @@ public class Out {
 	}
 	
 	/**
-	 * Sets the GuiEventHandler for the information to be displayed to for this thread.
-	 * @param g GuiEventHandler to send messages to
+	 * Sets the Connection for the information to be displayed to for this thread.
+	 * @param g Connection to send messages to
 	 */
-	public static void setThreadOutputConnection(GuiEventHandler g) {
+	public static void setThreadOutputConnection(Connection g) {
 		outConnection.set(g);
 	}
 
 	/**
-	 * Sets the GuiEventHandler for the information to be displayed to for this thread if none is already set.
-	 * @param g GuiEventHandler to send messages to
+	 * Sets the Connection for the information to be displayed to for this thread if none is already set.
+	 * @param g Connection to send messages to
 	 */
-	public static void setThreadOutputConnectionIfNone(GuiEventHandler g) {
+	public static void setThreadOutputConnectionIfNone(Connection g) {
 		if(outConnection.get() == null)
 			outConnection.set(g);
 	}
 	
 	/**
-	 * Sets the GuiEventHandler for the information to be displayed to when none is specified for the thread
-	 * @param g GuiEventHandler to send messages to
+	 * Sets the Connection for the information to be displayed to when none is specified for the thread
+	 * @param g Connection to send messages to
 	 */
-	public static void setDefaultOutputConnection(GuiEventHandler g) {
+	public static void setDefaultOutputConnection(Connection g) {
 		outConnectionDefault = g;
 	}
 

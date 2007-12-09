@@ -55,6 +55,7 @@ public class Profile {
 
 	private boolean insertConnection(ConnectionSettings cs) throws Exception {
 		BNCSConnection con = new BNCSConnection(cs, chatQueue, this);
+		Out.setThreadOutputConnectionIfNone(con);
 		synchronized(cons) {
 			if(cons.size() > 0) {
 				Connection primary = cons.get(0);
@@ -81,9 +82,8 @@ public class Profile {
 
 				// GUI
 				if(GlobalSettings.enableGUI) {
-					GuiEventHandler gui = new GuiEventHandler();
+					GuiEventHandler gui = new GuiEventHandler(con);
 					con.addEventHandler(gui);
-					Out.setThreadOutputConnectionIfNone(gui);
 				}
 
 				// Commands

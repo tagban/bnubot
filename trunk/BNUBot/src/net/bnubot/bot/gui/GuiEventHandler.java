@@ -64,8 +64,8 @@ import net.bnubot.util.BNetUser;
 import net.bnubot.util.Out;
 
 public class GuiEventHandler implements EventHandler {
+	private Connection firstConnection = null;
 	private JPanel frame = null;
-	private Connection con = null;
 	private TextWindow mainTextArea = null;
 	private JTextField chatTextArea = null;
 	private JTextField channelTextPane = null;
@@ -87,23 +87,21 @@ public class GuiEventHandler implements EventHandler {
 	
 	private static final Set<? extends AWTKeyStroke> EMPTY_SET = Collections.emptySet();
 	
-	public GuiEventHandler() {
+	public GuiEventHandler(Connection firstConnection) {
+		this.firstConnection = firstConnection;
 		initializeGui(ColorScheme.createColorScheme(GlobalSettings.colorScheme));
 	}
 	
 	private static Map<Connection, JMenuItem> settingsMenuItems = new HashMap<Connection, JMenuItem>();
-	public void initialize(final Connection con) {
-		if(this.con == null) {
-			this.con = con;
-			Out.setThreadOutputConnection(this);
-		}
+	public void initialize(final Connection source) {
+		Out.setThreadOutputConnection(source);
 		
 		JMenuItem settings = new JMenuItem("Settings");
 		settings.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				new ConfigurationFrame(con.getConnectionSettings());
+				new ConfigurationFrame(source.getConnectionSettings());
 			}});
-		settingsMenuItems.put(con, settings);
+		settingsMenuItems.put(source, settings);
 		
 		for(int i = 0; i < menuBar.getMenuComponentCount(); i++) {
 			Object x = menuBar.getMenuComponent(i);
@@ -112,14 +110,15 @@ public class GuiEventHandler implements EventHandler {
 				break;
 			}
 		}
-		titleChanged();
+		titleChanged(source);
 	}
 	
 	/**
 	 * Update the list of the TC popup
+	 * @param source TODO
 	 */
-	private void tcUpdate() {
-		List<String> users = con.findUsersForTabComplete(tcUser);
+	private void tcUpdate(Connection source) {
+		List<String> users = source.findUsersForTabComplete(tcUser);
 		if(users.size() == 1) {
 			tcSelect(users.get(0));
 		} else if(users.size() == 0) {
@@ -183,24 +182,24 @@ public class GuiEventHandler implements EventHandler {
 				menuItem = new JMenuItem("Connect");
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						if(!con.isConnected())
-							con.setConnected(true);
+						if(!firstConnection.isConnected())
+							firstConnection.setConnected(true);
 					} });
 				menu.add(menuItem);
 				
 				menuItem = new JMenuItem("Reconnect");
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						if(con.isConnected())
-							con.reconnect();
+						if(firstConnection.isConnected())
+							firstConnection.reconnect();
 					} });
 				menu.add(menuItem);
 				
 				menuItem = new JMenuItem("Disconnect");
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						if(con.isConnected())
-							con.setConnected(false);
+						if(firstConnection.isConnected())
+							firstConnection.setConnected(false);
 					} });
 				menu.add(menuItem);
 			}
@@ -210,7 +209,7 @@ public class GuiEventHandler implements EventHandler {
 			menuItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent evt) {
 					try {
-						con.sendQueryRealms2();
+						firstConnection.sendQueryRealms2();
 					} catch (Exception e) {
 						Out.exception(e);
 					}
@@ -223,7 +222,7 @@ public class GuiEventHandler implements EventHandler {
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent event) {
 						try {
-							con.sendClanMOTD(new ClanMOTDEditor(con));
+							firstConnection.sendClanMOTD(new ClanMOTDEditor(firstConnection));
 						} catch(Exception e) {
 							Out.exception(e);
 						}
@@ -252,7 +251,7 @@ public class GuiEventHandler implements EventHandler {
 						String text[] = chatTextArea.getText().split("\n");
 						for(String element : text) {
 							if(element.trim().length() > 0)
-								con.queueChatHelper(element, true);
+								firstConnection.queueChatHelper(element, true);
 						}
 						chatTextArea.setText(null);
 						return;
@@ -293,7 +292,7 @@ public class GuiEventHandler implements EventHandler {
 					tcBefore = chatTextArea.getText(0, start);
 					tcAfter = chatTextArea.getText(end, chatTextArea.getText().length() - end);
 
-					tcUpdate();
+					tcUpdate(firstConnection);
 				} catch(Exception ex) {
 					Out.exception(ex);
 				}
@@ -414,7 +413,7 @@ public class GuiEventHandler implements EventHandler {
 					chatTextArea.setCaretPosition(tcBefore.length() + tcUser.length());
 					
 					// Redraw the TC list
-					tcUpdate();
+					tcUpdate(firstConnection);
 					break;
 				}
 			}
@@ -458,36 +457,36 @@ public class GuiEventHandler implements EventHandler {
 			}
 	}
 	
-	public void channelJoin(BNetUser user) {
-		userList.showUser(user);
+	public void channelJoin(Connection source, BNetUser user) {
+		userList.showUser(source, user);
 		if(GlobalSettings.displayJoinParts)
 			mainTextArea.channelInfo(user + " has joined the channel" + user.getStatString().toString() + ".");
 		notifySystemTray(
 				Growl.CHANNEL_USER_JOIN,
-				con.getChannel(),
+				source.getChannel(),
 				user.getShortPrettyName() + " joined");
 		channelTextPane.setText(channel + " (" + userList.count() + ")");
 	}
 
-	public void channelLeave(BNetUser user) {
+	public void channelLeave(Connection source, BNetUser user) {
 		userList.removeUser(user);
 		if(GlobalSettings.displayJoinParts)
 			mainTextArea.channelInfo(user + " has left the channel.");
 		notifySystemTray(
 				Growl.CHANNEL_USER_PART,
-				con.getChannel(),
+				source.getChannel(),
 				user.getShortPrettyName() + " left");
 		channelTextPane.setText(channel + " (" + userList.count() + ")");
 	}
 
-	public void channelUser(BNetUser user) {
+	public void channelUser(Connection source, BNetUser user) {
 		if(GlobalSettings.displayChannelUsers)
 			mainTextArea.channelInfo(user + user.getStatString().toString() + ".");
-		userList.showUser(user);
+		userList.showUser(source, user);
 		channelTextPane.setText(channel + " (" + userList.count() + ")");
 	}
 
-	public void joinedChannel(String channel) {
+	public void joinedChannel(Connection source, String channel) {
 		this.channel = channel;
 		userList.clear();
 		mainTextArea.addSeparator();
@@ -498,28 +497,28 @@ public class GuiEventHandler implements EventHandler {
 				"Channel",
 				channel);
 		
-		GuiDesktop.setTitle(this, con.getProductID());
+		GuiDesktop.setTitle(this, source.getProductID());
 	}
 
-	public void recieveChat(BNetUser user, String text) {
-		mainTextArea.userChat(user, text, user.equals(con.getMyUser()));
+	public void recieveChat(Connection source, BNetUser user, String text) {
+		mainTextArea.userChat(user, text, user.equals(source.getMyUser()));
 		notifySystemTray(
 				Growl.CHANNEL_USER_CHAT,
-				con.getChannel(),
+				source.getChannel(),
 				"<" + user.getShortPrettyName() + "> " + text);
 	}
 
-	public void recieveEmote(BNetUser user, String text) {
+	public void recieveEmote(Connection source, BNetUser user, String text) {
 		mainTextArea.userEmote(user, text);
 		notifySystemTray(
 				Growl.CHANNEL_USER_EMOTE,
-				con.getChannel(),
+				source.getChannel(),
 				"<" + user.getShortPrettyName() + " " + text + ">");
 	}
 
 	private static long lastInfoRecieved = 0;
 	private static String lastInfo = null;
-	public void recieveInfo(String text) {
+	public void recieveInfo(Connection source, String text) {
 		long now = System.currentTimeMillis();
 		// Do not allow duplicate info strings unless there's a 50ms delay
 		if((now - lastInfoRecieved < 50)
@@ -533,41 +532,41 @@ public class GuiEventHandler implements EventHandler {
 		mainTextArea.recieveInfo(text);
 	}
 
-	public void recieveError(String text) {
+	public void recieveError(Connection source, String text) {
 		mainTextArea.recieveError(text);
 	}
 
-	public void recieveDebug(String text) {
+	public void recieveDebug(Connection source, String text) {
 		mainTextArea.recieveDebug(text);
 	}
 
-	public void whisperRecieved(BNetUser user, String text) {
+	public void whisperRecieved(Connection source, BNetUser user, String text) {
 		lastWhisperFrom = user;
 		mainTextArea.whisperRecieved(user, text);
 		notifySystemTray(
 				Growl.CHANNEL_WHISPER_RECIEVED,
-				con.getChannel(),
+				source.getChannel(),
 				"<From: " + user.getShortPrettyName() + "> " + text);
 	}
 
-	public void whisperSent(BNetUser user, String text) {
+	public void whisperSent(Connection source, BNetUser user, String text) {
 		mainTextArea.whisperSent(user, text);
 		notifySystemTray(
 				Growl.CHANNEL_WHISPER_SENT,
-				con.getChannel(),
+				source.getChannel(),
 				"<To: " + user.getShortPrettyName() + "> " + text);
 	}
 
-	public void bnetConnected() {
+	public void bnetConnected(Connection source) {
 		userList.clear();
 		channelTextPane.setText(null);
 		notifySystemTray(
 				Growl.BNET_CONNECT,
 				"Connected",
-				con.toString());
+				source.toString());
 	}
 
-	public void bnetDisconnected() {
+	public void bnetDisconnected(Connection source) {
 		userList.clear();
 		channelTextPane.setText(null);
 		mainTextArea.recieveError("Disconnected from battle.net.");
@@ -575,15 +574,15 @@ public class GuiEventHandler implements EventHandler {
 		notifySystemTray(
 				Growl.BNET_DISCONNECT,
 				"Disconnected",
-				con.toString());
+				source.toString());
 	}
 
-	public void titleChanged() {
+	public void titleChanged(Connection source) {
 		// Set the menu text to profile name or logon name
-		if(con.getMyUser() == null)
-			menuBar.setText(con.getProfile().getName());
+		if(source.getMyUser() == null)
+			menuBar.setText(source.getProfile().getName());
 		else
-			menuBar.setText(con.getMyUser().getFullLogonName());
+			menuBar.setText(source.getMyUser().getFullLogonName());
 		
 		// Update the settings menu items
 		for (Entry<Connection, JMenuItem> item : settingsMenuItems.entrySet()) {
@@ -596,35 +595,35 @@ public class GuiEventHandler implements EventHandler {
 		}
 		
 		// Update the desktop window
-		GuiDesktop.setTitle(this, con.getProductID());
+		GuiDesktop.setTitle(this, source.getProductID());
 		
 		// Update the tray icon
 		TrayIcon tray = GuiDesktop.getTray();
 		if(tray != null)
-			tray.setToolTip(con.toString());
+			tray.setToolTip(source.toString());
 	}
 
-	public void friendsList(FriendEntry[] entries) {
+	public void friendsList(Connection source, FriendEntry[] entries) {
 		friendList.showFriends(entries);
 	}
 	
-	public void friendsUpdate(FriendEntry friend) {
+	public void friendsUpdate(Connection source, FriendEntry friend) {
 		friendList.update(friend);
 	}
 	
-	public void friendsAdd(FriendEntry friend) {
+	public void friendsAdd(Connection source, FriendEntry friend) {
 		friendList.add(friend);
 	}
 	
-	public void friendsPosition(byte oldPosition, byte newPosition) {
+	public void friendsPosition(Connection source, byte oldPosition, byte newPosition) {
 		friendList.position(oldPosition, newPosition);
 	}
 	
-	public void friendsRemove(byte entry) {
+	public void friendsRemove(Connection source, byte entry) {
 		friendList.remove(entry);
 	}
 
-	public void clanMOTD(Object cookie, String text) {
+	public void clanMOTD(Connection source, Object cookie, String text) {
 		if(cookie instanceof ClanMOTDEditor) {
 			ClanMOTDEditor motd = (ClanMOTDEditor)cookie;
 			motd.setMOTD(text);
@@ -632,23 +631,23 @@ public class GuiEventHandler implements EventHandler {
 		}
 	}
 
-	public void clanMemberList(ClanMember[] members) {
+	public void clanMemberList(Connection source, ClanMember[] members) {
 		clanList.showMembers(members);
 	}
 	
-	public void clanMemberRemoved(String username) {
+	public void clanMemberRemoved(Connection source, String username) {
 		clanList.remove(username);
 	}
 	
-	public void clanMemberStatusChange(ClanMember member) {
+	public void clanMemberStatusChange(Connection source, ClanMember member) {
 		clanList.statusChange(member);
 	}
 	
-	public void clanMemberRankChange(byte oldRank, byte newRank, String user) {
+	public void clanMemberRankChange(Connection source, byte oldRank, byte newRank, String user) {
 		clanList.rankChange(oldRank, newRank, user);
 	}
 	
-	public void queryRealms2(String[] realms) {
+	public void queryRealms2(final Connection source, String[] realms) {
 		if(realms.length == 0)
 			return;
 		
@@ -658,19 +657,19 @@ public class GuiEventHandler implements EventHandler {
 		
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				con.addEventHandler(realmWindow);
+				source.addEventHandler(realmWindow);
 				if(showWindow)
 					realmWindow.setVisible(true);
 				else
 					try {
-						con.sendLogonRealmEx(autoRealm);
+						source.sendLogonRealmEx(autoRealm);
 					} catch (Exception e) {
 						Out.exception(e);
 					}
 			} });
 	}
 
-	public void logonRealmEx(int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName) {}
+	public void logonRealmEx(Connection source, int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName) {}
 
 	public void setChatText(String chatText) {
 		chatTextArea.setText(chatText);
@@ -683,15 +682,15 @@ public class GuiEventHandler implements EventHandler {
 		chatTextArea.requestFocus();
 	}
 
-	public boolean parseCommand(BNetUser user, String command, String param, boolean whisperBack) {
+	public boolean parseCommand(Connection source, BNetUser user, String command, String param, boolean whisperBack) {
 		//mainTextArea.recieveInfo(String.format("parseCommand(\"%1$s\", \"%2$s\", \"%3$s\")", user.getShortLogonName(), command, param));
 		return false;
 	}
 
 	public String toString() {
-		if(con == null)
+		if(firstConnection == null)
 			return null;
-		return con.toString();
+		return firstConnection.toString();
 	}
 	
 	public void setDividerLocation(int arg0) {
@@ -702,7 +701,7 @@ public class GuiEventHandler implements EventHandler {
 		return jsp.getDividerLocation();
 	}
 
-	public Connection getConnection() {
-		return this.con;
+	public Connection getFirstConnection() {
+		return firstConnection;
 	}
 }

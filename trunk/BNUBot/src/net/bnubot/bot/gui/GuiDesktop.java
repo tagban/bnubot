@@ -116,7 +116,7 @@ public class GuiDesktop extends JFrame {
 					}
 					
 					// Set the default output window
-					Out.setDefaultOutputConnection(gui);
+					Out.setDefaultOutputConnection(gui.getFirstConnection());
 					
 					// Store the selected GUI
 					selectedGui = gui;
