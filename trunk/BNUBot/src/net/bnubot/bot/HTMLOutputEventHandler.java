@@ -84,9 +84,8 @@ public class HTMLOutputEventHandler implements EventHandler {
 		File f = new File(fName);
 		if(!f.exists())
 			f.mkdir();
-		if(!f.isDirectory()) {
-			Out.fatalException(new Exception("Logs is not a directory!"));
-		}
+		if(!f.isDirectory())
+			Out.fatalException(new Exception(fName + " is not a directory!"));
 	}
 	
 	public void joinedChannel(Connection source, String channel) {
