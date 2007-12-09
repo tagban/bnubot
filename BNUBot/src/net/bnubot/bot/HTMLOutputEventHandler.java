@@ -41,13 +41,13 @@ public class HTMLOutputEventHandler implements EventHandler {
 	}
 	
 	public void bnetDisconnected(Connection source) {
-		writeUserList();
+		writeUserList(source);
 	}
 
 	public void titleChanged(Connection source) {}
 
 	public void channelJoin(Connection source, BNetUser user) {
-		writeUserList();
+		writeUserList(source);
 		
 		append(source,
 			user + " has joined the channel" + user.getStatString().toString() + ".",
@@ -55,7 +55,7 @@ public class HTMLOutputEventHandler implements EventHandler {
 	}
 	
 	public void channelLeave(Connection source, BNetUser user) {
-		writeUserList();
+		writeUserList(source);
 		
 		append(source,
 			user + " has left the channel.",
@@ -63,7 +63,7 @@ public class HTMLOutputEventHandler implements EventHandler {
 	}
 	
 	public void channelUser(Connection source, BNetUser user) {
-		writeUserList();
+		writeUserList(source);
 		
 		append(source,
 			user + user.getStatString().toString() + ".",
@@ -72,12 +72,9 @@ public class HTMLOutputEventHandler implements EventHandler {
 	
 	public void initialize(Connection source) {
 		users = source.getUsers();
-		
-		String fName = "logs";
-		checkFolder(fName);
-		checkFolder(fName + "/" + source.getProfile().getName());
-		
 		cs = ColorScheme.createColorScheme(GlobalSettings.colorScheme);
+		checkFolder("logs");
+		checkFolder("logs/" + source.getProfile().getName());
 	}
 
 	private void checkFolder(String fName) {
@@ -112,7 +109,7 @@ public class HTMLOutputEventHandler implements EventHandler {
 		return HexDump.DWordToPretty(product);
 	}
 	
-	private void writeUserList() {
+	private void writeUserList(final Connection source) {
 		if(writeUserListRunnable == null)
 			writeUserListRunnable = new Runnable() {
 				public void run() {
@@ -121,7 +118,7 @@ public class HTMLOutputEventHandler implements EventHandler {
 					generationNeeded = false;
 					
 					try {
-						File f = new File("html/userlist.html");
+						File f = new File("html/userlist_" + source.getProfile().getName() + ".html");
 						DataOutputStream fos = new DataOutputStream(new FileOutputStream(f));
 						
 						fos.write("<table><tr><td colspan=\"4\"><b>".getBytes());
