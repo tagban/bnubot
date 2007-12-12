@@ -6,7 +6,6 @@
 package net.bnubot.util;
 
 import java.sql.SQLException;
-import java.util.Hashtable;
 
 import net.bnubot.bot.database.AccountResultSet;
 import net.bnubot.bot.database.Database;
@@ -18,8 +17,6 @@ import net.bnubot.bot.database.RankResultSet;
  * @author scotta
  */
 public class BNetUser {
-	private static Hashtable<String, BNetUser> bnCache = new Hashtable<String, BNetUser>();
-	
 	private String shortLogonName;	// #=yes, realm=only if different from "myRealm"
 	private String fullLogonName;	// #=yes, realm=yes
 	private final String fullAccountName;	// #=no, realm=yes
@@ -29,76 +26,6 @@ public class BNetUser {
 	private Integer flags = null;
 	private Integer ping = null;
 	private StatString statString = null;
-	
-	/**
-	 * Clear the BNetUser cache
-	 */
-	public static void clearCache() {
-		bnCache.clear();
-	}
-	
-	/**
-	 * Touch the cache for key
-	 */
-	public static void touchCache(String key, BNetUser user) {
-		if(bnCache.size() > 40)
-			clearCache();
-		bnCache.put(key, user);
-	}
-
-	/**
-	 * Cacheing constructor for a BNetUser
-	 * @param user		User[#N]@Realm
-	 */
-	public static BNetUser getBNetUser(String user) {
-		String key = user.toLowerCase();
-		BNetUser bnc = bnCache.get(key);
-		if(bnc == null) {
-			bnc = new BNetUser(user);
-			bnCache.put(key, bnc);
-		}
-		touchCache(key, bnc);
-		return bnc;
-	}
-
-	/**
-	 * Cacheing constructor for a BNetUser
-	 * @param user		User[#N][@Realm]
-	 * @param myRealm	[User[#N]@]Realm
-	 */
-	public static BNetUser getBNetUser(String user, String myRealm) {
-		// Drop the @ from realm
-		int i = myRealm.indexOf('@');
-		if(i != -1)
-			myRealm = myRealm.substring(i + 1);
-		
-		//Generate a unique key
-		String key = user;
-		i = key.indexOf('@');
-		if(i == -1)
-			key += '@' + myRealm;
-		
-		key = key.toLowerCase();
-		
-		//Look for the key in cache
-		BNetUser bnc = bnCache.get(key);
-		if(bnc == null) {
-			//No cache hit; create and add it
-			bnc = new BNetUser(user, myRealm);
-			bnCache.put(key, bnc);
-		}
-		touchCache(key, bnc);
-		return bnc;
-	}
-
-	/**
-	 * Cacheing constructor for a BNetUser
-	 * @param user		User[#N][@Realm]
-	 * @param myRealm	<BNetUser>
-	 */
-	public static BNetUser getBNetUser(String user, BNetUser model) {
-		return getBNetUser(user, model.getFullAccountName());
-	}
 
 	/**
 	 * Constructor for a BNetUser
@@ -358,5 +285,16 @@ public class BNetUser {
 
 	public void setStatString(StatString statString) {
 		this.statString = statString;
+	}
+
+	/**
+	 * Convert a BNetUser to a BNetUser from a different perspective
+	 */
+	public BNetUser toPerspective(BNetUser myRealm) {
+		BNetUser out = new BNetUser(fullLogonName, myRealm.getFullAccountName());
+		out.setFlags(getFlags());
+		out.setPing(getPing());
+		out.setStatString(getStatString());
+		return out;
 	}
 }

@@ -748,4 +748,19 @@ public abstract class Connection extends Thread {
 	public String getChannel() {
 		return channelName;
 	}
+	
+	public BNetUser getBNetUser(String user) {
+		for(BNetUser u : users) {
+			if(u.equals(user))
+				return u;
+		}
+		return null;
+	}
+
+	public BNetUser getBNetUser(String user, BNetUser myRealm) {
+		BNetUser out = getBNetUser(user);
+		if(out != null)
+			return out.toPerspective(myRealm);
+		return new BNetUser(user, myRealm.getFullLogonName());
+	}
 }

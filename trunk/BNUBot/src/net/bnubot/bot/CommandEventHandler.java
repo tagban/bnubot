@@ -190,7 +190,7 @@ public class CommandEventHandler implements EventHandler {
 							rsSubjectAccount.saveCursor();
 						} else {
 							// They don't have an account by that name, check if it's a user
-							BNetUser bnSubject = BNetUser.getBNetUser(params[0], user);
+							BNetUser bnSubject = source.getBNetUser(params[0], user);
 							
 							rsSubjectAccount = d.getAccount(bnSubject);
 							if((rsSubjectAccount != null) && rsSubjectAccount.next()) {
@@ -600,7 +600,7 @@ public class CommandEventHandler implements EventHandler {
 						break;
 					}
 					
-					BNetUser bnSubject = BNetUser.getBNetUser(params[0], user);
+					BNetUser bnSubject = source.getBNetUser(params[0], user);
 					Integer ping = bnSubject.getPing();
 					if(ping == null)
 						source.sendChat(user, "I do not know the ping for " + bnSubject.getFullLogonName(), whisperBack);
@@ -634,7 +634,7 @@ public class CommandEventHandler implements EventHandler {
 						break;
 					}
 					
-					BNetUser bnSubject = BNetUser.getBNetUser(params[0], user);
+					BNetUser bnSubject = source.getBNetUser(params[0], user);
 					BNLoginResultSet rsSubject = d.getUser(bnSubject);
 					if(!rsSubject.next()) {
 						d.close(rsSubject);
@@ -774,7 +774,7 @@ public class CommandEventHandler implements EventHandler {
 						d.close(rsSubjectAccount);
 						
 						//They don't have an account by that name, check if it's a user
-						BNetUser bnSubject = BNetUser.getBNetUser(params[0], user);
+						BNetUser bnSubject = source.getBNetUser(params[0], user);
 						BNLoginResultSet rsSubject = d.getUser(bnSubject);
 						if(!rsSubject.next()) {
 							d.close(rsSubject);
@@ -827,7 +827,7 @@ public class CommandEventHandler implements EventHandler {
 						break;
 					}
 
-					BNetUser bnSubject = BNetUser.getBNetUser(params[0], user.getFullAccountName());
+					BNetUser bnSubject = source.getBNetUser(params[0], user);
 					BNLoginResultSet rsSubject = d.getUser(bnSubject);
 					if(!rsSubject.next()) {
 						d.close(rsSubject);
@@ -1043,7 +1043,7 @@ public class CommandEventHandler implements EventHandler {
 						if(rsSubjectAccount.next()) {
 							result = rsSubjectAccount.getName();
 						} else {
-							bnSubject = BNetUser.getBNetUser(params[0], user);
+							bnSubject = source.getBNetUser(params[0], user);
 							BNLoginResultSet rsSubject = d.getUser(bnSubject);
 							
 							if((rsSubject == null) || (!rsSubject.next())) {
@@ -1051,7 +1051,7 @@ public class CommandEventHandler implements EventHandler {
 								break;
 							}
 							
-							bnSubject = BNetUser.getBNetUser(rsSubject.getLogin());
+							bnSubject = source.getBNetUser(rsSubject.getLogin());
 							d.close(rsSubject);
 							d.close(rsSubjectAccount);
 							rsSubjectAccount = d.getAccount(bnSubject);
