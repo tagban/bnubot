@@ -211,14 +211,15 @@ public class TriviaEventHandler implements EventHandler {
 						try {
 							if(d != null) {
 								AccountResultSet rsAccount = d.getAccount(answerUser);
-								if(rsAccount.next()) {
+								if((rsAccount != null) && rsAccount.next()) {
 									long score = rsAccount.getTriviaCorrect();
 									score++;
 									rsAccount.setTriviaCorrect(score);
 									rsAccount.updateRow();
 									extra += " Your score is " + score + ".";
 								}
-								d.close(rsAccount);
+								if(rsAccount != null)
+									d.close(rsAccount);
 							}
 						} catch(Exception e) {
 							Out.exception(e);

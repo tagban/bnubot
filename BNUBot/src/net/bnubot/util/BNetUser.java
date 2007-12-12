@@ -252,7 +252,7 @@ public class BNetUser {
 			shortPrettyName = shortLogonName;
 			try {
 				AccountResultSet rsAccount = d.getAccount(this);
-				if(rsAccount.next()) {
+				if((rsAccount != null) && rsAccount.next()) {
 					String account = rsAccount.getName();
 					
 					if(account != null)
@@ -269,7 +269,8 @@ public class BNetUser {
 					}
 					d.close(rsRank);
 				}
-				d.close(rsAccount);
+				if(rsAccount != null)
+					d.close(rsAccount);
 			} catch(SQLException e) {
 				Out.exception(e);
 			}
@@ -290,7 +291,7 @@ public class BNetUser {
 			prettyName = shortLogonName;
 			try {
 				AccountResultSet rsAccount = d.getAccount(this);
-				if(rsAccount.next()) {
+				if((rsAccount != null) && rsAccount.next()) {
 					String account = rsAccount.getName();
 					
 					if(account != null)
@@ -305,7 +306,8 @@ public class BNetUser {
 					}
 					d.close(rsRank);
 				}
-				d.close(rsAccount);
+				if(rsAccount != null)
+					d.close(rsAccount);
 			} catch(SQLException e) {
 				Out.exception(e);
 			}

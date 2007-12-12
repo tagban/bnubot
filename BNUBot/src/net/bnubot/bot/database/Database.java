@@ -264,25 +264,23 @@ public class Database {
 		return new AccountResultSet(ps.executeQuery());
 	}
 	
-	public AccountResultSet getAccount(Long accountID) throws SQLException {
+	public AccountResultSet getAccount(long accountID) throws SQLException {
 		PreparedStatement ps = prepareStatement("SELECT * FROM account WHERE id=?");
 		ps.setLong(1, accountID);
 		return new AccountResultSet(ps.executeQuery());
 	}
 	
 	public AccountResultSet getAccount(BNetUser user) throws SQLException {
-		PreparedStatement ps = prepareStatement(
-				"SELECT A.* " +
-				"FROM account AS A " +
-				"JOIN bnlogin AS U " +
-					"ON A.id=U.account " +
-				"WHERE LOWER(U.login)=LOWER(?)");
-		String login = user.getFullAccountName();
-		if(login == null)
-			ps.setNull(1, java.sql.Types.VARCHAR);
-		else
-			ps.setString(1, login);
-		return new AccountResultSet(ps.executeQuery());
+		BNLoginResultSet rsUser = getUser(user);
+		Long accountId = null;
+		if(rsUser.next())
+			accountId = rsUser.getAccount();
+		close(rsUser);
+		
+		if(accountId != null)
+			return getAccount(accountId);
+		
+		return null;
 	}
 	
 	public void deleteAccount(long accountID) throws SQLException {
