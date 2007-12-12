@@ -69,7 +69,7 @@ public class CommandEventHandler implements EventHandler {
 	public void touchUser(Connection source, BNetUser user, String action) {
 		try {
 			BNLoginResultSet rsUser = d.getCreateUser(user);
-			if(rsUser.next()) {
+			if(rsUser.next() && (action != null)) {
 				rsUser.setLastSeen(new Timestamp(System.currentTimeMillis()));
 				rsUser.setLastAction(action);
 				rsUser.updateRow();
@@ -185,9 +185,42 @@ public class CommandEventHandler implements EventHandler {
 							throw new InvalidUseException();
 						
 						AccountResultSet rsSubjectAccount = d.getAccount(params[0]);
-						if(!rsSubjectAccount.next()) {
-							d.close(rsSubjectAccount);
-							throw new AccountDoesNotExistException(params[0]);
+						if(rsSubjectAccount.next()) {
+							// They are doing add on an account name
+							rsSubjectAccount.saveCursor();
+						} else {
+							// They don't have an account by that name, check if it's a user
+							BNetUser bnSubject = BNetUser.getBNetUser(params[0], user);
+							
+							rsSubjectAccount = d.getAccount(bnSubject);
+							if((rsSubjectAccount != null) && rsSubjectAccount.next()) {
+								// The account exists; fall through
+							} else {
+								// The account does not exist
+								BNLoginResultSet rsSubject = d.getUser(bnSubject);
+								if(!rsSubject.next()) {
+									d.close(rsSubject);
+									source.sendChat(user, "I have never seen [" + bnSubject.getFullAccountName() + "]", whisperBack);
+									break;
+								}
+								rsSubject.saveCursor();
+								
+								try {
+									createAccount(params[0], commanderAccountID, rsSubject);
+								} catch(AccountDoesNotExistException e) {
+									source.sendChat(user, e.getMessage(), whisperBack);
+									break;
+								}
+								
+								// Re-load the account
+								rsSubjectAccount = d.getAccount(bnSubject);
+								if((rsSubjectAccount == null) || !rsSubjectAccount.next()) {
+									source.sendChat(user, "Failed to create account for an unknown reason", whisperBack);
+									if(rsSubjectAccount != null)
+										d.close(rsSubjectAccount);
+									break;
+								}
+							}
 						}
 
 						long targetAccess = Long.parseLong(params[1]);
@@ -641,39 +674,18 @@ public class CommandEventHandler implements EventHandler {
 						}
 					}
 					
-					AccountResultSet rsSubjectAccount = d.getAccount(params[1]);
-					if(rsSubjectAccount.next()) {
-						d.close(rsSubjectAccount);
-						d.close(rsSubject);
-						source.sendChat(user, "That account already exists!", whisperBack);
-						break;
-					}
-					d.close(rsSubjectAccount);
-					
 					if(commanderAccountID == null) {
 						d.close(rsSubject);
 						source.sendChat(user, "You must have an account to use recruit.", whisperBack);
 						break;
 					}
 					
-					rsSubjectAccount = d.createAccount(params[1], 0, commanderAccountID);
-					if(!rsSubjectAccount.next()) {
-						d.close(rsSubjectAccount);
-						d.close(rsSubject);
-						source.sendChat(user, "Failed to create account [" + params[1] + "] for an unknown reason", whisperBack);
+					try {
+						createAccount(params[1], commanderAccountID, rsSubject);
+					} catch(AccountDoesNotExistException e) {
+						source.sendChat(user, e.getMessage(), whisperBack);
 						break;
 					}
-					rsSubjectAccount.saveCursor();
-					
-					subjectAccountId = rsSubjectAccount.getId();
-					rsSubject.refreshCursor();
-					rsSubject.setAccount(subjectAccountId);
-					rsSubject.updateRow();
-					d.close(rsSubject);
-					rsSubjectAccount.refreshCursor();
-					rsSubjectAccount.setAccess(GlobalSettings.recruitAccess);
-					rsSubjectAccount.updateRow();
-					d.close(rsSubjectAccount);
 
 					bnSubject.resetPrettyName();
 					source.queueChatHelper("Welcome to the clan, " + bnSubject.toString() + "!", false);
@@ -1157,6 +1169,35 @@ public class CommandEventHandler implements EventHandler {
 		return true;
 	}
 
+	private void createAccount(String accountName, Long commanderAccountID, BNLoginResultSet rsSubject)
+	throws SQLException, AccountDoesNotExistException {
+		AccountResultSet rsSubjectAccount = d.getAccount(accountName);
+		if(rsSubjectAccount.next()) {
+			d.close(rsSubjectAccount);
+			d.close(rsSubject);
+			throw new AccountDoesNotExistException("That account already exists!");
+		}
+		d.close(rsSubjectAccount);
+		
+		rsSubjectAccount = d.createAccount(accountName, 0, commanderAccountID);
+		if(!rsSubjectAccount.next()) {
+			d.close(rsSubjectAccount);
+			d.close(rsSubject);
+			throw new AccountDoesNotExistException("Failed to create account [" + accountName + "] for an unknown reason");
+		}
+		rsSubjectAccount.saveCursor();
+		
+		long subjectAccountId = rsSubjectAccount.getId();
+		rsSubject.refreshCursor();
+		rsSubject.setAccount(subjectAccountId);
+		rsSubject.updateRow();
+		d.close(rsSubject);
+		rsSubjectAccount.refreshCursor();
+		rsSubjectAccount.setAccess(GlobalSettings.recruitAccess);
+		rsSubjectAccount.updateRow();
+		d.close(rsSubjectAccount);
+	}
+
 	private char getTrigger(Connection source) {
 		return source.getConnectionSettings().trigger.charAt(0);
 	}
@@ -1315,6 +1356,8 @@ public class CommandEventHandler implements EventHandler {
 			d.close(rsUser);
 			
 			AccountResultSet rsAccount = d.getAccount(user);
+			if(rsAccount == null)
+				return;
 			if(!rsAccount.next()) {
 				d.close(rsAccount);
 				return;
@@ -1441,7 +1484,10 @@ public class CommandEventHandler implements EventHandler {
 		touchUser(source, user, "leaving the channel");
 	}
 	
-	public void channelUser(Connection source, BNetUser user) {}
+	public void channelUser(Connection source, BNetUser user) {
+		touchUser(source, user, null);
+	}
+	
 	public void joinedChannel(Connection source, String channel) {}
 
 	public void recieveChat(Connection source, BNetUser user, String text) {
