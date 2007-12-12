@@ -1,4 +1,4 @@
-2.0.2.1:
+2.0.2.1 (r1000) 2007-12-12:
 * Extended Settings read/write methods
 * Fixed a bug where the CLI would cause 100% CPU use
 * Added an option to change the profile in the GUI
@@ -9,8 +9,12 @@
 * Fixed a bug with 'new profile'
 * Added a <Connection> field to plugin events
 * Changed HTMLOutputEventHandler to use profile-specific userlists/logs
+* Moved anti-idle, trigger, and enableGreetings to profile-specific settings
+* Improved Database.getUser(BNetUser)
+* Quick 'add' command
+* Fixed a bug caused by the BNetUser cache
 
-2.0.2 (r978):
+2.0.2 (r978) 2007-12-07:
 * Started the change log
 * Added a tab to the settings window to configure debug logging
 * Allow / commands to be passed through parseCommand()
