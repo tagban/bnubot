@@ -8,8 +8,8 @@ package net.bnubot;
 import java.io.File;
 import java.io.PrintStream;
 
-import net.bnubot.bot.gui.ConfigurationFrame;
-import net.bnubot.bot.gui.GlobalConfigurationFrame;
+import net.bnubot.bot.gui.settings.ConfigurationFrame;
+import net.bnubot.bot.gui.settings.GlobalConfigurationFrame;
 import net.bnubot.core.Profile;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.settings.GlobalSettings;

@@ -24,7 +24,7 @@ import java.util.Random;
 import java.util.TimeZone;
 
 import net.bnubot.bot.CommandResponseCookie;
-import net.bnubot.bot.gui.ConfigurationFrame;
+import net.bnubot.bot.gui.settings.ConfigurationFrame;
 import net.bnubot.core.ChatQueue;
 import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
