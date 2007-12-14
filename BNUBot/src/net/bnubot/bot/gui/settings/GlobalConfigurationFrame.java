@@ -3,7 +3,7 @@
  * $Id$
  */
 
-package net.bnubot.bot.gui;
+package net.bnubot.bot.gui.settings;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -36,6 +36,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import net.bnubot.bot.database.DriverShim;
+import net.bnubot.bot.gui.KeyManager;
+import net.bnubot.bot.gui.WindowPosition;
 import net.bnubot.bot.gui.components.ConfigCheckBox;
 import net.bnubot.bot.gui.components.ConfigComboBox;
 import net.bnubot.bot.gui.components.ConfigFactory;
