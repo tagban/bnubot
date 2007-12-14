@@ -191,7 +191,7 @@ public class ConnectionSettings implements Serializable {
 		trigger = 	Settings.read(header, "trigger", "!");
 		antiIdle = 	Settings.read(header, "antiidle", "/me is a BNU-Bot %version%");
 		enableAntiIdle = Settings.readBoolean(header, "enableAntiidle", false);
-		enableGreetings = Settings.readBoolean(header, "enableGreetings", true);
+		enableGreetings = Settings.readBoolean(header, "enableGreetings", false);
 		antiIdleTimer = Settings.readInt(header, "antiIdleTimer", 5);
 	}
 }

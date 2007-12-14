@@ -204,7 +204,7 @@ public class GlobalSettings {
 	
 	public static void load() {
 		numBots = Settings.readInt(null, "numBots", 1);
-		colorScheme = (byte)Settings.readInt(null, "colorScheme", 1);
+		colorScheme = (byte)Settings.readInt(null, "colorScheme", 2);
 		bnlsServer =Settings.read(null, "bnlsserver", "jbls.clanbnu.net");
 		bnlsPort = Settings.readInt(null, "bnlsport", 9367);
 		enableMirrorSelector = Settings.readBoolean(null, "enableMirrorSelector", true);
@@ -219,10 +219,10 @@ public class GlobalSettings {
 		trayIconMode = Settings.readEnum(TrayIconMode.class, null, "trayIconMode", TrayIconMode.ENABLED);
 		tabCompleteMode = Settings.readEnum(TabCompleteMode.class, null, "tabCompleteMode", TabCompleteMode.STARTS_WITH_STRING);
 		enableLegacyIcons = Settings.readBoolean(null, "enableLegacyIcons", true);
-		enableCommands = Settings.readBoolean(null, "enableCommands", false);
+		enableCommands = Settings.readBoolean(null, "enableCommands", true);
 		enableTrivia = Settings.readBoolean(null, "enableTrivia", false);
 		triviaRoundLength = Settings.readLong(null, "triviaRoundLength", 100);
-		enableFloodProtect = Settings.readBoolean(null, "enableFloodProtect", true);
+		enableFloodProtect = Settings.readBoolean(null, "enableFloodProtect", false);
 		packetLog = Settings.readBoolean(null, "packetLog", false);
 		whisperBack = Settings.readBoolean(null, "whisperBack", true);
 		recruitAccess = Settings.readLong(null, "recruitAccess", 10);
