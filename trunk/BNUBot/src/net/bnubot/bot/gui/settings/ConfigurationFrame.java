@@ -3,7 +3,7 @@
  * $Id$
  */
 
-package net.bnubot.bot.gui;
+package net.bnubot.bot.gui.settings;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -19,6 +19,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.SwingUtilities;
 
+import net.bnubot.bot.gui.KeyManager;
+import net.bnubot.bot.gui.WindowPosition;
 import net.bnubot.bot.gui.KeyManager.CDKey;
 import net.bnubot.bot.gui.components.ConfigCheckBox;
 import net.bnubot.bot.gui.components.ConfigComboBox;
