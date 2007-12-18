@@ -1217,30 +1217,43 @@ public class CommandEventHandler implements EventHandler {
 		if(params.length > 1)
 			reason = params[1];
 		
-		List<BNetUser> users = source.findUsersWildcard(params[0], user);
-		if(users.size() == 0) {
-			source.sendChat(user, "That pattern did not match any users.", whisperBack);
-			return;
-		}
-		
-		int numSkipped = 0;
-		for(BNetUser u : users) {
-			if((u.getFlags() & 0x02) != 0) {
-				numSkipped++;
-				continue;
-			}
-			
-			// Build the command
+		if(isBan && (params[0].indexOf('*') == -1)) {
+			// Regular ban
 			String out = (isBan) ? "/ban " : "/kick ";
-			out += u.getFullLogonName() + " " + reason;
+			BNetUser bnSubject = source.findUser(params[0], user);
+			if(bnSubject != null)
+				out += bnSubject.getFullLogonName();
+			else
+				out += params[0];
+			out += " " + reason;
 			
 			// Send the command
 			source.queueChatHelper(out, false);
-		}
-		
-		if(numSkipped > 0) {
-			source.sendChat(user, "Skipped " + numSkipped + " users with operator status.", whisperBack);
-			return;
+		} else {
+			// Wildcard kick/ban
+			List<BNetUser> users = source.findUsersWildcard(params[0], user);
+			if(users.size() == 0) {
+				source.sendChat(user, "That pattern did not match any users.", whisperBack);
+				return;
+			}
+			
+			int numSkipped = 0;
+			for(BNetUser u : users) {
+				if((u.getFlags() & 0x02) != 0) {
+					numSkipped++;
+					continue;
+				}
+				
+				// Build the command
+				String out = (isBan) ? "/ban " : "/kick ";
+				out += u.getFullLogonName() + " " + reason;
+				
+				// Send the command
+				source.queueChatHelper(out, false);
+			}
+			
+			if(numSkipped > 0)
+				source.sendChat(user, "Skipped " + numSkipped + " users with operator status.", whisperBack);
 		}
 	}
 

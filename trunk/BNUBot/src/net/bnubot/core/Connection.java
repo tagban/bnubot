@@ -98,6 +98,18 @@ public abstract class Connection extends Thread {
 		}
 		return ret;
 	}
+	
+	/**
+	 * Find a user
+	 */
+	public BNetUser findUser(String pattern, BNetUser perspective) {
+		for(BNetUser user : users) {
+			String u = user.getShortLogonName(perspective);
+			if(pattern.compareToIgnoreCase(u) == 0)
+				return user;
+		}
+		return null;
+	}
 
 	private void waitForEHsemaphore() {
 		while(eh_semaphore > 0) {
