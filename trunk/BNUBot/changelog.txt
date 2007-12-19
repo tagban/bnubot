@@ -1,3 +1,11 @@
+2.0.2.2:
+* Fixed a bug that prevented banning of users outside of the channel
+* Allow editing cdkeys from the connection settings window
+* Closing profiles
+* Pressing the 'cancel' button on 'new profile' settings window closes the profile
+* Pressing the 'cancel' button when no CD keys are entered will not bring the window back
+* Fixed a bug where 'apply' didn't redraw the window correctly
+
 2.0.2.1 (r1000) 2007-12-12:
 * Extended Settings read/write methods
 * Fixed a bug where the CLI would cause 100% CPU use
