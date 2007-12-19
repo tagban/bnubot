@@ -1822,11 +1822,10 @@ public class BNCSConnection extends Connection {
 			BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_CHATCOMMAND);
 			p.writeNTString(text);
 			p.SendPacket(bncsOutputStream);
-		} catch(SocketException e) {
+		} catch(IOException e) {
+			Out.exception(e);
 			setConnected(false);
 			return;
-		} catch (IOException e) {
-			Out.fatalException(e);
 		}
 
 		if(text.charAt(0) != '/')
