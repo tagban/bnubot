@@ -60,6 +60,7 @@ public class KeyManager {
 	
 	public static void resetInitialized() {
 		initialized = false;
+		cdkeys.clear();
 	}
 	
 	private static void initialize() {

@@ -47,6 +47,7 @@ public class ConfigurationFrame extends JDialog {
 	JButton btnLoad = null;
 	JButton btnOK = null;
 	JButton btnCancel = null;
+	JButton btnKeys = null;
 	
 	// Profile
 	ConfigCheckBox chkAntiIdle = null;
@@ -68,7 +69,7 @@ public class ConfigurationFrame extends JDialog {
 	}
 
 	private void initializeGui() {
-		Box boxAll = new Box(BoxLayout.Y_AXIS);
+		final Box boxAll = new Box(BoxLayout.Y_AXIS);
 		boolean addConnectionStuff = true;
 		ConnectionStuff: {
 			Box boxSettings = new Box(BoxLayout.Y_AXIS);
@@ -215,6 +216,18 @@ public class ConfigurationFrame extends JDialog {
 
 			Box boxButtons = new Box(BoxLayout.X_AXIS);
 			{
+				btnKeys = new JButton("Key Editor");
+				btnKeys.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent act) {
+						SwingUtilities.invokeLater(new Runnable() {
+							public void run() {
+								remove(boxAll);
+								new GlobalConfigurationFrame(true);
+								initializeGui();
+							}});
+					}
+				});
+				
 				btnLoad = new JButton("Undo");
 				btnLoad.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent act) {
@@ -258,6 +271,8 @@ public class ConfigurationFrame extends JDialog {
 				});
 
 				boxButtons.add(Box.createHorizontalGlue());
+				boxButtons.add(btnKeys);
+				boxButtons.add(Box.createHorizontalStrut(50));
 				boxButtons.add(btnLoad);
 				boxButtons.add(Box.createHorizontalStrut(50));
 				boxButtons.add(btnOK);
@@ -269,7 +284,7 @@ public class ConfigurationFrame extends JDialog {
 			add(boxAll);
 		else {
 			// No CD keys, force GCF until there are
-			new GlobalConfigurationFrame();
+			new GlobalConfigurationFrame(true);
 			initializeGui();
 			return;
 		}
