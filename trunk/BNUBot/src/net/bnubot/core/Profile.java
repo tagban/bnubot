@@ -140,10 +140,21 @@ public class Profile {
 	}
 
 	public void dispose() {
-		for(Connection con : cons) {
-			con.dispose();
-			for(EventHandler e : con.getEventHandlers())
-				con.removeEventHandler(e);
+		synchronized(cons) {
+			for(Connection con : cons)
+				con.dispose();
+		}
+		
+		synchronized(profiles) {
+			// Remove this profile from the list
+			profiles.remove(this);
+		
+			// Get the highest botnum
+			int max = 0;
+			for(Profile p : profiles)
+				for(Connection con : p.cons)
+					max = Math.max(max, con.getConnectionSettings().botNum);
+			GlobalSettings.numBots = max;
 		}
 	}
 }
