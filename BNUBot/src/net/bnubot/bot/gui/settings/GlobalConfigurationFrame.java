@@ -129,11 +129,10 @@ public class GlobalConfigurationFrame extends JDialog {
 	}
 
 	private void initializeGui() {
+		getContentPane().removeAll();
+		
 		Box boxTabsAndButtons = new Box(BoxLayout.Y_AXIS);
 		add(boxTabsAndButtons);
-		
-		if(tabs != null)
-			remove(tabs);
 
 		// CD Keys
 		Box boxAll = new Box(BoxLayout.Y_AXIS);
