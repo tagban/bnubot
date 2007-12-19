@@ -483,6 +483,9 @@ public abstract class Connection extends Thread {
 	public void dispose() {
 		disposed = true;
 		setConnected(false);
+		
+		for(EventHandler e : eventHandlers)
+			removeEventHandler(e);
 	}
 
 	/*
