@@ -55,6 +55,7 @@ import net.bnubot.bot.gui.components.TextWindow;
 import net.bnubot.bot.gui.components.UserList;
 import net.bnubot.bot.gui.notifications.Growl;
 import net.bnubot.bot.gui.settings.ConfigurationFrame;
+import net.bnubot.bot.gui.settings.OperationCancelledException;
 import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.clan.ClanMember;
@@ -99,8 +100,10 @@ public class GuiEventHandler implements EventHandler {
 		
 		JMenuItem settings = new JMenuItem("Settings");
 		settings.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				new ConfigurationFrame(source.getConnectionSettings());
+			public void actionPerformed(ActionEvent event) {
+				try {
+					new ConfigurationFrame(source.getConnectionSettings());
+				} catch(OperationCancelledException e) {}
 			}});
 		settingsMenuItems.put(source, settings);
 		
