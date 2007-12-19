@@ -25,6 +25,7 @@ import java.util.TimeZone;
 
 import net.bnubot.bot.CommandResponseCookie;
 import net.bnubot.bot.gui.settings.ConfigurationFrame;
+import net.bnubot.bot.gui.settings.OperationCancelledException;
 import net.bnubot.core.ChatQueue;
 import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
@@ -149,6 +150,9 @@ public class BNCSConnection extends Connection {
 					
 				// Connection closed
 			} catch(SocketException e) {
+			} catch (OperationCancelledException e) {
+				disposed = true;
+				break;
 			} catch(Exception e) {
 				recieveError("Unhandled " + e.getClass().getSimpleName() + ": " + e.getMessage());
 				Out.exception(e);
@@ -156,6 +160,12 @@ public class BNCSConnection extends Connection {
 
 			try { setConnected(false); } catch (Exception e) { }
 		}
+		
+		for(Task t : currentTasks)
+			t.complete();
+		currentTasks.clear();
+		
+		getProfile().dispose();
 	}
 
 	private static Hashtable<String, Long> connectionTimes = new Hashtable<String, Long>();
