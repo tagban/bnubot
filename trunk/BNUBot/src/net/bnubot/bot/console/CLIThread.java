@@ -9,7 +9,8 @@ import net.bnubot.core.Connection;
 import net.bnubot.util.Out;
 
 public class CLIThread extends Thread {
-	Connection c;
+	private Connection c;
+	private boolean disabled = false;
 	
 	public CLIThread(Connection c) {
 		this.c = c;
@@ -18,7 +19,7 @@ public class CLIThread extends Thread {
 	public void run() {
 		try {
 			String text = "";
-			while(true) {
+			while(!disabled) {
 				if(System.in.available() > 0) {
 					int b = System.in.read();
 					if(b == '\n') {
@@ -35,5 +36,9 @@ public class CLIThread extends Thread {
 		} catch(Exception e) {
 			Out.fatalException(e);
 		}
+	}
+	
+	public void disable() {
+		disabled = true;
 	}
 }

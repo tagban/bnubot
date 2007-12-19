@@ -185,6 +185,15 @@ public class GuiDesktop extends JFrame {
 					} });
 				menu.add(menuItem);
 				
+				menuItem = new JMenuItem("Close Profile");
+				menuItem.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						if(selectedGui != null) {
+							selectedGui.getFirstConnection().getProfile().dispose();
+						}
+					} });
+				menu.add(menuItem);
+				
 				menuItem = new JMenuItem("Settings");
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
@@ -387,6 +396,12 @@ public class GuiDesktop extends JFrame {
 		menuBar.add(geh.getMenuBar());
 		guis.add(geh);
 		tabs.addTab(geh.toString(), geh.getFrame());
+	}
+	
+	public static void remove(GuiEventHandler geh) {
+		menuBar.remove(geh.getMenuBar());
+		guis.remove(geh);
+		tabs.remove(geh.getFrame());
 	}
 	
 	private void setTitle() {

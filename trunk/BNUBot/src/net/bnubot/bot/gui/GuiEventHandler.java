@@ -114,6 +114,12 @@ public class GuiEventHandler implements EventHandler {
 		titleChanged(source);
 	}
 	
+	public void disable(final Connection source) {
+		if(source == firstConnection) {
+			GuiDesktop.remove(this);
+		}
+	}
+	
 	/**
 	 * Update the list of the TC popup
 	 * @param source TODO

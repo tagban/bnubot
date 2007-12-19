@@ -63,8 +63,9 @@ public class CommandEventHandler implements EventHandler {
 		if(d == null)
 			throw new AssertionError("Can not enable commands without a database!");
 	}
-	
-	public void initialize(Connection c) {}
+
+	public void initialize(Connection source) {}
+	public void disable(Connection source) {}
 	
 	public void touchUser(Connection source, BNetUser user, String action) {
 		try {

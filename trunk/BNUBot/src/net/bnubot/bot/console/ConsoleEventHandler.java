@@ -5,6 +5,8 @@
 
 package net.bnubot.bot.console;
 
+import java.util.HashMap;
+
 import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.clan.ClanMember;
@@ -13,8 +15,18 @@ import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetUser;
 
 public class ConsoleEventHandler implements EventHandler {
+	private static final HashMap<Connection, CLIThread> threads = new HashMap<Connection, CLIThread>();
+	
 	public synchronized void initialize(Connection source) {
-		new CLIThread(source).start();
+		CLIThread thread = new CLIThread(source);
+		threads.put(source, thread);
+		thread.start();
+	}
+	
+	public void disable(Connection source) {
+		CLIThread thread = threads.get(source);
+		if(thread != null)
+			thread.disable();
 	}
 
 	public void joinedChannel(Connection source, String channel) {

@@ -138,4 +138,12 @@ public class Profile {
 	public static void setPlugins(String[] plugins) {
 		Profile.plugins = plugins;
 	}
+
+	public void dispose() {
+		for(Connection con : cons) {
+			con.dispose();
+			for(EventHandler e : con.getEventHandlers())
+				con.removeEventHandler(e);
+		}
+	}
 }

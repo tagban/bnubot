@@ -73,6 +73,7 @@ public class HTMLOutputEventHandler implements EventHandler {
 		checkFolder("logs");
 		checkFolder("logs/" + source.getProfile().getName());
 	}
+	public void disable(Connection source) {}
 
 	private void checkFolder(String fName) {
 		File f = new File(fName);
