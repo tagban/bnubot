@@ -128,6 +128,10 @@ public class BNCSConnection extends Connection {
 				// Wait a short time before allowing a reconnect
 				waitUntilConnectionSafe(connect);
 				
+				// Double-check if disposal occured
+				if(disposed)
+					break;
+				
 				// Clear the forceReconnect flag
 				manualReconnect = false;
 				
@@ -152,7 +156,6 @@ public class BNCSConnection extends Connection {
 			} catch(SocketException e) {
 			} catch (OperationCancelledException e) {
 				disposed = true;
-				break;
 			} catch(Exception e) {
 				recieveError("Unhandled " + e.getClass().getSimpleName() + ": " + e.getMessage());
 				Out.exception(e);
@@ -187,7 +190,7 @@ public class BNCSConnection extends Connection {
 		}
 
 		final String status = "Stalling to avoid flood: ";
-		while(true) {
+		while(!disposed) {
 			long timeLeft = waitUntil - System.currentTimeMillis();
 			if(timeLeft <= 0)
 				break;
@@ -1063,7 +1066,7 @@ public class BNCSConnection extends Connection {
 		profile.lastAntiIdle = System.currentTimeMillis();
 		lastNullPacket = System.currentTimeMillis();
 		
-		while(connected && !socket.isClosed()) {
+		while(connected && !socket.isClosed() && !disposed) {
 			long timeNow = System.currentTimeMillis();
 			
 			//Send null packets every 30 seconds
