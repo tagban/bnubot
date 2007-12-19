@@ -6,10 +6,12 @@
 package net.bnubot;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.PrintStream;
 
 import net.bnubot.bot.gui.settings.ConfigurationFrame;
 import net.bnubot.bot.gui.settings.GlobalConfigurationFrame;
+import net.bnubot.bot.gui.settings.OperationCancelledException;
 import net.bnubot.core.Profile;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.settings.GlobalSettings;
@@ -32,7 +34,7 @@ public class Main {
 		}
 	}
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		boolean forceConfig = !new File("settings.ini").exists();
 		for(int i = 0; i < args.length; i++) {
 			if(args[i].charAt(0) == '-') {
@@ -61,7 +63,11 @@ public class Main {
 					break;
 				case 'l':
 					if(args[i].equals("-logfile")) {
-						Out.setOutputStream(new PrintStream(new File(args[++i])));
+						try {
+							Out.setOutputStream(new PrintStream(new File(args[++i])));
+						} catch (FileNotFoundException e) {
+							Out.exception(e);
+						}
 						continue;
 					}
 					break;
@@ -110,14 +116,18 @@ public class Main {
 			ConnectionSettings cs = new ConnectionSettings(i);
 			String valid = cs.isValid();
 			if(GlobalSettings.enableGUI && (valid != null)) {
-				new ConfigurationFrame(cs);
-				valid = cs.isValid();
+				try {
+					new ConfigurationFrame(cs);
+					valid = cs.isValid();
+				} catch (OperationCancelledException e) {}
 			}
 			
 			if(valid == null)
-				Profile.add(cs);
-			else
-				throw new Exception("Invalid configuration for bot " + i + ": " + valid);
+				try {
+					Profile.add(cs);
+				} catch (Exception e) {
+					Out.exception(e);
+				}
 		}
 		
 		if(CurrentVersion.fromJar() && CurrentVersion.version().getReleaseType().isDevelopment())

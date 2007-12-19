@@ -57,6 +57,7 @@ public class GlobalConfigurationFrame extends JDialog {
 	JTabbedPane tabs = null;
 	
 	boolean keysOnly;
+	boolean pressedCancel = false;
 
 	//Settings
 	ConfigTextArea txtEmail = null;
@@ -108,7 +109,7 @@ public class GlobalConfigurationFrame extends JDialog {
 	ConfigCheckBox chkDebugToGui = null;
 	List<ConfigCheckBox> chkDebug = null;
 	
-	public GlobalConfigurationFrame(boolean keysOnly) {
+	public GlobalConfigurationFrame(boolean keysOnly) throws OperationCancelledException {
 		super();
 		setTitle("Configuration");
 
@@ -118,9 +119,12 @@ public class GlobalConfigurationFrame extends JDialog {
 		setModal(true);
 		WindowPosition.load(this);
 		setVisible(true);
+		
+		if(pressedCancel)
+			throw new OperationCancelledException();
 	}
 
-	public GlobalConfigurationFrame() {
+	public GlobalConfigurationFrame() throws OperationCancelledException {
 		this(false);
 	}
 
@@ -474,6 +478,7 @@ public class GlobalConfigurationFrame extends JDialog {
 	}
 
 	private void cancel() {
+		pressedCancel = true;
 		load();
 		dispose();
 	}

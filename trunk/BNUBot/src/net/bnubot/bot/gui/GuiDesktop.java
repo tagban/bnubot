@@ -45,6 +45,7 @@ import net.bnubot.bot.gui.icons.BNetIcon;
 import net.bnubot.bot.gui.icons.IconsDotBniReader;
 import net.bnubot.bot.gui.notifications.Growl;
 import net.bnubot.bot.gui.settings.GlobalConfigurationFrame;
+import net.bnubot.bot.gui.settings.OperationCancelledException;
 import net.bnubot.core.Profile;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.settings.GlobalSettings;
@@ -197,7 +198,9 @@ public class GuiDesktop extends JFrame {
 				menuItem = new JMenuItem("Settings");
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						new GlobalConfigurationFrame();
+						try {
+							new GlobalConfigurationFrame();
+						} catch (OperationCancelledException e1) {}
 					} });
 				menu.add(menuItem);
 				
