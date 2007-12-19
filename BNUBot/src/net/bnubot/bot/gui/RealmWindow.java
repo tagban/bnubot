@@ -87,8 +87,9 @@ public class RealmWindow extends JDialog implements EventHandler, RealmEventHand
 			
 		}
 	}
-	
-	public void initialize(Connection c) {}
+
+	public void initialize(Connection source) {}
+	public void disable(Connection source) {}
 
 	public void initialize(RealmConnection rc) {
 		this.realmCon = rc;

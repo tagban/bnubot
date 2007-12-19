@@ -12,6 +12,7 @@ import net.bnubot.util.BNetUser;
 public interface EventHandler {
 	//Initialization
 	public void initialize(Connection source);
+	public void disable(Connection source);
 	
 	//Connection
 	public void bnetConnected(Connection source);

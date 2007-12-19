@@ -35,7 +35,8 @@ public class TriviaEventHandler implements EventHandler {
 	private String answerUsed = null;
 	private Database d = null;
 	private int unanswered = 0;
-	private boolean initialized = false;
+	private Connection initializedConnection = null;
+	private boolean disposed = false;
 	
 	public TriviaEventHandler() {
 		this.d = Database.getInstance();
@@ -128,7 +129,7 @@ public class TriviaEventHandler implements EventHandler {
 	}
 	
 	private void triviaLoop(Connection source) {
-		while(true) {
+		while(!disposed) {
 			try {
 				if(triviaEnabled && source.canSendChat()) {
 					if(trivia.size() == 0) {
@@ -271,16 +272,18 @@ public class TriviaEventHandler implements EventHandler {
 	}
 	
 	public void initialize(final Connection source) {
-		if(initialized )
-			return;
-		
-		initialized = true;
-		
-		new Thread() {
-			public void run() {
-				triviaLoop(source);
-			}
-		}.start();
+		if(initializedConnection == null) {
+			initializedConnection = source;
+			new Thread() {
+				public void run() {
+					triviaLoop(source);
+				}
+			}.start();
+		}
+	}
+	public void disable(final Connection source) {
+		if(initializedConnection == source)
+			disposed = true;
 	}
 	
 	public void triviaOn(Connection source) {

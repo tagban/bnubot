@@ -90,7 +90,7 @@ public class BNCSConnection extends Connection {
 		
 		initialized = true;
 		
-		while(true) {
+		while(!disposed) {
 			try {
 				for(Task t : currentTasks)
 					t.complete();

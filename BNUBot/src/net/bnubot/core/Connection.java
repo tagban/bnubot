@@ -11,6 +11,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -42,6 +43,7 @@ public abstract class Connection extends Thread {
 	protected String channelName = null;
 	protected boolean forceReconnect = false;
 	protected boolean initialized = false;
+	protected boolean disposed = false;
 
 	public static final int MAX_CHAT_LENGTH = 242;
 
@@ -49,7 +51,7 @@ public abstract class Connection extends Thread {
 	private int eh2_semaphore = 0;
 	
 	public List<EventHandler> getEventHandlers() {
-		return eventHandlers;
+		return Collections.synchronizedList(eventHandlers);
 	}
 	
 	public List<BNetUser> getUsers() {
@@ -172,6 +174,7 @@ public abstract class Connection extends Thread {
 	public void removeEventHandler(EventHandler e) {
 		waitForEHsemaphore();
 		eventHandlers.remove(e);
+		e.disable(this);
 	}
 
 	public boolean isConnected() {
@@ -475,6 +478,11 @@ public abstract class Connection extends Thread {
 	
 	public boolean isInitialized() {
 		return initialized;
+	}
+
+	public void dispose() {
+		disposed = true;
+		setConnected(false);
 	}
 
 	/*
