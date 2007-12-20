@@ -5,14 +5,10 @@
 
 package net.bnubot.util;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 import java.util.Vector;
 
 public class SortedProperties extends Properties {
@@ -24,12 +20,6 @@ public class SortedProperties extends Properties {
 		}
 	};
 	
-	public Set<Object> keySet() {
-		List<Object> keyList = new ArrayList<Object>(super.keySet());
-		Collections.sort(keyList, comparator);
-		return new HashSet<Object>(keyList);
-	}
-
 	public synchronized Enumeration<Object> keys() {
 		Vector<Object> keyList = new Vector<Object>(super.keySet());
 		Collections.sort(keyList, comparator);

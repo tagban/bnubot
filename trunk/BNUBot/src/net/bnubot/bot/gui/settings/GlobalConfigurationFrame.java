@@ -279,8 +279,8 @@ public class GlobalConfigurationFrame extends JDialog {
 				
 				Properties props = Out.getProperties();
 				chkDebug = new ArrayList<ConfigCheckBox>(props.size());
-				for(Object key : props.keySet()) {
-					String clazz = key.toString();
+				for (Enumeration<Object> en = props.keys(); en.hasMoreElements();) {
+					String clazz = en.nextElement().toString();
 					boolean chkEnabled = Boolean.parseBoolean(props.getProperty(clazz));
 					ConfigCheckBox chk = new ConfigCheckBox(clazz, chkEnabled);
 					chkDebug.add(chk);
