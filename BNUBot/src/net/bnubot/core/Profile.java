@@ -34,7 +34,7 @@ public class Profile {
 		return new Profile(name);
 	}
 	
-	public static boolean add(ConnectionSettings cs) throws Exception {
+	private static boolean add(ConnectionSettings cs) throws Exception {
 		return findCreateProfile(cs.profile).insertConnection(cs);
 	}
 
@@ -42,7 +42,7 @@ public class Profile {
 	private final ChatQueue chatQueue;
 	private final String name;
 
-	public Profile(String name) {
+	private Profile(String name) {
 		this.name = name;
 
 		synchronized(profiles) {
@@ -156,5 +156,36 @@ public class Profile {
 					max = Math.max(max, con.getConnectionSettings().botNum);
 			GlobalSettings.numBots = max;
 		}
+	}
+
+	public static void newConnection(int newConnectionId) {
+		ConnectionSettings cs = new ConnectionSettings(newConnectionId);
+		try {
+			add(cs);
+		} catch (Exception e) {
+			Out.exception(e);
+		}
+	}
+
+	public static void newConnection() {
+		// Build a list of pre-existing connection ids
+		List<Integer> connectionIds;
+		synchronized(profiles) {
+			connectionIds = new ArrayList<Integer>(profiles.size());
+			for(Profile p : profiles) {
+				synchronized(p.cons) {
+					for(Connection con : p.cons)
+						connectionIds.add(con.getConnectionSettings().botNum);
+				}
+			}
+		}
+		
+		for(int i = 1; i <= GlobalSettings.numBots; i++)
+			if(!connectionIds.contains(i)) {
+				newConnection(i);
+				return;
+			}
+		
+		newConnection(++GlobalSettings.numBots);
 	}
 }
