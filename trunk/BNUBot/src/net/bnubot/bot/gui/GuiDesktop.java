@@ -47,7 +47,6 @@ import net.bnubot.bot.gui.notifications.Growl;
 import net.bnubot.bot.gui.settings.GlobalConfigurationFrame;
 import net.bnubot.bot.gui.settings.OperationCancelledException;
 import net.bnubot.core.Profile;
-import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.settings.Settings;
 import net.bnubot.settings.GlobalSettings.TrayIconMode;
@@ -175,23 +174,15 @@ public class GuiDesktop extends JFrame {
 				JMenuItem menuItem = new JMenuItem("New Profile");
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						try {
-							GlobalSettings.numBots++;
-							ConnectionSettings cs = new ConnectionSettings(GlobalSettings.numBots);
-							Thread.yield();
-							Profile.add(cs);
-						} catch(Exception ex) {
-							Out.exception(ex);
-						}
+						Profile.newConnection();
 					} });
 				menu.add(menuItem);
 				
 				menuItem = new JMenuItem("Close Profile");
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						if(selectedGui != null) {
+						if(selectedGui != null)
 							selectedGui.getFirstConnection().getProfile().dispose();
-						}
 					} });
 				menu.add(menuItem);
 				

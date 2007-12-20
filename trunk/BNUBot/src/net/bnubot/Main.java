@@ -9,11 +9,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 
-import net.bnubot.bot.gui.settings.ConfigurationFrame;
 import net.bnubot.bot.gui.settings.GlobalConfigurationFrame;
-import net.bnubot.bot.gui.settings.OperationCancelledException;
 import net.bnubot.core.Profile;
-import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.settings.Settings;
 import net.bnubot.util.Out;
@@ -111,24 +108,8 @@ public class Main {
 			}
 		}
 		
-		for(int i = 1; i <= GlobalSettings.numBots; i++) {
-			//Start up the next connection
-			ConnectionSettings cs = new ConnectionSettings(i);
-			String valid = cs.isValid();
-			if(GlobalSettings.enableGUI && (valid != null)) {
-				try {
-					new ConfigurationFrame(cs);
-					valid = cs.isValid();
-				} catch (OperationCancelledException e) {}
-			}
-			
-			if(valid == null)
-				try {
-					Profile.add(cs);
-				} catch (Exception e) {
-					Out.exception(e);
-				}
-		}
+		for(int i = 1; i <= GlobalSettings.numBots; i++)
+			Profile.newConnection(i);
 		
 		if(CurrentVersion.fromJar() && CurrentVersion.version().getReleaseType().isDevelopment())
 			Out.error(CurrentVersion.class, "WARNING: This is a development build, not for distribution!");
