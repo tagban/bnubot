@@ -130,6 +130,9 @@ public class GlobalConfigurationFrame extends JDialog {
 
 	private void initializeGui() {
 		getContentPane().removeAll();
+		Integer selecedTab = null;
+		if(tabs != null)
+			selecedTab = tabs.getSelectedIndex();
 		
 		Box boxTabsAndButtons = new Box(BoxLayout.Y_AXIS);
 		add(boxTabsAndButtons);
@@ -289,6 +292,9 @@ public class GlobalConfigurationFrame extends JDialog {
 			}
 			tabs.addTab("Debug", boxAll);
 		}
+		
+		if(selecedTab != null)
+			tabs.setSelectedIndex(selecedTab);
 		
 		Box boxButtons = new Box(BoxLayout.X_AXIS);
 		{
