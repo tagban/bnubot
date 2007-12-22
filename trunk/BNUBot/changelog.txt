@@ -1,4 +1,4 @@
-2.0.2.2:
+2.0.2.2 (r1022) 2007-12-22:
 * Fixed a bug that prevented banning users outside of the channel
 * Allow editing cdkeys from the connection settings window
 * Closing profiles
