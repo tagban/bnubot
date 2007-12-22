@@ -45,10 +45,10 @@ public class ConfigurationFrame extends JDialog {
 	ConfigComboBox cmbCDKey2 = null;
 	ConfigComboBox cmbBNCSServer = null;
 	ConfigTextArea txtChannel = null;
+	JButton btnKeys = null;
 	JButton btnLoad = null;
 	JButton btnOK = null;
 	JButton btnCancel = null;
-	JButton btnKeys = null;
 	
 	// Profile
 	ConfigCheckBox chkAntiIdle = null;

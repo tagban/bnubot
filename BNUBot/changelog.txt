@@ -1,5 +1,5 @@
 2.0.2.2:
-* Fixed a bug that prevented banning of users outside of the channel
+* Fixed a bug that prevented banning users outside of the channel
 * Allow editing cdkeys from the connection settings window
 * Closing profiles
 * Pressing the 'cancel' button on 'new profile' settings window closes the profile
