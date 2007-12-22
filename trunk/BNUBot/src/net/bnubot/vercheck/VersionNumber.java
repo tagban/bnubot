@@ -83,34 +83,24 @@ public class VersionNumber {
 			return VER_SVN_REVISION.compareTo(vn.VER_SVN_REVISION);
 
 		// Check Stable
-		if(vn.RELEASE_TYPE.isStable() && !RELEASE_TYPE.isStable())
-			return -1;
-		if(RELEASE_TYPE.isStable())
-			return 1;
+		if(vn.RELEASE_TYPE.isStable() ^ !RELEASE_TYPE.isStable())
+			return RELEASE_TYPE.isStable() ? 1 : -1;
 
 		// Check RC
-		if(vn.RELEASE_TYPE.isReleaseCandidate() && !RELEASE_TYPE.isReleaseCandidate())
-			return -1;
-		if(RELEASE_TYPE.isReleaseCandidate())
-			return 1;
+		if(vn.RELEASE_TYPE.isReleaseCandidate() ^ !RELEASE_TYPE.isReleaseCandidate())
+			return RELEASE_TYPE.isReleaseCandidate() ? 1 : -1;
 
 		// Check Beta
-		if(vn.RELEASE_TYPE.isBeta() && !RELEASE_TYPE.isBeta())
-			return -1;
-		if(RELEASE_TYPE.isBeta())
-			return 1;
+		if(vn.RELEASE_TYPE.isBeta() ^ !RELEASE_TYPE.isBeta())
+			return RELEASE_TYPE.isBeta() ? 1 : -1;
 
 		// Check Alpha
-		if(vn.RELEASE_TYPE.isAlpha() && !RELEASE_TYPE.isAlpha())
-			return -1;
-		if(RELEASE_TYPE.isAlpha())
-			return 1;
+		if(vn.RELEASE_TYPE.isAlpha() ^ !RELEASE_TYPE.isAlpha())
+			return RELEASE_TYPE.isAlpha() ? 1 : -1;
 
 		// Check Development
-		if(vn.RELEASE_TYPE.isDevelopment() && !RELEASE_TYPE.isDevelopment())
-			return -1;
-		if(RELEASE_TYPE.isDevelopment())
-			return 1;
+		if(vn.RELEASE_TYPE.isDevelopment() ^ !RELEASE_TYPE.isDevelopment())
+			return RELEASE_TYPE.isDevelopment() ? 1 : -1;
 
 		// They are the same!
 		return 0;
