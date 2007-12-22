@@ -161,15 +161,15 @@ public class GlobalConfigurationFrame extends JDialog {
 				txtEmail = ConfigFactory.makeText("Email", GlobalSettings.email, boxAll);
 				
 				Object[] values;
-				if(CurrentVersion.version().getReleaseType().isDevelopment())
-					values = new ReleaseType[] {
-						ReleaseType.Development };
-				else
+				if(CurrentVersion.fromJar())
 					values = new ReleaseType[] {
 						ReleaseType.Stable,
 						ReleaseType.ReleaseCandidate,
 						ReleaseType.Beta,
 						ReleaseType.Alpha };
+				else
+					values = new ReleaseType[] {
+						ReleaseType.Development };
 				cmbReleaseType = ConfigFactory.makeCombo("Version Check", values, false, boxAll);
 				cmbReleaseType.setSelectedItem(GlobalSettings.releaseType);
 	
