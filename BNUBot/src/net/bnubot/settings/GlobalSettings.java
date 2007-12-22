@@ -233,11 +233,18 @@ public class GlobalSettings {
 			setLookAndFeel(Settings.read(null, "lookAndFeel", "JGoodies Plastic XP"));
 		}
 		TimeFormatter.tsFormat = Settings.read(null, "tsFormat", TimeFormatter.tsFormat);
-		releaseType = Settings.readEnum(ReleaseType.class, null, "releaseType", CurrentVersion.version().getReleaseType());
-
-		// Ensure that development builds check for development, and non-development builds don't
-		ReleaseType rt = CurrentVersion.version().getReleaseType();
-		if(rt.isDevelopment() || releaseType.isDevelopment())
-			releaseType = rt;
+		
+		// Get the release type to check for when doing version checks
+		ReleaseType currentRelease = CurrentVersion.version().getReleaseType();
+		releaseType = Settings.readEnum(ReleaseType.class, null, "releaseType", currentRelease);
+		
+		if(CurrentVersion.fromJar()) {
+			// If from a JAR, force at least Alpha
+			if(releaseType.isDevelopment())
+				releaseType = ReleaseType.Alpha;
+		} else {
+			// Non-jar is always development
+			releaseType = ReleaseType.Development;
+		}
 	}
 }
