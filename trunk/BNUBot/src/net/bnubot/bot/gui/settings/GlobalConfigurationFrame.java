@@ -111,7 +111,10 @@ public class GlobalConfigurationFrame extends JDialog {
 	
 	public GlobalConfigurationFrame(boolean keysOnly) throws OperationCancelledException {
 		super();
-		setTitle("Configuration");
+		if(keysOnly)
+			setTitle("CD Key Editor");
+		else
+			setTitle("Configuration");
 
 		this.keysOnly = keysOnly;
 		initializeGui();
