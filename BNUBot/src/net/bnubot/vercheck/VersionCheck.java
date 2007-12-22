@@ -74,17 +74,17 @@ public class VersionCheck {
 		if(forceDownload || CurrentVersion.fromJar()) {
 			XMLElementDecorator downloads = elem.getPath("bnubot/downloads");
 			if(downloads != null) {
-				XMLElementDecorator[] files = downloads.getChildren("file");
-				for(XMLElementDecorator file : files) {
+				for(XMLElementDecorator file : downloads.getChildren("file")) {
 					XMLElementDecorator sha1Element = file.getChild("sha1");
 					SHA1Sum sha1 = null;
 					if(sha1Element != null)
 						sha1 = new SHA1Sum(sha1Element.getString());
+					String from = file.getChild("from").getString();
 					String to = file.getChild("to").getString();
 					if(downloadFolder != null)
 						to = downloadFolder + "/" + to;
 					URLDownloader.downloadURL(
-						new URL(file.getChild("from").getString()),
+						new URL(from),
 						new File(to),
 						sha1,
 						false);
@@ -143,27 +143,28 @@ public class VersionCheck {
 		
 		Out.error(VersionCheck.class, "Latest version: " + vnLatest.toString());
 		
-		if(url != null) {
-			try {
-				if(jarFileName != null) {
-					File thisJar = new File(jarFileName);
-					if(thisJar.exists()) {
-						String msg = "BNU-Bot version " + vnLatest.toString() + " is available.\nWould you like to update?";
-						if(JOptionPane.showConfirmDialog(null, msg, "BNU-Bot update available", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
-							URLDownloader.downloadURL(new URL(url), thisJar, sha1, true);
-							URLDownloader.flush();
-							JOptionPane.showMessageDialog(null, "Update complete. Please restart BNU-Bot.");
-							System.exit(0);
-						}
-						return true;
+		if(url == null)
+			return true;
+		
+		try {
+			if(jarFileName != null) {
+				File thisJar = new File(jarFileName);
+				if(thisJar.exists()) {
+					String msg = "BNU-Bot version " + vnLatest.toString() + " is available.\nWould you like to update?";
+					if(JOptionPane.showConfirmDialog(null, msg, "BNU-Bot update available", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+						URLDownloader.downloadURL(new URL(url), thisJar, sha1, true);
+						URLDownloader.flush();
+						JOptionPane.showMessageDialog(null, "Update complete. Please restart BNU-Bot.");
+						System.exit(0);
 					}
+					return true;
 				}
-			} catch(Exception e) {
-				Out.exception(e);
 			}
-			
-			Out.error(VersionCheck.class, "Update: " + url);
+		} catch(Exception e) {
+			Out.exception(e);
 		}
+		
+		Out.error(VersionCheck.class, "Update: " + url);
 		return true;
 	}
 }

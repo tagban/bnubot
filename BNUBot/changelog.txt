@@ -5,6 +5,8 @@
 * Pressing the 'cancel' button on 'new profile' settings window closes the profile
 * Pressing the 'cancel' button when no CD keys are entered will not bring the window back
 * Fixed a bug where 'apply' didn't redraw the window correctly
+* Fixed a bug with lowercase CD keys
+* Improved version comparison logic
 
 2.0.2.1 (r1000) 2007-12-12:
 * Extended Settings read/write methods
