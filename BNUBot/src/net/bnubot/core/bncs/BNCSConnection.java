@@ -1231,10 +1231,8 @@ public class BNCSConnection extends Connection {
 						whisperRecieved(user, text);
 						break;
 					case EID_CHANNELDOESNOTEXIST:
-						BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_JOINCHANNEL);
-						p.writeDWord(2); // create join
-						p.writeNTString(text);
-						p.SendPacket(bncsOutputStream);
+						recieveError("Channel " + text + " does not exist; creating");
+						sendJoinChannel2(text);
 						break;
 					case EID_CHANNELRESTRICTED:
 						recieveError("Channel " + text + " is restricted; forcing entry");
