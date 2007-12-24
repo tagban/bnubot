@@ -5,25 +5,57 @@
 
 package net.bnubot.core;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.Hashtable;
 import java.util.List;
 
 import net.bnubot.bot.CommandEventHandler;
 import net.bnubot.bot.console.ConsoleEventHandler;
+import net.bnubot.bot.database.CommandResultSet;
 import net.bnubot.bot.database.Database;
 import net.bnubot.bot.gui.GuiEventHandler;
 import net.bnubot.bot.trivia.TriviaEventHandler;
 import net.bnubot.core.bncs.BNCSConnection;
+import net.bnubot.core.commands.CommandRunnable;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.settings.DatabaseSettings;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.Out;
 
 public class Profile {
-	private static List<Profile> profiles = new ArrayList<Profile>();
+	private static final List<Profile> profiles = new ArrayList<Profile>();
 	private static String[] plugins = null;
+	private static final Dictionary<String, CommandRunnable> commands = new Hashtable<String, CommandRunnable>();
 	
 	public long lastAntiIdle;
+	
+	public static void registerCommand(String name, CommandRunnable action) {
+		if(commands.get(name) != null)
+			throw new IllegalArgumentException("The command " + name + " is already registered");
+		
+		Database db = Database.getInstance();
+		if(db == null)
+			throw new IllegalStateException("No database has been initialized");
+		
+		try {
+			boolean exists;
+			CommandResultSet crs = db.getCommand(name);
+			exists = crs.next();
+			db.close(crs);
+			if(!exists)
+				throw new IllegalArgumentException("The command " + name + " is not in the database");
+		} catch (SQLException e) {
+			throw new IllegalStateException(e);
+		}
+		
+		commands.put(name, action);
+	}
+	
+	public static CommandRunnable getCommand(String name) {
+		return commands.get(name);
+	}
 
 	private static Profile findCreateProfile(String name) {
 		synchronized(profiles) {
