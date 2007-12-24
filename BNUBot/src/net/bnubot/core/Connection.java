@@ -46,9 +46,6 @@ public abstract class Connection extends Thread {
 	protected boolean disposed = false;
 
 	public static final int MAX_CHAT_LENGTH = 242;
-
-	private int eh_semaphore = 0;
-	private int eh2_semaphore = 0;
 	
 	public List<EventHandler> getEventHandlers() {
 		return Collections.synchronizedList(eventHandlers);
@@ -113,20 +110,6 @@ public abstract class Connection extends Thread {
 		return null;
 	}
 
-	private void waitForEHsemaphore() {
-		while(eh_semaphore > 0) {
-			try {Thread.sleep(50);} catch (InterruptedException e) {Out.exception(e);}
-			Thread.yield();
-		}
-	}
-
-	private void waitForEH2semaphore() {
-		while(eh2_semaphore > 0) {
-			try {Thread.sleep(50);} catch (InterruptedException e) {Out.exception(e);}
-			Thread.yield();
-		}
-	}
-
 	public Connection(ConnectionSettings cs, ChatQueue cq, Profile p) {
 		super(Connection.class.getSimpleName());
 
@@ -159,21 +142,24 @@ public abstract class Connection extends Thread {
 		slaves.add(c);
 	}
 	public void addEventHandler(EventHandler e) {
-		waitForEHsemaphore();
-		eventHandlers.add(e);
-		if(initialized)
-			e.initialize(this);
+		synchronized(eventHandlers) {
+			eventHandlers.add(e);
+			if(initialized)
+				e.initialize(this);
+		}
 	}
 	public void addSecondaryEventHandler(EventHandler e) {
-		waitForEH2semaphore();
-		eventHandlers2.add(e);
-		if(initialized)
-			e.initialize(this);
+		synchronized(eventHandlers2) {
+			eventHandlers2.add(e);
+			if(initialized)
+				e.initialize(this);
+		}
 	}
 
 	public void removeEventHandler(EventHandler e) {
-		waitForEHsemaphore();
-		eventHandlers.remove(e);
+		synchronized(eventHandlers) {
+			eventHandlers.remove(e);
+		}
 		e.disable(this);
 	}
 
@@ -492,280 +478,282 @@ public abstract class Connection extends Thread {
 	 * EventHandler methods follow
 	 * 
 	 */
-	public synchronized void bnetConnected() {
+	public void bnetConnected() {
 		users.clear();
 		
-		for(EventHandler eh : eventHandlers)
-			eh.bnetConnected(this);
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.bnetConnected(this);
+		}
 	}
 
-	public synchronized void bnetDisconnected() {
+	public void bnetDisconnected() {
 		channelName = null;
 		users.clear();
 		myUser = null;
 
-		eh_semaphore++;
-		for(EventHandler eh : eventHandlers)
-			eh.bnetDisconnected(this);
-		eh_semaphore--;
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.bnetDisconnected(this);
+		}
 	}
 
 	public boolean parseCommand(BNetUser user, String command, String param, boolean whisperBack) {
 		boolean ret = false;
-		eh_semaphore++;
-		for(EventHandler eh : eventHandlers) {
-			if(ret = eh.parseCommand(this, user, command, param, whisperBack))
-				break;
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers) {
+				if(ret = eh.parseCommand(this, user, command, param, whisperBack))
+					break;
+			}
 		}
-		eh_semaphore--;
 		return ret;
 	}
 
-	public synchronized void titleChanged() {
-		eh_semaphore++;
-		for(EventHandler eh : eventHandlers)
-			eh.titleChanged(this);
-		eh_semaphore--;
-		
-		eh2_semaphore++;
-		for(EventHandler eh : eventHandlers2)
-			eh.titleChanged(this);
-		eh2_semaphore--;
+	public void titleChanged() {
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.titleChanged(this);
+		}
+
+		synchronized(eventHandlers2) {
+			for(EventHandler eh : eventHandlers2)
+				eh.titleChanged(this);
+		}
 	}
 
-	public synchronized void joinedChannel(String channel) {
+	public void joinedChannel(String channel) {
 		channelName = channel;
 		users.clear();
 
-		eh_semaphore++;
-		for(EventHandler eh : eventHandlers)
-			eh.joinedChannel(this, channel);
-		eh_semaphore--;
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.joinedChannel(this, channel);
+		}
 
-		eh2_semaphore++;
-		for(Connection c : slaves)
-			try {
-				if(c.myUser != null) {
-					Out.info(getClass(), "[" + myUser.getFullLogonName() + "] Telling [" + c.myUser.getFullLogonName() + "] to join " + channel);
-					c.sendJoinChannel(channel);
+		synchronized(eventHandlers2) {
+			for(Connection c : slaves)
+				try {
+					if(c.myUser != null) {
+						Out.info(getClass(), "[" + myUser.getFullLogonName() + "] Telling [" + c.myUser.getFullLogonName() + "] to join " + channel);
+						c.sendJoinChannel(channel);
+					}
+				} catch (Exception e) {
+					Out.exception(e);
 				}
-			} catch (Exception e) {
-				Out.exception(e);
-			}
-		eh2_semaphore--;
+		}
 	}
 
-	public synchronized void channelUser(BNetUser user) {
+	public void channelUser(BNetUser user) {
 		if(getUser(user) == null) {
 			users.add(user);
 			ChannelListPriority.sort(users);
 		}
-		
-		eh_semaphore++;
-		for(EventHandler eh : eventHandlers)
-			eh.channelUser(this, user);
-		eh_semaphore--;
+
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.channelUser(this, user);
+		}
 	}
 
-	public synchronized void channelJoin(BNetUser user) {
+	public void channelJoin(BNetUser user) {
 		if(getUser(user) == null) {
 			users.add(user);
 			ChannelListPriority.sort(users);
 		}
-		
-		eh_semaphore++;
-		for(EventHandler eh : eventHandlers)
-			eh.channelJoin(this, user);
-		eh_semaphore--;
+
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.channelJoin(this, user);
+		}
 	}
 
-	public synchronized void channelLeave(BNetUser user) {
+	public void channelLeave(BNetUser user) {
 		if(!users.remove(getUser(user)))
 			Out.error(getClass(), "Tried to remove a user that was not in the list: " + user.toString());
-		
-		eh_semaphore++;
-		for(EventHandler eh : eventHandlers)
-			eh.channelLeave(this, user);
-		eh_semaphore--;
+
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.channelLeave(this, user);
+		}
 	}
 
-	public synchronized void recieveChat(BNetUser user, String text) {
-		eh_semaphore++;
-		for(EventHandler eh : eventHandlers)
-			eh.recieveChat(this, user, text);
-		eh_semaphore--;
+	public void recieveChat(BNetUser user, String text) {
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.recieveChat(this, user, text);
+		}
 	}
 
-	public synchronized void recieveEmote(BNetUser user, String text) {
-		eh_semaphore++;
-		for(EventHandler eh : eventHandlers)
-			eh.recieveEmote(this, user, text);
-		eh_semaphore--;
+	public void recieveEmote(BNetUser user, String text) {
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.recieveEmote(this, user, text);
+		}
 	}
 
-	public synchronized void recieveDebug(String text) {
+	public void recieveDebug(String text) {
 		if(text == null)
 			return;
 		if(text.length() == 0)
 			return;
 
-		eh_semaphore++;
-		for(EventHandler eh : eventHandlers)
-			eh.recieveDebug(this, text);
-		eh_semaphore--;
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.recieveDebug(this, text);
+		}
 
-		eh2_semaphore++;
-		for(EventHandler eh : eventHandlers2)
-			eh.recieveDebug(this, text);
-		eh2_semaphore--;
+		synchronized(eventHandlers2) {
+			for(EventHandler eh : eventHandlers2)
+				eh.recieveDebug(this, text);
+		}
 	}
 
-	public synchronized void recieveInfo(String text) {
+	public void recieveInfo(String text) {
 		if(text == null)
 			return;
 		if(text.length() == 0)
 			return;
 
-		eh_semaphore++;
-		for(EventHandler eh : eventHandlers)
-			eh.recieveInfo(this, text);
-		eh_semaphore--;
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.recieveInfo(this, text);
+		}
 
-		eh2_semaphore++;
-		for(EventHandler eh : eventHandlers2)
-			eh.recieveInfo(this, text);
-		eh2_semaphore--;
+		synchronized(eventHandlers2) {
+			for(EventHandler eh : eventHandlers2)
+				eh.recieveInfo(this, text);
+		}
 	}
 
-	public synchronized void recieveError(String text) {
+	public void recieveError(String text) {
 		if(text == null)
 			return;
 		if(text.length() == 0)
 			return;
 
-		eh_semaphore++;
-		for(EventHandler eh : eventHandlers)
-			eh.recieveError(this, text);
-		eh_semaphore--;
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.recieveError(this, text);
+		}
 
-		eh2_semaphore++;
-		for(EventHandler eh : eventHandlers2)
-			eh.recieveError(this, text);
-		eh2_semaphore--;
+		synchronized(eventHandlers2) {
+			for(EventHandler eh : eventHandlers2)
+				eh.recieveError(this, text);
+		}
 	}
 
-	public synchronized void whisperSent(BNetUser user, String text) {
-		eh_semaphore++;
-		for(EventHandler eh : eventHandlers)
-			eh.whisperSent(this, user, text);
-		eh_semaphore--;
+	public void whisperSent(BNetUser user, String text) {
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.whisperSent(this, user, text);
+		}
 
-		eh2_semaphore++;
-		for(EventHandler eh : eventHandlers2)
-			eh.whisperSent(this, user, text);
-		eh2_semaphore--;
+		synchronized(eventHandlers2) {
+			for(EventHandler eh : eventHandlers2)
+				eh.whisperSent(this, user, text);
+		}
 	}
 
-	public synchronized void whisperRecieved(BNetUser user, String text) {
-		eh_semaphore++;
-		for(EventHandler eh : eventHandlers)
-			eh.whisperRecieved(this, user, text);
-		eh_semaphore--;
+	public void whisperRecieved(BNetUser user, String text) {
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.whisperRecieved(this, user, text);
+		}
 
-		eh2_semaphore++;
-		for(EventHandler eh : eventHandlers2)
-			eh.whisperRecieved(this, user, text);
-		eh2_semaphore--;
+		synchronized(eventHandlers2) {
+			for(EventHandler eh : eventHandlers2)
+				eh.whisperRecieved(this, user, text);
+		}
 	}
 
 	// Realms
 
-	public synchronized void queryRealms2(String[] realms) {
-		eh_semaphore++;
-		for(EventHandler eh : eventHandlers)
-			eh.queryRealms2(this, realms);
-		eh_semaphore--;
+	public void queryRealms2(String[] realms) {
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.queryRealms2(this, realms);
+		}
 	}
 
-	public synchronized void logonRealmEx(int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName) {
-		eh_semaphore++;
-		for(EventHandler eh : eventHandlers)
-			eh.logonRealmEx(this, MCPChunk1, ip, port, MCPChunk2, uniqueName);
-		eh_semaphore--;
+	public void logonRealmEx(int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName) {
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.logonRealmEx(this, MCPChunk1, ip, port, MCPChunk2, uniqueName);
+		}
 	}
 
 	// Friends
 
-	public synchronized void friendsList(FriendEntry[] entries) {
-		eh_semaphore++;
-		for(EventHandler eh : eventHandlers)
-			eh.friendsList(this, entries);
-		eh_semaphore--;
+	public void friendsList(FriendEntry[] entries) {
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.friendsList(this, entries);
+		}
 	}
 
-	public synchronized void friendsUpdate(FriendEntry friend) {
-		eh_semaphore++;
-		for(EventHandler eh : eventHandlers)
-			eh.friendsUpdate(this, friend);
-		eh_semaphore--;
+	public void friendsUpdate(FriendEntry friend) {
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.friendsUpdate(this, friend);
+		}
 	}
 
-	public synchronized void friendsAdd(FriendEntry friend) {
-		eh_semaphore++;
-		for(EventHandler eh : eventHandlers)
-			eh.friendsAdd(this, friend);
-		eh_semaphore--;
+	public void friendsAdd(FriendEntry friend) {
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.friendsAdd(this, friend);
+		}
 	}
 
 	public void friendsRemove(byte entry) {
-		eh_semaphore++;
-		for(EventHandler eh : eventHandlers)
-			eh.friendsRemove(this, entry);
-		eh_semaphore--;
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.friendsRemove(this, entry);
+		}
 	}
 
 	public void friendsPosition(byte oldPosition, byte newPosition) {
-		eh_semaphore++;
-		for(EventHandler eh : eventHandlers)
-			eh.friendsPosition(this, oldPosition, newPosition);
-		eh_semaphore--;
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.friendsPosition(this, oldPosition, newPosition);
+		}
 	}
 
 	// Clan
 
-	public synchronized void clanMOTD(Object cookie, String text) {
-		eh_semaphore++;
-		for(EventHandler eh : eventHandlers)
-			eh.clanMOTD(this, cookie, text);
-		eh_semaphore--;
+	public void clanMOTD(Object cookie, String text) {
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.clanMOTD(this, cookie, text);
+		}
 	}
 
-	public synchronized void clanMemberList(ClanMember[] members) {
-		eh_semaphore++;
-		for(EventHandler eh : eventHandlers)
-			eh.clanMemberList(this, members);
-		eh_semaphore--;
+	public void clanMemberList(ClanMember[] members) {
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.clanMemberList(this, members);
+		}
 	}
 
-	public synchronized void clanMemberRemoved(String username) {
-		eh_semaphore++;
-		for(EventHandler eh : eventHandlers)
-			eh.clanMemberRemoved(this, username);
-		eh_semaphore--;
+	public void clanMemberRemoved(String username) {
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.clanMemberRemoved(this, username);
+		}
 	}
 
-	public synchronized void clanMemberRankChange(byte oldRank, byte newRank, String user) {
-		eh_semaphore++;
-		for(EventHandler eh : eventHandlers)
-			eh.clanMemberRankChange(this, oldRank, newRank, user);
-		eh_semaphore--;
+	public void clanMemberRankChange(byte oldRank, byte newRank, String user) {
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.clanMemberRankChange(this, oldRank, newRank, user);
+		}
 	}
 
-	public synchronized void clanMemberStatusChange(ClanMember member) {
-		eh_semaphore++;
+	public void clanMemberStatusChange(ClanMember member) {
+		synchronized(eventHandlers) {
 		for(EventHandler eh : eventHandlers)
 			eh.clanMemberStatusChange(this, member);
-		eh_semaphore--;
+		}
 	}
 
 	public String getChannel() {
