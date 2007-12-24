@@ -168,9 +168,11 @@ public class ConfigurationFrame extends JDialog {
 			cmbCDKey = ConfigFactory.makeCombo("CD key", CDKeys, false, boxSettings);
 			cmbCDKey2 = ConfigFactory.makeCombo("CD key 2", CDKeys, false, boxSettings);
 			
-			cmbProduct.setSelectedIndex(cs.product - 1);
-			cmbCDKey.setSelectedItem(cs.cdkey);
-			cmbCDKey2.setSelectedItem(cs.cdkey2);
+			try {
+				cmbProduct.setSelectedIndex(cs.product - 1);
+				cmbCDKey.setSelectedItem(cs.cdkey);
+				cmbCDKey2.setSelectedItem(cs.cdkey2);
+			} catch(Exception e) {}
 
 			CDKeys = null;
 			switch(cmbProduct.getSelectedIndex() + 1) {
