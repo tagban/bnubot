@@ -28,16 +28,16 @@ public class ConnectionSettings implements Serializable {
     // Connection-specific stuff
     public int botNum;
     public String profile;
-	public String bncsServer;
-	public int port;
 	public String username;
 	public String password;
-	public String channel;
 	public String cdkey;
 	public String cdkey2;
 	public byte product;
 	
 	// Profile-specific stuff
+	public String bncsServer;
+	public int port;
+	public String channel;
 	public boolean enableAntiIdle;
 	public String antiIdle;
 	public String trigger;
@@ -147,17 +147,17 @@ public class ConnectionSettings implements Serializable {
 	public void save() {
 		String header = Integer.toString(botNum);
 		Settings.write(header, "profile", profile);
-		Settings.write(header, "server", bncsServer);
-		Settings.writeInt(header, "port", port);
 		Settings.write(header, "username", username);
 		Settings.write(header, "password", password);
-		Settings.write(header, "channel", channel);
 		Settings.write(header, "cdkey", cdkey);
 		Settings.write(header, "cdkey2", cdkey2);
 		if(product != 0)
 			Settings.write(header, "product", org.jbls.util.Constants.prods[product-1]);
 
 		header = "Profile_" + profile;
+		Settings.write(header, "server", bncsServer);
+		Settings.writeInt(header, "port", port);
+		Settings.write(header, "channel", channel);
 		Settings.write(header, "antiidle", antiIdle);
 		Settings.writeBoolean(header, "enableAntiidle", enableAntiIdle);
 		Settings.writeBoolean(header, "enableGreetings", enableGreetings);
@@ -171,11 +171,8 @@ public class ConnectionSettings implements Serializable {
 		String header = Integer.toString(botNum);
 		
 		profile = 	Settings.read(header, "profile", "Profile" + botNum);
-		bncsServer =Settings.read(header, "server", "useast.battle.net");
-		port =		Settings.readInt(header, "port", 6112);
 		username =	Settings.read(header, "username", null);
 		password =	Settings.read(header, "password", null);
-		channel =	Settings.read(header, "channel", "Clan BNU");
 		cdkey =		Settings.read(header, "cdkey", null);
 		cdkey2 =	Settings.read(header, "cdkey2", null);
 		String prod = Settings.read(header, "product", null);
@@ -188,6 +185,9 @@ public class ConnectionSettings implements Serializable {
 		}
 
 		header = "Profile_" + profile;
+		bncsServer =Settings.read(header, "server", "useast.battle.net");
+		port =		Settings.readInt(header, "port", 6112);
+		channel =	Settings.read(header, "channel", "Clan BNU");
 		trigger = 	Settings.read(header, "trigger", "!");
 		antiIdle = 	Settings.read(header, "antiidle", "/me is a BNU-Bot %version%");
 		enableAntiIdle = Settings.readBoolean(header, "enableAntiidle", false);
