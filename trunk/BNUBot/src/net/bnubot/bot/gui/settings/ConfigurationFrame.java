@@ -43,14 +43,14 @@ public class ConfigurationFrame extends JDialog {
 	ConfigComboBox cmbProduct = null;
 	ConfigComboBox cmbCDKey = null;
 	ConfigComboBox cmbCDKey2 = null;
-	ConfigComboBox cmbBNCSServer = null;
-	ConfigTextArea txtChannel = null;
 	JButton btnKeys = null;
 	JButton btnLoad = null;
 	JButton btnOK = null;
 	JButton btnCancel = null;
 	
 	// Profile
+	ConfigComboBox cmbBNCSServer = null;
+	ConfigTextArea txtChannel = null;
 	ConfigCheckBox chkAntiIdle = null;
 	ConfigTextArea txtAntiIdle = null;
 	ConfigTextArea txtAntiIdleTimer = null;
