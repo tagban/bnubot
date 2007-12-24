@@ -75,6 +75,7 @@ public class BNCSConnection extends Connection {
 	protected int myClan = 0;
 	protected Byte myClanRank = null;
 	protected long lastNullPacket;
+	protected long lastEntryForced;
 	
 	private final List<Task> currentTasks = new LinkedList<Task>();
 
@@ -1063,8 +1064,9 @@ public class BNCSConnection extends Connection {
 	 * @throws Exception
 	 */
 	private void connectedLoop() throws Exception {
-		profile.lastAntiIdle = System.currentTimeMillis();
 		lastNullPacket = System.currentTimeMillis();
+		lastEntryForced = lastNullPacket;
+		profile.lastAntiIdle = lastNullPacket;
 		
 		while(connected && !socket.isClosed() && !disposed) {
 			long timeNow = System.currentTimeMillis();
@@ -1235,8 +1237,13 @@ public class BNCSConnection extends Connection {
 						sendJoinChannel2(text);
 						break;
 					case EID_CHANNELRESTRICTED:
-						recieveError("Channel " + text + " is restricted; forcing entry");
-						sendJoinChannel2(text);
+						if(timeNow - lastEntryForced > 5000) {
+							lastEntryForced = timeNow;
+							recieveError("Channel " + text + " is restricted; forcing entry");
+							sendJoinChannel2(text);
+						} else {
+							recieveError("Channel " + text + " is restricted");
+						}
 						break;
 					case EID_CHANNELFULL:
 						recieveError("Channel " + text + " is full");
