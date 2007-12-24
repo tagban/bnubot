@@ -43,13 +43,16 @@ public class CommandEventHandler implements EventHandler {
 	private static final Hashtable<Connection, Boolean> sweepBanInProgress = new Hashtable<Connection, Boolean>();
 	private static final Hashtable<Connection, Integer> sweepBannedUsers = new Hashtable<Connection, Integer>();
 	
+	static {
+		initializeCommands();
+	}
+	
 	private long	lastCommandTime = 0;
 	private BNetUser lastCommandUser = null;
 	
 	public CommandEventHandler() {
 		if(d == null)
 			throw new AssertionError("Can not enable commands without a database!");
-		initializeCommands();
 	}
 
 	public void initialize(Connection source) {}
