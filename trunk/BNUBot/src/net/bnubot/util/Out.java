@@ -83,7 +83,7 @@ public class Out {
 	public static void exception(Exception e) {
 		final Connection oc = getOutConnection();
 		if(oc != null)
-			error(e.getClass(), e.getMessage());
+			error(e.getClass(), e.getMessage() + "\n" + getRelevantStack(e));
 		if(outStream != null)
 			e.printStackTrace(outStream);
 		else
