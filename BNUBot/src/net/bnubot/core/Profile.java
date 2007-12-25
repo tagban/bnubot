@@ -220,4 +220,8 @@ public class Profile {
 		
 		newConnection(++GlobalSettings.numBots);
 	}
+
+	public List<Connection> getConnections() {
+		return cons;
+	}
 }

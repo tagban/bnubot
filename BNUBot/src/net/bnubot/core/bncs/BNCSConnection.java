@@ -2061,6 +2061,13 @@ public class BNCSConnection extends Connection {
 			return out;
 		}
 		
+		return toShortString();
+	}
+	
+	public String toShortString() {
+		if(cs.isValid() == null)
+			return cs.username + "@" + cs.myRealm;
+		
 		return profile.getName();
 	}
 
