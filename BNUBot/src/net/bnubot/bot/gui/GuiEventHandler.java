@@ -444,6 +444,7 @@ public class GuiEventHandler implements EventHandler {
 		return menuBar;
 	}
 
+	private static long lastSystemTrayTime = 0;
 	private void notifySystemTray(String gt, String headline, String text) {
 		// Require that enableTrayPopups is set
 		if(!GlobalSettings.trayIconMode.enableTray())
@@ -453,6 +454,12 @@ public class GuiEventHandler implements EventHandler {
 		if(!GlobalSettings.trayIconMode.alwaysDisplayPopups())
 			if(GuiDesktop.getInstance().isFocused())
 				return;
+		
+		// Require 1 second between tray notifications
+		long timeNow = System.currentTimeMillis();
+		if(timeNow - lastSystemTrayTime < 1000)
+			return;
+		lastSystemTrayTime = timeNow;
 		
 		TrayIcon tray = GuiDesktop.getTray();
 		if(tray != null)
