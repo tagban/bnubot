@@ -136,14 +136,11 @@ public class ConfigurationFrame extends JDialog {
 					DefaultComboBoxModel model = (DefaultComboBoxModel)cmbCDKey.getModel();
 					model.removeAllElements();
 					if(prod != KeyManager.PRODUCT_ALLNORMAL) {
-						CDKey[] CDKeys = KeyManager.getKeys(prod);
-						for(int i = 0; i < CDKeys.length; i++) {
-							model.addElement(CDKeys[i]);
+						for(CDKey key : KeyManager.getKeys(prod)) {
+							model.addElement(key);
 
-							if(cs.cdkey != null) {
-								if(CDKeys[i].getKey().compareToIgnoreCase(cs.cdkey) == 0)
-									cmbCDKey.setSelectedIndex(i);
-							}
+							if(key.getKey().equalsIgnoreCase(cs.cdkey))
+								cmbCDKey.setSelectedItem(key);
 						}
 					}
 					
@@ -151,13 +148,11 @@ public class ConfigurationFrame extends JDialog {
 					DefaultComboBoxModel model2 = (DefaultComboBoxModel)cmbCDKey2.getModel();
 					model2.removeAllElements();
 					if(CDKeys2 != null) {
-						for(int i = 0; i < CDKeys2.length; i++) {
-							model2.addElement(CDKeys2[i]);
+						for(CDKey key : CDKeys2) {
+							model2.addElement(key);
 
-							if(cs.cdkey2 != null) {
-								if(CDKeys2[i].getKey().compareToIgnoreCase(cs.cdkey2) == 0)
-									cmbCDKey2.setSelectedIndex(i);
-							}
+							if(key.getKey().equalsIgnoreCase(cs.cdkey2))
+								cmbCDKey.setSelectedItem(key);
 						}
 					}
 					

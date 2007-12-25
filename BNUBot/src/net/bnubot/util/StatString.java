@@ -312,11 +312,11 @@ public class StatString {
 			    //00             05             10             15             20             25             30
 				
 				if(data.length != 33)
-					throw new IOException("data.length != 33");;
+					throw new IOException("data.length != 33 (" + data.length + ")");
 				
 				byte version = (byte)(data[0] & 0x7F);
 				if(version != 4)
-					throw new IOException("version != 4");
+					throw new IOException("version != 4 (" + version + ")");
 				
 				byte charClass = (byte)(data[13]-1);
 				if((charClass < 0) || (charClass > 6))
