@@ -193,7 +193,7 @@ public class GuiEventHandler implements EventHandler {
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						if(!firstConnection.isConnected())
-							firstConnection.setConnected(true);
+							firstConnection.connect();
 					} });
 				menu.add(menuItem);
 				
@@ -209,7 +209,7 @@ public class GuiEventHandler implements EventHandler {
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						if(firstConnection.isConnected())
-							firstConnection.setConnected(false);
+							firstConnection.disconnect(false);
 					} });
 				menu.add(menuItem);
 			}
