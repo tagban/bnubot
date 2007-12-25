@@ -140,8 +140,10 @@ public class ConfigurationFrame extends JDialog {
 						for(int i = 0; i < CDKeys.length; i++) {
 							model.addElement(CDKeys[i]);
 
-							if(CDKeys[i].getKey().compareToIgnoreCase(cs.cdkey) == 0)
-								cmbCDKey.setSelectedIndex(i);
+							if(cs.cdkey != null) {
+								if(CDKeys[i].getKey().compareToIgnoreCase(cs.cdkey) == 0)
+									cmbCDKey.setSelectedIndex(i);
+							}
 						}
 					}
 					
@@ -152,8 +154,10 @@ public class ConfigurationFrame extends JDialog {
 						for(int i = 0; i < CDKeys2.length; i++) {
 							model2.addElement(CDKeys2[i]);
 
-							if(CDKeys2[i].getKey().compareToIgnoreCase(cs.cdkey2) == 0)
-								cmbCDKey2.setSelectedIndex(i);
+							if(cs.cdkey2 != null) {
+								if(CDKeys2[i].getKey().compareToIgnoreCase(cs.cdkey2) == 0)
+									cmbCDKey2.setSelectedIndex(i);
+							}
 						}
 					}
 					
