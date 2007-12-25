@@ -128,6 +128,8 @@ public abstract class Connection extends Thread {
 			cq.add(this);
 	}
 
+	public abstract String toShortString();
+
 	public abstract void sendJoinChannel(String channel) throws Exception;
 	public abstract void sendQueryRealms2() throws Exception;
 	public abstract void sendLogonRealmEx(String realmTitle) throws Exception;

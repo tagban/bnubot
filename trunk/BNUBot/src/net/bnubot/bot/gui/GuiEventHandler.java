@@ -58,6 +58,7 @@ import net.bnubot.bot.gui.settings.ConfigurationFrame;
 import net.bnubot.bot.gui.settings.OperationCancelledException;
 import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
+import net.bnubot.core.Profile;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.settings.GlobalSettings;
@@ -602,14 +603,8 @@ public class GuiEventHandler implements EventHandler {
 			menuBar.setText(source.getMyUser().getFullLogonName());
 		
 		// Update the settings menu items
-		for (Entry<Connection, JMenuItem> item : settingsMenuItems.entrySet()) {
-			Connection key = item.getKey();
-			JMenuItem value = item.getValue();
-			String description = (key.getMyUser() == null)
-					? key.getProfile().getName() 
-					: key.getMyUser().getFullLogonName();
-			value.setText("Settings (" + description + ")");
-		}
+		for (Entry<Connection, JMenuItem> item : settingsMenuItems.entrySet())
+			item.getValue().setText("Settings (" + item.getKey().toShortString() + ")");
 		
 		// Update the desktop window
 		GuiDesktop.setTitle(this, source.getProductID());
@@ -707,7 +702,10 @@ public class GuiEventHandler implements EventHandler {
 	public String toString() {
 		if(firstConnection == null)
 			return null;
-		return firstConnection.toString();
+		Profile p = firstConnection.getProfile();
+		if((p == null) || (p.getConnections().size() == 1))
+			return firstConnection.toString();
+		return p.getName();
 	}
 	
 	public void setDividerLocation(int arg0) {

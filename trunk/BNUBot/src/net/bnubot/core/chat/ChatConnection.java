@@ -117,4 +117,9 @@ public class ChatConnection extends Connection {
 		throw new UnsupportedFeatureException("Chat clients can not request profiles");
 	}
 
+	@Override
+	public String toShortString() {
+		return toString();
+	}
+
 }
