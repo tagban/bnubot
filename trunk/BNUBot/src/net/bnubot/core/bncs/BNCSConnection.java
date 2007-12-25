@@ -13,6 +13,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetAddress;
+import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -44,6 +46,7 @@ import net.bnubot.util.BNetInputStream;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.CookieUtility;
 import net.bnubot.util.HexDump;
+import net.bnubot.util.MirrorSelector;
 import net.bnubot.util.Out;
 import net.bnubot.util.StatString;
 import net.bnubot.util.TimeFormatter;
@@ -70,7 +73,6 @@ public class BNCSConnection extends Connection {
 	private final int clientToken = Math.abs(new Random().nextInt());
 	private SRP srp = null;
 	private byte proof_M2[] = null;
-	private boolean manualReconnect = false;
 	protected StatString myStatString = null;
 	protected int myClan = 0;
 	protected Byte myClanRank = null;
@@ -81,6 +83,16 @@ public class BNCSConnection extends Connection {
 
 	public BNCSConnection(ConnectionSettings cs, ChatQueue cq, Profile p) {
 		super(cs, cq, p);
+	}
+	
+	private boolean canConnect() {
+		switch(connectionState) {
+		case FORCE_CONNECT:
+			return true;
+		case ALLOW_CONNECT:
+			return GlobalSettings.autoConnect;
+		}
+		return false;
 	}
 
 	public void run() {
@@ -104,20 +116,10 @@ public class BNCSConnection extends Connection {
 				productID = 0;
 				titleChanged();
 				
-				boolean connectNow = (manualReconnect || GlobalSettings.autoConnect);
-				
 				// Wait until we're supposed to connect
-				if(!connectNow) {
-					while(!isConnected()) {
-						// Check if autoConnect was enabled
-						if(GlobalSettings.autoConnect) {
-							connectNow = true;
-							break;
-						}
-						
-						yield();
-						sleep(200);
-					}
+				while(!canConnect()) {
+					yield();
+					sleep(200);
 				}
 				
 				Task connect = createTask("Connecting to Battle.net", "Verify connection settings validity");
@@ -132,9 +134,6 @@ public class BNCSConnection extends Connection {
 				// Double-check if disposal occured
 				if(disposed)
 					break;
-				
-				// Clear the forceReconnect flag
-				manualReconnect = false;
 				
 				// Set up BNLS, get verbyte
 				initializeBNLS(connect);
@@ -162,7 +161,7 @@ public class BNCSConnection extends Connection {
 				Out.exception(e);
 			}
 
-			try { setConnected(false); } catch (Exception e) { }
+			try { disconnect(true); } catch (Exception e) { }
 		}
 		
 		for(Task t : currentTasks)
@@ -185,16 +184,16 @@ public class BNCSConnection extends Connection {
 				return;
 			}
 			
-			// Manual reconnects wait 2s; server-disconnect waits 15
-			waitUntil = lastConnectionTime + (manualReconnect ? 2000 : 15000);
-			connectionTimes.put(cs.bncsServer, waitUntil);
+			waitUntil = lastConnectionTime + 15000;
 		}
 
 		final String status = "Stalling to avoid flood: ";
 		while(!disposed) {
 			long timeLeft = waitUntil - System.currentTimeMillis();
-			if(timeLeft <= 0)
+			if(timeLeft <= 0) {
+				connectionTimes.put(cs.bncsServer, waitUntil);
 				break;
+			}
 			
 			connect.updateProgress(status + TimeFormatter.formatTime(timeLeft, false));
 			
@@ -329,7 +328,7 @@ public class BNCSConnection extends Connection {
 			
 		default:
 			recieveError("Don't know how to connect with product " + productID);
-			setConnected(false);
+			disconnect(false);
 			break;
 		}
 	}
@@ -344,13 +343,17 @@ public class BNCSConnection extends Connection {
 		
 		// Set up BNCS
 		connect.updateProgress("Connecting to Battle.net");
-		setConnected(true);
+		InetAddress address = MirrorSelector.getClosestMirror(cs.bncsServer, cs.port);
+		recieveInfo("Connecting to " + address + ":" + cs.port + ".");
+		socket = new Socket(address, cs.port);
+		socket.setKeepAlive(true);
 		bncsInputStream = socket.getInputStream();
 		bncsOutputStream = new DataOutputStream(socket.getOutputStream());
 		
 		// Game
-		connect.updateProgress("Connected");
 		bncsOutputStream.writeByte(0x01);
+		connectionState = ConnectionState.CONNECTED;
+		connect.updateProgress("Connected");
 	}
 	
 	/**
@@ -358,7 +361,7 @@ public class BNCSConnection extends Connection {
 	 * @throws Exception
 	 */
 	private boolean sendLoginPackets(Task connect) throws Exception {
-		while(connected && !socket.isClosed()) {
+		while(isConnected() && !socket.isClosed()) {
 			if(bncsInputStream.available() > 0) {
 				BNCSPacketReader pr;
 				pr = new BNCSPacketReader(bncsInputStream);
@@ -469,13 +472,13 @@ public class BNCSConnection extends Connection {
                 		bnlsSocket = null;
                 	} catch(UnknownHostException e) {
                 		recieveError("BNLS connection failed: " + e.getMessage());
-                		setConnected(false);
+                		disconnect(true);
                 		break;
                 	}
                 	
                 	if((exeVersion == 0) || (exeHash == 0) || (exeInfo == null) || (exeInfo.length == 0)) {
                 		recieveError("Checkrevision failed.");
-                		setConnected(false);
+                		disconnect(true);
                 		break;
                 	}
 
@@ -575,7 +578,7 @@ public class BNCSConnection extends Connection {
 								recieveError("Unknown SID_AUTH_CHECK result 0x" + Integer.toHexString(result));
 								break;
 							}
-							setConnected(false);
+							disconnect(false);
 							break;
 						}
 						recieveInfo("Passed CD key challenge and CheckRevision.");
@@ -596,7 +599,7 @@ public class BNCSConnection extends Connection {
 								recieveError("Unknown SID_REPORTVERSION result 0x" + Integer.toHexString(result));
 								break;
 							}
-							setConnected(false);
+							disconnect(false);
 							break;
 						}
 						recieveInfo("Passed CheckRevision.");
@@ -639,7 +642,7 @@ public class BNCSConnection extends Connection {
 							recieveError("Unknown SID_CDKEY response 0x" + Integer.toHexString(result));
 							break;
 						}
-						setConnected(false);
+						disconnect(false);
 						break;
 					}
 					
@@ -671,7 +674,7 @@ public class BNCSConnection extends Connection {
 						
 						if(srp == null) {
 							recieveError("SRP is not initialized!");
-							setConnected(false);
+							disconnect(false);
 							break;
 						}
 
@@ -693,11 +696,11 @@ public class BNCSConnection extends Connection {
 						break;
 					case 0x05:
 						recieveError("Account requires upgrade");
-						setConnected(false);
+						disconnect(false);
 						break;
 					default:
 						recieveError("Unknown SID_AUTH_ACCOUNTLOGON status 0x" + Integer.toHexString(status));
-						setConnected(false);
+						disconnect(false);
 						break;
 					}
 					
@@ -706,7 +709,7 @@ public class BNCSConnection extends Connection {
 					
 					if(srp == null) {
 						recieveError("SRP is not initialized!");
-						setConnected(false);
+						disconnect(false);
 						break;
 					}
 					
@@ -776,7 +779,7 @@ public class BNCSConnection extends Connection {
 						break;
 					case 0x02:
 						recieveError("Incorrect password.");
-						setConnected(false);
+						disconnect(false);
 						break;
 					case 0x0E:
 						recieveError("An email address should be registered for this account.");
@@ -785,11 +788,11 @@ public class BNCSConnection extends Connection {
 						break;
 					case 0x0F:
 						recieveError("Custom bnet error: " + additionalInfo);
-						setConnected(false);
+						disconnect(false);
 						break;
 					default:
 						recieveError("Unknown SID_AUTH_ACCOUNTLOGONPROOF status: 0x" + Integer.toHexString(status));
-						setConnected(false);
+						disconnect(false);
 						break;
 					}
 					if(!isConnected())
@@ -833,15 +836,15 @@ public class BNCSConnection extends Connection {
 						break;
 					case 0x02:	// Invalid password;
 						recieveError("Incorrect password.");
-						setConnected(false);
+						disconnect(false);
 						break;
 					case 0x06:	// Account is closed
 						recieveError("Your account is closed.");
-						setConnected(false);
+						disconnect(false);
 						break;
 					default:
 						recieveError("Unknown SID_LOGONRESPONSE2 result 0x" + Integer.toHexString(result));
-						setConnected(false);
+						disconnect(false);
 						break;
 					}
 					break;
@@ -875,23 +878,23 @@ public class BNCSConnection extends Connection {
 						break;
 					case 0x02:
 						recieveError("Name contained invalid characters");
-						setConnected(false);
+						disconnect(false);
 						break;
 					case 0x03:
 						recieveError("Name contained a banned word");
-						setConnected(false);
+						disconnect(false);
 						break;
 					case 0x04:
 						recieveError("Account already exists");
-						setConnected(false);
+						disconnect(false);
 						break;
 					case 0x06:
 						recieveError("Name did not contain enough alphanumeric characters");
-						setConnected(false);
+						disconnect(false);
 						break;
 					default:
 						recieveError("Unknown SID_CREATEACCOUNT2 status 0x" + Integer.toHexString(status));
-						setConnected(false);
+						disconnect(false);
 						break;
 					}
 					break;
@@ -1068,7 +1071,7 @@ public class BNCSConnection extends Connection {
 		lastEntryForced = lastNullPacket;
 		profile.lastAntiIdle = lastNullPacket;
 		
-		while(connected && !socket.isClosed() && !disposed) {
+		while(isConnected() && !socket.isClosed() && !disposed) {
 			long timeNow = System.currentTimeMillis();
 			
 			//Send null packets every 30 seconds
@@ -1267,7 +1270,7 @@ public class BNCSConnection extends Connection {
 				
 				case SID_FLOODDETECTED: {
 					recieveError("You have been disconnected for flooding.");
-					setConnected(false);
+					disconnect(true);
 					break;
 				}
 				
@@ -1842,7 +1845,7 @@ public class BNCSConnection extends Connection {
 			p.SendPacket(bncsOutputStream);
 		} catch(IOException e) {
 			Out.exception(e);
-			setConnected(false);
+			disconnect(true);
 			return;
 		}
 
@@ -2059,11 +2062,6 @@ public class BNCSConnection extends Connection {
 		}
 		
 		return profile.getName();
-	}
-	
-	public void reconnect() {
-		manualReconnect = true;
-		setConnected(false);
 	}
 
 	public int getProductID() {

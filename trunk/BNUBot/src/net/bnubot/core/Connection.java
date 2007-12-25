@@ -28,6 +28,13 @@ import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.ReleaseType;
 
 public abstract class Connection extends Thread {
+	public enum ConnectionState {
+		DO_NOT_ALLOW_CONNECT,
+		ALLOW_CONNECT,
+		FORCE_CONNECT,
+		CONNECTED
+	}
+
 	protected Socket bnlsSocket = null;
 	protected Socket socket = null;
 
@@ -38,7 +45,7 @@ public abstract class Connection extends Thread {
 	protected List<EventHandler> eventHandlers2 = new ArrayList<EventHandler>();
 	protected BNetUser myUser = null;
 	protected final List<BNetUser> users = new LinkedList<BNetUser>();
-	protected boolean connected = false;
+	protected ConnectionState connectionState = ConnectionState.ALLOW_CONNECT;
 	protected List<Connection> slaves = new ArrayList<Connection>();
 	protected String channelName = null;
 	protected boolean forceReconnect = false;
@@ -134,7 +141,11 @@ public abstract class Connection extends Thread {
 		sendReadUserData(user.getFullAccountName());
 	}
 
-	public abstract void reconnect();
+	public void reconnect() {
+		disconnect(true);
+		connectionState = ConnectionState.FORCE_CONNECT;
+	}
+	
 	public abstract boolean isOp();
 	public abstract int getProductID();
 
@@ -164,7 +175,7 @@ public abstract class Connection extends Thread {
 	}
 
 	public boolean isConnected() {
-		return connected;
+		return (connectionState == ConnectionState.CONNECTED);
 	}
 
 	public void setBNLSConnected(boolean c) throws IOException {
@@ -180,8 +191,9 @@ public abstract class Connection extends Thread {
 			bnlsSocket.setKeepAlive(true);
 		}
 	}
-	public void setConnected(boolean c) {
-		if(connected == c)
+	
+	public void connect() {
+		if(isConnected())
 			return;
 
 		try {
@@ -190,28 +202,34 @@ public abstract class Connection extends Thread {
 				socket = null;
 			}
 			
-			if(c) {
-				String v = cs.isValid();
-				if(v != null) {
-					recieveError(v);
-					return;
-				}
-
-				InetAddress address = MirrorSelector.getClosestMirror(cs.bncsServer, cs.port);
-				recieveInfo("Connecting to " + address + ":" + cs.port + ".");
-				socket = new Socket(address, cs.port);
-				socket.setKeepAlive(true);
+			String v = cs.isValid();
+			if(v != null) {
+				recieveError(v);
+				return;
 			}
 		} catch(IOException e) {
 			Out.fatalException(e);
 		}
 
-		connected = c;
+		connectionState = ConnectionState.FORCE_CONNECT;
+		bnetConnected();
+	}
+	
+	public void disconnect(boolean allowReconnect) {
+		if(!isConnected())
+			return;
 
-		if(c)
-			bnetConnected();
-		else
-			bnetDisconnected();
+		try {
+			if(socket != null) {
+				socket.close();
+				socket = null;
+			}
+		} catch(IOException e) {
+			Out.fatalException(e);
+		}
+
+		connectionState = allowReconnect ? ConnectionState.ALLOW_CONNECT : ConnectionState.DO_NOT_ALLOW_CONNECT;
+		bnetDisconnected();
 	}
 
 	protected long lastChatTime = 0;
@@ -468,7 +486,7 @@ public abstract class Connection extends Thread {
 
 	public void dispose() {
 		disposed = true;
-		setConnected(false);
+		disconnect(false);
 		
 		for(EventHandler e : eventHandlers)
 			removeEventHandler(e);
