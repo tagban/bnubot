@@ -188,6 +188,7 @@ public class Profile {
 					max = Math.max(max, con.getConnectionSettings().botNum);
 			GlobalSettings.numBots = max;
 		}
+		GlobalSettings.save();
 	}
 
 	public static void newConnection(int newConnectionId) {
@@ -219,6 +220,7 @@ public class Profile {
 			}
 		
 		newConnection(++GlobalSettings.numBots);
+		GlobalSettings.save();
 	}
 
 	public List<Connection> getConnections() {
