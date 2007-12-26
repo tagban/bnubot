@@ -344,7 +344,8 @@ public class CommandEventHandler implements EventHandler {
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack,
 					long commanderAccess, String commanderAccount, Long commanderAccountID, boolean superUser)
 			throws Exception {
-				source.disconnect(false);
+				for(Connection con : source.getProfile().getConnections())
+					con.disconnect(false);
 			}});
 		Profile.registerCommand("home", new CommandRunnable() {
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack,
@@ -565,7 +566,8 @@ public class CommandEventHandler implements EventHandler {
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack,
 					long commanderAccess, String commanderAccount, Long commanderAccountID, boolean superUser)
 			throws Exception {
-				source.reconnect();
+				for(Connection con : source.getProfile().getConnections())
+					con.reconnect();
 			}});
 		Profile.registerCommand("recruit", new CommandRunnable() {
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack,

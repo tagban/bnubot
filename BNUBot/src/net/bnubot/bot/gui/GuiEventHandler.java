@@ -193,24 +193,24 @@ public class GuiEventHandler implements EventHandler {
 				menuItem = new JMenuItem("Connect");
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						if(!firstConnection.isConnected())
-							firstConnection.connect();
+						for(Connection con : firstConnection.getProfile().getConnections())
+							con.connect();
 					} });
 				menu.add(menuItem);
 				
 				menuItem = new JMenuItem("Reconnect");
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						if(firstConnection.isConnected())
-							firstConnection.reconnect();
+						for(Connection con : firstConnection.getProfile().getConnections())
+							con.reconnect();
 					} });
 				menu.add(menuItem);
 				
 				menuItem = new JMenuItem("Disconnect");
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						if(firstConnection.isConnected())
-							firstConnection.disconnect(false);
+						for(Connection con : firstConnection.getProfile().getConnections())
+							con.disconnect(false);
 					} });
 				menu.add(menuItem);
 			}
