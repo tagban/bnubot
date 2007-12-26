@@ -62,6 +62,11 @@ public class GlobalSettings {
 	public static boolean enableCLI;
 	public static boolean enableGUI;
 	public static TrayIconMode trayIconMode;
+	public static boolean trayDisplayConnectDisconnect;
+	public static boolean trayDisplayChannel;
+	public static boolean trayDisplayJoinPart;
+	public static boolean trayDisplayChatEmote;
+	public static boolean trayDisplayWhisper;
 	public static TabCompleteMode tabCompleteMode;
 	public static boolean enableLegacyIcons;
 	public static boolean enableCommands;
@@ -183,6 +188,11 @@ public class GlobalSettings {
 		Settings.writeBoolean(null, "enableCLI", enableCLI);
 		Settings.writeBoolean(null, "enableGUI", enableGUI);
 		Settings.writeEnum(null, "trayIconMode", trayIconMode);
+		Settings.writeBoolean(null, "trayDisplayConnectDisconnect", trayDisplayConnectDisconnect);
+		Settings.writeBoolean(null, "trayDisplayChannel", trayDisplayChannel);
+		Settings.writeBoolean(null, "trayDisplayJoinPart", trayDisplayJoinPart);
+		Settings.writeBoolean(null, "trayDisplayChatEmote", trayDisplayChatEmote);
+		Settings.writeBoolean(null, "trayDisplayWhisper", trayDisplayWhisper);
 		Settings.writeEnum(null, "tabCompleteMode", tabCompleteMode);
 		Settings.writeBoolean(null, "enableLegacyIcons", enableLegacyIcons);
 		Settings.writeBoolean(null, "enableCommands", enableCommands);
@@ -217,6 +227,11 @@ public class GlobalSettings {
 		enableCLI = Settings.readBoolean(null, "enableCLI", false);
 		enableGUI = Settings.readBoolean(null, "enableGUI", true);
 		trayIconMode = Settings.readEnum(TrayIconMode.class, null, "trayIconMode", TrayIconMode.ENABLED);
+		trayDisplayConnectDisconnect = Settings.readBoolean(null, "trayDisplayConnectDisconnect", false);
+		trayDisplayChannel = Settings.readBoolean(null, "trayDisplayChannel", false);
+		trayDisplayJoinPart = Settings.readBoolean(null, "trayDisplayJoinPart", false);
+		trayDisplayChatEmote = Settings.readBoolean(null, "trayDisplayChatEmote", true);
+		trayDisplayWhisper = Settings.readBoolean(null, "trayDisplayWhisper", true);
 		tabCompleteMode = Settings.readEnum(TabCompleteMode.class, null, "tabCompleteMode", TabCompleteMode.STARTS_WITH_STRING);
 		enableLegacyIcons = Settings.readBoolean(null, "enableLegacyIcons", true);
 		enableCommands = Settings.readBoolean(null, "enableCommands", true);

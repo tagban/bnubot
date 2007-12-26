@@ -75,6 +75,11 @@ public class GlobalConfigurationFrame extends JDialog {
 	ConfigCheckBox chkDisplayChannelUsers = null;
 	ConfigCheckBox chkEnableGUI = null;
 	ConfigComboBox cmbTrayIconMode = null;
+	ConfigCheckBox chkTrayDisplayConnectDisconnect = null;
+	ConfigCheckBox chkTrayDisplayChannel = null;
+	ConfigCheckBox chkTrayDisplayJoinPart = null;
+	ConfigCheckBox chkTrayDisplayChatEmote = null;
+	ConfigCheckBox chkTrayDisplayWhisper = null;
 	ConfigComboBox cmbTabCompleteMode = null;
 	ConfigCheckBox chkEnableLegacyIcons = null;
 	ConfigCheckBox chkEnableCLI = null;
@@ -212,6 +217,12 @@ public class GlobalConfigurationFrame extends JDialog {
 							chkEnableGUI.setSelected(true);
 					}});
 	
+				boxAll.add(chkTrayDisplayConnectDisconnect = new ConfigCheckBox("Tray: Connect/Disconnect", GlobalSettings.trayDisplayConnectDisconnect));
+				boxAll.add(chkTrayDisplayChannel = new ConfigCheckBox("Tray: Channel", GlobalSettings.trayDisplayChannel));
+				boxAll.add(chkTrayDisplayJoinPart = new ConfigCheckBox("Tray: Join/Part", GlobalSettings.trayDisplayJoinPart));
+				boxAll.add(chkTrayDisplayChatEmote = new ConfigCheckBox("Tray: Chat/Emote", GlobalSettings.trayDisplayChatEmote));
+				boxAll.add(chkTrayDisplayWhisper = new ConfigCheckBox("Tray: Whisper", GlobalSettings.trayDisplayWhisper));
+				
 				cmbTabCompleteMode = ConfigFactory.makeCombo("Tab Complete", TabCompleteMode.values(), false, boxAll);
 				cmbTabCompleteMode.setSelectedItem(GlobalSettings.tabCompleteMode);
 				
@@ -390,6 +401,11 @@ public class GlobalConfigurationFrame extends JDialog {
 			GlobalSettings.displayChannelUsers = chkDisplayChannelUsers.isSelected();
 			GlobalSettings.enableGUI = chkEnableGUI.isSelected();
 			GlobalSettings.trayIconMode = (TrayIconMode)cmbTrayIconMode.getSelectedItem();
+			GlobalSettings.trayDisplayConnectDisconnect = chkTrayDisplayConnectDisconnect.isSelected();
+			GlobalSettings.trayDisplayChannel = chkTrayDisplayChannel.isSelected();
+			GlobalSettings.trayDisplayJoinPart = chkTrayDisplayJoinPart.isSelected();
+			GlobalSettings.trayDisplayChatEmote = chkTrayDisplayChatEmote.isSelected();
+			GlobalSettings.trayDisplayWhisper = chkTrayDisplayWhisper.isSelected();
 			GlobalSettings.tabCompleteMode = (TabCompleteMode)cmbTabCompleteMode.getSelectedItem();
 			GlobalSettings.enableLegacyIcons = chkEnableLegacyIcons.isSelected();
 			GlobalSettings.enableCLI = chkEnableCLI.isSelected();
@@ -469,6 +485,11 @@ public class GlobalConfigurationFrame extends JDialog {
 			chkEnableLegacyIcons.setSelected(GlobalSettings.enableLegacyIcons);
 			chkEnableCLI.setSelected(GlobalSettings.enableCLI);
 			cmbTrayIconMode.setSelectedItem(GlobalSettings.trayIconMode);
+			chkTrayDisplayConnectDisconnect.setSelected(GlobalSettings.trayDisplayConnectDisconnect);
+			chkTrayDisplayChannel.setSelected(GlobalSettings.trayDisplayChannel);
+			chkTrayDisplayJoinPart.setSelected(GlobalSettings.trayDisplayJoinPart);
+			chkTrayDisplayChatEmote.setSelected(GlobalSettings.trayDisplayChatEmote);
+			chkTrayDisplayWhisper.setSelected(GlobalSettings.trayDisplayWhisper);
 			cmbTabCompleteMode.setSelectedItem(GlobalSettings.tabCompleteMode);
 			chkEnableTrivia.setSelected(GlobalSettings.enableTrivia);
 			txtTriviaRoundLength.setText(Long.toString(GlobalSettings.triviaRoundLength));

@@ -28,7 +28,7 @@ public class Growl {
 	public static final String CHANNEL_USER_EMOTE = "Channel: User Emote";
 	public static final String CHANNEL_WHISPER_RECIEVED = "Channel: Whisper Recieved";
 	public static final String CHANNEL_WHISPER_SENT = "Channel: Whisper Sent";
-	private static final Object[] growlNotifications = new Object[] {
+	public static final Object[] growlNotifications = new Object[] {
 		BNET_CONNECT,
 		BNET_DISCONNECT,
 		CHANNEL,
@@ -39,12 +39,7 @@ public class Growl {
 		CHANNEL_WHISPER_RECIEVED,
 		CHANNEL_WHISPER_SENT,
 		};
-	private static final Object[] growlDefaults = new Object[] {
-		CHANNEL_USER_CHAT,
-		CHANNEL_USER_EMOTE,
-		CHANNEL_WHISPER_RECIEVED,
-		CHANNEL_WHISPER_SENT,
-		};
+	private static final Object[] growlDefaults = growlNotifications;
 	
 	// defines
 	/** The name of the growl registration notification for DNC. */
