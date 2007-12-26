@@ -479,10 +479,11 @@ public class GuiEventHandler implements EventHandler {
 		userList.showUser(source, user);
 		if(GlobalSettings.displayJoinParts)
 			mainTextArea.channelInfo(user + " has joined the channel" + user.getStatString().toString() + ".");
-		notifySystemTray(
-				Growl.CHANNEL_USER_JOIN,
-				source.getChannel(),
-				user.getShortPrettyName() + " joined");
+		if(GlobalSettings.trayDisplayJoinPart)
+			notifySystemTray(
+					Growl.CHANNEL_USER_JOIN,
+					source.getChannel(),
+					user.getShortPrettyName() + " joined");
 		channelTextPane.setText(channel + " (" + userList.count() + ")");
 	}
 
@@ -490,10 +491,11 @@ public class GuiEventHandler implements EventHandler {
 		userList.removeUser(user);
 		if(GlobalSettings.displayJoinParts)
 			mainTextArea.channelInfo(user + " has left the channel.");
-		notifySystemTray(
-				Growl.CHANNEL_USER_PART,
-				source.getChannel(),
-				user.getShortPrettyName() + " left");
+		if(GlobalSettings.trayDisplayJoinPart)
+			notifySystemTray(
+					Growl.CHANNEL_USER_PART,
+					source.getChannel(),
+					user.getShortPrettyName() + " left");
 		channelTextPane.setText(channel + " (" + userList.count() + ")");
 	}
 
@@ -510,28 +512,31 @@ public class GuiEventHandler implements EventHandler {
 		mainTextArea.addSeparator();
 		mainTextArea.channelInfo("Joining channel " + channel + ".");
 		channelTextPane.setText(channel);
-		notifySystemTray(
-				Growl.CHANNEL,
-				"Channel",
-				channel);
+		if(GlobalSettings.trayDisplayChannel)
+			notifySystemTray(
+					Growl.CHANNEL,
+					"Channel",
+					channel);
 		
 		GuiDesktop.setTitle(this, source.getProductID());
 	}
 
 	public void recieveChat(Connection source, BNetUser user, String text) {
 		mainTextArea.userChat(user, text, user.equals(source.getMyUser()));
-		notifySystemTray(
-				Growl.CHANNEL_USER_CHAT,
-				source.getChannel(),
-				"<" + user.getShortPrettyName() + "> " + text);
+		if(GlobalSettings.trayDisplayChatEmote)
+			notifySystemTray(
+					Growl.CHANNEL_USER_CHAT,
+					source.getChannel(),
+					"<" + user.getShortPrettyName() + "> " + text);
 	}
 
 	public void recieveEmote(Connection source, BNetUser user, String text) {
 		mainTextArea.userEmote(user, text);
-		notifySystemTray(
-				Growl.CHANNEL_USER_EMOTE,
-				source.getChannel(),
-				"<" + user.getShortPrettyName() + " " + text + ">");
+		if(GlobalSettings.trayDisplayChatEmote)
+			notifySystemTray(
+					Growl.CHANNEL_USER_EMOTE,
+					source.getChannel(),
+					"<" + user.getShortPrettyName() + " " + text + ">");
 	}
 
 	private static long lastInfoRecieved = 0;
@@ -561,27 +566,30 @@ public class GuiEventHandler implements EventHandler {
 	public void whisperRecieved(Connection source, BNetUser user, String text) {
 		lastWhisperFrom = user;
 		mainTextArea.whisperRecieved(user, text);
-		notifySystemTray(
-				Growl.CHANNEL_WHISPER_RECIEVED,
-				source.getChannel(),
-				"<From: " + user.getShortPrettyName() + "> " + text);
+		if(GlobalSettings.trayDisplayWhisper)
+			notifySystemTray(
+					Growl.CHANNEL_WHISPER_RECIEVED,
+					source.getChannel(),
+					"<From: " + user.getShortPrettyName() + "> " + text);
 	}
 
 	public void whisperSent(Connection source, BNetUser user, String text) {
 		mainTextArea.whisperSent(user, text);
-		notifySystemTray(
-				Growl.CHANNEL_WHISPER_SENT,
-				source.getChannel(),
-				"<To: " + user.getShortPrettyName() + "> " + text);
+		if(GlobalSettings.trayDisplayWhisper)
+			notifySystemTray(
+					Growl.CHANNEL_WHISPER_SENT,
+					source.getChannel(),
+					"<To: " + user.getShortPrettyName() + "> " + text);
 	}
 
 	public void bnetConnected(Connection source) {
 		userList.clear();
 		channelTextPane.setText(null);
-		notifySystemTray(
-				Growl.BNET_CONNECT,
-				"Connected",
-				source.toString());
+		if(GlobalSettings.trayDisplayConnectDisconnect)
+			notifySystemTray(
+					Growl.BNET_CONNECT,
+					"Connected",
+					source.toString());
 	}
 
 	public void bnetDisconnected(Connection source) {
@@ -589,10 +597,11 @@ public class GuiEventHandler implements EventHandler {
 		channelTextPane.setText(null);
 		mainTextArea.recieveError("Disconnected from battle.net.");
 		mainTextArea.addSeparator();
-		notifySystemTray(
-				Growl.BNET_DISCONNECT,
-				"Disconnected",
-				source.toString());
+		if(GlobalSettings.trayDisplayConnectDisconnect)
+			notifySystemTray(
+					Growl.BNET_DISCONNECT,
+					"Disconnected",
+					source.toString());
 	}
 
 	public void titleChanged(Connection source) {

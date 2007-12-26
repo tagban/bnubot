@@ -185,15 +185,14 @@ public class BNCSConnection extends Connection {
 			}
 			
 			waitUntil = lastConnectionTime + 15000;
+			connectionTimes.put(cs.bncsServer, waitUntil);
 		}
 
 		final String status = "Stalling to avoid flood: ";
 		while(!disposed) {
 			long timeLeft = waitUntil - System.currentTimeMillis();
-			if(timeLeft <= 0) {
-				connectionTimes.put(cs.bncsServer, waitUntil);
+			if(timeLeft <= 0)
 				break;
-			}
 			
 			connect.updateProgress(status + TimeFormatter.formatTime(timeLeft, false));
 			
