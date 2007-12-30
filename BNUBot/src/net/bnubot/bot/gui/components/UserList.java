@@ -5,7 +5,9 @@
 
 package net.bnubot.bot.gui.components;
 
-import java.awt.FlowLayout;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -40,6 +42,7 @@ public class UserList extends JPanel {
 		int lastFlags;
 		int priority;
 		JLabel label;
+		JLabel ping;
 		JPopupMenu menu;
 	}
 	
@@ -79,11 +82,12 @@ public class UserList extends JPanel {
 	}
 	
 	public UserList(ColorScheme colors, GuiEventHandler geh) {
-		super(new FlowLayout(FlowLayout.LEFT));
+		super(new BorderLayout());
 		this.colors = colors;
 		this.geh = geh;
 		setBackground(colors.getBackgroundColor());
-		add(box);
+		
+		add(box, BorderLayout.NORTH);
 	}
 	
 	public void clear() {
@@ -98,7 +102,8 @@ public class UserList extends JPanel {
 	
 	private int getInsertPosition(int priority) {
 		for(int i = 0; i < box.getComponentCount(); i++) {
-			JLabel lbl = (JLabel)box.getComponent(i);
+			Container box2 = (Container)box.getComponent(i);
+			JLabel lbl = (JLabel)box2.getComponent(0);
 			UserInfo ui = getUI(lbl);
 			int pCurrent = ChannelListPriority.getPrioByFlags(ui.user.getFlags());
 			
@@ -159,9 +164,21 @@ public class UserList extends JPanel {
 			ui.menu.add(Box.createHorizontalGlue());
 		}
 		if(ui.label == null) {
+			Color fg = colors.getUserNameListColor(user.getFlags());
+			
 			ui.label = new JLabel(user.getFullLogonName());
-			ui.label.setForeground(colors.getUserNameListColor(user.getFlags()));
-			box.add(ui.label, getInsertPosition(ui.priority));
+			ui.label.setForeground(fg);
+			
+			ui.ping = new JLabel();
+			ui.ping.setForeground(fg);
+			
+			JPanel lbl = new JPanel(new BorderLayout());
+			lbl.setBackground(colors.getBackgroundColor());
+			lbl.add(ui.label, BorderLayout.WEST);
+			lbl.add(Box.createHorizontalGlue(), BorderLayout.CENTER);
+			lbl.add(ui.ping, BorderLayout.EAST);
+			
+			box.add(lbl, getInsertPosition(ui.priority));
 			
 			ui.label.addMouseListener(new MouseListener() {
 				public void mouseClicked(MouseEvent arg0) {
@@ -200,11 +217,14 @@ public class UserList extends JPanel {
 			int newPriority = ChannelListPriority.getPrioByFlags(ui.lastFlags);
 			if(ui.priority != newPriority) {
 				ui.priority = newPriority;
-				box.remove(ui.label);
-				box.add(ui.label, getInsertPosition(newPriority));
+				Container x = ui.label.getParent();
+				box.remove(x);
+				box.add(x, getInsertPosition(newPriority));
 			}
 			
-			ui.label.setForeground(colors.getUserNameListColor(ui.lastFlags));
+			Color fg = colors.getUserNameListColor(ui.lastFlags);
+			ui.label.setForeground(fg);
+			ui.ping.setForeground(fg);
 		}
 				
 		Icon icon = null;
@@ -291,6 +311,30 @@ public class UserList extends JPanel {
 		
 		if(icon != null)
 			ui.label.setIcon(icon);
+		
+		icons = IconsDotBniReader.getIconsLag();
+		if((icons != null) && (user.getPing() != null)) {
+			int ping = user.getPing();
+			
+			if(ping == -1)
+				ui.ping.setIcon(icons[7].getIcon());
+			else if(ping < 0)
+				ui.ping.setIcon(icons[6].getIcon());
+			else if(ping <= 20)
+				ui.ping.setIcon(icons[0].getIcon());
+			else if(ping <= 100)
+				ui.ping.setIcon(icons[1].getIcon());
+			else if(ping <= 200)
+				ui.ping.setIcon(icons[2].getIcon());
+			else if(ping <= 300)
+				ui.ping.setIcon(icons[3].getIcon());
+			else if(ping <= 400)
+				ui.ping.setIcon(icons[4].getIcon());
+			else if(ping <= 500)
+				ui.ping.setIcon(icons[5].getIcon());
+			else
+				ui.ping.setIcon(icons[6].getIcon());
+		}
 		
 		users.put(user, ui);
 		validate();

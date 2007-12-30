@@ -52,4 +52,28 @@ public class BNetIcon {
 	public int getSortIndex() {
 		return sortIndex;
 	}
+
+	public int getFlags() {
+		return flags;
+	}
+
+	public void setFlags(int flags) {
+		this.flags = flags;
+	}
+
+	public void setXSize(int size) {
+		xSize = size;
+	}
+
+	public void setYSize(int size) {
+		ySize = size;
+	}
+
+	public void setProducts(int[] products) {
+		this.products = products;
+	}
+
+	public void setIcon(Icon icon) {
+		this.icon = icon;
+	}
 }
