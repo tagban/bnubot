@@ -347,7 +347,7 @@ public class UserList extends JPanel {
 		UserInfo ui = getUI(user);
 		
 		if(ui != null) {
-			box.remove(ui.label);
+			box.remove(ui.label.getParent());
 			ui.label = null;
 			users.remove(user);
 			validate();
