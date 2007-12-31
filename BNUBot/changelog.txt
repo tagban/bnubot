@@ -4,6 +4,12 @@
 * Replaced EventHandler semaphores with synchronized code blocks
 * Fixed a race condition with joining restricted channels
 * Fixed a bug with selecting CD keys
+* Added lag icons
+* Improved the logic for constructing the text label on each profile tab
+* Configurable tray notifications
+* Fixed a bug where it was impossible to stay disconnected
+* Connect/disconnect/reconnect affect each connection of a profile
+* Multiple commands can be used at once with a semicolon delimiter.
 
 2.0.2.2 (r1022) 2007-12-22:
 * Fixed a bug that prevented banning users outside of the channel
