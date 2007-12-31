@@ -105,10 +105,13 @@ public class UserList extends JPanel {
 			Container box2 = (Container)box.getComponent(i);
 			JLabel lbl = (JLabel)box2.getComponent(0);
 			UserInfo ui = getUI(lbl);
-			int pCurrent = ChannelListPriority.getPrioByFlags(ui.user.getFlags());
-			
-			if(priority > pCurrent)
-				return i;
+			if(ui == null)
+				Out.error(UserList.class, "Couldn't find UserInfo for " + lbl.getText());
+			else {
+				int pCurrent = ChannelListPriority.getPrioByFlags(ui.user.getFlags());
+				if(priority > pCurrent)
+					return i;
+			}
 		}
 		return box.getComponentCount();
 	}
@@ -316,21 +319,21 @@ public class UserList extends JPanel {
 		if((icons != null) && (user.getPing() != null)) {
 			int ping = user.getPing();
 			
-			if(ping == -1)
+			if((user.getFlags() != null) && ((user.getFlags() & 0x10) != 0))
 				ui.ping.setIcon(icons[7].getIcon());
 			else if(ping < 0)
 				ui.ping.setIcon(icons[6].getIcon());
-			else if(ping <= 20)
+			else if(ping < 10)
 				ui.ping.setIcon(icons[0].getIcon());
-			else if(ping <= 100)
+			else if(ping < 200)
 				ui.ping.setIcon(icons[1].getIcon());
-			else if(ping <= 200)
+			else if(ping < 300)
 				ui.ping.setIcon(icons[2].getIcon());
-			else if(ping <= 300)
+			else if(ping < 400)
 				ui.ping.setIcon(icons[3].getIcon());
-			else if(ping <= 400)
+			else if(ping < 500)
 				ui.ping.setIcon(icons[4].getIcon());
-			else if(ping <= 500)
+			else if(ping < 600)
 				ui.ping.setIcon(icons[5].getIcon());
 			else
 				ui.ping.setIcon(icons[6].getIcon());
