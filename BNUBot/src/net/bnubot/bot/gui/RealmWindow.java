@@ -99,7 +99,7 @@ public class RealmWindow extends JDialog implements EventHandler, RealmEventHand
 	public void bnetDisconnected(Connection source) {}
 	public void titleChanged(Connection source) {}
 
-	public boolean parseCommand(Connection source, BNetUser user, String command, String param, boolean wasWhispered) {return false;}
+	public boolean parseCommand(Connection source, BNetUser user, String command, boolean wasWhispered) {return false;}
 	
 	public void realmConnected() {}
 	public void realmDisconnected() {}

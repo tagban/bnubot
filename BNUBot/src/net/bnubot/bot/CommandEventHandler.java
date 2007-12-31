@@ -986,7 +986,7 @@ public class CommandEventHandler implements EventHandler {
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack,
 					long commanderAccess, String commanderAccount, Long commanderAccountID, boolean superUser)
 			throws Exception {
-				source.parseCommand(user, "whois", user.getShortLogonName(), whisperBack);
+				source.parseCommand(user, "whois " + user.getShortLogonName(), whisperBack);
 			}});
 		Profile.registerCommand("whois", new CommandRunnable() {
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack,
@@ -1122,12 +1122,12 @@ public class CommandEventHandler implements EventHandler {
 			}});*/
 	}
 	
-	public boolean parseCommand(Connection source, BNetUser user, String command, String param, boolean whisperBack) {
+	public boolean parseCommand(Connection source, BNetUser user, String command, boolean whisperBack) {
 		try {
 			Long commanderAccess = null;
 			String commanderAccount = null;
 			Long commanderAccountID = null;
-	
+			
 			//Don't ask questions if they are a super-user
 			boolean superUser = user.equals(source.getMyUser());
 			try {
@@ -1150,7 +1150,15 @@ public class CommandEventHandler implements EventHandler {
 				d.close(d.getCreateUser(user));
 			}
 			
-
+			// Grab the obsolete 'param' string
+			String param = null;
+			{
+				String[] paramHelper = command.split(" ", 2);
+				command = paramHelper[0];
+				if(paramHelper.length > 1)
+					param = paramHelper[1];
+			}
+			
 			// Closed-scope for rsCommand
 			{
 				CommandResultSet rsCommand = d.getCommand(command);
@@ -1180,7 +1188,7 @@ public class CommandEventHandler implements EventHandler {
 				source.recieveError("Command " + command + " has no associated runnable");
 				return false;
 			}
-
+			
 			String[] params = null;
 			if(param != null)
 				params = param.split(" ");
@@ -1548,15 +1556,10 @@ public class CommandEventHandler implements EventHandler {
 		touchUser(source, user, "chatting in the channel");
 		
 		if(text.equals("?trigger"))
-			parseCommand(source, user, "trigger", null, GlobalSettings.whisperBack);
+			parseCommand(source, user, "trigger", GlobalSettings.whisperBack);
 		else
 			if(text.charAt(0) == getTrigger(source)) {
-				String[] command = text.substring(1).split(" ", 2);
-				String params = null;
-				if(command.length > 1)
-					params = command[1];
-			
-				parseCommand(source, user, command[0], params, GlobalSettings.whisperBack);
+				parseCommand(source, user, text.substring(1), GlobalSettings.whisperBack);
 			}
 	}
 
@@ -1652,15 +1655,7 @@ public class CommandEventHandler implements EventHandler {
 		if(text.charAt(0) == getTrigger(source))
 			text = text.substring(1);
 		
-		int i = text.indexOf(' ');
-		if(i == -1) {
-			parseCommand(source, user, text, null, true);
-		} else {
-			String command = text.substring(0, i);
-			String paramString = text.substring(i + 1);
-			
-			parseCommand(source, user, command, paramString, true);
-		}
+		parseCommand(source, user, text, true);
 	}
 
 	public void whisperSent(Connection source, BNetUser user, String text) {}

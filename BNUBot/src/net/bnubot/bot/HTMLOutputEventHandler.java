@@ -158,7 +158,7 @@ public class HTMLOutputEventHandler implements EventHandler {
 	public void logonRealmEx(Connection source, int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName) {}
 	public void queryRealms2(Connection source, String[] realms) {}
 
-	public boolean parseCommand(Connection source, BNetUser user, String command, String param, boolean wasWhispered) {return false;}
+	public boolean parseCommand(Connection source, BNetUser user, String command, boolean wasWhispered) {return false;}
 
 	public void clanMOTD(Connection source, Object cookie, String text) {}
 	public void clanMemberList(Connection source, ClanMember[] members) {}
