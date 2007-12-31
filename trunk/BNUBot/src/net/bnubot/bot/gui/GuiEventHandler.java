@@ -703,7 +703,7 @@ public class GuiEventHandler implements EventHandler {
 		chatTextArea.requestFocus();
 	}
 
-	public boolean parseCommand(Connection source, BNetUser user, String command, String param, boolean whisperBack) {
+	public boolean parseCommand(Connection source, BNetUser user, String command, boolean whisperBack) {
 		//mainTextArea.recieveInfo(String.format("parseCommand(\"%1$s\", \"%2$s\", \"%3$s\")", user.getShortLogonName(), command, param));
 		return false;
 	}

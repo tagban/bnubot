@@ -79,7 +79,7 @@ public class ConsoleEventHandler implements EventHandler {
 	public void bnetDisconnected(Connection source) {}
 	public void titleChanged(Connection source) {}
 
-	public boolean parseCommand(Connection source, BNetUser user, String command, String param, boolean whisperBack) {return false;}
+	public boolean parseCommand(Connection source, BNetUser user, String command, boolean whisperBack) {return false;}
 
 	public void friendsList(Connection source, FriendEntry[] entries) {}
 	public void friendsUpdate(Connection source, FriendEntry friend) {}

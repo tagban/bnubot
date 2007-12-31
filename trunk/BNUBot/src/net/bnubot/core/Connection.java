@@ -344,30 +344,18 @@ public abstract class Connection extends Thread {
 		
 		ALLOWCOMMANDS: if(allowCommands) {
 			if(text.charAt(0) == '/') {
-				String[] command = text.substring(1).split(" ", 3);
+				String postSlash = text.substring(1);
+				String[] command = postSlash.split(" ", 2);
 				switch(command[0].charAt(0)) {
 				case '/':
-					command = text.substring(2).split(" ", 2);
-					if(command.length > 0) {
-						String params = null;
-						if(command.length > 1)
-							params = command[1];
-		
-						parseCommand(myUser, command[0], params, false);
-						return;
-					}
-					break;
+					parseCommand(myUser, postSlash, false);
+					return;
 				case 'c':
 					if(command[0].equals("cmd")) {
-						if(command.length == 1)
-							break;
-	
-						String params = null;
-						if(command.length > 2)
-							params = command[2];
-	
-						parseCommand(myUser, command[1], params, true);
-						return;
+						if(command.length == 2) {
+							parseCommand(myUser, command[1], true);
+							return;
+						}
 					}
 					break;
 				case 'p':
@@ -392,13 +380,8 @@ public abstract class Connection extends Thread {
 				default:
 				}
 				
-				command = text.substring(1).split(" ", 2);
-				if(command.length > 0) {
-					String params = null;
-					if(command.length > 1)
-						params = command[1];
-	
-					if(parseCommand(myUser, command[0], params, true))
+				if(postSlash.length() > 0) {
+					if(parseCommand(myUser, postSlash, true))
 						return;
 				}
 			}
@@ -518,15 +501,28 @@ public abstract class Connection extends Thread {
 		}
 	}
 
-	public boolean parseCommand(BNetUser user, String command, String param, boolean whisperBack) {
-		boolean ret = false;
+	public boolean parseCommand(BNetUser user, String command, boolean whisperBack) {
+		int i = command.indexOf(';');
+		if(i != -1) {
+			String c1 = command.substring(0, i);
+			String c2 = command.substring(i + 1);
+			while(c2.charAt(0) == ' ')
+				c2 = c2.substring(1);
+			
+			boolean ret = parseCommand(user, c1, whisperBack);
+			ret |= parseCommand(user, c2, whisperBack);
+			return ret;
+		}
+
+		Out.info(Connection.class, user.toString() + ": " + command + " [" + whisperBack + "]");
+		
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers) {
-				if(ret = eh.parseCommand(this, user, command, param, whisperBack))
-					break;
+				if(eh.parseCommand(this, user, command, whisperBack))
+					return true;
 			}
 		}
-		return ret;
+		return false;
 	}
 
 	public void titleChanged() {

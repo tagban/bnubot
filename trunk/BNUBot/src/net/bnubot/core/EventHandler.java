@@ -20,7 +20,7 @@ public interface EventHandler {
 	public void titleChanged(Connection source);
 	
 	//Workarounds
-	public boolean parseCommand(Connection source, BNetUser user, String command, String param, boolean whisperBack);
+	public boolean parseCommand(Connection source, BNetUser user, String command, boolean whisperBack);
 
 	//Channel events
 	public void joinedChannel(Connection source, String channel);
