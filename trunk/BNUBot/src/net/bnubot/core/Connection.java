@@ -513,8 +513,6 @@ public abstract class Connection extends Thread {
 			ret |= parseCommand(user, c2, whisperBack);
 			return ret;
 		}
-
-		Out.info(Connection.class, user.toString() + ": " + command + " [" + whisperBack + "]");
 		
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers) {
