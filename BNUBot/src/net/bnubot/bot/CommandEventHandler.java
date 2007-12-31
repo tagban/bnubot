@@ -1123,6 +1123,8 @@ public class CommandEventHandler implements EventHandler {
 	}
 	
 	public boolean parseCommand(Connection source, BNetUser user, String command, boolean whisperBack) {
+		Out.debug(getClass(), user.toString() + ": " + command + " [" + whisperBack + "]");
+		
 		try {
 			Long commanderAccess = null;
 			String commanderAccount = null;
