@@ -45,7 +45,7 @@ public class Profile {
 			exists = crs.next();
 			db.close(crs);
 			if(!exists)
-				throw new IllegalArgumentException("The command " + name + " is not in the database");
+				db.createCommand(name);
 		} catch (SQLException e) {
 			throw new IllegalStateException(e);
 		}
