@@ -677,6 +677,14 @@ public class CommandEventHandler implements EventHandler {
 				}
 				return;
 			}});
+		Profile.registerCommand("rejoin", new CommandRunnable() {
+			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack,
+					long commanderAccess, String commanderAccount, Long commanderAccountID, boolean superUser)
+			throws Exception {
+				String channel = source.getChannel();
+				source.sendLeaveChat();
+				source.sendJoinChannel(channel);
+			}});
 		Profile.registerCommand("renameaccount", new CommandRunnable() {
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack,
 					long commanderAccess, String commanderAccount, Long commanderAccountID, boolean superUser)

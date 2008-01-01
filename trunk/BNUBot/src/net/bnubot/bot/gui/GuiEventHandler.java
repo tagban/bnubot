@@ -509,8 +509,12 @@ public class GuiEventHandler implements EventHandler {
 	public void joinedChannel(Connection source, String channel) {
 		this.channel = channel;
 		userList.clear();
-		mainTextArea.addSeparator();
-		mainTextArea.channelInfo("Joining channel " + channel + ".");
+		if(channel == null) {
+			mainTextArea.channelInfo("Leaving chat");
+		} else {
+			mainTextArea.addSeparator();
+			mainTextArea.channelInfo("Joining channel " + channel + ".");
+		}
 		channelTextPane.setText(channel);
 		if(GlobalSettings.trayDisplayChannel)
 			notifySystemTray(
