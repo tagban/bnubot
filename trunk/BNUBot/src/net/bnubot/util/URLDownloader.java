@@ -68,6 +68,7 @@ public class URLDownloader {
 			t.advanceProgress();
 		}
 		t.complete();
+		queue.clear();
 	}
 	
 	public static void downloadURLNow(URL url, File to, SHA1Sum sha1, boolean force) throws Exception {
