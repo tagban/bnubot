@@ -439,6 +439,22 @@ public class Database {
 		return command;
 	}
 
+	public void createCommand(String command) throws SQLException {
+		ResultSet rs = createStatement().executeQuery("SELECT MAX(access) FROM command");
+		if(!rs.next())
+			throw new SQLException("SELECT failed");
+		long access = rs.getLong(1);
+		close(rs);
+		
+		Out.error(Database.class, "Creating command '" + command + "' with access " + access);
+		
+		PreparedStatement ps = prepareStatement("INSERT INTO command (access, name, description, cmdgroup) VALUES (?, ?, NULL, 'new')");
+		ps.setLong(1, access);
+		ps.setString(2, command);
+		ps.execute();
+		close(ps);
+	}
+
 	public CommandResultSet getCommand(String command) throws SQLException {
 		command = resolveCommandAlias(command);
 		PreparedStatement ps = prepareStatement("SELECT * FROM command WHERE LOWER(name)=LOWER(?)");
