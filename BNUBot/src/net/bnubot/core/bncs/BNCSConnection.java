@@ -1764,6 +1764,16 @@ public class BNCSConnection extends Connection {
 	}
 
 	/**
+	 * Send SID_LEAVECHAT
+	 */
+	public void sendLeaveChat() throws Exception {
+		BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_LEAVECHAT);
+		p.SendPacket(bncsOutputStream);
+		channelName = null;
+		super.joinedChannel(null);
+	}
+
+	/**
 	 * Send SID_JOINCHANNEL
 	 */
 	public void sendJoinChannel(String channel) throws Exception {

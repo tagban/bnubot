@@ -68,6 +68,10 @@ public class ChatConnection extends Connection {
 	}
 
 	@Override
+	public void sendLeaveChat() throws Exception {
+	}
+
+	@Override
 	public void sendJoinChannel(String channel) throws Exception {
 	}
 
