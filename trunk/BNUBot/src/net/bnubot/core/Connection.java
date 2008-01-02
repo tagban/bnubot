@@ -349,7 +349,7 @@ public abstract class Connection extends Thread {
 				String[] command = postSlash.split(" ", 2);
 				switch(command[0].charAt(0)) {
 				case '/':
-					parseCommand(myUser, postSlash, false);
+					parseCommand(myUser, postSlash.substring(1), false);
 					return;
 				case 'c':
 					if(command[0].equals("cmd")) {
