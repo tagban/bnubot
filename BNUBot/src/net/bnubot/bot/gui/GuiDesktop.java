@@ -67,16 +67,28 @@ public class GuiDesktop extends JFrame {
 	
 	// This must be the last thing to initialize
 	private static final GuiDesktop instance = new GuiDesktop();
-	
+
 	private GuiDesktop() {
 		super();
+
+		if(CurrentVersion.fromJar()) {
+			// If we're launching a new version, pop up the what's new window
+			long currentVersionBuilt = CurrentVersion.version().getBuildDate().getTime();
+			long lastWhatsNewWindow = Settings.readLong(null, "whatsNewTime", 0);
+			if(lastWhatsNewWindow != currentVersionBuilt) {
+				Settings.writeLong(null, "whatsNewTime", currentVersionBuilt);
+				Settings.store();
+				new WhatsNewWindow();
+			}
+		}
+		
 		setTitle();
 		initializeGui();
 		initializeSystemTray();
 		WindowPosition.load(this);
-        setVisible(true);
+		setVisible(true);
 	}
-	
+
 	private void initializeGui() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
@@ -263,6 +275,13 @@ public class GuiDesktop extends JFrame {
 						} catch (Exception e) {
 							Out.exception(e);
 						}
+					} });
+				menu.add(menuItem);
+				
+				menuItem = new JMenuItem("View Change Log");
+				menuItem.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent event) {
+						new WhatsNewWindow();
 					} });
 				menu.add(menuItem);
 				
