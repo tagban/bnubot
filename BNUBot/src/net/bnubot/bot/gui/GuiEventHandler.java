@@ -120,19 +120,19 @@ public class GuiEventHandler implements EventHandler {
 	}
 	
 	public void disable(final Connection source) {
-		if(source == firstConnection) {
+		if(source == firstConnection)
 			GuiDesktop.remove(this);
-		}
+		menuBar.remove(settingsMenuItems.remove(source));
+		titleChanged(source);
 	}
 	
 	/**
 	 * Update the list of the TC popup
-	 * @param source TODO
 	 */
-	private void tcUpdate(Connection source) {
+	private void tcUpdate() {
 		List<String> options;
 		if(tcUserSearch)
-			options = source.findUsersForTabComplete(tcSearch);
+			options = firstConnection.findUsersForTabComplete(tcSearch);
 		else
 			options = Profile.findCommandsForTabComplete(tcSearch);
 		if(options.size() == 1) {
@@ -163,14 +163,17 @@ public class GuiEventHandler implements EventHandler {
 	private void tcSelect(String selection) {
 		if((tcBefore.length() == 0) && (tcAfter.length() == 0)) {
 			chatTextArea.setText(selection + ": ");
-			chatTextArea.setCaretPosition(chatTextArea.getText().length());
 		} else {
 			chatTextArea.setText(tcBefore + selection + tcAfter);
-			chatTextArea.setCaretPosition(tcBefore.length() + selection.length());
 		}
 
 		// Exit TC mode
 		tcPopupWindow.setVisible(tabComplete = false);
+
+		chatTextArea.requestFocus();
+		int start = tcBefore.length() + tcSearch.length();
+		int end = chatTextArea.getText().length();
+		chatTextArea.select(start, end);
 	}
 	
 	private void initializeGui(ColorScheme colors) {
@@ -264,8 +267,7 @@ public class GuiEventHandler implements EventHandler {
 				case '\n': {
 					e.consume();
 					try {
-						String text[] = chatTextArea.getText().split("\n");
-						for(String element : text) {
+						for(String element : chatTextArea.getText().split("\n")) {
 							if(element.trim().length() > 0)
 								firstConnection.queueChatHelper(element, true);
 						}
@@ -290,10 +292,14 @@ public class GuiEventHandler implements EventHandler {
 						if("/r".equals(txt) || "/rw".equals(txt))
 							chatTextArea.setText("/w " + lastWhisperFrom.getShortLogonName());
 					}
+					if("/cmd".equals(chatTextArea.getText())) {
+						tabComplete = true;
+						tcUserSearch = false;
+					}
 					break;
 				}
 				case '/': {
-					if("".equals(chatTextArea.getText())) {
+					if("/".equals(chatTextArea.getText())) {
 						tabComplete = true;
 						tcUserSearch = false;
 					}
@@ -318,12 +324,12 @@ public class GuiEventHandler implements EventHandler {
 						tcBefore = chatTextArea.getText(0, start);
 						tcAfter = chatTextArea.getText(end, chatTextArea.getText().length() - end);
 					} else {
-						tcSearch = chatTextArea.getText().substring(1);
-						tcBefore = "/";
+						tcSearch = "";
+						tcBefore = chatTextArea.getText();
 						tcAfter = "";
 					}
 					
-					tcUpdate(firstConnection);
+					tcUpdate();
 				} catch(Exception ex) {
 					Out.exception(ex);
 				}
@@ -444,7 +450,7 @@ public class GuiEventHandler implements EventHandler {
 					chatTextArea.setCaretPosition(tcBefore.length() + tcSearch.length());
 					
 					// Redraw the TC list
-					tcUpdate(firstConnection);
+					tcUpdate();
 					break;
 				}
 			}
