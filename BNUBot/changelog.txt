@@ -10,6 +10,8 @@
 * Fixed a bug where it was impossible to stay disconnected
 * Connect/disconnect/reconnect affect each connection of a profile
 * Multiple commands can be used at once with a semicolon delimiter.
+* Added tab-completion style slash command completion
+* Fixed a bug where tab-completion would select all text with certain look and feels
 
 2.0.2.2 (r1022) 2007-12-22:
 * Fixed a bug that prevented banning users outside of the channel
