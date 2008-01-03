@@ -34,7 +34,7 @@ public class WhatsNewWindow extends JDialog {
 		try {
 			InputStream changelog;
 			if(CurrentVersion.fromJar())
-				changelog = getClass().getResource("changelog.txt").openStream();
+				changelog = getClass().getResource("/changelog.txt").openStream();
 			else
 				changelog = new FileInputStream(new File("changelog.txt"));
 			byte[] data = new byte[0x100];
