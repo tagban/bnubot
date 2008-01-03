@@ -9,7 +9,8 @@
 * Configurable tray notifications
 * Fixed a bug where it was impossible to stay disconnected
 * Connect/disconnect/reconnect affect each connection of a profile
-* Multiple commands can be used at once with a semicolon delimiter.
+* Multiple commands can be used at once with a semicolon delimiter
+* Added a 'rejoin' command
 * Added tab-completion style slash command completion
 * Fixed a bug where tab-completion would select all text with certain look and feels
 * Added a "What's New" window
