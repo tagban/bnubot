@@ -82,8 +82,9 @@ public class GuiEventHandler implements EventHandler {
 	private boolean tabComplete = false;
 	private JDialog tcPopupWindow;
 	private final JList tcList = new JList();
+	private boolean tcUserSearch = true;
 	private String tcBefore = null;
-	private String tcUser = null;
+	private String tcSearch = null;
 	private String tcAfter = null;
 	private static final int textHeight = 23;
 	private static final int paddingHeight = 4;
@@ -129,13 +130,17 @@ public class GuiEventHandler implements EventHandler {
 	 * @param source TODO
 	 */
 	private void tcUpdate(Connection source) {
-		List<String> users = source.findUsersForTabComplete(tcUser);
-		if(users.size() == 1) {
-			tcSelect(users.get(0));
-		} else if(users.size() == 0) {
+		List<String> options;
+		if(tcUserSearch)
+			options = source.findUsersForTabComplete(tcSearch);
+		else
+			options = Profile.findCommandsForTabComplete(tcSearch);
+		if(options.size() == 1) {
+			tcSelect(options.get(0));
+		} else if(options.size() == 0) {
 			tcCancel();
 		} else {
-			tcList.setModel(new DefaultComboBoxModel(users.toArray()));
+			tcList.setModel(new DefaultComboBoxModel(options.toArray()));
 			tcPopupWindow.pack();
 			tcPopupWindow.setVisible(true);
 			tcList.setSelectedIndex(0);
@@ -273,8 +278,10 @@ public class GuiEventHandler implements EventHandler {
 				}
 				case '\t': {
 					e.consume();
-					if(GlobalSettings.tabCompleteMode.enableTC())
+					if(GlobalSettings.tabCompleteMode.enableTC()) {
 						tabComplete = true;
+						tcUserSearch = true;
+					}
 					break;
 				}
 				case ' ': {
@@ -282,6 +289,13 @@ public class GuiEventHandler implements EventHandler {
 						String txt = chatTextArea.getText().trim();
 						if("/r".equals(txt) || "/rw".equals(txt))
 							chatTextArea.setText("/w " + lastWhisperFrom.getShortLogonName());
+					}
+					break;
+				}
+				case '/': {
+					if("".equals(chatTextArea.getText())) {
+						tabComplete = true;
+						tcUserSearch = false;
 					}
 					break;
 				}
@@ -294,15 +308,21 @@ public class GuiEventHandler implements EventHandler {
 					return;
 
 				try {
-					int end = chatTextArea.getCaretPosition();
-					tcUser = chatTextArea.getText(0, end);
-					int start = tcUser.lastIndexOf(' ') + 1;
-					if(start != 0)
-						tcUser = tcUser.substring(start);
-
-					tcBefore = chatTextArea.getText(0, start);
-					tcAfter = chatTextArea.getText(end, chatTextArea.getText().length() - end);
-
+					if(tcUserSearch) {
+						int end = chatTextArea.getCaretPosition();
+						tcSearch = chatTextArea.getText(0, end);
+						int start = tcSearch.lastIndexOf(' ') + 1;
+						if(start != 0)
+							tcSearch = tcSearch.substring(start);
+	
+						tcBefore = chatTextArea.getText(0, start);
+						tcAfter = chatTextArea.getText(end, chatTextArea.getText().length() - end);
+					} else {
+						tcSearch = chatTextArea.getText().substring(1);
+						tcBefore = "/";
+						tcAfter = "";
+					}
+					
 					tcUpdate(firstConnection);
 				} catch(Exception ex) {
 					Out.exception(ex);
@@ -408,20 +428,20 @@ public class GuiEventHandler implements EventHandler {
 					// Pass the keystroke to the TC strings
 					if(e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
 						// If there's nothing left in the user string, cancel TC mode
-						if(tcUser.length() == 0) {
+						if(tcSearch.length() == 0) {
 							tcCancel();
 							break;
 						}
 						// Remove the last char from the string
-						tcUser = tcUser.substring(0, tcUser.length() - 1);
+						tcSearch = tcSearch.substring(0, tcSearch.length() - 1);
 					} else {
 						// Append the char to the string
-						tcUser += e.getKeyChar();
+						tcSearch += e.getKeyChar();
 					}
 					
 					// Update the TextArea with the new strings
-					chatTextArea.setText(tcBefore + tcUser + tcAfter);
-					chatTextArea.setCaretPosition(tcBefore.length() + tcUser.length());
+					chatTextArea.setText(tcBefore + tcSearch + tcAfter);
+					chatTextArea.setCaretPosition(tcBefore.length() + tcSearch.length());
 					
 					// Redraw the TC list
 					tcUpdate(firstConnection);

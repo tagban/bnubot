@@ -8,6 +8,7 @@ package net.bnubot.core;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Dictionary;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -225,5 +226,17 @@ public class Profile {
 
 	public List<Connection> getConnections() {
 		return cons;
+	}
+
+	public static List<String> findCommandsForTabComplete(String containing) {
+		containing = containing.toLowerCase();
+		
+		List<String> ret = new ArrayList<String>();
+		for(Enumeration<String> en = commands.keys(); en.hasMoreElements();) {
+			String command = en.nextElement();
+			if(command.toLowerCase().startsWith(containing))
+				ret.add(command);
+		}
+		return ret;
 	}
 }
