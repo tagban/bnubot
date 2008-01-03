@@ -162,7 +162,6 @@ INSERT INTO command (access, name, description, cmdgroup) VALUES
 (36,	'reconnect', NULL, 'administration'),
 (15,	'recruit', NULL, 'accounts'),
 (10,	'recruits', NULL, 'accounts'),
-(35,	'rejoin', NULL, 'administration'),
 (34,	'renameaccount', NULL, 'accounts'),
 (36,	'say', NULL, 'administration'),
 (1,		'seen', NULL, 'accounts'),

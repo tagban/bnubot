@@ -136,7 +136,8 @@ public class GuiEventHandler implements EventHandler {
 		else
 			options = Profile.findCommandsForTabComplete(tcSearch);
 		if(options.size() == 1) {
-			tcSelect(options.get(0));
+			// Unconfirmed; simply ran out of other options
+			tcSelect(options.get(0), false);
 		} else if(options.size() == 0) {
 			tcCancel();
 		} else {
@@ -159,8 +160,9 @@ public class GuiEventHandler implements EventHandler {
 	/**
 	 * Exit TC mode by selecting a username
 	 * @param selection The selected username
+	 * @param confirmed Whether the completed part should be highlighted
 	 */
-	private void tcSelect(String selection) {
+	private void tcSelect(String selection, boolean confirmed) {
 		if((tcBefore.length() == 0) && (tcAfter.length() == 0)) {
 			chatTextArea.setText(selection + ": ");
 		} else {
@@ -171,8 +173,12 @@ public class GuiEventHandler implements EventHandler {
 		tcPopupWindow.setVisible(tabComplete = false);
 
 		chatTextArea.requestFocus();
-		int start = tcBefore.length() + tcSearch.length();
-		int end = chatTextArea.getText().length();
+		final int start;
+		final int end = chatTextArea.getText().length();
+		if(confirmed)
+			start = end;
+		else
+			start = tcBefore.length() + tcSearch.length();
 		chatTextArea.select(start, end);
 	}
 	
@@ -425,7 +431,8 @@ public class GuiEventHandler implements EventHandler {
 					break;
 				case KeyEvent.VK_TAB:
 				case KeyEvent.VK_ENTER:
-					tcSelect(tcList.getSelectedValue().toString());
+					// Confirmed; the user selected with enter or tab
+					tcSelect(tcList.getSelectedValue().toString(), true);
 					break;
 				case KeyEvent.VK_ESCAPE:
 					tcCancel();
