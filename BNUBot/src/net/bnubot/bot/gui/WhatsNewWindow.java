@@ -1,10 +1,15 @@
 package net.bnubot.bot.gui;
 
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -16,7 +21,18 @@ public class WhatsNewWindow extends JDialog {
 	private static final long serialVersionUID = -2905017328939505262L;
 
 	public WhatsNewWindow() {
-		add(new JScrollPane(new JTextArea(getText())));
+		JTextArea txt = new JTextArea(getText());
+		JButton btnOK = new JButton("OK");
+		btnOK.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				dispose();
+			}});
+		
+		Box boxAll = new Box(BoxLayout.Y_AXIS);
+		boxAll.add(new JScrollPane(txt));
+		boxAll.add(btnOK);
+		add(boxAll);
+		
 		setTitle("What's new in BNU-Bot " + CurrentVersion.version().toString());
 		setModal(true);
 		setResizable(true);
