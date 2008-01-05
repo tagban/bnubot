@@ -17,6 +17,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
@@ -26,7 +27,16 @@ public class WhatsNewWindow extends JDialog {
 	private static final long serialVersionUID = -2905017328939505262L;
 
 	public WhatsNewWindow() {
-		JTextArea txt = new JTextArea(getText());
+		final JTabbedPane jtp = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
+		final String changeLog = getText();
+		final String newLine = (changeLog.indexOf('\r') == -1) ? "\n" : "\r\n";
+		
+		// Split up the change log by version
+		for(String entry : changeLog.split(newLine + newLine)) {
+			String[] data = entry.split(newLine, 2);
+			jtp.addTab(data[0], new JScrollPane(new JTextArea(data[1])));
+		}
+		
 		JButton btnOK = new JButton("OK");
 		btnOK.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -34,7 +44,7 @@ public class WhatsNewWindow extends JDialog {
 			}});
 		
 		Box boxAll = new Box(BoxLayout.Y_AXIS);
-		boxAll.add(new JScrollPane(txt));
+		boxAll.add(jtp);
 		boxAll.add(btnOK);
 		add(boxAll);
 		
