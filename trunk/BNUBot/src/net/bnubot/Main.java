@@ -19,6 +19,9 @@ import net.bnubot.vercheck.VersionCheck;
 
 public class Main {
 	static {
+		// Force the static initializers of GlobalSettings to run
+		if(GlobalSettings.enableGUI) {}
+		
 		// Delete the bnubot.pid file on application exit
 		File f = new File("bnubot.pid");
 		if(f.exists())
