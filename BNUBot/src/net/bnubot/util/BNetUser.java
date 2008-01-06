@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import net.bnubot.bot.database.AccountResultSet;
 import net.bnubot.bot.database.Database;
 import net.bnubot.bot.database.RankResultSet;
+import net.bnubot.settings.GlobalSettings;
 
 /**
  * A class responsible for formatting Battle.net usernames.
@@ -209,7 +210,7 @@ public class BNetUser {
 	 * Equivalent to getShortLogonName if there is no database or if the user isn't in it;
 	 * @return User[#N][@Realm] or [Prefix ][Account (]FullLogonName[)]
 	 */
-	public String toString() {
+	public String getPrettyName() {
 		Database d = Database.getInstance();
 		if(d == null)
 			return shortLogonName;
@@ -242,19 +243,37 @@ public class BNetUser {
 		return prettyName;
 	}
 	
+	/**
+	 * Returns user-desirable display string
+	 */
+	public String toString() {
+		/* "BNLogin@Gateway",
+		 * "BNLogin",
+		 * "Prefix Account",
+		 * "Prefix Account (BNLogin)"
+		 */
+		switch(GlobalSettings.bnUserToString) {
+		case 0: return getShortLogonName();
+		case 1: return getFullLogonName();
+		case 2: return getShortPrettyName();
+		case 3: return getPrettyName();
+		}
+		throw new IllegalStateException("Unknown GlobalSettings.bnUserToString " + GlobalSettings.bnUserToString);
+	}
+	
 	public boolean equals(Object o) {
 		if(o == this)
 			return true;
 		
 		if(o instanceof BNetUser) {
 			BNetUser u = (BNetUser)o;
-			if(u.getFullLogonName().compareToIgnoreCase(fullLogonName) == 0)
+			if(u.getFullLogonName().equalsIgnoreCase(fullLogonName))
 				return true;
 		} else if(o instanceof String) {
 			String s = (String)o;
-			if(s.compareToIgnoreCase(fullLogonName) == 0)
+			if(s.equalsIgnoreCase(fullLogonName))
 				return true;
-			if(s.compareToIgnoreCase(shortLogonName) == 0)
+			if(s.equalsIgnoreCase(shortLogonName))
 				return true;
 		} else {
 			throw new IllegalArgumentException("Unknown type " + o.getClass().getName());
