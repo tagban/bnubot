@@ -7,13 +7,21 @@ package net.bnubot.bot.gui.colors;
 
 import java.awt.Color;
 
+import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.Out;
 
 public abstract class ColorScheme {
 	public static final byte COLORSCHEME_STARCRAFT = (byte)0x01;
 	public static final byte COLORSCHEME_DIABLO2 = (byte)0x02;
 	
-	public static ColorScheme createColorScheme(byte colorScheme) {
+	public static ColorScheme colors = null;
+	public static ColorScheme getColors() {
+		if(colors == null)
+			return createColorScheme(GlobalSettings.colorScheme);
+		return colors;
+	}
+	
+	private static ColorScheme createColorScheme(byte colorScheme) {
 		switch(colorScheme) {
 		case COLORSCHEME_STARCRAFT:
 			return new StarcraftColorScheme();

@@ -17,8 +17,9 @@ import net.bnubot.bot.gui.colors.ColorScheme;
 public class ColoredTextField extends JTextField {
 	private static final long serialVersionUID = 2905756736511967581L;
 
-	public ColoredTextField(ColorScheme colors) {
+	public ColoredTextField() {
 		super();
+		ColorScheme colors = ColorScheme.getColors();
 		setBackground(colors.getBackgroundColor());
 		setForeground(colors.getForegroundColor());
 		setCaretColor(colors.getForegroundColor());

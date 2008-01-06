@@ -30,7 +30,7 @@ public class FriendList extends JPanel {
 	
 	private Hashtable<String, FriendInfo> friends = null;
 	private Box b = null;
-	private ColorScheme cs = null;
+	private final ColorScheme cs = ColorScheme.getColors();
 	
 	/**
 	 * Get FriendInfo from JLabel
@@ -47,10 +47,9 @@ public class FriendList extends JPanel {
 		return null;
 	}
 	
-	public FriendList(ColorScheme cs) {
+	public FriendList() {
 		super(new FlowLayout(FlowLayout.LEFT));
 		this.friends = new Hashtable<String, FriendInfo>();
-		this.cs = cs;
 		setBackground(cs.getBackgroundColor());
 		b = new Box(BoxLayout.Y_AXIS);
 		add(b);

@@ -18,9 +18,10 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
-import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
+import javax.swing.text.JTextComponent;
 
+import net.bnubot.bot.gui.components.ColoredTextField;
 import net.bnubot.vercheck.CurrentVersion;
 
 public class WhatsNewWindow extends JDialog {
@@ -34,7 +35,10 @@ public class WhatsNewWindow extends JDialog {
 		// Split up the change log by version
 		for(String entry : changeLog.split(newLine + newLine)) {
 			String[] data = entry.split(newLine, 2);
-			jtp.addTab(data[0], new JScrollPane(new JTextArea(data[1])));
+			JTextComponent jta = new ColoredTextField();
+			jta.setText(data[1]);
+			jta.setEditable(false);
+			jtp.addTab(data[0], new JScrollPane(jta));
 		}
 		
 		JButton btnOK = new JButton("OK");
