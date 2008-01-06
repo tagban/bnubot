@@ -5,23 +5,28 @@
 
 package net.bnubot.util.task;
 
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 
 public class TaskGui extends Task {
 	private static final long serialVersionUID = -5561830539661899515L;
+	private final Box box;
 	private final JProgressBar pb;
+	private final JLabel jl;
 	private int count = 0;
 	private final int max;
 	private final String units;
-	private final String title;
 	private boolean complete = false;
 
 	protected TaskGui(String title, int max, String units) {
 		this.max = max;
 		this.units = units;
-		this.title = title;
 		
 		pb = new JProgressBar(0, max);
 		pb.setString(title);
@@ -30,10 +35,17 @@ public class TaskGui extends Task {
 		
 		Dimension d = new Dimension(379, 24);
 		pb.setPreferredSize(d);
+
+		box = new Box(BoxLayout.Y_AXIS);
+		box.add(jl = new JLabel(title));
+		box.add(pb);
+		
+		box.setBackground(Color.WHITE);
+		jl.setForeground(Color.BLACK);
 	}
 	
-	protected JProgressBar getProgressBar() {
-		return pb;
+	protected Component getComponent() {
+		return box;
 	}
 	
 	protected boolean isDeterminant() {
@@ -46,9 +58,9 @@ public class TaskGui extends Task {
 	 */
 	public void updateProgress(String currentStep) {
 		if(complete) {
-			setString(title + " Complete");
+			setString("Complete");
 		} else {
-			String s = title;
+			String s = new String();
 			if(isDeterminant()) {
 				int percentComplete = (int)(count * 100.0 / max);
 				s += " " + String.valueOf(percentComplete) + " %";
@@ -62,7 +74,7 @@ public class TaskGui extends Task {
 			}
 			if(currentStep != null)
 				s += " (" + currentStep + ")";
-			setString(s);
+			setString(s.trim());
 		}
 	}
 
@@ -70,10 +82,8 @@ public class TaskGui extends Task {
 	 * Set the progressbar string and repaint
 	 */
 	private void setString(String s) {
-		if(!s.equals(pb.getString())) {
-			pb.setString(s);
-			pb.repaint();
-		}
+		if(!s.equals(jl.getText()))
+			jl.setText(s);
 	}
 
 	/**

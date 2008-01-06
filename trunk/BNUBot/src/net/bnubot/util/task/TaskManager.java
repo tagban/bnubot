@@ -59,7 +59,7 @@ public class TaskManager extends Dialog {
 			return new Task();
 		
 		TaskGui t = new TaskGui(title, max, units);
-		box.add(t.getProgressBar());
+		box.add(t.getComponent());
 		tm.pack();
 		tm.setVisible(true);
 		return t;
@@ -67,7 +67,7 @@ public class TaskManager extends Dialog {
 	
 	protected static void complete(TaskGui t) {
 		if(tm != null) {
-			box.remove(t.getProgressBar());
+			box.remove(t.getComponent());
 			if(box.getComponentCount() == 0) {
 				tm.setVisible(false);
 				tm.dispose();
