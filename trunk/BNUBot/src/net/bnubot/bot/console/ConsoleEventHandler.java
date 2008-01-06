@@ -35,7 +35,7 @@ public class ConsoleEventHandler implements EventHandler {
 
 	public void channelUser(Connection source, BNetUser user) {
 		if(GlobalSettings.displayChannelUsers)
-			System.out.println(user.getShortPrettyName() + " (" + user.getPing() + "ms)" + user.getStatString().toString());
+			System.out.println(user.toString() + " (" + user.getPing() + "ms)" + user.getStatString().toString());
 	}
 	
 	public void channelJoin(Connection source, BNetUser user) {
@@ -48,19 +48,19 @@ public class ConsoleEventHandler implements EventHandler {
 	}
 
 	public void recieveChat(Connection source, BNetUser user, String text) {
-		System.out.println("<" + user.getShortPrettyName() + "> " + text);
+		System.out.println("<" + user.toString() + "> " + text);
 	}
 
 	public void recieveEmote(Connection source, BNetUser user, String text) {
-		System.out.println("<" + user.getShortPrettyName() + " " + text + ">");
+		System.out.println("<" + user.toString() + " " + text + ">");
 	}
 
 	public void whisperRecieved(Connection source, BNetUser user, String text) {
-		System.out.println("<From: " + user.getShortPrettyName() + "> " + text);
+		System.out.println("<From: " + user.toString() + "> " + text);
 	}
 
 	public void whisperSent(Connection source, BNetUser user, String text) {
-		System.out.println("<To: " + user.getShortPrettyName() + "> " + text);
+		System.out.println("<To: " + user.toString() + "> " + text);
 	}
 	
 	public void recieveDebug(Connection source, String text) {

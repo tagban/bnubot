@@ -240,7 +240,7 @@ public class TriviaEventHandler implements EventHandler {
 							}
 						}
 						
-						source.queueChatHelper("/me - \"" + answerUsed + "\" is correct, " + answerUser.getShortPrettyName() + extra, false);
+						source.queueChatHelper("/me - \"" + answerUsed + "\" is correct, " + answerUser.toString() + extra, false);
 						
 						showLeaderBoard(source);
 					} else {

@@ -138,7 +138,7 @@ public class UserList extends JPanel {
 			ui.priority = ChannelListPriority.getPrioByFlags(user.getFlags());
 			
 			ui.menu = new JPopupMenu();
-			ui.menu.add(new JLabel(user.getShortPrettyName() + user.getStatString().toString()));
+			ui.menu.add(new JLabel(user.toString() + user.getStatString().toString()));
 			JMenuItem menuItem = new JMenuItem("Whisper");
 			menuItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {

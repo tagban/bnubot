@@ -515,7 +515,7 @@ public class GuiEventHandler implements EventHandler {
 			notifySystemTray(
 					Growl.CHANNEL_USER_JOIN,
 					source.getChannel(),
-					user.getShortPrettyName() + " joined");
+					user.toString() + " joined");
 		channelTextPane.setText(channel + " (" + userList.count() + ")");
 	}
 
@@ -527,7 +527,7 @@ public class GuiEventHandler implements EventHandler {
 			notifySystemTray(
 					Growl.CHANNEL_USER_PART,
 					source.getChannel(),
-					user.getShortPrettyName() + " left");
+					user.toString() + " left");
 		channelTextPane.setText(channel + " (" + userList.count() + ")");
 	}
 
@@ -563,7 +563,7 @@ public class GuiEventHandler implements EventHandler {
 			notifySystemTray(
 					Growl.CHANNEL_USER_CHAT,
 					source.getChannel(),
-					"<" + user.getShortPrettyName() + "> " + text);
+					"<" + user.toString() + "> " + text);
 	}
 
 	public void recieveEmote(Connection source, BNetUser user, String text) {
@@ -572,7 +572,7 @@ public class GuiEventHandler implements EventHandler {
 			notifySystemTray(
 					Growl.CHANNEL_USER_EMOTE,
 					source.getChannel(),
-					"<" + user.getShortPrettyName() + " " + text + ">");
+					"<" + user.toString() + " " + text + ">");
 	}
 
 	private static long lastInfoRecieved = 0;
@@ -606,7 +606,7 @@ public class GuiEventHandler implements EventHandler {
 			notifySystemTray(
 					Growl.CHANNEL_WHISPER_RECIEVED,
 					source.getChannel(),
-					"<From: " + user.getShortPrettyName() + "> " + text);
+					"<From: " + user.toString() + "> " + text);
 	}
 
 	public void whisperSent(Connection source, BNetUser user, String text) {
@@ -615,7 +615,7 @@ public class GuiEventHandler implements EventHandler {
 			notifySystemTray(
 					Growl.CHANNEL_WHISPER_SENT,
 					source.getChannel(),
-					"<To: " + user.getShortPrettyName() + "> " + text);
+					"<To: " + user.toString() + "> " + text);
 	}
 
 	public void bnetConnected(Connection source) {
