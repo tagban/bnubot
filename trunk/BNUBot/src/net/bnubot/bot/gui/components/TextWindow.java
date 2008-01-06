@@ -55,7 +55,7 @@ public class TextWindow extends JScrollPane {
 	
 	private Runnable scrollDown = null;
 	
-	private final ColorScheme cs;
+	private final ColorScheme cs = ColorScheme.getColors();
 	private final JEditorPane jep;
 	private String head;
 	private final String foot;
@@ -67,9 +67,8 @@ public class TextWindow extends JScrollPane {
 	 */
 	private boolean addSeparator = false;
 
-	public TextWindow(ColorScheme cs) {
+	public TextWindow() {
 		super(VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_NEVER);
-		this.cs = cs;
 		jep = new myJEP();
 		((Container)getComponent(0)).add(jep);
 		

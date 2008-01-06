@@ -32,7 +32,7 @@ public class ClanList extends JPanel {
 	
 	private Hashtable<String, ClanMemberInfo> members = null;
 	private Box b = null;
-	private ColorScheme cs = null;
+	private ColorScheme cs = ColorScheme.getColors();
 	
 	private ClanMemberInfo get(String username) {
 		ClanMemberInfo cmi = members.get(username);
@@ -80,10 +80,9 @@ public class ClanList extends JPanel {
 		return b.getComponentCount();
 	}
 	
-	public ClanList(ColorScheme cs) {
+	public ClanList() {
 		super(new FlowLayout(FlowLayout.LEFT));
 		this.members = new Hashtable<String, ClanMemberInfo>();
-		this.cs = cs;
 		setBackground(cs.getBackgroundColor());
 		b = new Box(BoxLayout.Y_AXIS);
 		add(b);

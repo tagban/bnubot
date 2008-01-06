@@ -48,7 +48,7 @@ public class UserList extends JPanel {
 	
 	private final Hashtable<BNetUser, UserInfo> users = new Hashtable<BNetUser, UserInfo>();
 	private final Box box = new Box(BoxLayout.Y_AXIS);
-	private final ColorScheme colors;
+	private final ColorScheme colors = ColorScheme.getColors();
 	private final GuiEventHandler geh;
 	
 	/**
@@ -81,9 +81,8 @@ public class UserList extends JPanel {
 		return null;
 	}
 	
-	public UserList(ColorScheme colors, GuiEventHandler geh) {
+	public UserList(GuiEventHandler geh) {
 		super(new BorderLayout());
-		this.colors = colors;
 		this.geh = geh;
 		setBackground(colors.getBackgroundColor());
 		

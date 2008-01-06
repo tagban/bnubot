@@ -21,7 +21,6 @@ import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
-import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.HexDump;
 import net.bnubot.util.Out;
@@ -31,7 +30,7 @@ public class HTMLOutputEventHandler implements EventHandler {
 	private String channel = null;
 	private boolean generationNeeded = false;
 	private Runnable writeUserListRunnable = null;
-	private ColorScheme cs = null;
+	private final ColorScheme cs = ColorScheme.getColors();
 
 	public void bnetConnected(Connection source) {
 		File f = new File("html");
@@ -69,7 +68,6 @@ public class HTMLOutputEventHandler implements EventHandler {
 	}
 	
 	public void initialize(Connection source) {
-		cs = ColorScheme.createColorScheme(GlobalSettings.colorScheme);
 		checkFolder("logs");
 		checkFolder("logs/" + source.getProfile().getName());
 	}

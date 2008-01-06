@@ -47,7 +47,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.JPopupMenu.Separator;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
 
-import net.bnubot.bot.gui.colors.ColorScheme;
 import net.bnubot.bot.gui.components.ClanList;
 import net.bnubot.bot.gui.components.ColoredTextField;
 import net.bnubot.bot.gui.components.FriendList;
@@ -93,7 +92,7 @@ public class GuiEventHandler implements EventHandler {
 	
 	public GuiEventHandler(Connection firstConnection) {
 		this.firstConnection = firstConnection;
-		initializeGui(ColorScheme.createColorScheme(GlobalSettings.colorScheme));
+		initializeGui();
 	}
 	
 	private static Map<Connection, JMenuItem> settingsMenuItems = new HashMap<Connection, JMenuItem>();
@@ -182,7 +181,7 @@ public class GuiEventHandler implements EventHandler {
 		chatTextArea.select(start, end);
 	}
 	
-	private void initializeGui(ColorScheme colors) {
+	private void initializeGui() {
 		// Create the panel
 		frame = new JPanel(new BorderLayout());
 		
@@ -259,9 +258,9 @@ public class GuiEventHandler implements EventHandler {
 		//frame.setJMenuBar(menuBar);
 		
 		// Main text area
-		mainTextArea = new TextWindow(colors);
+		mainTextArea = new TextWindow();
 		// Send chat textbox
-		chatTextArea = new ColoredTextField(colors);
+		chatTextArea = new ColoredTextField();
 		chatTextArea.setMaximumSize(new Dimension(Integer.MAX_VALUE, textHeight));
 		// Enable tab character
 		chatTextArea.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, EMPTY_SET);
@@ -342,17 +341,17 @@ public class GuiEventHandler implements EventHandler {
 			}
 		});
 		// Channel text box (above userlist)
-		channelTextPane = new ColoredTextField(colors);
+		channelTextPane = new ColoredTextField();
 		channelTextPane.setMaximumSize(new Dimension(Integer.MAX_VALUE, textHeight));
 		channelTextPane.setHorizontalAlignment(JTextField.CENTER);
 		channelTextPane.setEditable(false);
 		
 		// The userlist
-		userList = new UserList(colors, this);
+		userList = new UserList(this);
 		// Friends list
-		friendList = new FriendList(colors);
+		friendList = new FriendList();
 		// Clan list
-		clanList = new ClanList(colors);
+		clanList = new ClanList();
 
 		JTabbedPane allLists = new JTabbedPane(JTabbedPane.BOTTOM);
 		allLists.addTab("Channel", new JScrollPane(userList));
