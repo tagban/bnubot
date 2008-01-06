@@ -21,7 +21,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import javax.swing.text.JTextComponent;
 
-import net.bnubot.bot.gui.components.ColoredTextField;
+import net.bnubot.bot.gui.components.ColoredTextArea;
 import net.bnubot.vercheck.CurrentVersion;
 
 public class WhatsNewWindow extends JDialog {
@@ -35,7 +35,7 @@ public class WhatsNewWindow extends JDialog {
 		// Split up the change log by version
 		for(String entry : changeLog.split(newLine + newLine)) {
 			String[] data = entry.split(newLine, 2);
-			JTextComponent jta = new ColoredTextField();
+			JTextComponent jta = new ColoredTextArea();
 			jta.setText(data[1]);
 			jta.setEditable(false);
 			jtp.addTab(data[0], new JScrollPane(jta));
