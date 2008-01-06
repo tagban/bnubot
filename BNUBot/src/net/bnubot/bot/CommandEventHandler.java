@@ -1446,7 +1446,7 @@ public class CommandEventHandler implements EventHandler {
 					int age = cal.get(Calendar.YEAR);
 					cal.setTime(today);
 					age = cal.get(Calendar.YEAR) - age;
-					source.queueChatHelper("Happy birthday, " + user.getShortPrettyName() + "! Today, you are " + age + " years old!", false);
+					source.queueChatHelper("Happy birthday, " + user.toString() + "! Today, you are " + age + " years old!", false);
 				}
 			}
 
@@ -1457,7 +1457,7 @@ public class CommandEventHandler implements EventHandler {
 			if(rsRank.next()) {
 				String greeting = rsRank.getGreeting();
 				if(greeting != null) {
-					greeting = String.format(greeting, user.getShortPrettyName(), user.getPing(), user.getFullAccountName());
+					greeting = String.format(greeting, user.toString(), user.getPing(), user.getFullAccountName());
 					source.queueChatHelper(greeting, false);
 				}
 

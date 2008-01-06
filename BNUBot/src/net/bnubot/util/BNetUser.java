@@ -171,7 +171,7 @@ public class BNetUser {
 		prettyName = null;
 	}
 	
-	public String getShortPrettyName() {
+	private String getShortPrettyName() {
 		Database d = Database.getInstance();
 		if(d == null)
 			return shortLogonName;
@@ -210,7 +210,7 @@ public class BNetUser {
 	 * Equivalent to getShortLogonName if there is no database or if the user isn't in it;
 	 * @return User[#N][@Realm] or [Prefix ][Account (]FullLogonName[)]
 	 */
-	public String getPrettyName() {
+	private String getPrettyName() {
 		Database d = Database.getInstance();
 		if(d == null)
 			return shortLogonName;

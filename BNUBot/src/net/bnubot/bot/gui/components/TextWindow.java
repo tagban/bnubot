@@ -210,7 +210,7 @@ public class TextWindow extends JScrollPane {
 			c = cs.getUserNameColor(user.getFlags());
 		
 		append2(
-			"<" + user.getShortPrettyName() + "> ",
+			"<" + user.toString() + "> ",
 			c,
 			text,
 			cs.getChatColor(user.getFlags()));
@@ -218,7 +218,7 @@ public class TextWindow extends JScrollPane {
 	
 	public void whisperSent(BNetUser user, String text) {
 		append2(
-			"<To: " + user.getShortPrettyName() + "> ",
+			"<To: " + user.toString() + "> ",
 			cs.getUserNameColor(user.getFlags()),
 			text,
 			cs.getWhisperColor(user.getFlags()));
@@ -226,7 +226,7 @@ public class TextWindow extends JScrollPane {
 	
 	public void whisperRecieved(BNetUser user, String text) {
 		append2(
-			"<From: " + user.getShortPrettyName() + "> ",
+			"<From: " + user.toString() + "> ",
 			cs.getUserNameColor(user.getFlags()),
 			text,
 			cs.getWhisperColor(user.getFlags()));
@@ -234,7 +234,7 @@ public class TextWindow extends JScrollPane {
 	
 	public void userEmote(BNetUser user, String text) {
 		append(
-			"<" + user.getShortPrettyName() + " " + text + ">",
+			"<" + user.toString() + " " + text + ">",
 			cs.getEmoteColor(user.getFlags()));
 	}
 }

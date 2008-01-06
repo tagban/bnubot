@@ -432,7 +432,7 @@ public abstract class Connection extends Thread {
 					prefix += " RC";
 				prefix += "] ";
 			} else {
-				prefix = to.getShortPrettyName() + ": ";
+				prefix = to.toString() + ": ";
 			}
 
 			//Split up the text in to appropriate sized pieces
