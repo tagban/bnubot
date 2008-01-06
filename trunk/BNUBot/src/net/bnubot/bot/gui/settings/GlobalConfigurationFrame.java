@@ -63,6 +63,7 @@ public class GlobalConfigurationFrame extends JDialog {
 	ConfigTextArea txtEmail = null;
 	ConfigComboBox cmbTSFormat = null;
 	ConfigTextArea txtBNLSServer = null;
+	ConfigComboBox cmbBNUserToString = null;
 	ConfigComboBox cmbReleaseType = null;
 	ConfigComboBox cmbColorScheme = null;
 	ConfigComboBox cmbLookAndFeel = null;
@@ -207,7 +208,15 @@ public class GlobalConfigurationFrame extends JDialog {
 						if(!chkEnableGUI.isSelected())
 							cmbTrayIconMode.setSelectedItem(TrayIconMode.DISABLED);
 					}});
-	
+				
+				Object[] values = new String[] {
+					"BNLogin@Gateway",
+					"BNLogin",
+					"Prefix Account",
+					"Prefix Account (BNLogin)" };
+				cmbBNUserToString = ConfigFactory.makeCombo("BNetUser.toString()", values, false, boxAll);
+				cmbBNUserToString.setSelectedIndex(GlobalSettings.bnUserToString);
+				
 				cmbTrayIconMode = ConfigFactory.makeCombo("Tray Icon", TrayIconMode.values(), false, boxAll);
 				cmbTrayIconMode.setSelectedItem(GlobalSettings.trayIconMode);
 				cmbTrayIconMode.addItemListener(new ItemListener() {
@@ -226,7 +235,7 @@ public class GlobalConfigurationFrame extends JDialog {
 				cmbTabCompleteMode = ConfigFactory.makeCombo("Tab Complete", TabCompleteMode.values(), false, boxAll);
 				cmbTabCompleteMode.setSelectedItem(GlobalSettings.tabCompleteMode);
 				
-				Object[] values = { TimeFormatter.tsFormat, "%1$tH:%1$tM:%1$tS.%1$tL", "%1$tH:%1$tM:%1$tS", "%1$tH:%1$tM" };
+				values = new String[] { TimeFormatter.tsFormat, "%1$tH:%1$tM:%1$tS.%1$tL", "%1$tH:%1$tM:%1$tS", "%1$tH:%1$tM" };
 				cmbTSFormat = ConfigFactory.makeCombo("TimeStamp", values, true, boxAll);
 				cmbTSFormat.setSelectedItem(TimeFormatter.tsFormat);
 	
@@ -392,6 +401,7 @@ public class GlobalConfigurationFrame extends JDialog {
 			GlobalSettings.email = txtEmail.getText();
 			GlobalSettings.colorScheme = (byte)(cmbColorScheme.getSelectedIndex() + 1);
 			TimeFormatter.tsFormat = (String)cmbTSFormat.getSelectedItem();
+			GlobalSettings.bnUserToString = cmbBNUserToString.getSelectedIndex();
 			GlobalSettings.releaseType = (ReleaseType)cmbReleaseType.getSelectedItem();
 			GlobalSettings.autoConnect = chkAutoConnect.isSelected();
 			GlobalSettings.enableMirrorSelector = chkEnableMirrorSelector.isSelected();
@@ -478,6 +488,7 @@ public class GlobalConfigurationFrame extends JDialog {
 			txtEmail.setText(GlobalSettings.email);
 			cmbColorScheme.setSelectedIndex(GlobalSettings.colorScheme - 1);
 			cmbTSFormat.setSelectedItem(TimeFormatter.tsFormat);
+			cmbBNUserToString.setSelectedIndex(GlobalSettings.bnUserToString);
 			cmbReleaseType.setSelectedItem(GlobalSettings.releaseType);
 			chkAutoConnect.setSelected(GlobalSettings.autoConnect);
 			chkEnableMirrorSelector.setSelected(GlobalSettings.enableMirrorSelector);
