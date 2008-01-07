@@ -1020,6 +1020,8 @@ public class CommandEventHandler implements EventHandler {
 						}
 						
 						bnSubject = source.getBNetUser(rsSubject.getLogin());
+						if(bnSubject == null)
+							bnSubject = new BNetUser(rsSubject.getLogin(), user.getFullAccountName());
 						d.close(rsSubject);
 						d.close(rsSubjectAccount);
 						rsSubjectAccount = d.getAccount(bnSubject);
