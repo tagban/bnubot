@@ -22,11 +22,13 @@ public class TaskGui extends Task {
 	private int count = 0;
 	private final int max;
 	private final String units;
+	private final String title;
 	private boolean complete = false;
 
 	protected TaskGui(String title, int max, String units) {
 		this.max = max;
 		this.units = units;
+		this.title = title;
 		
 		pb = new JProgressBar(0, max);
 		pb.setString(title);
@@ -58,9 +60,9 @@ public class TaskGui extends Task {
 	 */
 	public void updateProgress(String currentStep) {
 		if(complete) {
-			setString("Complete");
+			setString(title + " Complete");
 		} else {
-			String s = new String();
+			String s = title;
 			if(isDeterminant()) {
 				int percentComplete = (int)(count * 100.0 / max);
 				s += " " + String.valueOf(percentComplete) + " %";
@@ -74,7 +76,7 @@ public class TaskGui extends Task {
 			}
 			if(currentStep != null)
 				s += " (" + currentStep + ")";
-			setString(s.trim());
+			setString(s);
 		}
 	}
 
