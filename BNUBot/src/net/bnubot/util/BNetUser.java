@@ -22,11 +22,12 @@ public class BNetUser {
 	private String fullLogonName;	// #=yes, realm=yes
 	private final String fullAccountName;	// #=no, realm=yes
 	private String realm = null;
-	private String shortPrettyName = null;
-	private String prettyName = null;
 	private Integer flags = null;
 	private Integer ping = null;
 	private StatString statString = null;
+	
+	private String lastToString = null;
+	private long lastToStringTime = 0;
 
 	/**
 	 * Constructor for a BNetUser
@@ -167,8 +168,8 @@ public class BNetUser {
 	 * Resets the pretty name back to null, so it will be re-evaluated next time toString() is called
 	 */
 	public void resetPrettyName() {
-		shortPrettyName = null;
-		prettyName = null;
+		lastToString = null;
+		lastToStringTime = 0;
 	}
 	
 	private String getShortPrettyName() {
@@ -176,33 +177,32 @@ public class BNetUser {
 		if(d == null)
 			return shortLogonName;
 		
-		if(shortPrettyName == null) {
-			shortPrettyName = shortLogonName;
-			try {
-				AccountResultSet rsAccount = d.getAccount(this);
-				if((rsAccount != null) && rsAccount.next()) {
-					String account = rsAccount.getName();
-					
-					if(account != null)
-						shortPrettyName = account;
+		String shortPrettyName = shortLogonName;
+		try {
+			AccountResultSet rsAccount = d.getAccount(this);
+			if((rsAccount != null) && rsAccount.next()) {
+				String account = rsAccount.getName();
+				
+				if(account != null)
+					shortPrettyName = account;
 
-					long access = rsAccount.getAccess();
-					RankResultSet rsRank = d.getRank(access);
-					if(rsRank.next()) {
-						String prefix = rsRank.getShortPrefix();
-						if(prefix == null)
-							prefix = rsRank.getPrefix();
-						if(prefix != null)
-							shortPrettyName = prefix + " " + shortPrettyName;
-					}
-					d.close(rsRank);
+				long access = rsAccount.getAccess();
+				RankResultSet rsRank = d.getRank(access);
+				if(rsRank.next()) {
+					String prefix = rsRank.getShortPrefix();
+					if(prefix == null)
+						prefix = rsRank.getPrefix();
+					if(prefix != null)
+						shortPrettyName = prefix + " " + shortPrettyName;
 				}
-				if(rsAccount != null)
-					d.close(rsAccount);
-			} catch(SQLException e) {
-				Out.exception(e);
+				d.close(rsRank);
 			}
+			if(rsAccount != null)
+				d.close(rsAccount);
+		} catch(SQLException e) {
+			Out.exception(e);
 		}
+		
 		return shortPrettyName;
 	}
 	
@@ -215,31 +215,30 @@ public class BNetUser {
 		if(d == null)
 			return shortLogonName;
 
-		if(prettyName == null) {
-			prettyName = shortLogonName;
-			try {
-				AccountResultSet rsAccount = d.getAccount(this);
-				if((rsAccount != null) && rsAccount.next()) {
-					String account = rsAccount.getName();
-					
-					if(account != null)
-						prettyName = account + " (" + prettyName + ")";
+		String prettyName = shortLogonName;
+		try {
+			AccountResultSet rsAccount = d.getAccount(this);
+			if((rsAccount != null) && rsAccount.next()) {
+				String account = rsAccount.getName();
+				
+				if(account != null)
+					prettyName = account + " (" + prettyName + ")";
 
-					long access = rsAccount.getAccess();
-					RankResultSet rsRank = d.getRank(access);
-					if(rsRank.next()) {
-						String prefix = rsRank.getPrefix();
-						if(prefix != null)
-							prettyName = prefix + " " + prettyName;
-					}
-					d.close(rsRank);
+				long access = rsAccount.getAccess();
+				RankResultSet rsRank = d.getRank(access);
+				if(rsRank.next()) {
+					String prefix = rsRank.getPrefix();
+					if(prefix != null)
+						prettyName = prefix + " " + prettyName;
 				}
-				if(rsAccount != null)
-					d.close(rsAccount);
-			} catch(SQLException e) {
-				Out.exception(e);
+				d.close(rsRank);
 			}
+			if(rsAccount != null)
+				d.close(rsAccount);
+		} catch(SQLException e) {
+			Out.exception(e);
 		}
+		
 		return prettyName;
 	}
 	
@@ -247,16 +246,22 @@ public class BNetUser {
 	 * Returns user-desirable display string
 	 */
 	public String toString() {
-		/* "BNLogin@Gateway",
-		 * "BNLogin",
-		 * "Prefix Account",
-		 * "Prefix Account (BNLogin)"
-		 */
+		// Check if we should re-generate the string; cache it for five seconds
+		if((lastToString == null)
+		|| (System.currentTimeMillis() - lastToStringTime > 5000)) {
+			lastToStringTime = System.currentTimeMillis();
+			lastToString = toString2();
+		}
+		
+		return lastToString;
+	}
+
+	private String toString2() {
 		switch(GlobalSettings.bnUserToString) {
-		case 0: return getShortLogonName();
-		case 1: return getFullLogonName();
-		case 2: return getShortPrettyName();
-		case 3: return getPrettyName();
+		case 0: return getFullLogonName();		// BNLogin@Gateway
+		case 1: return getShortLogonName();		// BNLogin
+		case 2: return getShortPrettyName();	// Prefix Account
+		case 3: return getPrettyName();			// Prefix Account (BNLogin)
 		}
 		throw new IllegalStateException("Unknown GlobalSettings.bnUserToString " + GlobalSettings.bnUserToString);
 	}
