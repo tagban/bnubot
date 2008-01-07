@@ -474,8 +474,10 @@ public abstract class Connection extends Thread {
 		disposed = true;
 		disconnect(false);
 		
-		for(EventHandler e : eventHandlers)
-			removeEventHandler(e);
+		synchronized(eventHandlers) {
+			for(EventHandler e : eventHandlers)
+				removeEventHandler(e);
+		}
 	}
 
 	/*
