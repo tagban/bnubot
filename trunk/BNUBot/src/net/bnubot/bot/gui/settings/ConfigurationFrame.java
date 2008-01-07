@@ -73,6 +73,8 @@ public class ConfigurationFrame extends JDialog {
 	}
 
 	private void initializeGui() {
+		getContentPane().removeAll();
+		
 		final Box boxAll = new Box(BoxLayout.Y_AXIS);
 		boolean hasCdKeys = true;
 		Box boxSettings = new Box(BoxLayout.Y_AXIS);
