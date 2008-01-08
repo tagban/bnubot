@@ -250,14 +250,14 @@ public class BNetUser {
 		if((lastToString == null)
 		|| (System.currentTimeMillis() - lastToStringTime > 5000)) {
 			lastToStringTime = System.currentTimeMillis();
-			lastToString = toString2();
+			lastToString = toString(GlobalSettings.bnUserToString);
 		}
 		
 		return lastToString;
 	}
 
-	private String toString2() {
-		switch(GlobalSettings.bnUserToString) {
+	public String toString(int type) {
+		switch(type) {
 		case 0: return getFullLogonName();		// BNLogin@Gateway
 		case 1: return getShortLogonName();		// BNLogin
 		case 2: return getShortPrettyName();	// Prefix Account

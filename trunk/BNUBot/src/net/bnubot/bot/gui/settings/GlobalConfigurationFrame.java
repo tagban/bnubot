@@ -64,6 +64,7 @@ public class GlobalConfigurationFrame extends JDialog {
 	ConfigComboBox cmbTSFormat = null;
 	ConfigTextArea txtBNLSServer = null;
 	ConfigComboBox cmbBNUserToString = null;
+	ConfigComboBox cmbBNUserToStringUserList = null;
 	ConfigComboBox cmbReleaseType = null;
 	ConfigComboBox cmbColorScheme = null;
 	ConfigComboBox cmbLookAndFeel = null;
@@ -216,6 +217,8 @@ public class GlobalConfigurationFrame extends JDialog {
 					"Prefix Account (BNLogin)" };
 				cmbBNUserToString = ConfigFactory.makeCombo("BNetUser.toString()", values, false, boxAll);
 				cmbBNUserToString.setSelectedIndex(GlobalSettings.bnUserToString);
+				cmbBNUserToStringUserList = ConfigFactory.makeCombo("User List", values, false, boxAll);
+				cmbBNUserToStringUserList.setSelectedIndex(GlobalSettings.bnUserToStringUserList);
 				
 				cmbTrayIconMode = ConfigFactory.makeCombo("Tray Icon", TrayIconMode.values(), false, boxAll);
 				cmbTrayIconMode.setSelectedItem(GlobalSettings.trayIconMode);
@@ -402,6 +405,7 @@ public class GlobalConfigurationFrame extends JDialog {
 			GlobalSettings.colorScheme = (byte)(cmbColorScheme.getSelectedIndex() + 1);
 			TimeFormatter.tsFormat = (String)cmbTSFormat.getSelectedItem();
 			GlobalSettings.bnUserToString = cmbBNUserToString.getSelectedIndex();
+			GlobalSettings.bnUserToStringUserList = cmbBNUserToStringUserList.getSelectedIndex();
 			GlobalSettings.releaseType = (ReleaseType)cmbReleaseType.getSelectedItem();
 			GlobalSettings.autoConnect = chkAutoConnect.isSelected();
 			GlobalSettings.enableMirrorSelector = chkEnableMirrorSelector.isSelected();
@@ -489,6 +493,7 @@ public class GlobalConfigurationFrame extends JDialog {
 			cmbColorScheme.setSelectedIndex(GlobalSettings.colorScheme - 1);
 			cmbTSFormat.setSelectedItem(TimeFormatter.tsFormat);
 			cmbBNUserToString.setSelectedIndex(GlobalSettings.bnUserToString);
+			cmbBNUserToStringUserList.setSelectedIndex(GlobalSettings.bnUserToStringUserList);
 			cmbReleaseType.setSelectedItem(GlobalSettings.releaseType);
 			chkAutoConnect.setSelected(GlobalSettings.autoConnect);
 			chkEnableMirrorSelector.setSelected(GlobalSettings.enableMirrorSelector);
