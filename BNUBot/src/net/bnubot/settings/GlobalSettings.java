@@ -80,6 +80,7 @@ public class GlobalSettings {
 	public static String recruitTagSuffix;
 	public static ReleaseType releaseType;
 	public static int bnUserToString;
+	public static int bnUserToStringUserList;
 	
 	private static String lookAndFeel;
 	private static String lookAndFeelTheme;
@@ -206,6 +207,7 @@ public class GlobalSettings {
 		Settings.write(null, "recruitTagPrefix", recruitTagPrefix);
 		Settings.write(null, "recruitTagSuffix", recruitTagSuffix);
 		Settings.writeInt(null, "bnUserToString", bnUserToString);
+		Settings.writeInt(null, "bnUserToStringUserList", bnUserToStringUserList);
 		Settings.writeEnum(null, "releaseType", releaseType);
 		Settings.writeLong(null, "triviaRoundLength", triviaRoundLength);
 		Settings.write(null, "tsFormat", TimeFormatter.tsFormat);
@@ -251,6 +253,7 @@ public class GlobalSettings {
 		}
 		TimeFormatter.tsFormat = Settings.read(null, "tsFormat", TimeFormatter.tsFormat);
 		bnUserToString = Settings.readInt(null, "bnUserToString", 3);
+		bnUserToStringUserList = Settings.readInt(null, "bnUserToStringUserList", 1);
 		
 		// Get the release type to check for when doing version checks
 		ReleaseType currentRelease = CurrentVersion.version().getReleaseType();

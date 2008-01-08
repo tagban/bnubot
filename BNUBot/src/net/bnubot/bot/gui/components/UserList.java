@@ -168,7 +168,7 @@ public class UserList extends JPanel {
 		if(ui.label == null) {
 			Color fg = colors.getUserNameListColor(user.getFlags());
 			
-			ui.label = new JLabel(user.getFullLogonName());
+			ui.label = new JLabel(user.toString(GlobalSettings.bnUserToStringUserList));
 			ui.label.setForeground(fg);
 			
 			ui.ping = new JLabel();
