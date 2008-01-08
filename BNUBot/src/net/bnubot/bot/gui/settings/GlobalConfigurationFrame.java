@@ -214,7 +214,8 @@ public class GlobalConfigurationFrame extends JDialog {
 					"BNLogin@Gateway",
 					"BNLogin",
 					"Prefix Account",
-					"Prefix Account (BNLogin)" };
+					"Prefix Account (BNLogin)",
+					"Account (BNLogin)" };
 				cmbBNUserToString = ConfigFactory.makeCombo("BNetUser.toString()", values, false, boxAll);
 				cmbBNUserToString.setSelectedIndex(GlobalSettings.bnUserToString);
 				cmbBNUserToStringUserList = ConfigFactory.makeCombo("User List", values, false, boxAll);
