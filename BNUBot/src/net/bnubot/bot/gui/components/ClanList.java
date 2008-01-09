@@ -32,7 +32,7 @@ public class ClanList extends JPanel {
 	
 	private Hashtable<String, ClanMemberInfo> members = null;
 	private Box b = null;
-	private ColorScheme cs = ColorScheme.getColors();
+	private final ColorScheme cs = ColorScheme.getColors();
 	
 	private ClanMemberInfo get(String username) {
 		ClanMemberInfo cmi = members.get(username);
@@ -146,7 +146,7 @@ public class ClanList extends JPanel {
 			cmi.entry = member;
 			
 			cmi.label = new JLabel(member.toString());
-			cmi.label.setForeground(cs.getUserNameListColor(0));
+			cmi.label.setForeground(cs.getUserNameListColor(0, false));
 			setIcon(cmi);
 			b.add(cmi.label, getInsertPosition(member.getRank()));
 			

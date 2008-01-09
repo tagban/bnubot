@@ -22,8 +22,8 @@ public class BNetUser {
 	private String fullLogonName;	// #=yes, realm=yes
 	private final String fullAccountName;	// #=no, realm=yes
 	private String realm = null;
-	private Integer flags = null;
-	private Integer ping = null;
+	private int flags = 0;
+	private int ping = -1;
 	private StatString statString = null;
 	
 	private String lastToString = null;
@@ -315,19 +315,19 @@ public class BNetUser {
 		return false;
 	}
 
-	public Integer getFlags() {
+	public int getFlags() {
 		return flags;
 	}
 
-	public void setFlags(Integer flags) {
+	public void setFlags(int flags) {
 		this.flags = flags;
 	}
 
-	public Integer getPing() {
+	public int getPing() {
 		return ping;
 	}
 
-	public void setPing(Integer ping) {
+	public void setPing(int ping) {
 		this.ping = ping;
 	}
 

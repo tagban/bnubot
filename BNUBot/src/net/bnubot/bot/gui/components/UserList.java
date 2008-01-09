@@ -166,7 +166,7 @@ public class UserList extends JPanel {
 			ui.menu.add(Box.createHorizontalGlue());
 		}
 		if(ui.label == null) {
-			Color fg = colors.getUserNameListColor(user.getFlags());
+			Color fg = colors.getUserNameListColor(user.getFlags(), user.equals(source.getMyUser()));
 			
 			ui.label = new JLabel(user.toString(GlobalSettings.bnUserToStringUserList));
 			ui.label.setForeground(fg);
@@ -224,7 +224,7 @@ public class UserList extends JPanel {
 				box.add(x, getInsertPosition(newPriority));
 			}
 			
-			Color fg = colors.getUserNameListColor(ui.lastFlags);
+			Color fg = colors.getUserNameListColor(ui.lastFlags, ui.user.equals(source.getMyUser()));
 			ui.label.setForeground(fg);
 			ui.ping.setForeground(fg);
 		}
@@ -315,10 +315,10 @@ public class UserList extends JPanel {
 			ui.label.setIcon(icon);
 		
 		icons = IconsDotBniReader.getIconsLag();
-		if((icons != null) && (user.getPing() != null)) {
+		if(icons != null) {
 			int ping = user.getPing();
 			
-			if((user.getFlags() != null) && ((user.getFlags() & 0x10) != 0))
+			if((user.getFlags() & 0x10) != 0)
 				ui.ping.setIcon(icons[7].getIcon());
 			else if(ping < 0)
 				ui.ping.setIcon(icons[6].getIcon());

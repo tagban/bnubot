@@ -60,7 +60,9 @@ public class Diablo2ColorScheme extends ColorScheme {
 		return D2Cyan; //PRIORITY_NORMAL;
 	}
 	
-	public Color getUserNameListColor(int flags) {
+	public Color getUserNameListColor(int flags, boolean myUser) {
+		if(myUser)
+			return D2LtYellow;
 		if((flags & 0x20) != 0)	return D2Red;
 		if((flags & 0x01) != 0)	return D2Cyan; //PRIORITY_BLIZZARD_REP;
 		if((flags & 0x08) != 0)	return D2Cyan; //PRIORITY_BNET_REP;
