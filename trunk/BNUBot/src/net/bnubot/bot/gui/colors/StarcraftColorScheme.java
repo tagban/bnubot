@@ -56,13 +56,15 @@ public class StarcraftColorScheme extends ColorScheme {
 		return SCCyan; //PRIORITY_NORMAL;
 	}
 	
-	public Color getUserNameListColor(int flags) {
+	public Color getUserNameListColor(int flags, boolean myUser) {
+		if(myUser)
+			return SCYellow;
 		if((flags & 0x20) != 0)	return SCRed;
 		if((flags & 0x01) != 0)	return SCCyan; //PRIORITY_BLIZZARD_REP;
 		if((flags & 0x08) != 0)	return SCCyan; //PRIORITY_BNET_REP;
 		if((flags & 0x02) != 0)	return SCWhite; //PRIORITY_OPERATOR;
-		//if((flags & 0x04) != 0)	return SCLtYellow; //PRIORITY_SPEAKER;
-		//if((flags & 0x40) != 0)	return SCLtYellow; //PRIORITY_BIZZARD_GUEST;
+		if((flags & 0x04) != 0)	return SCYellow; //PRIORITY_SPEAKER;
+		if((flags & 0x40) != 0)	return SCYellow; //PRIORITY_BIZZARD_GUEST;
 		return SCLtGray; //PRIORITY_NORMAL;
 	}
 	

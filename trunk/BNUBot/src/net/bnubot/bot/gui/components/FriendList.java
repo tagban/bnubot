@@ -101,7 +101,7 @@ public class FriendList extends JPanel {
 		fi.entry = friend;
 		
 		fi.label = new JLabel(friend.toString());
-		fi.label.setForeground(cs.getUserNameListColor(0));
+		fi.label.setForeground(cs.getUserNameListColor(0, false));
 
 		setIcon(fi);
 
