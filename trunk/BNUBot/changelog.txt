@@ -1,3 +1,8 @@
+2.0.3.1:
+* Added a setting to customize the userlist display format
+* Added a setting to enable the HTMLOutput plugin
+* Moved the HTMLOutput userlist to logs
+
 2.0.3 (r1072) 2008-01-07:
 * Completely redesigned the command subsystem to fit a more object-oriented model
 * Commands not in the database will be created with maximum (master) access
