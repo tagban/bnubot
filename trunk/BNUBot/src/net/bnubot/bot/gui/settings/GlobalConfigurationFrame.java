@@ -88,6 +88,7 @@ public class GlobalConfigurationFrame extends JDialog {
 	ConfigCheckBox chkEnableTrivia = null;
 	ConfigTextArea txtTriviaRoundLength = null;
 	ConfigCheckBox chkEnableCommands = null;
+	ConfigCheckBox chkEnableHTMLOutput = null;
 	ConfigCheckBox chkEnableFloodProtect = null;
 	ConfigCheckBox chkPacketLog = null;
 	ConfigCheckBox chkWhisperBack = null;
@@ -198,6 +199,7 @@ public class GlobalConfigurationFrame extends JDialog {
 				txtTriviaRoundLength = ConfigFactory.makeText("Trivia Round Length", Long.toString(GlobalSettings.triviaRoundLength), boxAll);
 				boxAll.add(chkEnableCLI = new ConfigCheckBox("Enable CLI (requires restart)", GlobalSettings.enableCLI));
 				boxAll.add(chkEnableCommands = new ConfigCheckBox("Enable Commands (requires restart)", GlobalSettings.enableCommands));
+				boxAll.add(chkEnableHTMLOutput = new ConfigCheckBox("Enable HTML Output (requires restart)", GlobalSettings.enableHTMLOutput));
 			}
 			tabs.addTab("Plugins", boxAll);
 	
@@ -427,6 +429,7 @@ public class GlobalConfigurationFrame extends JDialog {
 			GlobalSettings.enableTrivia = chkEnableTrivia.isSelected();
 			GlobalSettings.triviaRoundLength = Integer.parseInt(txtTriviaRoundLength.getText());
 			GlobalSettings.enableCommands = chkEnableCommands.isSelected();
+			GlobalSettings.enableHTMLOutput = chkEnableHTMLOutput.isSelected();
 			GlobalSettings.enableFloodProtect = chkEnableFloodProtect.isSelected();
 			GlobalSettings.packetLog = chkPacketLog.isSelected();
 			GlobalSettings.whisperBack = chkWhisperBack.isSelected();
@@ -511,6 +514,7 @@ public class GlobalConfigurationFrame extends JDialog {
 			chkEnableTrivia.setSelected(GlobalSettings.enableTrivia);
 			txtTriviaRoundLength.setText(Long.toString(GlobalSettings.triviaRoundLength));
 			chkEnableCommands.setSelected(GlobalSettings.enableCommands);
+			chkEnableHTMLOutput.setSelected(GlobalSettings.enableHTMLOutput);
 			chkEnableFloodProtect.setSelected(GlobalSettings.enableFloodProtect);
 			chkPacketLog.setSelected(GlobalSettings.packetLog);
 			chkWhisperBack.setSelected(GlobalSettings.whisperBack);
