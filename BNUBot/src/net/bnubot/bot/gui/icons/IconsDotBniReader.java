@@ -102,15 +102,15 @@ public class IconsDotBniReader {
 		
 		File f;
 		
-		f = new File("legacy_icons.bni");
+		f = new File("downloads/legacy_icons.bni");
 		if(f.exists())
 			legacy_icons = readIconsDotBni(f);
 		
-		f = new File("war3_icons.bni");
+		f = new File("downloads/war3_icons.bni");
 		if(f.exists())
 			icons_WAR3 = readIconsDotBni(f);
 		
-		f = new File("w3xp_icons.bni");
+		f = new File("downloads/w3xp_icons.bni");
 		if(f.exists())
 			icons_W3XP = readIconsDotBni(f);
 		
@@ -122,7 +122,7 @@ public class IconsDotBniReader {
 		if(f.exists())
 			icons = readIconsDotBni(f);
 		
-		f = new File("icons_lag.bni");
+		f = new File("downloads/icons_lag.bni");
 		if(f.exists())
 			icons_lag = readIconsDotBni(f);
 	}
@@ -201,7 +201,7 @@ public class IconsDotBniReader {
 			String info = "";
 			os.writeByte(info.length());	// infolength
 			os.writeByte(0);	// ColorMapType
-			os.writeByte(0x0A);	// run-length true-color image types = 0x0A	
+			os.writeByte(0x0A);	// run-length true-color image types = 0x0A
 			os.write(new byte[5]);	// ColorMapSpecification - color map data
 			os.writeWord(0);	// xOrigin
 			os.writeWord(0);	// yOrigin
@@ -355,7 +355,7 @@ public class IconsDotBniReader {
 					img2.setRGB(0, 0, bni.xSize, bni.ySize, pixelData, currentPixel, bni.xSize);
 					
 					JPEGImageEncoder jie =  JPEGCodec.createJPEGEncoder(new FileOutputStream(
-							"html/images/" + 
+							"html/images/" +
 							HexDump.DWordToPretty(bni.products[0]) +
 							".jpg"));
 					jie.encode(img2);

@@ -21,21 +21,18 @@ import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
+import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.HexDump;
 import net.bnubot.util.Out;
 import net.bnubot.util.StatString;
 
 public class HTMLOutputEventHandler implements EventHandler {
-	private String channel = null;
 	private boolean generationNeeded = false;
 	private Runnable writeUserListRunnable = null;
 	private final ColorScheme cs = ColorScheme.getColors();
 
-	public void bnetConnected(Connection source) {
-		File f = new File("html");
-		f.mkdir();
-	}
+	public void bnetConnected(Connection source) {}
 	
 	public void bnetDisconnected(Connection source) {
 		writeUserList(source);
@@ -47,7 +44,7 @@ public class HTMLOutputEventHandler implements EventHandler {
 		writeUserList(source);
 		
 		append(source,
-			user + " has joined the channel" + user.getStatString().toString() + ".",
+			user.toString() + " has joined the channel" + user.getStatString().toString() + ".",
 			cs.getChannelColor());
 	}
 	
@@ -55,7 +52,7 @@ public class HTMLOutputEventHandler implements EventHandler {
 		writeUserList(source);
 		
 		append(source,
-			user + " has left the channel.",
+			user.toString() + " has left the channel.",
 			cs.getChannelColor());
 	}
 	
@@ -82,8 +79,6 @@ public class HTMLOutputEventHandler implements EventHandler {
 	}
 	
 	public void joinedChannel(Connection source, String channel) {
-		this.channel = channel;
-		
 		append(source,
 			"Joining channel " + channel + ".", cs.getChannelColor());
 	}
@@ -114,11 +109,12 @@ public class HTMLOutputEventHandler implements EventHandler {
 					generationNeeded = false;
 					
 					try {
-						File f = new File("html/userlist_" + source.getProfile().getName() + ".html");
+						File f = new File("logs/userlist_" + source.getProfile().getName() + ".html");
 						DataOutputStream fos = new DataOutputStream(new FileOutputStream(f));
 						List<BNetUser> users = source.getUsers();
 						
 						fos.write("<table><tr><td colspan=\"4\"><b>".getBytes());
+						String channel = source.getChannel();
 						if(channel != null)
 							fos.write(channel.getBytes());
 						fos.write("</b> (".getBytes());
@@ -131,7 +127,7 @@ public class HTMLOutputEventHandler implements EventHandler {
 							
 							fos.write("<tr>".getBytes());
 							fos.write(("<td><img src=\"images/" + product + ".jpg\"></td>").getBytes());
-							fos.write(("<td>" + ui.getFullLogonName() + "</td>").getBytes());
+							fos.write(("<td>" + ui.toString(GlobalSettings.bnUserToStringUserList) + "</td>").getBytes());
 							fos.write(("<td>" + ui.getPing() + "ms</td>").getBytes());
 							fos.write("</tr>".getBytes());
 						}
@@ -214,7 +210,7 @@ public class HTMLOutputEventHandler implements EventHandler {
 	
 	public void recieveChat(Connection source, BNetUser user, String text) {
 		append2(source,
-			"<" + user + "> ",
+			"<" + user.toString() + "> ",
 			cs.getUserNameColor(user.getFlags()),
 			text,
 			cs.getChatColor(user.getFlags()));
@@ -222,12 +218,12 @@ public class HTMLOutputEventHandler implements EventHandler {
 
 	public void recieveEmote(Connection source, BNetUser user, String text) {
 		append(source,
-			"<" + user + " " + text + "> ", cs.getEmoteColor(user.getFlags()));
+			"<" + user.toString() + " " + text + "> ", cs.getEmoteColor(user.getFlags()));
 	}
 
 	public void whisperSent(Connection source, BNetUser user, String text) {
 		append2(source,
-			"<To: " + user + "> ",
+			"<To: " + user.toString() + "> ",
 			cs.getUserNameColor(user.getFlags()),
 			text,
 			cs.getWhisperColor(user.getFlags()));
@@ -235,7 +231,7 @@ public class HTMLOutputEventHandler implements EventHandler {
 
 	public void whisperRecieved(Connection source, BNetUser user, String text) {
 		append2(source,
-			"<From: " + user + "> ",
+			"<From: " + user.toString() + "> ",
 			cs.getUserNameColor(user.getFlags()),
 			text,
 			cs.getWhisperColor(user.getFlags()));
