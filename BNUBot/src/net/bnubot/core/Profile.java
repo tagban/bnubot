@@ -13,6 +13,7 @@ import java.util.Hashtable;
 import java.util.List;
 
 import net.bnubot.bot.CommandEventHandler;
+import net.bnubot.bot.HTMLOutputEventHandler;
 import net.bnubot.bot.console.ConsoleEventHandler;
 import net.bnubot.bot.database.CommandResultSet;
 import net.bnubot.bot.database.Database;
@@ -108,6 +109,10 @@ public class Profile {
 						con.addEventHandler(eh);
 					}
 				}
+				
+				// HTML Output
+				if(GlobalSettings.enableHTMLOutput)
+					con.addEventHandler(new HTMLOutputEventHandler());
 
 				// CLI
 				if(GlobalSettings.enableCLI)
