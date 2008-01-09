@@ -62,6 +62,10 @@ public class VersionNumber {
 	}
 
 	public int compareTo(VersionNumber vn) {
+		// Check SVN revision
+		if((VER_SVN_REVISION != null) && (vn.VER_SVN_REVISION != null))
+			return VER_SVN_REVISION.compareTo(vn.VER_SVN_REVISION);
+
 		// Check Major
 		if(VER_MAJOR > vn.VER_MAJOR) return 1;
 		if(VER_MAJOR < vn.VER_MAJOR) return -1;
@@ -77,10 +81,6 @@ public class VersionNumber {
 		// Check Release
 		if(VER_RELEASE > vn.VER_RELEASE) return 1;
 		if(VER_RELEASE < vn.VER_RELEASE) return -1;
-
-		// Check SVN revision
-		if((VER_SVN_REVISION != null) && (vn.VER_SVN_REVISION != null))
-			return VER_SVN_REVISION.compareTo(vn.VER_SVN_REVISION);
 
 		// Check Stable
 		if(vn.RELEASE_TYPE.isStable() ^ !RELEASE_TYPE.isStable())
