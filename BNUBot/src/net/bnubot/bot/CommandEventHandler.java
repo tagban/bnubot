@@ -68,7 +68,7 @@ public class CommandEventHandler implements EventHandler {
 			}
 			d.close(rsUser);
 		} catch(Exception e) {
-			source.recieveError(e.getClass().getSimpleName() + ": " + e.getMessage());
+			Out.exception(e);
 		}
 	}
 	
