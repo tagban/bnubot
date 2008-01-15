@@ -33,29 +33,31 @@ import org.jbls.util.Constants;
 public class ConfigurationFrame extends JDialog {
 	private static final long serialVersionUID = 1308177934480442149L;
 
-	ConnectionSettings cs;
-	boolean pressedCancel = false;
+	private final ConnectionSettings cs;
+	private boolean pressedCancel = false;
 
-	//Connection
-	ConfigTextArea txtProfile = null;
-	ConfigTextArea txtUsername = null;
-	JPasswordField txtPassword = null;
-	ConfigComboBox cmbProduct = null;
-	ConfigComboBox cmbCDKey = null;
-	ConfigComboBox cmbCDKey2 = null;
-	JButton btnKeys = null;
-	JButton btnUndo = null;
-	JButton btnOK = null;
-	JButton btnCancel = null;
+	// Connection
+	private ConfigTextArea txtProfile = null;
+	private ConfigTextArea txtUsername = null;
+	private JPasswordField txtPassword = null;
+	private ConfigComboBox cmbProduct = null;
+	private ConfigComboBox cmbCDKey = null;
+	private ConfigComboBox cmbCDKey2 = null;
 	
 	// Profile
-	ConfigComboBox cmbBNCSServer = null;
-	ConfigTextArea txtChannel = null;
-	ConfigCheckBox chkAntiIdle = null;
-	ConfigTextArea txtAntiIdle = null;
-	ConfigTextArea txtAntiIdleTimer = null;
-	ConfigTextArea txtTrigger = null;
-	ConfigCheckBox chkGreetings = null;
+	private ConfigComboBox cmbBNCSServer = null;
+	private ConfigTextArea txtChannel = null;
+	private ConfigTextArea txtTrigger = null;
+	private ConfigCheckBox chkAntiIdle = null;
+	private ConfigTextArea txtAntiIdle = null;
+	private ConfigTextArea txtAntiIdleTimer = null;
+	private ConfigCheckBox chkGreetings = null;
+	
+	// Buttons
+	private JButton btnKeys = null;
+	private JButton btnUndo = null;
+	private JButton btnOK = null;
+	private JButton btnCancel = null;
 
 	public ConfigurationFrame(ConnectionSettings cs) throws OperationCancelledException {
 		super();
