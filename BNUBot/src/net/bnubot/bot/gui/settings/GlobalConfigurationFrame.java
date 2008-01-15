@@ -32,8 +32,6 @@ import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import net.bnubot.bot.database.DriverShim;
 import net.bnubot.bot.gui.KeyManager;
@@ -65,6 +63,7 @@ public class GlobalConfigurationFrame extends JDialog {
 	ConfigTextArea txtBNLSServer = null;
 	ConfigComboBox cmbBNUserToString = null;
 	ConfigComboBox cmbBNUserToStringUserList = null;
+	ConfigCheckBox chkEnableLegacyIcons = null;
 	ConfigComboBox cmbReleaseType = null;
 	ConfigComboBox cmbColorScheme = null;
 	ConfigComboBox cmbLookAndFeel = null;
@@ -75,7 +74,6 @@ public class GlobalConfigurationFrame extends JDialog {
 	ConfigCheckBox chkDisplayBattleNetChannels = null;
 	ConfigCheckBox chkDisplayJoinParts = null;
 	ConfigCheckBox chkDisplayChannelUsers = null;
-	ConfigCheckBox chkEnableGUI = null;
 	ConfigComboBox cmbTrayIconMode = null;
 	ConfigCheckBox chkTrayDisplayConnectDisconnect = null;
 	ConfigCheckBox chkTrayDisplayChannel = null;
@@ -83,15 +81,14 @@ public class GlobalConfigurationFrame extends JDialog {
 	ConfigCheckBox chkTrayDisplayChatEmote = null;
 	ConfigCheckBox chkTrayDisplayWhisper = null;
 	ConfigComboBox cmbTabCompleteMode = null;
-	ConfigCheckBox chkEnableLegacyIcons = null;
 	ConfigCheckBox chkEnableCLI = null;
 	ConfigCheckBox chkEnableTrivia = null;
 	ConfigTextArea txtTriviaRoundLength = null;
 	ConfigCheckBox chkEnableCommands = null;
+	ConfigCheckBox chkWhisperBack = null;
 	ConfigCheckBox chkEnableHTMLOutput = null;
 	ConfigCheckBox chkEnableFloodProtect = null;
 	ConfigCheckBox chkPacketLog = null;
-	ConfigCheckBox chkWhisperBack = null;
 
 	//Connection
 	JButton btnLoad = null;
@@ -188,7 +185,6 @@ public class GlobalConfigurationFrame extends JDialog {
 				boxAll.add(chkEnableMirrorSelector = new ConfigCheckBox("Enable Mirror Selector", GlobalSettings.enableMirrorSelector));
 				boxAll.add(chkEnableFloodProtect = new ConfigCheckBox("Enable Flood Protect", GlobalSettings.enableFloodProtect));
 				boxAll.add(chkPacketLog = new ConfigCheckBox("Packet Log", GlobalSettings.packetLog));
-				boxAll.add(chkWhisperBack = new ConfigCheckBox("Whisper Commands", GlobalSettings.whisperBack));
 				boxAll.add(Box.createVerticalGlue());
 			}
 			tabs.addTab("Settings", boxAll);
@@ -199,19 +195,13 @@ public class GlobalConfigurationFrame extends JDialog {
 				txtTriviaRoundLength = ConfigFactory.makeText("Trivia Round Length", Long.toString(GlobalSettings.triviaRoundLength), boxAll);
 				boxAll.add(chkEnableCLI = new ConfigCheckBox("Enable CLI (requires restart)", GlobalSettings.enableCLI));
 				boxAll.add(chkEnableCommands = new ConfigCheckBox("Enable Commands (requires restart)", GlobalSettings.enableCommands));
+				boxAll.add(chkWhisperBack = new ConfigCheckBox("Whisper Command Responses", GlobalSettings.whisperBack));
 				boxAll.add(chkEnableHTMLOutput = new ConfigCheckBox("Enable HTML Output (requires restart)", GlobalSettings.enableHTMLOutput));
 			}
 			tabs.addTab("Plugins", boxAll);
 	
 			boxAll = new Box(BoxLayout.Y_AXIS);
 			{
-				boxAll.add(chkEnableGUI = new ConfigCheckBox("Enable GUI (requires restart)", GlobalSettings.enableGUI));
-				chkEnableGUI.addChangeListener(new ChangeListener() {
-					public void stateChanged(ChangeEvent arg0) {
-						if(!chkEnableGUI.isSelected())
-							cmbTrayIconMode.setSelectedItem(TrayIconMode.DISABLED);
-					}});
-				
 				Object[] values = new String[] {
 					"BNLogin@Gateway",
 					"BNLogin",
@@ -223,14 +213,10 @@ public class GlobalConfigurationFrame extends JDialog {
 				cmbBNUserToStringUserList = ConfigFactory.makeCombo("User List", values, false, boxAll);
 				cmbBNUserToStringUserList.setSelectedIndex(GlobalSettings.bnUserToStringUserList);
 				
+				boxAll.add(chkEnableLegacyIcons = new ConfigCheckBox("Enable Legacy Icons", GlobalSettings.enableLegacyIcons));
+				
 				cmbTrayIconMode = ConfigFactory.makeCombo("Tray Icon", TrayIconMode.values(), false, boxAll);
 				cmbTrayIconMode.setSelectedItem(GlobalSettings.trayIconMode);
-				cmbTrayIconMode.addItemListener(new ItemListener() {
-					public void itemStateChanged(ItemEvent e) {
-						TrayIconMode selection = (TrayIconMode)cmbTrayIconMode.getSelectedItem();
-						if(selection.enableTray())
-							chkEnableGUI.setSelected(true);
-					}});
 	
 				boxAll.add(chkTrayDisplayConnectDisconnect = new ConfigCheckBox("Tray: Connect/Disconnect", GlobalSettings.trayDisplayConnectDisconnect));
 				boxAll.add(chkTrayDisplayChannel = new ConfigCheckBox("Tray: Channel", GlobalSettings.trayDisplayChannel));
@@ -274,8 +260,6 @@ public class GlobalConfigurationFrame extends JDialog {
 				boxAll.add(chkDisplayBattleNetChannels = new ConfigCheckBox("Display Battle.net Channels", GlobalSettings.displayBattleNetChannels));
 				boxAll.add(chkDisplayJoinParts = new ConfigCheckBox("Display Join/Part Messages", GlobalSettings.displayJoinParts));
 				boxAll.add(chkDisplayChannelUsers = new ConfigCheckBox("Display Channel Users On Join", GlobalSettings.displayChannelUsers));
-	
-				boxAll.add(chkEnableLegacyIcons = new ConfigCheckBox("Enable Legacy Icons", GlobalSettings.enableLegacyIcons));
 			}
 			tabs.addTab("Display", boxAll);
 			
@@ -416,7 +400,6 @@ public class GlobalConfigurationFrame extends JDialog {
 			GlobalSettings.displayBattleNetChannels = chkDisplayBattleNetChannels.isSelected();
 			GlobalSettings.displayJoinParts = chkDisplayJoinParts.isSelected();
 			GlobalSettings.displayChannelUsers = chkDisplayChannelUsers.isSelected();
-			GlobalSettings.enableGUI = chkEnableGUI.isSelected();
 			GlobalSettings.trayIconMode = (TrayIconMode)cmbTrayIconMode.getSelectedItem();
 			GlobalSettings.trayDisplayConnectDisconnect = chkTrayDisplayConnectDisconnect.isSelected();
 			GlobalSettings.trayDisplayChannel = chkTrayDisplayChannel.isSelected();
@@ -501,7 +484,6 @@ public class GlobalConfigurationFrame extends JDialog {
 			cmbReleaseType.setSelectedItem(GlobalSettings.releaseType);
 			chkAutoConnect.setSelected(GlobalSettings.autoConnect);
 			chkEnableMirrorSelector.setSelected(GlobalSettings.enableMirrorSelector);
-			chkEnableGUI.setSelected(GlobalSettings.enableGUI);
 			chkEnableLegacyIcons.setSelected(GlobalSettings.enableLegacyIcons);
 			chkEnableCLI.setSelected(GlobalSettings.enableCLI);
 			cmbTrayIconMode.setSelectedItem(GlobalSettings.trayIconMode);
