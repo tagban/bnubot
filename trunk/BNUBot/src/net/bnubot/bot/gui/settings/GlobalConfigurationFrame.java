@@ -52,67 +52,68 @@ import net.bnubot.vercheck.ReleaseType;
 public class GlobalConfigurationFrame extends JDialog {
 	private static final long serialVersionUID = 1308177934480442149L;
 
-	JTabbedPane tabs = null;
+	private JTabbedPane tabs = null;
+	private boolean keysOnly;
+	private boolean pressedCancel = false;
+
+	// CDKeys
+	private ConfigTextArea txtCDKeys = null;
+
+	// Settings
+	private ConfigTextArea txtEmail = null;
+	private ConfigTextArea txtBNLSServer = null;
+	private ConfigComboBox cmbReleaseType = null;
+	private ConfigCheckBox chkAutoConnect = null;
+	private ConfigCheckBox chkEnableMirrorSelector = null;
+	private ConfigCheckBox chkEnableFloodProtect = null;
+	private ConfigCheckBox chkPacketLog = null;
 	
-	boolean keysOnly;
-	boolean pressedCancel = false;
+	// Plugins
+	private ConfigCheckBox chkEnableTrivia = null;
+	private ConfigTextArea txtTriviaRoundLength = null;
+	private ConfigCheckBox chkEnableCLI = null;
+	private ConfigCheckBox chkEnableCommands = null;
+	private ConfigCheckBox chkWhisperBack = null;
+	private ConfigCheckBox chkEnableHTMLOutput = null;
+	
+	// Display
+	private ConfigComboBox cmbBNUserToString = null;
+	private ConfigComboBox cmbBNUserToStringUserList = null;
+	private ConfigCheckBox chkEnableLegacyIcons = null;
+	private ConfigComboBox cmbTrayIconMode = null;
+	private ConfigCheckBox chkTrayDisplayConnectDisconnect = null;
+	private ConfigCheckBox chkTrayDisplayChannel = null;
+	private ConfigCheckBox chkTrayDisplayJoinPart = null;
+	private ConfigCheckBox chkTrayDisplayChatEmote = null;
+	private ConfigCheckBox chkTrayDisplayWhisper = null;
+	private ConfigComboBox cmbTabCompleteMode = null;
+	private ConfigComboBox cmbTSFormat = null;
+	private ConfigComboBox cmbColorScheme = null;
+	private ConfigComboBox cmbLookAndFeel = null;
+	private ConfigComboBox cmbPlasticTheme = null;
+	private ConfigCheckBox chkDisplayBattleNetMOTD = null;
+	private ConfigCheckBox chkDisplayBattleNetChannels = null;
+	private ConfigCheckBox chkDisplayJoinParts = null;
+	private ConfigCheckBox chkDisplayChannelUsers = null;
 
-	//Settings
-	ConfigTextArea txtEmail = null;
-	ConfigComboBox cmbTSFormat = null;
-	ConfigTextArea txtBNLSServer = null;
-	ConfigComboBox cmbBNUserToString = null;
-	ConfigComboBox cmbBNUserToStringUserList = null;
-	ConfigCheckBox chkEnableLegacyIcons = null;
-	ConfigComboBox cmbReleaseType = null;
-	ConfigComboBox cmbColorScheme = null;
-	ConfigComboBox cmbLookAndFeel = null;
-	ConfigComboBox cmbPlasticTheme = null;
-	ConfigCheckBox chkAutoConnect = null;
-	ConfigCheckBox chkEnableMirrorSelector = null;
-	ConfigCheckBox chkDisplayBattleNetMOTD = null;
-	ConfigCheckBox chkDisplayBattleNetChannels = null;
-	ConfigCheckBox chkDisplayJoinParts = null;
-	ConfigCheckBox chkDisplayChannelUsers = null;
-	ConfigComboBox cmbTrayIconMode = null;
-	ConfigCheckBox chkTrayDisplayConnectDisconnect = null;
-	ConfigCheckBox chkTrayDisplayChannel = null;
-	ConfigCheckBox chkTrayDisplayJoinPart = null;
-	ConfigCheckBox chkTrayDisplayChatEmote = null;
-	ConfigCheckBox chkTrayDisplayWhisper = null;
-	ConfigComboBox cmbTabCompleteMode = null;
-	ConfigCheckBox chkEnableCLI = null;
-	ConfigCheckBox chkEnableTrivia = null;
-	ConfigTextArea txtTriviaRoundLength = null;
-	ConfigCheckBox chkEnableCommands = null;
-	ConfigCheckBox chkWhisperBack = null;
-	ConfigCheckBox chkEnableHTMLOutput = null;
-	ConfigCheckBox chkEnableFloodProtect = null;
-	ConfigCheckBox chkPacketLog = null;
-
-	//Connection
-	JButton btnUndo = null;
-	JButton btnCancel = null;
-	JButton btnOK = null;
-	JButton btnApply = null;
-
-	//CDKeys
-	ConfigTextArea txtCDKeys = null;
-	JButton btnSaveKeys = null;
-
-	//Database
-	DatabaseSettings dbSettings = null;
-	ConfigComboBox cmbDrivers = null;
-	ConfigTextArea txtDriverURL = null;
-	ConfigTextArea txtDriverUsername = null;
-	ConfigTextArea txtDriverPassword = null;
-	ConfigTextArea txtDriverSchema = null;
-	JButton btnSaveDatabase = null;
+	// Database
+	private DatabaseSettings dbSettings = null;
+	private ConfigComboBox cmbDrivers = null;
+	private ConfigTextArea txtDriverURL = null;
+	private ConfigTextArea txtDriverUsername = null;
+	private ConfigTextArea txtDriverPassword = null;
+	private ConfigTextArea txtDriverSchema = null;
 	
 	// Debug
-	ConfigCheckBox chkEnableDebug = null;
-	ConfigCheckBox chkDebugToGui = null;
-	List<ConfigCheckBox> chkDebug = null;
+	private ConfigCheckBox chkEnableDebug = null;
+	private ConfigCheckBox chkDebugToGui = null;
+	private List<ConfigCheckBox> chkDebug = null;
+
+	// Buttons
+	private JButton btnUndo = null;
+	private JButton btnCancel = null;
+	private JButton btnOK = null;
+	private JButton btnApply = null;
 	
 	public GlobalConfigurationFrame(boolean keysOnly) throws OperationCancelledException {
 		super();
