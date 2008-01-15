@@ -109,6 +109,8 @@ public class KeyManager {
 			
 			try {
 				if(key.charAt(0) != '#')  {
+					key = key.replaceAll("\t", " ").trim();
+					
 					String comment = "";
 					int i = key.indexOf(" ");
 					if(i != -1) {
