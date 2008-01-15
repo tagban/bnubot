@@ -44,7 +44,7 @@ public class ConfigurationFrame extends JDialog {
 	ConfigComboBox cmbCDKey = null;
 	ConfigComboBox cmbCDKey2 = null;
 	JButton btnKeys = null;
-	JButton btnLoad = null;
+	JButton btnUndo = null;
 	JButton btnOK = null;
 	JButton btnCancel = null;
 	
@@ -65,6 +65,7 @@ public class ConfigurationFrame extends JDialog {
 		initializeGui();
 
 		setModal(true);
+		setResizable(false);
 		WindowPosition.load(this);
 		setVisible(true);
 		
@@ -230,8 +231,8 @@ public class ConfigurationFrame extends JDialog {
 				}
 			});
 			
-			btnLoad = new JButton("Undo");
-			btnLoad.addActionListener(new ActionListener() {
+			btnUndo = new JButton("Undo");
+			btnUndo.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent act) {
 					SwingUtilities.invokeLater(new Runnable() {
 						public void run() {
@@ -275,7 +276,7 @@ public class ConfigurationFrame extends JDialog {
 			boxButtons.add(Box.createHorizontalGlue());
 			boxButtons.add(btnKeys);
 			boxButtons.add(Box.createHorizontalStrut(50));
-			boxButtons.add(btnLoad);
+			boxButtons.add(btnUndo);
 			boxButtons.add(Box.createHorizontalStrut(50));
 			boxButtons.add(btnOK);
 			boxButtons.add(btnCancel);
