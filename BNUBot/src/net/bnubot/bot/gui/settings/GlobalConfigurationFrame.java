@@ -91,7 +91,7 @@ public class GlobalConfigurationFrame extends JDialog {
 	ConfigCheckBox chkPacketLog = null;
 
 	//Connection
-	JButton btnLoad = null;
+	JButton btnUndo = null;
 	JButton btnCancel = null;
 	JButton btnOK = null;
 	JButton btnApply = null;
@@ -125,6 +125,7 @@ public class GlobalConfigurationFrame extends JDialog {
 		initializeGui();
 
 		setModal(true);
+		setResizable(false);
 		WindowPosition.load(this);
 		setVisible(true);
 		
@@ -185,7 +186,6 @@ public class GlobalConfigurationFrame extends JDialog {
 				boxAll.add(chkEnableMirrorSelector = new ConfigCheckBox("Enable Mirror Selector", GlobalSettings.enableMirrorSelector));
 				boxAll.add(chkEnableFloodProtect = new ConfigCheckBox("Enable Flood Protect", GlobalSettings.enableFloodProtect));
 				boxAll.add(chkPacketLog = new ConfigCheckBox("Packet Log", GlobalSettings.packetLog));
-				boxAll.add(Box.createVerticalGlue());
 			}
 			tabs.addTab("Settings", boxAll);
 	
@@ -311,8 +311,8 @@ public class GlobalConfigurationFrame extends JDialog {
 		
 		Box boxButtons = new Box(BoxLayout.X_AXIS);
 		{
-			btnLoad = new JButton("Undo");
-			btnLoad.addActionListener(new ActionListener() {
+			btnUndo = new JButton("Undo");
+			btnUndo.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent act) {
 					SwingUtilities.invokeLater(new Runnable() {
 						public void run() {
@@ -365,7 +365,7 @@ public class GlobalConfigurationFrame extends JDialog {
 			});
 
 			boxButtons.add(Box.createHorizontalGlue());
-			boxButtons.add(btnLoad);
+			boxButtons.add(btnUndo);
 			boxButtons.add(Box.createHorizontalStrut(50));
 			boxButtons.add(btnCancel);
 			boxButtons.add(btnOK);
