@@ -59,14 +59,21 @@ public class CommandEventHandler implements EventHandler {
 	public void disable(Connection source) {}
 	
 	public void touchUser(Connection source, BNetUser user, String action) {
+		BNLoginResultSet rsUser = null;
 		try {
-			BNLoginResultSet rsUser = d.getCreateUser(user);
+			rsUser = d.getCreateUser(user);
 			if(rsUser.next() && (action != null)) {
 				rsUser.setLastSeen(new Timestamp(System.currentTimeMillis()));
 				rsUser.setLastAction(action);
 				rsUser.updateRow();
 			}
-			d.close(rsUser);
+		} catch(Exception e) {
+			Out.exception(e);
+		}
+		
+		try {
+			if(rsUser != null)
+				d.close(rsUser);
 		} catch(Exception e) {
 			Out.exception(e);
 		}
