@@ -294,6 +294,14 @@ public class BNetUser {
 		throw new IllegalStateException("Unknown GlobalSettings.bnUserToString " + GlobalSettings.bnUserToString);
 	}
 	
+	public String toStringEx() {
+		String out = toString();
+		if(flags != 0)
+			out += " (0x" + Integer.toHexString(flags) + ")";
+		out += " " + ping + "ms";
+		return out;
+	}
+	
 	public boolean equals(Object o) {
 		if(o == this)
 			return true;
@@ -332,7 +340,7 @@ public class BNetUser {
 	}
 
 	public StatString getStatString() {
-		return this.statString;
+		return statString;
 	}
 
 	public void setStatString(StatString statString) {
@@ -344,9 +352,9 @@ public class BNetUser {
 	 */
 	public BNetUser toPerspective(BNetUser myRealm) {
 		BNetUser out = new BNetUser(fullLogonName, myRealm.getFullAccountName());
-		out.setFlags(getFlags());
-		out.setPing(getPing());
-		out.setStatString(getStatString());
+		out.flags = flags;
+		out.ping = ping;
+		out.statString = statString;
 		return out;
 	}
 }
