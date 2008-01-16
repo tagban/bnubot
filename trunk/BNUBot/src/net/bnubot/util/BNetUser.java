@@ -295,10 +295,28 @@ public class BNetUser {
 	}
 	
 	public String toStringEx() {
-		String out = toString();
-		if(flags != 0)
-			out += " (0x" + Integer.toHexString(flags) + ")";
-		out += " " + ping + "ms";
+		String out = toString() + " [" + ping + "ms]";
+		if(flags != 0) {
+			out += " (";
+			if((flags & 0x01) != 0)
+				out += "Blizzard Representative, ";
+			if((flags & 0x08) != 0)
+				out += "Battle.net Representative, ";
+			if((flags & 0x02) != 0)
+				out += "Channel Operator, ";
+			if((flags & 0x04) != 0)
+				out += "Speaker, ";
+			if((flags & 0x40) != 0)
+				out += "Battle.net Guest, ";
+			if((flags & 0x20) != 0)
+				out += "Squelched, ";
+			if((flags & 0x100000) != 0)
+				out += "GF Official, ";
+			if((flags & 0x200000) != 0)
+				out += "GF Player, ";
+			out = out.substring(0, out.length() - 2);
+			out += ")";
+		}
 		return out;
 	}
 	
