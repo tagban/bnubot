@@ -35,16 +35,16 @@ public class ConsoleEventHandler implements EventHandler {
 
 	public void channelUser(Connection source, BNetUser user) {
 		if(GlobalSettings.displayChannelUsers)
-			System.out.println(user.toString() + " (" + user.getPing() + "ms)" + user.getStatString().toString());
+			System.out.println(user.toStringEx() + user.getStatString().toString());
 	}
 	
 	public void channelJoin(Connection source, BNetUser user) {
 		if(GlobalSettings.displayJoinParts)
-			System.out.println(user + " has joined the channel" + user.getStatString().toString() + ".");
+			System.out.println(user.toStringEx() + " has joined the channel" + user.getStatString().toString() + ".");
 	}
 	public void channelLeave(Connection source, BNetUser user) {
 		if(GlobalSettings.displayJoinParts)
-			System.out.println(user + " has left the channel.");
+			System.out.println(user.toStringEx() + " has left the channel.");
 	}
 
 	public void recieveChat(Connection source, BNetUser user, String text) {

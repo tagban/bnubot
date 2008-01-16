@@ -2,6 +2,13 @@
 * Added a setting to customize the userlist display format
 * Added a setting to enable the HTMLOutput plugin
 * Moved the HTMLOutput userlist to logs
+* Added highlighting of "my user" in the userlist
+* Improved version comparison logic
+* Removed the checkbox to disable the GUI from the GUI
+* Disabled resizing of configuration windows
+* Added logic to prevent KeyManager from choking on tabs
+* Addressed a common problem with Derby and CommandEventHandler.touchUser() 
+* Added BNetUser.toStringEx() to display ping and flags
 
 2.0.3 (r1072) 2008-01-07:
 * Completely redesigned the command subsystem to fit a more object-oriented model

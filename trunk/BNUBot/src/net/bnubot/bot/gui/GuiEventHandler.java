@@ -510,7 +510,7 @@ public class GuiEventHandler implements EventHandler {
 	public void channelJoin(Connection source, BNetUser user) {
 		userList.showUser(source, user);
 		if(GlobalSettings.displayJoinParts)
-			mainTextArea.channelInfo(user + " has joined the channel" + user.getStatString().toString() + ".");
+			mainTextArea.channelInfo(user.toStringEx() + " has joined the channel" + user.getStatString().toString() + ".");
 		if(GlobalSettings.trayDisplayJoinPart)
 			notifySystemTray(
 					Growl.CHANNEL_USER_JOIN,
@@ -522,7 +522,7 @@ public class GuiEventHandler implements EventHandler {
 	public void channelLeave(Connection source, BNetUser user) {
 		userList.removeUser(user);
 		if(GlobalSettings.displayJoinParts)
-			mainTextArea.channelInfo(user + " has left the channel.");
+			mainTextArea.channelInfo(user.toStringEx() + " has left the channel.");
 		if(GlobalSettings.trayDisplayJoinPart)
 			notifySystemTray(
 					Growl.CHANNEL_USER_PART,
@@ -533,7 +533,7 @@ public class GuiEventHandler implements EventHandler {
 
 	public void channelUser(Connection source, BNetUser user) {
 		if(GlobalSettings.displayChannelUsers)
-			mainTextArea.channelInfo(user + user.getStatString().toString() + ".");
+			mainTextArea.channelInfo(user.toStringEx() + user.getStatString().toString() + ".");
 		userList.showUser(source, user);
 		channelTextPane.setText(channel + " (" + userList.count() + ")");
 	}
