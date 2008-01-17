@@ -432,7 +432,7 @@ public abstract class Connection extends Thread {
 					prefix += " RC";
 				prefix += "] ";
 			} else {
-				prefix = to.toString() + ": ";
+				prefix = to.toString(GlobalSettings.bnUserToStringCommandResponse) + ": ";
 			}
 
 			//Split up the text in to appropriate sized pieces
