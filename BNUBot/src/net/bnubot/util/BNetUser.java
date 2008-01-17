@@ -244,9 +244,9 @@ public class BNetUser {
 	
 	/**
 	 * Equivalent to getShortLogonName if there is no database or if the user isn't in it;
-	 * @return User[#N][@Realm] or [Account (]FullLogonName[)]
+	 * @return User[#N][@Realm] or &lt;Account> [(FullLogonName)]
 	 */
-	private String getAltPrettyName() {
+	private String getAccountAndLogin() {
 		Database d = Database.getInstance();
 		if(d == null)
 			return shortLogonName;
@@ -259,6 +259,33 @@ public class BNetUser {
 				
 				if(account != null)
 					prettyName = account + " (" + prettyName + ")";
+			}
+			if(rsAccount != null)
+				d.close(rsAccount);
+		} catch(SQLException e) {
+			Out.exception(e);
+		}
+		
+		return prettyName;
+	}
+	
+	/**
+	 * Equivalent to getShortLogonName if there is no database or if the user isn't in it;
+	 * @return User[#N][@Realm] or &lt;Account>
+	 */
+	private String getAccountOrLogin() {
+		Database d = Database.getInstance();
+		if(d == null)
+			return shortLogonName;
+
+		String prettyName = shortLogonName;
+		try {
+			AccountResultSet rsAccount = d.getAccount(this);
+			if((rsAccount != null) && rsAccount.next()) {
+				String account = rsAccount.getName();
+				
+				if(account != null)
+					prettyName = account;
 			}
 			if(rsAccount != null)
 				d.close(rsAccount);
@@ -289,7 +316,8 @@ public class BNetUser {
 		case 1: return getShortLogonName();		// BNLogin
 		case 2: return getShortPrettyName();	// Prefix Account
 		case 3: return getPrettyName();			// Prefix Account (BNLogin)
-		case 4: return getAltPrettyName();		// Account (BNLogin)
+		case 4: return getAccountOrLogin();		// Account
+		case 5: return getAccountAndLogin();	// Account (BNLogin)
 		}
 		throw new IllegalStateException("Unknown GlobalSettings.bnUserToString " + GlobalSettings.bnUserToString);
 	}
