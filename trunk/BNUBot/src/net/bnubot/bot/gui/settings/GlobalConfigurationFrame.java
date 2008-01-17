@@ -208,6 +208,7 @@ public class GlobalConfigurationFrame extends JDialog {
 					"BNLogin",
 					"Prefix Account",
 					"Prefix Account (BNLogin)",
+					"Account",
 					"Account (BNLogin)" };
 				cmbBNUserToString = ConfigFactory.makeCombo("BNetUser.toString()", values, false, boxAll);
 				cmbBNUserToString.setSelectedIndex(GlobalSettings.bnUserToString);
