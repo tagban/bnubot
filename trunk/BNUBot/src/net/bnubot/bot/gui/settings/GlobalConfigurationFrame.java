@@ -79,6 +79,7 @@ public class GlobalConfigurationFrame extends JDialog {
 	// Display
 	private ConfigComboBox cmbBNUserToString = null;
 	private ConfigComboBox cmbBNUserToStringUserList = null;
+	private ConfigComboBox cmbBNUserToStringCommandResponse = null;
 	private ConfigCheckBox chkEnableLegacyIcons = null;
 	private ConfigComboBox cmbTrayIconMode = null;
 	private ConfigCheckBox chkTrayDisplayConnectDisconnect = null;
@@ -214,6 +215,8 @@ public class GlobalConfigurationFrame extends JDialog {
 				cmbBNUserToString.setSelectedIndex(GlobalSettings.bnUserToString);
 				cmbBNUserToStringUserList = ConfigFactory.makeCombo("User List", values, false, boxAll);
 				cmbBNUserToStringUserList.setSelectedIndex(GlobalSettings.bnUserToStringUserList);
+				cmbBNUserToStringCommandResponse = ConfigFactory.makeCombo("Command Response", values, false, boxAll);
+				cmbBNUserToStringCommandResponse.setSelectedIndex(GlobalSettings.bnUserToStringCommandResponse);
 				
 				boxAll.add(chkEnableLegacyIcons = new ConfigCheckBox("Enable Legacy Icons", GlobalSettings.enableLegacyIcons));
 				
@@ -395,6 +398,7 @@ public class GlobalConfigurationFrame extends JDialog {
 			TimeFormatter.tsFormat = (String)cmbTSFormat.getSelectedItem();
 			GlobalSettings.bnUserToString = cmbBNUserToString.getSelectedIndex();
 			GlobalSettings.bnUserToStringUserList = cmbBNUserToStringUserList.getSelectedIndex();
+			GlobalSettings.bnUserToStringCommandResponse = cmbBNUserToStringCommandResponse.getSelectedIndex();
 			GlobalSettings.releaseType = (ReleaseType)cmbReleaseType.getSelectedItem();
 			GlobalSettings.autoConnect = chkAutoConnect.isSelected();
 			GlobalSettings.enableMirrorSelector = chkEnableMirrorSelector.isSelected();
@@ -483,6 +487,7 @@ public class GlobalConfigurationFrame extends JDialog {
 			cmbTSFormat.setSelectedItem(TimeFormatter.tsFormat);
 			cmbBNUserToString.setSelectedIndex(GlobalSettings.bnUserToString);
 			cmbBNUserToStringUserList.setSelectedIndex(GlobalSettings.bnUserToStringUserList);
+			cmbBNUserToStringCommandResponse.setSelectedIndex(GlobalSettings.bnUserToStringCommandResponse);
 			cmbReleaseType.setSelectedItem(GlobalSettings.releaseType);
 			chkAutoConnect.setSelected(GlobalSettings.autoConnect);
 			chkEnableMirrorSelector.setSelected(GlobalSettings.enableMirrorSelector);

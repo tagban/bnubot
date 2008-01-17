@@ -1,5 +1,6 @@
 2.0.3.1:
 * Added a setting to customize the userlist display format
+* Added a setting to customize the command response display format
 * Added a setting to enable the HTMLOutput plugin
 * Moved the HTMLOutput userlist to logs
 * Added highlighting of "my user" in the userlist
