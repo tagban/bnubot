@@ -9,6 +9,7 @@
 * Added logic to prevent KeyManager from choking on tabs
 * Addressed a common problem with Derby and CommandEventHandler.touchUser() 
 * Added BNetUser.toStringEx() to display ping and flags
+* Fixed a bug where 'commander access' was not passed to commands properly
 
 2.0.3 (r1072) 2008-01-07:
 * Completely redesigned the command subsystem to fit a more object-oriented model

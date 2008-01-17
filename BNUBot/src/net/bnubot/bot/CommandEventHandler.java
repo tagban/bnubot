@@ -1141,7 +1141,7 @@ public class CommandEventHandler implements EventHandler {
 		Out.debug(getClass(), user.toString() + ": " + command + " [" + whisperBack + "]");
 		
 		try {
-			Long commanderAccess = null;
+			long commanderAccess = 0;
 			String commanderAccount = null;
 			Long commanderAccountID = null;
 			
@@ -1215,7 +1215,7 @@ public class CommandEventHandler implements EventHandler {
 					param,
 					params,
 					whisperBack,
-					lastCommandTime,
+					commanderAccess,
 					commanderAccount,
 					commanderAccountID,
 					superUser);
