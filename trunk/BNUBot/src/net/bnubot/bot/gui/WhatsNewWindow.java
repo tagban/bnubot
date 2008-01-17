@@ -30,11 +30,10 @@ public class WhatsNewWindow extends JDialog {
 	public WhatsNewWindow() {
 		final JTabbedPane jtp = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
 		final String changeLog = getText();
-		final String newLine = (changeLog.indexOf('\r') == -1) ? "\n" : "\r\n";
 		
 		// Split up the change log by version
-		for(String entry : changeLog.split(newLine + newLine)) {
-			String[] data = entry.split(newLine, 2);
+		for(String entry : changeLog.split("\n\n")) {
+			String[] data = entry.split("\n", 2);
 			JTextComponent jta = new ColoredTextArea();
 			jta.setText(data[1]);
 			jta.setEditable(false);
