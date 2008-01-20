@@ -1156,7 +1156,6 @@ public class BNCSConnection extends Connection {
 					
 					switch(eid) {
 					case EID_SHOWUSER:
-					case EID_USERFLAGS:
 					case EID_JOIN:
 						statstr = is.readStatString();
 						break;
