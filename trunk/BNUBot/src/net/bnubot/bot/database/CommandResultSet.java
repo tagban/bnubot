@@ -26,7 +26,7 @@ public class CommandResultSet extends ExtendableResultSet {
 		return value;
 	}
 	
-	public void setId(Long access) throws SQLException {
+	public void setAccess(Long access) throws SQLException {
 		if(access == null)
 			updateNull(ROW_ACCESS);
 		else
