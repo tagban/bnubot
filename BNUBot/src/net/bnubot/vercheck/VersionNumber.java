@@ -57,6 +57,10 @@ public class VersionNumber {
 		return BUILD_DATE;
 	}
 
+	public void setBuildDate(Date buildDate) {
+		BUILD_DATE = buildDate;
+	}
+
 	public boolean isNewerThan(VersionNumber vn) {
 		return compareTo(vn) > 0;
 	}
@@ -110,7 +114,48 @@ public class VersionNumber {
 		return RELEASE_TYPE;
 	}
 
+	public void setReleaseType(ReleaseType releaseType) {
+		RELEASE_TYPE = releaseType;
+		VER_STRING = null;
+	}
+
 	public Integer revision() {
 		return VER_SVN_REVISION;
+	}
+
+	public Integer getMajor() {
+		return VER_MAJOR;
+	}
+
+	public void setMajor(Integer major) {
+		VER_MAJOR = major;
+		VER_STRING = null;
+	}
+
+	public Integer getMinor() {
+		return VER_MINOR;
+	}
+
+	public void setMinor(Integer minor) {
+		VER_MINOR = minor;
+		VER_STRING = null;
+	}
+
+	public Integer getRevision() {
+		return VER_REVISION;
+	}
+
+	public void setRevision(Integer revision) {
+		VER_REVISION = revision;
+		VER_STRING = null;
+	}
+
+	public Integer getRelease() {
+		return VER_RELEASE;
+	}
+
+	public void setRelease(Integer release) {
+		VER_RELEASE = release;
+		VER_STRING = null;
 	}
 }
