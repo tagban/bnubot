@@ -11,6 +11,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPasswordField;
+import javax.swing.JSpinner;
 
 public class ConfigFactory {
 	private static final int lblWidth = 100;
@@ -36,7 +37,6 @@ public class ConfigFactory {
 		boxLine.add(makeLabel(label));
 		boxLine.add(txt);
 		parent.add(boxLine);
-
 		return txt;
 	}
 
@@ -48,7 +48,6 @@ public class ConfigFactory {
 		boxLine.add(makeLabel(label));
 		boxLine.add(pass);
 		parent.add(boxLine);
-
 		return pass;
 	}
 
@@ -62,7 +61,19 @@ public class ConfigFactory {
 		boxLine.add(makeLabel(label));
 		boxLine.add(cmb);
 		parent.add(boxLine);
-
 		return cmb;
+	}
+
+	public static JSpinner makeSpinner(String label, Object value, Box parent) {
+		JSpinner spinner = new JSpinner();
+		spinner.setBorder(null);
+		spinner.setValue(value);
+		spinner.setMaximumSize(maxComponentSize);
+
+		Box boxLine = new Box(BoxLayout.X_AXIS);
+		boxLine.add(makeLabel(label));
+		boxLine.add(spinner);
+		parent.add(boxLine);
+		return spinner;
 	}
 }

@@ -213,4 +213,23 @@ public final class CurrentVersion {
 			throw new IllegalStateException(e.getMessage(), e);
 		}
 	}
+
+	public static void setVersion(VersionNumber vnCurrent) {
+		try {
+			Properties versionprops = new SortedProperties();
+
+			versionprops.setProperty(sReleaseType, vnCurrent.getReleaseType().name());
+			versionprops.setProperty(sVerMajor, vnCurrent.getMajor().toString());
+			versionprops.setProperty(sVerMinor, vnCurrent.getMinor().toString());
+			versionprops.setProperty(sVerRevision, vnCurrent.getRevision().toString());
+			versionprops.setProperty(sVerRelease, vnCurrent.getRelease().toString());
+			versionprops.setProperty(sVerSVNRevision, vnCurrent.revision().toString());
+			
+			File file = new File("src/net/bnubot/version.properties");
+			versionprops.store(new FileOutputStream(file), VER.toString());
+		} catch (Exception e) {
+			Out.exception(e);
+			throw new IllegalStateException(e.getMessage(), e);
+		}
+	}
 }
