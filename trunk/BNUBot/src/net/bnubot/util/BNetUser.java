@@ -334,6 +334,8 @@ public class BNetUser {
 				out += "Channel Operator, ";
 			if((flags & 0x04) != 0)
 				out += "Speaker, ";
+			if((flags & 0x10) != 0)
+				out += "No UDP Support, ";
 			if((flags & 0x40) != 0)
 				out += "Battle.net Guest, ";
 			if((flags & 0x20) != 0)
@@ -342,6 +344,9 @@ public class BNetUser {
 				out += "GF Official, ";
 			if((flags & 0x200000) != 0)
 				out += "GF Player, ";
+			int flags2 = flags & ~0x30007F;
+			if(flags2 != 0)
+				out += "0x" + Integer.toHexString(flags2) + ", ";
 			out = out.substring(0, out.length() - 2);
 			out += ")";
 		}
