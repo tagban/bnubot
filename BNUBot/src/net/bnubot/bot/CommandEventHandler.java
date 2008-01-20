@@ -834,6 +834,36 @@ public class CommandEventHandler implements EventHandler {
 				bnSubject.resetPrettyName();
 				source.sendChat(user, "User [" + subject + "] was added to account [" + params[1] + "] successfully.", whisperBack);
 			}});
+		Profile.registerCommand("setauth", new CommandRunnable() {
+			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack,
+					long commanderAccess, String commanderAccount, Long commanderAccountID, boolean superUser)
+			throws Exception {
+				try {
+					if(params.length != 2)
+						throw new InvalidUseException();
+					
+					CommandResultSet rsCommand = d.getCommand(params[0]);
+					if(!rsCommand.next()) {
+						d.close(rsCommand);
+						source.sendChat(user, "That command does not exist!", whisperBack);
+						return;
+					}
+					
+					try {
+						Long access = new Long(params[1]);
+						rsCommand.setAccess(access);
+						rsCommand.updateRow();
+						d.close(rsCommand);
+						
+						source.sendChat(user, "Successfully changed the authorization required for command [" + params[0] + "] to " + access, whisperBack);
+					} catch(NumberFormatException e) {
+						d.close(rsCommand);
+						throw new InvalidUseException();
+					}
+				} catch(InvalidUseException e) {
+					source.sendChat(user, "Use: %trigger%setauth <command> <access>", whisperBack);
+				}
+			}});
 		Profile.registerCommand("setbirthday", new CommandRunnable() {
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack,
 					long commanderAccess, String commanderAccount, Long commanderAccountID, boolean superUser)
