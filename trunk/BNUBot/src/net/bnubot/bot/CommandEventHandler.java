@@ -839,7 +839,7 @@ public class CommandEventHandler implements EventHandler {
 					long commanderAccess, String commanderAccount, Long commanderAccountID, boolean superUser)
 			throws Exception {
 				try {
-					if(params.length != 2)
+					if((params == null) || (params.length != 2))
 						throw new InvalidUseException();
 					
 					CommandResultSet rsCommand = d.getCommand(params[0]);
