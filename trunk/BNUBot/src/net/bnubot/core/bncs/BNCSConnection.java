@@ -1159,6 +1159,12 @@ public class BNCSConnection extends Connection {
 					case EID_JOIN:
 						statstr = is.readStatString();
 						break;
+					case EID_USERFLAGS:
+						// Sometimes USERFLAGS contains a statstring; sometimes it doesn't
+						statstr = is.readStatString();
+						if(statstr.toString().length() == 0)
+							statstr = null;
+						break;
 					default:
 						text = is.readNTString();
 						break;
