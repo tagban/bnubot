@@ -82,6 +82,7 @@ public class GlobalConfigurationFrame extends JDialog {
 	private ConfigComboBox cmbBNUserToStringCommandResponse = null;
 	private ConfigCheckBox chkEnableLegacyIcons = null;
 	private ConfigComboBox cmbTrayIconMode = null;
+	private ConfigCheckBox chkTrayMinimizeTo = null;
 	private ConfigCheckBox chkTrayDisplayConnectDisconnect = null;
 	private ConfigCheckBox chkTrayDisplayChannel = null;
 	private ConfigCheckBox chkTrayDisplayJoinPart = null;
@@ -225,6 +226,7 @@ public class GlobalConfigurationFrame extends JDialog {
 				cmbTrayIconMode = ConfigFactory.makeCombo("Tray Icon", TrayIconMode.values(), false, boxAll);
 				cmbTrayIconMode.setSelectedItem(GlobalSettings.trayIconMode);
 	
+				boxAll.add(chkTrayMinimizeTo = new ConfigCheckBox("Minimize To System Tray (Java 6+)", GlobalSettings.trayMinimizeTo));
 				boxAll.add(chkTrayDisplayConnectDisconnect = new ConfigCheckBox("Tray: Connect/Disconnect", GlobalSettings.trayDisplayConnectDisconnect));
 				boxAll.add(chkTrayDisplayChannel = new ConfigCheckBox("Tray: Channel", GlobalSettings.trayDisplayChannel));
 				boxAll.add(chkTrayDisplayJoinPart = new ConfigCheckBox("Tray: Join/Part", GlobalSettings.trayDisplayJoinPart));
@@ -411,6 +413,7 @@ public class GlobalConfigurationFrame extends JDialog {
 			GlobalSettings.displayJoinParts = chkDisplayJoinParts.isSelected();
 			GlobalSettings.displayChannelUsers = chkDisplayChannelUsers.isSelected();
 			GlobalSettings.trayIconMode = (TrayIconMode)cmbTrayIconMode.getSelectedItem();
+			GlobalSettings.trayMinimizeTo = chkTrayMinimizeTo.isSelected();
 			GlobalSettings.trayDisplayConnectDisconnect = chkTrayDisplayConnectDisconnect.isSelected();
 			GlobalSettings.trayDisplayChannel = chkTrayDisplayChannel.isSelected();
 			GlobalSettings.trayDisplayJoinPart = chkTrayDisplayJoinPart.isSelected();
@@ -502,6 +505,7 @@ public class GlobalConfigurationFrame extends JDialog {
 			chkEnableTabCompleteCommand.setSelected(GlobalSettings.enableTabCompleteCommand);
 			chkEnableCLI.setSelected(GlobalSettings.enableCLI);
 			cmbTrayIconMode.setSelectedItem(GlobalSettings.trayIconMode);
+			chkTrayMinimizeTo.setSelected(GlobalSettings.trayMinimizeTo);
 			chkTrayDisplayConnectDisconnect.setSelected(GlobalSettings.trayDisplayConnectDisconnect);
 			chkTrayDisplayChannel.setSelected(GlobalSettings.trayDisplayChannel);
 			chkTrayDisplayJoinPart.setSelected(GlobalSettings.trayDisplayJoinPart);

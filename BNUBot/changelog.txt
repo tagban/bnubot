@@ -14,6 +14,7 @@
 * Added a 'setauth' command
 * Added a version editor utility
 * Added an option to disable tab completion
+* Added an option to disable minimize to system tray
 
 2.0.3 (r1072) 2008-01-07:
 * Completely redesigned the command subsystem to fit a more object-oriented model
