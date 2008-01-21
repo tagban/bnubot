@@ -75,10 +75,10 @@ public class VersionEditor extends JDialog {
 	
 	private void save() {
 		vnCurrent.setReleaseType((ReleaseType)cmbReleaseType.getSelectedItem());
-		vnCurrent.setMajor((Integer)spnMajor.getValue());
-		vnCurrent.setMinor((Integer)spnMinor.getValue());
-		vnCurrent.setRevision((Integer)spnRevision.getValue());
-		vnCurrent.setRelease((Integer)spnRelease.getValue());
+		vnCurrent.setMajor(spnMajor.getValue());
+		vnCurrent.setMinor(spnMinor.getValue());
+		vnCurrent.setRevision(spnRevision.getValue());
+		vnCurrent.setRelease(spnRelease.getValue());
 		vnCurrent.setBuildDate(new Date());
 		CurrentVersion.setVersion(vnCurrent);
 		dispose();

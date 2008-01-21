@@ -380,7 +380,7 @@ public class GuiDesktop extends JFrame {
 		
 		addWindowStateListener(new WindowStateListener() {
 			public void windowStateChanged(WindowEvent e) {
-				if((e.getNewState() & Frame.ICONIFIED) != 0) {
+				if(GlobalSettings.trayMinimizeTo && ((e.getNewState() & Frame.ICONIFIED) != 0)) {
 					setVisible(false);
 					setState(e.getNewState() & ~Frame.ICONIFIED);
 				}

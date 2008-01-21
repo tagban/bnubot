@@ -57,6 +57,7 @@ public class GlobalSettings {
 	public static boolean enableCLI;
 	public static boolean enableGUI;
 	public static TrayIconMode trayIconMode;
+	public static boolean trayMinimizeTo;
 	public static boolean trayDisplayConnectDisconnect;
 	public static boolean trayDisplayChannel;
 	public static boolean trayDisplayJoinPart;
@@ -189,6 +190,7 @@ public class GlobalSettings {
 		Settings.writeBoolean(null, "enableCLI", enableCLI);
 		Settings.writeBoolean(null, "enableGUI", enableGUI);
 		Settings.writeEnum(null, "trayIconMode", trayIconMode);
+		Settings.writeBoolean(null, "trayMinimizeTo", trayMinimizeTo);
 		Settings.writeBoolean(null, "trayDisplayConnectDisconnect", trayDisplayConnectDisconnect);
 		Settings.writeBoolean(null, "trayDisplayChannel", trayDisplayChannel);
 		Settings.writeBoolean(null, "trayDisplayJoinPart", trayDisplayJoinPart);
@@ -234,6 +236,7 @@ public class GlobalSettings {
 		enableCLI = Settings.readBoolean(null, "enableCLI", false);
 		enableGUI = Settings.readBoolean(null, "enableGUI", true);
 		trayIconMode = Settings.readEnum(TrayIconMode.class, null, "trayIconMode", TrayIconMode.ENABLED);
+		trayMinimizeTo = Settings.readBoolean(null, "trayMinimizeTo", true);
 		trayDisplayConnectDisconnect = Settings.readBoolean(null, "trayDisplayConnectDisconnect", false);
 		trayDisplayChannel = Settings.readBoolean(null, "trayDisplayChannel", false);
 		trayDisplayJoinPart = Settings.readBoolean(null, "trayDisplayJoinPart", false);
