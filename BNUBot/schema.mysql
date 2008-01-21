@@ -172,6 +172,7 @@ INSERT INTO command (access, name, description, cmdgroup) VALUES
 (36,	'say', NULL, 'administration'),
 (1,		'seen', NULL, 'accounts'),
 (34,	'setaccount', NULL, 'accounts'),
+(36,	'setauth', NULL, 'commands'),
 (1,		'setbirthday', NULL, 'accounts'),
 (35,	'setrank', NULL, 'clan'),
 (35,	'setrecruiter', NULL, 'accounts'),
