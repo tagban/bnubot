@@ -285,7 +285,7 @@ public class GuiEventHandler implements EventHandler {
 				}
 				case '\t': {
 					e.consume();
-					if(GlobalSettings.tabCompleteMode.enableTC()) {
+					if(GlobalSettings.enableTabCompleteUser) {
 						tabComplete = true;
 						tcUserSearch = true;
 					}
@@ -297,14 +297,14 @@ public class GuiEventHandler implements EventHandler {
 						if("/r".equals(txt) || "/rw".equals(txt))
 							chatTextArea.setText("/w " + lastWhisperFrom.getShortLogonName());
 					}
-					if("/cmd".equals(chatTextArea.getText())) {
+					if("/cmd".equals(chatTextArea.getText()) && GlobalSettings.enableTabCompleteCommand) {
 						tabComplete = true;
 						tcUserSearch = false;
 					}
 					break;
 				}
 				case '/': {
-					if("/".equals(chatTextArea.getText())) {
+					if("/".equals(chatTextArea.getText()) && GlobalSettings.enableTabCompleteCommand) {
 						tabComplete = true;
 						tcUserSearch = false;
 					}
