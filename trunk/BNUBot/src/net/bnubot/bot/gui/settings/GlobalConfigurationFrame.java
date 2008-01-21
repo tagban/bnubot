@@ -87,6 +87,8 @@ public class GlobalConfigurationFrame extends JDialog {
 	private ConfigCheckBox chkTrayDisplayJoinPart = null;
 	private ConfigCheckBox chkTrayDisplayChatEmote = null;
 	private ConfigCheckBox chkTrayDisplayWhisper = null;
+	private ConfigCheckBox chkEnableTabCompleteUser = null;
+	private ConfigCheckBox chkEnableTabCompleteCommand = null;
 	private ConfigComboBox cmbTabCompleteMode = null;
 	private ConfigComboBox cmbTSFormat = null;
 	private ConfigComboBox cmbColorScheme = null;
@@ -228,8 +230,10 @@ public class GlobalConfigurationFrame extends JDialog {
 				boxAll.add(chkTrayDisplayJoinPart = new ConfigCheckBox("Tray: Join/Part", GlobalSettings.trayDisplayJoinPart));
 				boxAll.add(chkTrayDisplayChatEmote = new ConfigCheckBox("Tray: Chat/Emote", GlobalSettings.trayDisplayChatEmote));
 				boxAll.add(chkTrayDisplayWhisper = new ConfigCheckBox("Tray: Whisper", GlobalSettings.trayDisplayWhisper));
+				boxAll.add(chkEnableTabCompleteUser = new ConfigCheckBox("User Tab Completion", GlobalSettings.enableTabCompleteUser));
+				boxAll.add(chkEnableTabCompleteCommand = new ConfigCheckBox("Command Tab Completion", GlobalSettings.enableTabCompleteCommand));
 				
-				cmbTabCompleteMode = ConfigFactory.makeCombo("Tab Complete", TabCompleteMode.values(), false, boxAll);
+				cmbTabCompleteMode = ConfigFactory.makeCombo("Tab Complete Mode", TabCompleteMode.values(), false, boxAll);
 				cmbTabCompleteMode.setSelectedItem(GlobalSettings.tabCompleteMode);
 				
 				values = new String[] { TimeFormatter.tsFormat, "%1$tH:%1$tM:%1$tS.%1$tL", "%1$tH:%1$tM:%1$tS", "%1$tH:%1$tM" };
@@ -414,6 +418,8 @@ public class GlobalConfigurationFrame extends JDialog {
 			GlobalSettings.trayDisplayWhisper = chkTrayDisplayWhisper.isSelected();
 			GlobalSettings.tabCompleteMode = (TabCompleteMode)cmbTabCompleteMode.getSelectedItem();
 			GlobalSettings.enableLegacyIcons = chkEnableLegacyIcons.isSelected();
+			GlobalSettings.enableTabCompleteUser = chkEnableTabCompleteUser.isSelected();
+			GlobalSettings.enableTabCompleteCommand = chkEnableTabCompleteCommand.isSelected();
 			GlobalSettings.enableCLI = chkEnableCLI.isSelected();
 			GlobalSettings.enableTrivia = chkEnableTrivia.isSelected();
 			GlobalSettings.triviaRoundLength = Integer.parseInt(txtTriviaRoundLength.getText());
@@ -492,6 +498,8 @@ public class GlobalConfigurationFrame extends JDialog {
 			chkAutoConnect.setSelected(GlobalSettings.autoConnect);
 			chkEnableMirrorSelector.setSelected(GlobalSettings.enableMirrorSelector);
 			chkEnableLegacyIcons.setSelected(GlobalSettings.enableLegacyIcons);
+			chkEnableTabCompleteUser.setSelected(GlobalSettings.enableTabCompleteUser);
+			chkEnableTabCompleteCommand.setSelected(GlobalSettings.enableTabCompleteCommand);
 			chkEnableCLI.setSelected(GlobalSettings.enableCLI);
 			cmbTrayIconMode.setSelectedItem(GlobalSettings.trayIconMode);
 			chkTrayDisplayConnectDisconnect.setSelected(GlobalSettings.trayDisplayConnectDisconnect);

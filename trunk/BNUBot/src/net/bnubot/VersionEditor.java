@@ -14,10 +14,10 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JSpinner;
 
 import net.bnubot.bot.gui.components.ConfigComboBox;
 import net.bnubot.bot.gui.components.ConfigFactory;
+import net.bnubot.bot.gui.components.ConfigSpinner;
 import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.ReleaseType;
 import net.bnubot.vercheck.VersionNumber;
@@ -27,14 +27,15 @@ public class VersionEditor extends JDialog {
 
 	public static void main(String args[]) {
 		new VersionEditor();
+		System.exit(0);
 	}
 	
 	VersionNumber vnCurrent = CurrentVersion.version();
 	ConfigComboBox cmbReleaseType;
-	JSpinner spnMajor;
-	JSpinner spnMinor;
-	JSpinner spnRevision;
-	JSpinner spnRelease;
+	ConfigSpinner spnMajor;
+	ConfigSpinner spnMinor;
+	ConfigSpinner spnRevision;
+	ConfigSpinner spnRelease;
 	JButton btnSave;
 	
 	public VersionEditor() throws HeadlessException {

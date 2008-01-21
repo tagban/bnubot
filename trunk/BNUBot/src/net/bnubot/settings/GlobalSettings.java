@@ -35,13 +35,8 @@ public class GlobalSettings {
 	}
 	
 	public static enum TabCompleteMode {
-		DISABLED,
 		CONTAINS_STRING,
 		STARTS_WITH_STRING;
-		
-		public boolean enableTC() {
-			return(this != DISABLED);
-		}
 		
 		public boolean beginsWithMode() {
 			return(this == STARTS_WITH_STRING);
@@ -67,6 +62,8 @@ public class GlobalSettings {
 	public static boolean trayDisplayJoinPart;
 	public static boolean trayDisplayChatEmote;
 	public static boolean trayDisplayWhisper;
+	public static boolean enableTabCompleteUser;
+	public static boolean enableTabCompleteCommand;
 	public static TabCompleteMode tabCompleteMode;
 	public static boolean enableLegacyIcons;
 	public static boolean enableCommands;
@@ -197,6 +194,8 @@ public class GlobalSettings {
 		Settings.writeBoolean(null, "trayDisplayJoinPart", trayDisplayJoinPart);
 		Settings.writeBoolean(null, "trayDisplayChatEmote", trayDisplayChatEmote);
 		Settings.writeBoolean(null, "trayDisplayWhisper", trayDisplayWhisper);
+		Settings.writeBoolean(null, "enableTabCompleteUser", enableTabCompleteUser);
+		Settings.writeBoolean(null, "enableTabCompleteCommand", enableTabCompleteCommand);
 		Settings.writeEnum(null, "tabCompleteMode", tabCompleteMode);
 		Settings.writeBoolean(null, "enableLegacyIcons", enableLegacyIcons);
 		Settings.writeBoolean(null, "enableCommands", enableCommands);
@@ -240,6 +239,8 @@ public class GlobalSettings {
 		trayDisplayJoinPart = Settings.readBoolean(null, "trayDisplayJoinPart", false);
 		trayDisplayChatEmote = Settings.readBoolean(null, "trayDisplayChatEmote", true);
 		trayDisplayWhisper = Settings.readBoolean(null, "trayDisplayWhisper", true);
+		enableTabCompleteUser = Settings.readBoolean(null, "enableTabCompleteUser", true);
+		enableTabCompleteCommand = Settings.readBoolean(null, "enableTabCompleteCommand", false);
 		tabCompleteMode = Settings.readEnum(TabCompleteMode.class, null, "tabCompleteMode", TabCompleteMode.STARTS_WITH_STRING);
 		enableLegacyIcons = Settings.readBoolean(null, "enableLegacyIcons", true);
 		enableCommands = Settings.readBoolean(null, "enableCommands", true);
