@@ -31,6 +31,8 @@ public class InstallMain {
 				System.exit(0);
 		} catch(Exception e) {}
 		
+		Out.setDebug(true);
+		
 		String command = "java -jar BNUBot.jar";
 		String jarFileName = "BNUBot.jar";
 		String downloadFolder = null;
