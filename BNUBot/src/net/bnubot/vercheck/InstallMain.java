@@ -83,6 +83,7 @@ public class InstallMain {
 		
 		// Launch the program
 		Out.info(InstallMain.class, "Launching: " + command);
-		System.exit(rt.exec(command).waitFor());
+		rt.exec(command);
+		System.exit(0);
 	}
 }
