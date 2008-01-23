@@ -42,7 +42,7 @@ public class SHA1Sum {
 		return Integer.toHexString(b & 0xF);
 	}
 	
-	public static String toHex(int b) {
+	private static String toHex(int b) {
 		return hexChr((b & 0xF0) >> 4) + hexChr(b & 0x0F);
 	}
 	

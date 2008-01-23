@@ -11,7 +11,6 @@ import java.awt.Frame;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 
-import net.bnubot.bot.gui.GuiDesktop;
 import net.bnubot.bot.gui.WindowPosition;
 import net.bnubot.settings.GlobalSettings;
 
@@ -40,15 +39,15 @@ public class TaskManager extends Dialog {
 		try {
 			enableGUI = GlobalSettings.enableGUI;
 			if(enableGUI)
-				owner = GuiDesktop.getInstance();
-		} catch(NoClassDefFoundError e) {
+				owner = (Frame)Class.forName("net.bnubot.bot.gui.GuiDesktop").getMethod("getInstance").invoke(null);
+		} catch(Throwable t) {
 			enableGUI = true;
 			owner = new Frame();
 		}
 		
 		if(enableGUI && (tm == null)) {
 			tm = new TaskManager(owner);
-			WindowPosition.load(tm);
+			try { WindowPosition.load(tm); } catch(Throwable t) {}
 			tm.setTitle("Running Tasks");
 			box = new Box(BoxLayout.Y_AXIS);
 			tm.add(box);
