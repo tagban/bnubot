@@ -193,11 +193,13 @@ public class Out {
 		if(globalDebug == debug)
 			return;
 		globalDebug = debug;
-		if(GlobalSettings.enableGUI)
-			GuiDesktop.updateDebugMenuText();
-		debug(Out.class, "Debug logging " + (debug ? "en" : "dis") + "abled");
-		Settings.writeBoolean(null, "debug", debug);
-		Settings.store();
+		try {
+			if(GlobalSettings.enableGUI)
+				GuiDesktop.updateDebugMenuText();
+			debug(Out.class, "Debug logging " + (debug ? "en" : "dis") + "abled");
+			Settings.writeBoolean(null, "debug", debug);
+			Settings.store();
+		} catch(Throwable t) {}
 	}
 
 	/**
