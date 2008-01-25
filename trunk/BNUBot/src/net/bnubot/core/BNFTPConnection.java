@@ -29,7 +29,7 @@ public class BNFTPConnection {
 			return f;
 		
 		try {
-			Socket s = new Socket(cs.bncsServer, cs.port);
+			Socket s = new Socket(cs.server, cs.port);
 			f = downloadFile(s, fileName, path);
 			s.close();
 			return f;
