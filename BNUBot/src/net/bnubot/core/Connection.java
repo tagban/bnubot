@@ -53,6 +53,7 @@ public abstract class Connection extends Thread {
 	protected ConnectionState connectionState = ConnectionState.ALLOW_CONNECT;
 	protected List<Connection> slaves = new ArrayList<Connection>();
 	protected String channelName = null;
+	protected int channelFlags = 0;
 	protected boolean forceReconnect = false;
 	protected boolean initialized = false;
 	protected boolean disposed = false;
@@ -581,6 +582,7 @@ public abstract class Connection extends Thread {
 
 	public void bnetDisconnected() {
 		channelName = null;
+		channelFlags = 0;
 		users.clear();
 		myUser = null;
 
@@ -624,8 +626,9 @@ public abstract class Connection extends Thread {
 		}
 	}
 
-	public void joinedChannel(String channel) {
+	public void joinedChannel(String channel, int flags) {
 		channelName = channel;
+		channelFlags = flags;
 		users.clear();
 
 		synchronized(eventHandlers) {

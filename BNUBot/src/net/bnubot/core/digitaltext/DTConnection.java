@@ -29,6 +29,7 @@ import net.bnubot.util.BNetUser;
 import net.bnubot.util.HexDump;
 import net.bnubot.util.MirrorSelector;
 import net.bnubot.util.Out;
+import net.bnubot.util.StatString;
 import net.bnubot.util.task.Task;
 import net.bnubot.util.task.TaskManager;
 
@@ -172,9 +173,15 @@ public class DTConnection extends Connection {
 					case 0x00:
 						recieveInfo("Login accepted.");
 						break;
+					case 0x01:
+						recieveError("Login failed");
+						return false;
 					case 0x02:
 						recieveInfo("Login created.");
 						break;
+					case 0x03:
+						recieveError("That account is already logged in.");
+						return false;
 					default:
 						recieveError("Unknown PKT_LOGON status 0x" + Integer.toHexString(status));
 						disconnect(false);
@@ -241,9 +248,132 @@ public class DTConnection extends Connection {
 			if(dtInputStream.available() > 0) {
 				DTPacketReader pr;
 				pr = new DTPacketReader(dtInputStream);
-				//BNetInputStream is = pr.getData();
+				BNetInputStream is = pr.getData();
 				
 				switch(pr.packetId) {
+				case PKT_ENTERCHANNEL: {
+					/* (CString) 	Channel
+					 * (UInt32)	Flags
+					 * (CString)	MOTD
+					 * 
+					 * Flags:
+					 * 0x01 : Registered
+					 * 0x02 : Silent
+					 * 0x04 : Admin
+					 */
+					
+					String channel = is.readNTString();
+					int flags = is.readDWord();
+					String motd = is.readNTString();
+					
+					joinedChannel(channel, flags);
+					recieveInfo(motd);
+					break;
+				}
+				
+				case PKT_CHANNELUSERS: {
+					/* (Byte)		User Count
+					 * (void)		User Data
+					 * 
+					 * For each user...
+					 * 	(CString)	Username
+					 * 	(UInt32)	Flags
+					 * 
+					 * User Flags:
+					 * 0x01 : Operator
+					 * 0x02 : Ignored
+					 * 0x04 : Admin
+					 * 0x08 : NetOp
+					 */
+					int numUsers = is.readByte();
+					for(int i = 0; i < numUsers; i++) {
+						String username = is.readNTString();
+						int flags = is.readDWord();
+						int bnflags = 0x10;
+						
+						// Make them look like bnet flags
+						if((flags & 0x08) != 0)
+							bnflags |= 0x08;
+						if((flags & 0x04) != 0)
+							bnflags |= 0x01;
+						if((flags & 0x02) != 0)
+							bnflags |= 0x20;
+						if((flags & 0x01) != 0)
+							bnflags |= 0x02;
+						
+						BNetUser user = new BNetUser(username, myUser.getFullAccountName());
+						user.setFlags(bnflags);
+						user.setStatString(new StatString("TAHC"));
+						channelUser(user);
+					}
+					break;
+				}
+				
+				case PKT_CHANNELCHAT: {
+					/* (Byte)		Chat Type
+					 * (CString)	From
+					 * (CString)	Message
+					 * 
+					 * Chat Type values:
+					 * 0x00 : Normal
+					 * 0x01 : Self Talking
+					 * 0x02 : Whisper To
+					 * 0x03 : Whisper From
+					 * 0x04 : Emote
+					 * 0x05 : Self Emote
+					 */
+					int chatType = is.readByte();
+					String username = is.readNTString();
+					String text = is.readNTString();
+					
+					// Get a BNetUser object for the user
+					BNetUser user = null;
+					if(myUser.equals(username))
+						user = myUser;
+					else
+						user = getBNetUser(username);
+					if(user == null)
+						user = new BNetUser(username, cs.myRealm);
+					
+					switch(chatType) {
+					case 0x00: // Normal
+					case 0x01: // Self talking
+						recieveChat(user, text);
+						break;
+					case 0x02: // Whisper to
+						whisperSent(user, text);
+						break;
+					case 0x03: // Whisper from
+						whisperRecieved(user, text);
+						break;
+					case 0x04: // Emote
+					case 0x05: // Self Emote
+						recieveEmote(user, text);
+						break;
+					default:
+						Out.debugAlways(getClass(), "Unexpected chat type 0x" + Integer.toHexString(chatType) + " from " + username + ": " + text);
+						break;
+					}
+					
+					break;
+				}
+				
+				case PKT_UNKNOWN_0x22: {
+					int unknown = is.readDWord();
+					String text = is.readNTString();
+					switch(unknown) {
+					case 0x00:
+						recieveInfo(text);
+						break;
+					case 0x01:
+						recieveError(text);
+						break;
+					default:
+						recieveInfo("0x" + Integer.toHexString(unknown) + ": " + text);
+						break;
+					}
+					break;
+				}
 				
 				default:
 					Out.debugAlways(getClass(), "Unexpected packet " + pr.packetId.name() + "\n" + HexDump.hexDump(pr.data));
@@ -275,7 +405,7 @@ public class DTConnection extends Connection {
 	public void queueChatHelper(String text, boolean allowCommands) {
 		text = cleanText(text);
 		
-		try {
+		/*try {
 			if(text.charAt(0) == '/') {
 				if(text.substring(1, 3).equals("j ")) {
 					sendJoinChannel(text.substring(3));
@@ -286,7 +416,7 @@ public class DTConnection extends Connection {
 					return;
 				}
 			}
-		} catch(Exception e) {}
+		} catch(Exception e) {}*/
 		
 		super.queueChatHelper(text, allowCommands);
 	}
