@@ -289,23 +289,40 @@ public class DTConnection extends Connection {
 					for(int i = 0; i < numUsers; i++) {
 						String username = is.readNTString();
 						int flags = is.readDWord();
-						int bnflags = 0x10;
 						
-						// Make them look like bnet flags
-						if((flags & 0x08) != 0)
-							bnflags |= 0x08;
-						if((flags & 0x04) != 0)
-							bnflags |= 0x01;
-						if((flags & 0x02) != 0)
-							bnflags |= 0x20;
-						if((flags & 0x01) != 0)
-							bnflags |= 0x02;
-						
-						BNetUser user = new BNetUser(username, myUser.getFullAccountName());
-						user.setFlags(bnflags);
-						user.setStatString(new StatString("TAHC"));
-						channelUser(user);
+						channelUser(findCreateBNUser(username, flags));
 					}
+					break;
+				}
+				
+				case PKT_UNKNOWN_0x20: {
+					/* (CString)	Username
+					 * (UInt32)	Flags
+					 */
+					String username = is.readNTString();
+					int flags = is.readDWord();
+					
+					channelUser(findCreateBNUser(username, flags));
+					break;
+				}
+				
+				case PKT_CHANNELJOIN: {
+					/* (CString)	Username
+					 * (UInt32)	Flags
+					 */
+					String username = is.readNTString();
+					int flags = is.readDWord();
+					
+					channelJoin(findCreateBNUser(username, flags));
+					break;
+				}
+				
+				case PKT_CHANNELLEAVE: {
+					/* (CString)	Username
+					 */
+					String username = is.readNTString();
+					
+					channelLeave(findCreateBNUser(username, 0));
 					break;
 				}
 				
@@ -369,7 +386,7 @@ public class DTConnection extends Connection {
 						recieveError(text);
 						break;
 					default:
-						recieveInfo("0x" + Integer.toHexString(unknown) + ": " + text);
+						Out.debugAlways(getClass(), "0x" + Integer.toHexString(unknown) + ": " + text);
 						break;
 					}
 					break;
@@ -384,6 +401,39 @@ public class DTConnection extends Connection {
 				yield();
 			}
 		}
+	}
+
+	/**
+	 * Find or create a BNetUser
+	 * @param username The user's name
+	 * @param flags Flags to mangle and set
+	 * @return BNetUser describing the person
+	 */
+	private BNetUser findCreateBNUser(String username, int flags) {
+		// Make flags look like bnet flags
+		int bnflags = 0x10;	// No UDP
+		if((flags & 0x08) != 0)
+			bnflags |= 0x08;
+		if((flags & 0x04) != 0)
+			bnflags |= 0x01;
+		if((flags & 0x02) != 0)
+			bnflags |= 0x20;
+		if((flags & 0x01) != 0)
+			bnflags |= 0x02;
+		
+		// Create the BNetUser
+		BNetUser user = getBNetUser(username);
+		if(user == null)
+			user = new BNetUser(username, cs.myRealm);
+		
+		// Flags
+		user.setFlags(bnflags);
+		
+		// StatString
+		if(user.getStatString() == null)
+			user.setStatString(new StatString("TAHC"));
+		
+		return user;
 	}
 	
 	public boolean isOp() {
