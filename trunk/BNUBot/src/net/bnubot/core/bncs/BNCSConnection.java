@@ -1194,7 +1194,7 @@ public class BNCSConnection extends Connection {
 						break;
 					case EID_CHANNEL:
 						channelName = text;
-						joinedChannel(text);
+						joinedChannel(text, flags);
 						titleChanged();
 						break;
 					case EID_WHISPERSENT:
@@ -1689,7 +1689,7 @@ public class BNCSConnection extends Connection {
 		BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_LEAVECHAT);
 		p.SendPacket(bncsOutputStream);
 		channelName = null;
-		super.joinedChannel(null);
+		joinedChannel(null, 0);
 	}
 
 	/**
