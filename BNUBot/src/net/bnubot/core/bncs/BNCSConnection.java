@@ -1660,10 +1660,7 @@ public class BNCSConnection extends Connection {
 	}
 	
 	public boolean isOp() {
-		Integer myFlags = myUser.getFlags();
-		if(myFlags == null)
-			return false;
-		return (myFlags & 0x02) == 0x02;
+		return (myUser.getFlags() & 0x02) == 0x02;
 	}
 	
 	/**

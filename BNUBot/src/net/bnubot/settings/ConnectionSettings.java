@@ -75,38 +75,44 @@ public class ConnectionSettings implements Serializable {
 		if((channel == null) || (channel.length() == 0))
 			return "Channel unset";
 
-		switch(product) {
-		case PRODUCT_STARCRAFT:
-		case PRODUCT_BROODWAR:
-		case PRODUCT_WAR2BNE:
-		case PRODUCT_DIABLO2:
-		case PRODUCT_LORDOFDESTRUCTION:
-		case PRODUCT_JAPANSTARCRAFT:
-		case PRODUCT_WARCRAFT3:
-		case PRODUCT_THEFROZENTHRONE:
-		case PRODUCT_DIABLO:
-		case PRODUCT_DIABLOSHAREWARE:
-		case PRODUCT_STARCRAFTSHAREWARE:
+		switch(connectionType) {
+		case DigitalText:
 			break;
-		default:
-			return "Unsupported product";
-		}
-		
-		switch(product) {
-		case PRODUCT_DIABLO:
-		case PRODUCT_DIABLOSHAREWARE:
-		case PRODUCT_STARCRAFTSHAREWARE:
-			break;
-		default:
-			if((cdkey == null) || (cdkey.length() == 0))
-				return "CD key not set";
+		case BNCS:
+			switch(product) {
+			case PRODUCT_STARCRAFT:
+			case PRODUCT_BROODWAR:
+			case PRODUCT_WAR2BNE:
+			case PRODUCT_DIABLO2:
+			case PRODUCT_LORDOFDESTRUCTION:
+			case PRODUCT_JAPANSTARCRAFT:
+			case PRODUCT_WARCRAFT3:
+			case PRODUCT_THEFROZENTHRONE:
+			case PRODUCT_DIABLO:
+			case PRODUCT_DIABLOSHAREWARE:
+			case PRODUCT_STARCRAFTSHAREWARE:
 				break;
-		}
-		
-		if((product == PRODUCT_LORDOFDESTRUCTION)
-		|| (product == PRODUCT_THEFROZENTHRONE)) {
-			if((cdkey2 == null) || (cdkey2.length() == 0))
-				return "CD key 2 not set";
+			default:
+				return "Unsupported product";
+			}
+			
+			switch(product) {
+			case PRODUCT_DIABLO:
+			case PRODUCT_DIABLOSHAREWARE:
+			case PRODUCT_STARCRAFTSHAREWARE:
+				break;
+			default:
+				if((cdkey == null) || (cdkey.length() == 0))
+					return "CD key not set";
+					break;
+			}
+			
+			if((product == PRODUCT_LORDOFDESTRUCTION)
+			|| (product == PRODUCT_THEFROZENTHRONE)) {
+				if((cdkey2 == null) || (cdkey2.length() == 0))
+					return "CD key 2 not set";
+			}
+			break;
 		}
 		
 		myRealm = getMyRealm();

@@ -295,7 +295,7 @@ public class DTConnection extends Connection {
 					break;
 				}
 				
-				case PKT_UNKNOWN_0x20: {
+				case PKT_USERUPDATE: {
 					/* (CString)	Username
 					 * (UInt32)	Flags
 					 */
@@ -437,10 +437,7 @@ public class DTConnection extends Connection {
 	}
 	
 	public boolean isOp() {
-		Integer myFlags = myUser.getFlags();
-		if(myFlags == null)
-			return false;
-		return (myFlags & 0x02) == 0x02;
+		return (myUser.getFlags() & 0x02) == 0x02;
 	}
 
 	/**
