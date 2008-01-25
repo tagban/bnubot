@@ -28,7 +28,7 @@ public class ChatConnection extends Connection {
 	
 	public void run() {
 		try {
-			s = new Socket(cs.bncsServer, cs.port);
+			s = new Socket(cs.server, cs.port);
 			is = new BNetInputStream(s.getInputStream());
 			os = new BNetOutputStream(s.getOutputStream());
 			
@@ -39,7 +39,7 @@ public class ChatConnection extends Connection {
 
 			os.writeBytes("/join open tech support\n");
 			
-			Out.info(getClass(), "Connected to " + cs.bncsServer + ":" + cs.port);
+			Out.info(getClass(), "Connected to " + cs.server + ":" + cs.port);
 			
 			
 			os.writeNTString(cs.username);

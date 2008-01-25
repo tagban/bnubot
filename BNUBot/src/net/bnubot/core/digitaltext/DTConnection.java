@@ -128,7 +128,7 @@ public class DTConnection extends Connection {
 	private void initializeDT(Task connect) throws Exception {
 		// Set up DT
 		connect.updateProgress("Connecting to DigitalText");
-		InetAddress address = MirrorSelector.getClosestMirror(cs.bncsServer, cs.port);
+		InetAddress address = MirrorSelector.getClosestMirror(cs.server, cs.port);
 		recieveInfo("Connecting to " + address + ":" + cs.port + ".");
 		socket = new Socket(address, cs.port);
 		socket.setKeepAlive(true);

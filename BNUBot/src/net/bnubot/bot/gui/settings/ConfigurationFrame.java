@@ -194,7 +194,7 @@ public class ConfigurationFrame extends JDialog {
 				"europe.battle.net",
 				"asia.battle.net",
 				}, false, boxSettings);
-			cmbBNCSServer.setSelectedItem(cs.bncsServer);
+			cmbBNCSServer.setSelectedItem(cs.server);
 			
 			txtChannel = ConfigFactory.makeText("Channel", cs.channel, boxSettings);
 			txtTrigger = ConfigFactory.makeText("Trigger", cs.trigger, boxSettings);
@@ -324,7 +324,7 @@ public class ConfigurationFrame extends JDialog {
 			cs.cdkey = formatCDKey(k.getKey());
 		if(k2 != null)
 			cs.cdkey2 = formatCDKey(k2.getKey());
-		cs.bncsServer = (String)cmbBNCSServer.getSelectedItem();
+		cs.server = (String)cmbBNCSServer.getSelectedItem();
 		cs.channel = txtChannel.getText();
 		
 		// Profile
@@ -346,7 +346,7 @@ public class ConfigurationFrame extends JDialog {
 		cmbProduct.setSelectedIndex(cs.product - 1);
 		cmbCDKey.setSelectedItem(cs.cdkey);
 		cmbCDKey2.setSelectedItem(cs.cdkey2);
-		cmbBNCSServer.setSelectedItem(cs.bncsServer);
+		cmbBNCSServer.setSelectedItem(cs.server);
 		txtChannel.setText(cs.channel);
 		
 		// Profile

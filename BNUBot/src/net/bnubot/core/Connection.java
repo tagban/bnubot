@@ -66,14 +66,14 @@ public abstract class Connection extends Thread {
 	protected void waitUntilConnectionSafe(Task connect) {
 		long waitUntil;
 		synchronized(connectionTimes) {
-			Long lastConnectionTime = connectionTimes.get(cs.bncsServer);
+			Long lastConnectionTime = connectionTimes.get(cs.server);
 			if(lastConnectionTime == null) {
-				connectionTimes.put(cs.bncsServer, System.currentTimeMillis());
+				connectionTimes.put(cs.server, System.currentTimeMillis());
 				return;
 			}
 			
 			waitUntil = lastConnectionTime + 15000;
-			connectionTimes.put(cs.bncsServer, waitUntil);
+			connectionTimes.put(cs.server, waitUntil);
 		}
 
 		final String status = "Stalling to avoid flood: ";

@@ -12,6 +12,11 @@ import net.bnubot.bot.gui.icons.IconsDotBniReader;
 public class ConnectionSettings implements Serializable {
 	private static final long serialVersionUID = -8169038278487314919L;
 	
+	public enum ConnectionType {
+		BNCS,
+		DigitalText
+	}
+	
 	// These are for BNLS/JBLS
     public static final byte PRODUCT_STARCRAFT         = (byte)0x01; //Fully supported
     public static final byte PRODUCT_BROODWAR          = (byte)0x02; //Fully Supported
@@ -35,7 +40,8 @@ public class ConnectionSettings implements Serializable {
 	public byte product;
 	
 	// Profile-specific stuff
-	public String bncsServer;
+	public ConnectionType connectionType;
+	public String server;
 	public int port;
 	public String channel;
 	public boolean enableAntiIdle;
@@ -54,7 +60,7 @@ public class ConnectionSettings implements Serializable {
 	}
 	
 	public String isValid() {
-		if((bncsServer == null) || (bncsServer.length() == 0))
+		if((server == null) || (server.length() == 0))
 			return "Server not set";
 		
 		if(port <= 0)
@@ -114,28 +120,31 @@ public class ConnectionSettings implements Serializable {
 	}
 	
 	private String getMyRealm() {
+		if(connectionType.equals(ConnectionType.DigitalText))
+			return "DigitalText";
+		
 		switch(product) {
 		case PRODUCT_WARCRAFT3:
 		case PRODUCT_THEFROZENTHRONE: {
-			if(bncsServer.equals("useast.battle.net"))
+			if(server.equals("useast.battle.net"))
 				return "Azeroth";
-			if(bncsServer.equals("uswest.battle.net"))
+			if(server.equals("uswest.battle.net"))
 				return "Lordaeron";
-			if(bncsServer.equals("europe.battle.net"))
+			if(server.equals("europe.battle.net"))
 				return "Northrend";
-			if(bncsServer.equals("asia.battle.net"))
+			if(server.equals("asia.battle.net"))
 				return "Kalimdor";
 			break;
 		}
 		
 		default: {
-			if(bncsServer.equals("useast.battle.net"))
+			if(server.equals("useast.battle.net"))
 				return "USEast";
-			if(bncsServer.equals("uswest.battle.net"))
+			if(server.equals("uswest.battle.net"))
 				return "USWest";
-			if(bncsServer.equals("europe.battle.net"))
+			if(server.equals("europe.battle.net"))
 				return "Europe";
-			if(bncsServer.equals("asia.battle.net"))
+			if(server.equals("asia.battle.net"))
 				return "Asia";
 			break;
 		}
@@ -155,7 +164,8 @@ public class ConnectionSettings implements Serializable {
 			Settings.write(header, "product", org.jbls.util.Constants.prods[product-1]);
 
 		header = "Profile_" + profile;
-		Settings.write(header, "server", bncsServer);
+		Settings.writeEnum(header, "connectionType", connectionType);
+		Settings.write(header, "server", server);
 		Settings.writeInt(header, "port", port);
 		Settings.write(header, "channel", channel);
 		Settings.write(header, "antiidle", antiIdle);
@@ -185,7 +195,8 @@ public class ConnectionSettings implements Serializable {
 		}
 
 		header = "Profile_" + profile;
-		bncsServer =Settings.read(header, "server", "useast.battle.net");
+		connectionType = Settings.readEnum(ConnectionType.class, header, "connectionType", ConnectionType.BNCS);
+		server =	Settings.read(header, "server", "useast.battle.net");
 		port =		Settings.readInt(header, "port", 6112);
 		channel =	Settings.read(header, "channel", "Clan BNU");
 		trigger = 	Settings.read(header, "trigger", "!");
