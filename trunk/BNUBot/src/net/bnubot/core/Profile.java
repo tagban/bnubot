@@ -19,7 +19,6 @@ import net.bnubot.bot.database.CommandResultSet;
 import net.bnubot.bot.database.Database;
 import net.bnubot.bot.gui.GuiEventHandler;
 import net.bnubot.bot.trivia.TriviaEventHandler;
-import net.bnubot.core.bncs.BNCSConnection;
 import net.bnubot.core.commands.CommandRunnable;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.settings.DatabaseSettings;
@@ -88,7 +87,7 @@ public class Profile {
 	}
 
 	private boolean insertConnection(ConnectionSettings cs) throws Exception {
-		BNCSConnection con = new BNCSConnection(cs, chatQueue, this);
+		Connection con = ConnectionFactory.createConnection(cs, chatQueue, this);
 		Out.setThreadOutputConnectionIfNone(con);
 		synchronized(cons) {
 			if(cons.size() > 0) {

@@ -5,13 +5,17 @@
 
 package net.bnubot.core;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -24,6 +28,7 @@ import net.bnubot.util.MirrorSelector;
 import net.bnubot.util.Out;
 import net.bnubot.util.TimeFormatter;
 import net.bnubot.util.Wildcard;
+import net.bnubot.util.task.Task;
 import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.ReleaseType;
 
@@ -53,6 +58,87 @@ public abstract class Connection extends Thread {
 	protected boolean disposed = false;
 
 	public static final int MAX_CHAT_LENGTH = 242;
+
+	private static Hashtable<String, Long> connectionTimes = new Hashtable<String, Long>();
+	/**
+	 * Wait until it is safe to connect to the server
+	 */
+	protected void waitUntilConnectionSafe(Task connect) {
+		long waitUntil;
+		synchronized(connectionTimes) {
+			Long lastConnectionTime = connectionTimes.get(cs.bncsServer);
+			if(lastConnectionTime == null) {
+				connectionTimes.put(cs.bncsServer, System.currentTimeMillis());
+				return;
+			}
+			
+			waitUntil = lastConnectionTime + 15000;
+			connectionTimes.put(cs.bncsServer, waitUntil);
+		}
+
+		final String status = "Stalling to avoid flood: ";
+		while(!disposed) {
+			long timeLeft = waitUntil - System.currentTimeMillis();
+			if(timeLeft <= 0)
+				break;
+			
+			connect.updateProgress(status + TimeFormatter.formatTime(timeLeft, false));
+			
+			try { sleep(100); } catch (InterruptedException e1) {}
+			yield();
+		}
+	}
+
+	private static List<String> antiIdles = new ArrayList<String>();
+	protected String getAntiIdle() {
+		if(antiIdles.size() == 0) {
+			BufferedReader is = null;
+			try {
+				File f = new File("anti-idle.txt");
+				if(!f.exists()) {
+					f.createNewFile();
+					
+					FileWriter os = new FileWriter(f);
+					os.write("# Enter anti-idle messages in this file.\r\n");
+					os.write("# \r\n");
+					os.write("# Lines beginning with '#' are regarded as comments\r\n");
+					os.write("# \r\n");
+					os.write("\r\n");
+					os.close();
+				}
+				is = new BufferedReader(new FileReader(f));
+			} catch (Exception e) {
+				Out.fatalException(e);
+			}
+			
+			do {
+				String line = null;
+				try {
+					line = is.readLine();
+				} catch (IOException e) {
+					Out.fatalException(e);
+				}
+				if(line == null)
+					break;
+				
+				line = line.trim();
+				if(line.length() == 0)
+					continue;
+				
+				if(line.charAt(0) != '#')
+					antiIdles.add(line);
+			} while(true);
+			
+			try { is.close(); } catch (Exception e) {}
+		}
+		
+		//grab one
+		int i = antiIdles.size();
+		if(i == 0)
+			return cs.antiIdle;
+		i = (int)Math.floor(Math.random() * i);
+		return antiIdles.remove(i);
+	}
 	
 	public List<EventHandler> getEventHandlers() {
 		return Collections.synchronizedList(eventHandlers);
