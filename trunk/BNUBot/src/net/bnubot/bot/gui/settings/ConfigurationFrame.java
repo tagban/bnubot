@@ -27,6 +27,7 @@ import net.bnubot.bot.gui.components.ConfigComboBox;
 import net.bnubot.bot.gui.components.ConfigFactory;
 import net.bnubot.bot.gui.components.ConfigTextArea;
 import net.bnubot.settings.ConnectionSettings;
+import net.bnubot.settings.ConnectionSettings.ConnectionType;
 
 import org.jbls.util.Constants;
 
@@ -35,6 +36,17 @@ public class ConfigurationFrame extends JDialog {
 
 	private final ConnectionSettings cs;
 	private boolean pressedCancel = false;
+	
+	final String[] bncsServers = new String[] {
+			"useast.battle.net",
+			"uswest.battle.net",
+			"europe.battle.net",
+			"asia.battle.net",
+			};
+	
+	final String[] dtServers = new String[] {
+			"koolaid.sidoh.org",
+			};
 
 	// Connection
 	private ConfigTextArea txtProfile = null;
@@ -45,7 +57,8 @@ public class ConfigurationFrame extends JDialog {
 	private ConfigComboBox cmbCDKey2 = null;
 	
 	// Profile
-	private ConfigComboBox cmbBNCSServer = null;
+	private ConfigComboBox cmbConnectionType = null;
+	private ConfigComboBox cmbServer = null;
 	private ConfigTextArea txtChannel = null;
 	private ConfigTextArea txtTrigger = null;
 	private ConfigCheckBox chkAntiIdle = null;
@@ -89,81 +102,8 @@ public class ConfigurationFrame extends JDialog {
 			cmbProduct = ConfigFactory.makeCombo("Product", Constants.prodsDisplay, false, boxSettings);
 			cmbProduct.addItemListener(new ItemListener() {
 				public void itemStateChanged(ItemEvent e) {
-					int prod = KeyManager.PRODUCT_ALLNORMAL;
-					switch(cmbProduct.getSelectedIndex() + 1) {
-					case ConnectionSettings.PRODUCT_STARCRAFT:
-					case ConnectionSettings.PRODUCT_BROODWAR:
-					case ConnectionSettings.PRODUCT_JAPANSTARCRAFT:
-						prod = KeyManager.PRODUCT_STAR;
-						break;
-					case ConnectionSettings.PRODUCT_DIABLO2:
-					case ConnectionSettings.PRODUCT_LORDOFDESTRUCTION:
-						prod = KeyManager.PRODUCT_D2DV;
-						break;
-					case ConnectionSettings.PRODUCT_WARCRAFT3:
-					case ConnectionSettings.PRODUCT_THEFROZENTHRONE:
-						prod = KeyManager.PRODUCT_WAR3;
-						break;
-					case ConnectionSettings.PRODUCT_WAR2BNE:
-						prod = KeyManager.PRODUCT_W2BN;
-						break;
-					}
-
-					CDKey[] CDKeys2 = null;
-					switch(cmbProduct.getSelectedIndex() + 1) {
-					case ConnectionSettings.PRODUCT_DIABLO:
-					case ConnectionSettings.PRODUCT_DIABLOSHAREWARE:
-					case ConnectionSettings.PRODUCT_STARCRAFTSHAREWARE:
-						cmbCDKey.setVisible(false);
-						cmbCDKey2.setVisible(false);
-						break;
-					case ConnectionSettings.PRODUCT_JAPANSTARCRAFT:
-					case ConnectionSettings.PRODUCT_STARCRAFT:
-					case ConnectionSettings.PRODUCT_BROODWAR:
-					case ConnectionSettings.PRODUCT_DIABLO2:
-					case ConnectionSettings.PRODUCT_WARCRAFT3:
-					case ConnectionSettings.PRODUCT_WAR2BNE:
-						cmbCDKey.setVisible(true);
-						cmbCDKey2.setVisible(false);
-						break;
-					case ConnectionSettings.PRODUCT_LORDOFDESTRUCTION:
-					case ConnectionSettings.PRODUCT_THEFROZENTHRONE:
-						cmbCDKey.setVisible(true);
-						cmbCDKey2.setVisible(true);
-						
-						if((cmbProduct.getSelectedIndex() + 1) == ConnectionSettings.PRODUCT_LORDOFDESTRUCTION)
-							CDKeys2 = KeyManager.getKeys(KeyManager.PRODUCT_D2XP);
-						if((cmbProduct.getSelectedIndex() + 1) == ConnectionSettings.PRODUCT_THEFROZENTHRONE)
-							CDKeys2 = KeyManager.getKeys(KeyManager.PRODUCT_W3XP);
-						break;
-					}
-
-					DefaultComboBoxModel model = (DefaultComboBoxModel)cmbCDKey.getModel();
-					model.removeAllElements();
-					if(prod != KeyManager.PRODUCT_ALLNORMAL) {
-						for(CDKey key : KeyManager.getKeys(prod)) {
-							model.addElement(key);
-
-							if(key.getKey().equalsIgnoreCase(cs.cdkey))
-								cmbCDKey.setSelectedItem(key);
-						}
-					}
-					
-
-					DefaultComboBoxModel model2 = (DefaultComboBoxModel)cmbCDKey2.getModel();
-					model2.removeAllElements();
-					if(CDKeys2 != null) {
-						for(CDKey key : CDKeys2) {
-							model2.addElement(key);
-
-							if(key.getKey().equalsIgnoreCase(cs.cdkey2))
-								cmbCDKey.setSelectedItem(key);
-						}
-					}
-					
-					pack();
-				}
-			});
+					setVisibleFields();
+				}});
 			//Initialize CD Keys combo box before setting product
 
 			CDKey[] CDKeys = KeyManager.getKeys(KeyManager.PRODUCT_ALLNORMAL);
@@ -171,6 +111,7 @@ public class ConfigurationFrame extends JDialog {
 				hasCdKeys = false;
 			cmbCDKey = ConfigFactory.makeCombo("CD key", CDKeys, false, boxSettings);
 			cmbCDKey2 = ConfigFactory.makeCombo("CD key 2", CDKeys, false, boxSettings);
+			cmbConnectionType = ConfigFactory.makeCombo("Connection Type", ConnectionType.values(), false, boxSettings);
 			
 			try {
 				cmbProduct.setSelectedIndex(cs.product - 1);
@@ -188,13 +129,16 @@ public class ConfigurationFrame extends JDialog {
 				break;
 			}
 			
-			cmbBNCSServer = ConfigFactory.makeCombo("Battle.net Server", new String[] {
-				"useast.battle.net",
-				"uswest.battle.net",
-				"europe.battle.net",
-				"asia.battle.net",
-				}, false, boxSettings);
-			cmbBNCSServer.setSelectedItem(cs.server);
+			cmbConnectionType.setSelectedItem(cs.connectionType);
+			cmbConnectionType.addItemListener(new ItemListener() {
+				public void itemStateChanged(ItemEvent e) {
+					setVisibleFields();
+				}});
+			
+			cmbServer = ConfigFactory.makeCombo("Server", new String[] {}, false, boxSettings);
+			cmbServer.setSelectedItem(cs.server);
+			
+			setVisibleFields();
 			
 			txtChannel = ConfigFactory.makeText("Channel", cs.channel, boxSettings);
 			txtTrigger = ConfigFactory.makeText("Trigger", cs.trigger, boxSettings);
@@ -324,7 +268,8 @@ public class ConfigurationFrame extends JDialog {
 			cs.cdkey = formatCDKey(k.getKey());
 		if(k2 != null)
 			cs.cdkey2 = formatCDKey(k2.getKey());
-		cs.server = (String)cmbBNCSServer.getSelectedItem();
+		cs.connectionType = (ConnectionType)cmbConnectionType.getSelectedItem();
+		cs.server = (String)cmbServer.getSelectedItem();
 		cs.channel = txtChannel.getText();
 		
 		// Profile
@@ -346,10 +291,11 @@ public class ConfigurationFrame extends JDialog {
 		cmbProduct.setSelectedIndex(cs.product - 1);
 		cmbCDKey.setSelectedItem(cs.cdkey);
 		cmbCDKey2.setSelectedItem(cs.cdkey2);
-		cmbBNCSServer.setSelectedItem(cs.server);
-		txtChannel.setText(cs.channel);
 		
 		// Profile
+		cmbConnectionType.setSelectedItem(cs.connectionType);
+		cmbServer.setSelectedItem(cs.server);
+		txtChannel.setText(cs.channel);
 		txtTrigger.setText(cs.trigger);
 		txtAntiIdle.setText(cs.antiIdle);
 		txtAntiIdleTimer.setText(Integer.toString(cs.antiIdleTimer));
@@ -374,5 +320,100 @@ public class ConfigurationFrame extends JDialog {
 					"The configuration is invalid",
 					JOptionPane.ERROR_MESSAGE);
 		}
+	}
+
+	private void setVisibleFields() {
+		DefaultComboBoxModel model = (DefaultComboBoxModel)cmbServer.getModel();
+		model.removeAllElements();
+		
+		if((ConnectionType)cmbConnectionType.getSelectedItem() == ConnectionType.DigitalText) {
+			cmbProduct.setVisible(false);
+			cmbCDKey.setVisible(false);
+			cmbCDKey2.setVisible(false);
+			for(String server : dtServers)
+				model.addElement(server);
+			cmbServer.setSelectedItem(cs.server);
+			return;
+		}
+
+		for(String server : bncsServers)
+			model.addElement(server);
+		cmbServer.setSelectedItem(cs.server);
+		
+		cmbProduct.setVisible(true);
+		
+		int prod = KeyManager.PRODUCT_ALLNORMAL;
+		switch(cmbProduct.getSelectedIndex() + 1) {
+		case ConnectionSettings.PRODUCT_STARCRAFT:
+		case ConnectionSettings.PRODUCT_BROODWAR:
+		case ConnectionSettings.PRODUCT_JAPANSTARCRAFT:
+			prod = KeyManager.PRODUCT_STAR;
+			break;
+		case ConnectionSettings.PRODUCT_DIABLO2:
+		case ConnectionSettings.PRODUCT_LORDOFDESTRUCTION:
+			prod = KeyManager.PRODUCT_D2DV;
+			break;
+		case ConnectionSettings.PRODUCT_WARCRAFT3:
+		case ConnectionSettings.PRODUCT_THEFROZENTHRONE:
+			prod = KeyManager.PRODUCT_WAR3;
+			break;
+		case ConnectionSettings.PRODUCT_WAR2BNE:
+			prod = KeyManager.PRODUCT_W2BN;
+			break;
+		}
+
+		CDKey[] CDKeys2 = null;
+		switch(cmbProduct.getSelectedIndex() + 1) {
+		case ConnectionSettings.PRODUCT_DIABLO:
+		case ConnectionSettings.PRODUCT_DIABLOSHAREWARE:
+		case ConnectionSettings.PRODUCT_STARCRAFTSHAREWARE:
+			cmbCDKey.setVisible(false);
+			cmbCDKey2.setVisible(false);
+			break;
+		case ConnectionSettings.PRODUCT_JAPANSTARCRAFT:
+		case ConnectionSettings.PRODUCT_STARCRAFT:
+		case ConnectionSettings.PRODUCT_BROODWAR:
+		case ConnectionSettings.PRODUCT_DIABLO2:
+		case ConnectionSettings.PRODUCT_WARCRAFT3:
+		case ConnectionSettings.PRODUCT_WAR2BNE:
+			cmbCDKey.setVisible(true);
+			cmbCDKey2.setVisible(false);
+			break;
+		case ConnectionSettings.PRODUCT_LORDOFDESTRUCTION:
+		case ConnectionSettings.PRODUCT_THEFROZENTHRONE:
+			cmbCDKey.setVisible(true);
+			cmbCDKey2.setVisible(true);
+			
+			if((cmbProduct.getSelectedIndex() + 1) == ConnectionSettings.PRODUCT_LORDOFDESTRUCTION)
+				CDKeys2 = KeyManager.getKeys(KeyManager.PRODUCT_D2XP);
+			if((cmbProduct.getSelectedIndex() + 1) == ConnectionSettings.PRODUCT_THEFROZENTHRONE)
+				CDKeys2 = KeyManager.getKeys(KeyManager.PRODUCT_W3XP);
+			break;
+		}
+
+		model = (DefaultComboBoxModel)cmbCDKey.getModel();
+		model.removeAllElements();
+		if(prod != KeyManager.PRODUCT_ALLNORMAL) {
+			for(CDKey key : KeyManager.getKeys(prod)) {
+				model.addElement(key);
+
+				if(key.getKey().equalsIgnoreCase(cs.cdkey))
+					cmbCDKey.setSelectedItem(key);
+			}
+		}
+		
+
+		DefaultComboBoxModel model2 = (DefaultComboBoxModel)cmbCDKey2.getModel();
+		model2.removeAllElements();
+		if(CDKeys2 != null) {
+			for(CDKey key : CDKeys2) {
+				model2.addElement(key);
+
+				if(key.getKey().equalsIgnoreCase(cs.cdkey2))
+					cmbCDKey.setSelectedItem(key);
+			}
+		}
+		
+		pack();
 	}
 }
