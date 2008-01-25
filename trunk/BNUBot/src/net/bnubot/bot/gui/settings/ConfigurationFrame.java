@@ -230,7 +230,8 @@ public class ConfigurationFrame extends JDialog {
 		boxAll.add(boxButtons);
 		
 		add(boxAll);
-		if(!hasCdKeys) {
+		boolean isBNCS = ((ConnectionType)cmbConnectionType.getSelectedItem()).equals(ConnectionType.BNCS);
+		if(!hasCdKeys && isBNCS) {
 			// Offer cd key window
 			JOptionPane.showMessageDialog(this,
 					"You have no CD keys in cdkeys.txt.",
