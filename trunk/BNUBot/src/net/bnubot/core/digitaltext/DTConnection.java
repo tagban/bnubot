@@ -225,7 +225,7 @@ public class DTConnection extends Connection {
 				timeSinceNullPacket /= 1000;
 				if(timeSinceNullPacket > 30) {
 					lastNullPacket = timeNow;
-					DTPacket p = new DTPacket(DTPacketId.PKT_UNKNOWN_0x00);
+					DTPacket p = new DTPacket(DTPacketId.PKT_NULL);
 					p.SendPacket(dtOutputStream);
 				}
 			}
@@ -412,13 +412,15 @@ public class DTConnection extends Connection {
 	private BNetUser findCreateBNUser(String username, int flags) {
 		// Make flags look like bnet flags
 		int bnflags = 0x10;	// No UDP
-		if((flags & 0x08) != 0)
+		if((flags & 0x10) != 0)	// Voiced -> Speaker
+			bnflags |= 0x04;
+		if((flags & 0x08) != 0)	// NetOp -> B.net Rep
 			bnflags |= 0x08;
-		if((flags & 0x04) != 0)
+		if((flags & 0x04) != 0)	// Admin -> Blizzard Rep
 			bnflags |= 0x01;
-		if((flags & 0x02) != 0)
+		if((flags & 0x02) != 0)	// Ignored -> Squelched
 			bnflags |= 0x20;
-		if((flags & 0x01) != 0)
+		if((flags & 0x01) != 0)	// Operator
 			bnflags |= 0x02;
 		
 		// Create the BNetUser
