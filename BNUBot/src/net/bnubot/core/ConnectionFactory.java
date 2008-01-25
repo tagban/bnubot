@@ -13,10 +13,14 @@ public class ConnectionFactory {
 	public static Connection createConnection(ConnectionSettings cs, ChatQueue chatQueue, Profile profile) {
 		switch(cs.connectionType) {
 		case BNCS:
+			if(cs.port == 1460)
+				cs.port = 6112;
 			return new BNCSConnection(cs, chatQueue, profile);
 		case DigitalText:
-			cs.server = "koolaid.sidoh.org";
-			cs.port = 1460;
+			if(cs.port == 6112) {
+				cs.server = "koolaid.sidoh.org";
+				cs.port = 1460;
+			}
 			return new DTConnection(cs, chatQueue, profile);
 		}
 		return null;
