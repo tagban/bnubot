@@ -73,7 +73,6 @@ public class BNCSConnection extends Connection {
 	private final int clientToken = Math.abs(new Random().nextInt());
 	private SRP srp = null;
 	private byte proof_M2[] = null;
-	protected StatString myStatString = null;
 	protected int myClan = 0;
 	protected Byte myClanRank = null;
 	protected long lastNullPacket;
@@ -109,7 +108,6 @@ public class BNCSConnection extends Connection {
 				for(Task t : currentTasks)
 					t.complete();
 				currentTasks.clear();
-				myStatString = null;
 				myUser = null;
 				myClan = 0;
 				myClanRank = null;
@@ -908,10 +906,11 @@ public class BNCSConnection extends Connection {
 				
 				case SID_ENTERCHAT: {
 					String uniqueUserName = is.readNTString();
-					myStatString = new StatString(is.readNTString());
+					StatString myStatString = new StatString(is.readNTString());
 					/*String accountName =*/ is.readNTString();
 					
 					myUser = new BNetUser(uniqueUserName, cs.myRealm);
+					myUser.setStatString(myStatString);
 					recieveInfo("Logged in as " + myUser.getFullLogonName() + ".");
 					titleChanged();
 					
