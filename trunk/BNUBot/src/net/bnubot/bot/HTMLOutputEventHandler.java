@@ -131,7 +131,7 @@ public class HTMLOutputEventHandler implements EventHandler {
 							fos.write(("<td>" + ui.getPing() + "ms</td>").getBytes());
 							fos.write("</tr>".getBytes());
 						}
-			
+						fos.write("</table>".getBytes());
 						fos.close();
 					} catch (Exception e) {
 						Out.exception(e);
