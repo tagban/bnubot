@@ -1,3 +1,7 @@
+2.0.4:
+* Added DigitalText connection support
+* Fixed a bug where having no connections would cause the GUI to never load
+
 2.0.3.1 (r1100) 2008-01-21:
 * Added a setting to customize the userlist display format
 * Added a setting to customize the command response display format
