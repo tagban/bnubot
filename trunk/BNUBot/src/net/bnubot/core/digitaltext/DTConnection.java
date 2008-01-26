@@ -322,7 +322,7 @@ public class DTConnection extends Connection {
 					 */
 					String username = is.readNTString();
 					
-					channelLeave(findCreateBNUser(username, 0));
+					channelLeave(findCreateBNUser(username, null));
 					break;
 				}
 				
@@ -409,27 +409,29 @@ public class DTConnection extends Connection {
 	 * @param flags Flags to mangle and set
 	 * @return BNetUser describing the person
 	 */
-	private BNetUser findCreateBNUser(String username, int flags) {
-		// Make flags look like bnet flags
-		int bnflags = 0x10;	// No UDP
-		if((flags & 0x10) != 0)	// Voiced -> Speaker
-			bnflags |= 0x04;
-		if((flags & 0x08) != 0)	// NetOp -> B.net Rep
-			bnflags |= 0x08;
-		if((flags & 0x04) != 0)	// Admin -> Blizzard Rep
-			bnflags |= 0x01;
-		if((flags & 0x02) != 0)	// Ignored -> Squelched
-			bnflags |= 0x20;
-		if((flags & 0x01) != 0)	// Operator
-			bnflags |= 0x02;
-		
+	private BNetUser findCreateBNUser(String username, Integer userFlags) {
 		// Create the BNetUser
 		BNetUser user = getBNetUser(username);
 		if(user == null)
 			user = new BNetUser(username, cs.myRealm);
 		
 		// Flags
-		user.setFlags(bnflags);
+		if(userFlags != null) {
+			int flags = userFlags.intValue();
+			// Make flags look like bnet flags
+			int bnflags = 0x10;	// No UDP
+			if((flags & 0x10) != 0)	// Voiced -> Speaker
+				bnflags |= 0x04;
+			if((flags & 0x08) != 0)	// NetOp -> Blizzard Rep
+				bnflags |= 0x01;
+			if((flags & 0x04) != 0)	// Admin -> B.net Rep
+				bnflags |= 0x08;
+			if((flags & 0x02) != 0)	// Ignored -> Squelched
+				bnflags |= 0x20;
+			if((flags & 0x01) != 0)	// Operator
+				bnflags |= 0x02;
+			user.setFlags(bnflags);
+		}
 		
 		// StatString
 		if(user.getStatString() == null)
