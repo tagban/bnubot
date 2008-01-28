@@ -328,7 +328,7 @@ public class GuiDesktop extends JFrame {
 		
 		Image image = Toolkit.getDefaultToolkit().getImage("tray.gif");
 		
-		PopupMenu pm = new PopupMenu("title");
+		PopupMenu pm = new PopupMenu();
 		{
 			MenuItem mi = new MenuItem("BNU-Bot " + CurrentVersion.version().toString());
 			mi.setEnabled(false);
