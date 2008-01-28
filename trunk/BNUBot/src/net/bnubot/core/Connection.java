@@ -37,7 +37,17 @@ public abstract class Connection extends Thread {
 		DO_NOT_ALLOW_CONNECT,
 		ALLOW_CONNECT,
 		FORCE_CONNECT,
-		CONNECTED
+		CONNECTED;
+		
+		public boolean canConnect() {
+			switch(this) {
+			case FORCE_CONNECT:
+				return true;
+			case ALLOW_CONNECT:
+				return GlobalSettings.autoConnect;
+			}
+			return false;
+		}
 	}
 
 	protected Socket bnlsSocket = null;
