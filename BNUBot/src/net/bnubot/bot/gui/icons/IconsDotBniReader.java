@@ -21,6 +21,10 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.PaletteData;
+
 import net.bnubot.core.BNFTPConnection;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.settings.GlobalSettings;
@@ -52,11 +56,11 @@ public class IconsDotBniReader {
 		for(int i = 0; i < 8; i++)
 			icons[i] = new BNetIcon();
 		for(int i = 0; i < 7; i++) {
-			icons[i].setIcon(new ImageIcon("lag" + i + ".jpeg"));
-			icons[i].setProducts(new int[] {HexDump.PrettyToDWord("LAG" + i)});
+			icons[i].icon = new ImageIcon("lag" + i + ".jpeg");
+			icons[i].products = new int[] {HexDump.PrettyToDWord("LAG" + i)};
 		}
-		icons[7].setIcon(new ImageIcon("lagplug.jpeg"));
-		icons[7].setProducts(new int[] {HexDump.PrettyToDWord("PLUG")});
+		icons[7].icon = new ImageIcon("lagplug.jpeg");
+		icons[7].products = new int[] {HexDump.PrettyToDWord("PLUG")};
 		IconsDotBniReader.writeIconsDotBni(new File("icons_lag.bni"), icons);
 	}
 	
@@ -345,23 +349,19 @@ public class IconsDotBniReader {
 				util.setLayout(null);
 			}
 			
-			for(int i = 0; i < numIcons; i++) {
-				BNetIcon bni = icons[i];
-				int imgSize = bni.xSize * bni.ySize;
-				bni.icon = new ImageIcon(util.createImage(new MemoryImageSource(bni.xSize, bni.ySize, pixelData, currentPixel, bni.xSize)));
+			for(BNetIcon bni : icons) {
+				// AWT
+				bni.awt_image = util.createImage(new MemoryImageSource(bni.xSize, bni.ySize, pixelData, currentPixel, bni.xSize));
+				bni.icon = new ImageIcon(bni.awt_image);
 				
-				/*if(bni.products != null) {
-					BufferedImage img2 = new BufferedImage(bni.xSize, bni.ySize, BufferedImage.TYPE_INT_RGB);
-					img2.setRGB(0, 0, bni.xSize, bni.ySize, pixelData, currentPixel, bni.xSize);
-					
-					JPEGImageEncoder jie =  JPEGCodec.createJPEGEncoder(new FileOutputStream(
-							"html/images/" +
-							HexDump.DWordToPretty(bni.products[0]) +
-							".jpg"));
-					jie.encode(img2);
-				}*/
-				
-				currentPixel += imgSize;
+				// SWT
+				ImageData imageData = new ImageData(bni.xSize, bni.ySize, 32, new PaletteData(0xFF0000, 0x00FF00, 0x0000FF));
+				for(int y = 0; y < bni.ySize; y++) {
+					for(int x = 0; x < bni.xSize; x++) {
+						imageData.setPixel(x, y, pixelData[currentPixel++]);
+					}
+				}
+				bni.image = new Image(null, imageData);
 			}
 			
 			return icons;

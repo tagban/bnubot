@@ -56,6 +56,7 @@ public class GlobalSettings {
 	public static boolean displayChannelUsers;
 	public static boolean enableCLI;
 	public static boolean enableGUI;
+	public static boolean enableSWT;
 	public static TrayIconMode trayIconMode;
 	public static boolean trayMinimizeTo;
 	public static boolean trayDisplayConnectDisconnect;
@@ -189,6 +190,7 @@ public class GlobalSettings {
 		Settings.writeBoolean(null, "enableMirrorSelector", enableMirrorSelector);
 		Settings.writeBoolean(null, "enableCLI", enableCLI);
 		Settings.writeBoolean(null, "enableGUI", enableGUI);
+		Settings.writeBoolean(null, "enableSWT", enableSWT);
 		Settings.writeEnum(null, "trayIconMode", trayIconMode);
 		Settings.writeBoolean(null, "trayMinimizeTo", trayMinimizeTo);
 		Settings.writeBoolean(null, "trayDisplayConnectDisconnect", trayDisplayConnectDisconnect);
@@ -235,6 +237,7 @@ public class GlobalSettings {
 		email =	Settings.read(null, "email", null);
 		enableCLI = Settings.readBoolean(null, "enableCLI", false);
 		enableGUI = Settings.readBoolean(null, "enableGUI", true);
+		enableSWT = Settings.readBoolean(null, "enableSWT", false);
 		trayIconMode = Settings.readEnum(TrayIconMode.class, null, "trayIconMode", TrayIconMode.ENABLED);
 		trayMinimizeTo = Settings.readBoolean(null, "trayMinimizeTo", true);
 		trayDisplayConnectDisconnect = Settings.readBoolean(null, "trayDisplayConnectDisconnect", false);
