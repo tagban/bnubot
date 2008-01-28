@@ -18,6 +18,7 @@ import net.bnubot.bot.console.ConsoleEventHandler;
 import net.bnubot.bot.database.CommandResultSet;
 import net.bnubot.bot.database.Database;
 import net.bnubot.bot.gui.GuiEventHandler;
+import net.bnubot.bot.swt.SWTDesktop;
 import net.bnubot.bot.trivia.TriviaEventHandler;
 import net.bnubot.core.commands.CommandRunnable;
 import net.bnubot.settings.ConnectionSettings;
@@ -118,10 +119,12 @@ public class Profile {
 					con.addEventHandler(new ConsoleEventHandler());
 
 				// GUI
-				if(GlobalSettings.enableGUI) {
-					GuiEventHandler gui = new GuiEventHandler(con);
-					con.addEventHandler(gui);
-				}
+				if(GlobalSettings.enableGUI)
+					con.addEventHandler(new GuiEventHandler(con));
+
+				// SWT GUI
+				if(GlobalSettings.enableSWT)
+					con.addEventHandler(SWTDesktop.createSWTEventHandler());
 
 				// Commands
 				if(GlobalSettings.enableCommands) {

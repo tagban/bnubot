@@ -7,6 +7,8 @@ package net.bnubot.bot.gui.icons;
 
 import javax.swing.Icon;
 
+import org.eclipse.swt.graphics.Image;
+
 import net.bnubot.util.HexDump;
 
 public class BNetIcon {
@@ -15,6 +17,8 @@ public class BNetIcon {
 	int ySize;
 	int products[];
 	Icon icon;
+	java.awt.Image awt_image;
+	Image image;
 	int sortIndex;
 	
 	public boolean useFor(int flags, int product) {
@@ -48,6 +52,14 @@ public class BNetIcon {
 	public Icon getIcon() {
 		return icon;
 	}
+
+	public Image getImage() {
+		return image;
+	}
+
+	public java.awt.Image getAWTImage() {
+		return awt_image;
+	}
 	
 	public int getSortIndex() {
 		return sortIndex;
@@ -56,24 +68,8 @@ public class BNetIcon {
 	public int getFlags() {
 		return flags;
 	}
-
-	public void setFlags(int flags) {
-		this.flags = flags;
-	}
-
-	public void setXSize(int size) {
-		xSize = size;
-	}
-
-	public void setYSize(int size) {
-		ySize = size;
-	}
-
-	public void setProducts(int[] products) {
-		this.products = products;
-	}
-
-	public void setIcon(Icon icon) {
-		this.icon = icon;
+	
+	public int[] getProducts() {
+		return products;
 	}
 }
