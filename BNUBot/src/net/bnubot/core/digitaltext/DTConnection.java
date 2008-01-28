@@ -23,7 +23,6 @@ import net.bnubot.core.Profile;
 import net.bnubot.core.UnsupportedFeatureException;
 import net.bnubot.core.bncs.ProductIDs;
 import net.bnubot.settings.ConnectionSettings;
-import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetInputStream;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.HexDump;
@@ -45,16 +44,6 @@ public class DTConnection extends Connection {
 	public DTConnection(ConnectionSettings cs, ChatQueue cq, Profile p) {
 		super(cs, cq, p);
 	}
-	
-	private boolean canConnect() {
-		switch(connectionState) {
-		case FORCE_CONNECT:
-			return true;
-		case ALLOW_CONNECT:
-			return GlobalSettings.autoConnect;
-		}
-		return false;
-	}
 
 	public void run() {
 		// We must initialize the EHs in the Connection thread
@@ -74,7 +63,7 @@ public class DTConnection extends Connection {
 				titleChanged();
 				
 				// Wait until we're supposed to connect
-				while(!canConnect()) {
+				while(!connectionState.canConnect()) {
 					yield();
 					sleep(200);
 				}

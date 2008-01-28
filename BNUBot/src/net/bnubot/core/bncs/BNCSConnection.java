@@ -78,16 +78,6 @@ public class BNCSConnection extends Connection {
 	public BNCSConnection(ConnectionSettings cs, ChatQueue cq, Profile p) {
 		super(cs, cq, p);
 	}
-	
-	private boolean canConnect() {
-		switch(connectionState) {
-		case FORCE_CONNECT:
-			return true;
-		case ALLOW_CONNECT:
-			return GlobalSettings.autoConnect;
-		}
-		return false;
-	}
 
 	public void run() {
 		// We must initialize the EHs in the Connection thread
@@ -110,7 +100,7 @@ public class BNCSConnection extends Connection {
 				titleChanged();
 				
 				// Wait until we're supposed to connect
-				while(!canConnect()) {
+				while(!connectionState.canConnect()) {
 					yield();
 					sleep(200);
 				}
