@@ -137,14 +137,14 @@ public class BNCSConnection extends Connection {
 					
 				// Connection closed
 			} catch(SocketException e) {
-			} catch (OperationCancelledException e) {
+			} catch(OperationCancelledException e) {
 				disposed = true;
 			} catch(Exception e) {
 				recieveError("Unhandled " + e.getClass().getSimpleName() + ": " + e.getMessage());
 				Out.exception(e);
 			}
 
-			try { disconnect(true); } catch (Exception e) { }
+			disconnect(true);
 		}
 		
 		for(Task t : currentTasks)
