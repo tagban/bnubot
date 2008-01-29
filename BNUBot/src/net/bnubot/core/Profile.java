@@ -31,8 +31,6 @@ public class Profile {
 	private static String[] plugins = null;
 	private static final Dictionary<String, CommandRunnable> commands = new Hashtable<String, CommandRunnable>();
 	
-	public long lastAntiIdle;
-	
 	public static void registerCommand(String name, CommandRunnable action) {
 		if(commands.get(name) != null)
 			throw new IllegalArgumentException("The command " + name + " is already registered");
@@ -75,6 +73,7 @@ public class Profile {
 	private final List<Connection> cons = new ArrayList<Connection>();
 	private final ChatQueue chatQueue;
 	private final String name;
+	public long lastAntiIdle;
 
 	private Profile(String name) {
 		this.name = name;
