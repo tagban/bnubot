@@ -11,6 +11,8 @@ import java.util.List;
 import javax.xml.ws.Holder;
 
 import net.bnubot.bot.gui.WhatsNewWindow;
+import net.bnubot.bot.gui.icons.BNetIcon;
+import net.bnubot.bot.gui.icons.IconsDotBniReader;
 import net.bnubot.settings.Settings;
 import net.bnubot.vercheck.CurrentVersion;
 
@@ -19,6 +21,8 @@ import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -57,6 +61,7 @@ public class SWTDesktop extends Thread {
 		
 		display = new Display();
 		shell = new Shell(display);
+		shell.setLayout(new FillLayout());
 		tabs = new CTabFolder(shell, SWT.BOTTOM);
 		
 		setTitle();
@@ -87,10 +92,46 @@ public class SWTDesktop extends Thread {
 			title += " - ";
 			title += selectedGui.toString();
 		}
-		shell.setText(title);
+		setTitle(title);
 		
 		if(tray != null)
 			tray.setToolTipText(title);
+	}
+
+	protected static void setTitle(String title) {
+		final String setTo = (title == null) ? "NULL" : title;
+		display.syncExec(new Runnable() {
+			public void run() {
+				shell.setText(setTo);
+			}});
+	}
+	
+	public static void setTitle(final SWTEventHandler seh, int product) {
+		instance.setTitle();
+		
+		Image img = null;
+		for(BNetIcon element : IconsDotBniReader.getIcons()) {
+			if(element.useFor(0, product)) {
+				img = element.getImage();
+				break;
+			}
+		}
+		
+		final Image image = img;
+		final Composite component = seh.getFrame();
+		String t = seh.toString();
+		final String title = (t == null) ? "NULL" : t;
+		display.syncExec(new Runnable() {
+			public void run() {
+				for(CTabItem tab : tabs.getItems()) {
+					if(component == tab.getControl()) {
+						tab.setText(title);
+						tab.setImage(image);
+						// TODO: seh.getMenuBar().setIcon(image);
+						break;
+					}
+				}
+			}});
 	}
 
 	public static SWTEventHandler createSWTEventHandler() {
@@ -110,13 +151,13 @@ public class SWTDesktop extends Thread {
 						} catch(Exception e) {}
 					}});
 				tab.setControl(composite);
-				tab.setText(seh.toString());
+				setTitle(seh.toString());
 				tabs.pack();
 				shell.pack();
-				// Set the divider location
+				// TODO: Set the divider location
 				//seh.setDividerLocation(getDividerLocation());
 				
-				// Add the components to the display
+				// TODO: Add the components to the display
 				//seh.getMenuBar().setVisible(false);
 				//menuBar.add(geh.getMenuBar());
 				guis.add(seh);

@@ -7,6 +7,7 @@ package net.bnubot.bot.swt;
 
 import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
+import net.bnubot.core.Profile;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.util.BNetUser;
@@ -21,11 +22,17 @@ import org.eclipse.swt.widgets.Text;
  */
 public class SWTEventHandler implements EventHandler {
 	private Connection firstConnection = null;
+	private Composite frame;
 	
 	public SWTEventHandler(Composite parent) {
+		frame = parent;
 		final Text text = new Text(parent, SWT.MULTI);
 		text.setText("asdf");
 		parent.pack();
+	}
+	
+	public Composite getFrame() {
+		return frame;
 	}
 	
 	public void initialize(Connection source) {
@@ -70,7 +77,18 @@ public class SWTEventHandler implements EventHandler {
 	public void recieveEmote(Connection source, BNetUser user, String text) {}
 	public void recieveError(Connection source, String text) {}
 	public void recieveInfo(Connection source, String text) {}
-	public void titleChanged(Connection source) {}
+	public void titleChanged(Connection source) {
+		SWTDesktop.setTitle(this, source.getProductID());
+	}
 	public void whisperRecieved(Connection source, BNetUser user, String text) {}
 	public void whisperSent(Connection source, BNetUser user, String text) {}
+
+	public String toString() {
+		if(firstConnection == null)
+			return null;
+		Profile p = firstConnection.getProfile();
+		if((p == null) || (p.getConnections().size() == 1))
+			return firstConnection.toString();
+		return p.getName();
+	}
 }
