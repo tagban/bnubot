@@ -62,7 +62,7 @@ public class SWTDesktop extends Thread {
 		display = new Display();
 		shell = new Shell(display);
 		shell.setLayout(new FillLayout());
-		tabs = new CTabFolder(shell, SWT.BOTTOM);
+		tabs = new CTabFolder(shell, SWT.TOP);
 		
 		setTitle();
 		initializeSystemTray();
@@ -99,10 +99,14 @@ public class SWTDesktop extends Thread {
 	}
 
 	protected static void setTitle(String title) {
+		if(display.isDisposed())
+			return;
+		
 		final String setTo = (title == null) ? "NULL" : title;
 		display.syncExec(new Runnable() {
 			public void run() {
-				shell.setText(setTo);
+				if(!shell.isDisposed())
+					shell.setText(setTo);
 			}});
 	}
 	
@@ -151,9 +155,10 @@ public class SWTDesktop extends Thread {
 						} catch(Exception e) {}
 					}});
 				tab.setControl(composite);
+				tabs.setSelection(tab);
+				selectedGui = seh;
 				setTitle(seh.toString());
-				tabs.pack();
-				shell.pack();
+				
 				// TODO: Set the divider location
 				//seh.setDividerLocation(getDividerLocation());
 				
