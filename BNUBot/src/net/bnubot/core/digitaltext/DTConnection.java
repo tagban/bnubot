@@ -91,8 +91,6 @@ public class DTConnection extends Connection {
 				completeTask(connect);
 				if(loggedIn)
 					connectedLoop();
-				else
-					disconnect(false);
 					
 				// Connection closed
 			} catch(SocketException e) {
@@ -166,18 +164,23 @@ public class DTConnection extends Connection {
 						break;
 					case 0x01:
 						recieveError("Login failed");
-						return false;
+						disconnect(false);
+						break;
 					case 0x02:
 						recieveInfo("Login created.");
 						break;
 					case 0x03:
 						recieveError("That account is already logged in.");
-						return false;
+						disconnect(false);
+						break;
 					default:
 						recieveError("Unknown PKT_LOGON status 0x" + Integer.toHexString(status));
 						disconnect(false);
 						break;
 					}
+					
+					if(!isConnected())
+						break;
 					
 					// We are officially logged in!
 					sendJoinChannel("x86");
