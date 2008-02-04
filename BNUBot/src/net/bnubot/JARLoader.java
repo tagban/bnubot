@@ -23,6 +23,7 @@ import javax.swing.UIManager;
 
 import net.bnubot.bot.database.DriverShim;
 import net.bnubot.core.EventHandler;
+import net.bnubot.core.PluginManager;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.Out;
 
@@ -92,6 +93,7 @@ public class JARLoader {
 	 * Check if a class is a JDBC driver, a Look and Feel, or a plugin
 	 * @param name The fully qualified class name
 	 */
+	@SuppressWarnings("unchecked")
 	private static void checkClass(String name) throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
 		// Get a Class for it
 		Class<?> clazz = JARLoader.forName(name);
@@ -116,7 +118,8 @@ public class JARLoader {
 				
 				// Check if it's a plugin
 				if(cif.equals(EventHandler.class)) {
-					// TODO: Enable use of this plugin
+					PluginManager.register((Class<? extends EventHandler>) clazz);
+					break;
 				}
 			}
 		}
