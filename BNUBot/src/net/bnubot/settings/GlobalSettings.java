@@ -69,8 +69,6 @@ public class GlobalSettings {
 	public static TabCompleteMode tabCompleteMode;
 	public static boolean enableLegacyIcons;
 	public static boolean enableCommands;
-	public static boolean enableHTMLOutput;
-	public static boolean enableTrivia;
 	public static long triviaRoundLength;
 	public static boolean enableFloodProtect;
 	public static boolean packetLog;
@@ -203,8 +201,6 @@ public class GlobalSettings {
 		Settings.writeEnum(null, "tabCompleteMode", tabCompleteMode);
 		Settings.writeBoolean(null, "enableLegacyIcons", enableLegacyIcons);
 		Settings.writeBoolean(null, "enableCommands", enableCommands);
-		Settings.writeBoolean(null, "enableHTMLOutput", enableHTMLOutput);
-		Settings.writeBoolean(null, "enableTrivia", enableTrivia);
 		Settings.writeBoolean(null, "enableFloodProtect", enableFloodProtect);
 		Settings.write(null, "lookAndFeel", lookAndFeel);
 		Settings.write(null, "lookAndFeelTheme", lookAndFeelTheme);
@@ -250,8 +246,6 @@ public class GlobalSettings {
 		tabCompleteMode = Settings.readEnum(TabCompleteMode.class, null, "tabCompleteMode", TabCompleteMode.STARTS_WITH_STRING);
 		enableLegacyIcons = Settings.readBoolean(null, "enableLegacyIcons", true);
 		enableCommands = Settings.readBoolean(null, "enableCommands", true);
-		enableHTMLOutput = Settings.readBoolean(null, "enableHTMLOutput", false);
-		enableTrivia = Settings.readBoolean(null, "enableTrivia", false);
 		triviaRoundLength = Settings.readLong(null, "triviaRoundLength", 100);
 		enableFloodProtect = Settings.readBoolean(null, "enableFloodProtect", false);
 		packetLog = Settings.readBoolean(null, "packetLog", false);

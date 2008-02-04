@@ -13,13 +13,11 @@ import java.util.Hashtable;
 import java.util.List;
 
 import net.bnubot.bot.CommandEventHandler;
-import net.bnubot.bot.HTMLOutputEventHandler;
 import net.bnubot.bot.console.ConsoleEventHandler;
 import net.bnubot.bot.database.CommandResultSet;
 import net.bnubot.bot.database.Database;
 import net.bnubot.bot.gui.GuiEventHandler;
 import net.bnubot.bot.swt.SWTDesktop;
-import net.bnubot.bot.trivia.TriviaEventHandler;
 import net.bnubot.core.commands.CommandRunnable;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.settings.DatabaseSettings;
@@ -28,7 +26,6 @@ import net.bnubot.util.Out;
 
 public class Profile {
 	private static final List<Profile> profiles = new ArrayList<Profile>();
-	private static String[] plugins = null;
 	private static final Dictionary<String, CommandRunnable> commands = new Hashtable<String, CommandRunnable>();
 	
 	public static void registerCommand(String name, CommandRunnable action) {
@@ -100,18 +97,8 @@ public class Profile {
 				primary.addSlave(con);
 			} else {
 				// Plugins
-				ArrayList<EventHandler> pluginEHs = new ArrayList<EventHandler>();
-				if(plugins != null) {
-					for(String element : plugins) {
-						EventHandler eh = (EventHandler)Class.forName(element).newInstance();
-						pluginEHs.add(eh);
-						con.addEventHandler(eh);
-					}
-				}
-				
-				// HTML Output
-				if(GlobalSettings.enableHTMLOutput)
-					con.addEventHandler(new HTMLOutputEventHandler());
+				for(Class<? extends EventHandler> plugin : PluginManager.getEnabledPlugins())
+					con.addEventHandler(plugin.newInstance());
 
 				// CLI
 				if(GlobalSettings.enableCLI)
@@ -150,10 +137,6 @@ public class Profile {
 						}
 					}
 				}
-
-				// Trivia
-				if(GlobalSettings.enableTrivia)
-					con.addEventHandler(new TriviaEventHandler());
 			}
 			
 			// Start the Connection thread
@@ -172,10 +155,6 @@ public class Profile {
 
 	public String getName() {
 		return name;
-	}
-
-	public static void setPlugins(String[] plugins) {
-		Profile.plugins = plugins;
 	}
 
 	public void dispose() {
