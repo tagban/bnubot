@@ -117,13 +117,13 @@ public class Profile {
 				if(GlobalSettings.enableCLI)
 					con.addEventHandler(new ConsoleEventHandler());
 
-				// GUI
-				if(GlobalSettings.enableGUI)
-					con.addEventHandler(new GuiEventHandler(con));
-
 				// SWT GUI
 				if(GlobalSettings.enableSWT)
 					con.addEventHandler(SWTDesktop.createSWTEventHandler());
+
+				// GUI
+				if(GlobalSettings.enableGUI)
+					con.addEventHandler(new GuiEventHandler(con));
 
 				// Commands
 				if(GlobalSettings.enableCommands) {
