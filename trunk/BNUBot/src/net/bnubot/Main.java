@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 
+import net.bnubot.bot.gui.GuiDesktop;
 import net.bnubot.bot.gui.settings.GlobalConfigurationFrame;
 import net.bnubot.core.Profile;
 import net.bnubot.settings.GlobalSettings;
@@ -81,12 +82,6 @@ public class Main {
 						continue;
 					}
 					break;
-				case 'p':
-					if(args[i].equals("-plugins")) {
-						Profile.setPlugins(args[++i].split(":"));
-						continue;
-					}
-					break;
 				case 'v':
 					if(args[i].equals("-v") || args[i].equals("-version")) {
 						System.out.println(CurrentVersion.version().toString());
@@ -111,8 +106,8 @@ public class Main {
 			}
 		}
 		
-	//	if(GlobalSettings.enableGUI)
-	//		GuiDesktop.getInstance();
+		if(GlobalSettings.enableGUI)
+			GuiDesktop.getInstance();
 		
 		for(int i = 1; i <= GlobalSettings.numBots; i++)
 			Profile.newConnection(i);

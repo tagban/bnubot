@@ -26,6 +26,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -40,6 +41,8 @@ import net.bnubot.bot.gui.components.ConfigCheckBox;
 import net.bnubot.bot.gui.components.ConfigComboBox;
 import net.bnubot.bot.gui.components.ConfigFactory;
 import net.bnubot.bot.gui.components.ConfigTextArea;
+import net.bnubot.core.EventHandler;
+import net.bnubot.core.PluginManager;
 import net.bnubot.settings.DatabaseSettings;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.settings.GlobalSettings.TabCompleteMode;
@@ -69,12 +72,12 @@ public class GlobalConfigurationFrame extends JDialog {
 	private ConfigCheckBox chkPacketLog = null;
 	
 	// Plugins
-	private ConfigCheckBox chkEnableTrivia = null;
 	private ConfigTextArea txtTriviaRoundLength = null;
 	private ConfigCheckBox chkEnableCLI = null;
 	private ConfigCheckBox chkEnableCommands = null;
 	private ConfigCheckBox chkWhisperBack = null;
-	private ConfigCheckBox chkEnableHTMLOutput = null;
+	private List<Class<? extends EventHandler>> plugins = null;
+	private List<ConfigCheckBox> chkEnabledPlugins = null;
 	
 	// Display
 	private ConfigComboBox cmbBNUserToString = null;
@@ -196,12 +199,21 @@ public class GlobalConfigurationFrame extends JDialog {
 	
 			boxAll = new Box(BoxLayout.Y_AXIS);
 			{
-				boxAll.add(chkEnableTrivia = new ConfigCheckBox("Enable Trivia (requires restart)", GlobalSettings.enableTrivia));
-				txtTriviaRoundLength = ConfigFactory.makeText("Trivia Round Length", Long.toString(GlobalSettings.triviaRoundLength), boxAll);
-				boxAll.add(chkEnableCLI = new ConfigCheckBox("Enable CLI (requires restart)", GlobalSettings.enableCLI));
-				boxAll.add(chkEnableCommands = new ConfigCheckBox("Enable Commands (requires restart)", GlobalSettings.enableCommands));
+				boxAll.add(new JLabel("You must reopen profiles for these changes to take effect."));
+				boxAll.add(chkEnableCLI = new ConfigCheckBox("Enable Command Line Interface", GlobalSettings.enableCLI));
+				boxAll.add(chkEnableCommands = new ConfigCheckBox("Enable Commands", GlobalSettings.enableCommands));
 				boxAll.add(chkWhisperBack = new ConfigCheckBox("Whisper Command Responses", GlobalSettings.whisperBack));
-				boxAll.add(chkEnableHTMLOutput = new ConfigCheckBox("Enable HTML Output (requires restart)", GlobalSettings.enableHTMLOutput));
+				
+				plugins = PluginManager.getPlugins();
+				chkEnabledPlugins = new ArrayList<ConfigCheckBox>(plugins.size());
+				for(int i = 0; i < plugins.size(); i++) {
+					Class<? extends EventHandler> plugin = plugins.get(i);
+					
+					ConfigCheckBox chkEnablePlugin = new ConfigCheckBox(plugin.getSimpleName(), PluginManager.isEnabled(plugin));
+					boxAll.add(chkEnablePlugin);
+					chkEnabledPlugins.add(chkEnablePlugin);
+				}
+				txtTriviaRoundLength = ConfigFactory.makeText("Trivia Round Length", Long.toString(GlobalSettings.triviaRoundLength), boxAll);
 			}
 			tabs.addTab("Plugins", boxAll);
 	
@@ -424,10 +436,13 @@ public class GlobalConfigurationFrame extends JDialog {
 			GlobalSettings.enableTabCompleteUser = chkEnableTabCompleteUser.isSelected();
 			GlobalSettings.enableTabCompleteCommand = chkEnableTabCompleteCommand.isSelected();
 			GlobalSettings.enableCLI = chkEnableCLI.isSelected();
-			GlobalSettings.enableTrivia = chkEnableTrivia.isSelected();
 			GlobalSettings.triviaRoundLength = Integer.parseInt(txtTriviaRoundLength.getText());
 			GlobalSettings.enableCommands = chkEnableCommands.isSelected();
-			GlobalSettings.enableHTMLOutput = chkEnableHTMLOutput.isSelected();
+			for(int i = 0; i < plugins.size(); i++) {
+				Class<? extends EventHandler> plugin = plugins.get(i);
+				ConfigCheckBox chkEnablePlugin = chkEnabledPlugins.get(i);
+				PluginManager.setEnabled(plugin, chkEnablePlugin.isSelected());
+			}
 			GlobalSettings.enableFloodProtect = chkEnableFloodProtect.isSelected();
 			GlobalSettings.packetLog = chkPacketLog.isSelected();
 			GlobalSettings.whisperBack = chkWhisperBack.isSelected();
@@ -512,10 +527,13 @@ public class GlobalConfigurationFrame extends JDialog {
 			chkTrayDisplayChatEmote.setSelected(GlobalSettings.trayDisplayChatEmote);
 			chkTrayDisplayWhisper.setSelected(GlobalSettings.trayDisplayWhisper);
 			cmbTabCompleteMode.setSelectedItem(GlobalSettings.tabCompleteMode);
-			chkEnableTrivia.setSelected(GlobalSettings.enableTrivia);
 			txtTriviaRoundLength.setText(Long.toString(GlobalSettings.triviaRoundLength));
 			chkEnableCommands.setSelected(GlobalSettings.enableCommands);
-			chkEnableHTMLOutput.setSelected(GlobalSettings.enableHTMLOutput);
+			for(int i = 0; i < plugins.size(); i++) {
+				Class<? extends EventHandler> plugin = plugins.get(i);
+				ConfigCheckBox chkEnablePlugin = chkEnabledPlugins.get(i);
+				chkEnablePlugin.setSelected(PluginManager.isEnabled(plugin));
+			}
 			chkEnableFloodProtect.setSelected(GlobalSettings.enableFloodProtect);
 			chkPacketLog.setSelected(GlobalSettings.packetLog);
 			chkWhisperBack.setSelected(GlobalSettings.whisperBack);
