@@ -77,6 +77,7 @@ public class GuiEventHandler implements EventHandler {
 	private String channel = null;
 	private final JMenu menuBar = new JMenu();
 	private BNetUser lastWhisperFrom = null;
+	private BNetUser lastWhisperTo = null;
 	private JSplitPane jsp = null;
 	private boolean tabComplete = false;
 	private JDialog tcPopupWindow;
@@ -294,8 +295,13 @@ public class GuiEventHandler implements EventHandler {
 				case ' ': {
 					if(lastWhisperFrom != null) {
 						String txt = chatTextArea.getText().trim();
-						if("/r".equals(txt) || "/rw".equals(txt))
+						if("/r".equals(txt))
 							chatTextArea.setText("/w " + lastWhisperFrom.getShortLogonName());
+					}
+					if(lastWhisperTo != null) {
+						String txt = chatTextArea.getText().trim();
+						if("/rw".equals(txt))
+							chatTextArea.setText("/w " + lastWhisperTo.getShortLogonName());
 					}
 					if("/cmd".equals(chatTextArea.getText()) && GlobalSettings.enableTabCompleteCommand) {
 						tabComplete = true;
@@ -610,6 +616,7 @@ public class GuiEventHandler implements EventHandler {
 	}
 
 	public void whisperSent(Connection source, BNetUser user, String text) {
+		lastWhisperTo = user;
 		mainTextArea.whisperSent(user, text);
 		if(GlobalSettings.trayDisplayWhisper)
 			notifySystemTray(
