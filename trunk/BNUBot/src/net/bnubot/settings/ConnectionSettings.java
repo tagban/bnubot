@@ -170,15 +170,15 @@ public class ConnectionSettings implements Serializable {
 			Settings.write(header, "product", org.jbls.util.Constants.prods[product-1]);
 
 		header = "Profile_" + profile;
-		Settings.writeEnum(header, "connectionType", connectionType);
+		Settings.write(header, "connectionType", connectionType);
 		Settings.write(header, "server", server);
-		Settings.writeInt(header, "port", port);
+		Settings.write(header, "port", port);
 		Settings.write(header, "channel", channel);
 		Settings.write(header, "antiidle", antiIdle);
-		Settings.writeBoolean(header, "enableAntiidle", enableAntiIdle);
-		Settings.writeBoolean(header, "enableGreetings", enableGreetings);
+		Settings.write(header, "enableAntiidle", enableAntiIdle);
+		Settings.write(header, "enableGreetings", enableGreetings);
 		Settings.write(header, "trigger", trigger);
-		Settings.writeInt(header, "antiIdleTimer", antiIdleTimer);
+		Settings.write(header, "antiIdleTimer", antiIdleTimer);
 		
 		Settings.store();
 	}
@@ -201,14 +201,14 @@ public class ConnectionSettings implements Serializable {
 		}
 
 		header = "Profile_" + profile;
-		connectionType = Settings.readEnum(ConnectionType.class, header, "connectionType", ConnectionType.BNCS);
+		connectionType = Settings.read(header, "connectionType", ConnectionType.BNCS);
 		server =	Settings.read(header, "server", "useast.battle.net");
-		port =		Settings.readInt(header, "port", 6112);
+		port =		Settings.read(header, "port", 6112);
 		channel =	Settings.read(header, "channel", "Clan BNU");
 		trigger = 	Settings.read(header, "trigger", "!");
 		antiIdle = 	Settings.read(header, "antiidle", "/me is a BNU-Bot %version%");
-		enableAntiIdle = Settings.readBoolean(header, "enableAntiidle", false);
-		enableGreetings = Settings.readBoolean(header, "enableGreetings", false);
-		antiIdleTimer = Settings.readInt(header, "antiIdleTimer", 5);
+		enableAntiIdle = Settings.read(header, "enableAntiidle", false);
+		enableGreetings = Settings.read(header, "enableGreetings", false);
+		antiIdleTimer = Settings.read(header, "antiIdleTimer", 5);
 	}
 }
