@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.TimeZone;
 
 import javax.swing.SwingUtilities;
 
@@ -28,6 +29,12 @@ import net.bnubot.util.Out;
 import net.bnubot.util.StatString;
 
 public class HTMLOutputEventHandler implements EventHandler {
+	// TODO Allow the user to customize TimeZone
+	private static final TimeZone TIME_ZONE = TimeZone.getTimeZone("GMT-05");
+	private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+	static {
+		sdf.setTimeZone(TIME_ZONE);
+	}
 	private boolean generationNeeded = false;
 	private Runnable writeUserListRunnable = null;
 	private final ColorScheme cs = ColorScheme.getColors();
@@ -43,25 +50,28 @@ public class HTMLOutputEventHandler implements EventHandler {
 	public void channelJoin(Connection source, BNetUser user) {
 		writeUserList(source);
 		
-		append(source,
-			user.toString() + " has joined the channel" + user.getStatString().toString() + ".",
-			cs.getChannelColor());
+		if(GlobalSettings.displayJoinParts)
+			append(source,
+				user.toString() + " has joined the channel" + user.getStatString().toString() + ".",
+				cs.getChannelColor());
 	}
 	
 	public void channelLeave(Connection source, BNetUser user) {
 		writeUserList(source);
 		
-		append(source,
-			user.toString() + " has left the channel.",
-			cs.getChannelColor());
+		if(GlobalSettings.displayJoinParts)
+			append(source,
+				user.toString() + " has left the channel.",
+				cs.getChannelColor());
 	}
 	
 	public void channelUser(Connection source, BNetUser user) {
 		writeUserList(source);
 		
-		append(source,
-			user + user.getStatString().toString() + ".",
-			cs.getChannelColor());
+		if(GlobalSettings.displayChannelUsers)
+			append(source,
+				user + user.getStatString().toString() + ".",
+				cs.getChannelColor());
 	}
 	
 	public void initialize(Connection source) {
@@ -162,7 +172,7 @@ public class HTMLOutputEventHandler implements EventHandler {
 
 	private void logChat(Connection source, String text) {
 		String fName = "logs/" + source.getProfile().getName() + "/";
-		fName += new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+		fName += sdf.format(new Date());
 		fName += ".log";
 		File f = new File(fName);
 		try {
@@ -178,7 +188,7 @@ public class HTMLOutputEventHandler implements EventHandler {
 	}
 	
 	private String getDate() {
-		return getColor(cs.getForegroundColor()) + String.format("[%1$tH:%1$tM:%1$tS] ", new GregorianCalendar());
+		return getColor(cs.getForegroundColor()) + String.format("[%1$tH:%1$tM:%1$tS] ", new GregorianCalendar(TIME_ZONE));
 	}
 	
 	private String getColor(Color col) {
