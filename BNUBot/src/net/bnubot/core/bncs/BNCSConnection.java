@@ -6,6 +6,7 @@
 package net.bnubot.core.bncs;
 
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -119,7 +120,14 @@ public class BNCSConnection extends Connection {
 					break;
 				
 				// Set up BNLS, get verbyte
-				initializeBNLS(connect);
+				try {
+					initializeBNLS(connect);
+				} catch(EOFException e) {
+					completeTask(connect);
+					Out.error(getClass(), "BNLS login failed");
+					disconnect(false);
+					continue;
+				}
 				
 				// Set up BNCS
 				initializeBNCS(connect);
@@ -160,14 +168,40 @@ public class BNCSConnection extends Connection {
 	 * @throws SocketException
 	 */
 	private void initializeBNLS(Task connect) throws IOException, SocketException {
-		// Get the verbyte locally
-		verByte = HashMain.getVerByte(cs.product);
-		
 		// Connect to BNLS
 		connect.updateProgress("Connecting to BNLS");
 		setBNLSConnected(true);
 		bnlsInputStream = bnlsSocket.getInputStream();
 		bnlsOutputStream = bnlsSocket.getOutputStream();
+		
+		// Log in to BNLS
+		connect.updateProgress("Logging in to BNLS");
+		
+		// Send BNLS_AUTHORIZE
+		BNLSPacket loginPacket = new BNLSPacket(BNLSPacketId.BNLS_AUTHORIZE);
+		loginPacket.writeNTString("bnu");
+		loginPacket.SendPacket(bnlsOutputStream);
+		
+		// Recieve BNLS_AUTHORIZE
+		BNetInputStream is = new BNLSPacketReader(bnlsInputStream).getInputStream();
+		int serverCode = is.readDWord();
+		
+		// Calculate checksum
+		int checksum = (int)(org.jbls.BNLSProtocol.BNLSlist.BNLSChecksum("bot", serverCode) & 0xFFFFFFFF);
+		
+		// Send BNLS_AUTHORIZEPROOF
+		loginPacket = new BNLSPacket(BNLSPacketId.BNLS_AUTHORIZEPROOF);
+		loginPacket.writeDWord(checksum);
+		loginPacket.SendPacket(bnlsOutputStream);
+		
+		// Recieve BNLS_AUTHORIZEPROOF
+		is = new BNLSPacketReader(bnlsInputStream).getInputStream();
+		int statusCode = is.readDWord();
+		if(statusCode != 0)
+			Out.error(getClass(), "Login to BNLS failed; logged in anonymously");
+	
+		// Get the verbyte locally
+		verByte = HashMain.getVerByte(cs.product);
 		
 		BNLS_REQUESTVERSIONBYTE: {
 			// Ask BNLS for the verbyte
