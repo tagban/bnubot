@@ -316,7 +316,7 @@ public abstract class Connection extends Thread {
 	}
 	
 	public void disconnect(boolean allowReconnect) {
-		if(!isConnected())
+		if(!isConnected() && allowReconnect)
 			return;
 
 		try {
