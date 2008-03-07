@@ -1,7 +1,9 @@
 2.0.4:
 * Added DigitalText connection support
 * Fixed a bug where having no connections would cause the GUI to never load
-* Changed /rw to StealthBot-style rewhisper.
+* Changed /rw to StealthBot-style rewhisper
+* Reorganized the Settings class
+* Added a BNLS bot id
 
 2.0.3.1 (r1100) 2008-01-21:
 * Added a setting to customize the userlist display format

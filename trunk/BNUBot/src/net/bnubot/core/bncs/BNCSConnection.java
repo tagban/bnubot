@@ -179,7 +179,7 @@ public class BNCSConnection extends Connection {
 		
 		// Send BNLS_AUTHORIZE
 		BNLSPacket loginPacket = new BNLSPacket(BNLSPacketId.BNLS_AUTHORIZE);
-		loginPacket.writeNTString("bnu");
+		loginPacket.writeNTString("bnu2");
 		loginPacket.SendPacket(bnlsOutputStream);
 		
 		// Recieve BNLS_AUTHORIZE
