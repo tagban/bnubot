@@ -74,9 +74,9 @@ public class GuiDesktop extends JFrame {
 		if(CurrentVersion.fromJar()) {
 			// If we're launching a new version, pop up the what's new window
 			long currentVersionBuilt = CurrentVersion.version().getBuildDate().getTime();
-			long lastWhatsNewWindow = Settings.readLong(null, "whatsNewTime", 0);
+			long lastWhatsNewWindow = Settings.read(null, "whatsNewTime", 0);
 			if(lastWhatsNewWindow != currentVersionBuilt) {
-				Settings.writeLong(null, "whatsNewTime", currentVersionBuilt);
+				Settings.write(null, "whatsNewTime", currentVersionBuilt);
 				Settings.store();
 				new WhatsNewWindow();
 			}
@@ -464,6 +464,6 @@ public class GuiDesktop extends JFrame {
 	public static int getDividerLocation() {
 		if(selectedGui != null)
 			return selectedGui.getDividerLocation();
-		return Settings.readInt("GuiDesktop", "dividerLocation", instance.getWidth() - 200);
+		return Settings.read("GuiDesktop", "dividerLocation", instance.getWidth() - 200);
 	}
 }

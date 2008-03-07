@@ -26,7 +26,7 @@ public class PluginManager {
 		Out.info(PluginManager.class, "Registering " + plugin.getName());
 		plugins.add(plugin);
 		
-		if(Settings.readBoolean(null, plugin.getName(), false))
+		if(Settings.read(null, plugin.getName(), false))
 			enabledPlugins.add(plugin);
 	}
 
@@ -43,7 +43,7 @@ public class PluginManager {
 			enabledPlugins.remove(plugin);
 			// TODO remove from running connections
 		}
-		Settings.writeBoolean(null, plugin.getName(), enable);
+		Settings.write(null, plugin.getName(), enable);
 	}
 
 	public static List<Class<? extends EventHandler>> getPlugins() {

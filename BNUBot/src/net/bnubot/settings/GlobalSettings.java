@@ -87,7 +87,7 @@ public class GlobalSettings {
 	private static Method setPlasticTheme = null;
 
 	static {
-		enableGUI = Settings.readBoolean(null, "enableGUI", true);
+		enableGUI = Settings.read(null, "enableGUI", true);
 		
 		if(enableGUI)
 			try {
@@ -175,82 +175,82 @@ public class GlobalSettings {
 	}
 	
 	public static void save() {
-		Settings.writeInt(null, "numBots", numBots);
-		Settings.writeBoolean(null, "autoConnect", autoConnect);
+		Settings.write(null, "numBots", numBots);
+		Settings.write(null, "autoConnect", autoConnect);
 		Settings.write(null, "bnlsserver", bnlsServer);
-		Settings.writeInt(null, "bnlsport", bnlsPort);
-		Settings.writeInt(null, "colorScheme", colorScheme);
-		Settings.writeBoolean(null, "displayBattleNetMOTD", displayBattleNetMOTD);
-		Settings.writeBoolean(null, "displayBattleNetChannels", displayBattleNetChannels);
-		Settings.writeBoolean(null, "displayJoinParts", displayJoinParts);
-		Settings.writeBoolean(null, "displayChannelUsers", displayChannelUsers);
+		Settings.write(null, "bnlsport", bnlsPort);
+		Settings.write(null, "colorScheme", colorScheme);
+		Settings.write(null, "displayBattleNetMOTD", displayBattleNetMOTD);
+		Settings.write(null, "displayBattleNetChannels", displayBattleNetChannels);
+		Settings.write(null, "displayJoinParts", displayJoinParts);
+		Settings.write(null, "displayChannelUsers", displayChannelUsers);
 		Settings.write(null, "email", email);
-		Settings.writeBoolean(null, "enableMirrorSelector", enableMirrorSelector);
-		Settings.writeBoolean(null, "enableCLI", enableCLI);
-		Settings.writeBoolean(null, "enableGUI", enableGUI);
-		Settings.writeBoolean(null, "enableSWT", enableSWT);
-		Settings.writeEnum(null, "trayIconMode", trayIconMode);
-		Settings.writeBoolean(null, "trayMinimizeTo", trayMinimizeTo);
-		Settings.writeBoolean(null, "trayDisplayConnectDisconnect", trayDisplayConnectDisconnect);
-		Settings.writeBoolean(null, "trayDisplayChannel", trayDisplayChannel);
-		Settings.writeBoolean(null, "trayDisplayJoinPart", trayDisplayJoinPart);
-		Settings.writeBoolean(null, "trayDisplayChatEmote", trayDisplayChatEmote);
-		Settings.writeBoolean(null, "trayDisplayWhisper", trayDisplayWhisper);
-		Settings.writeBoolean(null, "enableTabCompleteUser", enableTabCompleteUser);
-		Settings.writeBoolean(null, "enableTabCompleteCommand", enableTabCompleteCommand);
-		Settings.writeEnum(null, "tabCompleteMode", tabCompleteMode);
-		Settings.writeBoolean(null, "enableLegacyIcons", enableLegacyIcons);
-		Settings.writeBoolean(null, "enableCommands", enableCommands);
-		Settings.writeBoolean(null, "enableFloodProtect", enableFloodProtect);
+		Settings.write(null, "enableMirrorSelector", enableMirrorSelector);
+		Settings.write(null, "enableCLI", enableCLI);
+		Settings.write(null, "enableGUI", enableGUI);
+		Settings.write(null, "enableSWT", enableSWT);
+		Settings.write(null, "trayIconMode", trayIconMode);
+		Settings.write(null, "trayMinimizeTo", trayMinimizeTo);
+		Settings.write(null, "trayDisplayConnectDisconnect", trayDisplayConnectDisconnect);
+		Settings.write(null, "trayDisplayChannel", trayDisplayChannel);
+		Settings.write(null, "trayDisplayJoinPart", trayDisplayJoinPart);
+		Settings.write(null, "trayDisplayChatEmote", trayDisplayChatEmote);
+		Settings.write(null, "trayDisplayWhisper", trayDisplayWhisper);
+		Settings.write(null, "enableTabCompleteUser", enableTabCompleteUser);
+		Settings.write(null, "enableTabCompleteCommand", enableTabCompleteCommand);
+		Settings.write(null, "tabCompleteMode", tabCompleteMode);
+		Settings.write(null, "enableLegacyIcons", enableLegacyIcons);
+		Settings.write(null, "enableCommands", enableCommands);
+		Settings.write(null, "enableFloodProtect", enableFloodProtect);
 		Settings.write(null, "lookAndFeel", lookAndFeel);
 		Settings.write(null, "lookAndFeelTheme", lookAndFeelTheme);
-		Settings.writeBoolean(null, "packetLog", packetLog);
-		Settings.writeLong(null, "recruitAccess", recruitAccess);
+		Settings.write(null, "packetLog", packetLog);
+		Settings.write(null, "recruitAccess", recruitAccess);
 		Settings.write(null, "recruitTagPrefix", recruitTagPrefix);
 		Settings.write(null, "recruitTagSuffix", recruitTagSuffix);
-		Settings.writeInt(null, "bnUserToString", bnUserToString);
-		Settings.writeInt(null, "bnUserToStringUserList", bnUserToStringUserList);
-		Settings.writeInt(null, "bnUserToStringCommandResponse", bnUserToStringCommandResponse);
-		Settings.writeEnum(null, "releaseType", releaseType);
-		Settings.writeLong(null, "triviaRoundLength", triviaRoundLength);
+		Settings.write(null, "bnUserToString", bnUserToString);
+		Settings.write(null, "bnUserToStringUserList", bnUserToStringUserList);
+		Settings.write(null, "bnUserToStringCommandResponse", bnUserToStringCommandResponse);
+		Settings.write(null, "releaseType", releaseType);
+		Settings.write(null, "triviaRoundLength", triviaRoundLength);
 		Settings.write(null, "tsFormat", TimeFormatter.tsFormat);
-		Settings.writeBoolean(null, "whisperBack", whisperBack);
+		Settings.write(null, "whisperBack", whisperBack);
 		
 		Settings.store();
 	}
 	
 	public static void load() {
-		numBots = Settings.readInt(null, "numBots", 1);
-		colorScheme = (byte)Settings.readInt(null, "colorScheme", 2);
+		numBots = Settings.read(null, "numBots", 1);
+		colorScheme = (byte)Settings.read(null, "colorScheme", 2);
 		bnlsServer =Settings.read(null, "bnlsserver", "jbls.clanbnu.net");
-		bnlsPort = Settings.readInt(null, "bnlsport", 9367);
-		enableMirrorSelector = Settings.readBoolean(null, "enableMirrorSelector", true);
-		autoConnect = Settings.readBoolean(null, "autoConnect", true);
-		displayBattleNetMOTD = Settings.readBoolean(null, "displayBattleNetMOTD", true);
-		displayBattleNetChannels = Settings.readBoolean(null, "displayBattleNetChannels", false);
-		displayJoinParts = Settings.readBoolean(null, "displayJoinParts", true);
-		displayChannelUsers = Settings.readBoolean(null, "displayChannelUsers", false);
+		bnlsPort = Settings.read(null, "bnlsport", 9367);
+		enableMirrorSelector = Settings.read(null, "enableMirrorSelector", true);
+		autoConnect = Settings.read(null, "autoConnect", true);
+		displayBattleNetMOTD = Settings.read(null, "displayBattleNetMOTD", true);
+		displayBattleNetChannels = Settings.read(null, "displayBattleNetChannels", false);
+		displayJoinParts = Settings.read(null, "displayJoinParts", true);
+		displayChannelUsers = Settings.read(null, "displayChannelUsers", false);
 		email =	Settings.read(null, "email", null);
-		enableCLI = Settings.readBoolean(null, "enableCLI", false);
-		enableGUI = Settings.readBoolean(null, "enableGUI", true);
-		enableSWT = Settings.readBoolean(null, "enableSWT", false);
-		trayIconMode = Settings.readEnum(TrayIconMode.class, null, "trayIconMode", TrayIconMode.ENABLED);
-		trayMinimizeTo = Settings.readBoolean(null, "trayMinimizeTo", true);
-		trayDisplayConnectDisconnect = Settings.readBoolean(null, "trayDisplayConnectDisconnect", false);
-		trayDisplayChannel = Settings.readBoolean(null, "trayDisplayChannel", false);
-		trayDisplayJoinPart = Settings.readBoolean(null, "trayDisplayJoinPart", false);
-		trayDisplayChatEmote = Settings.readBoolean(null, "trayDisplayChatEmote", true);
-		trayDisplayWhisper = Settings.readBoolean(null, "trayDisplayWhisper", true);
-		enableTabCompleteUser = Settings.readBoolean(null, "enableTabCompleteUser", true);
-		enableTabCompleteCommand = Settings.readBoolean(null, "enableTabCompleteCommand", false);
-		tabCompleteMode = Settings.readEnum(TabCompleteMode.class, null, "tabCompleteMode", TabCompleteMode.STARTS_WITH_STRING);
-		enableLegacyIcons = Settings.readBoolean(null, "enableLegacyIcons", true);
-		enableCommands = Settings.readBoolean(null, "enableCommands", true);
-		triviaRoundLength = Settings.readLong(null, "triviaRoundLength", 100);
-		enableFloodProtect = Settings.readBoolean(null, "enableFloodProtect", false);
-		packetLog = Settings.readBoolean(null, "packetLog", false);
-		whisperBack = Settings.readBoolean(null, "whisperBack", true);
-		recruitAccess = Settings.readLong(null, "recruitAccess", 10);
+		enableCLI = Settings.read(null, "enableCLI", false);
+		enableGUI = Settings.read(null, "enableGUI", true);
+		enableSWT = Settings.read(null, "enableSWT", false);
+		trayIconMode = Settings.read(null, "trayIconMode", TrayIconMode.ENABLED);
+		trayMinimizeTo = Settings.read(null, "trayMinimizeTo", true);
+		trayDisplayConnectDisconnect = Settings.read(null, "trayDisplayConnectDisconnect", false);
+		trayDisplayChannel = Settings.read(null, "trayDisplayChannel", false);
+		trayDisplayJoinPart = Settings.read(null, "trayDisplayJoinPart", false);
+		trayDisplayChatEmote = Settings.read(null, "trayDisplayChatEmote", true);
+		trayDisplayWhisper = Settings.read(null, "trayDisplayWhisper", true);
+		enableTabCompleteUser = Settings.read(null, "enableTabCompleteUser", true);
+		enableTabCompleteCommand = Settings.read(null, "enableTabCompleteCommand", false);
+		tabCompleteMode = Settings.read(null, "tabCompleteMode", TabCompleteMode.STARTS_WITH_STRING);
+		enableLegacyIcons = Settings.read(null, "enableLegacyIcons", true);
+		enableCommands = Settings.read(null, "enableCommands", true);
+		triviaRoundLength = Settings.read(null, "triviaRoundLength", 100);
+		enableFloodProtect = Settings.read(null, "enableFloodProtect", false);
+		packetLog = Settings.read(null, "packetLog", false);
+		whisperBack = Settings.read(null, "whisperBack", true);
+		recruitAccess = Settings.read(null, "recruitAccess", 10);
 		recruitTagPrefix =	Settings.read(null, "recruitTagPrefix", "BNU-");
 		recruitTagSuffix =	Settings.read(null, "recruitTagSuffix", null);
 		if(enableGUI) {
@@ -258,13 +258,13 @@ public class GlobalSettings {
 			setLookAndFeel(Settings.read(null, "lookAndFeel", "JGoodies Plastic XP"));
 		}
 		TimeFormatter.tsFormat = Settings.read(null, "tsFormat", TimeFormatter.tsFormat);
-		bnUserToString = Settings.readInt(null, "bnUserToString", 3);
-		bnUserToStringUserList = Settings.readInt(null, "bnUserToStringUserList", 1);
-		bnUserToStringCommandResponse = Settings.readInt(null, "bnUserToStringCommandResponse", 4);
+		bnUserToString = Settings.read(null, "bnUserToString", 3);
+		bnUserToStringUserList = Settings.read(null, "bnUserToStringUserList", 1);
+		bnUserToStringCommandResponse = Settings.read(null, "bnUserToStringCommandResponse", 4);
 		
 		// Get the release type to check for when doing version checks
 		ReleaseType currentRelease = CurrentVersion.version().getReleaseType();
-		releaseType = Settings.readEnum(ReleaseType.class, null, "releaseType", currentRelease);
+		releaseType = Settings.read(null, "releaseType", currentRelease);
 		
 		if(CurrentVersion.fromJar()) {
 			// If from a JAR, force at least Alpha

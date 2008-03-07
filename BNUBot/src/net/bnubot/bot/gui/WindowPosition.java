@@ -29,11 +29,11 @@ public class WindowPosition {
 		String header = w.getClass().getSimpleName();
 		Rectangle bounds = w.getBounds();
 		if((w instanceof Frame) && ((Frame)w).isResizable()) {
-			bounds.height = Settings.readInt(header, "height", bounds.height);
-			bounds.width = Settings.readInt(header, "width", bounds.width);
+			bounds.height = Settings.read(header, "height", bounds.height);
+			bounds.width = Settings.read(header, "width", bounds.width);
 		}
-		bounds.x = Settings.readInt(header, "x", bounds.x);
-		bounds.y = Settings.readInt(header, "y", bounds.y);
+		bounds.x = Settings.read(header, "x", bounds.x);
+		bounds.y = Settings.read(header, "y", bounds.y);
 		w.setBounds(bounds);
 		w.addComponentListener(windowSaver);
 	}
@@ -47,12 +47,12 @@ public class WindowPosition {
 				return;
 			
 			if(f.isResizable()) {
-				Settings.writeInt(header, "height", bounds.height);
-				Settings.writeInt(header, "width", bounds.width);
+				Settings.write(header, "height", bounds.height);
+				Settings.write(header, "width", bounds.width);
 			}
 		}
-		Settings.writeInt(header, "x", bounds.x);
-		Settings.writeInt(header, "y", bounds.y);
+		Settings.write(header, "x", bounds.x);
+		Settings.write(header, "y", bounds.y);
 		Settings.store();
 	}
 }

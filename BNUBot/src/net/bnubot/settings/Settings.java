@@ -27,63 +27,63 @@ public class Settings {
 		}
 	}
 	
-	private static String getKey(String Header, String Setting) {
-		if(Header == null)
-			return "general_" + Setting;
-		return Header + "_" + Setting;
+	private static String getKey(String header, String setting) {
+		if(header == null)
+			return "general_" + setting;
+		return header + "_" + setting;
 	}
 	
-	public static String read(String Header, String Setting, String Default) {
-		String s = props.getProperty(getKey(Header, Setting));
-		if(s != null)
-			return s;
-		return Default;
+	public static String read(String header, String setting, String defaultValue) {
+		return props.getProperty(getKey(header, setting), defaultValue);
 	}
 	
-	public static boolean readBoolean(String Header, String Setting, boolean Default) {
-		return Boolean.parseBoolean(read(Header, Setting, Boolean.toString(Default)));
+	public static boolean read(String header, String setting, boolean defaultValue) {
+		return Boolean.parseBoolean(read(header, setting, Boolean.toString(defaultValue)));
 	}
 	
-	public static int readInt(String Header, String Setting, int Default) {
-		return Integer.parseInt(read(Header, Setting, Integer.toString(Default)));
+	public static int read(String header, String setting, int defaultValue) {
+		return Integer.parseInt(read(header, setting, Integer.toString(defaultValue)));
 	}
 	
-	public static long readLong(String Header, String Setting, long Default) {
-		return Long.parseLong(read(Header, Setting, Long.toString(Default)));
+	public static long read(String header, String setting, long defaultValue) {
+		return Long.parseLong(read(header, setting, Long.toString(defaultValue)));
 	}
 	
-	public static <T extends Enum<T>> T readEnum(Class<T> enumType, String Header, String Setting, T Default) {
-		return Enum.valueOf(enumType, read(Header, Setting, Default.name()));
+	/**
+	 * This method will not handle a NULL value for defaultValue
+	 */
+	public static <T extends Enum<T>> T read(String header, String setting, T defaultValue) {
+		return Enum.valueOf(defaultValue.getDeclaringClass(), read(header, setting, defaultValue.name()));
 	}
 	
-	public static void write(String Header, String Setting, String Value) {
-		String key = getKey(Header, Setting);
-		if(Value == null)
-			Value = new String();
+	public static void write(String header, String setting, String value) {
+		String key = getKey(header, setting);
+		if(value == null)
+			value = new String();
 		
 		// Don't allow modification of keys unless they haven't changed
-		if(props.containsKey(key) && props.getProperty(key).equals(Value))
+		if(props.containsKey(key) && props.getProperty(key).equals(value))
 			return;
 		
 		anythingChanged = true;
-		Out.debug(Settings.class, "Setting " + key + "=" + Value);
-		props.setProperty(key, Value);
+		Out.debug(Settings.class, "setting " + key + "=" + value);
+		props.setProperty(key, value);
 	}
 	
-	public static void writeBoolean(String Header, String Setting, boolean Value) {
-		write(Header, Setting, Boolean.toString(Value));
+	public static void write(String header, String setting, boolean value) {
+		write(header, setting, Boolean.toString(value));
 	}
 	
-	public static void writeInt(String Header, String Setting, int Value) {
-		write(Header, Setting, Integer.toString(Value));
+	public static void write(String header, String setting, int value) {
+		write(header, setting, Integer.toString(value));
 	}
 	
-	public static void writeLong(String Header, String Setting, long Value) {
-		write(Header, Setting, Long.toString(Value));
+	public static void write(String header, String setting, long value) {
+		write(header, setting, Long.toString(value));
 	}
 	
-	public static <T extends Enum<T>> void writeEnum(String Header, String Setting, T Value) {
-		write(Header, Setting, Value.name());
+	public static <T extends Enum<T>> void write(String header, String setting, T value) {
+		write(header, setting, value.name());
 	}
 
 	public static void store() {
