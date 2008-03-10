@@ -167,7 +167,7 @@ public class Database {
 			if(dss > expireDays) {
 				String login = rsOld.getString("login");
 	
-				BNLoginResultSet rsUser = getUser(new BNetUser(login));
+				BNLoginResultSet rsUser = getUser(new BNetUser(null, login));
 				if(rsUser.next()) {
 					Long rank = rsOld.getLong("rank");
 					if(rsOld.wasNull())

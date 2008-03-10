@@ -185,7 +185,7 @@ public class DTConnection extends Connection {
 					// We are officially logged in!
 					sendJoinChannel("x86");
 					
-					myUser = new BNetUser(cs.username, cs.myRealm);
+					myUser = new BNetUser(this, cs.username, cs.myRealm);
 					titleChanged();
 					return true;
 				}
@@ -344,7 +344,7 @@ public class DTConnection extends Connection {
 					else
 						user = getBNetUser(username);
 					if(user == null)
-						user = new BNetUser(username, cs.myRealm);
+						user = new BNetUser(this, username, cs.myRealm);
 					
 					switch(chatType) {
 					case 0x00: // Normal
@@ -407,7 +407,7 @@ public class DTConnection extends Connection {
 		// Create the BNetUser
 		BNetUser user = getBNetUser(username);
 		if(user == null)
-			user = new BNetUser(username, cs.myRealm);
+			user = new BNetUser(this, username, cs.myRealm);
 		
 		// Flags
 		if(userFlags != null) {

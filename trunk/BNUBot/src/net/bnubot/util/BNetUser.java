@@ -10,14 +10,19 @@ import java.sql.SQLException;
 import net.bnubot.bot.database.AccountResultSet;
 import net.bnubot.bot.database.Database;
 import net.bnubot.bot.database.RankResultSet;
+import net.bnubot.core.Connection;
 import net.bnubot.settings.GlobalSettings;
+import net.bnubot.vercheck.CurrentVersion;
+import net.bnubot.vercheck.ReleaseType;
 
 /**
  * A class responsible for formatting Battle.net usernames.
  * Now it includes support for the database, which will make toString() quite pretty.
+ * A BNetUser has a Connection, and can be whispered by .sendChat()
  * @author scotta
  */
 public class BNetUser {
+	private Connection con;
 	private String shortLogonName;	// #=yes, realm=only if different from "myRealm"
 	private String fullLogonName;	// #=yes, realm=yes
 	private final String fullAccountName;	// #=no, realm=yes
@@ -33,7 +38,8 @@ public class BNetUser {
 	 * Constructor for a BNetUser
 	 * @param user		User[#N]@Realm
 	 */
-	public BNetUser(String user) {
+	public BNetUser(Connection con, String user) {
+		this.con = con;
 		String uAccount;
 		int uNumber = 0;
 		
@@ -81,7 +87,8 @@ public class BNetUser {
 	 * @param user		User[#N][@Realm]
 	 * @param myRealm	[User[#N]@]Realm
 	 */
-	public BNetUser(String user, String myRealm) {
+	public BNetUser(Connection con, String user, String myRealm) {
+		this.con = con;
 		String uAccount;
 		int uNumber = 0;
 		
@@ -402,10 +409,63 @@ public class BNetUser {
 	 * Convert a BNetUser to a BNetUser from a different perspective
 	 */
 	public BNetUser toPerspective(BNetUser myRealm) {
-		BNetUser out = new BNetUser(fullLogonName, myRealm.getFullAccountName());
+		if(myRealm.con != con)
+			throw new IllegalStateException("Can not format BNetUser to a perspective on a different Connection");
+		BNetUser out = new BNetUser(con, fullLogonName, myRealm.getFullAccountName());
 		out.flags = flags;
 		out.ping = ping;
 		out.statString = statString;
 		return out;
+	}
+
+	/**
+	 * Send chat to a user in command response style - either whispered, or formatted with the user's name
+	 * @param msg
+	 * @param b
+	 */
+	public static final int MAX_CHAT_LENGTH = 242;
+	public void sendChat(String text, boolean whisperBack) {
+		if((text == null) || (con == null))
+			return;
+
+		text = con.cleanText(text);
+		
+		boolean isMyUser = false;
+		BNetUser myUser = con.getMyUser();
+		if(myUser != null)
+			isMyUser = myUser.equals(this);
+		
+		if(whisperBack && isMyUser)
+			con.recieveInfo(text);
+		else {
+			String prefix;
+			if(whisperBack || isMyUser) {
+				if(whisperBack)
+					prefix = "/w " + this.getFullLogonName() + " ";
+				else
+					prefix = "";
+				
+				prefix += "[BNU";
+				ReleaseType rt = CurrentVersion.version().getReleaseType();
+				if(rt.isAlpha())
+					prefix += " Alpha";
+				else if(rt.isBeta())
+					prefix += " Beta";
+				else if(rt.isReleaseCandidate())
+					prefix += " RC";
+				prefix += "] ";
+			} else {
+				prefix = this.toString(GlobalSettings.bnUserToStringCommandResponse) + ": ";
+			}
+		
+			//Split up the text in to appropriate sized pieces
+			int pieceSize = MAX_CHAT_LENGTH - prefix.length();
+			for(int i = 0; i < text.length(); i += pieceSize) {
+				String piece = prefix + text.substring(i);
+				if(piece.length() > MAX_CHAT_LENGTH)
+					piece = piece.substring(0, MAX_CHAT_LENGTH);
+				con.queueChatHelper(piece, false);
+			}
+		}
 	}
 }

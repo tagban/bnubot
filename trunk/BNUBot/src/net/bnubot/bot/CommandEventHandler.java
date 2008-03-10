@@ -97,7 +97,7 @@ public class CommandEventHandler implements EventHandler {
 						rsSubjectCategory = d.getCommandCategory(params[0], commanderAccess);
 					
 					if((rsSubjectCategory == null) || !rsSubjectCategory.next()) {
-						source.sendChat(user, "The category [" + params[0] + "] does not exist!", whisperBack);
+						user.sendChat("The category [" + params[0] + "] does not exist!", whisperBack);
 						if(rsSubjectCategory != null)
 							d.close(rsSubjectCategory);
 						return;
@@ -109,14 +109,14 @@ public class CommandEventHandler implements EventHandler {
 						result += ", " + rsSubjectCategory.getName() + " (" + rsSubjectCategory.getAccess() + ")";
 					
 					d.close(rsSubjectCategory);
-					source.sendChat(user, result, whisperBack);
+					user.sendChat(result, whisperBack);
 				} catch(InvalidUseException e) {
 					String use = "Use: %trigger%access <category> -- Available categories for rank " + commanderAccess + ": all";
 					CommandResultSet rsCategories = d.getCommandCategories(commanderAccess);
 					while(rsCategories.next())
 						use += ", " + rsCategories.getCmdGroup();
 					d.close(rsCategories);
-					source.sendChat(user, use, whisperBack);
+					user.sendChat(use, whisperBack);
 				}
 			}});
 		Profile.registerCommand("add", new CommandRunnable() {
@@ -145,7 +145,7 @@ public class CommandEventHandler implements EventHandler {
 							BNLoginResultSet rsSubject = d.getUser(bnSubject);
 							if(!rsSubject.next()) {
 								d.close(rsSubject);
-								source.sendChat(user, "I have never seen [" + bnSubject.getFullAccountName() + "]", whisperBack);
+								user.sendChat("I have never seen [" + bnSubject.getFullAccountName() + "]", whisperBack);
 								return;
 							}
 							rsSubject.saveCursor();
@@ -153,14 +153,14 @@ public class CommandEventHandler implements EventHandler {
 							try {
 								createAccount(params[0], commanderAccountID, rsSubject);
 							} catch(AccountDoesNotExistException e) {
-								source.sendChat(user, e.getMessage(), whisperBack);
+								user.sendChat(e.getMessage(), whisperBack);
 								return;
 							}
 							
 							// Re-load the account
 							rsSubjectAccount = d.getAccount(bnSubject);
 							if((rsSubjectAccount == null) || !rsSubjectAccount.next()) {
-								source.sendChat(user, "Failed to create account for an unknown reason", whisperBack);
+								user.sendChat("Failed to create account for an unknown reason", whisperBack);
 								if(rsSubjectAccount != null)
 									d.close(rsSubjectAccount);
 								return;
@@ -182,9 +182,9 @@ public class CommandEventHandler implements EventHandler {
 					rsSubjectAccount.setLastRankChange(new Timestamp(System.currentTimeMillis()));
 					rsSubjectAccount.updateRow();
 					d.close(rsSubjectAccount);
-					source.sendChat(user, "Added user [" + subjectAccount + "] successfully with access " + targetAccess, whisperBack);
+					user.sendChat("Added user [" + subjectAccount + "] successfully with access " + targetAccess, whisperBack);
 				} catch(InvalidUseException e) {
-					source.sendChat(user, "Use: %trigger%add <account> <access>", whisperBack);
+					user.sendChat("Use: %trigger%add <account> <access>", whisperBack);
 				}
 			}});
 		Profile.registerCommand("auth", new CommandRunnable() {
@@ -199,16 +199,16 @@ public class CommandEventHandler implements EventHandler {
 					
 					CommandResultSet rsSubectCommand = d.getCommand(params[0]);
 					if((rsSubectCommand == null) || !rsSubectCommand.next()) {
-						source.sendChat(user, "The command [" + params[0] + "] does not exist!", whisperBack);
+						user.sendChat("The command [" + params[0] + "] does not exist!", whisperBack);
 						return;
 					}
 					
 					params[0] = rsSubectCommand.getName();
 					long access = rsSubectCommand.getAccess();
 					
-					source.sendChat(user, "Authorization required for " + params[0] + " is " + access, whisperBack);
+					user.sendChat("Authorization required for " + params[0] + " is " + access, whisperBack);
 				} catch(InvalidUseException e) {
-					source.sendChat(user, "Use: %trigger%auth <command>", whisperBack);
+					user.sendChat("Use: %trigger%auth <command>", whisperBack);
 				}
 			}});
 		Profile.registerCommand("autopromotion", new CommandRunnable() {
@@ -283,7 +283,7 @@ public class CommandEventHandler implements EventHandler {
 							if(recruitScore > 0)
 								result += ", Recruit Score: " + recruitScore;
 							
-							source.sendChat(user, result, whisperBack);
+							user.sendChat(result, whisperBack);
 						} else {
 							String result = "AutoPromotion Info for [" + rsSubjectAccount.getName() + "]: ";
 							result += "Days: " + timeElapsed + "/" + apDays;
@@ -296,7 +296,7 @@ public class CommandEventHandler implements EventHandler {
 									result += "/" + apRecruitScore;
 							}
 							
-							source.sendChat(user, result, whisperBack);
+							user.sendChat(result, whisperBack);
 						}
 					} else {
 						String result = "Rank " + subjectRank + " was not found in the database; please contact the bot master and report this error. ";
@@ -306,12 +306,12 @@ public class CommandEventHandler implements EventHandler {
 						result += wins[1] + " D2 level, ";
 						result += wins[2] + " W3 level";
 						
-						source.sendChat(user, result, whisperBack);
+						user.sendChat(result, whisperBack);
 					}
 					d.close(rsRank);
 					d.close(rsSubjectAccount);
 				} catch(InvalidUseException e) {
-					source.sendChat(user, "Use: %trigger%automaticpromotion [account]", whisperBack);
+					user.sendChat("Use: %trigger%automaticpromotion [account]", whisperBack);
 				}
 			}});
 		Profile.registerCommand("ban", new CommandRunnable() {
@@ -325,14 +325,14 @@ public class CommandEventHandler implements EventHandler {
 					long commanderAccess, String commanderAccount, Long commanderAccountID, boolean superUser)
 			throws Exception {
 				if((params == null) || (params.length != 1)) {
-					source.sendChat(user, "Use: %trigger%createaccount <account>", whisperBack);
+					user.sendChat("Use: %trigger%createaccount <account>", whisperBack);
 					return;
 				}
 				
 				AccountResultSet rsAccount = d.getAccount(params[0]);
 				if(rsAccount.next()) {
 					d.close(rsAccount);
-					source.sendChat(user, "The account [" + params[0] + "] already exists", whisperBack);
+					user.sendChat("The account [" + params[0] + "] already exists", whisperBack);
 					return;
 				}
 				d.close(rsAccount);
@@ -340,12 +340,12 @@ public class CommandEventHandler implements EventHandler {
 				rsAccount = d.createAccount(params[0], 0L, commanderAccountID);
 				if(!rsAccount.next()) {
 					d.close(rsAccount);
-					source.sendChat(user, "Failed to create account [" + params[0] + "] for an unknown reason", whisperBack);
+					user.sendChat("Failed to create account [" + params[0] + "] for an unknown reason", whisperBack);
 					return;
 				}
 				d.close(rsAccount);
 				
-				source.sendChat(user, "The account [" + params[0] + "] has been created", whisperBack);
+				user.sendChat("The account [" + params[0] + "] has been created", whisperBack);
 			}});
 		Profile.registerCommand("disconnect", new CommandRunnable() {
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack,
@@ -364,14 +364,14 @@ public class CommandEventHandler implements EventHandler {
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack,
 					long commanderAccess, String commanderAccount, Long commanderAccountID, boolean superUser)
 			throws Exception {
-				source.sendChat(user, "BNU-Bot " + CurrentVersion.version() + " running on " + osVersion() + " with " + javaVersion(), whisperBack);
+				user.sendChat("BNU-Bot " + CurrentVersion.version() + " running on " + osVersion() + " with " + javaVersion(), whisperBack);
 			}});
 		Profile.registerCommand("invite", new CommandRunnable() {
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack,
 					long commanderAccess, String commanderAccount, Long commanderAccountID, boolean superUser)
 			throws Exception {
 				if((params == null) || (params.length != 1))
-					source.sendChat(user, "Use: %trigger%invite <user>", whisperBack);
+					user.sendChat("Use: %trigger%invite <user>", whisperBack);
 				else
 					source.sendClanInvitation(new CommandResponseCookie(user, whisperBack), params[0]);
 			}});
@@ -386,7 +386,7 @@ public class CommandEventHandler implements EventHandler {
 					long commanderAccess, String commanderAccount, Long commanderAccountID, boolean superUser)
 			throws Exception {
 				if(commanderAccountID == null) {
-					source.sendChat(user, "You must have an account to use mail.", whisperBack);
+					user.sendChat("You must have an account to use mail.", whisperBack);
 					return;
 				}
 				
@@ -409,7 +409,7 @@ public class CommandEventHandler implements EventHandler {
 						d.close(rsTargetAccount);
 						
 						d.sendMail(commanderAccountID, targetAccountID, params[2]);
-						source.sendChat(user, "Mail queued for delivery to " +  params[1], whisperBack);
+						user.sendChat("Mail queued for delivery to " +  params[1], whisperBack);
 					} else if(params[0].equals("read")
 							||params[0].equals("get")) {
 						//read [number]
@@ -446,7 +446,7 @@ public class CommandEventHandler implements EventHandler {
 								d.setMailRead(rsMail.getLong("id"));
 								d.close(rsMail);
 								
-								source.sendChat(user, message, true);
+								user.sendChat(message, true);
 								return;
 							}
 							
@@ -454,7 +454,7 @@ public class CommandEventHandler implements EventHandler {
 							long mailCount = d.getMailCount(commanderAccountID);
 							if(mailCount > 0)
 								message += " To read your " + mailCount + " messages, type [ %trigger%mail read <number> ]";
-							source.sendChat(user, message, whisperBack);
+							user.sendChat(message, whisperBack);
 						} else {
 							long mailNumber = 0;
 							while(rsMail.next()) {
@@ -476,11 +476,11 @@ public class CommandEventHandler implements EventHandler {
 								d.setMailRead(rsMail.getLong("id"));
 								d.close(rsMail);
 								
-								source.sendChat(user, message, true);
+								user.sendChat(message, true);
 								return;
 							}
 							
-							source.sendChat(user, "You only have " + mailNumber + " messages!", whisperBack);
+							user.sendChat("You only have " + mailNumber + " messages!", whisperBack);
 						}
 						d.close(rsMail);
 						return;
@@ -492,16 +492,16 @@ public class CommandEventHandler implements EventHandler {
 							throw new InvalidUseException();
 						
 						if(d.getUnreadMailCount(commanderAccountID) > 0) {
-							source.sendChat(user, "You have unread mail!", whisperBack);
+							user.sendChat("You have unread mail!", whisperBack);
 							return;
 						}
 						
 						d.clearMail(commanderAccountID);
-						source.sendChat(user, "Mailbox cleaned!", whisperBack);
+						user.sendChat("Mailbox cleaned!", whisperBack);
 					} else
 						throw new InvalidUseException();
 				} catch(InvalidUseException e) {
-					source.sendChat(user, "Use: %trigger%mail (read [number] | empty | send <account> <message>)", whisperBack);
+					user.sendChat("Use: %trigger%mail (read [number] | empty | send <account> <message>)", whisperBack);
 				}
 			}});
 		Profile.registerCommand("mailall", new CommandRunnable() {
@@ -532,9 +532,9 @@ public class CommandEventHandler implements EventHandler {
 						d.sendMail(commanderAccountID, targetAccountID, message);
 						numAccounts++;
 					}
-					source.sendChat(user, "Mail queued for delivery to " + numAccounts + " accounts", whisperBack);
+					user.sendChat("Mail queued for delivery to " + numAccounts + " accounts", whisperBack);
 				} catch(InvalidUseException e) {
-					source.sendChat(user, "Use: %trigger%mailall <minimum rank> <message>", whisperBack);
+					user.sendChat("Use: %trigger%mailall <minimum rank> <message>", whisperBack);
 				}
 			}});
 		Profile.registerCommand("ping", new CommandRunnable() {
@@ -542,16 +542,16 @@ public class CommandEventHandler implements EventHandler {
 					long commanderAccess, String commanderAccount, Long commanderAccountID, boolean superUser)
 			throws Exception {
 				if((params == null) || (params.length != 1)) {
-					source.sendChat(user, "Use: %trigger%ping <user>[@<realm>]", whisperBack);
+					user.sendChat("Use: %trigger%ping <user>[@<realm>]", whisperBack);
 					return;
 				}
 				
 				BNetUser bnSubject = source.getBNetUser(params[0], user);
 				Integer ping = bnSubject.getPing();
 				if(ping == null)
-					source.sendChat(user, "I do not know the ping for " + bnSubject.getFullLogonName(), whisperBack);
+					user.sendChat("I do not know the ping for " + bnSubject.getFullLogonName(), whisperBack);
 				else
-					source.sendChat(user, "Ping for " + bnSubject.getFullLogonName() + ": " + ping, whisperBack);
+					user.sendChat("Ping for " + bnSubject.getFullLogonName() + ": " + ping, whisperBack);
 			}});
 		Profile.registerCommand("pingme", new CommandRunnable() {
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack,
@@ -559,9 +559,9 @@ public class CommandEventHandler implements EventHandler {
 			throws Exception {
 				Integer ping = user.getPing();
 				if(ping == null)
-					source.sendChat(user, "I do not know the ping for " + user.getFullLogonName(), whisperBack);
+					user.sendChat("I do not know the ping for " + user.getFullLogonName(), whisperBack);
 				else
-					source.sendChat(user, "Your ping is: " + ping, whisperBack);
+					user.sendChat("Your ping is: " + ping, whisperBack);
 			}});
 		Profile.registerCommand("quit", new CommandRunnable() {
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack,
@@ -581,7 +581,7 @@ public class CommandEventHandler implements EventHandler {
 					long commanderAccess, String commanderAccount, Long commanderAccountID, boolean superUser)
 			throws Exception {
 				if((params == null) || (params.length != 2)) {
-					source.sendChat(user, "Use: %trigger%recruit <user>[@<realm>] <account>", whisperBack);
+					user.sendChat("Use: %trigger%recruit <user>[@<realm>] <account>", whisperBack);
 					return;
 				}
 				
@@ -589,7 +589,7 @@ public class CommandEventHandler implements EventHandler {
 				BNLoginResultSet rsSubject = d.getUser(bnSubject);
 				if(!rsSubject.next()) {
 					d.close(rsSubject);
-					source.sendChat(user, "I have never seen [" + bnSubject.getFullLogonName() + "] in the channel", whisperBack);
+					user.sendChat("I have never seen [" + bnSubject.getFullLogonName() + "] in the channel", whisperBack);
 					return;
 				}
 				
@@ -597,7 +597,7 @@ public class CommandEventHandler implements EventHandler {
 				Long subjectAccountId = rsSubject.getAccount();
 				if(subjectAccountId != null) {
 					d.close(rsSubject);
-					source.sendChat(user, "That user already has an account!", whisperBack);
+					user.sendChat("That user already has an account!", whisperBack);
 					return;
 				}
 
@@ -607,7 +607,7 @@ public class CommandEventHandler implements EventHandler {
 				if(requiredTagPrefix != null) {
 					if(bnSubject.getFullAccountName().substring(0, requiredTagPrefix.length()).compareToIgnoreCase(requiredTagPrefix) != 0) {
 						d.close(rsSubject);
-						source.sendChat(user, "That user must have the " + requiredTagPrefix + " tag!", whisperBack);
+						user.sendChat("That user must have the " + requiredTagPrefix + " tag!", whisperBack);
 						return;
 					}
 				}
@@ -620,21 +620,21 @@ public class CommandEventHandler implements EventHandler {
 					s = s.substring(s.length() - requiredTagSuffix.length());
 					if(s.compareToIgnoreCase(requiredTagSuffix) != 0) {
 						d.close(rsSubject);
-						source.sendChat(user, "That user must have the " + requiredTagSuffix + " tag!", whisperBack);
+						user.sendChat("That user must have the " + requiredTagSuffix + " tag!", whisperBack);
 						return;
 					}
 				}
 				
 				if(commanderAccountID == null) {
 					d.close(rsSubject);
-					source.sendChat(user, "You must have an account to use recruit.", whisperBack);
+					user.sendChat("You must have an account to use recruit.", whisperBack);
 					return;
 				}
 				
 				try {
 					createAccount(params[1], commanderAccountID, rsSubject);
 				} catch(AccountDoesNotExistException e) {
-					source.sendChat(user, e.getMessage(), whisperBack);
+					user.sendChat(e.getMessage(), whisperBack);
 					return;
 				}
 
@@ -678,9 +678,9 @@ public class CommandEventHandler implements EventHandler {
 					d.close(rsRecruits);
 					
 					output = output.trim();
-					source.sendChat(user, output, whisperBack);
+					user.sendChat(output, whisperBack);
 				} catch(InvalidUseException e) {
-					source.sendChat(user, "Use: %trigger%recruits [account]", whisperBack);
+					user.sendChat("Use: %trigger%recruits [account]", whisperBack);
 				}
 				return;
 			}});
@@ -697,7 +697,7 @@ public class CommandEventHandler implements EventHandler {
 					long commanderAccess, String commanderAccount, Long commanderAccountID, boolean superUser)
 			throws Exception {
 				if((params == null) || (params.length != 2)) {
-					source.sendChat(user, "Use: %trigger%renameaccount <old account> <new account>", whisperBack);
+					user.sendChat("Use: %trigger%renameaccount <old account> <new account>", whisperBack);
 					return;
 				}
 				
@@ -710,11 +710,11 @@ public class CommandEventHandler implements EventHandler {
 					rsSubjectAccount.updateRow();
 				} catch(SQLException e) {
 					//TODO: Verify that the exception was actually caused by the UNIQUE restriction
-					source.sendChat(user, "The account [" + params[1] + "] already exists!", whisperBack);
+					user.sendChat("The account [" + params[1] + "] already exists!", whisperBack);
 					return;
 				}
 				
-				source.sendChat(user, "The account [" + params[0] + "] was successfully renamed to [" + params[1] + "]", whisperBack);
+				user.sendChat("The account [" + params[0] + "] was successfully renamed to [" + params[1] + "]", whisperBack);
 			}});
 		Profile.registerCommand("say", new CommandRunnable() {
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack,
@@ -727,7 +727,7 @@ public class CommandEventHandler implements EventHandler {
 					long commanderAccess, String commanderAccount, Long commanderAccountID, boolean superUser)
 			throws Exception {
 				if((params == null) || (params.length != 1)) {
-					source.sendChat(user, "Use: %trigger%seen <account>", whisperBack);
+					user.sendChat("Use: %trigger%seen <account>", whisperBack);
 					return;
 				}
 				
@@ -743,7 +743,7 @@ public class CommandEventHandler implements EventHandler {
 					BNLoginResultSet rsSubject = d.getUser(bnSubject);
 					if(!rsSubject.next()) {
 						d.close(rsSubject);
-						source.sendChat(user, "I have never seen [" + bnSubject.getFullAccountName() + "]", whisperBack);
+						user.sendChat("I have never seen [" + bnSubject.getFullAccountName() + "]", whisperBack);
 						return;
 					}
 					
@@ -775,7 +775,7 @@ public class CommandEventHandler implements EventHandler {
 				}
 				
 				if(mostRecent == null) {
-					source.sendChat(user, "I have never seen [" + params[0] + "]", whisperBack);
+					user.sendChat("I have never seen [" + params[0] + "]", whisperBack);
 					return;
 				}
 				
@@ -783,14 +783,14 @@ public class CommandEventHandler implements EventHandler {
 				diff = "User [" + params[0] + "] was last seen " + diff + " ago";
 				if(mostRecentAction != null)
 					diff += " " + mostRecentAction;
-				source.sendChat(user, diff, whisperBack);
+				user.sendChat(diff, whisperBack);
 			}});
 		Profile.registerCommand("setaccount", new CommandRunnable() {
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack,
 					long commanderAccess, String commanderAccount, Long commanderAccountID, boolean superUser)
 			throws Exception {
 				if((params == null) || (params.length < 1) || (params.length > 2)) {
-					source.sendChat(user, "Use: %trigger%setaccount <user>[@<realm>] [<account>]", whisperBack);
+					user.sendChat("Use: %trigger%setaccount <user>[@<realm>] [<account>]", whisperBack);
 					return;
 				}
 
@@ -798,7 +798,7 @@ public class CommandEventHandler implements EventHandler {
 				BNLoginResultSet rsSubject = d.getUser(bnSubject);
 				if(!rsSubject.next()) {
 					d.close(rsSubject);
-					source.sendChat(user, "I have never seen [" + bnSubject.getFullAccountName() + "] in the channel", whisperBack);
+					user.sendChat("I have never seen [" + bnSubject.getFullAccountName() + "] in the channel", whisperBack);
 					return;
 				}
 				rsSubject.saveCursor();
@@ -832,7 +832,7 @@ public class CommandEventHandler implements EventHandler {
 				}
 				
 				bnSubject.resetPrettyName();
-				source.sendChat(user, "User [" + subject + "] was added to account [" + params[1] + "] successfully.", whisperBack);
+				user.sendChat("User [" + subject + "] was added to account [" + params[1] + "] successfully.", whisperBack);
 			}});
 		Profile.registerCommand("setauth", new CommandRunnable() {
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack,
@@ -845,7 +845,7 @@ public class CommandEventHandler implements EventHandler {
 					CommandResultSet rsCommand = d.getCommand(params[0]);
 					if(!rsCommand.next()) {
 						d.close(rsCommand);
-						source.sendChat(user, "That command does not exist!", whisperBack);
+						user.sendChat("That command does not exist!", whisperBack);
 						return;
 					}
 					
@@ -855,13 +855,13 @@ public class CommandEventHandler implements EventHandler {
 						rsCommand.updateRow();
 						d.close(rsCommand);
 						
-						source.sendChat(user, "Successfully changed the authorization required for command [" + params[0] + "] to " + access, whisperBack);
+						user.sendChat("Successfully changed the authorization required for command [" + params[0] + "] to " + access, whisperBack);
 					} catch(NumberFormatException e) {
 						d.close(rsCommand);
 						throw new InvalidUseException();
 					}
 				} catch(InvalidUseException e) {
-					source.sendChat(user, "Use: %trigger%setauth <command> <access>", whisperBack);
+					user.sendChat("Use: %trigger%setauth <command> <access>", whisperBack);
 				}
 			}});
 		Profile.registerCommand("setbirthday", new CommandRunnable() {
@@ -869,7 +869,7 @@ public class CommandEventHandler implements EventHandler {
 					long commanderAccess, String commanderAccount, Long commanderAccountID, boolean superUser)
 			throws Exception {
 				if(commanderAccountID == null) {
-					source.sendChat(user, "You must have an account to use setbirthday.", whisperBack);
+					user.sendChat("You must have an account to use setbirthday.", whisperBack);
 					return;
 				}
 				
@@ -894,9 +894,9 @@ public class CommandEventHandler implements EventHandler {
 					rsAccount.updateRow();
 					d.close(rsAccount);
 					
-					source.sendChat(user, "Your birthday has been set to [ " + new SimpleDateFormat("M/d/y").format(bd) + " ]", whisperBack);
+					user.sendChat("Your birthday has been set to [ " + new SimpleDateFormat("M/d/y").format(bd) + " ]", whisperBack);
 				} catch(InvalidUseException e) {
-					source.sendChat(user, "Use: %trigger%setbirthday <date:MM/DD/YY>", whisperBack);
+					user.sendChat("Use: %trigger%setbirthday <date:MM/DD/YY>", whisperBack);
 				}
 			}});
 		Profile.registerCommand("setrank", new CommandRunnable() {
@@ -930,7 +930,7 @@ public class CommandEventHandler implements EventHandler {
 							params[0],
 							newRank);
 				} catch(InvalidUseException e) {
-					source.sendChat(user, "Use: %trigger%setrank <user> <rank(peon|grunt|shaman|1-3)>", whisperBack);
+					user.sendChat("Use: %trigger%setrank <user> <rank(peon|grunt|shaman|1-3)>", whisperBack);
 				}
 			}});
 		Profile.registerCommand("setrecruiter", new CommandRunnable() {
@@ -938,7 +938,7 @@ public class CommandEventHandler implements EventHandler {
 					long commanderAccess, String commanderAccount, Long commanderAccountID, boolean superUser)
 			throws Exception {
 				if((params == null) || (params.length != 2)) {
-					source.sendChat(user, "Use: %trigger%setrecruiter <account> <account>", whisperBack);
+					user.sendChat("Use: %trigger%setrecruiter <account> <account>", whisperBack);
 					return;
 				}
 				
@@ -970,7 +970,7 @@ public class CommandEventHandler implements EventHandler {
 					
 					recursive += " -> " + rsTarget.getName();
 					if(id == subjectID) {
-						source.sendChat(user, "Recursion detected: " + recursive, whisperBack);
+						user.sendChat("Recursion detected: " + recursive, whisperBack);
 						break;
 					}
 
@@ -985,7 +985,7 @@ public class CommandEventHandler implements EventHandler {
 						rsSubject.refreshCursor();
 						rsSubject.setCreatedBy(targetID);
 						rsSubject.updateRow();
-						source.sendChat(user, "Successfully updated recruiter for [ " + params[0] + " ] to [ " + params[1] + " ]" , whisperBack);
+						user.sendChat("Successfully updated recruiter for [ " + params[0] + " ] to [ " + params[1] + " ]" , whisperBack);
 						break;
 					}
 					
@@ -1000,7 +1000,7 @@ public class CommandEventHandler implements EventHandler {
 					long commanderAccess, String commanderAccount, Long commanderAccountID, boolean superUser)
 			throws Exception {
 				if((params == null) || (params.length < 1)) {
-					source.sendChat(user, "Use: %trigger%sweepban <channel>", whisperBack);
+					user.sendChat("Use: %trigger%sweepban <channel>", whisperBack);
 					return;
 				}
 				sweepBanInProgress.put(source, true);
@@ -1015,7 +1015,7 @@ public class CommandEventHandler implements EventHandler {
 				String output = "0000" + Integer.toString(trigger);
 				output = output.substring(output.length() - 4);
 				output = "Current trigger: " + trigger + " (alt+" + output + ")";
-				source.sendChat(user, output, whisperBack);
+				user.sendChat(output, whisperBack);
 			}});
 		Profile.registerCommand("unban", new CommandRunnable() {
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack,
@@ -1023,7 +1023,7 @@ public class CommandEventHandler implements EventHandler {
 			throws Exception {
 				// TODO: Wildcard unbanning (requires keeping track of banned users)
 				if((params == null) || (params.length != 1))
-					source.sendChat(user, "Use: %trigger%unban <user>[@<realm>]", whisperBack);
+					user.sendChat("Use: %trigger%unban <user>[@<realm>]", whisperBack);
 				else
 					source.queueChatHelper("/unban " + params[0], false);
 			}});
@@ -1052,7 +1052,7 @@ public class CommandEventHandler implements EventHandler {
 						BNLoginResultSet rsSubject = d.getUser(bnSubject);
 						
 						if((rsSubject == null) || (!rsSubject.next())) {
-							source.sendChat(user, "I have never seen [" + bnSubject.getFullLogonName() + "] in the channel", whisperBack);
+							user.sendChat("I have never seen [" + bnSubject.getFullLogonName() + "] in the channel", whisperBack);
 							return;
 						}
 						
@@ -1062,7 +1062,7 @@ public class CommandEventHandler implements EventHandler {
 						rsSubjectAccount = d.getAccount(bnSubject);
 						
 						if((rsSubjectAccount == null) || (!rsSubjectAccount.next())) {
-							source.sendChat(user, "User [" + params[0] + "] has no account", whisperBack);
+							user.sendChat("User [" + params[0] + "] has no account", whisperBack);
 							if(rsSubjectAccount != null)
 								d.close(rsSubjectAccount);
 							return;
@@ -1154,9 +1154,9 @@ public class CommandEventHandler implements EventHandler {
 					}
 					
 					d.close(rsSubjectAccount);
-					source.sendChat(user, result, whisperBack);
+					user.sendChat(result, whisperBack);
 				} catch(InvalidUseException e) {
-					source.sendChat(user, "Use: %trigger%whois <user>[@realm]", whisperBack);
+					user.sendChat("Use: %trigger%whois <user>[@realm]", whisperBack);
 				}
 			}});
 		/*Profile.registerCommand("", new CommandRunnable() {
@@ -1250,12 +1250,12 @@ public class CommandEventHandler implements EventHandler {
 					commanderAccountID,
 					superUser);
 		} catch(AccountDoesNotExistException e) {
-			source.sendChat(user, "The account [" + e.getMessage() + "] does not exist!", whisperBack);
+			user.sendChat("The account [" + e.getMessage() + "] does not exist!", whisperBack);
 		} catch(InsufficientAccessException e) {
-			source.sendChat(user, "You have insufficient access " + e.getMessage(), whisperBack);
+			user.sendChat("You have insufficient access " + e.getMessage(), whisperBack);
 		} catch(Exception e) {
 			Out.exception(e);
-			source.sendChat(user, e.getClass().getSimpleName() + ": " + e.getMessage(), whisperBack);
+			user.sendChat(e.getClass().getSimpleName() + ": " + e.getMessage(), whisperBack);
 		}
 		return true;
 	}
@@ -1296,9 +1296,9 @@ public class CommandEventHandler implements EventHandler {
 	private static void doKickBan(Connection source, BNetUser user, String param, boolean isBan, boolean whisperBack) {
 		if((param == null) || (param.length() == 0)) {
 			if(isBan)
-				source.sendChat(user, "Use: %trigger%ban ( <user>[@<realm>] | pattern ) [reason]", whisperBack);
+				user.sendChat("Use: %trigger%ban ( <user>[@<realm>] | pattern ) [reason]", whisperBack);
 			else
-				source.sendChat(user, "Use: %trigger%kick ( <user>[@<realm>] | pattern ) [reason]", whisperBack);
+				user.sendChat("Use: %trigger%kick ( <user>[@<realm>] | pattern ) [reason]", whisperBack);
 			return;
 		}
 		
@@ -1324,7 +1324,7 @@ public class CommandEventHandler implements EventHandler {
 			// Wildcard kick/ban
 			List<BNetUser> users = source.findUsersWildcard(params[0], user);
 			if(users.size() == 0) {
-				source.sendChat(user, "That pattern did not match any users.", whisperBack);
+				user.sendChat("That pattern did not match any users.", whisperBack);
 				return;
 			}
 			
@@ -1344,7 +1344,7 @@ public class CommandEventHandler implements EventHandler {
 			}
 			
 			if(numSkipped > 0)
-				source.sendChat(user, "Skipped " + numSkipped + " users with operator status.", whisperBack);
+				user.sendChat("Skipped " + numSkipped + " users with operator status.", whisperBack);
 		}
 	}
 
@@ -1544,7 +1544,7 @@ public class CommandEventHandler implements EventHandler {
 							if((apMail != null) && (apMail.length() > 0))
 								d.sendMail(id, id, apMail);
 						} else {
-							source.sendChat(user, "You need " + Long.toString(apRS - rs) + " more recruitment points to recieve a promotion!", false);
+							user.sendChat("You need " + Long.toString(apRS - rs) + " more recruitment points to recieve a promotion!", false);
 						}
 					} else {
 						String msg = "You need ";
@@ -1568,7 +1568,7 @@ public class CommandEventHandler implements EventHandler {
 							break apBlock;
 						}
 						msg += " to recieve a promotion!";
-						source.sendChat(user, msg, false);
+						user.sendChat(msg, false);
 					}
 				}
 			}
@@ -1578,7 +1578,7 @@ public class CommandEventHandler implements EventHandler {
 			//Mail
 			long umc = d.getUnreadMailCount(id);
 			if(umc > 0)
-				source.sendChat(user, "You have " + umc + " unread messages; type [ %trigger%mail read ] to retrieve them", false);
+				user.sendChat("You have " + umc + " unread messages; type [ %trigger%mail read ] to retrieve them", false);
 		} catch (Exception e) {
 			Out.exception(e);
 		}
@@ -1623,7 +1623,7 @@ public class CommandEventHandler implements EventHandler {
 		if(timeElapsed < 200) {
 			if(!text.equals(lastInfo)) {
 				lastInfo = text;
-				source.sendChat(lastCommandUser, text, false);
+				lastCommandUser.sendChat(text, false);
 			}
 		}
 	}

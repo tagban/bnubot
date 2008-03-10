@@ -20,6 +20,6 @@ public class CommandResponseCookie {
 	}
 	
 	public void sendChat(net.bnubot.core.Connection c, String text) {
-		c.sendChat(source, text, wasWhispered);
+		source.sendChat(text, wasWhispered);
 	}
 }

@@ -30,7 +30,6 @@ import net.bnubot.util.TimeFormatter;
 import net.bnubot.util.Wildcard;
 import net.bnubot.util.task.Task;
 import net.bnubot.vercheck.CurrentVersion;
-import net.bnubot.vercheck.ReleaseType;
 
 public abstract class Connection extends Thread {
 	public enum ConnectionState {
@@ -67,8 +66,6 @@ public abstract class Connection extends Thread {
 	protected boolean forceReconnect = false;
 	protected boolean initialized = false;
 	protected boolean disposed = false;
-
-	public static final int MAX_CHAT_LENGTH = 242;
 
 	private static Hashtable<String, Long> connectionTimes = new Hashtable<String, Long>();
 	/**
@@ -499,49 +496,6 @@ public abstract class Connection extends Thread {
 			chatQueue.enqueue(text, GlobalSettings.enableFloodProtect);
 		}
 	}
-	public void sendChat(BNetUser to, String text, boolean whisperBack) {
-		if(text == null)
-			return;
-
-		text = cleanText(text);
-
-		boolean isMyUser = false;
-		if(myUser != null)
-			isMyUser = myUser.equals(to);
-		
-		if(whisperBack && isMyUser)
-			recieveInfo(text);
-		else {
-			String prefix;
-			if(whisperBack || isMyUser) {
-				if(whisperBack)
-					prefix = "/w " + to.getFullLogonName() + " ";
-				else
-					prefix = "";
-				
-				prefix += "[BNU";
-				ReleaseType rt = CurrentVersion.version().getReleaseType();
-				if(rt.isAlpha())
-					prefix += " Alpha";
-				else if(rt.isBeta())
-					prefix += " Beta";
-				else if(rt.isReleaseCandidate())
-					prefix += " RC";
-				prefix += "] ";
-			} else {
-				prefix = to.toString(GlobalSettings.bnUserToStringCommandResponse) + ": ";
-			}
-
-			//Split up the text in to appropriate sized pieces
-			int pieceSize = MAX_CHAT_LENGTH - prefix.length();
-			for(int i = 0; i < text.length(); i += pieceSize) {
-				String piece = prefix + text.substring(i);
-				if(piece.length() > MAX_CHAT_LENGTH)
-					piece = piece.substring(0, MAX_CHAT_LENGTH);
-				queueChatHelper(piece, false);
-			}
-		}
-	}
 
 	public File downloadFile(String filename) {
 		return BNFTPConnection.downloadFile(cs, filename);
@@ -888,6 +842,6 @@ public abstract class Connection extends Thread {
 		BNetUser out = getBNetUser(user);
 		if(out != null)
 			return out.toPerspective(myRealm);
-		return new BNetUser(user, myRealm.getFullLogonName());
+		return new BNetUser(this, user, myRealm.getFullLogonName());
 	}
 }

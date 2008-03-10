@@ -898,7 +898,7 @@ public class BNCSConnection extends Connection {
 					StatString myStatString = new StatString(is.readNTString());
 					/*String accountName =*/ is.readNTString();
 					
-					myUser = new BNetUser(uniqueUserName, cs.myRealm);
+					myUser = new BNetUser(this, uniqueUserName, cs.myRealm);
 					myUser.setStatString(myStatString);
 					recieveInfo("Logged in as " + myUser.getFullLogonName() + ".");
 					titleChanged();
@@ -1183,7 +1183,7 @@ public class BNCSConnection extends Connection {
 						else
 							user = getBNetUser(username);
 						if(user == null)
-							user = new BNetUser(username, cs.myRealm);
+							user = new BNetUser(this, username, cs.myRealm);
 						
 						// Set the flags, ping, statstr
 						user.setFlags(flags);
