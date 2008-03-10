@@ -5,19 +5,24 @@
 
 package net.bnubot.bot.gui;
 
+import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 import javax.swing.text.JTextComponent;
 
@@ -28,17 +33,29 @@ public class WhatsNewWindow extends JDialog {
 	private static final long serialVersionUID = -2905017328939505262L;
 
 	public WhatsNewWindow() {
-		final JTabbedPane jtp = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
-		final String changeLog = getText();
+		final CardLayout cardLayout = new CardLayout();
+		final JPanel cards = new JPanel(cardLayout);
+		DefaultComboBoxModel model = new DefaultComboBoxModel();
+        final String[] changeLog = getText().split("\n\n");
 		
 		// Split up the change log by version
-		for(String entry : changeLog.split("\n\n")) {
+		for(String entry : changeLog) {
 			String[] data = entry.split("\n", 2);
 			JTextComponent jta = new ColoredTextArea();
 			jta.setText(data[1]);
 			jta.setEditable(false);
-			jtp.addTab(data[0], new JScrollPane(jta));
+			cards.add(data[0], new JScrollPane(jta));
+			model.addElement(data[0]);
 		}
+
+		JComboBox cb = new JComboBox(model);
+		cb.setEditable(false);
+		cb.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				cardLayout.show(cards, (String)e.getItem());
+			}});
+		JPanel comboBoxPane = new JPanel();
+		comboBoxPane.add(cb);
 		
 		JButton btnOK = new JButton("OK");
 		btnOK.addActionListener(new ActionListener() {
@@ -47,7 +64,8 @@ public class WhatsNewWindow extends JDialog {
 			}});
 		
 		Box boxAll = new Box(BoxLayout.Y_AXIS);
-		boxAll.add(jtp);
+		boxAll.add(comboBoxPane);
+		boxAll.add(cards);
 		boxAll.add(btnOK);
 		add(boxAll);
 		
