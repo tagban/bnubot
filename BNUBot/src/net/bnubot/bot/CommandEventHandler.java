@@ -68,10 +68,12 @@ public class CommandEventHandler implements EventHandler {
 				rsUser.updateRow();
 			}
 		} catch(Exception e) {
-			Out.exception(e);
+			// This is known to be problematic with Derby
+			// Ignore the exception since this message is annoying and rarely useful
 		}
 		
 		try {
+			// Make sure we don't forget to close the RS
 			if(rsUser != null)
 				d.close(rsUser);
 		} catch(Exception e) {
