@@ -11,9 +11,6 @@ import java.io.FilenameFilter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.sql.Driver;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -21,7 +18,6 @@ import java.util.jar.JarFile;
 import javax.swing.LookAndFeel;
 import javax.swing.UIManager;
 
-import net.bnubot.bot.database.DriverShim;
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.PluginManager;
 import net.bnubot.settings.GlobalSettings;
@@ -94,7 +90,7 @@ public class JARLoader {
 	 * @param name The fully qualified class name
 	 */
 	@SuppressWarnings("unchecked")
-	private static void checkClass(String name) throws ClassNotFoundException, InstantiationException, IllegalAccessException, SQLException {
+	private static void checkClass(String name) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
 		// Get a Class for it
 		Class<?> clazz = JARLoader.forName(name);
 		
@@ -108,14 +104,6 @@ public class JARLoader {
 			
 			// Check the interfaces
 			for(Class<?> cif : superClazz.getInterfaces()) {
-				// Check if it's a JDBC driver
-				if(cif.equals(Driver.class)) {
-					Driver d = (Driver)clazz.newInstance();
-					if(d.jdbcCompliant())
-						DriverManager.registerDriver(new DriverShim(d));
-					break;
-				}
-				
 				// Check if it's a plugin
 				if(cif.equals(EventHandler.class)) {
 					PluginManager.register((Class<? extends EventHandler>) clazz);
