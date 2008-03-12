@@ -15,8 +15,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.sql.Driver;
-import java.sql.DriverManager;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -34,7 +32,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
-import net.bnubot.bot.database.DriverShim;
 import net.bnubot.bot.gui.KeyManager;
 import net.bnubot.bot.gui.WindowPosition;
 import net.bnubot.bot.gui.components.ConfigCheckBox;
@@ -43,7 +40,6 @@ import net.bnubot.bot.gui.components.ConfigFactory;
 import net.bnubot.bot.gui.components.ConfigTextArea;
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.PluginManager;
-import net.bnubot.settings.DatabaseSettings;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.settings.GlobalSettings.TabCompleteMode;
 import net.bnubot.settings.GlobalSettings.TrayIconMode;
@@ -102,14 +98,6 @@ public class GlobalConfigurationFrame extends JDialog {
 	private ConfigCheckBox chkDisplayBattleNetChannels = null;
 	private ConfigCheckBox chkDisplayJoinParts = null;
 	private ConfigCheckBox chkDisplayChannelUsers = null;
-
-	// Database
-	private DatabaseSettings dbSettings = null;
-	private ConfigComboBox cmbDrivers = null;
-	private ConfigTextArea txtDriverURL = null;
-	private ConfigTextArea txtDriverUsername = null;
-	private ConfigTextArea txtDriverPassword = null;
-	private ConfigTextArea txtDriverSchema = null;
 	
 	// Debug
 	private ConfigCheckBox chkEnableDebug = null;
@@ -285,31 +273,6 @@ public class GlobalConfigurationFrame extends JDialog {
 				boxAll.add(chkDisplayChannelUsers = new ConfigCheckBox("Display Channel Users On Join", GlobalSettings.displayChannelUsers));
 			}
 			tabs.addTab("Display", boxAll);
-			
-			boxAll = new Box(BoxLayout.Y_AXIS);
-			{
-				dbSettings = new DatabaseSettings();
-				dbSettings.load();
-	
-				// Get a list of the avalable drivers
-				List<Object> driverList = new ArrayList<Object>();
-				Enumeration<Driver> drivers = DriverManager.getDrivers();
-				while(drivers.hasMoreElements()) {
-					Driver d = drivers.nextElement();
-					if(d instanceof DriverShim)
-						driverList.add(((DriverShim)d).getDriverClass().getName());
-					else
-						driverList.add(d.getClass().getName());
-				}
-				
-				cmbDrivers = ConfigFactory.makeCombo("Driver", driverList.toArray(), false, boxAll);
-				cmbDrivers.setSelectedItem(dbSettings.driver);
-				txtDriverURL = ConfigFactory.makeText("URL", dbSettings.url, boxAll);
-				txtDriverUsername = ConfigFactory.makeText("Username", dbSettings.username, boxAll);
-				txtDriverPassword = ConfigFactory.makeText("Password", dbSettings.password, boxAll);
-				txtDriverSchema = ConfigFactory.makeText("Schema", dbSettings.schema, boxAll);
-			}
-			tabs.addTab("Database", boxAll);
 	
 			boxAll = new Box(BoxLayout.Y_AXIS);
 			{
@@ -401,14 +364,6 @@ public class GlobalConfigurationFrame extends JDialog {
 
 	private void save() {
 		if(!keysOnly) {
-			// Save database info
-			dbSettings.driver = (String)cmbDrivers.getSelectedItem();
-			dbSettings.url = txtDriverURL.getText();
-			dbSettings.username = txtDriverUsername.getText();
-			dbSettings.password = txtDriverPassword.getText();
-			dbSettings.schema = txtDriverSchema.getText();
-			dbSettings.save();
-			
 			// Save global settings
 			GlobalSettings.bnlsServer = txtBNLSServer.getText();
 			GlobalSettings.email = txtEmail.getText();
@@ -495,14 +450,6 @@ public class GlobalConfigurationFrame extends JDialog {
 		loadCDKeys();
 		
 		if(!keysOnly) {
-			// Load database info
-			dbSettings.load();
-			cmbDrivers.setSelectedItem(dbSettings.driver);
-			txtDriverURL.setText(dbSettings.url);
-			txtDriverUsername.setText(dbSettings.username);
-			txtDriverPassword.setText(dbSettings.password);
-			txtDriverSchema.setText(dbSettings.schema);
-			
 			// Load global settings
 			GlobalSettings.load();
 			txtBNLSServer.setText(GlobalSettings.bnlsServer);
