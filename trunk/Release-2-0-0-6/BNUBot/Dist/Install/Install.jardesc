@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="WINDOWS-1252" standalone="no"?>
+<jardesc>
+    <jar path="BNUBot/Dist/BNUBot-Install.jar"/>
+    <options buildIfNeeded="true" compress="true" descriptionLocation="/BNUBot/Dist/Install/Install.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+    <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
+    <selectedProjects/>
+    <manifest generateManifest="false" mainClassHandleIdentifier="=BNUBot/src&lt;net.bnubot.vercheck{InstallMain.java[InstallMain" manifestLocation="/BNUBot/Dist/Install/MANIFEST.MF" manifestVersion="1.0" reuseManifest="true" saveManifest="true" usesManifest="true">
+        <sealing sealJar="false">
+            <packagesToSeal/>
+            <packagesToUnSeal/>
+        </sealing>
+    </manifest>
+    <selectedElements exportClassFiles="true" exportJavaFiles="true" exportOutputFolder="false">
+        <javaElement handleIdentifier="=BNUBot/src&lt;net.bnubot.util{Settings.java"/>
+        <javaElement handleIdentifier="=BNUBot/src&lt;net.bnubot.vercheck{ReleaseType.java"/>
+        <javaElement handleIdentifier="=BNUBot/src&lt;net.bnubot.vercheck{XMLElementDecorator.java"/>
+        <file path="/BNUBot/.classpath"/>
+        <javaElement handleIdentifier="=BNUBot/src&lt;net.bnubot.util{Out.java"/>
+        <javaElement handleIdentifier="=BNUBot/src&lt;net.bnubot.vercheck{VersionCheck.java"/>
+        <javaElement handleIdentifier="=BNUBot/src&lt;net.bnubot.util{URLDownloader.java"/>
+        <javaElement handleIdentifier="=BNUBot/src&lt;net.bnubot.util{SortedProperties.java"/>
+        <javaElement handleIdentifier="=BNUBot/src&lt;net.bnubot.vercheck{InstallMain.java"/>
+        <file path="/BNUBot/.project"/>
+        <javaElement handleIdentifier="=BNUBot/src&lt;net.bnubot.vercheck{VersionNumber.java"/>
+        <javaElement handleIdentifier="=BNUBot/src&lt;net.bnubot.util{TimeFormatter.java"/>
+    </selectedElements>
+</jardesc>
