@@ -60,6 +60,9 @@ public class VersionCheck {
 			Out.error(VersionCheck.class, "Failed to get latest version: " + e.getClass().getSimpleName() + ".");
 			return false;
 		}
+		
+		if(downloadFolder != null)
+			jarFileName = downloadFolder + "/" + jarFileName;
 
 		XMLElementDecorator error = elem.getChild("error");
 		if(error != null) {

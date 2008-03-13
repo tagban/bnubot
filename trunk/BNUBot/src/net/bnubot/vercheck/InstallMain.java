@@ -8,6 +8,7 @@ package net.bnubot.vercheck;
 import java.io.File;
 import java.net.URL;
 
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 import net.bnubot.util.OperatingSystem;
@@ -26,17 +27,19 @@ public class InstallMain {
 	}
 	
 	public static void main(String[] args) throws Exception {
+		String downloadFolder = null;
 		try {
-			int opt = JOptionPane.showConfirmDialog(null, "This program will install the latest version of BNU-Bot 2.0.", "Installer", JOptionPane.OK_CANCEL_OPTION);
-			if(opt == JOptionPane.CANCEL_OPTION)
+			JFileChooser jfc = new JFileChooser();
+			jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+			if(jfc.showDialog(null, "Install Here") != JFileChooser.APPROVE_OPTION)
 				System.exit(0);
+			downloadFolder = jfc.getSelectedFile().getAbsolutePath();
 		} catch(Exception e) {}
 		
 		Out.setDebug(true);
 		
 		String command = "java -jar BNUBot.jar";
 		String jarFileName = "BNUBot.jar";
-		String downloadFolder = null;
 		
 		switch(OperatingSystem.getOS()) {
 		case OSX:
@@ -57,7 +60,10 @@ public class InstallMain {
 			download(url, appdir + "/Contents/Resources/Icon.icns");
 
 			jarFileName = appdir + "/Contents/Resources/Java/" + jarFileName;
-			downloadFolder = appdir;
+			if(downloadFolder == null)
+				downloadFolder = appdir;
+			else
+				downloadFolder += "/" + appdir;
 			command = appdir + "/Contents/MacOS/JavaApplicationStub";
 		}
 		
