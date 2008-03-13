@@ -14,7 +14,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Properties;
 
 import net.bnubot.bot.database.AccountResultSet;
 import net.bnubot.bot.database.BNLoginResultSet;
@@ -34,6 +33,7 @@ import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.CookieUtility;
+import net.bnubot.util.OperatingSystem;
 import net.bnubot.util.Out;
 import net.bnubot.util.TimeFormatter;
 import net.bnubot.vercheck.CurrentVersion;
@@ -366,7 +366,7 @@ public class CommandEventHandler implements EventHandler {
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack,
 					long commanderAccess, String commanderAccount, Long commanderAccountID, boolean superUser)
 			throws Exception {
-				user.sendChat("BNU-Bot " + CurrentVersion.version() + " running on " + osVersion() + " with " + javaVersion(), whisperBack);
+				user.sendChat("BNU-Bot " + CurrentVersion.version() + " running on " + OperatingSystem.osVersion() + " with " + OperatingSystem.javaVersion(), whisperBack);
 			}});
 		Profile.registerCommand("invite", new CommandRunnable() {
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack,
@@ -1348,39 +1348,6 @@ public class CommandEventHandler implements EventHandler {
 			if(numSkipped > 0)
 				user.sendChat("Skipped " + numSkipped + " users with operator status.", whisperBack);
 		}
-	}
-
-	/**
-	 * Get a displayable operating system version
-	 */
-	public static String osVersion() {
-		Properties p = System.getProperties();
-		String osName = p.getProperty("os.name");
-		String osVersion = p.getProperty("os.version");
-		
-		if(osName.equals("Mac OS X")) {
-			osName += " " + osVersion;
-			if(osVersion.startsWith("10.0"))
-				osName += " Cheetah";
-			else if(osVersion.startsWith("10.1"))
-				osName += " Puma";
-			else if(osVersion.startsWith("10.2"))
-				osName += " Jaguar";
-			else if(osVersion.startsWith("10.3"))
-				osName += " Panther";
-			else if(osVersion.startsWith("10.4"))
-				osName += " Tiger";
-			else if(osVersion.startsWith("10.5"))
-				osName += " Leopard";
-		} else if(osName.startsWith("Windows ")) {
-			osName += " " + p.getProperty("sun.os.patch.level");
-		}
-		osName += " (" + p.getProperty("os.arch") + ")";
-		return osName;
-	}
-	
-	public static String javaVersion() {
-		return "Java " + System.getProperties().getProperty("java.version");
 	}
 
 	public void channelJoin(Connection source, BNetUser user) {

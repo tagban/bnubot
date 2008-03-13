@@ -14,6 +14,7 @@ import net.bnubot.bot.gui.settings.GlobalConfigurationFrame;
 import net.bnubot.core.Profile;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.settings.Settings;
+import net.bnubot.util.OperatingSystem;
 import net.bnubot.util.Out;
 import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.VersionCheck;
@@ -21,7 +22,9 @@ import net.bnubot.vercheck.VersionCheck;
 public class Main {
 	static {
 		// Force the static initializers of GlobalSettings to run
-		if(GlobalSettings.enableGUI) {}
+		if(GlobalSettings.enableGUI)
+			// Force the Swing GUI to start
+			GuiDesktop.getInstance();
 		
 		// Delete the bnubot.pid file on application exit
 		File f = new File("bnubot.pid");
@@ -29,9 +32,10 @@ public class Main {
 			f.deleteOnExit();
 
 		// On OSX, set the application name
-		String osName = System.getProperty("os.name");
-		if (osName.startsWith("Mac OS")) {
+		switch(OperatingSystem.getOS()) {
+		case OSX:
 			System.setProperty("com.apple.mrj.application.apple.menu.about.name", "BNU-Bot");
+			break;
 		}
 	}
 
@@ -105,9 +109,6 @@ public class Main {
 				System.exit(1);
 			}
 		}
-		
-		if(GlobalSettings.enableGUI)
-			GuiDesktop.getInstance();
 		
 		for(int i = 1; i <= GlobalSettings.numBots; i++)
 			Profile.newConnection(i);
