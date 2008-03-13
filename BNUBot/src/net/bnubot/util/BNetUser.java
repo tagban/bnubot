@@ -428,7 +428,7 @@ public class BNetUser {
 		if((text == null) || (con == null))
 			return;
 
-		text = con.cleanText(text);
+		text = con.cleanText(text, true);
 		
 		boolean isMyUser = false;
 		BNetUser myUser = con.getMyUser();
