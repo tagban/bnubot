@@ -105,8 +105,15 @@ public class Profile {
 					con.addEventHandler(new ConsoleEventHandler());
 
 				// SWT GUI
-				if(GlobalSettings.enableSWT)
-					con.addEventHandler(SWTDesktop.createSWTEventHandler());
+				if(GlobalSettings.enableSWT) {
+					try {
+						con.addEventHandler(SWTDesktop.createSWTEventHandler());
+					} catch(NoClassDefFoundError e) {
+						// Failed to create SWT GUI; revert to Swing
+						GlobalSettings.enableSWT = false;
+						GlobalSettings.enableGUI = true;
+					}
+				}
 
 				// GUI
 				if(GlobalSettings.enableGUI)
