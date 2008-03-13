@@ -24,6 +24,7 @@ import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetUser;
+import net.bnubot.util.ITunesController;
 import net.bnubot.util.MirrorSelector;
 import net.bnubot.util.Out;
 import net.bnubot.util.TimeFormatter;
@@ -226,6 +227,7 @@ public abstract class Connection extends Thread {
 
 	public abstract void sendLeaveChat() throws Exception;
 	public abstract void sendJoinChannel(String channel) throws Exception;
+	public abstract void sendJoinChannel2(String channel) throws Exception;
 	public abstract void sendQueryRealms2() throws Exception;
 	public abstract void sendLogonRealmEx(String realmTitle) throws Exception;
 	public abstract void sendClanInvitation(Object cookie, String user) throws Exception;
@@ -381,7 +383,7 @@ public abstract class Connection extends Thread {
 			lastChatTime = System.currentTimeMillis() + increaseDelay(text.length());
 	}
 
-	public String cleanText(String text) {
+	public String cleanText(String text, boolean allowCommands) {
 		//Remove all chars under 0x20
 		byte[] data = text.getBytes();
 		text = "";
@@ -391,7 +393,7 @@ public abstract class Connection extends Thread {
 		}
 
 		boolean somethingDone = true;
-		while(somethingDone) {
+		while(somethingDone && allowCommands) {
 			somethingDone = false;
 
 			if(text.indexOf('%') == -1)
@@ -425,6 +427,22 @@ public abstract class Connection extends Thread {
 				String last = text.substring(i + 9);
 				text = first + CurrentVersion.version() + last;
 			}
+
+			i = text.indexOf("%mp3%");
+			if(i != -1) {
+				String mp3 = null;
+				try {
+					mp3 = ITunesController.getCurrentlyPlaying();
+				} catch(Exception e) {}
+				
+				if(mp3 == null)
+					mp3 = "[iTunes Error]";
+
+				somethingDone = true;
+				String first = text.substring(0, i);
+				String last = text.substring(i + 5);
+				text = first + mp3 + last;
+			}
 		}
 		return text;
 	}
@@ -453,6 +471,25 @@ public abstract class Connection extends Thread {
 						}
 					}
 					break;
+				case 'j':
+					try {
+						if(command[0].equals("j")) {
+							sendJoinChannel(command[1]);
+							return;
+						}
+						if(command[0].equals("join")) {
+							sendJoinChannel(command[1]);
+							return;
+						}
+						if(command[0].equals("join2")) {
+							sendJoinChannel2(command[1]);
+							return;
+						}
+					} catch(Exception e) {
+						Out.exception(e);
+						break ALLOWCOMMANDS;
+					}
+					break;
 				case 'p':
 					if(command[0].equals("profile")) {
 						try {
@@ -463,6 +500,12 @@ public abstract class Connection extends Thread {
 						} catch(Exception e) {
 							Out.exception(e);
 						}
+						return;
+					}
+					break;
+				case 'q':
+					if(command[0].equals("quote")) {
+						queueChatHelper(command[1], false);
 						return;
 					}
 					break;
@@ -485,7 +528,7 @@ public abstract class Connection extends Thread {
 		try {
 			text = new String(text.getBytes(), "UTF-8");
 		} catch (UnsupportedEncodingException e) {}
-		text = cleanText(text);
+		text = cleanText(text, allowCommands);
 
 		if(text.length() == 0)
 			return;

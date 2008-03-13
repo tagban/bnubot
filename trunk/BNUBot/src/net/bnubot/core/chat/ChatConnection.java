@@ -76,6 +76,10 @@ public class ChatConnection extends Connection {
 	}
 
 	@Override
+	public void sendJoinChannel2(String channel) throws Exception {
+	}
+
+	@Override
 	public void reconnect() {
 	}
 

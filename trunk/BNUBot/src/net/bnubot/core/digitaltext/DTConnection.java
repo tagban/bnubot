@@ -446,24 +446,12 @@ public class DTConnection extends Connection {
 		p.writeNTString(channel);
 		p.SendPacket(dtOutputStream);
 	}
-	
-	public void queueChatHelper(String text, boolean allowCommands) {
-		text = cleanText(text);
-		
-		/*try {
-			if(text.charAt(0) == '/') {
-				if(text.substring(1, 3).equals("j ")) {
-					sendJoinChannel(text.substring(3));
-					return;
-				}
-				if(text.substring(1, 6).equals("join ")) {
-					sendJoinChannel(text.substring(6));
-					return;
-				}
-			}
-		} catch(Exception e) {}*/
-		
-		super.queueChatHelper(text, allowCommands);
+
+	/**
+	 * Send SID_JOINCHANNEL with create channel flag
+	 */
+	public void sendJoinChannel2(String channel) throws Exception {
+		sendJoinChannel(channel);
 	}
 	
 	/**
