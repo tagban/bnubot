@@ -1,0 +1,27 @@
+Q: How do I enable the commands?
+A: This requires a database. Currently, Derby and MySQL are tested and known to work, although other databases may work as well.
+
+	Derby:
+
+	1) Download the Derby package from Apache's website: 	http://db.apache.org/derby/derby_downloads.html
+	2) Create a folder named 'lib'
+	3) Add derby.jar to the lib folder
+	4) Check the 'Enable Commands' box on the settings window
+	5) Restart the bot
+
+	MySQL:
+
+	1) Download the MySQLConnector/J package: http://www.mysql.com/products/connector/j/
+	2) Create a folder named 'lib'
+	3) Add mysql-connector-java-X.X.X-ga-bin.jar to the lib folder
+	4) Edit settings.ini; set enableCommands=true, and add the following (edit accordingly)
+		database_schema=schema.mysql
+		database_driver=com.mysql.jdbc.Driver
+		database_url=jdbc:mysql://[host]:3306/[database]
+		database_username=[username]
+		database_password=[password]
+	5) Restart the bot
+
+Q: How do I run BNUBot as a deamon [linux]?
+A: #> java -jar BNUBot.jar -nogui -nocli > stdout.txt 2> stderr.txt &
+See run.sh and check.sh for a more customizable shell script.
