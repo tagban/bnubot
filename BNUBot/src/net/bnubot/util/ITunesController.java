@@ -17,9 +17,6 @@ public class ITunesController {
 	private static File script = new File("apple.scpt");
 	
 	public static String getCurrentlyPlaying() throws Exception {
-		if(!System.getProperty("os.name").startsWith("Mac OS X"))
-			throw new IllegalStateException("This utility only works on Mac OS X");
-		
 		String data = "set sep to \"\\n\"\n"
 			+ "tell application \"iTunes\"\n"
 			+ "if player state is playing or player state is paused then\n"
@@ -48,6 +45,9 @@ public class ITunesController {
 	}
 	
 	private static String run(String data) throws Exception {
+		if(!OperatingSystem.getOS().equals(OperatingSystem.OSX))
+			throw new IllegalStateException("This utility only works on Mac OS X");
+		
 		synchronized(script) {
 			OutputStream fos = new FileOutputStream(script);
 			fos.write(data.getBytes());

@@ -10,6 +10,7 @@ import java.net.URL;
 
 import javax.swing.JOptionPane;
 
+import net.bnubot.util.OperatingSystem;
 import net.bnubot.util.Out;
 import net.bnubot.util.URLDownloader;
 
@@ -37,7 +38,8 @@ public class InstallMain {
 		String jarFileName = "BNUBot.jar";
 		String downloadFolder = null;
 		
-		if(System.getProperty("os.name").startsWith("Mac OS")) {
+		switch(OperatingSystem.getOS()) {
+		case OSX:
 			// We're on OSX, so let's try to create an application
 			String appdir = "BNUBot.app";
 			
