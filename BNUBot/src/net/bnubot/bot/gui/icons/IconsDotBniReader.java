@@ -355,13 +355,19 @@ public class IconsDotBniReader {
 				bni.icon = new ImageIcon(bni.awt_image);
 				
 				// SWT
-				ImageData imageData = new ImageData(bni.xSize, bni.ySize, 32, new PaletteData(0xFF0000, 0x00FF00, 0x0000FF));
-				for(int y = 0; y < bni.ySize; y++) {
-					for(int x = 0; x < bni.xSize; x++) {
-						imageData.setPixel(x, y, pixelData[currentPixel++]);
+				try {
+					int pos = 0;
+					ImageData imageData = new ImageData(bni.xSize, bni.ySize, 32, new PaletteData(0xFF0000, 0x00FF00, 0x0000FF));
+					for(int y = 0; y < bni.ySize; y++) {
+						for(int x = 0; x < bni.xSize; x++) {
+							imageData.setPixel(x, y, pixelData[currentPixel + pos++]);
+						}
 					}
+					bni.image = new Image(null, imageData);
+					currentPixel += pos;
+				} catch(NoClassDefFoundError e) {
+					currentPixel += bni.xSize * bni.ySize;
 				}
-				bni.image = new Image(null, imageData);
 			}
 			
 			return icons;
