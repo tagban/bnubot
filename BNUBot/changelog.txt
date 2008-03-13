@@ -1,12 +1,18 @@
-2.0.4:
+2.0.4 (r1147) 2008-03-13:
 * Added DigitalText connection support
 * Fixed a bug where having no connections would cause the GUI to never load
-* Changed /rw to StealthBot-style rewhisper
+* Added tag to close the HTML table in HTMLOutputEventHandler (Issue 57)
+* Introduced the ITunesController class to SVN; not connected to the bot yet
+* Introduced first-pass SWT code to SVN
+* Added a PluginManager for plugin discovery with the JARLoader
+* Changed /rw to StealthBot-style rewhisper (Issue 58)
+* Added the concept of a TimeZone to the HTMLOutputEventHandler
 * Reorganized the Settings class
 * Added a BNLS bot id
 * Changed the way commands respond to fit a more object-oriented model
 * Changed the "What's New" window's layout to use cards instead of tabs
 * Removed the database tab from the settings window
+* Removed the touchUser() exception display
 
 2.0.3.1 (r1100) 2008-01-21:
 * Added a setting to customize the userlist display format
