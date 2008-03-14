@@ -8,11 +8,10 @@ package net.bnubot.util.music;
 import net.bnubot.util.OperatingSystem;
 
 public abstract class MusicController {
-	private static MusicController mc = null;
+	private static MusicController mc = createMusicController(MediaPlayer.ITUNES);
+	
 	public static MusicController getMusicController() throws IllegalStateException {
-		if(mc != null)
-			return mc;
-		return mc = createMusicController(MediaPlayer.ITUNES);
+		return mc;
 	}
 	
 	private static MusicController createMusicController(MediaPlayer type) throws IllegalStateException {

@@ -433,7 +433,9 @@ public abstract class Connection extends Thread {
 				String mp3 = null;
 				try {
 					mp3 = MusicController.getMusicController().getCurrentlyPlaying();
-				} catch(Exception e) {}
+				} catch(Exception e) {
+					e.printStackTrace();
+				}
 				
 				if(mp3 == null)
 					mp3 = "[iTunes Error]";
