@@ -24,11 +24,11 @@ import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetUser;
-import net.bnubot.util.ITunesController;
 import net.bnubot.util.MirrorSelector;
 import net.bnubot.util.Out;
 import net.bnubot.util.TimeFormatter;
 import net.bnubot.util.Wildcard;
+import net.bnubot.util.music.MusicController;
 import net.bnubot.util.task.Task;
 import net.bnubot.vercheck.CurrentVersion;
 
@@ -432,7 +432,7 @@ public abstract class Connection extends Thread {
 			if(i != -1) {
 				String mp3 = null;
 				try {
-					mp3 = ITunesController.getCurrentlyPlaying();
+					mp3 = MusicController.getMusicController().getCurrentlyPlaying();
 				} catch(Exception e) {}
 				
 				if(mp3 == null)
