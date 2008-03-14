@@ -41,7 +41,7 @@ public class InstallMain {
 		String command = "java -jar BNUBot.jar";
 		String jarFileName = "BNUBot.jar";
 		
-		switch(OperatingSystem.getOS()) {
+		switch(OperatingSystem.userOS) {
 		case OSX:
 			// We're on OSX, so let's try to create an application
 			String appdir = "BNUBot.app";

@@ -32,7 +32,7 @@ public class Main {
 			f.deleteOnExit();
 
 		// On OSX, set the application name
-		switch(OperatingSystem.getOS()) {
+		switch(OperatingSystem.userOS) {
 		case OSX:
 			System.setProperty("com.apple.mrj.application.apple.menu.about.name", "BNU-Bot");
 			break;
