@@ -45,7 +45,7 @@ public class ITunesController {
 	}
 	
 	private static String run(String data) throws Exception {
-		if(!OperatingSystem.getOS().equals(OperatingSystem.OSX))
+		if(!OperatingSystem.userOS.equals(OperatingSystem.OSX))
 			throw new IllegalStateException("This utility only works on Mac OS X");
 		
 		synchronized(script) {

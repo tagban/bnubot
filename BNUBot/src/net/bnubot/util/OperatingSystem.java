@@ -12,7 +12,7 @@ public enum OperatingSystem {
 	OSX,
 	UNKNOWN;
 	
-	public static OperatingSystem getOS() {
+	private static OperatingSystem initOS() {
 		String osName = System.getProperty("os.name");
 		if(osName.equals("Mac OS X"))
 			return OSX;
@@ -20,7 +20,9 @@ public enum OperatingSystem {
 			return WINDOWS;
 		return UNKNOWN;
 	}
-
+	
+	public static final OperatingSystem userOS = initOS();
+	
 	/**
 	 * Get a displayable operating system version
 	 */
@@ -29,7 +31,7 @@ public enum OperatingSystem {
 		String osName = p.getProperty("os.name");
 		String osVersion = p.getProperty("os.version");
 		
-		switch(getOS()) {
+		switch(userOS) {
 		case OSX:
 			osName += " " + osVersion;
 			if(osVersion.startsWith("10.0"))
