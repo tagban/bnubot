@@ -2,7 +2,7 @@
 * Added DigitalText connection support
 * Fixed a bug where having no connections would cause the GUI to never load
 * Added tag to close the HTML table in HTMLOutputEventHandler (Issue 57)
-* Introduced the ITunesController class for OSX; use with %mp3%
+* Introduced an iTunes controller for Windows and OSX
 * Introduced first-pass SWT code to SVN
 * Added a PluginManager for plugin discovery with the JARLoader
 * Changed /rw to StealthBot-style rewhisper (Issue 58)
