@@ -297,14 +297,13 @@ public class UserList extends JPanel {
 						break;
 						
 					default:
-						if(icons != null)
-							for(BNetIcon element : icons) {
-								if(element.useFor(ui.user.getFlags(), specialIcon)) {
-									keepThisIcon = true;
-									icon = element.getIcon();
-									break;
-								}
+						for(BNetIcon element : icons) {
+							if(element.useFor(ui.user.getFlags(), specialIcon)) {
+								keepThisIcon = true;
+								icon = element.getIcon();
+								break;
 							}
+						}
 						break;
 					}
 				}
