@@ -433,10 +433,13 @@ public class GuiDesktop extends JFrame {
 		instance.setTitle();
 		
 		Icon icon = null;
-		for(BNetIcon element : IconsDotBniReader.getIcons()) {
-			if(element.useFor(0, product)) {
-				icon = element.getIcon();
-				break;
+		BNetIcon[] icons_bni = IconsDotBniReader.getIcons();
+		if(icons_bni != null) {
+			for(BNetIcon element : icons_bni) {
+				if(element.useFor(0, product)) {
+					icon = element.getIcon();
+					break;
+				}
 			}
 		}
 		
