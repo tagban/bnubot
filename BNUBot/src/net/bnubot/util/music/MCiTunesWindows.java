@@ -11,7 +11,7 @@ import com.jacob.activeX.ActiveXComponent;
 import com.jacob.com.ComThread;
 import com.jacob.com.Dispatch;
 
-class ITunesWindows extends MusicController {
+class MCiTunesWindows implements MusicController {
 	static {
 		if(!OperatingSystem.userOS.equals(OperatingSystem.WINDOWS))
 			throw new IllegalStateException("Only supported by Windows");
@@ -27,15 +27,12 @@ class ITunesWindows extends MusicController {
 		}
 	}
 
-	@Override
 	public void play() { comCommand("Play"); }
 
-	@Override
 	public void pause() { comCommand("Pause"); }
 
-	@Override
 	public String getCurrentlyPlaying() {
 		// TODO Auto-generated method stub
-		return "[error]";
+		return "[unsupported]";
 	}
 }
