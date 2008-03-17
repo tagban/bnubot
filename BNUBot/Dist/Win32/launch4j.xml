@@ -1,15 +1,15 @@
 <launch4jConfig>
   <dontWrapJar>true</dontWrapJar>
-  <headerType>console</headerType>
+  <headerType>gui</headerType>
   <jar>BNUBot.jar</jar>
   <outfile>BNUBot.exe</outfile>
   <errTitle></errTitle>
-  <cmdLine>-gui -nocli</cmdLine>
+  <cmdLine>-gui</cmdLine>
   <chdir></chdir>
   <priority>normal</priority>
   <downloadUrl>http://java.com/download</downloadUrl>
   <supportUrl></supportUrl>
-  <customProcName>false</customProcName>
+  <customProcName>true</customProcName>
   <stayAlive>false</stayAlive>
   <icon>BNUBot.ico</icon>
   <classPath>
