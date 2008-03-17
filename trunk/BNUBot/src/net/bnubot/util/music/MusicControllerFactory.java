@@ -8,27 +8,29 @@ package net.bnubot.util.music;
 import net.bnubot.util.OperatingSystem;
 
 public class MusicControllerFactory {
-	private static MusicController mc = createMusicController(MediaPlayer.JDIC);
-	
+	private static MusicController mc = null;
+
 	public static MusicController getMusicController() throws IllegalStateException {
+		if(mc == null)
+			mc = createMusicController();
 		return mc;
 	}
-	
-	private static MusicController createMusicController(MediaPlayer type) throws IllegalStateException {
+
+	private static MusicController createMusicController() throws IllegalStateException {
 		try {
-			switch(type) {
-			case ITUNES:
-				switch(OperatingSystem.userOS) {
-				case OSX: return new MCiTunesOSX();
-				case WINDOWS: return new MCiTunesWindows();
-				}
-				break;
-			case JDIC:
+			switch(OperatingSystem.userOS) {
+			case OSX:
+				return new MCiTunesOSX();
+			case WINDOWS:
+				// TODO: let windows users select between iTunes and Winamp
+				if(false)
+					return new MCiTunesWindows();
+				return new MCJDIC();
+			default:
 				return new MCJDIC();
 			}
-			throw new IllegalStateException("Unsupported OS/MediaPlayer combination");
 		} catch(Exception e) {
-			throw new IllegalStateException(e);
-		}		
+			throw new IllegalStateException("Unsupported OS/MediaPlayer combination", e);
+		}
 	}
 }
