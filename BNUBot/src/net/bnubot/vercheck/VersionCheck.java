@@ -12,6 +12,7 @@ import java.net.URL;
 import javax.swing.JOptionPane;
 
 import net.bnubot.settings.GlobalSettings;
+import net.bnubot.util.OperatingSystem;
 import net.bnubot.util.Out;
 import net.bnubot.util.SHA1Sum;
 import net.bnubot.util.URLDownloader;
@@ -54,6 +55,7 @@ public class VersionCheck {
 			if(!forceDownload && (CurrentVersion.version().revision() != null))
 				url += "svn=" + CurrentVersion.version().revision() + "&";
 			url += "release=" + rt.toString();
+			url += "&os=" + OperatingSystem.userOS.name();
 			Out.debug(VersionCheck.class, "Requesting latest version from " + url);
 			elem = XMLElementDecorator.parse(url);
 		} catch(Exception e) {
