@@ -15,6 +15,7 @@
 * Removed the touchUser() exception display
 * Added a /quote command to send text directly to bnet
 * Added an OperatingSystem enumeration utility
+* Added OS-specific version checks; download platform-specific files
 
 2.0.3.1 (r1100) 2008-01-21:
 * Added a setting to customize the userlist display format
