@@ -1,10 +1,10 @@
 <launch4jConfig>
   <dontWrapJar>true</dontWrapJar>
-  <headerType>gui</headerType>
+  <headerType>console</headerType>
   <jar>BNUBot.jar</jar>
-  <outfile>BNUBot.exe</outfile>
+  <outfile>BNUBot-console.exe</outfile>
   <errTitle></errTitle>
-  <cmdLine>-gui</cmdLine>
+  <cmdLine></cmdLine>
   <chdir>.</chdir>
   <priority>normal</priority>
   <downloadUrl>http://java.com/download</downloadUrl>
