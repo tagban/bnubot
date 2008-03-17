@@ -6,5 +6,6 @@
 package net.bnubot.util.music;
 
 public enum MediaPlayer {
-	ITUNES
+	ITUNES,
+	JDIC
 }

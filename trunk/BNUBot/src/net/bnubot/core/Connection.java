@@ -29,6 +29,7 @@ import net.bnubot.util.Out;
 import net.bnubot.util.TimeFormatter;
 import net.bnubot.util.Wildcard;
 import net.bnubot.util.music.MusicController;
+import net.bnubot.util.music.MusicControllerFactory;
 import net.bnubot.util.task.Task;
 import net.bnubot.vercheck.CurrentVersion;
 
@@ -432,13 +433,14 @@ public abstract class Connection extends Thread {
 			if(i != -1) {
 				String mp3 = null;
 				try {
-					mp3 = MusicController.getMusicController().getCurrentlyPlaying();
+					MusicController musicController = MusicControllerFactory.getMusicController();
+					mp3 = musicController.getCurrentlyPlaying();
 				} catch(Exception e) {
 					e.printStackTrace();
 				}
 				
 				if(mp3 == null)
-					mp3 = "[iTunes Error]";
+					mp3 = "[Music Player Error]";
 
 				somethingDone = true;
 				String first = text.substring(0, i);

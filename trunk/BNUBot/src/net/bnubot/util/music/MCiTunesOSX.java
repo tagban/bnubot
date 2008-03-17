@@ -13,7 +13,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-class ITunesOSX extends MusicController {
+class MCiTunesOSX implements MusicController {
 	private static File script = new File("apple.scpt");
 	
 	private static String run(String data) throws IllegalStateException {
@@ -52,17 +52,14 @@ class ITunesOSX extends MusicController {
 		}
 	}
 
-	@Override
 	public void pause() {
 		// TODO Auto-generated method stub
 	}
 
-	@Override
 	public void play() {
 		// TODO Auto-generated method stub
 	}
 	
-	@Override
 	public String getCurrentlyPlaying() {
 		String data = "set sep to \"\\n\"\n"
 			+ "tell application \"iTunes\"\n"
