@@ -60,7 +60,7 @@ public class InstallMain {
 		
 		// If launching in OSX, chmod the stub
 		if(command.endsWith("/JavaApplicationStub")) {
-			final String cmd_chmod = "chmod 755 \"" + command + "\"";
+			final String cmd_chmod = "chmod 755 " + command;
 			Out.info(InstallMain.class, "Fixing JavaApplicationStub: " + cmd_chmod);
 			int ret = rt.exec(cmd_chmod).waitFor();
 			if(ret != 0)
