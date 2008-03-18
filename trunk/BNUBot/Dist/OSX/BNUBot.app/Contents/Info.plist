@@ -29,9 +29,9 @@
 		<key>Properties</key>
 		<dict>
 			<key>apple.laf.useScreenMenuBar</key>
-			<string>true</string>
+			<string>false</string>
 			<key>com.apple.mrj.application.apple.menu.about.name</key>
-			<string>BNUBot</string>
+			<string>BNU-Bot</string>
 			<key>net.bnubot.jarpath</key>
 			<string>Contents/Resources/Java/BNUBot.jar</string>
 		</dict>

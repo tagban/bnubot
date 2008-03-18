@@ -14,7 +14,6 @@ import net.bnubot.bot.gui.settings.GlobalConfigurationFrame;
 import net.bnubot.core.Profile;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.settings.Settings;
-import net.bnubot.util.OperatingSystem;
 import net.bnubot.util.Out;
 import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.VersionCheck;
@@ -30,13 +29,6 @@ public class Main {
 		File f = new File("bnubot.pid");
 		if(f.exists())
 			f.deleteOnExit();
-
-		// On OSX, set the application name
-		switch(OperatingSystem.userOS) {
-		case OSX:
-			System.setProperty("com.apple.mrj.application.apple.menu.about.name", "BNU-Bot");
-			break;
-		}
 	}
 
 	public static void main(String[] args) {
