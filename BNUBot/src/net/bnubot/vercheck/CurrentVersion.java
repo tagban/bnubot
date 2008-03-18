@@ -224,6 +224,7 @@ public final class CurrentVersion {
 			versionprops.setProperty(sVerRevision, vnCurrent.getRevision().toString());
 			versionprops.setProperty(sVerRelease, vnCurrent.getRelease().toString());
 			versionprops.setProperty(sVerSVNRevision, vnCurrent.revision().toString());
+			versionprops.setProperty(sBuildDate, Long.toString(vnCurrent.getBuildDate().getTime()));
 			
 			File file = new File("src/net/bnubot/version.properties");
 			versionprops.store(new FileOutputStream(file), VER.toString());
