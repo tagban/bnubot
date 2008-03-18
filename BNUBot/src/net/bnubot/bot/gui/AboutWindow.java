@@ -75,26 +75,26 @@ public class AboutWindow extends JDialog {
 		Box b = new Box(BoxLayout.Y_AXIS);
 		{
 			VersionNumber vn = CurrentVersion.version();
-			b.add(new JLabel("BNU-Bot v" + vn.toString()));
+			b.add(new JLabel("BNU-Bot " + vn.toString()));
 			b.add(new JLabel("Built " + vn.getBuildDate()));
 			b.add(new JLabel("Created by BNU-Camel"));
+			b.add(Box.createVerticalStrut(15));
+			b.add(new JLabel("This project is distributed under the"));
+			b.add(new JLabel("GNU Public License, Version 2"));
 			b.add(Box.createVerticalStrut(15));
 			b.add(new ULabel("Special thanks to:"));
 			b.add(new JLabel("Google: Project hosting"));
 			b.add(new JLabel("Hdx: The JBLS project"));
 			b.add(new JLabel("iago: Canadian ambassador"));
-			b.add(new JLabel("Chavo: Mirror selector"));
+			b.add(new JLabel("Chavo: Mirror selector first draft"));
+			b.add(new JLabel("JDIC: The MPControl library; Winamp/XMMS/Rhythmbox/GMusicBrowser"));
+			b.add(new JLabel("The JACOB project: ActiveX controller; Tunes in Windows"));
+			b.add(new JLabel("JGoodies: Looks for Swing"));
 			b.add(Box.createVerticalStrut(15));
 			b.add(new ULabel("Alpha testers:"));
-			b.add(new JLabel("BNU-Fantasma"));
-			b.add(new JLabel("BNU-Sorceress"));
-			b.add(new JLabel("|3erzerk"));
+			b.add(new JLabel("BNU-Fantasma, BNU-Sorceress, Berzerk"));
 			b.add(Box.createVerticalStrut(15));
-			b.add(new JLabel("This project is distributed under the"));
-			b.add(new JLabel("GNU Public License, Version 2"));
-			b.add(Box.createVerticalStrut(15));
-			b.add(new JLabel("Want to contribute?"));
-			b.add(new JLabel("Visit the project website:"));
+			b.add(new JLabel("Want to find out more? Visit the project website:"));
 			b.add(new LinkLabel("http://bnubot.net/"));
 		}
 		add(b);
