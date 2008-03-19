@@ -961,11 +961,14 @@ public class BNCSConnection extends Connection {
 				}
 				
 				case SID_WARDEN: {
-					if(warden != null) {
-						warden.processWardenPacket(is.readFully(), bncsOutputStream);
-					} else {
-						Out.debugAlways(getClass(), "Recieved SID_WARDEN but warden model was not initialized\n" + HexDump.hexDump(pr.data));
-					}
+					if(warden != null)
+						try {
+							warden.processWardenPacket(is.readFully(), bncsOutputStream);
+							break;
+						} catch(Exception e) {
+							Out.exception(e);
+						}
+					Out.error(getClass(), "Recieved SID_WARDEN but warden model was not initialized\n" + HexDump.hexDump(pr.data));
 					break;
 				}
 				
@@ -1672,11 +1675,14 @@ public class BNCSConnection extends Connection {
 				// TODO: SID_CLANMEMBERINFORMATION
 				
 				case SID_WARDEN: {
-					if(warden != null) {
-						warden.processWardenPacket(is.readFully(), bncsOutputStream);
-					} else {
-						Out.debugAlways(getClass(), "Recieved SID_WARDEN but warden model was not initialized\n" + HexDump.hexDump(pr.data));
-					}
+					if(warden != null)
+						try {
+							warden.processWardenPacket(is.readFully(), bncsOutputStream);
+							break;
+						} catch(Exception e) {
+							Out.exception(e);
+						}
+					Out.error(getClass(), "Recieved SID_WARDEN but warden model was not initialized\n" + HexDump.hexDump(pr.data));
 					break;
 				}
 				
