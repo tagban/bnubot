@@ -65,6 +65,7 @@ public class BNCSConnection extends Connection {
 	private int productID = 0;
 	private int verByte;
 	private Integer nlsRevision = null;
+	private BNCSWarden warden = null;
 	private int serverToken = 0;
 	private final int clientToken = Math.abs(new Random().nextInt());
 	private SRP srp = null;
@@ -325,6 +326,7 @@ public class BNCSConnection extends Connection {
 	 */
 	private void initializeBNCS(Task connect) throws Exception {
 		nlsRevision = null;
+		warden = null;
 		productID = ProductIDs.ProductID[cs.product-1];
 		
 		// Set up BNCS
@@ -401,6 +403,15 @@ public class BNCSConnection extends Connection {
 							keyHash2 = HashMain.hashKey(clientToken, serverToken, cs.cdkey2).getBuffer();
 						if(cs.product == ConnectionSettings.PRODUCT_THEFROZENTHRONE)
 							keyHash2 = HashMain.hashKey(clientToken, serverToken, cs.cdkey2).getBuffer();
+						
+						try {
+							byte[] warden_seed = new byte[4];
+							System.arraycopy(keyHash, 16, warden_seed, 0, 4);
+							warden = new BNCSWarden(warden_seed);
+						} catch(Exception e) {
+							warden = null;
+							Out.exception(e);
+						}
 					}
 					
 					int exeHash = 0;
@@ -946,6 +957,15 @@ public class BNCSConnection extends Connection {
 					BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_CLANMEMBERLIST);
 					p.writeDWord(0);	// Cookie
 					p.SendPacket(bncsOutputStream);
+					break;
+				}
+				
+				case SID_WARDEN: {
+					if(warden != null) {
+						warden.processWardenPacket(is.readFully(), bncsOutputStream);
+					} else {
+						Out.debugAlways(getClass(), "Recieved SID_WARDEN but warden model was not initialized\n" + HexDump.hexDump(pr.data));
+					}
 					break;
 				}
 				
@@ -1650,6 +1670,15 @@ public class BNCSConnection extends Connection {
 				}
 				
 				// TODO: SID_CLANMEMBERINFORMATION
+				
+				case SID_WARDEN: {
+					if(warden != null) {
+						warden.processWardenPacket(is.readFully(), bncsOutputStream);
+					} else {
+						Out.debugAlways(getClass(), "Recieved SID_WARDEN but warden model was not initialized\n" + HexDump.hexDump(pr.data));
+					}
+					break;
+				}
 				
 				default:
 					Out.debugAlways(getClass(), "Unexpected packet " + pr.packetId.name() + "\n" + HexDump.hexDump(pr.data));
