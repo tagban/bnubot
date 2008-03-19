@@ -722,7 +722,7 @@ public class CommandEventHandler implements EventHandler {
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack,
 					long commanderAccess, String commanderAccount, Long commanderAccountID, boolean superUser)
 			throws Exception {
-				source.queueChatHelper(param, false);
+				source.queueChatHelper(param, true);
 			}});
 		Profile.registerCommand("seen", new CommandRunnable() {
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack,
