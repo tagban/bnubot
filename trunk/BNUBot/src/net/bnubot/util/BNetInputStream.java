@@ -16,6 +16,12 @@ public class BNetInputStream extends DataInputStream {
 		super(in);
 	}
 
+	public byte[] readFully() throws IOException {
+		byte[] ret = new byte[available()];
+		readFully(ret);
+        return ret;
+	}
+
 	public int readWord() throws IOException {
         return	((readByte() << 0) & 0x00FF) |
 				((readByte() << 8) & 0xFF00);

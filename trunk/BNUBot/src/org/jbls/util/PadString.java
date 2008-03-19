@@ -13,6 +13,10 @@ public class PadString {
 	static public String padNumber(int number, int length) {
 		return padString("" + number, length, '0');
 	}
+	
+	static public String padHex(byte number, int length) {
+		return padHex(number & 0xFF, length);
+	}
 
 	// Converts the number to hex, then pads it with 0's up to the requested
 	// length.
