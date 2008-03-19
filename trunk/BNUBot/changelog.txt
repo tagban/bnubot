@@ -1,3 +1,6 @@
+2.0.4.1:
+* Added warden (special thanks to iago and Hdx)
+
 2.0.4 Beta (r1174) 2008-03-17:
 * Added DigitalText connection support
 * Fixed a bug where having no connections would cause the GUI to never load

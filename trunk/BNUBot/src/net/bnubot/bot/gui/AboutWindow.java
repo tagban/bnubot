@@ -84,8 +84,8 @@ public class AboutWindow extends JDialog {
 			b.add(Box.createVerticalStrut(15));
 			b.add(new ULabel("Special thanks to:"));
 			b.add(new JLabel("Google: Project hosting"));
-			b.add(new JLabel("Hdx: The JBLS project"));
-			b.add(new JLabel("iago: Canadian ambassador"));
+			b.add(new JLabel("iago: Canadian ambassador, Warden"));
+			b.add(new JLabel("Hdx: The JBLS project, Warden"));
 			b.add(new JLabel("Chavo: Mirror selector first draft"));
 			b.add(new JLabel("JDIC: The MPControl library; Winamp/XMMS/Rhythmbox/GMusicBrowser"));
 			b.add(new JLabel("The JACOB project: ActiveX controller; Tunes in Windows"));
