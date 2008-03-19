@@ -1106,7 +1106,7 @@ public class BNCSConnection extends Connection {
 					timeSinceAntiIdle /= 60;
 					if(timeSinceAntiIdle >= cs.antiIdleTimer) {
 						profile.lastAntiIdle = timeNow;
-						queueChatHelper(getAntiIdle(), false);
+						queueChatHelper(getAntiIdle(), true);
 					}
 				}
 			}
