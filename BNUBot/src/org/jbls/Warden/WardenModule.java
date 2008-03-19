@@ -27,7 +27,7 @@ public class WardenModule {
 	private byte[] md5Hash = null;
 	private byte[] decryptionSeed = null;
 	private String name = null;
-	private File sc = new File("Starcraft.exe");
+	private static File sc = new File("Starcraft.exe");
 
 	public WardenModule(int size, byte[] md5, byte[] decryptor) {
 		this.compressedSize = size;
