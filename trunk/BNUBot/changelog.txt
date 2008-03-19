@@ -1,5 +1,6 @@
-2.0.4.1:
-* Added warden (special thanks to iago and Hdx)
+2.0.4.1 (r1182) 2008-03-19:
+* Added warden support (special thanks to iago and Hdx)
+  - Just drop Starcraft.exe in the bot folder!
 
 2.0.4 Beta (r1174) 2008-03-17:
 * Added DigitalText connection support
