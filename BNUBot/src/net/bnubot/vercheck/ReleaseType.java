@@ -10,10 +10,15 @@ public enum ReleaseType {
 	ReleaseCandidate,
 	Beta,
 	Alpha,
+	Nightly,
 	Development;
 	
 	public boolean isDevelopment() {
 		return (this == Development);
+	}
+	
+	public boolean isNightly() {
+		return (this == Nightly);
 	}
 	
 	public boolean isAlpha() {

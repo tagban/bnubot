@@ -171,7 +171,8 @@ public class GlobalConfigurationFrame extends JDialog {
 						ReleaseType.Stable,
 						ReleaseType.ReleaseCandidate,
 						ReleaseType.Beta,
-						ReleaseType.Alpha };
+						ReleaseType.Alpha,
+						ReleaseType.Nightly };
 				else
 					values = new ReleaseType[] {
 						ReleaseType.Development };
