@@ -1,5 +1,6 @@
 2.0.4.2:
 * Allow use of %keywords% and commands in anti-idles and with /say
+* Nightly builds are now an update type! They are less stable than Alpha.
 
 2.0.4.1 (r1182) 2008-03-19:
 * Added warden support (special thanks to iago and Hdx)
