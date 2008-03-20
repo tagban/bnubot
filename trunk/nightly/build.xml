@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<project name="BNU-Bot" default="build" basedir=".">
+	<property file="src/net/bnubot/version.properties"/>
+	<property file="svn.properties"/>
+	<property name="project.dir" value="${svn.checkout.dir}/BNUBot"/>
+	
+	<path id="project.classpath">
+		<fileset dir="lib">
+			<include name="**/*.jar"/>
+		</fileset>
+		<fileset dir="${project.dir}/lib">
+			<include name="**/*.jar"/>
+		</fileset>
+	</path>
+	
+	<taskdef name="svn" classname="org.tigris.subversion.svnant.SvnTask" classpathref="project.classpath"/>
+	
+	<target name="update" description="Update BNU-Bot from SVN" >
+		<svn username="${svn.username}" password="${svn.password}">
+			<checkout url="${svn.url}" destPath="${svn.checkout.dir}"/>
+		</svn>
+	</target>
+
+	<target name="build">
+		<svn>
+			<status path="${svn.checkout.dir}" revisionProperty="revision" />
+		</svn>
+		<echo>revision=${revision}</echo>
+		<mkdir dir="${project.dir}/bin"/>
+		<javac classpathref="project.classpath"
+			srcdir="${project.dir}/src"
+			destdir="${project.dir}/bin"
+			source="1.5"
+		/>
+		<!-- Get the BUILD_DATE time in seconds -->
+		<exec executable="date" outputproperty="TODAY">
+			<arg value="+%s"/>
+		</exec>
+		<property name="vf.src" value="${project.dir}/src/net/bnubot/version.properties" />
+		<property name="vf.bin" value="${project.dir}/bin/net/bnubot/version.properties" />
+		<copy file="${vf.src}" tofile="${vf.bin}"/>
+		<propertyfile file="${vf.bin}">
+			<entry key="RELEASE_TYPE" type="string" value="Development"/>
+			<entry key="VER_SVN_REVISION" type="string" value="${revision}"/>
+			<!-- Convert seconds to ms -->
+			<entry key="BUILD_DATE" type="string" value="${TODAY}000" />
+		</propertyfile>
+		<tstamp>
+			<format property="TODAY_DATE" pattern="yyyy-MM-dd"/>
+		</tstamp>
+		<jar destfile="${release.dir}/${TODAY_DATE}.jar" manifest="${project.dir}/Dist/Main/MANIFEST.MF">
+			<fileset dir="${project.dir}/bin">
+				<include name="**/*.*"/>
+			</fileset>
+		</jar>
+		<propertyfile file="${release.dir}/LATEST">
+			<entry key="LATEST" type="string" value="${TODAY_DATE}.jar"/>
+		</propertyfile>
+	</target>
+</project>
