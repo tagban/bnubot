@@ -13,7 +13,6 @@ import java.io.InputStream;
 import java.security.MessageDigest;
 import java.util.zip.Inflater;
 
-import net.bnubot.util.BNetInputStream;
 import net.bnubot.util.Out;
 
 import org.jbls.util.BigIntegerEx;
@@ -50,43 +49,13 @@ public class WardenModule {
 		Buffer ret = new Buffer();
 		int checksum = 0;
 		while (in.size() >= 7) {
-			int command = in.removeWord();
+			/*int command =*/ in.removeWord();
 			int address = in.removeDWord();
 			int length = in.removeByte();
-			if(Out.isDebug())
-				Out.debug(getClass(), "Command: 0x" + PadString.padHex(command, 4)
-						+ ", " + "Address: 0x" + PadString.padHex(address, 8)
-						+ ", " + "Length: " + length);
-			ret.addByte((byte) 0);
-			ret.addBytes(getFileData(address - 0x400000, length));
-			switch (address) {
-			case 0x00497FB0:
-				checksum += 1;
-				break;
-			case 0x0049C33D:
-				checksum += 2;
-				break;
-			case 0x004A2FF7:
-				checksum += 3;
-				break;
-			}
-			checksum *= 10;
-		}
-		ret.addDWord(checksum / 10);
-		return ret;
-	}
-
-	public Buffer handleRequest(BNetInputStream in) throws IOException {
-		in.readByte();
-		Buffer ret = new Buffer();
-		int checksum = 0;
-		while (in.available() >= 7) {
-			int command = in.readWord();
-			int address = in.readDWord();
-			int length = in.readByte();
-			System.out.println("Command: 0x" + PadString.padHex(command, 4)
-					+ ", " + "Address: 0x" + PadString.padHex(address, 8)
-					+ ", " + "Length: " + length);
+//			if(Out.isDebug())
+//				Out.debug(getClass(), "Command: 0x" + PadString.padHex(command, 4)
+//						+ ", " + "Address: 0x" + PadString.padHex(address, 8)
+//						+ ", " + "Length: " + length);
 			ret.addByte((byte) 0);
 			ret.addBytes(getFileData(address - 0x400000, length));
 			switch (address) {
