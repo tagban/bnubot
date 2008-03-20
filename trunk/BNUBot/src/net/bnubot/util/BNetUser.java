@@ -447,7 +447,9 @@ public class BNetUser {
 				
 				prefix += "[BNU";
 				ReleaseType rt = CurrentVersion.version().getReleaseType();
-				if(rt.isAlpha())
+				if(rt.isNightly())
+					prefix += " Nightly";
+				else if(rt.isAlpha())
 					prefix += " Alpha";
 				else if(rt.isBeta())
 					prefix += " Beta";
