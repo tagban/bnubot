@@ -40,7 +40,7 @@
 		<property name="vf.bin" value="${project.dir}/bin/net/bnubot/version.properties" />
 		<delete file="${vf.bin}"/>
 		<propertyfile file="${vf.src}">
-			<entry key="RELEASE_TYPE" type="string" value="Development"/>
+			<entry key="RELEASE_TYPE" type="string" value="Nightly"/>
 			<entry key="VER_SVN_REVISION" type="string" value="${revision}"/>
 			<!-- Convert seconds to ms -->
 			<entry key="BUILD_DATE" type="string" value="${TODAY}000" />
@@ -50,6 +50,9 @@
 		</tstamp>
 		<property name="RELEASE_FILE" value="${TODAY_DATE}-r${revision}.jar"/>
 		<jar destfile="${release.dir}/${RELEASE_FILE}" manifest="${project.dir}/Dist/Main/MANIFEST.MF">
+			<fileset dir="${project.dir}">
+				<include name="changelog.txt"/>
+			</fileset>
 			<fileset dir="${project.dir}/bin">
 				<include name="**/*.*"/>
 			</fileset>
