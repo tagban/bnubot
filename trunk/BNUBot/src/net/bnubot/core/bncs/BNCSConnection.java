@@ -965,9 +965,7 @@ public class BNCSConnection extends Connection {
 						try {
 							warden.processWardenPacket(is.readFully(), bncsOutputStream);
 							break;
-						} catch(Exception e) {
-							Out.exception(e);
-						}
+						} catch(Exception e) {}
 					Out.error(getClass(), "Recieved SID_WARDEN but warden model was not initialized\n" + HexDump.hexDump(pr.data));
 					break;
 				}
@@ -1084,19 +1082,18 @@ public class BNCSConnection extends Connection {
 		while(isConnected() && !socket.isClosed() && !disposed) {
 			long timeNow = System.currentTimeMillis();
 			
-			//Send null packets every 30 seconds
+			// Send null packets every 5 seconds
 			if(true) {
-				long timeSinceNullPacket = timeNow - lastNullPacket;
-				//Wait 30 seconds
-				timeSinceNullPacket /= 1000;
-				if(timeSinceNullPacket > 30) {
+				long timeSinceNullPacket = (timeNow - lastNullPacket) / 1000;
+				// Wait 5 seconds
+				if(timeSinceNullPacket > 5) {
 					lastNullPacket = timeNow;
 					BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_NULL);
 					p.SendPacket(bncsOutputStream);
 				}
 			}
 			
-			//Send anti-idles every 5 minutes
+			// Send anti-idles every cs.antiIdleTimer minutes
 			if((channelName != null) && cs.enableAntiIdle) {
 				synchronized(profile) {
 					long timeSinceAntiIdle = timeNow - profile.lastAntiIdle;
@@ -1679,9 +1676,7 @@ public class BNCSConnection extends Connection {
 						try {
 							warden.processWardenPacket(is.readFully(), bncsOutputStream);
 							break;
-						} catch(Exception e) {
-							Out.exception(e);
-						}
+						} catch(Exception e) {}
 					Out.error(getClass(), "Recieved SID_WARDEN but warden model was not initialized\n" + HexDump.hexDump(pr.data));
 					break;
 				}

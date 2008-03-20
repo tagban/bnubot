@@ -76,7 +76,7 @@ public class Database {
 			
 		int i = openStatements.indexOf(stmt);
 		if(i == -1)
-			throw new IllegalStateException("Statement not found in cache");
+			throw new SQLException("Statement not found in cache");
 		
 		openStatements.remove(i);
 		openStmtExcept.remove(i);
