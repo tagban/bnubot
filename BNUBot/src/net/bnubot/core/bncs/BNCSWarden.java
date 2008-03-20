@@ -53,10 +53,10 @@ public class BNCSWarden {
 			Out.debug(getClass(), "  Length:         " + warden_module.getSize());
 
 			if (warden_module.alreadyExists()) {
-				Out.debug(getClass(), "Module already exists: " + warden_module.getName());
+				Out.debug(getClass(), "Module already exists");
 				out.write(outgoing.do_crypt((byte) 1));
 			} else {
-				Out.debug(getClass(), "Downloading module: " + warden_module.getName());
+				Out.debug(getClass(), "Downloading module...");
 				out.write(outgoing.do_crypt((byte) 0));
 			}
 			out.SendPacket(os);
@@ -69,7 +69,7 @@ public class BNCSWarden {
 
 			if (warden_module.downloadComplete()) {
 				if (warden_module.alreadyExists()) {
-					Out.debug(getClass(), "Download successfull");
+					Out.debug(getClass(), "Download successful");
 					out.write(outgoing.do_crypt((byte) 1));
 					// warden_module.setup();
 				} else {
