@@ -39,8 +39,10 @@ public class WardenModule {
 		name = nametmp.toString();
 		saveFile(name + ".decr", decryptor);
 		
-		if(!sc.exists())
-			throw new IllegalStateException("Starcraft.exe does not exist! Warden will fail.");
+		if(!sc.exists()) {
+			Out.error(getClass(), "Starcraft.exe does not exist! Warden will fail.");
+			throw new IllegalStateException();
+		}
 	}
 
 	public Buffer handleRequest(Buffer in) throws IOException {

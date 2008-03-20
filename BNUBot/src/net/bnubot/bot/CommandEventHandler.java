@@ -77,7 +77,7 @@ public class CommandEventHandler implements EventHandler {
 			if(rsUser != null)
 				d.close(rsUser);
 		} catch(Exception e) {
-			Out.exception(e);
+			//Out.exception(e);
 		}
 	}
 	
