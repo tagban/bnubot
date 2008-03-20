@@ -21,7 +21,7 @@
 		</svn>
 	</target>
 
-	<target name="build">
+	<target name="build" depends="update">
 		<svn>
 			<status path="${svn.checkout.dir}" revisionProperty="revision" />
 		</svn>
@@ -38,8 +38,8 @@
 		</exec>
 		<property name="vf.src" value="${project.dir}/src/net/bnubot/version.properties" />
 		<property name="vf.bin" value="${project.dir}/bin/net/bnubot/version.properties" />
-		<copy file="${vf.src}" tofile="${vf.bin}"/>
-		<propertyfile file="${vf.bin}">
+		<delete file="${vf.bin}"/>
+		<propertyfile file="${vf.src}">
 			<entry key="RELEASE_TYPE" type="string" value="Development"/>
 			<entry key="VER_SVN_REVISION" type="string" value="${revision}"/>
 			<!-- Convert seconds to ms -->
@@ -48,13 +48,17 @@
 		<tstamp>
 			<format property="TODAY_DATE" pattern="yyyy-MM-dd"/>
 		</tstamp>
-		<jar destfile="${release.dir}/${TODAY_DATE}.jar" manifest="${project.dir}/Dist/Main/MANIFEST.MF">
+		<property name="RELEASE_FILE" value="${TODAY_DATE}-r${revision}.jar"/>
+		<jar destfile="${release.dir}/${RELEASE_FILE}" manifest="${project.dir}/Dist/Main/MANIFEST.MF">
 			<fileset dir="${project.dir}/bin">
+				<include name="**/*.*"/>
+			</fileset>
+			<fileset dir="${project.dir}/src">
 				<include name="**/*.*"/>
 			</fileset>
 		</jar>
 		<propertyfile file="${release.dir}/LATEST">
-			<entry key="LATEST" type="string" value="${TODAY_DATE}.jar"/>
+			<entry key="LATEST" type="string" value="${RELEASE_FILE}"/>
 		</propertyfile>
 	</target>
 </project>
