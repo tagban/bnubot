@@ -22,33 +22,36 @@
 	</target>
 
 	<target name="build" depends="update">
-		<svn>
-			<status path="${svn.checkout.dir}" revisionProperty="revision" />
-		</svn>
-		<echo>revision=${revision}</echo>
 		<mkdir dir="${project.dir}/bin"/>
 		<javac classpathref="project.classpath"
 			srcdir="${project.dir}/src"
 			destdir="${project.dir}/bin"
 			source="1.5"
 		/>
+
+		<delete file="${project.dir}/bin/net/bnubot/version.properties"/>
+		<property name="vf.src" value="${project.dir}/src/net/bnubot/version.properties" />
+		<svn>
+			<revert file="${vf.src}"/>
+			<status path="${svn.checkout.dir}" revisionProperty="revision" />
+		</svn>
+		
 		<!-- Get the BUILD_DATE time in seconds -->
 		<exec executable="date" outputproperty="TODAY">
 			<arg value="+%s"/>
 		</exec>
-		<property name="vf.src" value="${project.dir}/src/net/bnubot/version.properties" />
-		<property name="vf.bin" value="${project.dir}/bin/net/bnubot/version.properties" />
-		<delete file="${vf.bin}"/>
+		
 		<propertyfile file="${vf.src}">
 			<entry key="RELEASE_TYPE" type="string" value="Nightly"/>
 			<entry key="VER_SVN_REVISION" type="string" value="${revision}"/>
+			<entry key="VER_RELEASE" type="int" operation="+" default="0"/>
 			<!-- Convert seconds to ms -->
 			<entry key="BUILD_DATE" type="string" value="${TODAY}000" />
 		</propertyfile>
-		<tstamp>
-			<format property="TODAY_DATE" pattern="yyyy-MM-dd"/>
-		</tstamp>
-		<property name="RELEASE_FILE" value="${TODAY_DATE}-r${revision}.jar"/>
+		
+		<property file="${vf.src}"/>
+		<property name="RELEASE_FILE" value="BNUBot-${VER_MAJOR}-${VER_MINOR}-${VER_REVISION}-${VER_RELEASE}-${RELEASE_TYPE}-r${VER_SVN_REVISION}.jar"/>
+				
 		<jar destfile="${release.dir}/${RELEASE_FILE}" manifest="${project.dir}/Dist/Main/MANIFEST.MF">
 			<fileset dir="${project.dir}">
 				<include name="changelog.txt"/>
