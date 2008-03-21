@@ -31,7 +31,8 @@
 			srcdir="${project.dir}/src"
 			destdir="${project.dir}/bin"
 			excludes="**/junit/**/*.*"
-			source="5.0"
+			source="1.5"
+			target="1.5"
 		/>
 
 		<delete file="${project.dir}/bin/net/bnubot/version.properties"/>
