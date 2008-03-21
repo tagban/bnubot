@@ -187,11 +187,11 @@ public class ConnectionSettings implements Serializable {
 		String header = Integer.toString(botNum);
 		
 		profile = 	Settings.read(header, "profile", "Profile" + botNum);
-		username =	Settings.read(header, "username", null);
-		password =	Settings.read(header, "password", null);
-		cdkey =		Settings.read(header, "cdkey", null);
-		cdkey2 =	Settings.read(header, "cdkey2", null);
-		String prod = Settings.read(header, "product", null);
+		username =	Settings.read(header, "username", (String)null);
+		password =	Settings.read(header, "password", (String)null);
+		cdkey =		Settings.read(header, "cdkey", (String)null);
+		cdkey2 =	Settings.read(header, "cdkey2", (String)null);
+		String prod = Settings.read(header, "product", (String)null);
 		product = 0;
 		if(prod != null) {
 			for(int i = 0; i < org.jbls.util.Constants.prods.length; i++) {

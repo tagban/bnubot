@@ -230,7 +230,7 @@ public class GlobalSettings {
 		displayBattleNetChannels = Settings.read(null, "displayBattleNetChannels", false);
 		displayJoinParts = Settings.read(null, "displayJoinParts", true);
 		displayChannelUsers = Settings.read(null, "displayChannelUsers", false);
-		email =	Settings.read(null, "email", null);
+		email =	Settings.read(null, "email", (String)null);
 		enableCLI = Settings.read(null, "enableCLI", false);
 		enableGUI = Settings.read(null, "enableGUI", true);
 		enableSWT = Settings.read(null, "enableSWT", false);
@@ -252,7 +252,7 @@ public class GlobalSettings {
 		whisperBack = Settings.read(null, "whisperBack", true);
 		recruitAccess = Settings.read(null, "recruitAccess", 10);
 		recruitTagPrefix =	Settings.read(null, "recruitTagPrefix", "BNU-");
-		recruitTagSuffix =	Settings.read(null, "recruitTagSuffix", null);
+		recruitTagSuffix =	Settings.read(null, "recruitTagSuffix", (String)null);
 		if(enableGUI) {
 			setLookAndFeelTheme(Settings.read(null, "lookAndFeelTheme", "SkyKrupp"));
 			setLookAndFeel(Settings.read(null, "lookAndFeel", "JGoodies Plastic XP"));
