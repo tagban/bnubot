@@ -8,8 +8,9 @@
 		<fileset dir="lib">
 			<include name="**/*.jar"/>
 		</fileset>
-		<fileset dir="${project.dir}/lib">
-			<include name="**/*.jar"/>
+		<fileset dir="${project.dir}">
+			<include name="lib/**/*.jar"/>
+			<include name="swt/*.jar"/>
 		</fileset>
 	</path>
 	
@@ -26,6 +27,7 @@
 		<javac classpathref="project.classpath"
 			srcdir="${project.dir}/src"
 			destdir="${project.dir}/bin"
+			excludes="**/junit/**/*.*"
 			source="1.5"
 		/>
 
