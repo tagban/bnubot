@@ -16,8 +16,8 @@ public class DatabaseSettings {
 	public void load() {
 		driver = Settings.read(header, "driver", "org.apache.derby.jdbc.EmbeddedDriver");
 		url = Settings.read(header, "url", "jdbc:derby:database;create=true");
-		username = Settings.read(header, "username", null);
-		password = Settings.read(header, "password", null);
+		username = Settings.read(header, "username", (String)null);
+		password = Settings.read(header, "password", (String)null);
 		schema = Settings.read(header, "schema", "schema.derby");
 	}
 	
