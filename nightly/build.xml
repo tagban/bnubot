@@ -12,6 +12,9 @@
 			<include name="lib/**/*.jar"/>
 			<include name="swt/*.jar"/>
 		</fileset>
+		<fileset dir="${java.home.rtlib}">
+			<include name="**/*.jar"/>
+		</fileset>
 	</path>
 	
 	<taskdef name="svn" classname="org.tigris.subversion.svnant.SvnTask" classpathref="project.classpath"/>
