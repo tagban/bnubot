@@ -6,7 +6,6 @@
 package net.bnubot.bot.gui;
 
 import java.awt.CardLayout;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -72,7 +71,6 @@ public class WhatsNewWindow extends JDialog {
 		setTitle("What's new in BNU-Bot " + CurrentVersion.version().toString());
 		setModal(true);
 		setResizable(true);
-		setPreferredSize(new Dimension(400, 400));
 		
 		pack();
 		WindowPosition.load(this);
