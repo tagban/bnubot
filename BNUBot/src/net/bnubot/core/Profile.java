@@ -96,45 +96,18 @@ public class Profile {
 
 				primary.addSlave(con);
 			} else {
-				// Plugins
-				for(Class<? extends EventHandler> plugin : PluginManager.getEnabledPlugins())
-					con.addEventHandler(plugin.newInstance());
-
-				// CLI
-				if(GlobalSettings.enableCLI)
-					con.addEventHandler(new ConsoleEventHandler());
-
-				// SWT GUI
-				if(GlobalSettings.enableSWT) {
-					try {
-						con.addEventHandler(SWTDesktop.createSWTEventHandler());
-					} catch(NoClassDefFoundError e) {
-						// Failed to create SWT GUI; revert to Swing
-						GlobalSettings.enableSWT = false;
-						GlobalSettings.enableGUI = true;
-					}
-				}
-
-				// GUI
-				if(GlobalSettings.enableGUI)
-					con.addEventHandler(new GuiEventHandler(con));
-
-				// Commands
+				// Start the database
 				if(GlobalSettings.enableCommands) {
-					if(Database.getInstance() != null) {
-						con.addEventHandler(new CommandEventHandler());
-					} else {
+					if(Database.getInstance() == null) {
 						DatabaseSettings ds = new DatabaseSettings();
 						ds.load();
 
-						if((ds.driver == null)
-								|| (ds.url == null)) {
+						if((ds.driver == null) || (ds.url == null)) {
 							String msg = "Database is not configured; disabling commands.";
 							Out.info(Profile.class, msg);
 						} else {
 							try {
 								new Database(ds);
-								con.addEventHandler(new CommandEventHandler());
 								ds.save();
 							} catch(Exception e) {
 								Out.exception(e);
@@ -143,6 +116,34 @@ public class Profile {
 							}
 						}
 					}
+				}
+				
+				// Plugins
+				for(Class<? extends EventHandler> plugin : PluginManager.getEnabledPlugins())
+					con.addEventHandler(plugin.newInstance());
+
+				// CLI
+				if(GlobalSettings.enableCLI)
+					con.addEventHandler(new ConsoleEventHandler());
+
+				// GUI
+				if(GlobalSettings.enableGUI)
+					con.addEventHandler(new GuiEventHandler(con));
+
+				// SWT GUI
+				if(GlobalSettings.enableSWT)
+					try {
+						con.addEventHandler(SWTDesktop.createSWTEventHandler());
+					} catch(NoClassDefFoundError e) {
+						// Failed to create SWT GUI; revert to Swing
+						GlobalSettings.enableSWT = false;
+						GlobalSettings.enableGUI = true;
+					}
+
+				// Commands
+				if(GlobalSettings.enableCommands) {
+					if(Database.getInstance() != null)
+						con.addEventHandler(new CommandEventHandler());
 				}
 			}
 			
