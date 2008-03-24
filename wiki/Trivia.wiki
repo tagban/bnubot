@@ -1,0 +1,13 @@
+#summary How to set up trivia for BNU-Bot.
+
+== Enabling Trivia ==
+
+Enable the TriviaEventHandler in the Settings window.
+
+== Adding trivia files ==
+
+Place the trivia files in the trivia folder. The bot accepts trivia in the following formats:
+
+ * /<category>/<answer>/<answer>//<question>
+ * <Question>*<answer>*<answer2>*...
+ * Scramble*<word>
