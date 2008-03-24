@@ -53,7 +53,13 @@ public class Settings {
 	 * This method will not handle a NULL value for defaultValue
 	 */
 	public static <T extends Enum<T>> T read(String header, String setting, T defaultValue) {
-		return Enum.valueOf(defaultValue.getDeclaringClass(), read(header, setting, defaultValue.name()));
+		String readValue = read(header, setting, defaultValue.name());
+		try {
+			return Enum.valueOf(defaultValue.getDeclaringClass(), readValue);
+		} catch(Exception e) {
+			Out.error(Settings.class, "Invalid " + defaultValue.getDeclaringClass().getSimpleName() + ": " + readValue);
+			return defaultValue;
+		}
 	}
 	
 	public static void write(String header, String setting, String value) {
