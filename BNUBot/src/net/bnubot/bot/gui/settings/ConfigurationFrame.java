@@ -52,8 +52,8 @@ public class ConfigurationFrame extends JDialog {
 	private ConfigTextArea txtProfile = null;
 	private ConfigTextArea txtUsername = null;
 	private JPasswordField txtPassword = null;
-	private ConfigCheckBox chkPlug = null;
 	private ConfigComboBox cmbProduct = null;
+	private ConfigCheckBox chkPlug = null;
 	private ConfigComboBox cmbCDKey = null;
 	private ConfigComboBox cmbCDKey2 = null;
 	
@@ -105,7 +105,7 @@ public class ConfigurationFrame extends JDialog {
 				public void itemStateChanged(ItemEvent e) {
 					setVisibleFields();
 				}});
-			boxSettings.add(chkPlug = new ConfigCheckBox("Enable Plug (STAR/SEXP/W2BN)", cs.enablePlug));
+			boxSettings.add(chkPlug = new ConfigCheckBox("Enable Plug (No UDP support)", cs.enablePlug));
 			
 			//Initialize CD Keys combo box before setting product
 			CDKey[] CDKeys = KeyManager.getKeys(KeyManager.PRODUCT_ALLNORMAL);
@@ -332,6 +332,7 @@ public class ConfigurationFrame extends JDialog {
 		model.removeAllElements();
 		
 		if((ConnectionType)cmbConnectionType.getSelectedItem() == ConnectionType.DigitalText) {
+			chkPlug.setVisible(false);
 			cmbProduct.setVisible(false);
 			cmbCDKey.setVisible(false);
 			cmbCDKey2.setVisible(false);
@@ -364,6 +365,17 @@ public class ConfigurationFrame extends JDialog {
 			break;
 		case ConnectionSettings.PRODUCT_WAR2BNE:
 			prod = KeyManager.PRODUCT_W2BN;
+			break;
+		}
+		
+		switch(cmbProduct.getSelectedIndex() + 1) {
+		case ConnectionSettings.PRODUCT_STARCRAFT:
+		case ConnectionSettings.PRODUCT_BROODWAR:
+		case ConnectionSettings.PRODUCT_WAR2BNE:
+			chkPlug.setVisible(true);
+			break;
+		default:
+			chkPlug.setVisible(false);
 			break;
 		}
 
