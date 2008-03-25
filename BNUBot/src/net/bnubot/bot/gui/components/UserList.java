@@ -237,17 +237,18 @@ public class UserList extends JPanel {
 		
 		BNetIcon[] icons = IconsDotBniReader.getIcons();
 		boolean keepThisIcon = false;
-		for(BNetIcon element : icons) {
-			//Look for
-			if(element.useFor(ui.user.getFlags(), specialIcon)) {
-				keepThisIcon = true;
-				icon = element.getIcon();
-				break;
+		if(icons != null)
+			for(BNetIcon element : icons) {
+				//Look for
+				if(element.useFor(ui.user.getFlags(), specialIcon)) {
+					keepThisIcon = true;
+					icon = element.getIcon();
+					break;
+				}
+				if(element.useFor(ui.user.getFlags(), product)) {
+					icon = element.getIcon();
+				}
 			}
-			if(element.useFor(ui.user.getFlags(), product)) {
-				icon = element.getIcon();
-			}
-		}
 		
 		if(!keepThisIcon) {
 			if(GlobalSettings.enableLegacyIcons) {

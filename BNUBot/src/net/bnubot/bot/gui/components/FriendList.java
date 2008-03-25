@@ -68,6 +68,8 @@ public class FriendList extends JPanel {
 	
 	private void setIcon(FriendInfo fi) {
 		BNetIcon icons[] = IconsDotBniReader.getIcons();
+		if(icons == null)
+			return;
 		
 		if(fi.entry.getProduct() != 0) {
 			for(BNetIcon element : icons) {

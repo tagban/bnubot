@@ -119,11 +119,11 @@ public class IconsDotBniReader {
 			icons_W3XP = readIconsDotBni(f);
 		
 		f = BNFTPConnection.downloadFile(cs, "icons_STAR.bni");
-		if(f.exists())
+		if((f != null) && f.exists())
 			icons_STAR = readIconsDotBni(f);
 		
 		f = BNFTPConnection.downloadFile(cs, "Icons.bni");
-		if(f.exists())
+		if((f != null) && f.exists())
 			icons = readIconsDotBni(f);
 		
 		f = new File("downloads/icons_lag.bni");
