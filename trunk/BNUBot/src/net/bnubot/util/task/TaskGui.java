@@ -14,6 +14,8 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 
+import net.bnubot.util.OperatingSystem;
+
 public class TaskGui extends Task {
 	private static final long serialVersionUID = -5561830539661899515L;
 	private final Box box;
@@ -34,20 +36,30 @@ public class TaskGui extends Task {
 		pb.setString(title);
 		pb.setStringPainted(true);
 		pb.setIndeterminate(max == 0);
-		
+
 		Dimension d = new Dimension(379, 24);
 		pb.setPreferredSize(d);
-
-		box = new Box(BoxLayout.Y_AXIS);
-		box.add(jl = new JLabel(title));
-		box.add(pb);
 		
-		box.setBackground(Color.WHITE);
-		jl.setForeground(Color.BLACK);
+		switch(OperatingSystem.userOS) {
+		case OSX:
+			box = new Box(BoxLayout.Y_AXIS);
+			box.add(jl = new JLabel(title));
+			box.add(pb);
+			
+			box.setBackground(Color.WHITE);
+			jl.setForeground(Color.BLACK);
+			break;
+		default:
+			box = null;
+			jl = null;
+			break;
+		}
 	}
 	
 	protected Component getComponent() {
-		return box;
+		if(box != null)
+			return box;
+		return pb;
 	}
 	
 	protected boolean isDeterminant() {
@@ -84,8 +96,14 @@ public class TaskGui extends Task {
 	 * Set the progressbar string and repaint
 	 */
 	private void setString(String s) {
-		if(!s.equals(jl.getText()))
-			jl.setText(s);
+		if(jl == null) {
+			s = title + ": " + s;
+			if(!s.equals(pb.getString()))
+				pb.setString(s);
+		} else {
+			if(!s.equals(jl.getText()))
+				jl.setText(s);
+		}
 	}
 
 	/**
