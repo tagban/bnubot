@@ -55,6 +55,18 @@ public class VersionNumber {
 		return VER_STRING;
 	}
 
+	public String toFileName() {
+		StringBuilder sb = new StringBuilder("BNUBot");
+		sb.append('-').append(VER_MAJOR);
+		sb.append('-').append(VER_MINOR);
+		sb.append('-').append(VER_REVISION);
+		sb.append('-').append(VER_RELEASE);
+		sb.append('-').append(RELEASE_TYPE);
+		sb.append("-r").append(VER_SVN_REVISION);
+		sb.append(".jar");
+		return sb.toString();
+	}
+
 	public Date getBuildDate() {
 		return BUILD_DATE;
 	}
