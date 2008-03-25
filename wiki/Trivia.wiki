@@ -8,9 +8,9 @@ Enable the TriviaEventHandler in the Settings window.
 
 Place the trivia files in the trivia folder. The bot accepts trivia in the following formats:
 
- * /<category>/<answer>/<answer>//<question>
- * <Question>*<answer>*<answer2>*...
- * Scramble*<word>
+ * `/<category>/<answer>/<answer>//<question>`
+ * `<Question>*<answer>*<answer2>*...`
+ * `Scramble*<word>`
 
 == Enabling trivia ==
 
