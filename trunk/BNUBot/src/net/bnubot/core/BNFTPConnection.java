@@ -34,7 +34,7 @@ public class BNFTPConnection {
 			s.close();
 			return f;
 		} catch (Exception e) {
-			Out.fatalException(e);
+			Out.exception(e);
 		}
 		return null;
 	}
@@ -65,7 +65,7 @@ public class BNFTPConnection {
 					throw new Exception("Download failed");
 			}
 	
-			//Recieve the file
+			//Receive the file
 			is.skip(2);	//int headerLength = is.readWord();
 			is.skip(2);	//int unknown = is.readWord();
 			int fileSize = is.readDWord();
