@@ -64,7 +64,7 @@ public class VersionCheck {
 		}
 		
 		if(downloadFolder != null)
-			jarFileName = downloadFolder + "/" + jarFileName;
+			jarFileName = downloadFolder + File.separatorChar + jarFileName;
 
 		XMLElementDecorator error = elem.getChild("error");
 		if(error != null) {
@@ -87,7 +87,7 @@ public class VersionCheck {
 					String from = file.getChild("from").getString();
 					String to = file.getChild("to").getString();
 					if(downloadFolder != null)
-						to = downloadFolder + "/" + to;
+						to = downloadFolder + File.separatorChar + to;
 					URLDownloader.downloadURL(
 						new URL(from),
 						new File(to),
@@ -157,8 +157,20 @@ public class VersionCheck {
 				if(thisJar.exists()) {
 					String msg = "BNU-Bot version " + vnLatest.toString() + " is available.\nWould you like to update?";
 					if(JOptionPane.showConfirmDialog(null, msg, "BNU-Bot update available", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
-						URLDownloader.downloadURL(new URL(url), thisJar, sha1, true);
+						// Find the parent folder
+						String parentFolder = thisJar.getAbsolutePath();
+						parentFolder = parentFolder.substring(0, parentFolder.lastIndexOf(File.separatorChar) + 1);
+						
+						// Download to download.jar
+						File to = new File(parentFolder + "download.jar");
+						URLDownloader.downloadURL(new URL(url), to, sha1, true);
 						URLDownloader.flush();
+						
+						// Swap the files
+						thisJar.renameTo(new File(parentFolder + CurrentVersion.version().toFileName()));
+						to.renameTo(thisJar);
+						
+						// Show complete notification
 						JOptionPane.showMessageDialog(null, "Update complete. Please restart BNU-Bot.");
 						System.exit(0);
 					}
