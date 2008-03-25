@@ -11,3 +11,9 @@ Place the trivia files in the trivia folder. The bot accepts trivia in the follo
  * /<category>/<answer>/<answer>//<question>
  * <Question>*<answer>*<answer2>*...
  * Scramble*<word>
+
+== Enabling trivia ==
+
+Simply type "trivia on" without a trigger.
+To turn it off, type "trivia off".
+To view the leaderboard, type "trivia score".
