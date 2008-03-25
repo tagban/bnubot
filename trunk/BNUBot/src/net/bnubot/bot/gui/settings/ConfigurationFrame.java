@@ -52,6 +52,7 @@ public class ConfigurationFrame extends JDialog {
 	private ConfigTextArea txtProfile = null;
 	private ConfigTextArea txtUsername = null;
 	private JPasswordField txtPassword = null;
+	private ConfigCheckBox chkPlug = null;
 	private ConfigComboBox cmbProduct = null;
 	private ConfigComboBox cmbCDKey = null;
 	private ConfigComboBox cmbCDKey2 = null;
@@ -104,8 +105,9 @@ public class ConfigurationFrame extends JDialog {
 				public void itemStateChanged(ItemEvent e) {
 					setVisibleFields();
 				}});
+			boxSettings.add(chkPlug = new ConfigCheckBox("Enable Plug (STAR/SEXP/W2BN)", cs.enablePlug));
+			
 			//Initialize CD Keys combo box before setting product
-
 			CDKey[] CDKeys = KeyManager.getKeys(KeyManager.PRODUCT_ALLNORMAL);
 			if(CDKeys.length == 0)
 				hasCdKeys = false;
@@ -261,6 +263,7 @@ public class ConfigurationFrame extends JDialog {
 		cs.profile = txtProfile.getText();
 		cs.username = txtUsername.getText();
 		cs.password = new String(txtPassword.getPassword());
+		cs.enablePlug = chkPlug.isSelected();
 		cs.product = (byte)(cmbProduct.getSelectedIndex() + 1);
 		CDKey k = (CDKey)cmbCDKey.getSelectedItem();
 		CDKey k2 = (CDKey)cmbCDKey2.getSelectedItem();
@@ -289,6 +292,7 @@ public class ConfigurationFrame extends JDialog {
 		txtProfile.setText(cs.profile);
 		txtUsername.setText(cs.username);
 		txtPassword.setText(cs.password);
+		chkPlug.setSelected(cs.enablePlug);
 		cmbProduct.setSelectedIndex(cs.product - 1);
 		cmbCDKey.setSelectedItem(cs.cdkey);
 		cmbCDKey2.setSelectedItem(cs.cdkey2);
