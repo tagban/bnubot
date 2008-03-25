@@ -6,7 +6,10 @@
 package net.bnubot.vercheck;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URL;
 
 import javax.swing.JOptionPane;
@@ -167,8 +170,8 @@ public class VersionCheck {
 						URLDownloader.flush();
 						
 						// Swap the files
-						thisJar.renameTo(new File(parentFolder + CurrentVersion.version().toFileName()));
-						to.renameTo(thisJar);
+						renameFile(thisJar, new File(parentFolder + CurrentVersion.version().toFileName()));
+						renameFile(to, thisJar);
 						
 						// Show complete notification
 						JOptionPane.showMessageDialog(null, "Update complete. Please restart BNU-Bot.");
@@ -183,5 +186,27 @@ public class VersionCheck {
 		
 		Out.error(VersionCheck.class, "Update: " + url);
 		return true;
+	}
+	
+	private static void renameFile(File from, File to) throws IOException {
+		if(from.renameTo(to))
+			return;
+		
+		// Windows doesn't allow renaming open files; copy the contents instead
+		FileInputStream is = new FileInputStream(from);
+		FileOutputStream os = new FileOutputStream(to);
+		byte[] b = new byte[1024];
+		
+		do {
+			int c = is.read(b);
+			if(c == -1)
+				break;
+			os.write(b, 0, c);
+		} while(true);
+		
+		os.close();
+		is.close();
+		
+		to.setLastModified(from.lastModified());
 	}
 }
