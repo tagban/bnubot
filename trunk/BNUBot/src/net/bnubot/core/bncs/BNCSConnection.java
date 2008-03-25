@@ -1021,6 +1021,18 @@ public class BNCSConnection extends Connection {
 	 * @throws Exception
 	 */
 	private void sendPassword() throws Exception {
+		if(!cs.enablePlug)
+			// Disable the plug by sending SID_UDPPINGRESPONE
+			switch(productID) {
+			case ProductIDs.PRODUCT_STAR:
+			case ProductIDs.PRODUCT_SEXP:
+			case ProductIDs.PRODUCT_W2BN:
+				BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_UDPPINGRESPONSE);
+				p.writeDWord("bnet"); // TODO: get this value from a real UDP connection
+				p.SendPacket(bncsOutputStream);
+				break;
+			}
+		
 		if((nlsRevision == null) || (nlsRevision == 0)) {
 			int passwordHash[] = DoubleHash.doubleHash(cs.password.toLowerCase(), clientToken, serverToken);
 			
