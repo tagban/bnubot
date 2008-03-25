@@ -41,7 +41,7 @@ public class VersionNumber {
 		if(RELEASE_TYPE.isDevelopment())
 			VER_STRING += " Development";
 		else if(RELEASE_TYPE.isNightly())
-			VER_STRING += " Nightly";
+			VER_STRING += " Nightly Build";
 		else if(RELEASE_TYPE.isAlpha())
 			VER_STRING += " Alpha";
 		else if(RELEASE_TYPE.isBeta())
