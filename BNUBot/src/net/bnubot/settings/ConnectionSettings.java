@@ -38,6 +38,7 @@ public class ConnectionSettings implements Serializable {
 	public String cdkey;
 	public String cdkey2;
 	public byte product;
+	public boolean enablePlug;
 	
 	// Profile-specific stuff
 	public ConnectionType connectionType;
@@ -168,6 +169,7 @@ public class ConnectionSettings implements Serializable {
 		Settings.write(header, "cdkey2", cdkey2);
 		if(product != 0)
 			Settings.write(header, "product", org.jbls.util.Constants.prods[product-1]);
+		Settings.write(header, "enablePlug", enablePlug);
 
 		header = "Profile_" + profile;
 		Settings.write(header, "connectionType", connectionType);
@@ -199,6 +201,7 @@ public class ConnectionSettings implements Serializable {
 					product = (byte)(i+1);
 			}
 		}
+		enablePlug = Settings.read(header, "enablePlug", false);
 
 		header = "Profile_" + profile;
 		connectionType = Settings.read(header, "connectionType", ConnectionType.BNCS);

@@ -4,6 +4,7 @@
 * Removed the size restraint on the "What's New" window
 * Added some error handling for conditions where BNI downloads fail
 * Changed the auto-update algorithm to prevent failed download from breaking the jar
+* Added a setting to disable the plug icon for STAR/SEXP/W2BN
 
 2.0.4.1 (r1182) 2008-03-19:
 * Added warden support (special thanks to iago and Hdx)
