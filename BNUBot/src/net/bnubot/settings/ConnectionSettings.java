@@ -35,10 +35,10 @@ public class ConnectionSettings implements Serializable {
     public String profile;
 	public String username;
 	public String password;
+	public boolean enablePlug;
 	public String cdkey;
 	public String cdkey2;
 	public byte product;
-	public boolean enablePlug;
 	
 	// Profile-specific stuff
 	public ConnectionType connectionType;
@@ -165,11 +165,11 @@ public class ConnectionSettings implements Serializable {
 		Settings.write(header, "profile", profile);
 		Settings.write(header, "username", username);
 		Settings.write(header, "password", password);
+		Settings.write(header, "enablePlug", enablePlug);
 		Settings.write(header, "cdkey", cdkey);
 		Settings.write(header, "cdkey2", cdkey2);
 		if(product != 0)
 			Settings.write(header, "product", org.jbls.util.Constants.prods[product-1]);
-		Settings.write(header, "enablePlug", enablePlug);
 
 		header = "Profile_" + profile;
 		Settings.write(header, "connectionType", connectionType);
@@ -191,6 +191,7 @@ public class ConnectionSettings implements Serializable {
 		profile = 	Settings.read(header, "profile", "Profile" + botNum);
 		username =	Settings.read(header, "username", (String)null);
 		password =	Settings.read(header, "password", (String)null);
+		enablePlug = Settings.read(header, "enablePlug", false);
 		cdkey =		Settings.read(header, "cdkey", (String)null);
 		cdkey2 =	Settings.read(header, "cdkey2", (String)null);
 		String prod = Settings.read(header, "product", (String)null);
@@ -201,7 +202,6 @@ public class ConnectionSettings implements Serializable {
 					product = (byte)(i+1);
 			}
 		}
-		enablePlug = Settings.read(header, "enablePlug", false);
 
 		header = "Profile_" + profile;
 		connectionType = Settings.read(header, "connectionType", ConnectionType.BNCS);
