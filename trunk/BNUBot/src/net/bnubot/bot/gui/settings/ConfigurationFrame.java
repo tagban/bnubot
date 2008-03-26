@@ -369,6 +369,10 @@ public class ConfigurationFrame extends JDialog {
 		}
 		
 		switch(cmbProduct.getSelectedIndex() + 1) {
+		case ConnectionSettings.PRODUCT_DIABLOSHAREWARE:
+		case ConnectionSettings.PRODUCT_DIABLO:
+		case ConnectionSettings.PRODUCT_STARCRAFTSHAREWARE:
+		case ConnectionSettings.PRODUCT_JAPANSTARCRAFT:
 		case ConnectionSettings.PRODUCT_STARCRAFT:
 		case ConnectionSettings.PRODUCT_BROODWAR:
 		case ConnectionSettings.PRODUCT_WAR2BNE:
