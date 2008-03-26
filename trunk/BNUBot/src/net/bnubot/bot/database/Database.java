@@ -36,7 +36,7 @@ public class Database {
 	private final List<Statement> openStatements = new LinkedList<Statement>();
 	private final List<Exception> openStmtExcept = new LinkedList<Exception>();
 	
-	public Database(DatabaseSettings settings) throws Exception {
+	private Database(DatabaseSettings settings) throws Exception {
 		try {
 			DriverManager.getDriver(settings.url);
 		} catch(SQLException e) {
@@ -56,6 +56,24 @@ public class Database {
 	}
 	
 	public static Database getInstance() {
+		if(instance != null)
+			return instance;
+		
+		DatabaseSettings ds = new DatabaseSettings();
+		ds.load();
+
+		if((ds.driver == null) || (ds.url == null)) {
+			Out.error(Database.class, "Database is not configured.");
+		} else {
+			try {
+				instance =new Database(ds);
+				ds.save();
+			} catch(Exception e) {
+				Out.exception(e);
+				Out.error(Database.class, "Failed to initialize the database.\n" + e.getMessage());
+			}
+		}
+		
 		return instance;
 	}
 	

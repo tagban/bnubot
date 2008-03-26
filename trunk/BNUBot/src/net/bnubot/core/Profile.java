@@ -20,7 +20,6 @@ import net.bnubot.bot.gui.GuiEventHandler;
 import net.bnubot.bot.swt.SWTDesktop;
 import net.bnubot.core.commands.CommandRunnable;
 import net.bnubot.settings.ConnectionSettings;
-import net.bnubot.settings.DatabaseSettings;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.Out;
 
@@ -96,28 +95,6 @@ public class Profile {
 
 				primary.addSlave(con);
 			} else {
-				// Start the database
-				if(GlobalSettings.enableCommands) {
-					if(Database.getInstance() == null) {
-						DatabaseSettings ds = new DatabaseSettings();
-						ds.load();
-
-						if((ds.driver == null) || (ds.url == null)) {
-							String msg = "Database is not configured; disabling commands.";
-							Out.info(Profile.class, msg);
-						} else {
-							try {
-								new Database(ds);
-								ds.save();
-							} catch(Exception e) {
-								Out.exception(e);
-								String msg = "Failed to initialize the database; commands disabled.\n" + e.getMessage();
-								Out.error(Profile.class, msg);
-							}
-						}
-					}
-				}
-				
 				// Plugins
 				for(Class<? extends EventHandler> plugin : PluginManager.getEnabledPlugins())
 					con.addEventHandler(plugin.newInstance());
@@ -143,7 +120,11 @@ public class Profile {
 				// Commands
 				if(GlobalSettings.enableCommands) {
 					if(Database.getInstance() != null)
-						con.addEventHandler(new CommandEventHandler());
+						try {
+							con.addEventHandler(new CommandEventHandler());
+						} catch(IllegalStateException e) {
+							Out.exception(e);
+						}
 				}
 			}
 			

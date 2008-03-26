@@ -30,17 +30,14 @@ public class TriviaEventHandler implements EventHandler {
 	private boolean triviaEnabled = false;
 	private final List<TriviaItem> trivia = new LinkedList<TriviaItem>();
 	private String triviaAnswers[] = null;
-	private boolean gotAnswer = false;
 	private BNetUser answerUser = null;
 	private String answerUsed = null;
-	private Database d = null;
+	private Database d = Database.getInstance();
 	private int unanswered = 0;
 	private Connection initializedConnection = null;
 	private boolean disposed = false;
 	
-	public TriviaEventHandler() {
-		this.d = Database.getInstance();
-	}
+	public TriviaEventHandler() {}
 	
 	private void readFile(String fileName) {
 		BufferedReader is = null;
@@ -138,31 +135,33 @@ public class TriviaEventHandler implements EventHandler {
 						continue;
 					}
 					
-					try {
-						long max[] = d.getTriviaTopTwo();
-						if(max != null) {
-							final long total = d.getTriviaSum();
-							final long target = GlobalSettings.triviaRoundLength;
-							boolean condition = false;
-							// There are no questions left
-							condition |= (total >= target);
-							// First place has half of the points
-							condition |= (max[0] > (target/2));
-							if(max.length > 1) {
-								long questionsLeft = (target - total);
-								long bestTop2Score = max[1] + questionsLeft;
-								// Second place can't pass first place
-								condition |= (bestTop2Score < max[1]);
+					if(d != null) {
+						try {
+							long max[] = d.getTriviaTopTwo();
+							if(max != null) {
+								final long total = d.getTriviaSum();
+								final long target = GlobalSettings.triviaRoundLength;
+								boolean condition = false;
+								// There are no questions left
+								condition |= (total >= target);
+								// First place has half of the points
+								condition |= (max[0] > (target/2));
+								if(max.length > 1) {
+									long questionsLeft = (target - total);
+									long bestTop2Score = max[1] + questionsLeft;
+									// Second place can't pass first place
+									condition |= (bestTop2Score < max[1]);
+								}
+								if(condition) {
+									String out = "The trivia round is over! Congratulations to ";
+									out += d.resetTrivia();
+									out += " for winning the round!";
+									source.queueChatHelper(out, false);
+								}
 							}
-							if(condition) {
-								String out = "The trivia round is over! Congratulations to ";
-								out += d.resetTrivia();
-								out += " for winning the round!";
-								source.queueChatHelper(out, false);
-							}
+						} catch (SQLException e) {
+							Out.exception(e);
 						}
-					} catch (SQLException e) {
-						Out.exception(e);
 					}
 					
 					TriviaItem ti = trivia.remove((int)(Math.random() * trivia.size()));
@@ -178,14 +177,13 @@ public class TriviaEventHandler implements EventHandler {
 					}
 					
 					triviaAnswers = ti.getAnswers();
-					gotAnswer = false;
 					answerUser = null;
 					
 					long timeQuestionAsked = System.currentTimeMillis();
 					long timeElapsed = 0;
 					int numHints = 0;
 					do {
-						if(gotAnswer)
+						if(answerUser != null)
 							break;
 						
 						timeElapsed = System.currentTimeMillis() - timeQuestionAsked;
@@ -205,7 +203,7 @@ public class TriviaEventHandler implements EventHandler {
 						Thread.yield();
 					} while((timeElapsed < 30) && triviaEnabled);
 
-					if(gotAnswer) {
+					if(answerUser != null) {
 						unanswered = 0;
 						String extra = "!";
 
@@ -300,21 +298,24 @@ public class TriviaEventHandler implements EventHandler {
 	
 	public void joinedChannel(Connection source, String channel) {}
 	public void recieveChat(Connection source, BNetUser user, String text) {
-		if("trivia on".equals(text)) {
-			triviaOn(source);
-		} else if("trivia off".equals(text)) {
-			triviaOff();
-		} else if("trivia score".equals(text)) {
-			if(!triviaEnabled)
-				showLeaderBoard(source);
+		if(!triviaEnabled) {
+			if("trivia on".equals(text)) {
+				triviaOn(source);
+			} else if("trivia score".equals(text)) {
+				if(!triviaEnabled)
+					showLeaderBoard(source);
+			}
 		} else {
-			if(triviaAnswers != null) {
-				text = HexDump.getAlphaNumerics(text);
-				for(String triviaAnswer : triviaAnswers) {
-					if(triviaAnswer.compareToIgnoreCase(text) == 0) {
-						gotAnswer = true;
-						answerUser = user;
-						answerUsed = triviaAnswer;
+			if("trivia off".equals(text)) {
+				triviaOff();
+			} else {
+				if(triviaAnswers != null) {
+					text = HexDump.getAlphaNumerics(text);
+					for(String triviaAnswer : triviaAnswers) {
+						if(triviaAnswer.compareToIgnoreCase(text) == 0) {
+							answerUser = user;
+							answerUsed = triviaAnswer;
+						}
 					}
 				}
 			}
