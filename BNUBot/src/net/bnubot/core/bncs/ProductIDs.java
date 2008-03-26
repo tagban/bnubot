@@ -1,12 +1,10 @@
 /**
- * 
+ * This file is distributed under the GPL
+ * $Id$
  */
+
 package net.bnubot.core.bncs;
 
-/**
- * @author sanderson
- *
- */
 public enum ProductIDs {
 	STAR(0x53544152, "Starcraft"), 
 	SEXP(0x53455850, "Starcraft: Brood War"),
