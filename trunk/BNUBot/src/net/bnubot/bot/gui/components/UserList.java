@@ -230,9 +230,9 @@ public class UserList extends JPanel {
 		}
 				
 		Icon icon = null;
-		int product = user.getStatString().getProduct();
+		ProductIDs product = user.getStatString().getProduct();
 		int specialIcon = user.getStatString().getIcon();
-		if(specialIcon == product)
+		if(specialIcon == product.getDword())
 			specialIcon = 0;
 		
 		BNetIcon[] icons = IconsDotBniReader.getIcons();
@@ -245,7 +245,7 @@ public class UserList extends JPanel {
 					icon = element.getIcon();
 					break;
 				}
-				if(element.useFor(ui.user.getFlags(), product)) {
+				if(element.useFor(ui.user.getFlags(), product.getDword())) {
 					icon = element.getIcon();
 				}
 			}
@@ -253,15 +253,15 @@ public class UserList extends JPanel {
 		if(!keepThisIcon) {
 			if(GlobalSettings.enableLegacyIcons) {
 				switch(product) {
-				case ProductIDs.PRODUCT_STAR:
-				case ProductIDs.PRODUCT_SEXP:
-				case ProductIDs.PRODUCT_W2BN:
+				case STAR:
+				case SEXP:
+				case W2BN:
 					icons = IconsDotBniReader.getLegacyIcons();
 					break;
-				case ProductIDs.PRODUCT_WAR3:
+				case WAR3:
 					icons = IconsDotBniReader.getIconsWAR3();
 					break;
-				case ProductIDs.PRODUCT_W3XP:
+				case W3XP:
 					icons = IconsDotBniReader.getIconsW3XP();
 					break;
 				default:
@@ -271,8 +271,8 @@ public class UserList extends JPanel {
 				
 				if(icons != null) {
 					switch(product) {
-					case ProductIDs.PRODUCT_STAR:
-					case ProductIDs.PRODUCT_SEXP:
+					case STAR:
+					case SEXP:
 						int w = Math.max(Math.min(user.getStatString().getWins(), 10), 0);
 						icon = icons[w].getIcon();
 						int r = user.getStatString().getLadderRank();
@@ -284,7 +284,7 @@ public class UserList extends JPanel {
 						}
 						break;
 
-					case ProductIDs.PRODUCT_W2BN:
+					case W2BN:
 						w = Math.max(Math.min(user.getStatString().getWins(), 10), 0);
 						icon = icons[IconsDotBniReader.LEGACY_W2BNWIN + w].getIcon();
 						

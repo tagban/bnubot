@@ -19,6 +19,7 @@ import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 
+import net.bnubot.core.bncs.ProductIDs;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.settings.ConnectionSettings;
@@ -247,7 +248,7 @@ public abstract class Connection extends Thread {
 	}
 	
 	public abstract boolean isOp();
-	public abstract int getProductID();
+	public abstract ProductIDs getProductID();
 
 	public void addSlave(Connection c) {
 		slaves.add(c);

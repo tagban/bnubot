@@ -62,7 +62,7 @@ public class BNCSConnection extends Connection {
 	protected InputStream bncsInputStream = null;
 	protected DataOutputStream bncsOutputStream = null;
 	
-	private int productID = 0;
+	private ProductIDs productID = null;
 	private int verByte;
 	private Integer nlsRevision = null;
 	private BNCSWarden warden = null;
@@ -98,7 +98,7 @@ public class BNCSConnection extends Connection {
 				myUser = null;
 				myClan = 0;
 				myClanRank = null;
-				productID = 0;
+				productID = null;
 				titleChanged();
 				
 				// Wait until we're supposed to connect
@@ -202,13 +202,13 @@ public class BNCSConnection extends Connection {
 			Out.error(getClass(), "Login to BNLS failed; logged in anonymously");
 	
 		// Get the verbyte locally
-		verByte = HashMain.getVerByte(cs.product);
+		verByte = HashMain.getVerByte(cs.product.getBnls());
 		
 		BNLS_REQUESTVERSIONBYTE: {
 			// Ask BNLS for the verbyte
 			connect.updateProgress("Getting verbyte from BNLS");
 			BNLSPacket vbPacket = new BNLSPacket(BNLSPacketId.BNLS_REQUESTVERSIONBYTE);
-			vbPacket.writeDWord(cs.product);
+			vbPacket.writeDWord(cs.product.getBnls());
 			vbPacket.SendPacket(bnlsOutputStream);
 			
 			BNetInputStream vbInputStream = new BNLSPacketReader(bnlsInputStream).getInputStream();
@@ -239,17 +239,17 @@ public class BNCSConnection extends Connection {
 		int tzBias = TimeZone.getDefault().getOffset(System.currentTimeMillis()) / -60000;
 		
 		switch(cs.product) {
-		case ConnectionSettings.PRODUCT_STARCRAFT:
-		case ConnectionSettings.PRODUCT_BROODWAR:
-		case ConnectionSettings.PRODUCT_DIABLO2:
-		case ConnectionSettings.PRODUCT_LORDOFDESTRUCTION:
-		case ConnectionSettings.PRODUCT_WARCRAFT3:
-		case ConnectionSettings.PRODUCT_THEFROZENTHRONE: {
+		case STAR:
+		case SEXP:
+		case D2DV:
+		case D2XP:
+		case WAR3:
+		case W3XP: {
 			// NLS
 			p = new BNCSPacket(BNCSPacketId.SID_AUTH_INFO);
 			p.writeDWord(0);							// Protocol ID (0)
 			p.writeDWord(PlatformIDs.PLATFORM_IX86);	// Platform ID (IX86)
-			p.writeDWord(productID);					// Product ID
+			p.writeDWord(productID.getDword());			// Product ID
 			p.writeDWord(verByte);						// Version byte
 			p.writeDWord(prodLang);						// Product language
 			p.writeDWord(0);							// Local IP
@@ -262,13 +262,13 @@ public class BNCSConnection extends Connection {
 			break;
 		}
 
-		case ConnectionSettings.PRODUCT_DIABLO:
-		case ConnectionSettings.PRODUCT_DIABLOSHAREWARE:
-		case ConnectionSettings.PRODUCT_STARCRAFTSHAREWARE:
-		case ConnectionSettings.PRODUCT_JAPANSTARCRAFT:
-		case ConnectionSettings.PRODUCT_WAR2BNE: {
+		case DRTL:
+		case DSHR:
+		case SSHR:
+		case JSTR:
+		case W2BN: {
 			// OLS
-			if(cs.product == ConnectionSettings.PRODUCT_STARCRAFTSHAREWARE) {
+			if(cs.product == ProductIDs.SSHR) {
 				p = new BNCSPacket(BNCSPacketId.SID_CLIENTID);
 				p.writeDWord(0);	// Registration Version
 				p.writeDWord(0);	// Registration Authority
@@ -306,7 +306,7 @@ public class BNCSConnection extends Connection {
 			
 			p = new BNCSPacket(BNCSPacketId.SID_STARTVERSIONING);
 			p.writeDWord(PlatformIDs.PLATFORM_IX86);	// Platform ID (IX86)
-			p.writeDWord(productID);					// Product ID
+			p.writeDWord(productID.getDword());			// Product ID
 			p.writeDWord(verByte);						// Version byte
 			p.writeDWord(0);							// Unknown (0)
 			p.SendPacket(bncsOutputStream);
@@ -327,7 +327,7 @@ public class BNCSConnection extends Connection {
 	private void initializeBNCS(Task connect) throws Exception {
 		nlsRevision = null;
 		warden = null;
-		productID = ProductIDs.ProductID[cs.product-1];
+		productID = cs.product;
 		
 		// Set up BNCS
 		connect.updateProgress("Connecting to Battle.net");
@@ -399,9 +399,9 @@ public class BNCSConnection extends Connection {
 					byte keyHash2[] = null;
 					if(nlsRevision != null) {
 						keyHash = HashMain.hashKey(clientToken, serverToken, cs.cdkey).getBuffer();
-						if(cs.product == ConnectionSettings.PRODUCT_LORDOFDESTRUCTION)
+						if(cs.product == ProductIDs.D2XP)
 							keyHash2 = HashMain.hashKey(clientToken, serverToken, cs.cdkey2).getBuffer();
-						if(cs.product == ConnectionSettings.PRODUCT_THEFROZENTHRONE)
+						if(cs.product == ProductIDs.W3XP)
 							keyHash2 = HashMain.hashKey(clientToken, serverToken, cs.cdkey2).getBuffer();
 						
 						try {
@@ -420,7 +420,7 @@ public class BNCSConnection extends Connection {
                 	
                 	try {
                 		BNLSPacket bnlsOut = new BNLSPacket(BNLSPacketId.BNLS_VERSIONCHECKEX2);
-                		bnlsOut.writeDWord(cs.product);
+                		bnlsOut.writeDWord(cs.product.getBnls());
                 		bnlsOut.writeDWord(0);	// Flags
                 		bnlsOut.writeDWord(0);	// Cookie
                 		bnlsOut.writeQWord(MPQFileTime);
@@ -456,15 +456,11 @@ public class BNCSConnection extends Connection {
                 		exeHash = bnlsIn.readDWord();
                 		exeInfo = bnlsIn.readNTBytes();
                 		bnlsIn.readDWord(); // cookie
-                		int exeVerbyte = bnlsIn.readDWord();
+                		bnlsIn.readDWord(); // verbyte 
                 		assert(bnlsIn.available() == 0);
 
                 		recieveInfo("Recieved version check from BNLS.");
                 		
-                		int verByte = HashMain.getVerByte(cs.product);
-                		if(exeVerbyte != verByte)
-                			recieveError("BNLS reported a different verByte(0x" + Integer.toHexString(exeVerbyte) + ") from the one we used (0x" + Integer.toHexString(verByte) + ")");
-
                 		bnlsSocket.close();
                 		bnlsSocket = null;
                 	} catch(UnknownHostException e) {
@@ -519,7 +515,7 @@ public class BNCSConnection extends Connection {
                 		 */
                 		BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_REPORTVERSION);
                 		p.writeDWord(PlatformIDs.PLATFORM_IX86);
-                		p.writeDWord(productID);
+                		p.writeDWord(productID.getDword());
                 		p.writeDWord(verByte);
 						p.writeDWord(exeVersion);
 						p.writeDWord(exeHash);
@@ -989,8 +985,8 @@ public class BNCSConnection extends Connection {
 	private void sendKeyOrPassword() throws Exception {
 		BNCSPacket p;
 		
-		switch(productID) {
-		case ProductIDs.PRODUCT_JSTR:
+		switch(cs.product) {
+		case JSTR:
 			p = new BNCSPacket(BNCSPacketId.SID_CDKEY);
 			p.writeDWord(0); //Spawn
 			p.writeNTString(cs.cdkey);
@@ -998,7 +994,7 @@ public class BNCSConnection extends Connection {
 			p.SendPacket(bncsOutputStream);
 			break;
 			
-		case ProductIDs.PRODUCT_W2BN:
+		case W2BN:
 			byte[] keyHash = HashMain.hashW2Key(clientToken, serverToken, cs.cdkey).getBuffer();
 			if(keyHash.length != 40)
 				throw new Exception("Invalid keyHash length");
@@ -1024,13 +1020,13 @@ public class BNCSConnection extends Connection {
 		if(!cs.enablePlug)
 			// Disable the plug by sending SID_UDPPINGRESPONE
 			switch(productID) {
-			case ProductIDs.PRODUCT_DSHR:
-			case ProductIDs.PRODUCT_DRTL:
-			case ProductIDs.PRODUCT_SSHR:
-			case ProductIDs.PRODUCT_JSTR:
-			case ProductIDs.PRODUCT_STAR:
-			case ProductIDs.PRODUCT_SEXP:
-			case ProductIDs.PRODUCT_W2BN:
+			case DSHR:
+			case DRTL:
+			case SSHR:
+			case JSTR:
+			case STAR:
+			case SEXP:
+			case W2BN:
 				BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_UDPPINGRESPONSE);
 				p.writeDWord("bnet"); // TODO: get this value from a real UDP connection
 				p.SendPacket(bncsOutputStream);
@@ -1082,7 +1078,7 @@ public class BNCSConnection extends Connection {
 	 */
 	private void sendGetChannelList() throws Exception {
 		BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_GETCHANNELLIST);
-		p.writeDWord(productID);
+		p.writeDWord(productID.getDword());
 		p.SendPacket(bncsOutputStream);
 	}
 	
@@ -1205,8 +1201,8 @@ public class BNCSConnection extends Connection {
 					case EID_WHISPERSENT:
 					case EID_WHISPER:
 						switch(productID) {
-						case ProductIDs.PRODUCT_D2DV:
-						case ProductIDs.PRODUCT_D2XP:
+						case D2DV:
+						case D2XP:
 							int asterisk = username.indexOf('*');
 							if(asterisk >= 0)
 								username = username.substring(asterisk+1);
@@ -1787,8 +1783,8 @@ public class BNCSConnection extends Connection {
 		
 
 		switch(productID) {
-		case ProductIDs.PRODUCT_D2DV:
-		case ProductIDs.PRODUCT_D2XP:
+		case D2DV:
+		case D2XP:
 			if((text.length() > 1) && (text.charAt(0) == '/')) {
 				String cmd = text.substring(1);
 				int i = cmd.indexOf(' ');
@@ -1830,8 +1826,8 @@ public class BNCSConnection extends Connection {
 	 */
 	public void sendClanInvitation(Object cookie, String user) throws Exception {
 		switch(productID) {
-		case ProductIDs.PRODUCT_WAR3:
-		case ProductIDs.PRODUCT_W3XP:
+		case WAR3:
+		case W3XP:
 			break;
 		default:
 			throw new UnsupportedFeatureException("Only WAR3/W3XP support clans.");
@@ -1853,8 +1849,8 @@ public class BNCSConnection extends Connection {
 	 */
 	public void sendClanRankChange(Object cookie, String user, int newRank) throws Exception {
 		switch(productID) {
-		case ProductIDs.PRODUCT_WAR3:
-		case ProductIDs.PRODUCT_W3XP:
+		case WAR3:
+		case W3XP:
 			break;
 		default:
 			throw new UnsupportedFeatureException("Only WAR3/W3XP support clans.");
@@ -1872,8 +1868,8 @@ public class BNCSConnection extends Connection {
 	 */
 	public void sendClanMOTD(Object cookie) throws Exception {
 		switch(productID) {
-		case ProductIDs.PRODUCT_WAR3:
-		case ProductIDs.PRODUCT_W3XP:
+		case WAR3:
+		case W3XP:
 			break;
 		default:
 			throw new UnsupportedFeatureException("Only WAR3/W3XP support MOTD.");
@@ -1889,8 +1885,8 @@ public class BNCSConnection extends Connection {
 	 */
 	public void sendClanSetMOTD(String text) throws Exception {
 		switch(productID) {
-		case ProductIDs.PRODUCT_WAR3:
-		case ProductIDs.PRODUCT_W3XP:
+		case WAR3:
+		case W3XP:
 			break;
 		default:
 			throw new UnsupportedFeatureException("Only WAR3/W3XP support MOTD.");
@@ -1907,8 +1903,8 @@ public class BNCSConnection extends Connection {
 	 */
 	public void sendQueryRealms2() throws Exception {
 		switch(productID) {
-		case ProductIDs.PRODUCT_D2DV:
-		case ProductIDs.PRODUCT_D2XP:
+		case D2DV:
+		case D2XP:
 			break;
 		default:
 			throw new UnsupportedFeatureException("Only D2DV/D2XP support realms");
@@ -1927,8 +1923,8 @@ public class BNCSConnection extends Connection {
 	 */
 	public void sendLogonRealmEx(String realmTitle) throws Exception {
 		switch(productID) {
-		case ProductIDs.PRODUCT_D2DV:
-		case ProductIDs.PRODUCT_D2XP:
+		case D2DV:
+		case D2XP:
 			break;
 		default:
 			throw new UnsupportedFeatureException("Only D2DV/D2XP support realms");
@@ -2043,7 +2039,7 @@ public class BNCSConnection extends Connection {
 		return profile.getName();
 	}
 
-	public int getProductID() {
+	public ProductIDs getProductID() {
 		return productID;
 	}
 	

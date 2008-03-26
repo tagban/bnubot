@@ -8,6 +8,7 @@ package net.bnubot.settings;
 import java.io.Serializable;
 
 import net.bnubot.bot.gui.icons.IconsDotBniReader;
+import net.bnubot.core.bncs.ProductIDs;
 
 public class ConnectionSettings implements Serializable {
 	private static final long serialVersionUID = -8169038278487314919L;
@@ -16,19 +17,6 @@ public class ConnectionSettings implements Serializable {
 		BNCS,
 		DigitalText
 	}
-	
-	// These are for BNLS/JBLS
-    public static final byte PRODUCT_STARCRAFT         = (byte)0x01; //Fully supported
-    public static final byte PRODUCT_BROODWAR          = (byte)0x02; //Fully Supported
-    public static final byte PRODUCT_WAR2BNE           = (byte)0x03; //Fully Supported
-    public static final byte PRODUCT_DIABLO2           = (byte)0x04; //Fully Supported
-    public static final byte PRODUCT_LORDOFDESTRUCTION = (byte)0x05; //Fully Supported
-    public static final byte PRODUCT_JAPANSTARCRAFT    = (byte)0x06; //Fully Supported
-    public static final byte PRODUCT_WARCRAFT3         = (byte)0x07; //Fully Supported
-    public static final byte PRODUCT_THEFROZENTHRONE   = (byte)0x08; //Fully Supported
-    public static final byte PRODUCT_DIABLO            = (byte)0x09; //Fully Supported
-    public static final byte PRODUCT_DIABLOSHAREWARE   = (byte)0x0A; //Fully Supported
-    public static final byte PRODUCT_STARCRAFTSHAREWARE= (byte)0x0B; //Fully Supported
 
     // Connection-specific stuff
     public int botNum;
@@ -38,7 +26,7 @@ public class ConnectionSettings implements Serializable {
 	public boolean enablePlug;
 	public String cdkey;
 	public String cdkey2;
-	public byte product;
+	public ProductIDs product;
 	
 	// Profile-specific stuff
 	public ConnectionType connectionType;
@@ -81,26 +69,9 @@ public class ConnectionSettings implements Serializable {
 			break;
 		case BNCS:
 			switch(product) {
-			case PRODUCT_STARCRAFT:
-			case PRODUCT_BROODWAR:
-			case PRODUCT_WAR2BNE:
-			case PRODUCT_DIABLO2:
-			case PRODUCT_LORDOFDESTRUCTION:
-			case PRODUCT_JAPANSTARCRAFT:
-			case PRODUCT_WARCRAFT3:
-			case PRODUCT_THEFROZENTHRONE:
-			case PRODUCT_DIABLO:
-			case PRODUCT_DIABLOSHAREWARE:
-			case PRODUCT_STARCRAFTSHAREWARE:
-				break;
-			default:
-				return "Unsupported product";
-			}
-			
-			switch(product) {
-			case PRODUCT_DIABLO:
-			case PRODUCT_DIABLOSHAREWARE:
-			case PRODUCT_STARCRAFTSHAREWARE:
+			case DRTL:
+			case DSHR:
+			case SSHR:
 				break;
 			default:
 				if((cdkey == null) || (cdkey.length() == 0))
@@ -108,11 +79,13 @@ public class ConnectionSettings implements Serializable {
 					break;
 			}
 			
-			if((product == PRODUCT_LORDOFDESTRUCTION)
-			|| (product == PRODUCT_THEFROZENTHRONE)) {
+			switch(product) {
+			case D2XP:
+			case W3XP:
 				if((cdkey2 == null) || (cdkey2.length() == 0))
 					return "CD key 2 not set";
 			}
+			
 			break;
 		}
 		
@@ -131,8 +104,8 @@ public class ConnectionSettings implements Serializable {
 			return "DigitalText";
 		
 		switch(product) {
-		case PRODUCT_WARCRAFT3:
-		case PRODUCT_THEFROZENTHRONE: {
+		case WAR3:
+		case W3XP: {
 			if(server.equals("useast.battle.net"))
 				return "Azeroth";
 			if(server.equals("uswest.battle.net"))
@@ -168,8 +141,7 @@ public class ConnectionSettings implements Serializable {
 		Settings.write(header, "enablePlug", enablePlug);
 		Settings.write(header, "cdkey", cdkey);
 		Settings.write(header, "cdkey2", cdkey2);
-		if(product != 0)
-			Settings.write(header, "product", org.jbls.util.Constants.prods[product-1]);
+		Settings.write(header, "product", product);
 
 		header = "Profile_" + profile;
 		Settings.write(header, "connectionType", connectionType);
@@ -194,14 +166,7 @@ public class ConnectionSettings implements Serializable {
 		enablePlug = Settings.read(header, "enablePlug", false);
 		cdkey =		Settings.read(header, "cdkey", (String)null);
 		cdkey2 =	Settings.read(header, "cdkey2", (String)null);
-		String prod = Settings.read(header, "product", (String)null);
-		product = 0;
-		if(prod != null) {
-			for(int i = 0; i < org.jbls.util.Constants.prods.length; i++) {
-				if(org.jbls.util.Constants.prods[i].compareTo(prod) == 0)
-					product = (byte)(i+1);
-			}
-		}
+		product = Settings.read(header, "product", ProductIDs.STAR);
 
 		header = "Profile_" + profile;
 		connectionType = Settings.read(header, "connectionType", ConnectionType.BNCS);

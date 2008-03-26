@@ -8,6 +8,7 @@ package net.bnubot.util;
 import java.io.EOFException;
 import java.io.IOException;
 
+import net.bnubot.core.bncs.IconIDs;
 import net.bnubot.core.bncs.ProductIDs;
 
 public class StatString {
@@ -19,7 +20,7 @@ public class StatString {
 	private String prettyStart = null;
 	private String prettyEnd = "";
 	private String pretty = null;
-	private int product = 0;
+	private ProductIDs product = null;
 	private int icon = 0;
 	private Integer wins = null;
 	private Integer level = null;
@@ -52,7 +53,7 @@ public class StatString {
 		}
 	}
 	
-	public int getProduct() {
+	public ProductIDs getProduct() {
 		return product;
 	}
 	
@@ -60,79 +61,79 @@ public class StatString {
 		return icon;
 	}
 	
-	public String getIconName(int product, int icon) {
+	public String getIconName(ProductIDs product, int icon) {
 		switch(product) {
 		// http://www.battle.net/war3/ladder/war3-ladder-info-laddericons.aspx
-		case ProductIDs.PRODUCT_WAR3:
+		case WAR3:
 			switch(icon) {
-			case ProductIDs.ICON_W3H1:
-			case ProductIDs.ICON_W3O1:
-			case ProductIDs.ICON_W3N1:
-			case ProductIDs.ICON_W3U1:
-			case ProductIDs.ICON_W3R1:	return "Orc Peon";
+			case IconIDs.ICON_W3H1:
+			case IconIDs.ICON_W3O1:
+			case IconIDs.ICON_W3N1:
+			case IconIDs.ICON_W3U1:
+			case IconIDs.ICON_W3R1:	return "Orc Peon";
 			
-			case ProductIDs.ICON_W3H2:	return "Human Footman";
-			case ProductIDs.ICON_W3H3:	return "Human Knight";
-			case ProductIDs.ICON_W3H4:	return "Human Archmage";
-			case ProductIDs.ICON_W3H5:	return "Human Midvh";
-			case ProductIDs.ICON_W3O2:	return "Orc Grunt";
-			case ProductIDs.ICON_W3O3:	return "Orc Tauren";
-			case ProductIDs.ICON_W3O4:	return "Orc Far Seer";
-			case ProductIDs.ICON_W3O5:	return "Orc Thrall";
-			case ProductIDs.ICON_W3N2:	return "Night Elf Archer";
-			case ProductIDs.ICON_W3N3:	return "Night Elf Druid of the Claw";
-			case ProductIDs.ICON_W3N4:	return "Night Elf Priestess of the Moon";
-			case ProductIDs.ICON_W3N5:	return "Night Elf Furion Stormrage";
-			case ProductIDs.ICON_W3U2:	return "Undead Ghoul";
-			case ProductIDs.ICON_W3U3:	return "Undead Abomination";
-			case ProductIDs.ICON_W3U4:	return "Undead Lich";
-			case ProductIDs.ICON_W3U5:	return "Undead Tichondrius";
-			case ProductIDs.ICON_W3R2:	return "Green Dragon Whelp";
-			case ProductIDs.ICON_W3R3:	return "Blue Dragon";
-			case ProductIDs.ICON_W3R4:	return "Red Dragon";
-			case ProductIDs.ICON_W3R5:	return "Deathwing";
+			case IconIDs.ICON_W3H2:	return "Human Footman";
+			case IconIDs.ICON_W3H3:	return "Human Knight";
+			case IconIDs.ICON_W3H4:	return "Human Archmage";
+			case IconIDs.ICON_W3H5:	return "Human Midvh";
+			case IconIDs.ICON_W3O2:	return "Orc Grunt";
+			case IconIDs.ICON_W3O3:	return "Orc Tauren";
+			case IconIDs.ICON_W3O4:	return "Orc Far Seer";
+			case IconIDs.ICON_W3O5:	return "Orc Thrall";
+			case IconIDs.ICON_W3N2:	return "Night Elf Archer";
+			case IconIDs.ICON_W3N3:	return "Night Elf Druid of the Claw";
+			case IconIDs.ICON_W3N4:	return "Night Elf Priestess of the Moon";
+			case IconIDs.ICON_W3N5:	return "Night Elf Furion Stormrage";
+			case IconIDs.ICON_W3U2:	return "Undead Ghoul";
+			case IconIDs.ICON_W3U3:	return "Undead Abomination";
+			case IconIDs.ICON_W3U4:	return "Undead Lich";
+			case IconIDs.ICON_W3U5:	return "Undead Tichondrius";
+			case IconIDs.ICON_W3R2:	return "Green Dragon Whelp";
+			case IconIDs.ICON_W3R3:	return "Blue Dragon";
+			case IconIDs.ICON_W3R4:	return "Red Dragon";
+			case IconIDs.ICON_W3R5:	return "Deathwing";
 			}
 			break;
 		// http://www.battle.net/war3/ladder/w3xp-ladder-info-laddericons.aspx
-		case ProductIDs.PRODUCT_W3XP:
+		case W3XP:
 			switch(icon) {
-			case ProductIDs.ICON_W3H1:
-			case ProductIDs.ICON_W3O1:
-			case ProductIDs.ICON_W3N1:
-			case ProductIDs.ICON_W3U1:
-			case ProductIDs.ICON_W3R1:
-			case ProductIDs.ICON_W3D1:	return "Orc Peon";
+			case IconIDs.ICON_W3H1:
+			case IconIDs.ICON_W3O1:
+			case IconIDs.ICON_W3N1:
+			case IconIDs.ICON_W3U1:
+			case IconIDs.ICON_W3R1:
+			case IconIDs.ICON_W3D1:	return "Orc Peon";
 			
-			case ProductIDs.ICON_W3H2:	return "Human Rifleman";
-			case ProductIDs.ICON_W3H3:	return "Human Sorceress";
-			case ProductIDs.ICON_W3H4:	return "Human Spellbreaker";
-			case ProductIDs.ICON_W3H5:	return "Human Blood Mage";
-			case ProductIDs.ICON_W3H6:	return "Human Jaina";
-			case ProductIDs.ICON_W3O2:	return "Orc Troll Headhunter";
-			case ProductIDs.ICON_W3O3:	return "Orc Shaman";
-			case ProductIDs.ICON_W3O4:	return "Orc Spirit Walker";
-			case ProductIDs.ICON_W3O5:	return "Orc Shadow Hunter";
-			case ProductIDs.ICON_W3O6:	return "Orc Rexxar";
-			case ProductIDs.ICON_W3N2:	return "Night Elf Huntress";
-			case ProductIDs.ICON_W3N3:	return "Night Elf Druid of the Talon";
-			case ProductIDs.ICON_W3N4:	return "Night Elf Dryad";
-			case ProductIDs.ICON_W3N5:	return "Night Elf Keeper of the Grove";
-			case ProductIDs.ICON_W3N6:	return "Night Elf Maiev";
-			case ProductIDs.ICON_W3U2:	return "Undead Crypt Fiend";
-			case ProductIDs.ICON_W3U3:	return "Undead Banshee";
-			case ProductIDs.ICON_W3U4:	return "Undead Destroyer";
-			case ProductIDs.ICON_W3U5:	return "Undead Crypt Lord";
-			case ProductIDs.ICON_W3U6:	return "Undead Sylvanas";
-			case ProductIDs.ICON_W3R2:	return "Myrmidon";
-			case ProductIDs.ICON_W3R3:	return "Siren";
-			case ProductIDs.ICON_W3R4:	return "Dragon Turtle";
-			case ProductIDs.ICON_W3R5:	return "Sea Witch";
-			case ProductIDs.ICON_W3R6:	return "Illidan";
-			case ProductIDs.ICON_W3D2:	return "Felguard";
-			case ProductIDs.ICON_W3D3:	return "Infernal";
-			case ProductIDs.ICON_W3D4:	return "Doomguard";
-			case ProductIDs.ICON_W3D5:	return "Pit Lord";
-			case ProductIDs.ICON_W3D6:	return "Archimonde";
+			case IconIDs.ICON_W3H2:	return "Human Rifleman";
+			case IconIDs.ICON_W3H3:	return "Human Sorceress";
+			case IconIDs.ICON_W3H4:	return "Human Spellbreaker";
+			case IconIDs.ICON_W3H5:	return "Human Blood Mage";
+			case IconIDs.ICON_W3H6:	return "Human Jaina";
+			case IconIDs.ICON_W3O2:	return "Orc Troll Headhunter";
+			case IconIDs.ICON_W3O3:	return "Orc Shaman";
+			case IconIDs.ICON_W3O4:	return "Orc Spirit Walker";
+			case IconIDs.ICON_W3O5:	return "Orc Shadow Hunter";
+			case IconIDs.ICON_W3O6:	return "Orc Rexxar";
+			case IconIDs.ICON_W3N2:	return "Night Elf Huntress";
+			case IconIDs.ICON_W3N3:	return "Night Elf Druid of the Talon";
+			case IconIDs.ICON_W3N4:	return "Night Elf Dryad";
+			case IconIDs.ICON_W3N5:	return "Night Elf Keeper of the Grove";
+			case IconIDs.ICON_W3N6:	return "Night Elf Maiev";
+			case IconIDs.ICON_W3U2:	return "Undead Crypt Fiend";
+			case IconIDs.ICON_W3U3:	return "Undead Banshee";
+			case IconIDs.ICON_W3U4:	return "Undead Destroyer";
+			case IconIDs.ICON_W3U5:	return "Undead Crypt Lord";
+			case IconIDs.ICON_W3U6:	return "Undead Sylvanas";
+			case IconIDs.ICON_W3R2:	return "Myrmidon";
+			case IconIDs.ICON_W3R3:	return "Siren";
+			case IconIDs.ICON_W3R4:	return "Dragon Turtle";
+			case IconIDs.ICON_W3R5:	return "Sea Witch";
+			case IconIDs.ICON_W3R6:	return "Illidan";
+			case IconIDs.ICON_W3D2:	return "Felguard";
+			case IconIDs.ICON_W3D3:	return "Infernal";
+			case IconIDs.ICON_W3D4:	return "Doomguard";
+			case IconIDs.ICON_W3D5:	return "Pit Lord";
+			case IconIDs.ICON_W3D6:	return "Archimonde";
 			}
 			break;
 		}
@@ -147,15 +148,15 @@ public class StatString {
 		
 		if(is == null) {
 			try {
-				product = HexDump.StringToDWord(statString[0]);
-				icon = product;
+				product = ProductIDs.fromDWord(HexDump.StringToDWord(statString[0]));
+				icon = product.getDword();
 			} catch(Exception e) {
 				prettyEnd = e.getMessage();
 				return;
 			}
 		} else {
 			try {
-				product = is.readDWord();
+				product = ProductIDs.fromDWord(is.readDWord());
 			} catch(EOFException e) {
 				prettyEnd = e.getMessage();
 				return;
@@ -163,54 +164,17 @@ public class StatString {
 		}
 
 		prettyStart = " using ";
-		switch(product) {
-		case ProductIDs.PRODUCT_DRTL:
-			prettyStart += "Diablo";
-			break;
-		case ProductIDs.PRODUCT_DSHR:
-			prettyStart += "Diablo Shareware";
-			break;
-		case ProductIDs.PRODUCT_STAR:
-			prettyStart += "Starcraft";
-			break;
-		case ProductIDs.PRODUCT_SEXP:
-			prettyStart += "Starcraft: Brood War";
-			break;
-		case ProductIDs.PRODUCT_JSTR:
-			prettyStart += "Starcraft Japanese";
-			break;
-		case ProductIDs.PRODUCT_SSHR:
-			prettyStart += "Starcraft Shareware";
-			break;
-		case ProductIDs.PRODUCT_W2BN:
-			prettyStart += "Warcraft II";
-			break;
-		case ProductIDs.PRODUCT_D2DV:
-			prettyStart += "Diablo II";
-			break;
-		case ProductIDs.PRODUCT_D2XP:
-			prettyStart += "Diablo II: Lord of Destruction";
-			break;
-		case ProductIDs.PRODUCT_WAR3:
-			prettyStart += "Warcraft III";
-			break;
-		case ProductIDs.PRODUCT_W3XP:
-			prettyStart += "Warcraft III: The Frozen Throne";
-			break;
-		default:
-			prettyStart += HexDump.DWordToPretty(product);
-			break;
-		}
+		prettyStart += product.toString();
 
 		if((is != null) || (statString.length > 1) || (statString[0].length() > 4)) {
 			switch(product) {
-			case ProductIDs.PRODUCT_STAR:
-			case ProductIDs.PRODUCT_SEXP:
-			case ProductIDs.PRODUCT_JSTR:
-			case ProductIDs.PRODUCT_W2BN:
-			case ProductIDs.PRODUCT_SSHR:
-			case ProductIDs.PRODUCT_DSHR:
-			case ProductIDs.PRODUCT_DRTL:
+			case STAR:
+			case SEXP:
+			case JSTR:
+			case W2BN:
+			case SSHR:
+			case DSHR:
+			case DRTL:
 				/*
 				Starcraft, Starcraft Japanese, Brood War, and Warcraft II
 				These products use the same format for their statstrings as Diablo. Most of these fields are usually 0 and their meanings are not known.
@@ -264,15 +228,15 @@ public class StatString {
 						prettyEnd += ", unknown7=" + unknown7;
 					if(unknown8 != 0)
 						prettyEnd += ", unknown8=" + unknown8;
-					if((icon != 0) && (icon != product))
+					if((icon != 0) && (icon != product.getDword()))
 						prettyEnd += ", " + HexDump.DWordToPretty(icon) + " icon";
 				} catch(Exception e) {
 					Out.exception(e);
 				}
 				break;
 	
-			case ProductIDs.PRODUCT_D2DV:
-			case ProductIDs.PRODUCT_D2XP:
+			case D2DV:
+			case D2XP:
 				byte[] data = null;
 				
 				if(is == null) {
@@ -388,8 +352,8 @@ public class StatString {
 				
 				break;
 				
-			case ProductIDs.PRODUCT_WAR3:
-			case ProductIDs.PRODUCT_W3XP:
+			case WAR3:
+			case W3XP:
 				if(is != null) {
 					if(is.readByte() == 0) // discard the space, or terminate the string
 						break;

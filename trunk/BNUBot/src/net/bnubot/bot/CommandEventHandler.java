@@ -23,7 +23,6 @@ import net.bnubot.bot.database.RankResultSet;
 import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.Profile;
-import net.bnubot.core.bncs.ProductIDs;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.commands.AccountDoesNotExistException;
 import net.bnubot.core.commands.CommandRunnable;
@@ -1364,7 +1363,7 @@ public class CommandEventHandler implements EventHandler {
 			}
 			
 			switch(user.getStatString().getProduct()) {
-			case ProductIDs.PRODUCT_STAR: {
+			case STAR: {
 				Integer newWins = user.getStatString().getWins();
 				if(newWins != null) {
 					Long oldWins = rsUser.getWinsSTAR();
@@ -1376,7 +1375,7 @@ public class CommandEventHandler implements EventHandler {
 				break;
 			}
 			
-			case ProductIDs.PRODUCT_SEXP: {
+			case SEXP: {
 				Integer newWins = user.getStatString().getWins();
 				if(newWins != null) {
 					Long oldWins = rsUser.getWinsSEXP();
@@ -1388,7 +1387,7 @@ public class CommandEventHandler implements EventHandler {
 				break;
 			}
 			
-			case ProductIDs.PRODUCT_W2BN: {
+			case W2BN: {
 				Integer newWins = user.getStatString().getWins();
 				if(newWins != null) {
 					Long oldWins = rsUser.getWinsW2BN();
@@ -1400,8 +1399,8 @@ public class CommandEventHandler implements EventHandler {
 				break;
 			}
 				
-			case ProductIDs.PRODUCT_D2DV:
-			case ProductIDs.PRODUCT_D2XP: {
+			case D2DV:
+			case D2XP: {
 				Integer newLevel = user.getStatString().getCharLevel();
 				if(newLevel != null) {
 					Long oldLevel = rsUser.getLevelD2();
@@ -1413,8 +1412,8 @@ public class CommandEventHandler implements EventHandler {
 				break;
 			}
 
-			case ProductIDs.PRODUCT_WAR3:
-			case ProductIDs.PRODUCT_W3XP: {
+			case WAR3:
+			case W3XP: {
 				Integer newLevel = user.getStatString().getLevel();
 				if(newLevel != null) {
 					Long oldLevel = rsUser.getLevelW3();
@@ -1518,19 +1517,19 @@ public class CommandEventHandler implements EventHandler {
 					} else {
 						String msg = "You need ";
 						switch(user.getStatString().getProduct()) {
-						case ProductIDs.PRODUCT_STAR:
-						case ProductIDs.PRODUCT_SEXP:
-						case ProductIDs.PRODUCT_W2BN:
+						case STAR:
+						case SEXP:
+						case W2BN:
 							msg += Long.toString(apWins - wins[0]) + " more win";
 							if(apWins - wins[0] > 1)
 								msg += "s";
 							break;
-						case ProductIDs.PRODUCT_D2DV:
-						case ProductIDs.PRODUCT_D2XP:
+						case D2DV:
+						case D2XP:
 							msg += "to reach Diablo 2 level " + apD2Level;
 							break;
-						case ProductIDs.PRODUCT_WAR3:
-						case ProductIDs.PRODUCT_W3XP:
+						case WAR3:
+						case W3XP:
 							msg += "to reach Warcraft 3 level " + apW3Level;
 							break;
 						default:

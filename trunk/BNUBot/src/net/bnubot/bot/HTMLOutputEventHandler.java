@@ -133,7 +133,7 @@ public class HTMLOutputEventHandler implements EventHandler {
 
 						for(BNetUser ui : users) {
 							StatString ss = ui.getStatString();
-							String product = getIcon(ss.getProduct(), ss.getIcon(), ui.getFlags());
+							String product = getIcon(ss.getProduct().getDword(), ss.getIcon(), ui.getFlags());
 							
 							fos.write("<tr>".getBytes());
 							fos.write(("<td><img src=\"images/" + product + ".jpg\"></td>").getBytes());

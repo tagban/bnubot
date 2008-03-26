@@ -26,10 +26,9 @@ import net.bnubot.bot.gui.components.ConfigCheckBox;
 import net.bnubot.bot.gui.components.ConfigComboBox;
 import net.bnubot.bot.gui.components.ConfigFactory;
 import net.bnubot.bot.gui.components.ConfigTextArea;
+import net.bnubot.core.bncs.ProductIDs;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.settings.ConnectionSettings.ConnectionType;
-
-import org.jbls.util.Constants;
 
 public class ConfigurationFrame extends JDialog {
 	private static final long serialVersionUID = 1308177934480442149L;
@@ -100,7 +99,7 @@ public class ConfigurationFrame extends JDialog {
 			txtUsername = ConfigFactory.makeText("Username", cs.username, boxSettings);
 			txtPassword = ConfigFactory.makePass("Password", cs.password, boxSettings);
 
-			cmbProduct = ConfigFactory.makeCombo("Product", Constants.prodsDisplay, false, boxSettings);
+			cmbProduct = ConfigFactory.makeCombo("Product", ProductIDs.values(), false, boxSettings);
 			cmbProduct.addItemListener(new ItemListener() {
 				public void itemStateChanged(ItemEvent e) {
 					setVisibleFields();
@@ -116,17 +115,17 @@ public class ConfigurationFrame extends JDialog {
 			cmbConnectionType = ConfigFactory.makeCombo("Connection Type", ConnectionType.values(), false, boxSettings);
 			
 			try {
-				cmbProduct.setSelectedIndex(cs.product - 1);
+				cmbProduct.setSelectedItem(cs.product);
 				cmbCDKey.setSelectedItem(cs.cdkey);
 				cmbCDKey2.setSelectedItem(cs.cdkey2);
 			} catch(Exception e) {}
 
 			CDKeys = null;
-			switch(cmbProduct.getSelectedIndex() + 1) {
-			case ConnectionSettings.PRODUCT_LORDOFDESTRUCTION:
+			switch((ProductIDs)cmbProduct.getSelectedItem()) {
+			case D2XP:
 				CDKeys = KeyManager.getKeys(KeyManager.PRODUCT_D2XP);
 				break;
-			case ConnectionSettings.PRODUCT_THEFROZENTHRONE:
+			case W3XP:
 				CDKeys = KeyManager.getKeys(KeyManager.PRODUCT_W3XP);
 				break;
 			}
@@ -264,7 +263,7 @@ public class ConfigurationFrame extends JDialog {
 		cs.username = txtUsername.getText();
 		cs.password = new String(txtPassword.getPassword());
 		cs.enablePlug = chkPlug.isSelected();
-		cs.product = (byte)(cmbProduct.getSelectedIndex() + 1);
+		cs.product = (ProductIDs)cmbProduct.getSelectedItem();
 		CDKey k = (CDKey)cmbCDKey.getSelectedItem();
 		CDKey k2 = (CDKey)cmbCDKey2.getSelectedItem();
 
@@ -293,7 +292,7 @@ public class ConfigurationFrame extends JDialog {
 		txtUsername.setText(cs.username);
 		txtPassword.setText(cs.password);
 		chkPlug.setSelected(cs.enablePlug);
-		cmbProduct.setSelectedIndex(cs.product - 1);
+		cmbProduct.setSelectedItem(cs.product);
 		cmbCDKey.setSelectedItem(cs.cdkey);
 		cmbCDKey2.setSelectedItem(cs.cdkey2);
 		
@@ -347,35 +346,36 @@ public class ConfigurationFrame extends JDialog {
 		cmbServer.setSelectedItem(cs.server);
 		
 		cmbProduct.setVisible(true);
+		ProductIDs cProd = (ProductIDs)cmbProduct.getSelectedItem();
 		
 		int prod = KeyManager.PRODUCT_ALLNORMAL;
-		switch(cmbProduct.getSelectedIndex() + 1) {
-		case ConnectionSettings.PRODUCT_STARCRAFT:
-		case ConnectionSettings.PRODUCT_BROODWAR:
-		case ConnectionSettings.PRODUCT_JAPANSTARCRAFT:
+		switch(cProd) {
+		case STAR:
+		case SEXP:
+		case JSTR:
 			prod = KeyManager.PRODUCT_STAR;
 			break;
-		case ConnectionSettings.PRODUCT_DIABLO2:
-		case ConnectionSettings.PRODUCT_LORDOFDESTRUCTION:
+		case D2DV:
+		case D2XP:
 			prod = KeyManager.PRODUCT_D2DV;
 			break;
-		case ConnectionSettings.PRODUCT_WARCRAFT3:
-		case ConnectionSettings.PRODUCT_THEFROZENTHRONE:
+		case WAR3:
+		case W3XP:
 			prod = KeyManager.PRODUCT_WAR3;
 			break;
-		case ConnectionSettings.PRODUCT_WAR2BNE:
+		case W2BN:
 			prod = KeyManager.PRODUCT_W2BN;
 			break;
 		}
 		
-		switch(cmbProduct.getSelectedIndex() + 1) {
-		case ConnectionSettings.PRODUCT_DIABLOSHAREWARE:
-		case ConnectionSettings.PRODUCT_DIABLO:
-		case ConnectionSettings.PRODUCT_STARCRAFTSHAREWARE:
-		case ConnectionSettings.PRODUCT_JAPANSTARCRAFT:
-		case ConnectionSettings.PRODUCT_STARCRAFT:
-		case ConnectionSettings.PRODUCT_BROODWAR:
-		case ConnectionSettings.PRODUCT_WAR2BNE:
+		switch(cProd) {
+		case DSHR:
+		case DRTL:
+		case SSHR:
+		case JSTR:
+		case STAR:
+		case SEXP:
+		case W2BN:
 			chkPlug.setVisible(true);
 			break;
 		default:
@@ -384,30 +384,30 @@ public class ConfigurationFrame extends JDialog {
 		}
 
 		CDKey[] CDKeys2 = null;
-		switch(cmbProduct.getSelectedIndex() + 1) {
-		case ConnectionSettings.PRODUCT_DIABLO:
-		case ConnectionSettings.PRODUCT_DIABLOSHAREWARE:
-		case ConnectionSettings.PRODUCT_STARCRAFTSHAREWARE:
+		switch(cProd) {
+		case DRTL:
+		case DSHR:
+		case SSHR:
 			cmbCDKey.setVisible(false);
 			cmbCDKey2.setVisible(false);
 			break;
-		case ConnectionSettings.PRODUCT_JAPANSTARCRAFT:
-		case ConnectionSettings.PRODUCT_STARCRAFT:
-		case ConnectionSettings.PRODUCT_BROODWAR:
-		case ConnectionSettings.PRODUCT_DIABLO2:
-		case ConnectionSettings.PRODUCT_WARCRAFT3:
-		case ConnectionSettings.PRODUCT_WAR2BNE:
+		case JSTR:
+		case STAR:
+		case SEXP:
+		case D2DV:
+		case WAR3:
+		case W2BN:
 			cmbCDKey.setVisible(true);
 			cmbCDKey2.setVisible(false);
 			break;
-		case ConnectionSettings.PRODUCT_LORDOFDESTRUCTION:
-		case ConnectionSettings.PRODUCT_THEFROZENTHRONE:
+		case D2XP:
+		case W3XP:
 			cmbCDKey.setVisible(true);
 			cmbCDKey2.setVisible(true);
 			
-			if((cmbProduct.getSelectedIndex() + 1) == ConnectionSettings.PRODUCT_LORDOFDESTRUCTION)
+			if(cmbProduct.getSelectedItem() == ProductIDs.D2XP)
 				CDKeys2 = KeyManager.getKeys(KeyManager.PRODUCT_D2XP);
-			if((cmbProduct.getSelectedIndex() + 1) == ConnectionSettings.PRODUCT_THEFROZENTHRONE)
+			if(cmbProduct.getSelectedItem() == ProductIDs.W3XP)
 				CDKeys2 = KeyManager.getKeys(KeyManager.PRODUCT_W3XP);
 			break;
 		}

@@ -5,22 +5,22 @@
 
 package net.bnubot.junit.util;
 
+import junit.framework.TestCase;
 import net.bnubot.core.bncs.ProductIDs;
 import net.bnubot.util.HexDump;
-import junit.framework.TestCase;
 
 public class HexDumpTest extends TestCase {
 
 	public void testDWordToPretty() {
-		assertEquals("STAR", HexDump.DWordToPretty(ProductIDs.PRODUCT_STAR));
-		assertEquals("W2BN", HexDump.DWordToPretty(ProductIDs.PRODUCT_W2BN));
-		assertEquals("W3XP", HexDump.DWordToPretty(ProductIDs.PRODUCT_W3XP));
+		assertEquals("STAR", HexDump.DWordToPretty(ProductIDs.STAR.getDword()));
+		assertEquals("W2BN", HexDump.DWordToPretty(ProductIDs.W2BN.getDword()));
+		assertEquals("W3XP", HexDump.DWordToPretty(ProductIDs.W3XP.getDword()));
 	}
 	
 	public void testPrettyToDWord() {
-		assertEquals(ProductIDs.PRODUCT_STAR, HexDump.PrettyToDWord("STAR"));
-		assertEquals(ProductIDs.PRODUCT_W2BN, HexDump.PrettyToDWord("W2BN"));
-		assertEquals(ProductIDs.PRODUCT_W3XP, HexDump.PrettyToDWord("W3XP"));
+		assertEquals(ProductIDs.STAR.getDword(), HexDump.PrettyToDWord("STAR"));
+		assertEquals(ProductIDs.W2BN.getDword(), HexDump.PrettyToDWord("W2BN"));
+		assertEquals(ProductIDs.W3XP.getDword(), HexDump.PrettyToDWord("W3XP"));
 	}
 	
 	public void testHexDump() {
