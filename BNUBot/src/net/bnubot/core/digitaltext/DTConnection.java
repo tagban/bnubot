@@ -506,8 +506,8 @@ public class DTConnection extends Connection {
 		t.complete();
 	}
 
-	public int getProductID() {
-		return ProductIDs.PRODUCT_CHAT;
+	public ProductIDs getProductID() {
+		return ProductIDs.CHAT;
 	}
 	
 	public void sendClanInvitation(Object cookie, String user) throws Exception { throw new UnsupportedFeatureException(null); }

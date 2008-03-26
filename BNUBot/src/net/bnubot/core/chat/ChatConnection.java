@@ -106,8 +106,8 @@ public class ChatConnection extends Connection {
 	}
 
 	@Override
-	public int getProductID() {
-		return ProductIDs.PRODUCT_CHAT;
+	public ProductIDs getProductID() {
+		return ProductIDs.CHAT;
 	}
 
 	@Override

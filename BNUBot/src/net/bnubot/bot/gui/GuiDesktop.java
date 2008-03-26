@@ -47,6 +47,7 @@ import net.bnubot.bot.gui.notifications.Growl;
 import net.bnubot.bot.gui.settings.GlobalConfigurationFrame;
 import net.bnubot.bot.gui.settings.OperationCancelledException;
 import net.bnubot.core.Profile;
+import net.bnubot.core.bncs.ProductIDs;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.settings.Settings;
 import net.bnubot.settings.GlobalSettings.TrayIconMode;
@@ -429,14 +430,14 @@ public class GuiDesktop extends JFrame {
 			tray.setToolTip(title);
 	}
 	
-	public static void setTitle(GuiEventHandler geh, int product) {
+	public static void setTitle(GuiEventHandler geh, ProductIDs product) {
 		instance.setTitle();
 		
 		Icon icon = null;
 		BNetIcon[] icons_bni = IconsDotBniReader.getIcons();
-		if(icons_bni != null) {
+		if((icons_bni != null) && (product != null)) {
 			for(BNetIcon element : icons_bni) {
-				if(element.useFor(0, product)) {
+				if(element.useFor(0, product.getDword())) {
 					icon = element.getIcon();
 					break;
 				}

@@ -13,6 +13,7 @@ import javax.xml.ws.Holder;
 import net.bnubot.bot.gui.WhatsNewWindow;
 import net.bnubot.bot.gui.icons.BNetIcon;
 import net.bnubot.bot.gui.icons.IconsDotBniReader;
+import net.bnubot.core.bncs.ProductIDs;
 import net.bnubot.settings.Settings;
 import net.bnubot.vercheck.CurrentVersion;
 
@@ -110,14 +111,17 @@ public class SWTDesktop extends Thread {
 			}});
 	}
 	
-	public static void setTitle(final SWTEventHandler seh, int product) {
+	public static void setTitle(final SWTEventHandler seh, ProductIDs product) {
 		instance.setTitle();
 		
 		Image img = null;
-		for(BNetIcon element : IconsDotBniReader.getIcons()) {
-			if(element.useFor(0, product)) {
-				img = element.getImage();
-				break;
+		BNetIcon[] icons_bni = IconsDotBniReader.getIcons();
+		if((icons_bni != null) && (product != null)) {
+			for(BNetIcon element : IconsDotBniReader.getIcons()) {
+				if(element.useFor(0, product.getDword())) {
+					img = element.getImage();
+					break;
+				}
 			}
 		}
 		
