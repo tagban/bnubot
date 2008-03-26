@@ -86,6 +86,8 @@ public class TriviaEventHandler implements EventHandler {
 	
 	private void reloadTrivia(Connection source) {
 		File f = new File("trivia");
+		if(!f.exists())
+			f.mkdir();
 		if(f.isDirectory())
 			for(String fname : f.list())
 				readFile(f.getPath() + System.getProperty("file.separator") + fname);
