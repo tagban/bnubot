@@ -51,7 +51,7 @@ public class CommandEventHandler implements EventHandler {
 	
 	public CommandEventHandler() {
 		if(d == null)
-			throw new AssertionError("Can not enable commands without a database!");
+			throw new IllegalStateException("Can not enable commands without a database!");
 	}
 
 	public void initialize(Connection source) {}
