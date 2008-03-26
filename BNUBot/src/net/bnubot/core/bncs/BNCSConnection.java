@@ -1024,6 +1024,10 @@ public class BNCSConnection extends Connection {
 		if(!cs.enablePlug)
 			// Disable the plug by sending SID_UDPPINGRESPONE
 			switch(productID) {
+			case ProductIDs.PRODUCT_DSHR:
+			case ProductIDs.PRODUCT_DRTL:
+			case ProductIDs.PRODUCT_SSHR:
+			case ProductIDs.PRODUCT_JSTR:
 			case ProductIDs.PRODUCT_STAR:
 			case ProductIDs.PRODUCT_SEXP:
 			case ProductIDs.PRODUCT_W2BN:
