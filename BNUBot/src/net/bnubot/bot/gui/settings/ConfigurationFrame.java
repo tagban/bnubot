@@ -100,6 +100,7 @@ public class ConfigurationFrame extends JDialog {
 			txtPassword = ConfigFactory.makePass("Password", cs.password, boxSettings);
 
 			cmbProduct = ConfigFactory.makeCombo("Product", ProductIDs.values(), false, boxSettings);
+			cmbProduct.removeItem(ProductIDs.CHAT);
 			cmbProduct.addItemListener(new ItemListener() {
 				public void itemStateChanged(ItemEvent e) {
 					setVisibleFields();
