@@ -6,6 +6,7 @@
 package net.bnubot.core.bncs;
 
 public enum ProductIDs {
+	CHAT(0x43484154, "Chat"),
 	STAR(0x53544152, "Starcraft"), 
 	SEXP(0x53455850, "Starcraft: Brood War"),
 	W2BN(0x5732424E, "Warcraft II"),
@@ -16,8 +17,7 @@ public enum ProductIDs {
 	W3XP(0x57335850, "Warcraft III: The Frozen Throne"),
 	DRTL(0x4452544C, "Diablo"),
 	DSHR(0x44534852, "Diablo Shareware"),
-	SSHR(0x53534852, "Starcraft Shareware"),
-	CHAT(0x43484154, "Chat");
+	SSHR(0x53534852, "Starcraft Shareware");
 	
 	int dword;
 	String name;

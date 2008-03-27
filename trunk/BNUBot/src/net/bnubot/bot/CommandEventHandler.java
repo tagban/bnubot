@@ -1455,21 +1455,21 @@ public class CommandEventHandler implements EventHandler {
 				}
 			}
 
-			//check for autopromotions
 			long rank = rsAccount.getAccess();
 			long id = rsAccount.getId();
 			RankResultSet rsRank = d.getRank(rank);
 			if(rsRank.next()) {
+				// Greetings
 				String greeting = rsRank.getGreeting();
 				if(greeting != null) {
 					greeting = String.format(greeting, user.toString(), user.getPing(), user.getFullAccountName());
 					source.queueChatHelper(greeting, false);
 				}
 
-				//Autopromotions:
+				// Autopromotions
 				Long apDays = rsRank.getApDays();
 				Timestamp ts = rsAccount.getLastRankChange();
-				//Check that they meet the days requirement
+				// Check that they meet the days requirement
 				apBlock: if((apDays != null) && (apDays != 0)) {
 					if(ts != null) {
 						double timeElapsed = System.currentTimeMillis() - ts.getTime();
