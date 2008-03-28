@@ -55,7 +55,7 @@
 			<entry key="VER_SVN_REVISION" type="string" value="${revision}"/>
 			<entry key="VER_RELEASE" type="int" operation="+" default="0"/>
 			<!-- Convert seconds to ms -->
-			<entry key="BUILD_DATE" type="string" value="${TODAY}000" />
+			<entry key="BUILD_DATE" type="string" value="${TODAY}000"/>
 		</propertyfile>
 		
 		<property file="${vf.src}"/>
@@ -74,6 +74,7 @@
 		</jar>
 		<propertyfile file="${release.dir}/LATEST">
 			<entry key="LATEST" type="string" value="${RELEASE_FILE}"/>
+			<entry key="BUILT" type="string" value="${TODAY}000"/>
 		</propertyfile>
 	</target>
 </project>
