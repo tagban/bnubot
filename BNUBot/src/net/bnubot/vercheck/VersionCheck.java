@@ -172,6 +172,7 @@ public class VersionCheck {
 						// Swap the files
 						renameFile(thisJar, new File(parentFolder + CurrentVersion.version().toFileName()));
 						renameFile(to, thisJar);
+						to.delete();
 						
 						// Show complete notification
 						JOptionPane.showMessageDialog(null, "Update complete. Please restart BNU-Bot.");
