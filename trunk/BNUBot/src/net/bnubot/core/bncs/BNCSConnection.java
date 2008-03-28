@@ -426,9 +426,8 @@ public class BNCSConnection extends Connection {
                 		bnlsOut.writeQWord(MPQFileTime);
                 		bnlsOut.writeNTString(MPQFileName);
                 		bnlsOut.writeNTString(ValueStr);
-                		bnlsOut.SendPacket(bnlsSocket.getOutputStream());
+                		bnlsOut.SendPacket(bnlsOutputStream);
 
-                		InputStream bnlsInputStream = bnlsSocket.getInputStream();
                 		long startTime = System.currentTimeMillis();
                 		Task bnlsTask = createTask("BNLS_VERSIONCHECKEX2", 5000, "ms");
                 		while(bnlsInputStream.available() < 3) {
