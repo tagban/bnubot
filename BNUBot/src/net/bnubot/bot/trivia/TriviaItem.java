@@ -14,6 +14,7 @@ public class TriviaItem {
 	private String category;
 	private String question;
 	private String[] answers;
+	private String[] answersAlphaNumeric;
 	private String hint0;
 	private String hint1;
 	private String hint2;
@@ -106,8 +107,9 @@ public class TriviaItem {
 				throw new IllegalArgumentException(line);
 		}
 		
+		this.answersAlphaNumeric = new String[this.answers.length];
 		for(int i = 0; i < this.answers.length; i++)
-			this.answers[i] = HexDump.getAlphaNumerics(this.answers[i]);
+			this.answersAlphaNumeric[i] = HexDump.getAlphaNumerics(this.answers[i]);
 		
 		makeHints();
 	}
@@ -122,6 +124,10 @@ public class TriviaItem {
 	
 	public String[] getAnswers() {
 		return answers;
+	}
+	
+	public String[] getAnswersAlphaNumeric() {
+		return answersAlphaNumeric;
 	}
 
 	public String getHint0() {

@@ -29,7 +29,7 @@ import net.bnubot.util.Out;
 public class TriviaEventHandler implements EventHandler {
 	private boolean triviaEnabled = false;
 	private final List<TriviaItem> trivia = new LinkedList<TriviaItem>();
-	private String triviaAnswers[] = null;
+	private TriviaItem triviaCurrent = null;
 	private BNetUser answerUser = null;
 	private String answerUsed = null;
 	private Database d = Database.getInstance();
@@ -166,20 +166,18 @@ public class TriviaEventHandler implements EventHandler {
 						}
 					}
 					
-					TriviaItem ti = trivia.remove((int)(Math.random() * trivia.size()));
+					triviaCurrent = trivia.remove((int)(Math.random() * trivia.size()));
+					answerUser = null;
 					
 					if(true) {
 						String q = "/me";
-						if(ti.getCategory() != null)
-							q += " - Category: " + ti.getCategory();
-						q += " - Question: " + ti.getQuestion();
-						q += " - Hint: " + ti.getHint0();
+						if(triviaCurrent.getCategory() != null)
+							q += " - Category: " + triviaCurrent.getCategory();
+						q += " - Question: " + triviaCurrent.getQuestion();
+						q += " - Hint: " + triviaCurrent.getHint0();
 						source.queueChatHelper(q, false);
 						//c.recieveInfo("Answer: " + ti.getAnswer());
 					}
-					
-					triviaAnswers = ti.getAnswers();
-					answerUser = null;
 					
 					long timeQuestionAsked = System.currentTimeMillis();
 					long timeElapsed = 0;
@@ -192,12 +190,12 @@ public class TriviaEventHandler implements EventHandler {
 						timeElapsed /= 1000;
 
 						if((timeElapsed > 10) && (numHints < 1)) {
-							source.queueChatHelper("/me - 20 seconds left! Hint: " + ti.getHint1(), false);
+							source.queueChatHelper("/me - 20 seconds left! Hint: " + triviaCurrent.getHint1(), false);
 							numHints++;
 						}
 						
 						if((timeElapsed > 20) && (numHints < 2)) {
-							source.queueChatHelper("/me - 10 seconds left! Hint: " + ti.getHint2(), false);
+							source.queueChatHelper("/me - 10 seconds left! Hint: " + triviaCurrent.getHint2(), false);
 							numHints++;
 						}
 						
@@ -226,11 +224,14 @@ public class TriviaEventHandler implements EventHandler {
 							Out.exception(e);
 						}
 
-						if(triviaAnswers.length > 1) {
+						String[] triviaAnswersAN = triviaCurrent.getAnswersAlphaNumeric();
+						if(triviaAnswersAN.length > 1) {
 							extra += " Other acceptable answers were: ";
 							boolean first = true;
-							for(int i = 0; i < triviaAnswers.length; i++) {
-								if(!triviaAnswers[i].equals(answerUsed)) {
+							String answerUsedAN = HexDump.getAlphaNumerics(answerUsed);
+							String[] triviaAnswers = triviaCurrent.getAnswers();
+							for(int i = 0; i < triviaAnswersAN.length; i++) {
+								if(!triviaAnswersAN[i].equals(answerUsedAN)) {
 									if(first)
 										first = false;
 									else
@@ -244,6 +245,7 @@ public class TriviaEventHandler implements EventHandler {
 						
 						showLeaderBoard(source);
 					} else {
+						String[] triviaAnswers = triviaCurrent.getAnswers();
 						String correct = " The correct answer was \"" + triviaAnswers[0] + "\"";
 						for(int i = 1; i < triviaAnswers.length; i++)
 							correct += ", or \"" + triviaAnswers[i] + "\"";
@@ -310,14 +312,14 @@ public class TriviaEventHandler implements EventHandler {
 		} else {
 			if("trivia off".equals(text)) {
 				triviaOff();
-			} else {
-				if(triviaAnswers != null) {
-					text = HexDump.getAlphaNumerics(text);
-					for(String triviaAnswer : triviaAnswers) {
-						if(triviaAnswer.compareToIgnoreCase(text) == 0) {
-							answerUser = user;
-							answerUsed = triviaAnswer;
-						}
+			} else if(triviaCurrent != null) {
+				String textAN = HexDump.getAlphaNumerics(text);
+				String[] triviaAnswers = triviaCurrent.getAnswers();
+				String[] triviaAnswersAN = triviaCurrent.getAnswersAlphaNumeric();
+				for(int i = 0; i < triviaAnswers.length; i++) {
+					if(triviaAnswersAN[i].equalsIgnoreCase(textAN)) {
+						answerUser = user;
+						answerUsed = triviaAnswers[i];
 					}
 				}
 			}
