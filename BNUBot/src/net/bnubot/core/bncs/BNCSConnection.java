@@ -227,6 +227,30 @@ public class BNCSConnection extends Connection {
 	}
 
 	/**
+	 * Initialize the connection, send game id
+	 * @throws Exception
+	 */
+	private void initializeBNCS(Task connect) throws Exception {
+		nlsRevision = null;
+		warden = null;
+		productID = cs.product;
+		
+		// Set up BNCS
+		connect.updateProgress("Connecting to Battle.net");
+		InetAddress address = MirrorSelector.getClosestMirror(cs.server, cs.port);
+		recieveInfo("Connecting to " + address + ":" + cs.port + ".");
+		socket = new Socket(address, cs.port);
+		socket.setKeepAlive(true);
+		bncsInputStream = socket.getInputStream();
+		bncsOutputStream = new DataOutputStream(socket.getOutputStream());
+		
+		// Game
+		bncsOutputStream.writeByte(0x01);
+		connectionState = ConnectionState.CONNECTED;
+		connect.updateProgress("Connected");
+	}
+
+	/**
 	 * Send the initial set of packets
 	 * @throws Exception
 	 */
@@ -238,7 +262,7 @@ public class BNCSConnection extends Connection {
 		String prodLang = loc.getLanguage() + loc.getCountry();
 		int tzBias = TimeZone.getDefault().getOffset(System.currentTimeMillis()) / -60000;
 		
-		switch(cs.product) {
+		switch(productID) {
 		case STAR:
 		case SEXP:
 		case D2DV:
@@ -268,7 +292,7 @@ public class BNCSConnection extends Connection {
 		case JSTR:
 		case W2BN: {
 			// OLS
-			if(cs.product == ProductIDs.SSHR) {
+			if(productID == ProductIDs.SSHR) {
 				p = new BNCSPacket(BNCSPacketId.SID_CLIENTID);
 				p.writeDWord(0);	// Registration Version
 				p.writeDWord(0);	// Registration Authority
@@ -318,30 +342,6 @@ public class BNCSConnection extends Connection {
 			disconnect(false);
 			break;
 		}
-	}
-
-	/**
-	 * Initialize the connection, send game id
-	 * @throws Exception
-	 */
-	private void initializeBNCS(Task connect) throws Exception {
-		nlsRevision = null;
-		warden = null;
-		productID = cs.product;
-		
-		// Set up BNCS
-		connect.updateProgress("Connecting to Battle.net");
-		InetAddress address = MirrorSelector.getClosestMirror(cs.server, cs.port);
-		recieveInfo("Connecting to " + address + ":" + cs.port + ".");
-		socket = new Socket(address, cs.port);
-		socket.setKeepAlive(true);
-		bncsInputStream = socket.getInputStream();
-		bncsOutputStream = new DataOutputStream(socket.getOutputStream());
-		
-		// Game
-		bncsOutputStream.writeByte(0x01);
-		connectionState = ConnectionState.CONNECTED;
-		connect.updateProgress("Connected");
 	}
 	
 	/**
@@ -399,9 +399,9 @@ public class BNCSConnection extends Connection {
 					byte keyHash2[] = null;
 					if(nlsRevision != null) {
 						keyHash = HashMain.hashKey(clientToken, serverToken, cs.cdkey).getBuffer();
-						if(cs.product == ProductIDs.D2XP)
+						if(productID == ProductIDs.D2XP)
 							keyHash2 = HashMain.hashKey(clientToken, serverToken, cs.cdkey2).getBuffer();
-						if(cs.product == ProductIDs.W3XP)
+						if(productID == ProductIDs.W3XP)
 							keyHash2 = HashMain.hashKey(clientToken, serverToken, cs.cdkey2).getBuffer();
 						
 						try {
@@ -420,7 +420,7 @@ public class BNCSConnection extends Connection {
                 	
                 	try {
                 		BNLSPacket bnlsOut = new BNLSPacket(BNLSPacketId.BNLS_VERSIONCHECKEX2);
-                		bnlsOut.writeDWord(cs.product.getBnls());
+                		bnlsOut.writeDWord(productID.getBnls());
                 		bnlsOut.writeDWord(0);	// Flags
                 		bnlsOut.writeDWord(0);	// Cookie
                 		bnlsOut.writeQWord(MPQFileTime);
@@ -984,7 +984,7 @@ public class BNCSConnection extends Connection {
 	private void sendKeyOrPassword() throws Exception {
 		BNCSPacket p;
 		
-		switch(cs.product) {
+		switch(productID) {
 		case JSTR:
 			p = new BNCSPacket(BNCSPacketId.SID_CDKEY);
 			p.writeDWord(0); //Spawn
