@@ -385,7 +385,7 @@ public abstract class Connection extends Thread {
 			lastChatTime = System.currentTimeMillis() + increaseDelay(text.length());
 	}
 
-	public String cleanText(String text, boolean allowCommands) {
+	public String cleanText(String text, boolean enableKeywords) {
 		//Remove all chars under 0x20
 		byte[] data = text.getBytes();
 		text = "";
@@ -395,7 +395,7 @@ public abstract class Connection extends Thread {
 		}
 
 		boolean somethingDone = true;
-		while(somethingDone && allowCommands) {
+		while(somethingDone && enableKeywords) {
 			somethingDone = false;
 
 			if(text.indexOf('%') == -1)
@@ -453,6 +453,10 @@ public abstract class Connection extends Thread {
 	}
 
 	public void queueChatHelper(String text, boolean allowCommands) {
+		queueChatHelper(text, allowCommands, true);
+	}
+	
+	public void queueChatHelper(String text, boolean allowCommands, boolean enableKeywords) {
 		if(text == null)
 			return;
 		if(text.length() == 0)
@@ -510,7 +514,7 @@ public abstract class Connection extends Thread {
 					break;
 				case 'q':
 					if(command[0].equals("quote")) {
-						queueChatHelper(command[1], false);
+						queueChatHelper(command[1], false, false);
 						return;
 					}
 					break;
@@ -533,7 +537,7 @@ public abstract class Connection extends Thread {
 		try {
 			text = new String(text.getBytes(), "UTF-8");
 		} catch (UnsupportedEncodingException e) {}
-		text = cleanText(text, allowCommands);
+		text = cleanText(text, enableKeywords);
 
 		if(text.length() == 0)
 			return;
