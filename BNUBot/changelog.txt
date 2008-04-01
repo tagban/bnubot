@@ -1,5 +1,5 @@
-2.0.4.2 ($Revision$) $Date$:
-* Allow use of %keywords% and commands in anti-idles and with /say
+2.0.4.2 (r1237) 2008-04-01
+* Allow use of %keywords% and commands in anti-idles and with /say (Cause of issue 61)
 * Nightly builds are now an update type! They are less stable than Alpha
 * Removed the size restraint on the "What's New" window
 * Added some error handling for conditions where BNI downloads fail
