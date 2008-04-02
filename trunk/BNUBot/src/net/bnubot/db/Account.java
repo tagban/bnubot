@@ -19,7 +19,7 @@ public class Account extends _Account {
 	private static final long serialVersionUID = -8256413482643908852L;
 
 	public static Account get(BNetUser user) {
-		Bnlogin bnl = Bnlogin.get(user);
+		BNLogin bnl = BNLogin.get(user);
 		if(bnl == null)
 			return null;
 		return bnl.getAccount();

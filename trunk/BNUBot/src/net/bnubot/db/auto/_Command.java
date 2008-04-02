@@ -22,10 +22,10 @@ public abstract class _Command extends CayenneDataObject {
 
     public static final String ID_PK_COLUMN = "id";
 
-    public void setAccess(Integer access) {
-        writeProperty("access", access);
+    public void setAccess(int access) {
+        writeProperty("access", new Integer(access));
     }
-    public Integer getAccess() {
+    public int getAccess() {
         return (Integer)readProperty("access");
     }
 

@@ -39,8 +39,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import net.bnubot.DatabaseContext;
-import net.bnubot.bot.gui.database.DatabaseAccountEditor;
-import net.bnubot.bot.gui.database.DatabaseRankEditor;
 import net.bnubot.bot.gui.icons.BNetIcon;
 import net.bnubot.bot.gui.icons.IconsDotBniReader;
 import net.bnubot.bot.gui.notifications.Growl;
@@ -48,14 +46,14 @@ import net.bnubot.bot.gui.settings.GlobalConfigurationFrame;
 import net.bnubot.bot.gui.settings.OperationCancelledException;
 import net.bnubot.core.Profile;
 import net.bnubot.core.bncs.ProductIDs;
+import net.bnubot.db.Account;
+import net.bnubot.db.Rank;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.settings.Settings;
 import net.bnubot.settings.GlobalSettings.TrayIconMode;
 import net.bnubot.util.Out;
 import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.VersionCheck;
-
-import org.apache.cayenne.access.DataContext;
 
 public class GuiDesktop extends JFrame {
 	private static final long serialVersionUID = -7144648179041514994L;
@@ -224,9 +222,8 @@ public class GuiDesktop extends JFrame {
 				JMenuItem menuItem = new JMenuItem("Rank editor");
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent event) {
-						DataContext d = DatabaseContext.getContext();
-						if(d != null)
-							new DatabaseRankEditor(d);
+						if(DatabaseContext.getContext() != null)
+							new GenericDatabaseEditor<Rank>();
 						else
 							Out.error(GuiDesktop.class, "There is no database initialized.");
 					} });
@@ -235,9 +232,8 @@ public class GuiDesktop extends JFrame {
 				menuItem = new JMenuItem("Account editor");
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent event) {
-						DataContext d = DatabaseContext.getContext();
-						if(d != null)
-							new DatabaseAccountEditor(d);
+						if(DatabaseContext.getContext() != null)
+							new GenericDatabaseEditor<Account>();
 						else
 							Out.error(GuiDesktop.class, "There is no database initialized.");
 					} });
