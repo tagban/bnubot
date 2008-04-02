@@ -10,21 +10,21 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
-import net.bnubot.bot.database.AccountResultSet;
-import net.bnubot.bot.database.Database;
+import net.bnubot.DatabaseContext;
 import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
+import net.bnubot.db.Account;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.HexDump;
 import net.bnubot.util.Out;
+
+import org.apache.cayenne.access.DataContext;
 
 public class TriviaEventHandler implements EventHandler {
 	private boolean triviaEnabled = false;
@@ -32,7 +32,6 @@ public class TriviaEventHandler implements EventHandler {
 	private TriviaItem triviaCurrent = null;
 	private BNetUser answerUser = null;
 	private String answerUsed = null;
-	private Database d = Database.getInstance();
 	private int unanswered = 0;
 	private Connection initializedConnection = null;
 	private boolean disposed = false;
@@ -105,26 +104,66 @@ public class TriviaEventHandler implements EventHandler {
 	
 	private void showLeaderBoard(Connection source) {
 		try {
-			if(d == null)
+			DataContext context = DatabaseContext.getContext();
+			if(context == null)
 				return;
 			
-			ResultSet rsLeaders = d.getTriviaLeaders();
-			if(rsLeaders == null)
+			List<Account> leaders = Account.getTriviaLeaders();
+			if(leaders == null)
 				return;
 			
-			String out = "Trivia Leader Board: ";
-			while(rsLeaders.next()) {
-				out += rsLeaders.getString("name");
-				out += "(";
-				out += rsLeaders.getLong("trivia_correct");
-				out += ") ";
+			StringBuilder out = new StringBuilder("Trivia Leader Board: ");
+			for(Account a : leaders) {
+				out.append(a.getName()).append('(');
+				out.append(a.getTriviaCorrect()).append(") ");
 			}
-			d.close(rsLeaders);
-			out += "Total=" + d.getTriviaSum();
-			source.queueChatHelper(out, false);
-		} catch (SQLException e) {
+			out.append("Total=").append(getTriviaSum());
+			source.queueChatHelper(out.toString(), false);
+		} catch (Exception e) {
 			Out.exception(e);
 		}
+	}
+	
+	private long getTriviaSum() {
+		long total = 0;
+		for(Account a : Account.getTriviaLeaders())
+			total += a.getTriviaCorrect();
+		return total;
+	}
+	
+	private long[] getTriviaTopTwo() {
+		List<Account> leaders = Account.getTriviaLeaders();
+		if((leaders == null) || (leaders.size() == 0))
+			return null;
+		
+		if(leaders.size() == 1)
+			return new long[] {leaders.get(0).getTriviaCorrect()};
+		
+		return null;
+	}
+	
+	private String resetTrivia() {
+		DataContext context = DatabaseContext.getContext();
+		List<Account> leaders = Account.getTriviaLeaders();
+		if((leaders != null) && (leaders.size() > 0)) {
+			Account winner = leaders.get(0);
+			// Increment the winner's wins
+			winner.setTriviaWin(winner.getTriviaWin() + 1);
+			// Reset all scores to zero
+			for(Account a : leaders)
+				a.setTriviaCorrect(0);
+			try {
+				// Save changes
+				context.commitChanges();
+				// Return the winner's name
+				return winner.getName();
+			} catch(Exception e) {
+				Out.exception(e);
+				// Revert the changes
+				context.rollbackChanges();
+			}
+		}
+		return null;
 	}
 	
 	private void triviaLoop(Connection source) {
@@ -137,11 +176,12 @@ public class TriviaEventHandler implements EventHandler {
 						continue;
 					}
 					
-					if(d != null) {
+					DataContext context = DatabaseContext.getContext();
+					if(context != null) {
 						try {
-							long max[] = d.getTriviaTopTwo();
+							long max[] = getTriviaTopTwo();
 							if(max != null) {
-								final long total = d.getTriviaSum();
+								final long total = getTriviaSum();
 								final long target = GlobalSettings.triviaRoundLength;
 								boolean condition = false;
 								// There are no questions left
@@ -156,12 +196,12 @@ public class TriviaEventHandler implements EventHandler {
 								}
 								if(condition) {
 									String out = "The trivia round is over! Congratulations to ";
-									out += d.resetTrivia();
+									out += resetTrivia();
 									out += " for winning the round!";
 									source.queueChatHelper(out, false);
 								}
 							}
-						} catch (SQLException e) {
+						} catch (Exception e) {
 							Out.exception(e);
 						}
 					}
@@ -207,21 +247,21 @@ public class TriviaEventHandler implements EventHandler {
 						unanswered = 0;
 						String extra = "!";
 
-						try {
-							if(d != null) {
-								AccountResultSet rsAccount = d.getAccount(answerUser);
-								if((rsAccount != null) && rsAccount.next()) {
-									long score = rsAccount.getTriviaCorrect();
+						if(context != null) {
+							try {
+								Account answeredBy = Account.get(answerUser);
+								if(answeredBy != null) {
+									int score = answeredBy.getTriviaCorrect();
 									score++;
-									rsAccount.setTriviaCorrect(score);
-									rsAccount.updateRow();
+									answeredBy.setTriviaCorrect(score);
+									context.commitChanges();
+									context.commitChanges();
 									extra += " Your score is " + score + ".";
 								}
-								if(rsAccount != null)
-									d.close(rsAccount);
+							} catch(Exception e) {
+								Out.exception(e);
+								context.rollbackChanges();
 							}
-						} catch(Exception e) {
-							Out.exception(e);
 						}
 
 						String[] triviaAnswersAN = triviaCurrent.getAnswersAlphaNumeric();

@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data-map project-version="3.0">
+	<property name="defaultPackage" value="net.bnubot.db"/>
+	<db-entity name="account">
+		<db-attribute name="access" type="INTEGER" isMandatory="true" length="11"/>
+		<db-attribute name="birthday" type="DATE" length="11"/>
+		<db-attribute name="created" type="TIMESTAMP" isMandatory="true" length="26"/>
+		<db-attribute name="createdby" type="INTEGER" length="11"/>
+		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true" length="11"/>
+		<db-attribute name="lastRankChange" type="TIMESTAMP" length="26"/>
+		<db-attribute name="name" type="VARCHAR" isMandatory="true" length="32"/>
+		<db-attribute name="trivia_correct" type="INTEGER" isMandatory="true" length="11"/>
+		<db-attribute name="trivia_win" type="INTEGER" isMandatory="true" length="11"/>
+	</db-entity>
+	<db-entity name="bnlogin">
+		<db-attribute name="account" type="INTEGER" length="11"/>
+		<db-attribute name="created" type="TIMESTAMP" isMandatory="true" length="26"/>
+		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true" length="11"/>
+		<db-attribute name="lastAction" type="VARCHAR" length="32"/>
+		<db-attribute name="lastSeen" type="TIMESTAMP" length="26"/>
+		<db-attribute name="levelD2" type="INTEGER" length="11"/>
+		<db-attribute name="levelW3" type="INTEGER" length="11"/>
+		<db-attribute name="login" type="VARCHAR" isMandatory="true" length="32"/>
+		<db-attribute name="winsSEXP" type="INTEGER" length="11"/>
+		<db-attribute name="winsSTAR" type="INTEGER" length="11"/>
+		<db-attribute name="winsW2BN" type="INTEGER" length="11"/>
+	</db-entity>
+	<db-entity name="command">
+		<db-attribute name="access" type="INTEGER" isMandatory="true" length="11"/>
+		<db-attribute name="cmdgroup" type="VARCHAR" length="32"/>
+		<db-attribute name="description" type="VARCHAR" length="255"/>
+		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true" length="11"/>
+		<db-attribute name="name" type="VARCHAR" isMandatory="true" length="32"/>
+	</db-entity>
+	<db-entity name="command_alias">
+		<db-attribute name="alias" type="VARCHAR" isPrimaryKey="true" isMandatory="true" length="32"/>
+		<db-attribute name="name" type="VARCHAR" isMandatory="true" length="32"/>
+	</db-entity>
+	<db-entity name="dbVersion">
+		<db-attribute name="version" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="11"/>
+	</db-entity>
+	<db-entity name="mail">
+		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true" length="11"/>
+		<db-attribute name="isread" type="TINYINT" isMandatory="true" length="1"/>
+		<db-attribute name="message" type="VARCHAR" length="255"/>
+		<db-attribute name="sent" type="TIMESTAMP" isMandatory="true" length="26"/>
+		<db-attribute name="sentfrom" type="INTEGER" isMandatory="true" length="11"/>
+		<db-attribute name="sentto" type="INTEGER" isMandatory="true" length="11"/>
+	</db-entity>
+	<db-entity name="rank">
+		<db-attribute name="apD2Level" type="INTEGER" length="11"/>
+		<db-attribute name="apDays" type="INTEGER" length="11"/>
+		<db-attribute name="apMail" type="VARCHAR" length="255"/>
+		<db-attribute name="apRecruitScore" type="INTEGER" length="11"/>
+		<db-attribute name="apW3Level" type="INTEGER" length="11"/>
+		<db-attribute name="apWins" type="INTEGER" length="11"/>
+		<db-attribute name="expireDays" type="INTEGER" isMandatory="true" length="11"/>
+		<db-attribute name="greeting" type="VARCHAR" length="255"/>
+		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true" length="11"/>
+		<db-attribute name="prefix" type="VARCHAR" length="32"/>
+		<db-attribute name="shortPrefix" type="VARCHAR" length="32"/>
+		<db-attribute name="verbstr" type="VARCHAR" length="64"/>
+	</db-entity>
+	<obj-entity name="Account" className="net.bnubot.db.Account" dbEntityName="account">
+		<obj-attribute name="birthday" type="java.util.Date" db-attribute-path="birthday"/>
+		<obj-attribute name="created" type="java.util.Date" db-attribute-path="created"/>
+		<obj-attribute name="lastRankChange" type="java.util.Date" db-attribute-path="lastRankChange"/>
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
+		<obj-attribute name="triviaCorrect" type="int" db-attribute-path="trivia_correct"/>
+		<obj-attribute name="triviaWin" type="int" db-attribute-path="trivia_win"/>
+	</obj-entity>
+	<obj-entity name="Bnlogin" className="net.bnubot.db.Bnlogin" dbEntityName="bnlogin">
+		<obj-attribute name="created" type="java.util.Date" db-attribute-path="created"/>
+		<obj-attribute name="lastAction" type="java.lang.String" db-attribute-path="lastAction"/>
+		<obj-attribute name="lastSeen" type="java.util.Date" db-attribute-path="lastSeen"/>
+		<obj-attribute name="levelD2" type="java.lang.Integer" db-attribute-path="levelD2"/>
+		<obj-attribute name="levelW3" type="java.lang.Integer" db-attribute-path="levelW3"/>
+		<obj-attribute name="login" type="java.lang.String" db-attribute-path="login"/>
+		<obj-attribute name="winsSEXP" type="java.lang.Integer" db-attribute-path="winsSEXP"/>
+		<obj-attribute name="winsSTAR" type="java.lang.Integer" db-attribute-path="winsSTAR"/>
+		<obj-attribute name="winsW2BN" type="java.lang.Integer" db-attribute-path="winsW2BN"/>
+	</obj-entity>
+	<obj-entity name="Command" className="net.bnubot.db.Command" dbEntityName="command">
+		<obj-attribute name="access" type="java.lang.Integer" db-attribute-path="access"/>
+		<obj-attribute name="cmdgroup" type="java.lang.String" db-attribute-path="cmdgroup"/>
+		<obj-attribute name="description" type="java.lang.String" db-attribute-path="description"/>
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
+	</obj-entity>
+	<obj-entity name="CommandAlias" className="net.bnubot.db.CommandAlias" dbEntityName="command_alias">
+		<obj-attribute name="alias" type="java.lang.String" db-attribute-path="alias"/>
+		<obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
+	</obj-entity>
+	<obj-entity name="DbVersion" className="net.bnubot.db.DbVersion" dbEntityName="dbVersion">
+		<obj-attribute name="version" type="java.lang.Integer" db-attribute-path="version"/>
+	</obj-entity>
+	<obj-entity name="Mail" className="net.bnubot.db.Mail" dbEntityName="mail">
+		<obj-attribute name="isread" type="boolean" db-attribute-path="isread"/>
+		<obj-attribute name="message" type="java.lang.String" db-attribute-path="message"/>
+		<obj-attribute name="sent" type="java.util.Date" db-attribute-path="sent"/>
+	</obj-entity>
+	<obj-entity name="Rank" className="net.bnubot.db.Rank" dbEntityName="rank">
+		<obj-attribute name="apD2Level" type="java.lang.Integer" db-attribute-path="apD2Level"/>
+		<obj-attribute name="apDays" type="java.lang.Integer" db-attribute-path="apDays"/>
+		<obj-attribute name="apMail" type="java.lang.String" db-attribute-path="apMail"/>
+		<obj-attribute name="apRecruitScore" type="java.lang.Integer" db-attribute-path="apRecruitScore"/>
+		<obj-attribute name="apW3Level" type="java.lang.Integer" db-attribute-path="apW3Level"/>
+		<obj-attribute name="apWins" type="java.lang.Integer" db-attribute-path="apWins"/>
+		<obj-attribute name="expireDays" type="java.lang.Byte" db-attribute-path="expireDays"/>
+		<obj-attribute name="greeting" type="java.lang.String" db-attribute-path="greeting"/>
+		<obj-attribute name="prefix" type="java.lang.String" db-attribute-path="prefix"/>
+		<obj-attribute name="shortPrefix" type="java.lang.String" db-attribute-path="shortPrefix"/>
+		<obj-attribute name="verbstr" type="java.lang.String" db-attribute-path="verbstr"/>
+	</obj-entity>
+	<db-relationship name="aliases" source="account" target="bnlogin" toMany="true">
+		<db-attribute-pair source="id" target="account"/>
+	</db-relationship>
+	<db-relationship name="recievedMail" source="account" target="mail" toMany="true">
+		<db-attribute-pair source="id" target="sentto"/>
+	</db-relationship>
+	<db-relationship name="recruiter" source="account" target="account" toMany="false">
+		<db-attribute-pair source="createdby" target="id"/>
+	</db-relationship>
+	<db-relationship name="recruits" source="account" target="account" toMany="true">
+		<db-attribute-pair source="id" target="createdby"/>
+	</db-relationship>
+	<db-relationship name="sentMail" source="account" target="mail" toMany="true">
+		<db-attribute-pair source="id" target="sentfrom"/>
+	</db-relationship>
+	<db-relationship name="toRank" source="account" target="rank" toMany="false">
+		<db-attribute-pair source="access" target="id"/>
+	</db-relationship>
+	<db-relationship name="toAccount" source="bnlogin" target="account" toMany="false">
+		<db-attribute-pair source="account" target="id"/>
+	</db-relationship>
+	<db-relationship name="commandAliasArray" source="command" target="command_alias" toMany="true">
+		<db-attribute-pair source="name" target="name"/>
+	</db-relationship>
+	<db-relationship name="toCommand" source="command_alias" target="command" toMany="false">
+		<db-attribute-pair source="name" target="name"/>
+	</db-relationship>
+	<db-relationship name="sentFrom" source="mail" target="account" toMany="false">
+		<db-attribute-pair source="sentfrom" target="id"/>
+	</db-relationship>
+	<db-relationship name="sentTo" source="mail" target="account" toMany="false">
+		<db-attribute-pair source="sentto" target="id"/>
+	</db-relationship>
+	<db-relationship name="accountArray" source="rank" target="account" toMany="true">
+		<db-attribute-pair source="id" target="access"/>
+	</db-relationship>
+	<obj-relationship name="bnLogins" source="Account" target="Bnlogin" db-relationship-path="aliases"/>
+	<obj-relationship name="rank" source="Account" target="Rank" db-relationship-path="toRank"/>
+	<obj-relationship name="recievedMail" source="Account" target="Mail" db-relationship-path="recievedMail"/>
+	<obj-relationship name="recruiter" source="Account" target="Account" db-relationship-path="recruiter"/>
+	<obj-relationship name="recruits" source="Account" target="Account" db-relationship-path="recruits"/>
+	<obj-relationship name="sentMail" source="Account" target="Mail" db-relationship-path="sentMail"/>
+	<obj-relationship name="account" source="Bnlogin" target="Account" db-relationship-path="toAccount"/>
+	<obj-relationship name="toCommand" source="CommandAlias" target="Command" db-relationship-path="toCommand"/>
+	<obj-relationship name="sentFrom" source="Mail" target="Account" db-relationship-path="sentFrom"/>
+	<obj-relationship name="sentTo" source="Mail" target="Account" db-relationship-path="sentTo"/>
+	<obj-relationship name="accountArray" source="Rank" target="Account" db-relationship-path="accountArray"/>
+</data-map>

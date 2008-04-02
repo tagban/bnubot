@@ -15,6 +15,9 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 
+import org.apache.cayenne.access.DataContext;
+
+import net.bnubot.DatabaseContext;
 import net.bnubot.bot.database.AccountResultSet;
 import net.bnubot.bot.database.BNLoginResultSet;
 import net.bnubot.bot.database.CommandResultSet;
@@ -29,6 +32,8 @@ import net.bnubot.core.commands.CommandRunnable;
 import net.bnubot.core.commands.InsufficientAccessException;
 import net.bnubot.core.commands.InvalidUseException;
 import net.bnubot.core.friend.FriendEntry;
+import net.bnubot.db.Account;
+import net.bnubot.db.Bnlogin;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.CookieUtility;
@@ -38,7 +43,7 @@ import net.bnubot.util.TimeFormatter;
 import net.bnubot.vercheck.CurrentVersion;
 
 public class CommandEventHandler implements EventHandler {
-	private static final Database d = Database.getInstance();
+	private static final DataContext context = DatabaseContext.getContext();
 	private static final Hashtable<Connection, Boolean> sweepBanInProgress = new Hashtable<Connection, Boolean>();
 	private static final Hashtable<Connection, Integer> sweepBannedUsers = new Hashtable<Connection, Integer>();
 	
@@ -50,7 +55,7 @@ public class CommandEventHandler implements EventHandler {
 	private BNetUser lastCommandUser = null;
 	
 	public CommandEventHandler() {
-		if(d == null)
+		if(context == null)
 			throw new IllegalStateException("Can not enable commands without a database!");
 	}
 
@@ -220,29 +225,14 @@ public class CommandEventHandler implements EventHandler {
 					if((params != null) && (params.length != 1))
 						throw new InvalidUseException();
 					
-					Long subjectAccountId = null;
-					Long subjectRank = null;
-					if(params == null) {
-						subjectAccountId = commanderAccountID;
-						subjectRank = commanderAccess;
-					} else {
-						AccountResultSet rsSubjectAccount = d.getAccount(params[0]);
-						if(rsSubjectAccount.next()) {
-							subjectAccountId = rsSubjectAccount.getId();
-							subjectRank = rsSubjectAccount.getAccess();
-						}
-						d.close(rsSubjectAccount);
-					}
+					Account subject;
+					if(params == null)
+						subject = Account.get(user);
+					else
+						subject = Account.get(params[0]);
 					
-					if((subjectAccountId == null) || (subjectRank == null))
+					if((subject == null) || (subject.getRank() == null))
 						throw new AccountDoesNotExistException(params[0]);
-					
-					AccountResultSet rsSubjectAccount = d.getAccount(subjectAccountId);
-					if(!rsSubjectAccount.next()) {
-						d.close(rsSubjectAccount);
-						//This isn't actually invalid use, but it's a state we should never encounter
-						throw new InvalidUseException();
-					}
 					
 					long wins[] = d.getAccountWinsLevels(subjectAccountId, GlobalSettings.recruitTagPrefix, GlobalSettings.recruitTagSuffix);
 					long recruitScore = d.getAccountRecruitScore(subjectAccountId, GlobalSettings.recruitAccess);

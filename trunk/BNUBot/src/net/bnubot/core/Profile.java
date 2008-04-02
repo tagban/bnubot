@@ -5,23 +5,28 @@
 
 package net.bnubot.core;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 
+import net.bnubot.DatabaseContext;
 import net.bnubot.bot.CommandEventHandler;
 import net.bnubot.bot.console.ConsoleEventHandler;
-import net.bnubot.bot.database.CommandResultSet;
-import net.bnubot.bot.database.Database;
 import net.bnubot.bot.gui.GuiEventHandler;
 import net.bnubot.bot.swt.SWTDesktop;
 import net.bnubot.core.commands.CommandRunnable;
+import net.bnubot.db.Command;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.Out;
+
+import org.apache.cayenne.DataObjectUtils;
+import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.query.SelectQuery;
 
 public class Profile {
 	private static final List<Profile> profiles = new ArrayList<Profile>();
@@ -31,19 +36,13 @@ public class Profile {
 		if(commands.get(name) != null)
 			throw new IllegalArgumentException("The command " + name + " is already registered");
 		
-		Database db = Database.getInstance();
-		if(db == null)
-			throw new IllegalStateException("No database has been initialized");
-		
-		try {
-			boolean exists;
-			CommandResultSet crs = db.getCommand(name);
-			exists = crs.next();
-			db.close(crs);
-			if(!exists)
-				db.createCommand(name);
-		} catch (SQLException e) {
-			throw new IllegalStateException(e);
+		DataContext context = DatabaseContext.getContext();
+		Expression expr = ExpressionFactory.matchExp(Command.NAME_PROPERTY, name);
+		SelectQuery query = new SelectQuery(Command.class, expr);
+		Command cmd = (Command) DataObjectUtils.objectForQuery(context, query);
+		if(cmd == null) {
+			//TODO
+			throw new IllegalStateException("TODO: create the command in the database");
 		}
 		
 		commands.put(name, action);
@@ -119,12 +118,11 @@ public class Profile {
 
 				// Commands
 				if(GlobalSettings.enableCommands) {
-					if(Database.getInstance() != null)
-						try {
-							con.addEventHandler(new CommandEventHandler());
-						} catch(IllegalStateException e) {
-							Out.exception(e);
-						}
+					try {
+						con.addEventHandler(new CommandEventHandler());
+					} catch(IllegalStateException e) {
+						Out.exception(e);
+					}
 				}
 			}
 			
