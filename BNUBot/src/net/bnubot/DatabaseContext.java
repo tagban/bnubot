@@ -1,10 +1,12 @@
+/**
+ * This file is distributed under the GPL
+ * $Id$
+ */
+
 package net.bnubot;
 
-import net.bnubot.db.Account;
-import net.bnubot.db.Mail;
 import net.bnubot.util.BNetUser;
 
-import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.conf.Configuration;
 
