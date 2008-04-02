@@ -5,7 +5,6 @@
 
 package net.bnubot.bot;
 
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -798,8 +797,6 @@ public class CommandEventHandler implements EventHandler {
 					if(bd == null)
 						throw new InvalidUseException();
 					
-					if(commanderAccount == null)
-						throw new SQLException();
 					commanderAccount.setBirthday(new java.sql.Date(bd.getTime()));
 					commanderAccount.updateRow();
 					
@@ -863,15 +860,8 @@ public class CommandEventHandler implements EventHandler {
 				
 				String recursive = params[0];
 
-				Account cb = rsTarget.getRecruiter();
+				Account cb = rsTarget;
 				do {
-					if(cb == null) {
-						rsSubject.setRecruiter(rsTarget);
-						rsSubject.updateRow();
-						user.sendChat("Successfully updated recruiter for [ " + params[0] + " ] to [ " + params[1] + " ]" , whisperBack);
-						break;
-					}
-					
 					recursive += " -> " + cb.getName();
 					if(cb == rsSubject) {
 						user.sendChat("Recursion detected: " + recursive, whisperBack);
@@ -879,6 +869,13 @@ public class CommandEventHandler implements EventHandler {
 					}
 
 					cb = cb.getRecruiter();
+					
+					if(cb == null) {
+						rsSubject.setRecruiter(rsTarget);
+						rsSubject.updateRow();
+						user.sendChat("Successfully updated recruiter for [ " + params[0] + " ] to [ " + params[1] + " ]" , whisperBack);
+						break;
+					}
 				} while(true);
 			}});
 		Profile.registerCommand("sweepban", new CommandRunnable() {
