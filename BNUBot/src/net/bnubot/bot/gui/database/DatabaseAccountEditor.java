@@ -23,18 +23,19 @@ import javax.swing.JList;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import net.bnubot.bot.database.AccountResultSet;
-import net.bnubot.bot.database.Database;
 import net.bnubot.bot.gui.WindowPosition;
 import net.bnubot.bot.gui.components.ConfigFactory;
 import net.bnubot.bot.gui.components.ConfigTextArea;
+import net.bnubot.db.Account;
 import net.bnubot.util.Out;
 import net.bnubot.util.TimeFormatter;
+
+import org.apache.cayenne.access.DataContext;
 
 public class DatabaseAccountEditor extends JDialog {
 	private static final long serialVersionUID = -3408441296609359300L;
 
-	private Database d = null;
+	private DataContext d = null;
 	
 	private DefaultListModel lm;
 	private JList lstAccounts;
@@ -52,9 +53,9 @@ public class DatabaseAccountEditor extends JDialog {
 	private JButton cmdApply;
 	private JButton cmdRevert;
 	
-	private AccountResultSet rsAccount = null;
+	private Account rsAccount = null;
 	
-	public DatabaseAccountEditor(Database d) {
+	public DatabaseAccountEditor(DataContext d) {
 		this.d = d;
 		initializeGui();
 		setTitle("Account Editor");

@@ -120,7 +120,7 @@ public class Profile {
 				if(GlobalSettings.enableCommands) {
 					try {
 						con.addEventHandler(new CommandEventHandler());
-					} catch(IllegalStateException e) {
+					} catch(Exception e) {
 						Out.exception(e);
 					}
 				}

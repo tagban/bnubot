@@ -23,18 +23,19 @@ import javax.swing.JList;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import net.bnubot.bot.database.Database;
-import net.bnubot.bot.database.RankResultSet;
 import net.bnubot.bot.gui.WindowPosition;
 import net.bnubot.bot.gui.components.ConfigFactory;
 import net.bnubot.bot.gui.components.ConfigTextArea;
+import net.bnubot.db.Rank;
 import net.bnubot.util.Out;
 import net.bnubot.util.TimeFormatter;
+
+import org.apache.cayenne.access.DataContext;
 
 public class DatabaseRankEditor extends JDialog {
 	private static final long serialVersionUID = 8358635720495103894L;
 
-	private Database d = null;
+	private DataContext d = null;
 
 	private DefaultListModel lm;
 	private JList lstRanks;
@@ -55,9 +56,9 @@ public class DatabaseRankEditor extends JDialog {
 	private JButton cmdApply;
 	private JButton cmdRevert;
 	
-	private RankResultSet rsRank = null;
+	private Rank rsRank = null;
 	
-	public DatabaseRankEditor(Database d) {
+	public DatabaseRankEditor(DataContext d) {
 		this.d = d;
 		initializeGui();
 		setTitle("Rank Editor");
