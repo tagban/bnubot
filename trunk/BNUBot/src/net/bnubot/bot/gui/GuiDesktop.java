@@ -38,10 +38,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.apache.cayenne.access.DataContext;
-
 import net.bnubot.DatabaseContext;
-import net.bnubot.bot.database.Database;
 import net.bnubot.bot.gui.database.DatabaseAccountEditor;
 import net.bnubot.bot.gui.database.DatabaseRankEditor;
 import net.bnubot.bot.gui.icons.BNetIcon;
@@ -57,6 +54,8 @@ import net.bnubot.settings.GlobalSettings.TrayIconMode;
 import net.bnubot.util.Out;
 import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.VersionCheck;
+
+import org.apache.cayenne.access.DataContext;
 
 public class GuiDesktop extends JFrame {
 	private static final long serialVersionUID = -7144648179041514994L;

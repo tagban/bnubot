@@ -4,7 +4,7 @@
 * Removed the size restraint on the "What's New" window
 * Added some error handling for conditions where BNI downloads fail
 * Changed the auto-update algorithm to prevent failed download from breaking the jar
-* Added a setting to disable the plug icon for STAR/SEXP/W2BN
+* Added a setting to disable the plug icon for DSHR/DRTL/SSHR/JSTR/STAR/SEXP/W2BN
 * Improved the readability of trivia answers
 * Separated the commands and keywords enable flags (Issue 61)
 

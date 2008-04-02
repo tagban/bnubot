@@ -15,14 +15,7 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 
-import org.apache.cayenne.access.DataContext;
-
 import net.bnubot.DatabaseContext;
-import net.bnubot.bot.database.AccountResultSet;
-import net.bnubot.bot.database.BNLoginResultSet;
-import net.bnubot.bot.database.CommandResultSet;
-import net.bnubot.bot.database.Database;
-import net.bnubot.bot.database.RankResultSet;
 import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.Profile;
@@ -33,7 +26,6 @@ import net.bnubot.core.commands.InsufficientAccessException;
 import net.bnubot.core.commands.InvalidUseException;
 import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.db.Account;
-import net.bnubot.db.Bnlogin;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.CookieUtility;
@@ -41,6 +33,8 @@ import net.bnubot.util.OperatingSystem;
 import net.bnubot.util.Out;
 import net.bnubot.util.TimeFormatter;
 import net.bnubot.vercheck.CurrentVersion;
+
+import org.apache.cayenne.access.DataContext;
 
 public class CommandEventHandler implements EventHandler {
 	private static final DataContext context = DatabaseContext.getContext();
