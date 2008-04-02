@@ -28,7 +28,7 @@ public class Account extends _Account {
 	}
 
 	public static Account get(String name) {
-		Expression expression = ExpressionFactory.greaterExp(Account.NAME_PROPERTY, name);
+		Expression expression = ExpressionFactory.likeIgnoreCaseExp(Account.NAME_PROPERTY, name);
 		SelectQuery query = new SelectQuery(Account.class, expression);
 		return (Account)DataObjectUtils.objectForQuery(DatabaseContext.getContext(), query);
 	}
@@ -96,5 +96,17 @@ public class Account extends _Account {
 	public long[] getWinsLevels(String recruitTagPrefix, String recruitTagSuffix) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	/**
+	 * Try to save changes to this object
+	 */
+	public void updateRow() throws Exception {
+		try {
+			getObjectContext().commitChanges();
+		} catch(Exception e) {
+			getObjectContext().rollbackChanges();
+			throw e;
+		}
 	}
 }

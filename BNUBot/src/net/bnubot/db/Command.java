@@ -34,7 +34,7 @@ public class Command extends _Command {
 	 * @return The command, or null
 	 */
 	public static Command get(String command) {
-		Expression expression = ExpressionFactory.lessOrEqualExp(Command.NAME_PROPERTY, command);
+		Expression expression = ExpressionFactory.matchExp(Command.NAME_PROPERTY, command);
 		SelectQuery query = new SelectQuery(Command.class, expression);
 		return (Command)DataObjectUtils.objectForQuery(DatabaseContext.getContext(), query);
 	}
@@ -72,5 +72,17 @@ public class Command extends _Command {
 	@SuppressWarnings("unchecked")
 	public static List<Command> getGroups() {
 		return DatabaseContext.getContext().performQuery(commandGroups);
+	}
+
+	/**
+	 * Try to save changes to this object
+	 */
+	public void updateRow() throws Exception {
+		try {
+			getObjectContext().commitChanges();
+		} catch(Exception e) {
+			getObjectContext().rollbackChanges();
+			throw e;
+		}
 	}
 }
