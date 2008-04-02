@@ -30,13 +30,9 @@ import net.bnubot.db.Account;
 import net.bnubot.util.Out;
 import net.bnubot.util.TimeFormatter;
 
-import org.apache.cayenne.access.DataContext;
-
 public class DatabaseAccountEditor extends JDialog {
 	private static final long serialVersionUID = -3408441296609359300L;
 
-	private DataContext d = null;
-	
 	private DefaultListModel lm;
 	private JList lstAccounts;
 	private ConfigTextArea txtID;
@@ -55,8 +51,7 @@ public class DatabaseAccountEditor extends JDialog {
 	
 	private Account rsAccount = null;
 	
-	public DatabaseAccountEditor(DataContext d) {
-		this.d = d;
+	public DatabaseAccountEditor() {
 		initializeGui();
 		setTitle("Account Editor");
 		

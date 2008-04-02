@@ -30,12 +30,8 @@ import net.bnubot.db.Rank;
 import net.bnubot.util.Out;
 import net.bnubot.util.TimeFormatter;
 
-import org.apache.cayenne.access.DataContext;
-
 public class DatabaseRankEditor extends JDialog {
 	private static final long serialVersionUID = 8358635720495103894L;
-
-	private DataContext d = null;
 
 	private DefaultListModel lm;
 	private JList lstRanks;
@@ -58,8 +54,7 @@ public class DatabaseRankEditor extends JDialog {
 	
 	private Rank rsRank = null;
 	
-	public DatabaseRankEditor(DataContext d) {
-		this.d = d;
+	public DatabaseRankEditor() {
 		initializeGui();
 		setTitle("Rank Editor");
 		
