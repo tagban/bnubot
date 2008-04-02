@@ -7,16 +7,26 @@ package net.bnubot.db;
 
 import java.util.List;
 
-import org.apache.cayenne.DataObjectUtils;
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.query.SelectQuery;
-
 import net.bnubot.DatabaseContext;
 import net.bnubot.db.auto._Command;
 
+import org.apache.cayenne.DataObjectUtils;
+import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.query.SelectQuery;
+
 public class Command extends _Command {
 	private static final long serialVersionUID = 8794076397315891153L;
+	private static final SQLTemplate commandGroups = new SQLTemplate(Command.class,
+			"SELECT " +
+			"#result('max(id)' 'Integer' 'id'), " +
+			"#result('max(name)' 'String' 'name'), " +
+			"#result('max(description)' 'String' 'description'), " +
+			"#result('max(access)' 'Integer' 'access'), " +
+			"#result('cmdgroup' 'String' 'cmdgroup') " +
+			"FROM command " +
+			"GROUP BY cmdgroup ");
 	
 	/**
 	 * Get a command by name
@@ -55,4 +65,12 @@ public class Command extends _Command {
 		return DatabaseContext.getContext().performQuery(query);
 	}
 
+	/**
+	 * Get command groups
+	 * @return List of distinct command groups
+	 */
+	@SuppressWarnings("unchecked")
+	public static List<Command> getGroups() {
+		return DatabaseContext.getContext().performQuery(commandGroups);
+	}
 }

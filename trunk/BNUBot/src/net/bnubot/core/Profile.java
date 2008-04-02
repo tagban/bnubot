@@ -23,7 +23,7 @@ import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.Out;
 
 import org.apache.cayenne.DataObjectUtils;
-import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
@@ -36,7 +36,7 @@ public class Profile {
 		if(commands.get(name) != null)
 			throw new IllegalArgumentException("The command " + name + " is already registered");
 		
-		DataContext context = DatabaseContext.getContext();
+		ObjectContext context = DatabaseContext.getContext();
 		Expression expr = ExpressionFactory.matchExp(Command.NAME_PROPERTY, name);
 		SelectQuery query = new SelectQuery(Command.class, expr);
 		Command cmd = (Command) DataObjectUtils.objectForQuery(context, query);
