@@ -24,7 +24,7 @@ import net.bnubot.util.BNetUser;
 import net.bnubot.util.HexDump;
 import net.bnubot.util.Out;
 
-import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.ObjectContext;
 
 public class TriviaEventHandler implements EventHandler {
 	private boolean triviaEnabled = false;
@@ -104,7 +104,7 @@ public class TriviaEventHandler implements EventHandler {
 	
 	private void showLeaderBoard(Connection source) {
 		try {
-			DataContext context = DatabaseContext.getContext();
+			ObjectContext context = DatabaseContext.getContext();
 			if(context == null)
 				return;
 			
@@ -143,7 +143,7 @@ public class TriviaEventHandler implements EventHandler {
 	}
 	
 	private String resetTrivia() {
-		DataContext context = DatabaseContext.getContext();
+		ObjectContext context = DatabaseContext.getContext();
 		List<Account> leaders = Account.getTriviaLeaders();
 		if((leaders != null) && (leaders.size() > 0)) {
 			Account winner = leaders.get(0);
@@ -176,7 +176,7 @@ public class TriviaEventHandler implements EventHandler {
 						continue;
 					}
 					
-					DataContext context = DatabaseContext.getContext();
+					ObjectContext context = DatabaseContext.getContext();
 					if(context != null) {
 						try {
 							long max[] = getTriviaTopTwo();

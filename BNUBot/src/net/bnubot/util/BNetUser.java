@@ -13,7 +13,7 @@ import net.bnubot.settings.GlobalSettings;
 import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.ReleaseType;
 
-import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.ObjectContext;
 
 /**
  * A class responsible for formatting Battle.net usernames.
@@ -180,7 +180,7 @@ public class BNetUser {
 	}
 	
 	private String getShortPrettyName() {
-		DataContext context = DatabaseContext.getContext();
+		ObjectContext context = DatabaseContext.getContext();
 		if(context == null)
 			return shortLogonName;
 		
@@ -213,7 +213,7 @@ public class BNetUser {
 	 * @return User[#N][@Realm] or [Prefix ][Account (]FullLogonName[)]
 	 */
 	private String getPrettyName() {
-		DataContext context = DatabaseContext.getContext();
+		ObjectContext context = DatabaseContext.getContext();
 		if(context == null)
 			return shortLogonName;
 
@@ -244,7 +244,7 @@ public class BNetUser {
 	 * @return User[#N][@Realm] or &lt;Account> [(FullLogonName)]
 	 */
 	private String getAccountAndLogin() {
-		DataContext context = DatabaseContext.getContext();
+		ObjectContext context = DatabaseContext.getContext();
 		if(context == null)
 			return shortLogonName;
 
@@ -268,7 +268,7 @@ public class BNetUser {
 	 * @return User[#N][@Realm] or &lt;Account>
 	 */
 	private String getAccountOrLogin() {
-		DataContext context = DatabaseContext.getContext();
+		ObjectContext context = DatabaseContext.getContext();
 		if(context == null)
 			return shortLogonName;
 
