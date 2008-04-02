@@ -38,6 +38,9 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.apache.cayenne.access.DataContext;
+
+import net.bnubot.DatabaseContext;
 import net.bnubot.bot.database.Database;
 import net.bnubot.bot.gui.database.DatabaseAccountEditor;
 import net.bnubot.bot.gui.database.DatabaseRankEditor;
@@ -222,7 +225,7 @@ public class GuiDesktop extends JFrame {
 				JMenuItem menuItem = new JMenuItem("Rank editor");
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent event) {
-						Database d = Database.getInstance();
+						DataContext d = DatabaseContext.getContext();
 						if(d != null)
 							new DatabaseRankEditor(d);
 						else
@@ -233,7 +236,7 @@ public class GuiDesktop extends JFrame {
 				menuItem = new JMenuItem("Account editor");
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent event) {
-						Database d = Database.getInstance();
+						DataContext d = DatabaseContext.getContext();
 						if(d != null)
 							new DatabaseAccountEditor(d);
 						else

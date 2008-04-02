@@ -5,15 +5,15 @@
 
 package net.bnubot.util;
 
-import java.sql.SQLException;
-
-import net.bnubot.bot.database.AccountResultSet;
-import net.bnubot.bot.database.Database;
-import net.bnubot.bot.database.RankResultSet;
+import net.bnubot.DatabaseContext;
 import net.bnubot.core.Connection;
+import net.bnubot.db.Account;
+import net.bnubot.db.Rank;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.ReleaseType;
+
+import org.apache.cayenne.access.DataContext;
 
 /**
  * A class responsible for formatting Battle.net usernames.
@@ -180,33 +180,28 @@ public class BNetUser {
 	}
 	
 	private String getShortPrettyName() {
-		Database d = Database.getInstance();
-		if(d == null)
+		DataContext context = DatabaseContext.getContext();
+		if(context == null)
 			return shortLogonName;
 		
 		String shortPrettyName = shortLogonName;
 		try {
-			AccountResultSet rsAccount = d.getAccount(this);
-			if((rsAccount != null) && rsAccount.next()) {
-				String account = rsAccount.getName();
-				
-				if(account != null)
-					shortPrettyName = account;
+			Account account = Account.get(this);
+			if(account != null) {
+				String name = account.getName();
+				if(name != null)
+					shortPrettyName = name;
 
-				long access = rsAccount.getAccess();
-				RankResultSet rsRank = d.getRank(access);
-				if(rsRank.next()) {
-					String prefix = rsRank.getShortPrefix();
+				Rank rank = account.getRank();
+				if(rank != null) {
+					String prefix = rank.getShortPrefix();
 					if(prefix == null)
-						prefix = rsRank.getPrefix();
+						prefix = rank.getPrefix();
 					if(prefix != null)
 						shortPrettyName = prefix + " " + shortPrettyName;
 				}
-				d.close(rsRank);
 			}
-			if(rsAccount != null)
-				d.close(rsAccount);
-		} catch(SQLException e) {
+		} catch(Exception e) {
 			Out.exception(e);
 		}
 		
@@ -218,31 +213,26 @@ public class BNetUser {
 	 * @return User[#N][@Realm] or [Prefix ][Account (]FullLogonName[)]
 	 */
 	private String getPrettyName() {
-		Database d = Database.getInstance();
-		if(d == null)
+		DataContext context = DatabaseContext.getContext();
+		if(context == null)
 			return shortLogonName;
 
 		String prettyName = shortLogonName;
 		try {
-			AccountResultSet rsAccount = d.getAccount(this);
-			if((rsAccount != null) && rsAccount.next()) {
-				String account = rsAccount.getName();
-				
-				if(account != null)
-					prettyName = account + " (" + prettyName + ")";
+			Account account = Account.get(this);
+			if(account != null) {
+				String name = account.getName();
+				if(name != null)
+					prettyName = name + " (" + prettyName + ")";
 
-				long access = rsAccount.getAccess();
-				RankResultSet rsRank = d.getRank(access);
-				if(rsRank.next()) {
-					String prefix = rsRank.getPrefix();
+				Rank rank = account.getRank();
+				if(rank != null) {
+					String prefix = rank.getPrefix();
 					if(prefix != null)
 						prettyName = prefix + " " + prettyName;
 				}
-				d.close(rsRank);
 			}
-			if(rsAccount != null)
-				d.close(rsAccount);
-		} catch(SQLException e) {
+		} catch(Exception e) {
 			Out.exception(e);
 		}
 		
@@ -254,22 +244,19 @@ public class BNetUser {
 	 * @return User[#N][@Realm] or &lt;Account> [(FullLogonName)]
 	 */
 	private String getAccountAndLogin() {
-		Database d = Database.getInstance();
-		if(d == null)
+		DataContext context = DatabaseContext.getContext();
+		if(context == null)
 			return shortLogonName;
 
 		String prettyName = shortLogonName;
 		try {
-			AccountResultSet rsAccount = d.getAccount(this);
-			if((rsAccount != null) && rsAccount.next()) {
-				String account = rsAccount.getName();
-				
-				if(account != null)
-					prettyName = account + " (" + prettyName + ")";
+			Account account = Account.get(this);
+			if(account != null) {
+				String name = account.getName();
+				if(name != null)
+					prettyName = name + " (" + prettyName + ")";
 			}
-			if(rsAccount != null)
-				d.close(rsAccount);
-		} catch(SQLException e) {
+		} catch(Exception e) {
 			Out.exception(e);
 		}
 		
@@ -281,22 +268,19 @@ public class BNetUser {
 	 * @return User[#N][@Realm] or &lt;Account>
 	 */
 	private String getAccountOrLogin() {
-		Database d = Database.getInstance();
-		if(d == null)
+		DataContext context = DatabaseContext.getContext();
+		if(context == null)
 			return shortLogonName;
 
 		String prettyName = shortLogonName;
 		try {
-			AccountResultSet rsAccount = d.getAccount(this);
-			if((rsAccount != null) && rsAccount.next()) {
-				String account = rsAccount.getName();
-				
-				if(account != null)
-					prettyName = account;
+			Account account = Account.get(this);
+			if(account != null) {
+				String name = account.getName();
+				if(name != null)
+					prettyName = name;
 			}
-			if(rsAccount != null)
-				d.close(rsAccount);
-		} catch(SQLException e) {
+		} catch(Exception e) {
 			Out.exception(e);
 		}
 		
