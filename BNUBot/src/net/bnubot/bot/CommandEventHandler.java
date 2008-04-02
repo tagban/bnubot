@@ -1227,15 +1227,15 @@ public class CommandEventHandler implements EventHandler {
 		if(rsSubjectAccount == null)
 			throw new AccountDoesNotExistException("Failed to create account [" + accountName + "] for an unknown reason");
 		
-		long subjectAccountId = rsSubjectAccount.getId();
-		rsSubject.refreshCursor();
-		rsSubject.setAccount(subjectAccountId);
-		rsSubject.updateRow();
-		d.close(rsSubject);
-		rsSubjectAccount.refreshCursor();
-		rsSubjectAccount.setAccess(GlobalSettings.recruitAccess);
-		rsSubjectAccount.updateRow();
-		d.close(rsSubjectAccount);
+		rsSubject.setAccount(rsSubjectAccount);
+		rsSubjectAccount.setRank(Rank.get(GlobalSettings.recruitAccess));
+		
+		try {
+			rsSubjectAccount.getObjectContext().commitChanges();
+		} catch(Exception e) {
+			rsSubjectAccount.getObjectContext().rollbackChanges();
+			throw new AccountDoesNotExistException(e.getMessage());
+		}
 	}
 
 	private static char getTrigger(Connection source) {
@@ -1315,7 +1315,6 @@ public class CommandEventHandler implements EventHandler {
 					Integer oldWins = rsUser.getWinsSTAR();
 					if((oldWins == null) || (newWins > oldWins)) {
 						rsUser.setWinsSTAR(newWins);
-						rsUser.updateRow();
 					}
 				}
 				break;
@@ -1327,7 +1326,6 @@ public class CommandEventHandler implements EventHandler {
 					Integer oldWins = rsUser.getWinsSEXP();
 					if((oldWins == null) || (newWins > oldWins)) {
 						rsUser.setWinsSEXP(newWins);
-						rsUser.updateRow();
 					}
 				}
 				break;
@@ -1339,7 +1337,6 @@ public class CommandEventHandler implements EventHandler {
 					Integer oldWins = rsUser.getWinsW2BN();
 					if((oldWins == null) || (newWins > oldWins)) {
 						rsUser.setWinsW2BN(newWins);
-						rsUser.updateRow();
 					}
 				}
 				break;
@@ -1352,7 +1349,6 @@ public class CommandEventHandler implements EventHandler {
 					Integer oldLevel = rsUser.getLevelD2();
 					if((oldLevel == null) || (newLevel > oldLevel)) {
 						rsUser.setLevelD2(newLevel);
-						rsUser.updateRow();
 					}
 				}
 				break;
@@ -1365,22 +1361,21 @@ public class CommandEventHandler implements EventHandler {
 					Integer oldLevel = rsUser.getLevelW3();
 					if((oldLevel == null) || (newLevel > oldLevel)) {
 						rsUser.setLevelW3(newLevel);
-						rsUser.updateRow();
 					}
 				}
 				break;
 			}
 			}
-			d.close(rsUser);
+			try {
+				rsUser.getObjectContext().commitChanges();
+			} catch(Exception e) {
+				Out.exception(e);
+				rsUser.getObjectContext().rollbackChanges();
+			}
 			
 			Account rsAccount = Account.get(user);
 			if(rsAccount == null)
 				return;
-			if(!rsAccount.next()) {
-				d.close(rsAccount);
-				return;
-			}
-			rsAccount.saveCursor();
 			
 			//check for birthdays
 			Date birthday = rsAccount.getBirthday();
@@ -1401,10 +1396,8 @@ public class CommandEventHandler implements EventHandler {
 				}
 			}
 
-			long rank = rsAccount.getAccess();
-			long id = rsAccount.getId();
-			Rank rsRank = d.getRank(rank);
-			if(rsRank.next()) {
+			Rank rsRank = rsAccount.getRank();
+			if(rsRank != null) {
 				// Greetings
 				String greeting = rsRank.getGreeting();
 				if(greeting != null) {
@@ -1413,12 +1406,11 @@ public class CommandEventHandler implements EventHandler {
 				}
 
 				// Autopromotions
-				Long apDays = rsRank.getApDays();
-				Timestamp ts = rsAccount.getLastRankChange();
+				Integer apDays = rsRank.getApDays();
 				// Check that they meet the days requirement
 				apBlock: if((apDays != null) && (apDays != 0)) {
-					if(ts != null) {
-						double timeElapsed = System.currentTimeMillis() - ts.getTime();
+					if(rsAccount.getLastRankChange() != null) {
+						double timeElapsed = System.currentTimeMillis() - rsAccount.getLastRankChange().getTime();
 						timeElapsed /= 1000 * 60 * 60 * 24;
 						
 						if(timeElapsed < apDays)
@@ -1426,14 +1418,14 @@ public class CommandEventHandler implements EventHandler {
 					} else
 						break apBlock;
 					
-					Long apWins = rsRank.getApWins();
-					Long apD2Level = rsRank.getApD2Level();
-					Long apW3Level = rsRank.getApW3Level();
+					Integer apWins = rsRank.getApWins();
+					Integer apD2Level = rsRank.getApD2Level();
+					Integer apW3Level = rsRank.getApW3Level();
 					if((apWins == null)
 					|| (apD2Level == null)
 					|| (apW3Level == null))
 						break apBlock;
-					long wins[] = Account.getWinsLevels(id, GlobalSettings.recruitTagPrefix, GlobalSettings.recruitTagSuffix);
+					long wins[] = rsAccount.getWinsLevels(GlobalSettings.recruitTagPrefix, GlobalSettings.recruitTagSuffix);
 					
 					boolean condition = false;
 					condition |= ((apWins > 0) && (wins[0] >= apWins));
@@ -1443,20 +1435,26 @@ public class CommandEventHandler implements EventHandler {
 					
 					if(condition) {
 						// Check RS
-						long rs = Account.getRecruitScore(id, GlobalSettings.recruitAccess);
-						Long apRS = rsRank.getApRecruitScore();
+						long rs = rsAccount.getRecruitScore(GlobalSettings.recruitAccess);
+						Integer apRS = rsRank.getApRecruitScore();
 						if((apRS == null) || (apRS == 0) || (rs >= apRS)) {
+							int rank = rsAccount.getAccess();
 							// Give them a promotion
 							rank++;
-							rsAccount.refreshCursor();
-							rsAccount.setAccess(rank);
-							rsAccount.setLastRankChange(new Timestamp(System.currentTimeMillis()));
-							rsAccount.updateRow();
+							rsAccount.setRank(Rank.get(rank));
+							rsAccount.setLastRankChange(new Date(System.currentTimeMillis()));
+							try {
+								rsAccount.getObjectContext().commitChanges();
+							} catch(Exception e) {
+								Out.exception(e);
+								rsAccount.getObjectContext().rollbackChanges();
+								break apBlock;
+							}
 							user.resetPrettyName();	//Reset the presentable name
 							source.queueChatHelper("Congratulations " + user.toString() + ", you just recieved a promotion! Your rank is now " + rank + ".", false);
 							String apMail = rsRank.getApMail();
 							if((apMail != null) && (apMail.length() > 0))
-								d.sendMail(id, id, apMail);
+								Mail.send(rsAccount, rsAccount, apMail);
 						} else {
 							user.sendChat("You need " + Long.toString(apRS - rs) + " more recruitment points to recieve a promotion!", false);
 						}
@@ -1486,11 +1484,9 @@ public class CommandEventHandler implements EventHandler {
 					}
 				}
 			}
-			d.close(rsRank);
-			d.close(rsAccount);
 
 			//Mail
-			long umc = d.getUnreadMailCount(id);
+			long umc = Mail.getUnreadCount(rsAccount);;
 			if(umc > 0)
 				user.sendChat("You have " + umc + " unread messages; type [ %trigger%mail read ] to retrieve them", false);
 		} catch (Exception e) {

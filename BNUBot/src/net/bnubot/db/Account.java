@@ -51,6 +51,20 @@ public class Account extends _Account {
 		return DatabaseContext.getContext().performQuery(query);
 	}
 
+	/**
+	 * @param recruitAccess
+	 * @return
+	 */
+	public long getRecruitScore(long recruitAccess) {
+		long rs = 0;
+		for(Account recruit : getRecruits()) {
+			int access = recruit.getAccess();
+			if(access > recruitAccess)
+				rs += access - recruitAccess;
+		}
+		return rs;
+	}
+
 	public static Account create(String name, Rank access, Account recruiter) {
 		ObjectContext context = DatabaseContext.getContext();
 		Account account = context.newObject(Account.class);
@@ -82,14 +96,5 @@ public class Account extends _Account {
 	public long[] getWinsLevels(String recruitTagPrefix, String recruitTagSuffix) {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	/**
-	 * @param recruitAccess
-	 * @return
-	 */
-	public long getRecruitScore(long recruitAccess) {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 }
