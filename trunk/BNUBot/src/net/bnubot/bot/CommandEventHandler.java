@@ -8,7 +8,6 @@ package net.bnubot.bot;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Hashtable;
@@ -65,10 +64,9 @@ public class CommandEventHandler implements EventHandler {
 			rsUser.setLastSeen(new Timestamp(System.currentTimeMillis()));
 			rsUser.setLastAction(action);
 			try {
-				rsUser.getObjectContext().commitChanges();
+				rsUser.updateRow();
 			} catch(Exception e) {
 				Out.exception(e);
-				rsUser.getObjectContext().rollbackChanges();
 			}
 		}
 	}
@@ -181,11 +179,10 @@ public class CommandEventHandler implements EventHandler {
 					rsSubjectAccount.setRank(targetRank);
 					rsSubjectAccount.setLastRankChange(new Timestamp(System.currentTimeMillis()));
 					try {
-						rsSubjectAccount.getObjectContext().commitChanges();
+						rsSubjectAccount.updateRow();
 						user.sendChat("Added user [" + subjectAccount + "] successfully with access " + targetAccess, whisperBack);
 					} catch(Exception e) {
 						Out.exception(e);
-						rsSubjectAccount.getObjectContext().rollbackChanges();
 						user.sendChat("Failed: " + e.getMessage(), whisperBack);
 					}
 				} catch(InvalidUseException e) {
@@ -440,15 +437,14 @@ public class CommandEventHandler implements EventHandler {
 							return;
 						}
 						
-						ObjectContext context = commanderAccount.getObjectContext();
 						try {
+							ObjectContext context = commanderAccount.getObjectContext();
 							for(Mail m : commanderAccount.getRecievedMail())
 								context.deleteObject(m);
-							context.commitChanges();
+							commanderAccount.updateRow();
 							user.sendChat("Mailbox cleaned!", whisperBack);
 						} catch(Exception e) {
 							Out.exception(e);
-							context.rollbackChanges();
 							user.sendChat("Failed to delete mail: " + e.getMessage(), whisperBack);
 						}
 					} else
@@ -649,9 +645,8 @@ public class CommandEventHandler implements EventHandler {
 				
 				try {
 					rsSubjectAccount.setName(params[1]);
-					rsSubjectAccount.getObjectContext().commitChanges();
+					rsSubjectAccount.updateRow();
 				} catch(Exception e) {
-					rsSubjectAccount.getObjectContext().rollbackChanges();
 					//TODO: Verify that the exception was actually caused by the UNIQUE restriction
 					user.sendChat("The account [" + params[1] + "] already exists!", whisperBack);
 					return;
@@ -674,18 +669,15 @@ public class CommandEventHandler implements EventHandler {
 					return;
 				}
 				
-				Timestamp mostRecent = null;
+				Date mostRecent = null;
 				String mostRecentAction = null;
 				
 				Account rsSubjectAccount = Account.get(params[0]);
-				if(!rsSubjectAccount.next()) {
-					d.close(rsSubjectAccount);
-					
+				if(rsSubjectAccount == null) {
 					//They don't have an account by that name, check if it's a user
 					BNetUser bnSubject = source.getBNetUser(params[0], user);
 					BNLogin rsSubject = BNLogin.get(bnSubject);
-					if(!rsSubject.next()) {
-						d.close(rsSubject);
+					if(rsSubject == null) {
 						user.sendChat("I have never seen [" + bnSubject.getFullAccountName() + "]", whisperBack);
 						return;
 					}
@@ -693,28 +685,20 @@ public class CommandEventHandler implements EventHandler {
 					mostRecent = rsSubject.getLastSeen();
 					mostRecentAction = rsSubject.getLastAction();
 					params[0] = rsSubject.getLogin();
-					d.close(rsSubject);
 				} else {
-					BNLogin rsSubjectUsers = Account.getUsers(rsSubjectAccount.getId());
 					params[0] = rsSubjectAccount.getName();
-					d.close(rsSubjectAccount);
-					if(!rsSubjectUsers.next()) {
-					} else {
-						//Check the user's accounts
-						do {
-							Timestamp nt = rsSubjectUsers.getLastSeen();
-							if(mostRecent == null) {
+					for(BNLogin rsSubjectUsers : rsSubjectAccount.getBnLogins()) {
+						Date nt = rsSubjectUsers.getLastSeen();
+						if(mostRecent == null) {
+							mostRecent = nt;
+							mostRecentAction = rsSubjectUsers.getLastAction();
+						} else {
+							if((nt != null) && (nt.compareTo(mostRecent) > 0)) {
 								mostRecent = nt;
 								mostRecentAction = rsSubjectUsers.getLastAction();
-							} else {
-								if((nt != null) && (nt.compareTo(mostRecent) > 0)) {
-									mostRecent = nt;
-									mostRecentAction = rsSubjectUsers.getLastAction();
-								}
 							}
-						} while(rsSubjectUsers.next());
+						}
 					}
-					d.close(rsSubjectUsers);
 				}
 				
 				if(mostRecent == null) {
@@ -739,40 +723,27 @@ public class CommandEventHandler implements EventHandler {
 
 				BNetUser bnSubject = source.getBNetUser(params[0], user);
 				BNLogin rsSubject = BNLogin.get(bnSubject);
-				if(!rsSubject.next()) {
-					d.close(rsSubject);
+				if(rsSubject == null) {
 					user.sendChat("I have never seen [" + bnSubject.getFullAccountName() + "] in the channel", whisperBack);
 					return;
 				}
-				rsSubject.saveCursor();
 				String subject = rsSubject.getLogin();
 				
-				Long newAccount = null;
+				Account newAccount = null;
 				if(params.length == 2) {
-					Account rsSubjectAccount = Account.get(params[1]);
-					if(!rsSubjectAccount.next()) {
-						d.close(rsSubjectAccount);
-						d.close(rsSubject);
+					newAccount = Account.get(params[1]);
+					if(newAccount == null)
 						throw new AccountDoesNotExistException(params[1]);
-					}
-					newAccount = rsSubjectAccount.getId();
-					d.close(rsSubjectAccount);
 				}
 				
-				rsSubject.refreshCursor();
 				rsSubject.setAccount(newAccount);
 				rsSubject.updateRow();
-				d.close(rsSubject);
 				
 				// Set params[1] to what the account looks like in the database
-				if(newAccount == null) {
+				if(newAccount == null)
 					params = new String[] { params[0], "NULL" };
-				} else {
-					Account rsSubjectAccount = Account.get(newAccount);
-					if(rsSubjectAccount.next())
-						params[1] = rsSubjectAccount.getName();
-					d.close(rsSubjectAccount);
-				}
+				else
+					params[1] = newAccount.getName();
 				
 				bnSubject.resetPrettyName();
 				user.sendChat("User [" + subject + "] was added to account [" + params[1] + "] successfully.", whisperBack);
@@ -786,21 +757,18 @@ public class CommandEventHandler implements EventHandler {
 						throw new InvalidUseException();
 					
 					Command rsCommand = Command.get(params[0]);
-					if(!rsCommand.next()) {
-						d.close(rsCommand);
+					if(rsCommand == null) {
 						user.sendChat("That command does not exist!", whisperBack);
 						return;
 					}
 					
 					try {
-						Long access = new Long(params[1]);
+						int access = Integer.parseInt(params[1]);
 						rsCommand.setAccess(access);
 						rsCommand.updateRow();
-						d.close(rsCommand);
 						
 						user.sendChat("Successfully changed the authorization required for command [" + params[0] + "] to " + access, whisperBack);
 					} catch(NumberFormatException e) {
-						d.close(rsCommand);
 						throw new InvalidUseException();
 					}
 				} catch(InvalidUseException e) {
@@ -884,57 +852,34 @@ public class CommandEventHandler implements EventHandler {
 				}
 				
 				Account rsSubject = Account.get(params[0]);
-				if(!rsSubject.next()) {
-					d.close(rsSubject);
+				if(rsSubject == null)
 					throw new AccountDoesNotExistException(params[0]);
-				}
-				rsSubject.saveCursor();
 				params[0] = rsSubject.getName();
 				
 				Account rsTarget = Account.get(params[1]);
-				if(!rsTarget.next()) {
-					d.close(rsSubject);
-					d.close(rsTarget);
+				if(rsTarget == null)
 					throw new AccountDoesNotExistException(params[1]);
-				}
 				params[1] = rsTarget.getName();
-
-				
-				long subjectID = rsSubject.getId();
-				long targetID = rsTarget.getId();
 				
 				String recursive = params[0];
-				
-				do {
-					long id = rsTarget.getId();
-					Long cb = rsTarget.getCreatedBy();
-					
-					recursive += " -> " + rsTarget.getName();
-					if(id == subjectID) {
-						user.sendChat("Recursion detected: " + recursive, whisperBack);
-						break;
-					}
 
-					if(cb != null) {
-						d.close(rsTarget);
-						rsTarget = Account.get(cb);
-						if(!rsTarget.next())
-							cb = null;
-					}
-					
+				Account cb = rsTarget.getRecruiter();
+				do {
 					if(cb == null) {
-						rsSubject.refreshCursor();
-						rsSubject.setCreatedBy(targetID);
+						rsSubject.setRecruiter(rsTarget);
 						rsSubject.updateRow();
 						user.sendChat("Successfully updated recruiter for [ " + params[0] + " ] to [ " + params[1] + " ]" , whisperBack);
 						break;
 					}
 					
+					recursive += " -> " + cb.getName();
+					if(cb == rsSubject) {
+						user.sendChat("Recursion detected: " + recursive, whisperBack);
+						break;
+					}
+
+					cb = cb.getRecruiter();
 				} while(true);
-				
-				recursive = null;
-				d.close(rsTarget);
-				d.close(rsSubject);
 			}});
 		Profile.registerCommand("sweepban", new CommandRunnable() {
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack,
@@ -982,43 +927,32 @@ public class CommandEventHandler implements EventHandler {
 					if((params == null) || (params.length != 1))
 						throw new InvalidUseException();
 					
-
 					BNetUser bnSubject = null;
 					Account rsSubjectAccount = Account.get(params[0]);
 					String result = null;
-					if(rsSubjectAccount.next()) {
+					if(rsSubjectAccount != null) {
 						result = rsSubjectAccount.getName();
 					} else {
 						bnSubject = source.getBNetUser(params[0], user);
-						BNLogin rsSubject = BNLogin.get(bnSubject);
 						
-						if((rsSubject == null) || (!rsSubject.next())) {
+						BNLogin rsSubject = BNLogin.get(bnSubject);
+						if(rsSubject == null) {
 							user.sendChat("I have never seen [" + bnSubject.getFullLogonName() + "] in the channel", whisperBack);
 							return;
 						}
 						
-						bnSubject = source.getBNetUser(rsSubject.getLogin(), user);
-						d.close(rsSubject);
-						d.close(rsSubjectAccount);
-						rsSubjectAccount = Account.get(bnSubject);
-						
-						if((rsSubjectAccount == null) || (!rsSubjectAccount.next())) {
+						rsSubjectAccount = rsSubject.getAccount();
+						if(rsSubjectAccount == null) {
 							user.sendChat("User [" + params[0] + "] has no account", whisperBack);
-							if(rsSubjectAccount != null)
-								d.close(rsSubjectAccount);
 							return;
 						}
 						
 						result = bnSubject.toString();
 					}
-
-					long subjectAccountID = rsSubjectAccount.getId();
-					long subjectAccess = rsSubjectAccount.getAccess();
-					Rank rsSubjectRank = d.getRank(subjectAccess);
 					
-					Date subjectBirthday = rsSubjectAccount.getBirthday();
-					
-					if(rsSubjectRank.next()) {
+					// Access
+					Rank rsSubjectRank = rsSubjectAccount.getRank();
+					if(rsSubjectRank != null) {
 						if(bnSubject == null) {
 							String prefix = rsSubjectRank.getShortPrefix();
 							if(prefix == null)
@@ -1032,13 +966,14 @@ public class CommandEventHandler implements EventHandler {
 							result = prefix + rsSubjectAccount.getName();
 						}
 						
-						result += " " + rsSubjectRank.getVerbStr();
-						result += " (" + subjectAccess + ")";
+						result += " " + rsSubjectRank.getVerbstr();
+						result += " (" + rsSubjectAccount.getAccess() + ")";
 					} else {
-						result += " has access " + subjectAccess;
+						result += " has access " + rsSubjectAccount.getAccess();
 					}
-					d.close(rsSubjectRank);
 					
+					// Birthday
+					Date subjectBirthday = rsSubjectAccount.getBirthday();
 					if(subjectBirthday != null) {
 						double age = System.currentTimeMillis() - subjectBirthday.getTime();
 						age /= 1000 * 60 * 60 * 24 * 365.24;
@@ -1046,21 +981,17 @@ public class CommandEventHandler implements EventHandler {
 						result += ", is " + Double.toString(age) + " years old";
 					}
 					
-					// Append aliases
-					ArrayList<String> aliases = new ArrayList<String>();
-					Timestamp lastSeen = null;
-					BNLogin rsSubject = Account.getUsers(subjectAccountID);
-					while(rsSubject.next()) {
+					// Last seen
+					Date lastSeen = null;
+					for(BNLogin rsSubject : rsSubjectAccount.getBnLogins()) {
 						if(lastSeen == null)
 							lastSeen = rsSubject.getLastSeen();
 						else {
-							Timestamp nt = rsSubject.getLastSeen();
+							Date nt = rsSubject.getLastSeen();
 							if((nt != null) && (nt.compareTo(lastSeen) > 0))
 								lastSeen = nt;
 						}
-						aliases.add(rsSubject.getLogin());
 					}
-					d.close(rsSubject);
 
 					if(lastSeen != null) {
 						result += ", was last seen [ ";
@@ -1068,33 +999,27 @@ public class CommandEventHandler implements EventHandler {
 						result += " ] ago";
 					}
 					
-					Long cb = rsSubjectAccount.getCreatedBy();
-					if(cb != null) {
-						Account rsCreatorAccount = Account.get(cb);
-						if(rsCreatorAccount.next()) {
-							result += ", was recruited by ";
-							result += rsCreatorAccount.getName();
-						}
-						d.close(rsCreatorAccount);
+					// Recruiter
+					Account rsCreatorAccount = rsSubjectAccount.getRecruiter();
+					if(rsCreatorAccount != null) {
+						result += ", was recruited by ";
+						result += rsCreatorAccount.getName();
 					}
 					
 					boolean andHasAliases = false;
-					for(String l : aliases) {
-						
-						if((bnSubject != null) && (bnSubject.equals(l)))
+					for(BNLogin alias : rsSubjectAccount.getBnLogins()) {
+						if((bnSubject != null) && bnSubject.equals(alias.getLogin()))
 							continue;
-						
+
+						result += ", ";
 						if(!andHasAliases) {
 							andHasAliases = true;
-							result += ", and has aliases ";
-						} else {
-							result += ", ";
+							result += "and has aliases ";
 						}
 						
-						result += l;
+						result += alias.getLogin();
 					}
 					
-					d.close(rsSubjectAccount);
 					user.sendChat(result, whisperBack);
 				} catch(InvalidUseException e) {
 					user.sendChat("Use: %trigger%whois <user>[@realm]", whisperBack);
@@ -1122,10 +1047,9 @@ public class CommandEventHandler implements EventHandler {
 		
 		m.setIsread(true);
 		try {
-			m.getObjectContext().commitChanges();
+			m.updateRow();
 		} catch(Exception e) {
 			Out.exception(e);
-			m.getObjectContext().rollbackChanges();
 			user.sendChat("Failed to set mail read", whisperBack);
 		}
 		
@@ -1218,12 +1142,12 @@ public class CommandEventHandler implements EventHandler {
 	}
 
 	private static void createAccount(String accountName, Account recruiter, BNLogin rsSubject)
-	throws SQLException, AccountDoesNotExistException {
+	throws AccountDoesNotExistException {
 		Account rsSubjectAccount = Account.get(accountName);
 		if(rsSubjectAccount != null)
 			throw new AccountDoesNotExistException("That account already exists!");
 		
-		rsSubjectAccount = Account.create(accountName, 0, recruiter);
+		rsSubjectAccount = Account.create(accountName, Rank.get(0), recruiter);
 		if(rsSubjectAccount == null)
 			throw new AccountDoesNotExistException("Failed to create account [" + accountName + "] for an unknown reason");
 		
@@ -1231,9 +1155,8 @@ public class CommandEventHandler implements EventHandler {
 		rsSubjectAccount.setRank(Rank.get(GlobalSettings.recruitAccess));
 		
 		try {
-			rsSubjectAccount.getObjectContext().commitChanges();
+			rsSubjectAccount.updateRow();
 		} catch(Exception e) {
-			rsSubjectAccount.getObjectContext().rollbackChanges();
 			throw new AccountDoesNotExistException(e.getMessage());
 		}
 	}
@@ -1367,10 +1290,9 @@ public class CommandEventHandler implements EventHandler {
 			}
 			}
 			try {
-				rsUser.getObjectContext().commitChanges();
+				rsUser.updateRow();
 			} catch(Exception e) {
 				Out.exception(e);
-				rsUser.getObjectContext().rollbackChanges();
 			}
 			
 			Account rsAccount = Account.get(user);
@@ -1444,10 +1366,9 @@ public class CommandEventHandler implements EventHandler {
 							rsAccount.setRank(Rank.get(rank));
 							rsAccount.setLastRankChange(new Date(System.currentTimeMillis()));
 							try {
-								rsAccount.getObjectContext().commitChanges();
+								rsAccount.updateRow();
 							} catch(Exception e) {
 								Out.exception(e);
-								rsAccount.getObjectContext().rollbackChanges();
 								break apBlock;
 							}
 							user.resetPrettyName();	//Reset the presentable name
