@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.cayenne.CayenneDataObject;
 
 import net.bnubot.db.Account;
-import net.bnubot.db.Bnlogin;
+import net.bnubot.db.BNLogin;
 import net.bnubot.db.Mail;
 import net.bnubot.db.Rank;
 
@@ -77,15 +77,15 @@ public abstract class _Account extends CayenneDataObject {
         return (value != null) ? (Integer) value : 0;
     }
 
-    public void addToBnLogins(Bnlogin obj) {
+    public void addToBnLogins(BNLogin obj) {
         addToManyTarget("bnLogins", obj, true);
     }
-    public void removeFromBnLogins(Bnlogin obj) {
+    public void removeFromBnLogins(BNLogin obj) {
         removeToManyTarget("bnLogins", obj, true);
     }
     @SuppressWarnings("unchecked")
-    public List<Bnlogin> getBnLogins() {
-        return (List<Bnlogin>)readProperty("bnLogins");
+    public List<BNLogin> getBnLogins() {
+        return (List<BNLogin>)readProperty("bnLogins");
     }
 
 

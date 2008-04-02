@@ -69,7 +69,7 @@
 		<obj-attribute name="triviaCorrect" type="int" db-attribute-path="trivia_correct"/>
 		<obj-attribute name="triviaWin" type="int" db-attribute-path="trivia_win"/>
 	</obj-entity>
-	<obj-entity name="Bnlogin" className="net.bnubot.db.Bnlogin" dbEntityName="bnlogin">
+	<obj-entity name="BNLogin" className="net.bnubot.db.BNLogin" dbEntityName="bnlogin">
 		<obj-attribute name="created" type="java.util.Date" db-attribute-path="created"/>
 		<obj-attribute name="lastAction" type="java.lang.String" db-attribute-path="lastAction"/>
 		<obj-attribute name="lastSeen" type="java.util.Date" db-attribute-path="lastSeen"/>
@@ -81,7 +81,7 @@
 		<obj-attribute name="winsW2BN" type="java.lang.Integer" db-attribute-path="winsW2BN"/>
 	</obj-entity>
 	<obj-entity name="Command" className="net.bnubot.db.Command" dbEntityName="command">
-		<obj-attribute name="access" type="java.lang.Integer" db-attribute-path="access"/>
+		<obj-attribute name="access" type="int" db-attribute-path="access"/>
 		<obj-attribute name="cmdgroup" type="java.lang.String" db-attribute-path="cmdgroup"/>
 		<obj-attribute name="description" type="java.lang.String" db-attribute-path="description"/>
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
@@ -147,13 +147,13 @@
 	<db-relationship name="accountArray" source="rank" target="account" toMany="true">
 		<db-attribute-pair source="id" target="access"/>
 	</db-relationship>
-	<obj-relationship name="bnLogins" source="Account" target="Bnlogin" db-relationship-path="aliases"/>
+	<obj-relationship name="bnLogins" source="Account" target="BNLogin" db-relationship-path="aliases"/>
 	<obj-relationship name="rank" source="Account" target="Rank" db-relationship-path="toRank"/>
 	<obj-relationship name="recievedMail" source="Account" target="Mail" db-relationship-path="recievedMail"/>
 	<obj-relationship name="recruiter" source="Account" target="Account" db-relationship-path="recruiter"/>
 	<obj-relationship name="recruits" source="Account" target="Account" db-relationship-path="recruits"/>
 	<obj-relationship name="sentMail" source="Account" target="Mail" db-relationship-path="sentMail"/>
-	<obj-relationship name="account" source="Bnlogin" target="Account" db-relationship-path="toAccount"/>
+	<obj-relationship name="account" source="BNLogin" target="Account" db-relationship-path="toAccount"/>
 	<obj-relationship name="toCommand" source="CommandAlias" target="Command" db-relationship-path="toCommand"/>
 	<obj-relationship name="sentFrom" source="Mail" target="Account" db-relationship-path="sentFrom"/>
 	<obj-relationship name="sentTo" source="Mail" target="Account" db-relationship-path="sentTo"/>

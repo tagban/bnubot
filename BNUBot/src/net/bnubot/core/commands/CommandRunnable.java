@@ -6,6 +6,7 @@
 package net.bnubot.core.commands;
 
 import net.bnubot.core.Connection;
+import net.bnubot.db.Account;
 import net.bnubot.util.BNetUser;
 
 public abstract class CommandRunnable {
@@ -15,9 +16,8 @@ public abstract class CommandRunnable {
 			String param,
 			String[] params,
 			boolean whisperBack,
-			long commanderAccess,
-			String commanderAccount,
-			Long commanderAccountID,
+			int commanderAccess,
+			Account commanderAccount,
 			boolean superUser)
 	throws Exception;
 }
