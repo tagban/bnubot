@@ -32,6 +32,24 @@ public class Account extends _Account {
 		SelectQuery query = new SelectQuery(Account.class, expression);
 		return (Account)DataObjectUtils.objectForQuery(DatabaseContext.getContext(), query);
 	}
+	
+	public int getAccess() {
+		Rank rank = getRank();
+		if(rank == null)
+			return 0;
+		return DataObjectUtils.intPKForObject(rank);
+	}
+
+	/**
+	 * @param rank
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static List<Account> getRanked(int rank) {
+		Expression expression = ExpressionFactory.greaterOrEqualDbExp(Account.RANK_PROPERTY, rank);
+		SelectQuery query = new SelectQuery(Account.class, expression);
+		return DatabaseContext.getContext().performQuery(query);
+	}
 
 	public static Account create(String name, Rank access, Account recruiter) {
 		ObjectContext context = DatabaseContext.getContext();

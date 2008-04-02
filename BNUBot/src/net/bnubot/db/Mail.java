@@ -26,4 +26,13 @@ public class Mail extends _Mail {
 		context.commitChanges();
 		return mail;
 	}
+
+	/**
+	 * @param commanderAccount
+	 * @return
+	 */
+	public static int getUnreadCount(Account commanderAccount) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

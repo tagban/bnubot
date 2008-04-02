@@ -38,6 +38,7 @@ import net.bnubot.util.TimeFormatter;
 import net.bnubot.vercheck.CurrentVersion;
 
 import org.apache.cayenne.DataObjectUtils;
+import org.apache.cayenne.ObjectContext;
 
 public class CommandEventHandler implements EventHandler {
 	private static final Hashtable<Connection, Boolean> sweepBanInProgress = new Hashtable<Connection, Boolean>();
@@ -249,7 +250,7 @@ public class CommandEventHandler implements EventHandler {
 					
 					Rank rsRank = subject.getRank();
 					if(rsRank == null) {
-						String result = "Rank " + subjectRank + " does not exist! ";
+						String result = "Rank does not exist! ";
 						result += subject.getName() + "'s current status is: ";
 						result += timeElapsed + " days, ";
 						result += wins[0] + " wins, ";
@@ -276,7 +277,7 @@ public class CommandEventHandler implements EventHandler {
 						// No nulls; check if all zeroes
 						condition = (apDays == 0) && (apWins == 0) && (apD2Level == 0) && (apW3Level == 0);
 					if(condition) {
-						String result = "Autopromotions are not enabled for rank " + subjectRank + ". ";
+						String result = "Autopromotions are not enabled for rank " + subject.getAccess() + ". ";
 						result += subject.getName() + "'s current status is: ";
 						result += "Days: " + timeElapsed;
 						result += ", Wins: " + wins[0];
@@ -434,13 +435,22 @@ public class CommandEventHandler implements EventHandler {
 						if(params.length != 1)
 							throw new InvalidUseException();
 						
-						if(d.getUnreadMailCount(commanderAccount) > 0) {
+						if(Mail.getUnreadCount(commanderAccount) > 0) {
 							user.sendChat("You have unread mail!", whisperBack);
 							return;
 						}
 						
-						d.clearMail(commanderAccount);
-						user.sendChat("Mailbox cleaned!", whisperBack);
+						ObjectContext context = commanderAccount.getObjectContext();
+						try {
+							for(Mail m : commanderAccount.getRecievedMail())
+								context.deleteObject(m);
+							context.commitChanges();
+							user.sendChat("Mailbox cleaned!", whisperBack);
+						} catch(Exception e) {
+							Out.exception(e);
+							context.rollbackChanges();
+							user.sendChat("Failed to delete mail: " + e.getMessage(), whisperBack);
+						}
 					} else
 						throw new InvalidUseException();
 				} catch(InvalidUseException e) {
@@ -459,23 +469,19 @@ public class CommandEventHandler implements EventHandler {
 					if((params.length < 2) || (params[1].length() == 0))
 						throw new InvalidUseException();
 					
-					long rank = 0;
+					int rank = 0;
 					try {
-						rank = Long.parseLong(params[0]);
+						rank = Integer.parseInt(params[0]);
 					} catch(Exception e) {
 						throw new InvalidUseException();
 					}
 					
 					String message = "[Sent to ranks " + rank + "+] " + params[1];
 					
-					int numAccounts = 0;
-					Account rsAccounts = d.getRankedAccounts(rank);
-					while(rsAccounts.next()) {
-						long targetAccountID = rsAccounts.getId();
-						d.sendMail(commanderAccount, targetAccountID, message);
-						numAccounts++;
-					}
-					user.sendChat("Mail queued for delivery to " + numAccounts + " accounts", whisperBack);
+					List<Account> rsAccounts = Account.getRanked(rank);
+					for(Account a : rsAccounts)
+						Mail.send(commanderAccount, a, message);
+					user.sendChat("Mail queued for delivery to " + rsAccounts.size() + " accounts", whisperBack);
 				} catch(InvalidUseException e) {
 					user.sendChat("Use: %trigger%mailall <minimum rank> <message>", whisperBack);
 				}
@@ -528,18 +534,19 @@ public class CommandEventHandler implements EventHandler {
 					return;
 				}
 				
+				if(commanderAccount == null) {
+					user.sendChat("You must have an account to use recruit.", whisperBack);
+					return;
+				}
+				
 				BNetUser bnSubject = source.getBNetUser(params[0], user);
 				BNLogin rsSubject = BNLogin.get(bnSubject);
-				if(!rsSubject.next()) {
-					d.close(rsSubject);
+				if(rsSubject == null) {
 					user.sendChat("I have never seen [" + bnSubject.getFullLogonName() + "] in the channel", whisperBack);
 					return;
 				}
 				
-				rsSubject.saveCursor();
-				Long subjectAccountId = rsSubject.getAccount();
-				if(subjectAccountId != null) {
-					d.close(rsSubject);
+				if(rsSubject.getAccount() != null) {
 					user.sendChat("That user already has an account!", whisperBack);
 					return;
 				}
@@ -549,7 +556,6 @@ public class CommandEventHandler implements EventHandler {
 				
 				if(requiredTagPrefix != null) {
 					if(bnSubject.getFullAccountName().substring(0, requiredTagPrefix.length()).compareToIgnoreCase(requiredTagPrefix) != 0) {
-						d.close(rsSubject);
 						user.sendChat("That user must have the " + requiredTagPrefix + " tag!", whisperBack);
 						return;
 					}
@@ -562,16 +568,9 @@ public class CommandEventHandler implements EventHandler {
 						s = s.substring(0, i);
 					s = s.substring(s.length() - requiredTagSuffix.length());
 					if(s.compareToIgnoreCase(requiredTagSuffix) != 0) {
-						d.close(rsSubject);
 						user.sendChat("That user must have the " + requiredTagSuffix + " tag!", whisperBack);
 						return;
 					}
-				}
-				
-				if(commanderAccount == null) {
-					d.close(rsSubject);
-					user.sendChat("You must have an account to use recruit.", whisperBack);
-					return;
 				}
 				
 				try {
@@ -593,32 +592,32 @@ public class CommandEventHandler implements EventHandler {
 						throw new InvalidUseException();
 					
 					
-					Long subjectAccountId = null;
+					Account subjectAccount = null;
 					String output = null;
 					if(params == null) {
-						subjectAccountId = commanderAccount;
+						subjectAccount = commanderAccount;
 						output = "You have recruited: ";
 					} else {
-						Account rsSubject = Account.get(params[0]);
-						if(!rsSubject.next()) {
-							d.close(rsSubject);
+						subjectAccount = Account.get(params[0]);
+						if(subjectAccount == null)
 							throw new AccountDoesNotExistException(params[0]);
-						}
-						subjectAccountId = rsSubject.getId();
-						output = rsSubject.getName();
+						output = subjectAccount.getName();
 						output += " has recruited: ";
-						d.close(rsSubject);
 					}
 					
-					Account rsRecruits = Account.getRecruits(subjectAccountId, GlobalSettings.recruitAccess);
-					if(rsRecruits.next()) {
-						do {
-							output += rsRecruits.getName() + "(" + rsRecruits.getAccess() + ") ";
-						} while(rsRecruits.next());
+					List<Account> rsRecruits = subjectAccount.getRecruits();
+					// Remove accounts below the threshold
+					for(Account recruit : rsRecruits) {
+						if(recruit.getAccess() < GlobalSettings.recruitAccess)
+							rsRecruits.remove(recruit);
+					}
+					
+					if(rsRecruits.size() > 0) {
+						for(Account recruit : rsRecruits)
+							output += recruit.getName() + "(" + recruit.getAccess() + ") ";
 					} else {
 						output += "no one";
 					}
-					d.close(rsRecruits);
 					
 					output = output.trim();
 					user.sendChat(output, whisperBack);
@@ -645,13 +644,14 @@ public class CommandEventHandler implements EventHandler {
 				}
 				
 				Account rsSubjectAccount = Account.get(params[0]);
-				if((rsSubjectAccount == null) || !rsSubjectAccount.next())
+				if(rsSubjectAccount == null)
 					throw new AccountDoesNotExistException(params[0]);
 				
 				try {
 					rsSubjectAccount.setName(params[1]);
-					rsSubjectAccount.updateRow();
-				} catch(SQLException e) {
+					rsSubjectAccount.getObjectContext().commitChanges();
+				} catch(Exception e) {
+					rsSubjectAccount.getObjectContext().rollbackChanges();
 					//TODO: Verify that the exception was actually caused by the UNIQUE restriction
 					user.sendChat("The account [" + params[1] + "] already exists!", whisperBack);
 					return;
