@@ -73,7 +73,7 @@ public class GlobalSettings {
 	public static boolean enableFloodProtect;
 	public static boolean packetLog;
 	public static boolean whisperBack;
-	public static long recruitAccess;
+	public static int recruitAccess;
 	public static String recruitTagPrefix;
 	public static String recruitTagSuffix;
 	public static ReleaseType releaseType;
