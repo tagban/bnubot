@@ -38,9 +38,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import net.bnubot.DatabaseContext;
-import net.bnubot.bot.gui.database.DatabaseAccountEditor;
-import net.bnubot.bot.gui.database.DatabaseRankEditor;
 import net.bnubot.bot.gui.icons.BNetIcon;
 import net.bnubot.bot.gui.icons.IconsDotBniReader;
 import net.bnubot.bot.gui.notifications.Growl;
@@ -217,7 +214,7 @@ public class GuiDesktop extends JFrame {
 			}
 			menuBar.add(menu);
 			
-			menu = new JMenu("Database");
+			/*menu = new JMenu("Database");
 			{
 				JMenuItem menuItem = new JMenuItem("Rank editor");
 				menuItem.addActionListener(new ActionListener() {
@@ -239,7 +236,7 @@ public class GuiDesktop extends JFrame {
 					} });
 				menu.add(menuItem);
 			}
-			menuBar.add(menu);
+			menuBar.add(menu);*/
 		
 			menu = new JMenu("Debug");
 			{
