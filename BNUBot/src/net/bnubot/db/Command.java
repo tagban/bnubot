@@ -29,11 +29,17 @@ public class Command extends _Command {
 			"GROUP BY cmdgroup ");
 	
 	/**
-	 * Get a command by name
-	 * @param command The name of the command
-	 * @return The command, or null
+	 * Get a Command by name
+	 * @param command The name of the Command
+	 * @return The Command, or NULL if the command is not in the database
 	 */
 	public static Command get(String command) {
+		// Check for aliases
+		CommandAlias ca = CommandAlias.get(command);
+		if(ca != null)
+			return ca.getToCommand();
+		
+		// No aliases found; check for the real command
 		Expression expression = ExpressionFactory.matchExp(Command.NAME_PROPERTY, command);
 		SelectQuery query = new SelectQuery(Command.class, expression);
 		return (Command)DataObjectUtils.objectForQuery(DatabaseContext.getContext(), query);

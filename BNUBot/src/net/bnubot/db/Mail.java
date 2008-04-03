@@ -33,13 +33,17 @@ public class Mail extends _Mail {
 	}
 
 	/**
-	 * @param account
-	 * @return
+	 * Get the number of unread mail messages
+	 * @param account The user to check
+	 * @return The number of unread mail messages
 	 */
-	@Deprecated
 	public static int getUnreadCount(Account account) {
-		// TODO Auto-generated method stub
-		return 0;
+		// TODO: Replace this with a more efficient query
+		int count = 0;
+		for(Mail m : account.getRecievedMail())
+			if(!m.isIsread())
+				count++;
+		return count;
 	}
 
 	/**
