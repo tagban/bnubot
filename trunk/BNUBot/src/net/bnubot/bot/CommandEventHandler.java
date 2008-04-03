@@ -1145,7 +1145,10 @@ public class CommandEventHandler implements EventHandler {
 		if(rsSubjectAccount != null)
 			throw new AccountDoesNotExistException("That account already exists!");
 		
-		rsSubjectAccount = Account.create(accountName, Rank.get(0), recruiter);
+		try {
+			rsSubjectAccount = Account.create(accountName, Rank.get(0), recruiter);
+		} catch(Exception e) {}
+		
 		if(rsSubjectAccount == null)
 			throw new AccountDoesNotExistException("Failed to create account [" + accountName + "] for an unknown reason");
 		
