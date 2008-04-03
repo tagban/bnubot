@@ -23,7 +23,7 @@ public class Account extends _Account {
 	/**
 	 * Get an Account from a BNetUser
 	 * @param user The BNetUser
-	 * @return The Account
+	 * @return The Account, or NULL if the user has no account
 	 */
 	public static Account get(BNetUser user) {
 		BNLogin bnl = BNLogin.get(user);
