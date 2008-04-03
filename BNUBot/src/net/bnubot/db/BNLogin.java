@@ -50,17 +50,4 @@ public class BNLogin extends _BNLogin {
 		bnl.updateRow();
 		return bnl;
 	}
-
-	/**
-	 * Try to save changes to this object
-	 * @throws Exception If a commit error occurs
-	 */
-	public void updateRow() throws Exception {
-		try {
-			getObjectContext().commitChanges();
-		} catch(Exception e) {
-			getObjectContext().rollbackChanges();
-			throw e;
-		}
-	}
 }

@@ -3,10 +3,9 @@ package net.bnubot.db.auto;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.cayenne.CayenneDataObject;
-
 import net.bnubot.db.Account;
 import net.bnubot.db.BNLogin;
+import net.bnubot.db.CustomDataObject;
 import net.bnubot.db.Mail;
 import net.bnubot.db.Rank;
 
@@ -16,7 +15,7 @@ import net.bnubot.db.Rank;
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
  */
-public abstract class _Account extends CayenneDataObject {
+public abstract class _Account extends CustomDataObject {
 
     public static final String BIRTHDAY_PROPERTY = "birthday";
     public static final String CREATED_PROPERTY = "created";
