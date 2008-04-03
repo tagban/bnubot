@@ -36,9 +36,6 @@
 		<db-attribute name="alias" type="VARCHAR" isPrimaryKey="true" isMandatory="true" length="32"/>
 		<db-attribute name="name" type="VARCHAR" isMandatory="true" length="32"/>
 	</db-entity>
-	<db-entity name="dbVersion">
-		<db-attribute name="version" type="INTEGER" isPrimaryKey="true" isMandatory="true" length="11"/>
-	</db-entity>
 	<db-entity name="mail">
 		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true" length="11"/>
 		<db-attribute name="isread" type="TINYINT" isMandatory="true" length="1"/>
@@ -89,9 +86,6 @@
 	<obj-entity name="CommandAlias" className="net.bnubot.db.CommandAlias" dbEntityName="command_alias">
 		<obj-attribute name="alias" type="java.lang.String" db-attribute-path="alias"/>
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
-	</obj-entity>
-	<obj-entity name="DbVersion" className="net.bnubot.db.DbVersion" dbEntityName="dbVersion">
-		<obj-attribute name="version" type="int" db-attribute-path="version"/>
 	</obj-entity>
 	<obj-entity name="Mail" className="net.bnubot.db.Mail" dbEntityName="mail">
 		<obj-attribute name="isread" type="boolean" db-attribute-path="isread"/>
