@@ -5,6 +5,7 @@
 
 package net.bnubot.db;
 
+import java.util.Date;
 import java.util.List;
 
 import net.bnubot.DatabaseContext;
@@ -87,20 +88,22 @@ public class Account extends _Account {
 	 * @param access The Account's Rank
 	 * @param recruiter The Account's recuter's Account
 	 * @return The created Account
+	 * @throws Exception If a commit error occurs
 	 */
-	public static Account create(String name, Rank access, Account recruiter) {
+	public static Account create(String name, Rank access, Account recruiter) throws Exception {
+		Date now = new Date(System.currentTimeMillis());
+		
 		ObjectContext context = DatabaseContext.getContext();
 		Account account = context.newObject(Account.class);
+		account.setCreated(now);
+		account.setLastRankChange(now);
 		account.setName(name);
 		account.setRank(access);
 		account.setRecruiter(recruiter);
-		try {
-			context.commitChanges();
-			return account;
-		} catch(Exception e) {
-			context.rollbackChanges();
-			return null;
-		}
+		account.setTriviaCorrect(0);
+		account.setTriviaWin(0);
+		account.updateRow();
+		return account;
 	}
 	
 	/**
