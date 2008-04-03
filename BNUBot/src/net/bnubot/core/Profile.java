@@ -11,7 +11,6 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 
-import net.bnubot.DatabaseContext;
 import net.bnubot.bot.CommandEventHandler;
 import net.bnubot.bot.console.ConsoleEventHandler;
 import net.bnubot.bot.gui.GuiEventHandler;
@@ -22,12 +21,6 @@ import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.Out;
 
-import org.apache.cayenne.DataObjectUtils;
-import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.query.SelectQuery;
-
 public class Profile {
 	private static final List<Profile> profiles = new ArrayList<Profile>();
 	private static final Dictionary<String, CommandRunnable> commands = new Hashtable<String, CommandRunnable>();
@@ -36,14 +29,8 @@ public class Profile {
 		if(commands.get(name) != null)
 			throw new IllegalArgumentException("The command " + name + " is already registered");
 		
-		ObjectContext context = DatabaseContext.getContext();
-		Expression expr = ExpressionFactory.matchExp(Command.NAME_PROPERTY, name);
-		SelectQuery query = new SelectQuery(Command.class, expr);
-		Command cmd = (Command) DataObjectUtils.objectForQuery(context, query);
-		if(cmd == null) {
-			//TODO
+		if(Command.get(name) == null)
 			throw new IllegalStateException("TODO: create the command in the database");
-		}
 		
 		commands.put(name, action);
 	}
