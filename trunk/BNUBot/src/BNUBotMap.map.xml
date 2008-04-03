@@ -105,7 +105,7 @@
 		<obj-attribute name="apRecruitScore" type="java.lang.Integer" db-attribute-path="apRecruitScore"/>
 		<obj-attribute name="apW3Level" type="java.lang.Integer" db-attribute-path="apW3Level"/>
 		<obj-attribute name="apWins" type="java.lang.Integer" db-attribute-path="apWins"/>
-		<obj-attribute name="expireDays" type="java.lang.Byte" db-attribute-path="expireDays"/>
+		<obj-attribute name="expireDays" type="int" db-attribute-path="expireDays"/>
 		<obj-attribute name="greeting" type="java.lang.String" db-attribute-path="greeting"/>
 		<obj-attribute name="prefix" type="java.lang.String" db-attribute-path="prefix"/>
 		<obj-attribute name="shortPrefix" type="java.lang.String" db-attribute-path="shortPrefix"/>

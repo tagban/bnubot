@@ -71,11 +71,12 @@ public abstract class _Rank extends CayenneDataObject {
         return (Integer)readProperty("apWins");
     }
 
-    public void setExpireDays(Byte expireDays) {
+    public void setExpireDays(int expireDays) {
         writeProperty("expireDays", expireDays);
     }
-    public Byte getExpireDays() {
-        return (Byte)readProperty("expireDays");
+    public int getExpireDays() {
+        Object value = readProperty("expireDays");
+        return (value != null) ? (Integer) value : 0;
     }
 
     public void setGreeting(String greeting) {
