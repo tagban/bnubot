@@ -76,6 +76,7 @@ public class Command extends _Command {
 
 	/**
 	 * Try to save changes to this object
+	 * @throws Exception If a commit error occurs
 	 */
 	public void updateRow() throws Exception {
 		try {

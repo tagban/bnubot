@@ -14,8 +14,9 @@ public class Rank extends _Rank {
 	private static final long serialVersionUID = 6998327103095647711L;
 
 	/**
-	 * @param targetAccess
-	 * @return
+	 * Get a Rank by access level
+	 * @param access The access level
+	 * @return The Rank
 	 */
 	public static Rank get(int access) {
 		return DataObjectUtils.objectForPK(DatabaseContext.getContext(), Rank.class, access);

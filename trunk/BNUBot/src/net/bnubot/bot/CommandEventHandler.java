@@ -59,9 +59,10 @@ public class CommandEventHandler implements EventHandler {
 	
 	public void touchUser(Connection source, BNetUser user, String action) {
 		BNLogin rsUser = BNLogin.getCreate(user);
-		if((rsUser != null) && (action != null)) {
+		if(rsUser != null) {
 			rsUser.setLastSeen(new Timestamp(System.currentTimeMillis()));
-			rsUser.setLastAction(action);
+			if(action != null)
+				rsUser.setLastAction(action);
 			try {
 				rsUser.updateRow();
 			} catch(Exception e) {
