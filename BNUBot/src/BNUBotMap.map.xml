@@ -91,7 +91,7 @@
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
 	</obj-entity>
 	<obj-entity name="DbVersion" className="net.bnubot.db.DbVersion" dbEntityName="dbVersion">
-		<obj-attribute name="version" type="java.lang.Integer" db-attribute-path="version"/>
+		<obj-attribute name="version" type="int" db-attribute-path="version"/>
 	</obj-entity>
 	<obj-entity name="Mail" className="net.bnubot.db.Mail" dbEntityName="mail">
 		<obj-attribute name="isread" type="boolean" db-attribute-path="isread"/>
