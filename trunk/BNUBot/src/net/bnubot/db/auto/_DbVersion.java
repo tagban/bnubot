@@ -14,11 +14,12 @@ public abstract class _DbVersion extends CayenneDataObject {
 
     public static final String VERSION_PK_COLUMN = "version";
 
-    public void setVersion(Integer version) {
+    public void setVersion(int version) {
         writeProperty("version", version);
     }
-    public Integer getVersion() {
-        return (Integer)readProperty("version");
+    public int getVersion() {
+        Object value = readProperty("version");
+        return (value != null) ? (Integer) value : 0;
     }
 
 }
