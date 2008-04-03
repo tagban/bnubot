@@ -13,6 +13,14 @@ import net.bnubot.db.auto._Mail;
 public class Mail extends _Mail {
 	private static final long serialVersionUID = 7450788505595409098L;
 
+	/**
+	 * Send mail to a user
+	 * @param from The Account the mail is sent from
+	 * @param to The Account the mail is sent to
+	 * @param message The message to send
+	 * @return The Mail object
+	 * @throws Exception If a commit error occurs
+	 */
 	public static Mail send(Account from, Account to, String message) throws Exception {
 		Mail mail = DatabaseContext.getContext().newObject(Mail.class);
 		mail.setSentFrom(from);
@@ -25,16 +33,18 @@ public class Mail extends _Mail {
 	}
 
 	/**
-	 * @param commanderAccount
+	 * @param account
 	 * @return
 	 */
-	public static int getUnreadCount(Account commanderAccount) {
+	@Deprecated
+	public static int getUnreadCount(Account account) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	/**
 	 * Try to save changes to this object
+	 * @throws Exception If a commit error occurs
 	 */
 	public void updateRow() throws Exception {
 		try {

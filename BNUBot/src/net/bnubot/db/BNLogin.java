@@ -17,12 +17,23 @@ import net.bnubot.util.BNetUser;
 public class BNLogin extends _BNLogin {
 	private static final long serialVersionUID = 8786293271622053325L;
 
+	/**
+	 * Get a BNLogin from a BNetUser
+	 * @param user The BNetUser
+	 * @return The BNLogin, or NULL if the user is not in the database
+	 */
 	public static BNLogin get(BNetUser user) {
 		Expression expr = ExpressionFactory.likeIgnoreCaseExp(BNLogin.LOGIN_PROPERTY, user.getFullAccountName());
 		SelectQuery query = new SelectQuery(BNLogin.class, expr);
 		return (BNLogin)DataObjectUtils.objectForQuery(DatabaseContext.getContext(), query);
 	}
 
+	/**
+	 * Get or create a BNLogin from a BNetUser
+	 * @param user The BNetUser
+	 * @return The BNLogin
+	 */
+	@Deprecated
 	public static BNLogin getCreate(BNetUser user) {
 		BNLogin bnl = get(user);
 		if(bnl != null)
@@ -35,6 +46,7 @@ public class BNLogin extends _BNLogin {
 
 	/**
 	 * Try to save changes to this object
+	 * @throws Exception If a commit error occurs
 	 */
 	public void updateRow() throws Exception {
 		try {
