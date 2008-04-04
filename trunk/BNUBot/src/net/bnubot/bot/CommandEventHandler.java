@@ -274,7 +274,7 @@ public class CommandEventHandler implements EventHandler {
 						// No nulls; check if all zeroes
 						condition = (apDays == 0) && (apWins == 0) && (apD2Level == 0) && (apW3Level == 0);
 					if(condition) {
-						String result = "Autopromotions are not enabled for rank " + subject.getAccess() + ". ";
+						String result = "AutoPromotions are not enabled for rank " + subject.getAccess() + ". ";
 						result += subject.getName() + "'s current status is: ";
 						result += "Days: " + timeElapsed;
 						result += ", Wins: " + wins[0];
