@@ -5,7 +5,7 @@
 
 	<node name="BNUBotDomainNode"
 		 datasource="BNUBotDomainNode.driver.xml"
-		 factory="org.apache.cayenne.conf.DriverDataSourceFactory">
+		 factory="net.bnubot.db.conf.CayenneConfiguration">
 			<map-ref name="BNUBotMap"/>
 	 </node>
 </domain>

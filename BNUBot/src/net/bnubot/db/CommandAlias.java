@@ -1,6 +1,6 @@
 /**
  * This file is distributed under the GPL
- * $Id$
+ * $Id: CommandAlias.java 1262 2008-04-03 16:52:02Z scotta $
  */
 
 package net.bnubot.db;
@@ -10,8 +10,8 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
 
-import net.bnubot.DatabaseContext;
 import net.bnubot.db.auto._CommandAlias;
+import net.bnubot.db.conf.DatabaseContext;
 
 public class CommandAlias extends _CommandAlias {
 	private static final long serialVersionUID = -3633743075279729925L;

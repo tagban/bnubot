@@ -7,8 +7,8 @@ package net.bnubot.db;
 
 import java.util.List;
 
-import net.bnubot.DatabaseContext;
 import net.bnubot.db.auto._Command;
+import net.bnubot.db.conf.DatabaseContext;
 
 import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.exp.Expression;

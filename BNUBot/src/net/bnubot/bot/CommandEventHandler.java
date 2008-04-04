@@ -12,7 +12,6 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 
-import net.bnubot.DatabaseContext;
 import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.Profile;
@@ -27,6 +26,7 @@ import net.bnubot.db.BNLogin;
 import net.bnubot.db.Command;
 import net.bnubot.db.Mail;
 import net.bnubot.db.Rank;
+import net.bnubot.db.conf.DatabaseContext;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.CookieUtility;
