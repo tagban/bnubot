@@ -124,9 +124,35 @@ public class Account extends _Account {
 	 * @param recruitTagSuffix (optional) The required BNetUser logon suffix
 	 * @return TODO
 	 */
-	@Deprecated
 	public long[] getWinsLevels(String recruitTagPrefix, String recruitTagSuffix) {
-		// TODO Auto-generated method stub
-		return null;
+		long wins = 0;
+		long d2level = 0;
+		long w3level = 0;
+		for(BNLogin login : getBnLogins()) {
+			// Check prefix
+			if((recruitTagPrefix != null) && !login.getLogin().startsWith(recruitTagPrefix))
+				continue;
+			
+			// Check suffix
+			if((recruitTagSuffix != null) && !login.getLogin().endsWith(recruitTagSuffix))
+				continue;
+			
+			// Calculate wins
+			if(login.getWinsSTAR() != null)
+				wins += login.getWinsSTAR().intValue();
+			if(login.getWinsSEXP() != null)
+				wins += login.getWinsSEXP().intValue();
+			if(login.getWinsW2BN() != null)
+				wins += login.getWinsW2BN().intValue();
+			
+			// Calculate D2 level
+			if(login.getLevelD2() != null)
+				d2level = Math.max(d2level, login.getLevelD2().intValue());
+			
+			// Calculate W3 level
+			if(login.getLevelW3() != null)
+				w3level += Math.max(w3level, login.getLevelW3().intValue());
+		}
+		return new long[] {wins, d2level, w3level};
 	}
 }
