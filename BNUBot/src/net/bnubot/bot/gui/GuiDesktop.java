@@ -45,6 +45,8 @@ import net.bnubot.bot.gui.settings.GlobalConfigurationFrame;
 import net.bnubot.bot.gui.settings.OperationCancelledException;
 import net.bnubot.core.Profile;
 import net.bnubot.core.bncs.ProductIDs;
+import net.bnubot.db.Account;
+import net.bnubot.db.Rank;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.settings.Settings;
 import net.bnubot.settings.GlobalSettings.TrayIconMode;
@@ -214,29 +216,33 @@ public class GuiDesktop extends JFrame {
 			}
 			menuBar.add(menu);
 			
-			/*menu = new JMenu("Database");
+			menu = new JMenu("Database");
 			{
 				JMenuItem menuItem = new JMenuItem("Rank editor");
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent event) {
-						if(DatabaseContext.getContext() != null)
-							new DatabaseRankEditor();
-						else
+						try {
+							new DatabaseEditor(Rank.class, "id");
+						} catch(Exception e) {
+							Out.exception(e);
 							Out.error(GuiDesktop.class, "There is no database initialized.");
+						}
 					} });
 				menu.add(menuItem);
 				
 				menuItem = new JMenuItem("Account editor");
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent event) {
-						if(DatabaseContext.getContext() != null)
-							new DatabaseAccountEditor();
-						else
+						try {
+							new DatabaseEditor(Account.class, "name");
+						} catch(Exception e) {
+							Out.exception(e);
 							Out.error(GuiDesktop.class, "There is no database initialized.");
+						}
 					} });
 				menu.add(menuItem);
 			}
-			menuBar.add(menu);*/
+			menuBar.add(menu);
 		
 			menu = new JMenu("Debug");
 			{
