@@ -50,4 +50,8 @@ public class BNLogin extends _BNLogin {
 		bnl.updateRow();
 		return bnl;
 	}
+
+	public String toDisplayString() {
+		return getLogin();
+	}
 }

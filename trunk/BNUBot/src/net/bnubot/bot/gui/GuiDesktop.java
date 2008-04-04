@@ -222,7 +222,7 @@ public class GuiDesktop extends JFrame {
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent event) {
 						try {
-							new DatabaseEditor(Rank.class, "id");
+							new DatabaseEditor(Rank.class);
 						} catch(Exception e) {
 							Out.exception(e);
 							Out.error(GuiDesktop.class, "There is no database initialized.");
@@ -234,7 +234,7 @@ public class GuiDesktop extends JFrame {
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent event) {
 						try {
-							new DatabaseEditor(Account.class, "name");
+							new DatabaseEditor(Account.class);
 						} catch(Exception e) {
 							Out.exception(e);
 							Out.error(GuiDesktop.class, "There is no database initialized.");

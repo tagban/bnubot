@@ -79,4 +79,8 @@ public class Command extends _Command {
 	public static List<Command> getGroups() {
 		return DatabaseContext.getContext().performQuery(commandGroups);
 	}
+
+	public String toDisplayString() {
+		return getName();
+	}
 }

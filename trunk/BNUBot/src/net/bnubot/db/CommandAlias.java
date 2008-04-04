@@ -27,4 +27,7 @@ public class CommandAlias extends _CommandAlias {
 		return (CommandAlias)DataObjectUtils.objectForQuery(DatabaseContext.getContext(), query);
 	}
 
+	public String toDisplayString() {
+		return getAlias();
+	}
 }
