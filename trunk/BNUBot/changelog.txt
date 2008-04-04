@@ -1,4 +1,7 @@
-2.0.4.2 (r1237) 2008-04-01
+2.0.5:
+* Added a Cayenne persistence layer to address database problems
+
+2.0.4.2 (r1237) 2008-04-01:
 * Allow use of %keywords% and commands in anti-idles and with /say (Cause of issue 61)
 * Nightly builds are now an update type! They are less stable than Alpha
 * Removed the size restraint on the "What's New" window

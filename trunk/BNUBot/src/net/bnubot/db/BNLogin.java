@@ -7,8 +7,8 @@ package net.bnubot.db;
 
 import java.util.Date;
 
-import net.bnubot.DatabaseContext;
 import net.bnubot.db.auto._BNLogin;
+import net.bnubot.db.conf.DatabaseContext;
 import net.bnubot.util.BNetUser;
 
 import org.apache.cayenne.DataObjectUtils;

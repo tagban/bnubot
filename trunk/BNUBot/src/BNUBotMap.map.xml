@@ -59,7 +59,7 @@
 		<db-attribute name="shortPrefix" type="VARCHAR" length="32"/>
 		<db-attribute name="verbstr" type="VARCHAR" length="64"/>
 	</db-entity>
-	<obj-entity name="Account" className="net.bnubot.db.Account" dbEntityName="account" superClassName="net.bnubot.db.CommandAlias">
+	<obj-entity name="Account" className="net.bnubot.db.Account" dbEntityName="account" superClassName="net.bnubot.db.CustomDataObject">
 		<obj-attribute name="birthday" type="java.util.Date" db-attribute-path="birthday"/>
 		<obj-attribute name="created" type="java.util.Date" db-attribute-path="created"/>
 		<obj-attribute name="lastRankChange" type="java.util.Date" db-attribute-path="lastRankChange"/>
@@ -67,7 +67,7 @@
 		<obj-attribute name="triviaCorrect" type="int" db-attribute-path="trivia_correct"/>
 		<obj-attribute name="triviaWin" type="int" db-attribute-path="trivia_win"/>
 	</obj-entity>
-	<obj-entity name="BNLogin" className="net.bnubot.db.BNLogin" dbEntityName="bnlogin" superClassName="net.bnubot.db.CommandAlias">
+	<obj-entity name="BNLogin" className="net.bnubot.db.BNLogin" dbEntityName="bnlogin" superClassName="net.bnubot.db.CustomDataObject">
 		<obj-attribute name="created" type="java.util.Date" db-attribute-path="created"/>
 		<obj-attribute name="lastAction" type="java.lang.String" db-attribute-path="lastAction"/>
 		<obj-attribute name="lastSeen" type="java.util.Date" db-attribute-path="lastSeen"/>
@@ -78,22 +78,22 @@
 		<obj-attribute name="winsSTAR" type="java.lang.Integer" db-attribute-path="winsSTAR"/>
 		<obj-attribute name="winsW2BN" type="java.lang.Integer" db-attribute-path="winsW2BN"/>
 	</obj-entity>
-	<obj-entity name="Command" className="net.bnubot.db.Command" dbEntityName="command" superClassName="net.bnubot.db.CommandAlias">
+	<obj-entity name="Command" className="net.bnubot.db.Command" dbEntityName="command" superClassName="net.bnubot.db.CustomDataObject">
 		<obj-attribute name="access" type="int" db-attribute-path="access"/>
 		<obj-attribute name="cmdgroup" type="java.lang.String" db-attribute-path="cmdgroup"/>
 		<obj-attribute name="description" type="java.lang.String" db-attribute-path="description"/>
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
 	</obj-entity>
-	<obj-entity name="CommandAlias" className="net.bnubot.db.CommandAlias" dbEntityName="command_alias" superClassName="net.bnubot.db.CommandAlias">
+	<obj-entity name="CommandAlias" className="net.bnubot.db.CommandAlias" dbEntityName="command_alias" superClassName="net.bnubot.db.CustomDataObject">
 		<obj-attribute name="alias" type="java.lang.String" db-attribute-path="alias"/>
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
 	</obj-entity>
-	<obj-entity name="Mail" className="net.bnubot.db.Mail" dbEntityName="mail" superClassName="net.bnubot.db.CommandAlias">
+	<obj-entity name="Mail" className="net.bnubot.db.Mail" dbEntityName="mail" superClassName="net.bnubot.db.CustomDataObject">
 		<obj-attribute name="isread" type="boolean" db-attribute-path="isread"/>
 		<obj-attribute name="message" type="java.lang.String" db-attribute-path="message"/>
 		<obj-attribute name="sent" type="java.util.Date" db-attribute-path="sent"/>
 	</obj-entity>
-	<obj-entity name="Rank" className="net.bnubot.db.Rank" dbEntityName="rank" superClassName="net.bnubot.db.CommandAlias">
+	<obj-entity name="Rank" className="net.bnubot.db.Rank" dbEntityName="rank" superClassName="net.bnubot.db.CustomDataObject">
 		<obj-attribute name="apD2Level" type="java.lang.Integer" db-attribute-path="apD2Level"/>
 		<obj-attribute name="apDays" type="java.lang.Integer" db-attribute-path="apDays"/>
 		<obj-attribute name="apMail" type="java.lang.String" db-attribute-path="apMail"/>

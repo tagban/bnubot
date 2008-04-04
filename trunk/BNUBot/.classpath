@@ -5,10 +5,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3.8.1"/>
 	<classpathentry kind="lib" path="lib/jacob.jar"/>
 	<classpathentry kind="lib" path="lib/jdic-mpcontrol.jar"/>
-	<classpathentry kind="lib" path="lib/derby-10.3.1.4.jar"/>
-	<classpathentry kind="lib" path="lib/mysql-connector-java-3.0.17-ga-bin.jar"/>
 	<classpathentry kind="lib" path="lib/ashwood-1.1.jar"/>
-	<classpathentry kind="lib" path="lib/cayenne-jdk1.5-unpublished-3.0-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="lib/commons-collections-3.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-lang-2.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-logging-1.1.jar"/>

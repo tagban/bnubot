@@ -13,12 +13,12 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-import net.bnubot.DatabaseContext;
 import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.db.Account;
+import net.bnubot.db.conf.DatabaseContext;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.HexDump;
@@ -143,7 +143,6 @@ public class TriviaEventHandler implements EventHandler {
 	}
 	
 	private String resetTrivia() {
-		ObjectContext context = DatabaseContext.getContext();
 		List<Account> leaders = Account.getTriviaLeaders();
 		if((leaders != null) && (leaders.size() > 0)) {
 			Account winner = leaders.get(0);
@@ -154,13 +153,11 @@ public class TriviaEventHandler implements EventHandler {
 				a.setTriviaCorrect(0);
 			try {
 				// Save changes
-				context.commitChanges();
+				winner.updateRow();
 				// Return the winner's name
 				return winner.getName();
 			} catch(Exception e) {
 				Out.exception(e);
-				// Revert the changes
-				context.rollbackChanges();
 			}
 		}
 		return null;
@@ -176,8 +173,7 @@ public class TriviaEventHandler implements EventHandler {
 						continue;
 					}
 					
-					ObjectContext context = DatabaseContext.getContext();
-					if(context != null) {
+					if(DatabaseContext.getContext() != null) {
 						try {
 							long max[] = getTriviaTopTwo();
 							if(max != null) {
@@ -247,20 +243,18 @@ public class TriviaEventHandler implements EventHandler {
 						unanswered = 0;
 						String extra = "!";
 
-						if(context != null) {
+						if(DatabaseContext.getContext() != null) {
 							try {
 								Account answeredBy = Account.get(answerUser);
 								if(answeredBy != null) {
 									int score = answeredBy.getTriviaCorrect();
 									score++;
 									answeredBy.setTriviaCorrect(score);
-									context.commitChanges();
-									context.commitChanges();
+									answeredBy.updateRow();
 									extra += " Your score is " + score + ".";
 								}
 							} catch(Exception e) {
 								Out.exception(e);
-								context.rollbackChanges();
 							}
 						}
 
