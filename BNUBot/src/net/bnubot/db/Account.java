@@ -52,7 +52,7 @@ public class Account extends _Account {
 		Rank rank = getRank();
 		if(rank == null)
 			return 0;
-		return DataObjectUtils.intPKForObject(rank);
+		return rank.getAccess();
 	}
 
 	/**
@@ -154,5 +154,9 @@ public class Account extends _Account {
 				w3level += Math.max(w3level, login.getLevelW3().intValue());
 		}
 		return new long[] {wins, d2level, w3level};
+	}
+
+	public String toDisplayString() {
+		return getName();
 	}
 }

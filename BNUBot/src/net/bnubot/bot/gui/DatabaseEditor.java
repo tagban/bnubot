@@ -17,6 +17,7 @@ import net.bnubot.db.Account;
 import net.bnubot.db.CustomDataObject;
 import net.bnubot.db.conf.DatabaseContext;
 
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.query.SelectQuery;
 
@@ -28,12 +29,13 @@ public class DatabaseEditor {
 	private JDialog jf = new JDialog();
 	
 	public static void main(String[] args) throws Exception {
-		new DatabaseEditor(Account.class, "name");
+		new DatabaseEditor(Account.class);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public DatabaseEditor(Class<? extends CustomDataObject> clazz, String displayField) throws Exception {
-		List<CustomDataObject> dataRows = DatabaseContext.getContext().performQuery(new SelectQuery(clazz));
+	public DatabaseEditor(Class<? extends CustomDataObject> clazz) throws Exception {
+		ObjectContext context = DatabaseContext.getContext();
+		List<CustomDataObject> dataRows = context.performQuery(new SelectQuery(clazz));
 		
 		jf.setTitle(clazz.getSimpleName() + " Editor");
 		
