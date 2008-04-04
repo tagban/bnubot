@@ -5,7 +5,7 @@
 
 package net.bnubot.bot.gui;
 
-import java.awt.Component;
+import java.awt.Container;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,11 +21,11 @@ import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import net.bnubot.db.BNLogin;
+import net.bnubot.bot.gui.components.ConfigCheckBox;
+import net.bnubot.bot.gui.components.ConfigTextArea;
 import net.bnubot.db.CustomDataObject;
 import net.bnubot.db.conf.DatabaseContext;
 
-import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.query.SelectQuery;
@@ -37,10 +37,6 @@ import org.apache.cayenne.query.SelectQuery;
 public class DatabaseEditor {
 	private Map<String, CustomDataObject> data = new HashMap<String, CustomDataObject>();
 	private JDialog jf = new JDialog();
-	
-	public static void main(String[] args) throws Exception {
-		new DatabaseEditor(BNLogin.class);
-	}
 	
 	@SuppressWarnings("unchecked")
 	public DatabaseEditor(Class<? extends CustomDataObject> clazz) throws Exception {
@@ -57,11 +53,7 @@ public class DatabaseEditor {
 		box.add(jp);
 		
 		for(CustomDataObject row : dataRows) {
-			final String disp = new StringBuilder("[")
-				.append(DataObjectUtils.intPKForObject(row))
-				.append("] ")
-				.append(row.toDisplayString())
-				.toString();
+			final String disp = row.toDisplayString();
 			model.addElement(disp);
 			data.put(disp, row);
 		}
@@ -69,12 +61,19 @@ public class DatabaseEditor {
 		jl.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent e) {
 				CustomDataObject row = data.get(jl.getSelectedValue());
-				Box box = new Box(BoxLayout.Y_AXIS);
-				for (ObjAttribute attr : row.getObjEntity().getAttributes())
-					box.add(addField(attr.getJavaClass(), attr.getName(), row.readProperty(attr.getName())));
+				Box box1 = new Box(BoxLayout.Y_AXIS);
+				Box box2 = new Box(BoxLayout.Y_AXIS);
+				Box box3 = new Box(BoxLayout.Y_AXIS);
+				for (ObjAttribute attr : row.getObjEntity().getAttributes()) {
+					if(attr.getDbAttribute().isGenerated())
+						continue;
+					addField(box1, box2, box3, attr, row);
+				}
 				
 				jp.removeAll();
-				jp.add(box);
+				jp.add(box1);
+				jp.add(box2);
+				jp.add(box3);
 				jf.pack();
 			}});
 		
@@ -85,10 +84,23 @@ public class DatabaseEditor {
 		jf.setAlwaysOnTop(true);
 	}
 	
-	public Component addField(Class<?> fieldType, String propName, Object value) {
+	public void addField(Container row1, Container row2, Container row3, ObjAttribute attr, CustomDataObject row) {
+		//final Class<?> fieldType = attr.getJavaClass();
+		final String propName = attr.getName();
+		final Object value = row.readProperty(propName);
+		final boolean isNullable = !attr.getDbAttribute().isMandatory();
+		
 		String v = null;
 		if(value != null)
 			v = value.toString();
-		return new JLabel(propName + "=" + v + ",");
+		
+		row1.add(new JLabel(propName));
+		if(isNullable) {
+			ConfigCheckBox bNull = new ConfigCheckBox("NULL", v == null);
+			row2.add(bNull);
+		} else {
+			row2.add(new JLabel());
+		}
+		row3.add(new ConfigTextArea(v));
 	}
 }
