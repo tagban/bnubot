@@ -46,6 +46,11 @@ import net.bnubot.bot.gui.settings.OperationCancelledException;
 import net.bnubot.core.Profile;
 import net.bnubot.core.bncs.ProductIDs;
 import net.bnubot.db.Account;
+import net.bnubot.db.BNLogin;
+import net.bnubot.db.Command;
+import net.bnubot.db.CommandAlias;
+import net.bnubot.db.CustomDataObject;
+import net.bnubot.db.Mail;
 import net.bnubot.db.Rank;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.settings.Settings;
@@ -218,29 +223,12 @@ public class GuiDesktop extends JFrame {
 			
 			menu = new JMenu("Database");
 			{
-				JMenuItem menuItem = new JMenuItem("Rank editor");
-				menuItem.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent event) {
-						try {
-							new DatabaseEditor(Rank.class);
-						} catch(Exception e) {
-							Out.exception(e);
-							Out.error(GuiDesktop.class, "There is no database initialized.");
-						}
-					} });
-				menu.add(menuItem);
-				
-				menuItem = new JMenuItem("Account editor");
-				menuItem.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent event) {
-						try {
-							new DatabaseEditor(Account.class);
-						} catch(Exception e) {
-							Out.exception(e);
-							Out.error(GuiDesktop.class, "There is no database initialized.");
-						}
-					} });
-				menu.add(menuItem);
+				addDatabaseEditor(menu, Account.class);
+				addDatabaseEditor(menu, BNLogin.class);
+				addDatabaseEditor(menu, Command.class);
+				addDatabaseEditor(menu, CommandAlias.class);
+				addDatabaseEditor(menu, Mail.class);
+				addDatabaseEditor(menu, Rank.class);
 			}
 			menuBar.add(menu);
 		
@@ -301,6 +289,24 @@ public class GuiDesktop extends JFrame {
 			menuBar.add(menu);
 		}
 		setJMenuBar(menuBar);
+	}
+
+	/**
+	 * @param menu
+	 */
+	private void addDatabaseEditor(JMenu menu, final Class<? extends CustomDataObject> clazz) {
+		JMenuItem menuItem;
+		menuItem = new JMenuItem(clazz.getSimpleName() + " Editor");
+		menuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				try {
+					new DatabaseEditor(clazz);
+				} catch(Exception e) {
+					Out.exception(e);
+					Out.error(GuiDesktop.class, "There is no database initialized.");
+				}
+			} });
+		menu.add(menuItem);
 	}
 
 	private void initializeSystemTray() {
