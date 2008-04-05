@@ -8,6 +8,8 @@ package net.bnubot.bot;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
@@ -404,6 +406,10 @@ public class CommandEventHandler implements EventHandler {
 						}
 						
 						List<Mail> rsMail = commanderAccount.getRecievedMail();
+						Collections.sort(rsMail, new Comparator<Mail>() {
+							public int compare(Mail arg0, Mail arg1) {
+								return arg0.getSent().compareTo(arg1.getSent());
+							}});
 						if(id == 0) {
 							for(Mail m : rsMail) {
 								id++;
