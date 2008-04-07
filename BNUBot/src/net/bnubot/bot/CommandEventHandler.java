@@ -169,10 +169,9 @@ public class CommandEventHandler implements EventHandler {
 						user.sendChat("Invalid rank: " + targetAccess, whisperBack);
 						return;
 					}
-					String subjectAccount = rsSubjectAccount.getName();
 					
 					if(!superUser) {
-						if(subjectAccount.equals(commanderAccount))
+						if(rsSubjectAccount.equals(commanderAccount))
 							throw new InsufficientAccessException("to modify your self");
 						if(targetAccess >= commanderAccess)
 							throw new InsufficientAccessException("to add users beyond " + (commanderAccess - 1));
@@ -182,7 +181,7 @@ public class CommandEventHandler implements EventHandler {
 					rsSubjectAccount.setLastRankChange(new Timestamp(System.currentTimeMillis()));
 					try {
 						rsSubjectAccount.updateRow();
-						user.sendChat("Added user [" + subjectAccount + "] successfully with access " + targetAccess, whisperBack);
+						user.sendChat("Added user [" + rsSubjectAccount.getName() + "] successfully with access " + targetAccess, whisperBack);
 					} catch(Exception e) {
 						Out.exception(e);
 						user.sendChat("Failed: " + e.getMessage(), whisperBack);
@@ -321,7 +320,7 @@ public class CommandEventHandler implements EventHandler {
 				
 				Account rsAccount = Account.get(params[0]);
 				if(rsAccount != null) {
-					user.sendChat("The account [" + params[0] + "] already exists", whisperBack);
+					user.sendChat("The account [" + rsAccount.getName() + "] already exists", whisperBack);
 					return;
 				}
 				
@@ -389,7 +388,7 @@ public class CommandEventHandler implements EventHandler {
 						
 						params[1] = rsTargetAccount.getName();
 						Mail.send(commanderAccount, rsTargetAccount, params[2]);
-						user.sendChat("Mail queued for delivery to " +  params[1], whisperBack);
+						user.sendChat("Mail queued for delivery to " + rsTargetAccount.getName(), whisperBack);
 					} else if(params[0].equals("read")
 							||params[0].equals("get")) {
 						//read [number]
