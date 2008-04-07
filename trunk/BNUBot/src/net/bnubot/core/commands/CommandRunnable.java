@@ -16,7 +16,6 @@ public abstract class CommandRunnable {
 			String param,
 			String[] params,
 			boolean whisperBack,
-			int commanderAccess,
 			Account commanderAccount,
 			boolean superUser)
 	throws Exception;
