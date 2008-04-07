@@ -89,6 +89,15 @@ public class Out {
 		else
 			e.printStackTrace();
 	}
+
+	/**
+	 * Display a popup with the exception
+	 * @param e
+	 */
+	public static void popupException(Exception e) {
+		JOptionPane.showMessageDialog(null, getRelevantStack(e), e.getClass().getName(), JOptionPane.ERROR_MESSAGE);
+		exception(e);
+	}
 	
 	/**
 	 * Attempt to popup a window with a stack trace, and exit with code 1
