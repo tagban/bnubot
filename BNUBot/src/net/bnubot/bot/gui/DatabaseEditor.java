@@ -5,7 +5,10 @@
 
 package net.bnubot.bot.gui;
 
+import java.awt.Component;
 import java.awt.Container;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +16,7 @@ import java.util.Map;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -29,14 +33,20 @@ import net.bnubot.db.conf.DatabaseContext;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.query.SelectQuery;
+;
 
 /**
  * @author sanderson
  *
  */
 public class DatabaseEditor {
-	private Map<String, CustomDataObject> data = new HashMap<String, CustomDataObject>();
+	private Map<String, CustomDataObject> dataMap = new HashMap<String, CustomDataObject>();
+	private Map<ObjAttribute, getValueDelegate> data = new HashMap<ObjAttribute, getValueDelegate>();
 	private JDialog jf = new JDialog();
+	
+	private interface getValueDelegate {
+		public Object getValue();
+	}
 	
 	@SuppressWarnings("unchecked")
 	public DatabaseEditor(Class<? extends CustomDataObject> clazz) throws Exception {
@@ -49,31 +59,39 @@ public class DatabaseEditor {
 		DefaultComboBoxModel model = new DefaultComboBoxModel();
 		final JList jl = new JList(model);
 		box.add(new JScrollPane(jl));
-		final JPanel jp = new JPanel();
-		box.add(jp);
+		
+		Box box2 = new Box(BoxLayout.Y_AXIS);
+		final JPanel jp = new JPanel(new GridBagLayout());
+		box2.add(jp);
+		
+		Box box3 = new Box(BoxLayout.X_AXIS);
+
+		box3.add(new JButton("Save"));
+		box3.add(new JButton("Revert"));
+		
+		box2.add(box3);
+		
+		box.add(box2);
 		
 		for(CustomDataObject row : dataRows) {
 			final String disp = row.toDisplayString();
 			model.addElement(disp);
-			data.put(disp, row);
+			dataMap.put(disp, row);
 		}
 		
 		jl.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent e) {
-				CustomDataObject row = data.get(jl.getSelectedValue());
-				Box box1 = new Box(BoxLayout.Y_AXIS);
-				Box box2 = new Box(BoxLayout.Y_AXIS);
-				Box box3 = new Box(BoxLayout.Y_AXIS);
+				jp.removeAll();
+				data.clear();
+				int y = 0;
+				
+				CustomDataObject row = dataMap.get(jl.getSelectedValue());
 				for (ObjAttribute attr : row.getObjEntity().getAttributes()) {
 					if(attr.getDbAttribute().isGenerated())
 						continue;
-					addField(box1, box2, box3, attr, row);
+					addField(jp, y++, attr, row);
 				}
 				
-				jp.removeAll();
-				jp.add(box1);
-				jp.add(box2);
-				jp.add(box3);
 				jf.pack();
 			}});
 		
@@ -84,8 +102,8 @@ public class DatabaseEditor {
 		jf.setAlwaysOnTop(true);
 	}
 	
-	public void addField(Container row1, Container row2, Container row3, ObjAttribute attr, CustomDataObject row) {
-		//final Class<?> fieldType = attr.getJavaClass();
+	public void addField(Container jp, int y, ObjAttribute attr, CustomDataObject row) {
+		final Class<?> fieldType = attr.getJavaClass();
 		final String propName = attr.getName();
 		final Object value = row.readProperty(propName);
 		final boolean isNullable = !attr.getDbAttribute().isMandatory();
@@ -94,13 +112,47 @@ public class DatabaseEditor {
 		if(value != null)
 			v = value.toString();
 		
-		row1.add(new JLabel(propName));
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridy = y;
+		gbc.gridx = 0;
+		gbc.fill = GridBagConstraints.BOTH;
+		jp.add(new JLabel(propName), gbc);
+		
+		final ConfigCheckBox bNull;
+		gbc.gridx++;
 		if(isNullable) {
-			ConfigCheckBox bNull = new ConfigCheckBox("NULL", v == null);
-			row2.add(bNull);
+			bNull = new ConfigCheckBox("NULL", v == null);
+			jp.add(bNull, gbc);
 		} else {
-			row2.add(new JLabel());
+			bNull = null;
+			jp.add(new JLabel(), gbc);
 		}
-		row3.add(new ConfigTextArea(v));
+		
+		final Component valueComponent;
+		if(fieldType.equals(Boolean.class))
+			valueComponent = new ConfigCheckBox(null, ((Boolean)value).booleanValue());
+		else
+			valueComponent = new ConfigTextArea(v);
+		gbc.gridx++;
+		jp.add(valueComponent, gbc);
+		
+		data.put(attr, new getValueDelegate() {
+			public Object getValue() {
+				// If it's nullable, and it's null, return null
+				if(isNullable && bNull.isSelected())
+					return null;
+				
+				// If it's a boolean, return a Boolean
+				if(fieldType.equals(Boolean.class))
+					return new Boolean(((ConfigCheckBox)valueComponent).isSelected());
+				
+				String value = ((ConfigTextArea)valueComponent).getText();
+				if(fieldType.equals(String.class))
+					return value;
+				if(fieldType.equals(Integer.class))
+					return new Integer(value);
+				
+				throw new IllegalStateException("asfd");
+			}});
 	}
 }
