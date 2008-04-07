@@ -9,6 +9,9 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +23,7 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
@@ -41,6 +45,7 @@ import org.apache.cayenne.query.SelectQuery;
  */
 public class DatabaseEditor {
 	private Map<String, CustomDataObject> dataMap = new HashMap<String, CustomDataObject>();
+	private CustomDataObject currentRow = null;
 	private Map<ObjAttribute, getValueDelegate> data = new HashMap<ObjAttribute, getValueDelegate>();
 	private JDialog jf = new JDialog();
 	
@@ -66,8 +71,28 @@ public class DatabaseEditor {
 		
 		Box box3 = new Box(BoxLayout.X_AXIS);
 
-		box3.add(new JButton("Save"));
-		box3.add(new JButton("Revert"));
+		JButton btnSave = new JButton("Save");
+		btnSave.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					for(ObjAttribute attr : data.keySet()) {
+						String key = attr.getName();
+						Object value = data.get(attr).getValue();
+						currentRow.writeProperty(key, value);
+					}
+					currentRow.getObjectContext().commitChanges();
+				} catch(Exception ex) {
+					currentRow.getObjectContext().rollbackChanges();
+					JOptionPane.showMessageDialog(jf, "Commit failed: " + ex.getClass().getSimpleName() + "\n" + ex.getMessage());
+				}
+			}});
+		box3.add(btnSave);
+		JButton btnRevert = new JButton("Revert");
+		btnRevert.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				jl.setSelectedIndex(jl.getSelectedIndex());
+			}});
+		box3.add(btnRevert);
 		
 		box2.add(box3);
 		
@@ -85,11 +110,11 @@ public class DatabaseEditor {
 				data.clear();
 				int y = 0;
 				
-				CustomDataObject row = dataMap.get(jl.getSelectedValue());
-				for (ObjAttribute attr : row.getObjEntity().getAttributes()) {
+				currentRow = dataMap.get(jl.getSelectedValue());
+				for (ObjAttribute attr : currentRow.getObjEntity().getAttributes()) {
 					if(attr.getDbAttribute().isGenerated())
 						continue;
-					addField(jp, y++, attr, row);
+					addField(jp, y++, attr, currentRow);
 				}
 				
 				jf.pack();
@@ -137,6 +162,7 @@ public class DatabaseEditor {
 		jp.add(valueComponent, gbc);
 		
 		data.put(attr, new getValueDelegate() {
+			@SuppressWarnings("deprecation")
 			public Object getValue() {
 				// If it's nullable, and it's null, return null
 				if(isNullable && bNull.isSelected())
@@ -149,8 +175,12 @@ public class DatabaseEditor {
 				String value = ((ConfigTextArea)valueComponent).getText();
 				if(fieldType.equals(String.class))
 					return value;
-				if(fieldType.equals(Integer.class))
+				if(fieldType.equals(Integer.class) || fieldType.equals(int.class))
 					return new Integer(value);
+				if(fieldType.equals(Boolean.class) || fieldType.equals(boolean.class))
+					return new Boolean(value);
+				if(fieldType.equals(Date.class))
+					return new Date(value);
 				
 				throw new IllegalStateException("asfd");
 			}});
