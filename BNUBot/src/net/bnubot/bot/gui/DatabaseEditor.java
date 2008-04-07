@@ -23,7 +23,6 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
@@ -33,6 +32,7 @@ import net.bnubot.bot.gui.components.ConfigCheckBox;
 import net.bnubot.bot.gui.components.ConfigTextArea;
 import net.bnubot.db.CustomDataObject;
 import net.bnubot.db.conf.DatabaseContext;
+import net.bnubot.util.Out;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.map.ObjAttribute;
@@ -44,10 +44,13 @@ import org.apache.cayenne.query.SelectQuery;
  *
  */
 public class DatabaseEditor {
-	private Map<String, CustomDataObject> dataMap = new HashMap<String, CustomDataObject>();
+	private final Map<String, CustomDataObject> dataMap = new HashMap<String, CustomDataObject>();
 	private CustomDataObject currentRow = null;
-	private Map<ObjAttribute, getValueDelegate> data = new HashMap<ObjAttribute, getValueDelegate>();
-	private JDialog jf = new JDialog();
+	private final Map<ObjAttribute, getValueDelegate> data = new HashMap<ObjAttribute, getValueDelegate>();
+	private final JDialog jf = new JDialog();
+	private final JPanel jp = new JPanel(new GridBagLayout());
+	private final DefaultComboBoxModel model = new DefaultComboBoxModel();
+	private final JList jl = new JList(model);
 	
 	private interface getValueDelegate {
 		public Object getValue();
@@ -60,13 +63,9 @@ public class DatabaseEditor {
 		
 		jf.setTitle(clazz.getSimpleName() + " Editor");
 		Box box = new Box(BoxLayout.X_AXIS);
-		
-		DefaultComboBoxModel model = new DefaultComboBoxModel();
-		final JList jl = new JList(model);
 		box.add(new JScrollPane(jl));
 		
 		Box box2 = new Box(BoxLayout.Y_AXIS);
-		final JPanel jp = new JPanel(new GridBagLayout());
 		box2.add(jp);
 		
 		Box box3 = new Box(BoxLayout.X_AXIS);
@@ -74,25 +73,40 @@ public class DatabaseEditor {
 		JButton btnSave = new JButton("Save");
 		btnSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				ObjectContext context = currentRow.getObjectContext();
 				try {
 					for(ObjAttribute attr : data.keySet()) {
 						String key = attr.getName();
 						Object value = data.get(attr).getValue();
 						currentRow.writeProperty(key, value);
 					}
-					currentRow.getObjectContext().commitChanges();
+					context.commitChanges();
 				} catch(Exception ex) {
-					currentRow.getObjectContext().rollbackChanges();
-					JOptionPane.showMessageDialog(jf, "Commit failed: " + ex.getClass().getSimpleName() + "\n" + ex.getMessage());
+					context.rollbackChanges();
+					Out.popupException(ex);
 				}
 			}});
 		box3.add(btnSave);
 		JButton btnRevert = new JButton("Revert");
 		btnRevert.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				jl.setSelectedIndex(jl.getSelectedIndex());
+				loadData();
 			}});
 		box3.add(btnRevert);
+		JButton btnDelete = new JButton("Delete");
+		btnDelete.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// TODO: Confirm
+				ObjectContext context = currentRow.getObjectContext();
+				try {
+					context.deleteObject(currentRow);
+					context.commitChanges();
+				} catch(Exception ex) {
+					context.rollbackChanges();
+					Out.popupException(ex);
+				}
+			}});
+		box3.add(btnDelete);
 		
 		box2.add(box3);
 		
@@ -106,18 +120,7 @@ public class DatabaseEditor {
 		
 		jl.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent e) {
-				jp.removeAll();
-				data.clear();
-				int y = 0;
-				
-				currentRow = dataMap.get(jl.getSelectedValue());
-				for (ObjAttribute attr : currentRow.getObjEntity().getAttributes()) {
-					if(attr.getDbAttribute().isGenerated())
-						continue;
-					addField(jp, y++, attr, currentRow);
-				}
-				
-				jf.pack();
+				loadData();
 			}});
 		
 		jf.add(box);
@@ -125,6 +128,21 @@ public class DatabaseEditor {
 		jf.setVisible(true);
 		jf.setModal(true);
 		jf.setAlwaysOnTop(true);
+	}
+	
+	private void loadData() {
+		jp.removeAll();
+		data.clear();
+		int y = 0;
+		
+		currentRow = dataMap.get(jl.getSelectedValue());
+		for (ObjAttribute attr : currentRow.getObjEntity().getAttributes()) {
+			if(attr.getDbAttribute().isGenerated())
+				continue;
+			addField(jp, y++, attr, currentRow);
+		}
+		
+		jf.pack();
 	}
 	
 	public void addField(Container jp, int y, ObjAttribute attr, CustomDataObject row) {
