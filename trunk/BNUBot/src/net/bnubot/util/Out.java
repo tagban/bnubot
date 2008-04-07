@@ -96,7 +96,10 @@ public class Out {
 	 */
 	public static void popupException(Exception e) {
 		JOptionPane.showMessageDialog(null, getRelevantStack(e), e.getClass().getName(), JOptionPane.ERROR_MESSAGE);
-		exception(e);
+		if(outStream != null)
+			e.printStackTrace(outStream);
+		else
+			e.printStackTrace();
 	}
 	
 	/**
