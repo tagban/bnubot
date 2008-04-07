@@ -78,7 +78,9 @@ public class DatabaseEditor {
 					}
 					currentRow.updateRow();
 				} catch(Exception ex) {
-					Out.popupException(ex);
+					jf.setModal(false);
+					Out.popupException(ex, jf);
+					jf.setModal(true);
 				}
 			}});
 		box3.add(btnSave);
@@ -96,7 +98,9 @@ public class DatabaseEditor {
 					currentRow.getObjectContext().deleteObject(currentRow);
 					currentRow.updateRow();
 				} catch(Exception ex) {
-					Out.popupException(ex);
+					jf.setModal(false);
+					Out.popupException(ex, jf);
+					jf.setModal(true);
 				}
 			}});
 		box3.add(btnDelete);

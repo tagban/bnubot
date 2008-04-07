@@ -5,8 +5,8 @@
 
 package net.bnubot.util;
 
-import java.io.File;
-import java.io.FileInputStream;
+ java.io.FileInputStream;
+import java.awt.Component;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -94,8 +94,12 @@ public class Out {
 	 * Display a popup with the exception
 	 * @param e
 	 */
-	public static void popupException(Exception e) {
-		JOptionPane.showMessageDialog(null, getRelevantStack(e), e.getClass().getName(), JOptionPane.ERROR_MESSAGE);
+	public static void popupException(Exception e, Component parent) {
+		JOptionPane.showMessageDialog(
+				parent,
+				getRelevantStack(e),
+				e.getClass().getName(),
+				JOptionPane.ERROR_MESSAGE);
 		if(outStream != null)
 			e.printStackTrace(outStream);
 		else
