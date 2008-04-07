@@ -1,5 +1,6 @@
 2.0.5:
 * Added a Cayenne persistence layer to address database problems
+* Fixed a bug where super-users couldn't use commands
 
 2.0.4.2 (r1237) 2008-04-01:
 * Allow use of %keywords% and commands in anti-idles and with /say (Cause of issue 61)
