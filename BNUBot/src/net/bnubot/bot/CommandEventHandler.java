@@ -652,6 +652,13 @@ public class CommandEventHandler implements EventHandler {
 				}
 				
 				Account rsSubjectAccount = Account.get(params[0]);
+				Account targetAccount = Account.get(params[1]);
+				
+				if((targetAccount != null) && !targetAccount.equals(rsSubjectAccount)) {
+					user.sendChat("The Account [" + targetAccount.getName() + "] already exists!", whisperBack);
+					return;
+				}
+				
 				if(rsSubjectAccount == null)
 					throw new AccountDoesNotExistException(params[0]);
 				
@@ -661,8 +668,8 @@ public class CommandEventHandler implements EventHandler {
 					rsSubjectAccount.setName(params[1]);
 					rsSubjectAccount.updateRow();
 				} catch(Exception e) {
-					//TODO: Verify that the exception was actually caused by the UNIQUE restriction
-					user.sendChat("The account [" + params[1] + "] already exists!", whisperBack);
+					Out.exception(e);
+					user.sendChat("Rename failed for an unknown reason.", whisperBack);
 					return;
 				}
 				
@@ -1072,8 +1079,15 @@ public class CommandEventHandler implements EventHandler {
 		Out.debug(getClass(), user.toString() + ": " + command + " [" + whisperBack + "]");
 		
 		try {
-			int commanderAccess = 0;
-			Account commanderAccount = Account.get(user);
+			// Grab the obsolete 'param' string
+			String param = null;
+			{
+				String[] paramHelper = command.split(" ", 2);
+				command = paramHelper[0];
+				if(paramHelper.length > 1)
+					param = paramHelper[1];
+			}
+			
 			Command rsCommand = Command.get(command);
 			
 			if(rsCommand == null) {
@@ -1085,11 +1099,12 @@ public class CommandEventHandler implements EventHandler {
 			
 			//Don't ask questions if they are a super-user
 			boolean superUser = user.equals(source.getMyUser());
+			Account commanderAccount = Account.get(user);
 			if(!superUser) {
 				if(commanderAccount == null)
 					return false;
 
-				commanderAccess = commanderAccount.getAccess();
+				int commanderAccess = commanderAccount.getAccess();
 				if(commanderAccess <= 0)
 					return false;
 				
@@ -1098,15 +1113,6 @@ public class CommandEventHandler implements EventHandler {
 					source.recieveError("Insufficient access (" + commanderAccess + "/" + requiredAccess + ")");
 					return false;
 				}
-			}
-			
-			// Grab the obsolete 'param' string
-			String param = null;
-			{
-				String[] paramHelper = command.split(" ", 2);
-				command = paramHelper[0];
-				if(paramHelper.length > 1)
-					param = paramHelper[1];
 			}
 		
 			CommandRunnable cr = Profile.getCommand(command);
