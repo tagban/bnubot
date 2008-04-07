@@ -649,6 +649,8 @@ public class CommandEventHandler implements EventHandler {
 				if(rsSubjectAccount == null)
 					throw new AccountDoesNotExistException(params[0]);
 				
+				params[0] = rsSubjectAccount.getName();
+				
 				try {
 					rsSubjectAccount.setName(params[1]);
 					rsSubjectAccount.updateRow();
