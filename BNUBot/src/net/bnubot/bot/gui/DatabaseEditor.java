@@ -34,10 +34,8 @@ import net.bnubot.db.CustomDataObject;
 import net.bnubot.db.conf.DatabaseContext;
 import net.bnubot.util.Out;
 
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.query.SelectQuery;
-;
 
 /**
  * @author sanderson
@@ -58,8 +56,7 @@ public class DatabaseEditor {
 	
 	@SuppressWarnings("unchecked")
 	public DatabaseEditor(Class<? extends CustomDataObject> clazz) throws Exception {
-		ObjectContext context = DatabaseContext.getContext();
-		List<CustomDataObject>dataRows = context.performQuery(new SelectQuery(clazz));
+		List<CustomDataObject>dataRows = DatabaseContext.getContext().performQuery(new SelectQuery(clazz));
 		
 		jf.setTitle(clazz.getSimpleName() + " Editor");
 		Box box = new Box(BoxLayout.X_AXIS);
@@ -73,16 +70,14 @@ public class DatabaseEditor {
 		JButton btnSave = new JButton("Save");
 		btnSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				ObjectContext context = currentRow.getObjectContext();
 				try {
 					for(ObjAttribute attr : data.keySet()) {
 						String key = attr.getName();
 						Object value = data.get(attr).getValue();
 						currentRow.writeProperty(key, value);
 					}
-					context.commitChanges();
+					currentRow.updateRow();
 				} catch(Exception ex) {
-					context.rollbackChanges();
 					Out.popupException(ex);
 				}
 			}});
@@ -97,12 +92,10 @@ public class DatabaseEditor {
 		btnDelete.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// TODO: Confirm
-				ObjectContext context = currentRow.getObjectContext();
 				try {
-					context.deleteObject(currentRow);
-					context.commitChanges();
+					currentRow.getObjectContext().deleteObject(currentRow);
+					currentRow.updateRow();
 				} catch(Exception ex) {
-					context.rollbackChanges();
 					Out.popupException(ex);
 				}
 			}});
