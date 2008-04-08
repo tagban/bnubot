@@ -927,10 +927,13 @@ public class CommandEventHandler implements EventHandler {
 					Account commanderAccount, boolean superUser)
 			throws Exception {
 				// TODO: Wildcard unbanning (requires keeping track of banned users)
-				if((params == null) || (params.length != 1))
+				if((params == null) || (params.length != 1)) {
 					user.sendChat("Use: %trigger%unban <user>[@<realm>]", whisperBack);
-				else
-					source.queueChatHelper("/unban " + params[0], false);
+					return;
+				}
+				
+				BNetUser target = new BNetUser(source, params[0], user.getFullAccountName());
+				source.queueChatHelper("/unban " + target.getFullLogonName(), false);
 			}});
 		Profile.registerCommand("whoami", new CommandRunnable() {
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack,
