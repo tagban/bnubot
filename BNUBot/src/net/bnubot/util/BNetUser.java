@@ -146,12 +146,17 @@ public class BNetUser {
 	}
 
 	/**
-	 * Gets the shortest possible logon name
+	 * Gets the shortest possible logon name, as another user sees it
 	 * @return User[#N][@Realm]
 	 */
 	public String getShortLogonName(BNetUser perspective) {
-		if(this.realm.equals(perspective.realm))
-			return shortLogonName;
+		if(this.realm.equals(perspective.realm)) {
+			//return shortLogonName.split("@")[0];
+			int x = shortLogonName.lastIndexOf('@');
+			if(x == -1)
+				return shortLogonName;
+			return shortLogonName.substring(0, x);
+		}
 		return fullLogonName;
 	}
 	
