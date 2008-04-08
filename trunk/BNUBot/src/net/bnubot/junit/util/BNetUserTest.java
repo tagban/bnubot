@@ -124,4 +124,16 @@ public class BNetUserTest extends TestCase {
 		assertEquals(u3.getFullLogonName(), "testuser@USEast");
 		assertEquals(u3.getFullAccountName(), "testuser@USEast");
 	}
+	
+	public void testIlly() {
+		BNetUser viewer = new BNetUser(null, "BNU-Camel@USEast");
+		BNetUser banme = new BNetUser(null, "($@$@$@)", "USEast");
+		assertEquals("($@$@$@)", banme.getShortLogonName(viewer));
+	}
+	
+	public void testIlly2() {
+		BNetUser viewer = new BNetUser(null, "BNU-Camel@Azeroth");
+		BNetUser banme = new BNetUser(null, "($@$@$@)@USEast", "Azeroth");
+		assertEquals("($@$@$@)@USEast", banme.getShortLogonName(viewer));
+	}
 }
