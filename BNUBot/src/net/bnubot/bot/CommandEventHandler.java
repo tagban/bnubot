@@ -43,6 +43,81 @@ public class CommandEventHandler implements EventHandler {
 	private static final Hashtable<Connection, Boolean> sweepBanInProgress = new Hashtable<Connection, Boolean>();
 	private static final Hashtable<Connection, Integer> sweepBannedUsers = new Hashtable<Connection, Integer>();
 	
+	private static final Hashtable<Connection, Vote> votes = new Hashtable<Connection, Vote>();
+	private static class Vote extends Thread {
+		private long startTime;
+		private Connection connection;
+		private BNetUser subject;
+		private boolean isBan;
+		private Hashtable<BNetUser, Boolean> votes = new Hashtable<BNetUser, Boolean>();
+		
+		private boolean voteCancelled = false;
+
+		public Vote(Connection connection, BNetUser subject, boolean isBan) {
+			startTime = System.currentTimeMillis();
+			this.connection = connection;
+			this.subject = subject;
+			this.isBan = isBan;
+			start();
+		}
+		
+		public BNetUser getSubject() {
+			return subject;
+		}
+		
+		public void cancel() {
+			voteCancelled = true;
+			send("Vote cancelled.");
+		}
+		
+		public void castVote(BNetUser user, boolean vote) {
+			votes.put(user, new Boolean(vote));
+		}
+		
+		private void send(String text) {
+			connection.queueChatHelper(text, false);
+		}
+		
+		public void run() {
+			send("A vote to " + (isBan ? "ban " : "kick ") + subject.toString() + " has started. Type \"vote yes\" or \"vote no\" to vote. Vote lasts 30 seconds.");
+			
+			// Wait 30 seconds for voters to vote
+			while(!voteCancelled) {
+				if(System.currentTimeMillis() - startTime > 30000)
+					break;
+				
+				yield();
+				try {
+					sleep(1000);
+				} catch (InterruptedException e) {}
+			}
+			
+			if(!voteCancelled) {
+				// Tally up the votes
+				int yay = 0, nay = 0;
+				for(BNetUser voter : votes.keySet()) {
+					if(votes.get(voter).booleanValue())
+						yay++;
+					else
+						nay++;
+				}
+				
+				if(yay + nay >= 5) {
+					float ratio = ((float)yay) / (yay + nay);
+					// Check for 2/3 ratio
+					if(ratio * 3 >= 2)
+						send((isBan ? "/ban " : "/kick ") + subject.getFullLogonName() + " " + yay + " to " + nay);
+					else
+						send("Vote failed, " + yay + " to " + nay + ", needed 2/3 ratio.");
+				} else {
+					send("Not enough votes: " + yay + " to " + nay + ", needed 5 votes.");
+				}
+			}
+			
+			CommandEventHandler.votes.remove(connection);
+		}
+	}
+	
 	static {
 		initializeCommands();
 	}
@@ -935,6 +1010,38 @@ public class CommandEventHandler implements EventHandler {
 				BNetUser target = new BNetUser(source, params[0], user.getFullAccountName());
 				source.queueChatHelper("/unban " + target.getFullLogonName(), false);
 			}});
+		Profile.registerCommand("voteban", new CommandRunnable() {
+			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack,
+					Account commanderAccount, boolean superUser)
+			throws Exception {
+				if((param == null) || (params.length != 1)) {
+					user.sendChat("Use: %trigger%voteban <user>[@<realm>]", whisperBack);
+					return;
+				}
+				
+				startVote(source, user, param, whisperBack, Boolean.TRUE);
+			}});
+		Profile.registerCommand("votecancel", new CommandRunnable() {
+			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack,
+					Account commanderAccount, boolean superUser)
+			throws Exception {
+				Vote vote = votes.get(source);
+				if(vote == null)
+					user.sendChat("There is no vote in progress", whisperBack);
+				else
+					vote.cancel();
+			}});
+		Profile.registerCommand("votekick", new CommandRunnable() {
+			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack,
+					Account commanderAccount, boolean superUser)
+			throws Exception {
+				if((param == null) || (params.length != 1)) {
+					user.sendChat("Use: %trigger%votekick <user>[@<realm>]", whisperBack);
+					return;
+				}
+				
+				startVote(source, user, param, whisperBack, Boolean.FALSE);
+			}});
 		Profile.registerCommand("whoami", new CommandRunnable() {
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack,
 					Account commanderAccount, boolean superUser)
@@ -1230,6 +1337,30 @@ public class CommandEventHandler implements EventHandler {
 				user.sendChat("Skipped " + numSkipped + " users with operator status.", whisperBack);
 		}
 	}
+	
+	/**
+	 * Start a vote
+	 * @param source The connection to vote on
+	 * @param user The user who started the vote
+	 * @param target The user to vote against
+	 * @param whisperBack
+	 * @param isBan Whether to ban if vote succeeds
+	 */
+	private static void startVote(Connection source, BNetUser user, String target, boolean whisperBack, boolean isBan) {
+		if(votes.get(source) != null) {
+			user.sendChat("There is already a vote in progress!", whisperBack);
+			return;
+		}
+		
+		BNetUser bnSubject = source.findUser(target, user);
+		if(bnSubject == null) {
+			user.sendChat("User not found", whisperBack);
+			return;
+		}
+		
+		Vote v = new Vote(source, bnSubject, isBan);
+		votes.put(source, v);
+	}
 
 	public void channelJoin(Connection source, BNetUser user) {
 		if(!source.getConnectionSettings().enableGreetings)
@@ -1428,6 +1559,10 @@ public class CommandEventHandler implements EventHandler {
 	
 	public void channelLeave(Connection source, BNetUser user) {
 		touchUser(source, user, "leaving the channel");
+		
+		Vote vote = votes.get(source);
+		if((vote != null) && vote.getSubject().equals(user))
+			vote.cancel();
 	}
 	
 	public void channelUser(Connection source, BNetUser user) {
@@ -1443,6 +1578,14 @@ public class CommandEventHandler implements EventHandler {
 			return;
 		
 		touchUser(source, user, "chatting in the channel");
+		
+		Vote vote = votes.get(source);
+		if(vote != null) {
+			if(text.equals("vote yes"))
+				vote.castVote(user, true);
+			else if(text.equals("vote no"))
+				vote.castVote(user, false);
+		}
 		
 		if(text.equals("?trigger"))
 			parseCommand(source, user, "trigger", GlobalSettings.whisperBack);
