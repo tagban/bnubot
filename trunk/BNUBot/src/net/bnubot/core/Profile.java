@@ -17,6 +17,7 @@ import net.bnubot.bot.gui.GuiEventHandler;
 import net.bnubot.bot.swt.SWTDesktop;
 import net.bnubot.core.commands.CommandRunnable;
 import net.bnubot.db.Command;
+import net.bnubot.db.conf.DatabaseContext;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.Out;
@@ -29,8 +30,18 @@ public class Profile {
 		if(commands.get(name) != null)
 			throw new IllegalArgumentException("The command " + name + " is already registered");
 		
-		if(Command.get(name) == null)
-			throw new IllegalStateException("TODO: create the command in the database");
+		if(Command.get(name) == null) {
+			Command c = DatabaseContext.getContext().newObject(Command.class);
+			c.setAccess(36);
+			c.setCmdgroup(null);
+			c.setDescription(null);
+			c.setName(name);
+			try {
+				c.updateRow();
+			} catch (Exception e) {
+				throw new IllegalStateException(e);
+			}
+		}
 		
 		commands.put(name, action);
 	}
