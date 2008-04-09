@@ -1,4 +1,4 @@
-2.0.5:
+2.0.5 (r1300) 2008-04-09:
 * Added a Cayenne persistence layer to address database problems
 * Added StatString test cases
 * The 'renameaccount' command now picks up the case of the old account name
@@ -12,6 +12,7 @@
 * Fixed a bug with the chat splitter
 * Added an 'allseen' command
 * Fixed a bug where auto-promotions were case sensitive
+* Remove stale users from the database
 
 2.0.4.2 (r1237) 2008-04-01:
 * Allow use of %keywords% and commands in anti-idles and with /say (Cause of issue 61)
