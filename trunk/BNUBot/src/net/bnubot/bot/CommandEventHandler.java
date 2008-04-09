@@ -1354,6 +1354,9 @@ public class CommandEventHandler implements EventHandler {
 			if(rsUser == null)
 				return;
 			
+			// Fix the case of the user's login if it has changed
+			rsUser.setLogin(user.getFullAccountName());
+			
 			switch(user.getStatString().getProduct()) {
 			case STAR: {
 				Integer newWins = user.getStatString().getWins();
