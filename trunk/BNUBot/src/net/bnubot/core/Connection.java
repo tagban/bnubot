@@ -455,10 +455,11 @@ public abstract class Connection extends Thread {
 	}
 
 	public void queueChatHelper(String text, boolean allowCommands) {
-		queueChatHelper(text, allowCommands, true);
+		queueChatHelper(null, text, allowCommands, true);
 	}
 	
-	public void queueChatHelper(String text, boolean allowCommands, boolean enableKeywords) {
+	public static final int MAX_CHAT_LENGTH = 200;
+	public void queueChatHelper(String prefix, String text, boolean allowCommands, boolean enableKeywords) {
 		if(text == null)
 			return;
 		if(text.length() == 0)
@@ -516,7 +517,7 @@ public abstract class Connection extends Thread {
 					break;
 				case 'q':
 					if(command[0].equals("quote")) {
-						queueChatHelper(command[1], false, false);
+						queueChatHelper(prefix, command[1], false, false);
 						return;
 					}
 					break;
@@ -543,11 +544,19 @@ public abstract class Connection extends Thread {
 
 		if(text.length() == 0)
 			return;
+		
+		//Split up the text in to appropriate sized pieces
+		int pieceSize = MAX_CHAT_LENGTH - (prefix == null ? 0 : prefix.length());
+		for(int i = 0; i < text.length(); i += pieceSize) {
+			String piece = (prefix == null ? "" : prefix) + text.substring(i); 
+			if(piece.length() > MAX_CHAT_LENGTH)
+				piece = piece.substring(0, MAX_CHAT_LENGTH);
 
-		if(canSendChat() && !GlobalSettings.enableFloodProtect) {
-			sendChatCommand(text);
-		} else {
-			chatQueue.enqueue(text, GlobalSettings.enableFloodProtect);
+			if(canSendChat() && !GlobalSettings.enableFloodProtect) {
+				sendChatCommand(piece);
+			} else {
+				chatQueue.enqueue(piece, GlobalSettings.enableFloodProtect);
+			}
 		}
 	}
 
