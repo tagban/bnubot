@@ -29,6 +29,7 @@ import net.bnubot.util.HexDump;
 import net.bnubot.util.MirrorSelector;
 import net.bnubot.util.Out;
 import net.bnubot.util.StatString;
+import net.bnubot.util.UserProfile;
 import net.bnubot.util.task.Task;
 import net.bnubot.util.task.TaskManager;
 
@@ -518,4 +519,5 @@ public class DTConnection extends Connection {
 	public void sendLogonRealmEx(String realmTitle) throws Exception { throw new UnsupportedFeatureException(null); }
 	public void sendQueryRealms2() throws Exception { throw new UnsupportedFeatureException(null); }
 	public void sendReadUserData(String user) throws Exception { throw new UnsupportedFeatureException(null); }
+	public void sendWriteUserData(UserProfile profile) throws Exception { throw new UnsupportedFeatureException(null); }
 }

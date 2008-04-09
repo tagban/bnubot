@@ -22,6 +22,7 @@ import java.util.Random;
 import java.util.TimeZone;
 
 import net.bnubot.bot.CommandResponseCookie;
+import net.bnubot.bot.gui.ProfileEditor;
 import net.bnubot.bot.gui.settings.ConfigurationFrame;
 import net.bnubot.bot.gui.settings.OperationCancelledException;
 import net.bnubot.core.ChatQueue;
@@ -46,6 +47,7 @@ import net.bnubot.util.MirrorSelector;
 import net.bnubot.util.Out;
 import net.bnubot.util.StatString;
 import net.bnubot.util.TimeFormatter;
+import net.bnubot.util.UserProfile;
 import net.bnubot.util.task.Task;
 import net.bnubot.util.task.TaskManager;
 
@@ -1396,17 +1398,19 @@ public class BNCSConnection extends Connection {
 					if(numAccounts != 1)
 						throw new IllegalStateException("SID_READUSERDATA with numAccounts != 1");
 
-					completeTask((Task)keys.remove(0));
-					
-					recieveInfo("Profile for " + (String)keys.remove(0));
+					UserProfile up = new UserProfile((String)keys.remove(0));
+					recieveInfo("Profile for " + up.getUser());
 					for(int i = 0; i < numKeys; i++) {
 						String key = (String)keys.get(i);
 						String value = is.readNTStringUTF8();
-						if((key == null) || (key.length() == 0) || (value.length() == 0))
+						if((key == null) || (key.length() == 0))
 							continue;
 						value = prettyProfileValue(key, value);
 						recieveInfo(key + " = " + value);
+						
+						up.put(key, value);
 					}
+					new ProfileEditor(up, this);
 					break;
 				}
 				
@@ -1947,9 +1951,9 @@ public class BNCSConnection extends Connection {
 	}
 	
 	private String prettyProfileValue(String key, String value) {
-		if("System\\Account Created".equals(key)
-		|| "System\\Last Logon".equals(key)
-		|| "System\\Last Logoff".equals(key)) {
+		if(UserProfile.SYSTEM_ACCOUNT_CREATED.equals(key)
+		|| UserProfile.SYSTEM_LAST_LOGON.equals(key)
+		|| UserProfile.SYSTEM_LAST_LOGOFF.equals(key)) {
 			String parts[] = value.split(" ", 2);
 			long time = Long.parseLong(parts[0]);
 			time <<= 32;
@@ -1957,7 +1961,7 @@ public class BNCSConnection extends Connection {
 			
 			return TimeFormatter.fileTime(time).toString();
 		} else
-		if("System\\Time Logged".equals(key)) {
+		if(UserProfile.SYSTEM_TIME_LOGGED.equals(key)) {
 			long time = Long.parseLong(value);
 			time *= 1000;
 			return TimeFormatter.formatTime(time);
@@ -1970,42 +1974,56 @@ public class BNCSConnection extends Connection {
 	 * Send SID_READUSERDATA
 	 */
 	public void sendReadUserData(String user) throws Exception {
-		/*BNCSPacket p = new BNCSPacket(BNCSCommandIDs.SID_PROFILE);
-		p.writeDWord(CookieUtility.createCookie(user));
-		p.writeNTString(user);
-		p.SendPacket(bncsOutputStream);*/
 		/* (DWORD)		 Number of Accounts
 		 * (DWORD)		 Number of Keys
 		 * (DWORD)		 Request ID
 		 * (STRING[])	 Requested Accounts
 		 * (STRING[])	 Requested Keys
 		 */
-		List<Object> keys = new ArrayList<Object>(8);
-		keys.add(createTask("Get profile", user));
+		List<String> keys = new ArrayList<String>(7);
 		keys.add(user);
-		keys.add("profile\\sex");
-		keys.add("profile\\age");
-		keys.add("profile\\location");
-		keys.add("profile\\description");
-		keys.add("profile\\dbkey1");
-		keys.add("profile\\dbkey2");
+		keys.add(UserProfile.PROFILE_SEX);
+		keys.add(UserProfile.PROFILE_AGE);
+		keys.add(UserProfile.PROFILE_LOCATION);
+		keys.add(UserProfile.PROFILE_DESCRIPTION);
+		//keys.add("profile\\dbkey1");
+		//keys.add("profile\\dbkey2");
 		if(myUser.equals(user)) {
-			keys.add("System\\Account Created");
-			keys.add("System\\Last Logon");
-			keys.add("System\\Last Logoff");
-			keys.add("System\\Time Logged");
-			keys.add("System\\Username");
+			keys.add(UserProfile.SYSTEM_ACCOUNT_CREATED);
+			keys.add(UserProfile.SYSTEM_LAST_LOGON);
+			keys.add(UserProfile.SYSTEM_LAST_LOGOFF);
+			keys.add(UserProfile.SYSTEM_TIME_LOGGED);
+			keys.add(UserProfile.SYSTEM_USERNAME);
 		}
 		
 		BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_READUSERDATA);
 		p.writeDWord(1);
-		p.writeDWord(keys.size() - 2);
+		p.writeDWord(keys.size() - 1);
 		p.writeDWord(CookieUtility.createCookie(keys));
-		p.writeNTString(user);
-		for(int i = 2; i < keys.size(); i++)
-			p.writeNTString((String)keys.get(i));
+		// The user isn't actually a key; since it's at the top of the list this works anyways
+		for(String key : keys)
+			p.writeNTString(key);
 		p.SendPacket(bncsOutputStream);
-	 	
+	}
+	
+	/**
+	 * Send SID_WRITEUSERDATA
+	 * 	(DWORD) Number of accounts
+	 *	(DWORD) Number of keys
+	 *	(STRING) [] Accounts to update
+	 *	(STRING) [] Keys to update
+	 *	(STRING) [] New values
+	 */
+	public void sendWriteUserData(UserProfile profile) throws Exception {
+		BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_WRITEUSERDATA);
+		p.writeDWord(1);
+		p.writeDWord(profile.keySet().size());
+		p.writeNTString(profile.getUser());
+		for(Object key : profile.keySet())
+			p.writeNTString(key.toString());
+		for(Object key : profile.keySet())
+			p.writeNTString(profile.get(key));
+		p.SendPacket(bncsOutputStream);
 	}
 	
 	public String toString() {
