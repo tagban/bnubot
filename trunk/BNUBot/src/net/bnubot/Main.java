@@ -29,6 +29,14 @@ public class Main {
 		File f = new File("bnubot.pid");
 		if(f.exists())
 			f.deleteOnExit();
+		
+		// Set the default log file
+		if(CurrentVersion.fromJar())
+			try {
+				Out.setOutputStream(new PrintStream(new File("log.txt")));
+			} catch (FileNotFoundException e) {
+				Out.exception(e);
+			}
 	}
 
 	public static void main(String[] args) {
