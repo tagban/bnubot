@@ -56,8 +56,7 @@ public class ProfileEditor extends JDialog {
 			txtUsername = ConfigFactory.makeText("Username", p.getUser(), boxAll);
 			txtUsername.setEnabled(false);
 			
-			for(Object o : p.keySet()) {
-				String key = o.toString();
+			for(String key : p.keySet()) {
 				ConfigTextArea cta = ConfigFactory.makeText(key, p.get(key), boxAll);
 				boolean enableThisKey = enableWrite && key.startsWith(UserProfile.PROFILE_);
 				cta.setEnabled(enableThisKey);
