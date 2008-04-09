@@ -1,3 +1,7 @@
+#summary A description of the available commands in BNU-Bot
+== About ==
+Prefix the command name with your trigger. If you're doing the command locally (from within the bot), you can use / as long as it doesn't conflict with a battle.net command (ex: /whois will always do a battle.net whois).
+
 == Arguments Legend ==
 || *Argument* || *Meaning* ||
 || `text` || Literal text ||
