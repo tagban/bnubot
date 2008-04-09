@@ -11,6 +11,7 @@
 * Added a profile editor
 * Fixed a bug with the chat splitter
 * Added an 'allseen' command
+* Fixed a bug where auto-promotions were case sensitive
 
 2.0.4.2 (r1237) 2008-04-01:
 * Allow use of %keywords% and commands in anti-idles and with /say (Cause of issue 61)

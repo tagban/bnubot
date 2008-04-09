@@ -128,13 +128,17 @@ public class Account extends _Account {
 		long wins = 0;
 		long d2level = 0;
 		long w3level = 0;
+		recruitTagPrefix = recruitTagPrefix.toLowerCase();
+		recruitTagSuffix = recruitTagSuffix.toLowerCase();
 		for(BNLogin login : getBnLogins()) {
+			String bnlogin = login.getLogin().toLowerCase();
+			
 			// Check prefix
-			if((recruitTagPrefix != null) && !login.getLogin().startsWith(recruitTagPrefix))
+			if((recruitTagPrefix != null) && !bnlogin.startsWith(recruitTagPrefix))
 				continue;
 			
 			// Check suffix
-			if((recruitTagSuffix != null) && !login.getLogin().endsWith(recruitTagSuffix))
+			if((recruitTagSuffix != null) && !bnlogin.endsWith(recruitTagSuffix))
 				continue;
 			
 			// Calculate wins
