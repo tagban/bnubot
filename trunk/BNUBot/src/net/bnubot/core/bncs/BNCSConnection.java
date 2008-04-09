@@ -1406,11 +1406,22 @@ public class BNCSConnection extends Connection {
 						if((key == null) || (key.length() == 0))
 							continue;
 						value = prettyProfileValue(key, value);
-						recieveInfo(key + " = " + value);
 						
+						if(value.length() != 0) {
+							recieveInfo(key + " = " + value);
+						} else if(
+							key.equals(UserProfile.PROFILE_DESCRIPTION) ||
+							key.equals(UserProfile.PROFILE_LOCATION) ||
+							key.equals(UserProfile.PROFILE_SEX)) {
+							// Always report these keys
+						} else {
+							continue;
+						}
 						up.put(key, value);
 					}
-					new ProfileEditor(up, this);
+					
+					if(GlobalSettings.enableGUI)
+						new ProfileEditor(up, this);
 					break;
 				}
 				
@@ -1986,8 +1997,8 @@ public class BNCSConnection extends Connection {
 		//keys.add(UserProfile.PROFILE_AGE);
 		keys.add(UserProfile.PROFILE_LOCATION);
 		keys.add(UserProfile.PROFILE_DESCRIPTION);
-		//keys.add(UserProfile.PROFILE_ + "dbkey1");
-		//keys.add(UserProfile.PROFILE_ + "dbkey2");
+		keys.add(UserProfile.PROFILE_ + "dbkey1");
+		keys.add(UserProfile.PROFILE_ + "dbkey2");
 		if(myUser.equals(user)) {
 			keys.add(UserProfile.SYSTEM_ACCOUNT_CREATED);
 			keys.add(UserProfile.SYSTEM_LAST_LOGON);
