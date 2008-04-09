@@ -1983,7 +1983,7 @@ public class BNCSConnection extends Connection {
 		List<String> keys = new ArrayList<String>(7);
 		keys.add(user);
 		keys.add(UserProfile.PROFILE_SEX);
-		keys.add(UserProfile.PROFILE_AGE);
+		//keys.add(UserProfile.PROFILE_AGE);
 		keys.add(UserProfile.PROFILE_LOCATION);
 		keys.add(UserProfile.PROFILE_DESCRIPTION);
 		//keys.add("profile\\dbkey1");
@@ -2015,10 +2015,21 @@ public class BNCSConnection extends Connection {
 	 *	(STRING) [] New values
 	 */
 	public void sendWriteUserData(UserProfile profile) throws Exception {
+		if(!myUser.equals(profile.getUser()))
+			throw new Exception("You may only write your own profile!");
+		
+		String user = myUser.getShortLogonName();
+		int i = user.lastIndexOf('@');
+		if(i != -1)
+			user = user.substring(0, i);
+		i = user.lastIndexOf('#');
+		if(i != -1)
+			user = user.substring(0, i);
+		
 		BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_WRITEUSERDATA);
 		p.writeDWord(1);
 		p.writeDWord(profile.keySet().size());
-		p.writeNTString(profile.getUser());
+		p.writeNTString(user);
 		for(Object key : profile.keySet())
 			p.writeNTString(key.toString());
 		for(Object key : profile.keySet())
