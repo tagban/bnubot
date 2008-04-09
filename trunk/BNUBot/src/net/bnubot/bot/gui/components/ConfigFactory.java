@@ -16,6 +16,7 @@ public class ConfigFactory {
 	private static final int lblWidth = 100;
 	private static final int height = 25;
 	private static final Dimension preferredLabelSize = new Dimension(lblWidth, 0);
+	private static final Dimension preferredTextSize = new Dimension(350, 20);
 	private static final Dimension maxComponentSize = new Dimension(Integer.MAX_VALUE, height);
 
 	public static final Dimension getMaxComponentSize() {
@@ -31,6 +32,7 @@ public class ConfigFactory {
 	public static ConfigTextArea makeText(String label, String value, Box parent) {
 		ConfigTextArea txt = new ConfigTextArea(value);
 		txt.setMaximumSize(maxComponentSize);
+		txt.setPreferredSize(preferredTextSize);
 
 		Box boxLine = new Box(BoxLayout.X_AXIS);
 		boxLine.add(makeLabel(label));

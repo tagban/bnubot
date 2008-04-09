@@ -28,6 +28,7 @@ import net.bnubot.util.BNetUser;
 import net.bnubot.util.MirrorSelector;
 import net.bnubot.util.Out;
 import net.bnubot.util.TimeFormatter;
+import net.bnubot.util.UserProfile;
 import net.bnubot.util.Wildcard;
 import net.bnubot.util.music.MusicController;
 import net.bnubot.util.music.MusicControllerFactory;
@@ -237,6 +238,7 @@ public abstract class Connection extends Thread {
 	public abstract void sendClanMOTD(Object cookie) throws Exception;
 	public abstract void sendClanSetMOTD(String text) throws Exception;
 	public abstract void sendReadUserData(String user) throws Exception;
+	public abstract void sendWriteUserData(UserProfile profile) throws Exception;
 
 	public void sendProfile(BNetUser user) throws Exception {
 		sendReadUserData(user.getFullAccountName());

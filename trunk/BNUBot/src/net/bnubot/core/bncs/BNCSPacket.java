@@ -8,7 +8,6 @@ package net.bnubot.core.bncs;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.SocketException;
 
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetOutputStream;
@@ -22,22 +21,48 @@ public class BNCSPacket extends BNetOutputStream {
 		super(new ByteArrayOutputStream());
 		this.packetId = packetId;
 	}
+	
+	private static void debug(BNCSPacketId packetId, byte[] data) {
+		String msg = "SEND " + packetId.name();
+		if(Out.isDebug())
+			msg += "\n" + HexDump.hexDump(data);
+		Out.debugAlways(BNCSPacket.class, msg);
+	}
+	
+	public void debug() throws IOException {
+		debug(packetId, getData());
+	}
 
-	public void SendPacket(OutputStream out) throws IOException, SocketException {
+	public void SendPacket(OutputStream out) throws IOException {
+		byte[] data;
+		try {
+			data = getData();
+		} catch(Exception e) {
+			Out.exception(e);
+			return;
+		}
+
+		if(GlobalSettings.packetLog)
+			debug(packetId, data);
+
+		out.write(data);
+		out.flush();
+	}
+
+	/**
+	 * @return
+	 */
+	private byte[] getData() throws IOException {
 		byte data[] = ((ByteArrayOutputStream)this.out).toByteArray();
 		//BNCSOutputStream sckout = new BNCSOutputStream(out);
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		BNetOutputStream sckout = new BNetOutputStream(baos);
 
 		if(packetId == BNCSPacketId.SID_CHATCOMMAND) {
-			if(data.length > 0xFB) {
-				Out.error(getClass(), "Chat command is too long; ignoring.");
-				return;
-			}
-			if(data[data.length-1] != 0x00) {
-				Out.error(getClass(), "Chat command is not null terminated; ignoring.");
-				return;
-			}
+			if(data.length > 0xFB)
+				throw new IOException("Chat command is too long; ignoring.");
+			if(data[data.length-1] != 0x00)
+				throw new IOException("Chat command is not null terminated; ignoring.");
 		}
 
 		try {
@@ -50,15 +75,6 @@ public class BNCSPacket extends BNetOutputStream {
 		}
 
 		data = baos.toByteArray();
-
-		if(GlobalSettings.packetLog) {
-			String msg = "SEND " + packetId.name();
-			if(Out.isDebug())
-				msg += "\n" + HexDump.hexDump(data);
-			Out.debugAlways(getClass(), msg);
-		}
-
-		out.write(data);
-		out.flush();
+		return data;
 	}
 }

@@ -16,6 +16,7 @@ import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.util.BNetInputStream;
 import net.bnubot.util.BNetOutputStream;
 import net.bnubot.util.Out;
+import net.bnubot.util.UserProfile;
 
 public class ChatConnection extends Connection {
 	protected Socket s;
@@ -123,6 +124,11 @@ public class ChatConnection extends Connection {
 	@Override
 	public void sendReadUserData(String user) throws Exception {
 		throw new UnsupportedFeatureException("Chat clients can not request profiles");
+	}
+	
+	@Override
+	public void sendWriteUserData(UserProfile profile) throws Exception {
+		throw new UnsupportedFeatureException("Chat clients can not write profiles");
 	}
 
 	@Override
