@@ -1986,8 +1986,8 @@ public class BNCSConnection extends Connection {
 		//keys.add(UserProfile.PROFILE_AGE);
 		keys.add(UserProfile.PROFILE_LOCATION);
 		keys.add(UserProfile.PROFILE_DESCRIPTION);
-		//keys.add("profile\\dbkey1");
-		//keys.add("profile\\dbkey2");
+		//keys.add(UserProfile.PROFILE_ + "dbkey1");
+		//keys.add(UserProfile.PROFILE_ + "dbkey2");
 		if(myUser.equals(user)) {
 			keys.add(UserProfile.SYSTEM_ACCOUNT_CREATED);
 			keys.add(UserProfile.SYSTEM_LAST_LOGON);
@@ -2026,13 +2026,15 @@ public class BNCSConnection extends Connection {
 		if(i != -1)
 			user = user.substring(0, i);
 		
+		List<String> profileKeys = profile.keySetProfile();
+		
 		BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_WRITEUSERDATA);
 		p.writeDWord(1);
-		p.writeDWord(profile.keySet().size());
+		p.writeDWord(profileKeys.size());
 		p.writeNTString(user);
-		for(Object key : profile.keySet())
+		for(Object key : profileKeys)
 			p.writeNTString(key.toString());
-		for(Object key : profile.keySet())
+		for(Object key : profileKeys)
 			p.writeNTString(profile.get(key));
 		p.SendPacket(bncsOutputStream);
 	}
