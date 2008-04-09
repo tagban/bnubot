@@ -2019,13 +2019,14 @@ public class BNCSConnection extends Connection {
 	
 	/**
 	 * Send SID_WRITEUSERDATA
-	 * 	(DWORD) Number of accounts
-	 *	(DWORD) Number of keys
-	 *	(STRING) [] Accounts to update
-	 *	(STRING) [] Keys to update
-	 *	(STRING) [] New values
 	 */
 	public void sendWriteUserData(UserProfile profile) throws Exception {
+		/* (DWORD) Number of accounts
+		 * (DWORD) Number of keys
+		 * (STRING) [] Accounts to update
+		 * (STRING) [] Keys to update
+		 * (STRING) [] New values
+		 */
 		if(!myUser.equals(profile.getUser()))
 			throw new Exception("You may only write your own profile!");
 		
