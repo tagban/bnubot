@@ -150,6 +150,7 @@ INSERT INTO bnlogin (login, account) VALUES
 INSERT INTO command (access, name, description, cmdgroup) VALUES
 (1,		'access', 'Get the commands avalible to the user', 'commands'),
 (34,	'add', 'Set access', 'accounts'),
+(10,	'allseen', NULL, 'info'),
 (1,		'auth', 'Get the authorization required to use a command', 'commands'),
 (1,		'autopromotion', 'Get the AP info for an account', 'accounts'),
 (35,	'ban', NULL, 'moderation'),
