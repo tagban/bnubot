@@ -59,8 +59,10 @@ public class ProfileEditor extends JDialog {
 			for(Object o : p.keySet()) {
 				String key = o.toString();
 				ConfigTextArea cta = ConfigFactory.makeText(key, p.get(key), boxAll);
-				cta.setEnabled(enableWrite);
-				txtBoxes.put(key, cta);
+				boolean enableThisKey = enableWrite && key.startsWith(UserProfile.PROFILE_);
+				cta.setEnabled(enableThisKey);
+				if(enableThisKey)
+					txtBoxes.put(key, cta);
 			}
 			
 			Box buttons = new Box(BoxLayout.X_AXIS);
