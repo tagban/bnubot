@@ -138,20 +138,25 @@ public class Account extends _Account {
 				continue;
 			
 			// Calculate wins
-			if(login.getWinsSTAR() != null)
-				wins += login.getWinsSTAR().intValue();
-			if(login.getWinsSEXP() != null)
-				wins += login.getWinsSEXP().intValue();
-			if(login.getWinsW2BN() != null)
-				wins += login.getWinsW2BN().intValue();
+			Integer star = login.getWinsSTAR();
+			Integer sexp = login.getWinsSEXP();
+			Integer w2bn = login.getWinsW2BN();
+			if(star != null)
+				wins += star.intValue();
+			if(sexp != null)
+				wins += sexp.intValue();
+			if(w2bn != null)
+				wins += w2bn.intValue();
 			
 			// Calculate D2 level
-			if(login.getLevelD2() != null)
-				d2level = Math.max(d2level, login.getLevelD2().intValue());
+			Integer d2 = login.getLevelD2();
+			if(d2 != null)
+				d2level = Math.max(d2level, d2.intValue());
 			
 			// Calculate W3 level
-			if(login.getLevelW3() != null)
-				w3level += Math.max(w3level, login.getLevelW3().intValue());
+			Integer w3 = login.getLevelW3();
+			if(w3 != null)
+				w3level += Math.max(w3level, w3.intValue());
 		}
 		return new long[] {wins, d2level, w3level};
 	}

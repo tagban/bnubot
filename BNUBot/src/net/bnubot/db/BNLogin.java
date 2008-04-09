@@ -6,6 +6,7 @@
 package net.bnubot.db;
 
 import java.util.Date;
+import java.util.List;
 
 import net.bnubot.db.auto._BNLogin;
 import net.bnubot.db.conf.DatabaseContext;
@@ -53,5 +54,18 @@ public class BNLogin extends _BNLogin {
 
 	public String toDisplayString() {
 		return getLogin();
+	}
+
+	/**
+	 * Get the last <code>num</code> people seen
+	 * @param num The number of people to search for
+	 * @return A <code>List&lt;BNLogin></code>
+	 */
+	@SuppressWarnings("unchecked")
+	public static List<BNLogin> getLastSeen(int num) {
+		SelectQuery query = new SelectQuery(BNLogin.class);
+		query.addOrdering(BNLogin.LAST_SEEN_PROPERTY, false);
+		query.setFetchLimit(num);
+		return DatabaseContext.getContext().performQuery(query);
 	}
 }
