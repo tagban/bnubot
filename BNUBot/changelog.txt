@@ -1,7 +1,15 @@
 2.0.5:
 * Added a Cayenne persistence layer to address database problems
-* Fixed a bug where super-users couldn't use commands
 * Added StatString test cases
+* The 'renameaccount' command now picks up the case of the old account name
+* The 'unban' command now infers the user namespace
+* Fixed a bug where super-users couldn't use commands 
+* Added more database editors
+* Fixed a bug affecting 'kick' and 'ban' when searching for users
+* Added 'votekick' 'voteban' and 'votecancel' commands
+* Logs will be saved to log.txt by default
+* Added a profile editor
+* Fixed a bug with the chat splitter
 
 2.0.4.2 (r1237) 2008-04-01:
 * Allow use of %keywords% and commands in anti-idles and with /say (Cause of issue 61)

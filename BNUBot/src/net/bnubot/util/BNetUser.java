@@ -410,7 +410,6 @@ public class BNetUser {
 	 * @param msg
 	 * @param b
 	 */
-	public static final int MAX_CHAT_LENGTH = 242;
 	public void sendChat(String text, boolean whisperBack) {
 		if((text == null) || (con == null))
 			return;
@@ -447,14 +446,7 @@ public class BNetUser {
 				prefix = this.toString(GlobalSettings.bnUserToStringCommandResponse) + ": ";
 			}
 		
-			//Split up the text in to appropriate sized pieces
-			int pieceSize = MAX_CHAT_LENGTH - prefix.length();
-			for(int i = 0; i < text.length(); i += pieceSize) {
-				String piece = prefix + text.substring(i);
-				if(piece.length() > MAX_CHAT_LENGTH)
-					piece = piece.substring(0, MAX_CHAT_LENGTH);
-				con.queueChatHelper(piece, false);
-			}
+			con.queueChatHelper(prefix, text, false, true);
 		}
 	}
 }
