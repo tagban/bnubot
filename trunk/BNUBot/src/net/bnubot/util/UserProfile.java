@@ -7,8 +7,6 @@ package net.bnubot.util;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
-import java.util.Set;
 
 public class UserProfile {
 	public static final String PROFILE_ = "profile\\";
@@ -22,8 +20,13 @@ public class UserProfile {
 	public static final String SYSTEM_TIME_LOGGED = "System\\Time Logged";
 	public static final String SYSTEM_USERNAME = "System\\Username";
 	
+	private class KeyValue {
+		public String key;
+		public String value;
+	}
+	
 	private String user;
-	private Properties data = new SortedProperties();
+	private List<KeyValue> data = new ArrayList<KeyValue>();
 	
 	public UserProfile(String user) {
 		this.user = user;
@@ -34,24 +37,31 @@ public class UserProfile {
 	}
 	
 	public void put(String key, String value) {
-		data.put(key, value);
+		KeyValue kv = new KeyValue();
+		kv.key = key;
+		kv.value = value;
+		data.add(kv);
 	}
 	
-	public String get(Object key) {
-		return (String)data.get(key);
+	public String get(Object key) {;
+		for(KeyValue kv : data)
+			if(kv.key.equals(key))
+				return kv.value;
+		return null;
 	}
 	
-	public Set<Object> keySet() {
-		return data.keySet();
+	public List<String> keySet() {
+		List<String> keys = new ArrayList<String>(data.size());
+		for(KeyValue kv : data)
+			keys.add(kv.key);
+		return keys;
 	}
 	
 	public List<String> keySetProfile() {
 		List<String> keys = new ArrayList<String>(data.size());
-		for(Object o : data.keySet()) {
-			String key = o.toString();
-			if(key.startsWith(PROFILE_))
-				keys.add(key);
-		}
+		for(KeyValue kv : data)
+			if(kv.key.startsWith(PROFILE_))
+				keys.add(kv.key);
 		return keys;
 	}
 }
