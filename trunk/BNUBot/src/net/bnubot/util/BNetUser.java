@@ -118,13 +118,11 @@ public class BNetUser {
 		else
 			this.realm = myRealm;
 		
-		Boolean onMyRealm = this.realm.equals(myRealm);
-		
 		// ...
 		shortLogonName = uAccount;
 		if(uNumber != 0)
 			shortLogonName += "#" + uNumber;
-		if(!onMyRealm)
+		if(!this.realm.equals(myRealm))
 			shortLogonName += "@" + this.realm;
 		
 		// ...
