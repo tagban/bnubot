@@ -1,5 +1,5 @@
 #summary How to set up trivia for BNU-Bot.
-#labels Featured,Phase-Requirements
+#labels Featured,Phase-Support
 
 == Enabling Trivia ==
 
