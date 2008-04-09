@@ -10,7 +10,7 @@ import java.util.Set;
 
 public class UserProfile {
 	public static final String PROFILE_SEX = "profile\\sex";
-	public static final String PROFILE_AGE = "profile\\age";
+	//public static final String PROFILE_AGE = "profile\\age";
 	public static final String PROFILE_LOCATION = "profile\\location";
 	public static final String PROFILE_DESCRIPTION = "profile\\description";
 	public static final String SYSTEM_ACCOUNT_CREATED = "System\\Account Created";
