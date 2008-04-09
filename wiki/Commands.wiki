@@ -44,20 +44,25 @@
 ==clan==
 || *Command* || *Arguments* || *Access Required* || *Comment* ||
 || setrank || `<user> <rank>` || 35 || Rank can be one of peon, grunt, shaman, or 1, 2, or 3 ||
+|| invite || `<user>` || 30 || Invite a user in to the clan (requires shaman) ||
 
 ==commands==
 || *Command* || *Arguments* || *Access Required* || *Comment* ||
 || auth || `<command>` || 1 || Get the rank requirement to use the given command ||
-|| access || `[category]` || 1 || list available commands ||
+|| access || `[category]` || 1 || List available commands ||
+|| setauth || `<command> <access>` || 36 | Set the authorization required to use a command ||
 
 ==info==
 || *Command* || *Arguments* || *Access Required* || *Comment* ||
+|| allseen || || 10 || View the last 10 active users ||
 || info || || 1 || Get the bot version and Operating System version and architecture ||
 
 ==moderation==
 || *Command* || *Arguments* || *Access Required* || *Comment* ||
 || sweepban || `<channel>` || 34 || Bans all users in <channel> ||
 || unban || `<user>` || 34 || ||
-|| kick || `<user> [reason]` || 34 || ||
-|| ban || `<user> [reason]` || 35 || ||
-
+|| kick || `<user> [reason]` || 34 || Accepts wildcards! ||
+|| ban || `<user> [reason]` || 35 || Accepts wildcards! ||
+|| votekick || `<user>` || 15 || Vote to kick a user ||
+|| voteban || `<user>` || 15 || Vote to ban a user ||
+|| votecancel || || 15 || Cancel a vote ||
