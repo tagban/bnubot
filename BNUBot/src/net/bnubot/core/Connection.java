@@ -756,6 +756,25 @@ public abstract class Connection extends Thread {
 			for(EventHandler eh : eventHandlers2)
 				eh.recieveInfo(this, text);
 		}
+		
+		if(GlobalSettings.autoRejoin
+		&& (myUser != null)
+		&& text.startsWith(myUser.getShortLogonName() + " was kicked out of the channel")) {
+			final String oldChannel = channelName;
+			recieveError("Will auto-rejoin in 5 seconds...");
+			new Thread() {
+				public void run() {
+					try {
+						sleep(5000);
+						if(channelName.equalsIgnoreCase("The Void"))
+							sendJoinChannel(oldChannel);
+						else
+							recieveError("Auto-rejoin cancelled.");
+					} catch(Exception e) {
+						Out.exception(e);
+					}
+				}}.start();
+		}
 	}
 
 	public void recieveError(String text) {
