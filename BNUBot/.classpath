@@ -10,8 +10,6 @@
 	<classpathentry kind="lib" path="lib/commons-lang-2.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-logging-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/velocity-1.3.jar"/>
-	<classpathentry kind="lib" path="lib/cayenne-jdk1.5-unpublished-3.0-SNAPSHOT.jar" sourcepath="C:/cayenne/framework/cayenne-jdk1.5-unpublished/src/main/java"/>
-	<classpathentry kind="lib" path="lib/derby-10.3.1.4.jar"/>
-	<classpathentry kind="lib" path="lib/mysql-connector-java-3.0.17-ga-bin.jar"/>
+	<classpathentry kind="lib" path="lib/cayenne-jdk1.5-unpublished-3.0-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

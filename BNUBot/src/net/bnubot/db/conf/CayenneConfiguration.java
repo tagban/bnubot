@@ -54,7 +54,7 @@ public class CayenneConfiguration implements DataSourceFactory {
 		// Connect
 		Out.debug(getClass(), "Connecting to " + settings.url);
 		PoolManager poolManager = new PoolManager(
-				settings.driver,
+				null, // Setting this to null will force Cayenne to use the DriverManager
 				settings.url,
 				1,
 				1,
