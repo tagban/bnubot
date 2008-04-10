@@ -171,6 +171,8 @@ INSERT INTO command (access, name, description, cmdgroup) VALUES
 (35,	'rejoin', NULL, 'administration'),
 (34,	'renameaccount', NULL, 'accounts'),
 (36,	'say', NULL, 'administration'),
+(2,		'search', 'Search for users by pattern', 'useful'),
+(2,		'searchrank', 'Search for accounts by rank', 'useful'),
 (1,		'seen', NULL, 'accounts'),
 (34,	'setaccount', NULL, 'accounts'),
 (36,	'setauth', NULL, 'commands'),

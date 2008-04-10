@@ -68,4 +68,17 @@ public class BNLogin extends _BNLogin {
 		query.setFetchLimit(num);
 		return DatabaseContext.getContext().performQuery(query);
 	}
+
+	/**
+	 * Search for users with pattern in their name
+	 * @param pattern The search string
+	 * @return A <code>List&lt;BNLogin></code> of users matching the pattern
+	 */
+	@SuppressWarnings("unchecked")
+	public static List<BNLogin> search(String pattern) {
+		Expression expr = ExpressionFactory.likeIgnoreCaseExp(BNLogin.LOGIN_PROPERTY, "%" + pattern + "%");
+		SelectQuery query = new SelectQuery(BNLogin.class, expr);
+		query.addOrdering(BNLogin.LAST_SEEN_PROPERTY, false);
+		return DatabaseContext.getContext().performQuery(query);
+	}
 }
