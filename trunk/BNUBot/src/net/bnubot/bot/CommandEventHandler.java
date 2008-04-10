@@ -1601,7 +1601,7 @@ public class CommandEventHandler implements EventHandler {
 			}
 
 			//Mail
-			long umc = Mail.getUnreadCount(rsAccount);;
+			long umc = Mail.getUnreadCount(rsAccount);
 			if(umc > 0)
 				user.sendChat("You have " + umc + " unread messages; type [ %trigger%mail read ] to retrieve them", false);
 		} catch (Exception e) {
@@ -1617,7 +1617,14 @@ public class CommandEventHandler implements EventHandler {
 			vote.cancel();
 	}
 	
-	public void channelUser(Connection source, BNetUser user) {}
+	public void channelUser(Connection source, BNetUser user) {
+		try {
+			BNLogin.getCreate(user);
+		} catch (Exception e) {
+			Out.exception(e);
+		}
+	}
+	
 	public void joinedChannel(Connection source, String channel) {}
 
 	public void recieveChat(Connection source, BNetUser user, String text) {
