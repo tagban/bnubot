@@ -366,6 +366,7 @@ public class IconsDotBniReader {
 					bni.image = new Image(null, imageData);
 					currentPixel += pos;
 				} catch(Throwable t) {
+					Out.exception(new Exception(t));
 					currentPixel += bni.xSize * bni.ySize;
 				}
 			}
