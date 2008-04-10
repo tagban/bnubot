@@ -19,6 +19,8 @@ Prefix the command name with your trigger. If you're doing the command locally (
 ==useful==
 || *Command* || *Arguments* || *Access Required* || *Comment* ||
 || trigger || `none` || 1 || called with ?trigger ||
+|| search || `<pattern>` || 1 || Search for users matching a pattern ||
+|| searchrank || `<rank> [access]` || 1 || Search for Accounts with certain access ||
 
 ==accounts==
 || *Command* || *Arguments* || *Access Required* || *Comment* ||
