@@ -275,7 +275,7 @@ public class GuiEventHandler implements EventHandler {
 					try {
 						for(String element : chatTextArea.getText().split("\n")) {
 							if(element.trim().length() > 0)
-								firstConnection.queueChatHelper(element, true);
+								firstConnection.sendChat(element, true);
 						}
 						chatTextArea.setText(null);
 						return;

@@ -235,7 +235,7 @@ public class DTConnection extends Connection {
 					timeSinceAntiIdle /= 60;
 					if(timeSinceAntiIdle >= cs.antiIdleTimer) {
 						profile.lastAntiIdle = timeNow;
-						queueChatHelper(getAntiIdle(), true);
+						sendChat(getAntiIdle(), true);
 					}
 				}
 			}
