@@ -63,6 +63,7 @@ public class GlobalConfigurationFrame extends JDialog {
 	private ConfigTextArea txtBNLSServer = null;
 	private ConfigComboBox cmbReleaseType = null;
 	private ConfigCheckBox chkAutoConnect = null;
+	private ConfigCheckBox chkAutoRejoin = null;
 	private ConfigCheckBox chkEnableMirrorSelector = null;
 	private ConfigCheckBox chkEnableFloodProtect = null;
 	private ConfigCheckBox chkPacketLog = null;
@@ -180,6 +181,7 @@ public class GlobalConfigurationFrame extends JDialog {
 				cmbReleaseType.setSelectedItem(GlobalSettings.releaseType);
 	
 				boxAll.add(chkAutoConnect = new ConfigCheckBox("Auto Connect", GlobalSettings.autoConnect));
+				boxAll.add(chkAutoRejoin = new ConfigCheckBox("Auto Rejoin After Kicked", GlobalSettings.autoRejoin));
 				boxAll.add(chkEnableMirrorSelector = new ConfigCheckBox("Enable Mirror Selector", GlobalSettings.enableMirrorSelector));
 				boxAll.add(chkEnableFloodProtect = new ConfigCheckBox("Enable Flood Protect", GlobalSettings.enableFloodProtect));
 				boxAll.add(chkPacketLog = new ConfigCheckBox("Packet Log", GlobalSettings.packetLog));
@@ -375,6 +377,7 @@ public class GlobalConfigurationFrame extends JDialog {
 			GlobalSettings.bnUserToStringCommandResponse = cmbBNUserToStringCommandResponse.getSelectedIndex();
 			GlobalSettings.releaseType = (ReleaseType)cmbReleaseType.getSelectedItem();
 			GlobalSettings.autoConnect = chkAutoConnect.isSelected();
+			GlobalSettings.autoRejoin = chkAutoRejoin.isSelected();
 			GlobalSettings.enableMirrorSelector = chkEnableMirrorSelector.isSelected();
 			GlobalSettings.displayBattleNetMOTD = chkDisplayBattleNetMOTD.isSelected();
 			GlobalSettings.displayBattleNetChannels = chkDisplayBattleNetChannels.isSelected();
@@ -462,6 +465,7 @@ public class GlobalConfigurationFrame extends JDialog {
 			cmbBNUserToStringCommandResponse.setSelectedIndex(GlobalSettings.bnUserToStringCommandResponse);
 			cmbReleaseType.setSelectedItem(GlobalSettings.releaseType);
 			chkAutoConnect.setSelected(GlobalSettings.autoConnect);
+			chkAutoRejoin.setSelected(GlobalSettings.autoRejoin);
 			chkEnableMirrorSelector.setSelected(GlobalSettings.enableMirrorSelector);
 			chkEnableLegacyIcons.setSelected(GlobalSettings.enableLegacyIcons);
 			chkEnableTabCompleteUser.setSelected(GlobalSettings.enableTabCompleteUser);
