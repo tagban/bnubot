@@ -1,5 +1,6 @@
 2.0.5.1:
-* Added auto-rejoin afer being kicked
+* Added auto-rejoin afer being kicked (Issue 52)
+* Added 'search' and 'searchrank' commands
 
 2.0.5 (r1300) 2008-04-09:
 * Added a Cayenne persistence layer to address database problems
