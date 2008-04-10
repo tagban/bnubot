@@ -122,8 +122,9 @@ public class CommandEventHandler implements EventHandler {
 		initializeCommands();
 	}
 	
-	private long	lastCommandTime = 0;
+	private long lastCommandTime = 0;
 	private BNetUser lastCommandUser = null;
+	private boolean lastCommandWhisperBack = true;
 	
 	public CommandEventHandler() {
 		if(DatabaseContext.getContext() == null)
@@ -1286,6 +1287,7 @@ public class CommandEventHandler implements EventHandler {
 			
 			lastCommandUser = user;
 			lastCommandTime = System.currentTimeMillis();
+			lastCommandWhisperBack = whisperBack;
 			
 			cr.run(source,
 					user,
@@ -1653,19 +1655,19 @@ public class CommandEventHandler implements EventHandler {
 
 	public void recieveEmote(Connection source, BNetUser user, String text) {}
 	
-	private boolean enableSendInfoErrorBack = false;
 	private String lastInfo = null;
 	private void recieveInfoError(Connection source, String text) {
-		if(!enableSendInfoErrorBack)
+		if(lastCommandUser == null)
+			return;
+		if(sweepBanInProgress.get(source) == Boolean.TRUE)
 			return;
 		
 		long timeElapsed = System.currentTimeMillis() - lastCommandTime;
-		// 200ms
-		if(timeElapsed < 200) {
-			if(!text.equals(lastInfo)) {
-				lastInfo = text;
-				lastCommandUser.sendChat(text, false);
-			}
+		// 500ms
+		if((timeElapsed < 500)
+		&& (!text.equals(lastInfo))) {
+			lastInfo = text;
+			lastCommandUser.sendChat(text, lastCommandWhisperBack);
 		}
 	}
 	
