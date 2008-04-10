@@ -20,7 +20,7 @@ Prefix the command name with your trigger. If you're doing the command locally (
 || *Command* || *Arguments* || *Access Required* || *Comment* ||
 || trigger || `none` || 1 || called with ?trigger ||
 || search || `<pattern>` || 1 || Search for users matching a pattern ||
-|| searchrank || `<rank> [access]` || 1 || Search for Accounts with certain access ||
+|| searchrank || `<minimum access> [maximum access]` || 1 || Search for Accounts with certain access ||
 
 ==accounts==
 || *Command* || *Arguments* || *Access Required* || *Comment* ||
@@ -34,7 +34,7 @@ Prefix the command name with your trigger. If you're doing the command locally (
 || autopromotion || `[account]` || 1 || Shows autopromotion status for an account ||
 || recruit || `<user> <account>` || 15 || The user must have been seen by the bot ||
 || recruits || `[account]` || 10 || Shows the account's recruits ||
-|| mailall || `<minimum rank> <message>` || 30 || Sends mail to everyone of rank <minimum rank> and higher ||
+|| mailall || `<minimum access> <message>` || 30 || Sends mail to everyone of access <minimum access> and higher ||
 || setaccount || `<user> <account>` || 34 || Adds <user> to <account> ||
 || renameaccount || `<oldaccount> <newaccount>` || 34 || Renames an account ||
 || createaccount || `<account>` || 34 || ||
@@ -50,12 +50,12 @@ Prefix the command name with your trigger. If you're doing the command locally (
 
 ==clan==
 || *Command* || *Arguments* || *Access Required* || *Comment* ||
-|| setrank || `<user> <rank>` || 35 || Rank can be one of peon, grunt, shaman, or 1, 2, or 3 ||
+|| setrank || `<user> <rank>` || 35 || Access can be one of peon, grunt, shaman, or 1, 2, or 3 ||
 || invite || `<user>` || 30 || Invite a user in to the clan (requires shaman) ||
 
 ==commands==
 || *Command* || *Arguments* || *Access Required* || *Comment* ||
-|| auth || `<command>` || 1 || Get the rank requirement to use the given command ||
+|| auth || `<command>` || 1 || Get the access requirement to use the given command ||
 || access || `[category]` || 1 || List available commands ||
 || setauth || `<command> <access>` || 36 | Set the authorization required to use a command ||
 
