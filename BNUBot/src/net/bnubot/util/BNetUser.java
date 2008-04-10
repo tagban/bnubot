@@ -446,7 +446,7 @@ public class BNetUser {
 				prefix = this.toString(GlobalSettings.bnUserToStringCommandResponse) + ": ";
 			}
 		
-			con.queueChatHelper(prefix, text, false, true);
+			con.sendChat(prefix, text, false, true);
 		}
 	}
 }

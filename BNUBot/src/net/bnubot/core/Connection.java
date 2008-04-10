@@ -377,7 +377,7 @@ public abstract class Connection extends Thread {
 		return (checkDelay() <= 0);
 	}
 
-	public void sendChatCommand(String text) {
+	protected void sendChatCommand(String text) {
 		profile.lastAntiIdle = System.currentTimeMillis();
 
 		if(canSendChat())
@@ -454,12 +454,12 @@ public abstract class Connection extends Thread {
 		return text;
 	}
 
-	public void queueChatHelper(String text, boolean allowCommands) {
-		queueChatHelper(null, text, allowCommands, true);
+	public void sendChat(String text, boolean allowCommands) {
+		sendChat(null, text, allowCommands, true);
 	}
 	
 	public static final int MAX_CHAT_LENGTH = 200;
-	public void queueChatHelper(String prefix, String text, boolean allowCommands, boolean enableKeywords) {
+	public void sendChat(String prefix, String text, boolean allowCommands, boolean enableKeywords) {
 		if(text == null)
 			return;
 		if(text.length() == 0)
@@ -517,7 +517,7 @@ public abstract class Connection extends Thread {
 					break;
 				case 'q':
 					if(command[0].equals("quote")) {
-						queueChatHelper(prefix, command[1], false, false);
+						sendChat(prefix, command[1], false, false);
 						return;
 					}
 					break;

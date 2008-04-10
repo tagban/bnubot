@@ -118,7 +118,7 @@ public class TriviaEventHandler implements EventHandler {
 				out.append(a.getTriviaCorrect()).append(") ");
 			}
 			out.append("Total=").append(getTriviaSum());
-			source.queueChatHelper(out.toString(), false);
+			source.sendChat(out.toString(), false);
 		} catch (Exception e) {
 			Out.exception(e);
 		}
@@ -168,7 +168,7 @@ public class TriviaEventHandler implements EventHandler {
 			try {
 				if(triviaEnabled && source.canSendChat()) {
 					if(trivia.size() == 0) {
-						source.queueChatHelper("There are no trivia questions left; game over.", false);
+						source.sendChat("There are no trivia questions left; game over.", false);
 						triviaEnabled = false;
 						continue;
 					}
@@ -194,7 +194,7 @@ public class TriviaEventHandler implements EventHandler {
 									String out = "The trivia round is over! Congratulations to ";
 									out += resetTrivia();
 									out += " for winning the round!";
-									source.queueChatHelper(out, false);
+									source.sendChat(out, false);
 								}
 							}
 						} catch (Exception e) {
@@ -211,7 +211,7 @@ public class TriviaEventHandler implements EventHandler {
 							q += " - Category: " + triviaCurrent.getCategory();
 						q += " - Question: " + triviaCurrent.getQuestion();
 						q += " - Hint: " + triviaCurrent.getHint0();
-						source.queueChatHelper(q, false);
+						source.sendChat(q, false);
 						//c.recieveInfo("Answer: " + ti.getAnswer());
 					}
 					
@@ -226,12 +226,12 @@ public class TriviaEventHandler implements EventHandler {
 						timeElapsed /= 1000;
 
 						if((timeElapsed > 10) && (numHints < 1)) {
-							source.queueChatHelper("/me - 20 seconds left! Hint: " + triviaCurrent.getHint1(), false);
+							source.sendChat("/me - 20 seconds left! Hint: " + triviaCurrent.getHint1(), false);
 							numHints++;
 						}
 						
 						if((timeElapsed > 20) && (numHints < 2)) {
-							source.queueChatHelper("/me - 10 seconds left! Hint: " + triviaCurrent.getHint2(), false);
+							source.sendChat("/me - 10 seconds left! Hint: " + triviaCurrent.getHint2(), false);
 							numHints++;
 						}
 						
@@ -275,7 +275,7 @@ public class TriviaEventHandler implements EventHandler {
 							}
 						}
 						
-						source.queueChatHelper("/me - \"" + answerUsed + "\" is correct, " + answerUser.toString() + extra, false);
+						source.sendChat("/me - \"" + answerUsed + "\" is correct, " + answerUser.toString() + extra, false);
 						
 						showLeaderBoard(source);
 					} else {
@@ -286,17 +286,17 @@ public class TriviaEventHandler implements EventHandler {
 						
 						if(triviaEnabled) {
 							unanswered++;
-							source.queueChatHelper("/me - Time's up!" + correct, false);
+							source.sendChat("/me - Time's up!" + correct, false);
 						} else {
-							source.queueChatHelper("/me - Game over!" + correct, false);
+							source.sendChat("/me - Game over!" + correct, false);
 							continue;
 						}
 					}
 
 					if(unanswered == 9)
-						source.queueChatHelper("Trivia will automaticly shut off after the next question. To extend trivia, type [ trivia on ]", false);
+						source.sendChat("Trivia will automaticly shut off after the next question. To extend trivia, type [ trivia on ]", false);
 					if(unanswered >= 10) {
-						source.queueChatHelper("Auto-disabling trivia.", false);
+						source.sendChat("Auto-disabling trivia.", false);
 						triviaEnabled = false;
 					}
 				}

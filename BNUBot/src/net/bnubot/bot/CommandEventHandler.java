@@ -75,7 +75,7 @@ public class CommandEventHandler implements EventHandler {
 		}
 		
 		private void send(String text) {
-			connection.queueChatHelper(text, false);
+			connection.sendChat(text, false);
 		}
 		
 		public void run() {
@@ -664,7 +664,7 @@ public class CommandEventHandler implements EventHandler {
 				}
 
 				bnSubject.resetPrettyName();
-				source.queueChatHelper("Welcome to the clan, " + bnSubject.toString() + "!", false);
+				source.sendChat("Welcome to the clan, " + bnSubject.toString() + "!", false);
 			}});
 		Profile.registerCommand("recruits", new CommandRunnable() {
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
@@ -750,7 +750,7 @@ public class CommandEventHandler implements EventHandler {
 		Profile.registerCommand("say", new CommandRunnable() {
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
 			throws Exception {
-				source.queueChatHelper(param, false);
+				source.sendChat(param, false);
 			}});
 		Profile.registerCommand("seen", new CommandRunnable() {
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
@@ -974,7 +974,7 @@ public class CommandEventHandler implements EventHandler {
 				}
 				sweepBanInProgress.put(source, true);
 				sweepBannedUsers.put(source, 0);
-				source.queueChatHelper("/who " + param, false);
+				source.sendChat("/who " + param, false);
 			}});
 		Profile.registerCommand("trigger", new CommandRunnable() {
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
@@ -995,7 +995,7 @@ public class CommandEventHandler implements EventHandler {
 				}
 				
 				BNetUser target = new BNetUser(source, params[0], user.getFullAccountName());
-				source.queueChatHelper("/unban " + target.getFullLogonName(), false);
+				source.sendChat("/unban " + target.getFullLogonName(), false);
 			}});
 		Profile.registerCommand("voteban", new CommandRunnable() {
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
@@ -1290,7 +1290,7 @@ public class CommandEventHandler implements EventHandler {
 			out += " " + reason;
 			
 			// Send the command
-			source.queueChatHelper(out, false);
+			source.sendChat(out, false);
 		} else {
 			// Wildcard kick/ban
 			List<BNetUser> users = source.findUsersWildcard(params[0], user);
@@ -1311,7 +1311,7 @@ public class CommandEventHandler implements EventHandler {
 				out += u.getFullLogonName() + " " + reason;
 				
 				// Send the command
-				source.queueChatHelper(out, false);
+				source.sendChat(out, false);
 			}
 			
 			if(numSkipped > 0)
@@ -1440,7 +1440,7 @@ public class CommandEventHandler implements EventHandler {
 					int age = cal.get(Calendar.YEAR);
 					cal.setTime(today);
 					age = cal.get(Calendar.YEAR) - age;
-					source.queueChatHelper("Happy birthday, " + user.toString() + "! Today, you are " + age + " years old!", false);
+					source.sendChat("Happy birthday, " + user.toString() + "! Today, you are " + age + " years old!", false);
 				}
 			}
 
@@ -1450,7 +1450,7 @@ public class CommandEventHandler implements EventHandler {
 				String greeting = rsRank.getGreeting();
 				if(greeting != null) {
 					greeting = String.format(greeting, user.toString(), user.getPing(), user.getFullAccountName());
-					source.queueChatHelper(greeting, false);
+					source.sendChat(greeting, false);
 				}
 
 				// Autopromotions
@@ -1498,7 +1498,7 @@ public class CommandEventHandler implements EventHandler {
 								break apBlock;
 							}
 							user.resetPrettyName();	//Reset the presentable name
-							source.queueChatHelper("Congratulations " + user.toString() + ", you just recieved a promotion! Your rank is now " + rank + ".", false);
+							source.sendChat("Congratulations " + user.toString() + ", you just recieved a promotion! Your rank is now " + rank + ".", false);
 							String apMail = rsRank.getApMail();
 							if((apMail != null) && (apMail.length() > 0))
 								Mail.send(rsAccount, rsAccount, apMail);
@@ -1620,7 +1620,7 @@ public class CommandEventHandler implements EventHandler {
 				if(text.substring(0, 17).equals("Users in channel ")) {
 					if(sweepBannedUsers.get(source) == 0) {
 						turnItOff = false;
-						source.queueChatHelper("Sweepbanning channel " + text.substring(17, text.length() - 1), false);
+						source.sendChat("Sweepbanning channel " + text.substring(17, text.length() - 1), false);
 					}
 				}
 			}
@@ -1629,15 +1629,15 @@ public class CommandEventHandler implements EventHandler {
 			if(users.length == 2) {
 				if(users[0].indexOf(' ') == -1) {
 					if(users[1].indexOf(' ') == -1) {
-						source.queueChatHelper("/ban " + removeOpUserBrackets(users[0]), false);
-						source.queueChatHelper("/ban " + removeOpUserBrackets(users[1]), false);
+						source.sendChat("/ban " + removeOpUserBrackets(users[0]), false);
+						source.sendChat("/ban " + removeOpUserBrackets(users[1]), false);
 						sweepBannedUsers.put(source, sweepBannedUsers.get(source) + 2);
 						turnItOff = false;
 					}
 				}
 			} else {
 				if(text.indexOf(' ') == -1) {
-					source.queueChatHelper("/ban " + removeOpUserBrackets(text), false);
+					source.sendChat("/ban " + removeOpUserBrackets(text), false);
 					sweepBannedUsers.put(source, sweepBannedUsers.get(source) + 1);
 					turnItOff = true;
 				}
