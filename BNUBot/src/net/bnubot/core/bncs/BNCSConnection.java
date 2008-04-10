@@ -2044,9 +2044,9 @@ public class BNCSConnection extends Connection {
 		p.writeDWord(1);
 		p.writeDWord(profileKeys.size());
 		p.writeNTString(user);
-		for(Object key : profileKeys)
+		for(String key : profileKeys)
 			p.writeNTString(key.toString());
-		for(Object key : profileKeys)
+		for(String key : profileKeys)
 			p.writeNTString(profile.get(key));
 		p.SendPacket(bncsOutputStream);
 	}
