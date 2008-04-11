@@ -37,7 +37,10 @@ Yes; Hdx was kind enough to release a solution to get around Warden, but before 
 To use this workaround, simply place a copy of Starcraft.exe in your BNU-Bot folder. Please do not advertise this feature without the disclaimer.
 
 == Help with commands ==
-There is a wiki page documenting the available commands in BNU-Bot on the wiki: [http://code.google.com/p/bnubot/wiki/Commands]
+There is a wiki page documenting the available commands in BNU-Bot: [Commands]
+
+== Help with trivia ==
+There is a wiki page documenting how to use trivia in BNU-Bot: [Trivia]
 
 == Ask questions ==
 There is a support form for BNU-Bot on clanbnu.net's forums: [http://forums.clanbnu.net/index.php?board=23.0]
