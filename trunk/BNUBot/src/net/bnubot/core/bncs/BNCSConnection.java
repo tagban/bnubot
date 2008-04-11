@@ -1794,7 +1794,6 @@ public class BNCSConnection extends Connection {
 	 */
 	public void sendChatCommand(String text) {
 		super.sendChatCommand(text);
-		
 
 		switch(productID) {
 		case D2DV:
