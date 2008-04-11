@@ -31,8 +31,11 @@ Double-click on run.sh, or run `./run.sh` from the console in the directory wher
 
 
 = Get support =
+== Help with commands ==
+There is a wiki page documenting the available commands in BNU-Bot on the wiki: [http://code.google.com/p/bnubot/wiki/Commands]
+
 == Ask questions ==
-There is a support form for BNU-Bot on [clanbnu.net]'s forums: [http://forums.clanbnu.net/index.php?board=23.0]
+There is a support form for BNU-Bot on clanbnu.net's forums: [http://forums.clanbnu.net/index.php?board=23.0]
 
 == Report a bug ==
 If you experience a bug, please consult the support forum before reporting an issue. It's very likely that someone else has had the same problem, and there is already a known solution.
