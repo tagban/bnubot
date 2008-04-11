@@ -100,10 +100,6 @@ public class Profile {
 				if(GlobalSettings.enableCLI)
 					con.addEventHandler(new ConsoleEventHandler());
 
-				// GUI
-				if(GlobalSettings.enableGUI)
-					con.addEventHandler(new GuiEventHandler(con));
-
 				// SWT GUI
 				if(GlobalSettings.enableSWT)
 					try {
@@ -114,14 +110,17 @@ public class Profile {
 						GlobalSettings.enableGUI = true;
 					}
 
+				// GUI
+				if(GlobalSettings.enableGUI)
+					con.addEventHandler(new GuiEventHandler(con));
+
 				// Commands
-				if(GlobalSettings.enableCommands) {
+				if(GlobalSettings.enableCommands)
 					try {
 						con.addEventHandler(new CommandEventHandler());
 					} catch(Exception e) {
 						Out.exception(e);
 					}
-				}
 			}
 			
 			// Start the Connection thread
