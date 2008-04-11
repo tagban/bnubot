@@ -31,6 +31,11 @@ Double-click on run.sh, or run `./run.sh` from the console in the directory wher
 
 
 = Get support =
+== Can I use Starcraft/BroodWar? ==
+Yes; Hdx was kind enough to release a solution to get around Warden, but before you do this, please be aware that this solution is not entirely safe. If Blizzard changes the Warden algorithm with the intent to break this workaround, your cdkeys and/or accounts may become banned.
+
+To use this workaround, simply place a copy of Starcraft.exe in your BNU-Bot folder. Please do not advertise this feature without the disclaimer.
+
 == Help with commands ==
 There is a wiki page documenting the available commands in BNU-Bot on the wiki: [http://code.google.com/p/bnubot/wiki/Commands]
 
