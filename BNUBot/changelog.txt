@@ -8,6 +8,7 @@
 * Improved feedback when the database fails to initialize
 * Mail notifications are now whispered
 * Improved the chat long line splitter to use ellipses
+* Missing keys in settings.ini will be added with the default value
 
 2.0.5 (r1300) 2008-04-09:
 * Added a Cayenne persistence layer to address database problems
