@@ -7,13 +7,14 @@
 * Reduced the verbosity of exceptions on the GUI
 * Improved feedback when the database fails to initialize
 * Mail notifications are now whispered
+* Improved the chat long line splitter to use ellipses
 
 2.0.5 (r1300) 2008-04-09:
 * Added a Cayenne persistence layer to address database problems
 * Added StatString test cases
 * The 'renameaccount' command now picks up the case of the old account name
 * The 'unban' command now infers the user namespace
-* Fixed a bug where super-users couldn't use commands 
+* Fixed a bug where super-users couldn't use commands
 * Added more database editors
 * Fixed a bug affecting 'kick' and 'ban' when searching for users
 * Added 'votekick' 'voteban' and 'votecancel' commands

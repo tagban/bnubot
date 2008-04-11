@@ -548,9 +548,13 @@ public abstract class Connection extends Thread {
 		//Split up the text in to appropriate sized pieces
 		int pieceSize = MAX_CHAT_LENGTH - (prefix == null ? 0 : prefix.length());
 		for(int i = 0; i < text.length(); i += pieceSize) {
-			String piece = (prefix == null ? "" : prefix) + text.substring(i); 
-			if(piece.length() > MAX_CHAT_LENGTH)
-				piece = piece.substring(0, MAX_CHAT_LENGTH);
+			String piece = (prefix == null ? "" : prefix) + (i > 0 ? "..." : "") + text.substring(i);
+			if(i > 0)
+				i -= 3;
+			if(piece.length() > MAX_CHAT_LENGTH) {
+				piece = piece.substring(0, MAX_CHAT_LENGTH - 3) + "...";
+				i -= 3;
+			}
 
 			if(canSendChat() && !GlobalSettings.enableFloodProtect) {
 				sendChatCommand(piece);
