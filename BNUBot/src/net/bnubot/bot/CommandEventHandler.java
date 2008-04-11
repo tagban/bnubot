@@ -1608,7 +1608,7 @@ public class CommandEventHandler implements EventHandler {
 			//Mail
 			long umc = Mail.getUnreadCount(rsAccount);
 			if(umc > 0)
-				user.sendChat("You have " + umc + " unread messages; type [ %trigger%mail read ] to retrieve them", false);
+				user.sendChat("You have " + umc + " unread messages; type [ %trigger%mail read ] to retrieve them", true);
 		} catch (Exception e) {
 			Out.exception(e);
 		}

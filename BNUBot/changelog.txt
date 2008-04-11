@@ -5,7 +5,8 @@
 * Re-enabled info/error responses forwarded to the user
 * Auto-create users that don't exist in the DB when joining a channel
 * Reduced the verbosity of exceptions on the GUI
-* Improved feedback when the database fails to initialize 
+* Improved feedback when the database fails to initialize
+* Mail notifications are now whispered
 
 2.0.5 (r1300) 2008-04-09:
 * Added a Cayenne persistence layer to address database problems
