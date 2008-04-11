@@ -84,7 +84,7 @@ public class Out {
 	public static void exception(Exception e) {
 		final Connection oc = getOutConnection();
 		if(oc != null)
-			error(e.getClass(), getRelevantStack(e));
+			error(e.getClass(), e.getMessage());
 		if(outStream != null)
 			e.printStackTrace(outStream);
 		else
@@ -115,7 +115,10 @@ public class Out {
 		try {
 			JOptionPane.showMessageDialog(null, getRelevantStack(e), e.getClass().getSimpleName(), JOptionPane.ERROR_MESSAGE);
 		} catch(Exception e1) {}
-		e.printStackTrace();
+		if(outStream != null)
+			e.printStackTrace(outStream);
+		else
+			e.printStackTrace();
 		System.exit(1);
 	}
 
