@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import net.bnubot.settings.GlobalSettings;
+
 public class ChatQueue extends Thread {
 	private final List<Connection> cons = new ArrayList<Connection>();
 	private final List<String> queue = new LinkedList<String>();
@@ -25,8 +27,8 @@ public class ChatQueue extends Thread {
 		}
 	}
 
-	public boolean enqueue(String text, boolean fp) {
-		if(fp) synchronized(queue) {
+	public boolean enqueue(Connection source, String text) {
+		if(GlobalSettings.enableFloodProtect) synchronized(queue) {
 			// Flood protection is enabled
 			return queue.add(text);
 		}

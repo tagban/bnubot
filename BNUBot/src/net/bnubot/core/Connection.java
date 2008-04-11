@@ -556,11 +556,7 @@ public abstract class Connection extends Thread {
 				i -= 3;
 			}
 
-			if(canSendChat() && !GlobalSettings.enableFloodProtect) {
-				sendChatCommand(piece);
-			} else {
-				chatQueue.enqueue(piece, GlobalSettings.enableFloodProtect);
-			}
+			chatQueue.enqueue(this, piece);
 		}
 	}
 
