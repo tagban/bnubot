@@ -17,7 +17,7 @@ import net.bnubot.vercheck.CurrentVersion;
 public class Settings {
 	private static final File propsFile = new File("settings.ini");
 	private static final Properties props = new SortedProperties();
-	private static Boolean anythingChanged = false;
+	private static boolean anythingChanged = false;
 	
 	static {
 		if(propsFile.exists()) try {
@@ -34,7 +34,12 @@ public class Settings {
 	}
 	
 	public static String read(String header, String setting, String defaultValue) {
-		return props.getProperty(getKey(header, setting), defaultValue);
+		String key = getKey(header, setting);
+		if(props.containsKey(key))
+			return props.getProperty(key);
+		
+		write(key, defaultValue);
+		return defaultValue;
 	}
 	
 	public static boolean read(String header, String setting, boolean defaultValue) {
@@ -63,7 +68,10 @@ public class Settings {
 	}
 	
 	public static void write(String header, String setting, String value) {
-		String key = getKey(header, setting);
+		write(getKey(header, setting), value);
+	}
+	
+	private static void write(String key, String value) {
 		if(value == null)
 			value = new String();
 		
