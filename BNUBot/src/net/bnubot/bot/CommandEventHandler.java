@@ -118,9 +118,6 @@ public class CommandEventHandler implements EventHandler {
 		}
 	}
 	
-	static {
-		initializeCommands();
-	}
 	
 	private long lastCommandTime = 0;
 	private BNetUser lastCommandUser = null;
@@ -129,6 +126,7 @@ public class CommandEventHandler implements EventHandler {
 	public CommandEventHandler() {
 		if(DatabaseContext.getContext() == null)
 			throw new IllegalStateException("Can not enable commands without a database!");
+		initializeCommands();
 	}
 
 	public void initialize(Connection source) {}
@@ -148,7 +146,12 @@ public class CommandEventHandler implements EventHandler {
 		}
 	}
 	
+	private static boolean commandsInitialized = false;
 	public static void initializeCommands() {
+		if(commandsInitialized)
+			return;
+		commandsInitialized = true;
+		
 		Profile.registerCommand("access", new CommandRunnable() {
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
 			throws Exception {
