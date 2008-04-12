@@ -49,7 +49,7 @@ public class CommandEventHandler implements EventHandler {
 		private Connection connection;
 		private BNetUser subject;
 		private boolean isBan;
-		private Hashtable<Account, Boolean> votes = new Hashtable<Account, Boolean>();
+		private Hashtable<String, Boolean> votes = new Hashtable<String, Boolean>();
 		
 		private boolean voteCancelled = false;
 
@@ -71,7 +71,7 @@ public class CommandEventHandler implements EventHandler {
 		}
 		
 		public void castVote(Account user, boolean vote) {
-			votes.put(user, new Boolean(vote));
+			votes.put(user.getName(), new Boolean(vote));
 		}
 		
 		private void send(String text) {
@@ -95,7 +95,7 @@ public class CommandEventHandler implements EventHandler {
 			if(!voteCancelled) {
 				// Tally up the votes
 				int yay = 0, nay = 0;
-				for(Account voter : votes.keySet()) {
+				for(String voter : votes.keySet()) {
 					if(votes.get(voter).booleanValue())
 						yay++;
 					else
