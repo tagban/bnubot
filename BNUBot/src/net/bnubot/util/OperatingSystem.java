@@ -10,6 +10,7 @@ import java.util.Properties;
 public enum OperatingSystem {
 	WINDOWS,
 	OSX,
+	LINUX,
 	UNKNOWN;
 	
 	private static OperatingSystem initOS() {
@@ -18,6 +19,8 @@ public enum OperatingSystem {
 			return OSX;
 		if(osName.startsWith("Windows "))
 			return WINDOWS;
+		if(osName.startsWith("Linux"))
+			return LINUX;
 		return UNKNOWN;
 	}
 	
