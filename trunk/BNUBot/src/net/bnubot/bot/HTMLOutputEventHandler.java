@@ -10,9 +10,9 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.List;
 import java.util.TimeZone;
 
 import javax.swing.SwingUtilities;
@@ -121,7 +121,7 @@ public class HTMLOutputEventHandler implements EventHandler {
 					try {
 						File f = new File("logs/userlist_" + source.getProfile().getName() + ".html");
 						DataOutputStream fos = new DataOutputStream(new FileOutputStream(f));
-						List<BNetUser> users = source.getUsers();
+						Collection<BNetUser> users = source.getUsers();
 						
 						fos.write("<table><tr><td colspan=\"4\"><b>".getBytes());
 						String channel = source.getChannel();

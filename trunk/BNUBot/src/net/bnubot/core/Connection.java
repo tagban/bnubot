@@ -14,9 +14,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Hashtable;
-import java.util.LinkedList;
 import java.util.List;
 
 import net.bnubot.core.bncs.ProductIDs;
@@ -59,12 +59,12 @@ public abstract class Connection extends Thread {
 	protected ConnectionSettings cs;
 	protected ChatQueue chatQueue;
 	protected Profile profile;
-	protected List<EventHandler> eventHandlers = new ArrayList<EventHandler>();
-	protected List<EventHandler> eventHandlers2 = new ArrayList<EventHandler>();
+	protected final Collection<EventHandler> eventHandlers = new ArrayList<EventHandler>();
+	protected final Collection<EventHandler> eventHandlers2 = new ArrayList<EventHandler>();
+	protected final Collection<Connection> slaves = new ArrayList<Connection>();
+	protected final Hashtable<String, BNetUser> users = new Hashtable<String, BNetUser>();
 	protected BNetUser myUser = null;
-	protected final List<BNetUser> users = new LinkedList<BNetUser>();
 	protected ConnectionState connectionState = ConnectionState.ALLOW_CONNECT;
-	protected List<Connection> slaves = new ArrayList<Connection>();
 	protected String channelName = null;
 	protected int channelFlags = 0;
 	protected boolean forceReconnect = false;
@@ -152,20 +152,16 @@ public abstract class Connection extends Thread {
 		return antiIdles.remove(i);
 	}
 	
-	public List<EventHandler> getEventHandlers() {
-		return Collections.synchronizedList(eventHandlers);
+	public Collection<EventHandler> getEventHandlers() {
+		return Collections.synchronizedCollection(eventHandlers);
 	}
 	
-	public List<BNetUser> getUsers() {
-		return users;
+	public Collection<BNetUser> getUsers() {
+		return users.values();
 	}
 	
 	private BNetUser getUser(BNetUser u) {
-		for(BNetUser ui : users) {
-			if(u.equals(ui))
-				return ui;
-		}
-		return null;
+		return users.get(u.getFullLogonName());
 	}
 	
 	/**
@@ -175,7 +171,7 @@ public abstract class Connection extends Thread {
 		containing = containing.toLowerCase();
 		
 		List<String> ret = new ArrayList<String>(users.size());
-		for(BNetUser user : users) {
+		for(BNetUser user : getUsers()) {
 			String u = user.getShortLogonName();
 			if(GlobalSettings.tabCompleteMode.beginsWithMode()) {
 				if(u.toLowerCase().startsWith(containing))
@@ -195,7 +191,7 @@ public abstract class Connection extends Thread {
 		pattern = pattern.toLowerCase();
 		
 		List<BNetUser> ret = new ArrayList<BNetUser>(users.size());
-		for(BNetUser user : users) {
+		for(BNetUser user : getUsers()) {
 			String u = user.getShortLogonName(perspective).toLowerCase();
 			if(Wildcard.matches(pattern, u))
 				ret.add(user);
@@ -207,7 +203,7 @@ public abstract class Connection extends Thread {
 	 * Find a user
 	 */
 	public BNetUser findUser(String pattern, BNetUser perspective) {
-		for(BNetUser user : users) {
+		for(BNetUser user : getUsers()) {
 			String u = user.getShortLogonName(perspective);
 			if(pattern.equalsIgnoreCase(u))
 				return user;
@@ -677,10 +673,8 @@ public abstract class Connection extends Thread {
 	}
 
 	public void channelUser(BNetUser user) {
-		if(getUser(user) == null) {
-			users.add(user);
-			ChannelListPriority.sort(users);
-		}
+		if(getUser(user) == null)
+			users.put(user.getFullLogonName(), user);
 
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
@@ -689,10 +683,8 @@ public abstract class Connection extends Thread {
 	}
 
 	public void channelJoin(BNetUser user) {
-		if(getUser(user) == null) {
-			users.add(user);
-			ChannelListPriority.sort(users);
-		}
+		if(getUser(user) == null)
+			users.put(user.getFullLogonName(), user);
 
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
@@ -701,7 +693,7 @@ public abstract class Connection extends Thread {
 	}
 
 	public void channelLeave(BNetUser user) {
-		if(!users.remove(getUser(user)))
+		if(users.remove(user.getFullLogonName()) == null)
 			Out.error(getClass(), "Tried to remove a user that was not in the list: " + user.toString());
 
 		synchronized(eventHandlers) {
@@ -913,11 +905,9 @@ public abstract class Connection extends Thread {
 	}
 	
 	public BNetUser getBNetUser(String user) {
-		for(BNetUser u : users) {
-			if(u.equals(user))
-				return u;
-		}
-		return null;
+		if(user.indexOf('@') == -1)
+			user += '@' + myUser.getRealm();
+		return users.get(user);
 	}
 
 	public BNetUser getBNetUser(String user, BNetUser myRealm) {
