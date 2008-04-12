@@ -6,6 +6,7 @@
 package net.bnubot.core.bncs;
 
 public enum ProductIDs {
+	// The order here is important; ordinals correspond to BNLS product ids (excluding CHAT)
 	CHAT(0x43484154, "Chat"),
 	STAR(0x53544152, "Starcraft"), 
 	SEXP(0x53455850, "Starcraft: Brood War"),
