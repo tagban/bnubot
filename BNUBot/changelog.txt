@@ -9,6 +9,7 @@
 * Mail/AP notifications are now whispered
 * Improved the chat long line splitter to use ellipses
 * Missing keys in settings.ini will be added with the default value
+* Vote is now a command which works by Account
 
 2.0.5 (r1300) 2008-04-09:
 * Added a Cayenne persistence layer to address database problems

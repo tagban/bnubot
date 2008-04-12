@@ -49,7 +49,7 @@ public class CommandEventHandler implements EventHandler {
 		private Connection connection;
 		private BNetUser subject;
 		private boolean isBan;
-		private Hashtable<BNetUser, Boolean> votes = new Hashtable<BNetUser, Boolean>();
+		private Hashtable<Account, Boolean> votes = new Hashtable<Account, Boolean>();
 		
 		private boolean voteCancelled = false;
 
@@ -70,7 +70,7 @@ public class CommandEventHandler implements EventHandler {
 			send("Vote cancelled.");
 		}
 		
-		public void castVote(BNetUser user, boolean vote) {
+		public void castVote(Account user, boolean vote) {
 			votes.put(user, new Boolean(vote));
 		}
 		
@@ -79,7 +79,7 @@ public class CommandEventHandler implements EventHandler {
 		}
 		
 		public void run() {
-			send("A vote to " + (isBan ? "ban " : "kick ") + subject.toString() + " has started. Type \"vote yes\" or \"vote no\" to vote. Vote lasts 30 seconds.");
+			send("A vote to " + (isBan ? "ban " : "kick ") + subject.toString() + " has started. Type \"%trigger%vote yes\" or \"%trigger%vote no\" to vote. Vote lasts 30 seconds.");
 			
 			// Wait 30 seconds for voters to vote
 			while(!voteCancelled) {
@@ -95,7 +95,7 @@ public class CommandEventHandler implements EventHandler {
 			if(!voteCancelled) {
 				// Tally up the votes
 				int yay = 0, nay = 0;
-				for(BNetUser voter : votes.keySet()) {
+				for(Account voter : votes.keySet()) {
 					if(votes.get(voter).booleanValue())
 						yay++;
 					else
@@ -1069,6 +1069,21 @@ public class CommandEventHandler implements EventHandler {
 				BNetUser target = new BNetUser(source, params[0], user.getFullAccountName());
 				source.sendChat("/unban " + target.getFullLogonName(), false);
 			}});
+		Profile.registerCommand("vote", new CommandRunnable() {
+			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
+			throws Exception {
+				Vote vote = votes.get(source);
+				if(vote == null)
+					user.sendChat("There is no vote in progress", whisperBack);
+				else if(commanderAccount == null)
+					user.sendChat("You must have an account to use vote.", whisperBack);
+				else if(param.equals("yes"))
+					vote.castVote(commanderAccount, true);
+				else if(param.equals("no"))
+					vote.castVote(commanderAccount, false);
+				else
+					user.sendChat("Use: %trigger%vote (yes | no)", whisperBack);
+			}});
 		Profile.registerCommand("voteban", new CommandRunnable() {
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
 			throws Exception {
@@ -1639,14 +1654,6 @@ public class CommandEventHandler implements EventHandler {
 			return;
 		
 		touchUser(source, user, "chatting in the channel");
-		
-		Vote vote = votes.get(source);
-		if(vote != null) {
-			if(text.equals("vote yes"))
-				vote.castVote(user, true);
-			else if(text.equals("vote no"))
-				vote.castVote(user, false);
-		}
 		
 		if(text.equals("?trigger"))
 			parseCommand(source, user, "trigger", GlobalSettings.whisperBack);
