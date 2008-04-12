@@ -160,6 +160,12 @@ public abstract class Connection extends Thread {
 		return users.values();
 	}
 	
+	public List<BNetUser> getSortedUsers() {
+		List<BNetUser> x = new ArrayList<BNetUser>(getUsers());
+		ChannelListPriority.sort(x);
+		return x;
+	}
+	
 	private BNetUser getUser(BNetUser u) {
 		return users.get(u.getFullLogonName());
 	}

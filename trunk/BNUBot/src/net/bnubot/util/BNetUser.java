@@ -353,7 +353,7 @@ public class BNetUser {
 		
 		if(o instanceof BNetUser) {
 			BNetUser u = (BNetUser)o;
-			if(u.getFullLogonName().equalsIgnoreCase(fullLogonName))
+			if(u.fullLogonName.equalsIgnoreCase(fullLogonName))
 				return true;
 		} else if(o instanceof String) {
 			String s = (String)o;
@@ -366,6 +366,11 @@ public class BNetUser {
 		}
 		
 		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		return fullLogonName.hashCode();
 	}
 
 	public int getFlags() {
@@ -448,5 +453,9 @@ public class BNetUser {
 		
 			con.sendChat(prefix, text, false, true);
 		}
+	}
+
+	public String getRealm() {
+		return realm;
 	}
 }
