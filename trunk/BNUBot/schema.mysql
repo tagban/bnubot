@@ -182,8 +182,9 @@ INSERT INTO command (access, name, description, cmdgroup) VALUES
 (34,	'sweepban', NULL, 'moderation'),
 (1,		'trigger', 'Current trigger', 'useful'),
 (34,	'unban', NULL, 'moderation'),
-(15,	'voteban', 'vote to ban', 'moderation'),
-(15,	'votecancel', 'cancel a vote', 'moderation'),
+(1,		'vote', 'cast a vote', 'moderation'),
+(20,	'voteban', 'vote to ban', 'moderation'),
+(20,	'votecancel', 'cancel a vote', 'moderation'),
 (15,	'votekick', 'vote to kick', 'moderation'),
 (1,		'whoami', NULL, 'accounts'),
 (1,		'whois', NULL, 'accounts');
