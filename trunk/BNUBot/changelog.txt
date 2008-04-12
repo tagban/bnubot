@@ -6,7 +6,7 @@
 * Auto-create users that don't exist in the DB when joining a channel
 * Reduced the verbosity of exceptions on the GUI
 * Improved feedback when the database fails to initialize
-* Mail notifications are now whispered
+* Mail/AP notifications are now whispered
 * Improved the chat long line splitter to use ellipses
 * Missing keys in settings.ini will be added with the default value
 

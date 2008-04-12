@@ -1576,7 +1576,7 @@ public class CommandEventHandler implements EventHandler {
 							if((apMail != null) && (apMail.length() > 0))
 								Mail.send(rsAccount, rsAccount, apMail);
 						} else {
-							user.sendChat("You need " + Long.toString(apRS - rs) + " more recruitment points to recieve a promotion!", false);
+							user.sendChat("You need " + Long.toString(apRS - rs) + " more recruitment points to recieve a promotion!", true);
 						}
 					} else {
 						String msg = "You need ";
@@ -1600,13 +1600,13 @@ public class CommandEventHandler implements EventHandler {
 							break apBlock;
 						}
 						msg += " to recieve a promotion!";
-						user.sendChat(msg, false);
+						user.sendChat(msg, true);
 					}
 				}
 			}
 
 			//Mail
-			long umc = Mail.getUnreadCount(rsAccount);
+			int umc = Mail.getUnreadCount(rsAccount);
 			if(umc > 0)
 				user.sendChat("You have " + umc + " unread messages; type [ %trigger%mail read ] to retrieve them", true);
 		} catch (Exception e) {
