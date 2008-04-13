@@ -83,7 +83,8 @@ public class ChatQueue extends Thread {
 
 						// The commands /kick and /ban require ops
 						if(cmd.equals("kick")
-						|| cmd.equals("ban"))
+						|| cmd.equals("ban")
+						|| cmd.equals("unban"))
 							continue;
 					}
 				}
