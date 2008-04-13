@@ -7,7 +7,6 @@ package net.bnubot.core.chat;
 
 import java.net.Socket;
 
-import net.bnubot.core.ChatQueue;
 import net.bnubot.core.Connection;
 import net.bnubot.core.Profile;
 import net.bnubot.core.UnsupportedFeatureException;
@@ -23,8 +22,8 @@ public class ChatConnection extends Connection {
 	protected BNetInputStream is;
 	protected BNetOutputStream os;
 	
-	public ChatConnection(ConnectionSettings cs, ChatQueue cq, Profile p) {
-		super(cs, cq, p);
+	public ChatConnection(ConnectionSettings cs, Profile p) {
+		super(cs, p);
 	}
 	
 	public void run() {

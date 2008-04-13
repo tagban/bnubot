@@ -25,7 +25,6 @@ import net.bnubot.bot.CommandResponseCookie;
 import net.bnubot.bot.gui.ProfileEditor;
 import net.bnubot.bot.gui.settings.ConfigurationFrame;
 import net.bnubot.bot.gui.settings.OperationCancelledException;
-import net.bnubot.core.ChatQueue;
 import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.Profile;
@@ -79,8 +78,8 @@ public class BNCSConnection extends Connection {
 	
 	private final List<Task> currentTasks = new LinkedList<Task>();
 
-	public BNCSConnection(ConnectionSettings cs, ChatQueue cq, Profile p) {
-		super(cs, cq, p);
+	public BNCSConnection(ConnectionSettings cs, Profile p) {
+		super(cs, p);
 	}
 
 	public void run() {

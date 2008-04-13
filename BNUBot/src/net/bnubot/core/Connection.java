@@ -57,7 +57,6 @@ public abstract class Connection extends Thread {
 	protected Socket socket = null;
 
 	protected ConnectionSettings cs;
-	protected ChatQueue chatQueue;
 	protected Profile profile;
 	protected final Collection<EventHandler> eventHandlers = new ArrayList<EventHandler>();
 	protected final Collection<EventHandler> eventHandlers2 = new ArrayList<EventHandler>();
@@ -227,15 +226,13 @@ public abstract class Connection extends Thread {
 		return null;
 	}
 
-	public Connection(ConnectionSettings cs, ChatQueue cq, Profile p) {
-		super(Connection.class.getSimpleName());
+	public Connection(ConnectionSettings cs, Profile p) {
+		super(Connection.class.getSimpleName() + "-" + cs.botNum);
 
 		this.cs = cs;
-		this.chatQueue = cq;
 		this.profile = p;
 
-		if(cq != null)
-			cq.add(this);
+		p.getChatQueue().add(this);
 	}
 
 	public abstract String toShortString();
@@ -559,6 +556,7 @@ public abstract class Connection extends Thread {
 		
 		//Split up the text in to appropriate sized pieces
 		int pieceSize = MAX_CHAT_LENGTH - (prefix == null ? 0 : prefix.length());
+		ChatQueue cq = profile.getChatQueue();
 		for(int i = 0; i < text.length(); i += pieceSize) {
 			String piece = (prefix == null ? "" : prefix) + (i > 0 ? "..." : "") + text.substring(i);
 			if(i > 0)
@@ -568,7 +566,7 @@ public abstract class Connection extends Thread {
 				i -= 3;
 			}
 
-			chatQueue.enqueue(this, piece);
+			cq.enqueue(this, piece);
 		}
 	}
 
@@ -583,13 +581,9 @@ public abstract class Connection extends Thread {
 	public BNetUser getMyUser() {
 		return myUser;
 	}
-
-	public ChatQueue getChatQueue() {
-		return this.chatQueue;
-	}
 	
 	public Profile getProfile() {
-		return this.profile;
+		return profile;
 	}
 	
 	public boolean isInitialized() {
