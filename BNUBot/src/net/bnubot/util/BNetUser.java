@@ -28,7 +28,7 @@ public class BNetUser {
 	private final String fullAccountName;	// #=no, realm=yes
 	private String realm = null;
 	private int flags = 0;
-	private int ping = -1;
+	private Integer ping = null;
 	private StatString statString = null;
 	
 	private String lastToString = null;
@@ -36,56 +36,19 @@ public class BNetUser {
 
 	/**
 	 * Constructor for a BNetUser
-	 * @param user		User[#N]@Realm
+	 * @param con	The connection the user is on
+	 * @param user	User[#N][@Realm]
+	 * @param perspectiveOf	BNetUser to infer realm from
 	 */
-	public BNetUser(Connection con, String user) {
-		this.con = con;
-		String uAccount;
-		int uNumber = 0;
-		
-		int i = user.indexOf('#');
-		if(i != -1) {
-			String num = user.substring(i + 1);
-			int j = num.indexOf('@');
-			if(j != -1) {
-				num = num.substring(0, j);
-				this.realm = user.substring(i + j + 2);
-				user = user.substring(0, i) + '@' + this.realm;
-			} else {
-				throw new IllegalStateException("User [" + user + "] is not a valid bnet user; no realm");
-			}
-			
-			uNumber = Integer.parseInt(num);
-		}
-		
-		String up[] = user.split("@", 2);
-		uAccount = up[0];
-		if(up.length == 2)
-			this.realm = up[1];
-		else
-			throw new IllegalStateException("User [" + user + "] is not a valid bnet user; no realm");
-		
-		
-		// ...
-		shortLogonName = uAccount;
-		if(uNumber != 0)
-			shortLogonName += "#" + uNumber;
-		shortLogonName += "@" + this.realm;
-		
-		// ...
-		fullLogonName = uAccount;
-		if(uNumber != 0)
-			fullLogonName += "#" + uNumber;
-		fullLogonName += "@" + this.realm;
-		
-		// ...
-		fullAccountName = uAccount + "@" + this.realm;
+	public BNetUser(Connection con, String user, BNetUser perspectiveOf) {
+		this(con, user, perspectiveOf.realm);
 	}
 	
 	/**
 	 * Constructor for a BNetUser
-	 * @param user		User[#N][@Realm]
-	 * @param myRealm	[User[#N]@]Realm
+	 * @param con	The connection the user is on
+	 * @param user	"User[#N][@Realm]"
+	 * @param myRealm	"[User[#N]@]Realm" to infer realm from
 	 */
 	public BNetUser(Connection con, String user, String myRealm) {
 		this.con = con;
@@ -317,7 +280,9 @@ public class BNetUser {
 	}
 	
 	public String toStringEx() {
-		String out = toString() + " [" + ping + "ms]";
+		String out = toString();
+		if(ping != null)
+			out += " [" + ping + "ms]";
 		if(flags != 0) {
 			out += " (";
 			if((flags & 0x01) != 0)
@@ -381,12 +346,12 @@ public class BNetUser {
 		this.flags = flags;
 	}
 
-	public int getPing() {
+	public Integer getPing() {
 		return ping;
 	}
 
 	public void setPing(int ping) {
-		this.ping = ping;
+		this.ping = new Integer(ping);
 	}
 
 	public StatString getStatString() {
@@ -412,12 +377,15 @@ public class BNetUser {
 
 	/**
 	 * Send chat to a user in command response style - either whispered, or formatted with the user's name
-	 * @param msg
-	 * @param b
+	 * @param text The message to send
+	 * @param whisperBack Whether to whisper the message
+	 * @throws IllegalStateException <code>if(con == null)</code>
 	 */
 	public void sendChat(String text, boolean whisperBack) {
-		if((text == null) || (con == null))
+		if(text == null)
 			return;
+		if(con == null)
+			throw new IllegalStateException("Can not send chat; connection is null");
 
 		text = con.cleanText(text, true);
 		

@@ -315,8 +315,8 @@ public class UserList extends JPanel {
 			ui.label.setIcon(icon);
 		
 		icons = IconsDotBniReader.getIconsLag();
-		if(icons != null) {
-			int ping = user.getPing();
+		if((icons != null) && (user.getPing() != null)) {
+			int ping = user.getPing().intValue();
 			
 			if((user.getFlags() & 0x10) != 0)
 				ui.ping.setIcon(icons[7].getIcon());
