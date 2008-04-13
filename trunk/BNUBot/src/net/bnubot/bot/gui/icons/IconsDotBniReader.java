@@ -21,10 +21,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.ImageData;
-import org.eclipse.swt.graphics.PaletteData;
-
 import net.bnubot.core.BNFTPConnection;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.settings.GlobalSettings;
@@ -32,6 +28,10 @@ import net.bnubot.util.BNetInputStream;
 import net.bnubot.util.BNetOutputStream;
 import net.bnubot.util.HexDump;
 import net.bnubot.util.Out;
+
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.PaletteData;
 
 public class IconsDotBniReader {
 	private static boolean initialized = false;
@@ -366,7 +366,7 @@ public class IconsDotBniReader {
 					bni.image = new Image(null, imageData);
 					currentPixel += pos;
 				} catch(Throwable t) {
-					Out.exception(new Exception(t));
+					//Out.exception(new Exception(t));
 					currentPixel += bni.xSize * bni.ySize;
 				}
 			}
