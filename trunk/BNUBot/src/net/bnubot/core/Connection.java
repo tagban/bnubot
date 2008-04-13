@@ -167,7 +167,17 @@ public abstract class Connection extends Thread {
 	}
 	
 	private BNetUser getUser(BNetUser u) {
-		return users.get(u.getFullLogonName());
+		return users.get(u.getFullLogonName().toLowerCase());
+	}
+
+	private void checkAddUser(BNetUser user) {
+		if(getUser(user) == null)
+			users.put(user.getFullLogonName().toLowerCase(), user);
+	}
+
+	private void removeUser(BNetUser user) {
+		if(users.remove(user.getFullLogonName().toLowerCase()) == null)
+			Out.error(getClass(), "Tried to remove a user that was not in the list: " + user.toString());
 	}
 	
 	/**
@@ -679,8 +689,7 @@ public abstract class Connection extends Thread {
 	}
 
 	public void channelUser(BNetUser user) {
-		if(getUser(user) == null)
-			users.put(user.getFullLogonName(), user);
+		checkAddUser(user);
 
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
@@ -689,8 +698,7 @@ public abstract class Connection extends Thread {
 	}
 
 	public void channelJoin(BNetUser user) {
-		if(getUser(user) == null)
-			users.put(user.getFullLogonName(), user);
+		checkAddUser(user);
 
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
@@ -699,9 +707,8 @@ public abstract class Connection extends Thread {
 	}
 
 	public void channelLeave(BNetUser user) {
-		if(users.remove(user.getFullLogonName()) == null)
-			Out.error(getClass(), "Tried to remove a user that was not in the list: " + user.toString());
-
+		removeUser(user);
+		
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
 				eh.channelLeave(this, user);
@@ -909,17 +916,13 @@ public abstract class Connection extends Thread {
 	public String getChannel() {
 		return channelName;
 	}
-	
-	public BNetUser getBNetUser(String user) {
-		if(user.indexOf('@') == -1)
-			user += '@' + myUser.getRealm();
-		return users.get(user);
-	}
 
 	public BNetUser getBNetUser(String user, BNetUser myRealm) {
-		BNetUser out = getBNetUser(user);
-		if(out != null)
-			return out.toPerspective(myRealm);
-		return new BNetUser(this, user, myRealm.getFullLogonName());
+		if(user.indexOf('@') == -1)
+			user += '@' + myRealm.getRealm();
+		BNetUser x = users.get(user.toLowerCase());
+		if(x != null)
+			return x;
+		return new BNetUser(this, user, myRealm.getRealm());
 	}
 }

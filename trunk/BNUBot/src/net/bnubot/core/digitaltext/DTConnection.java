@@ -343,7 +343,7 @@ public class DTConnection extends Connection {
 					if(myUser.equals(username))
 						user = myUser;
 					else
-						user = getBNetUser(username);
+						user = getBNetUser(username, myUser);
 					if(user == null)
 						user = new BNetUser(this, username, cs.myRealm);
 					
@@ -406,7 +406,7 @@ public class DTConnection extends Connection {
 	 */
 	private BNetUser findCreateBNUser(String username, Integer userFlags) {
 		// Create the BNetUser
-		BNetUser user = getBNetUser(username);
+		BNetUser user = getBNetUser(username, myUser);
 		if(user == null)
 			user = new BNetUser(this, username, cs.myRealm);
 		
