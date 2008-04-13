@@ -589,7 +589,7 @@ public abstract class Connection extends Thread {
 	}
 
 	private boolean isPrimaryConnection() {
-		return equals(profile.getPrimaryConnect());
+		return equals(profile.getPrimaryConnection());
 	}
 
 	public String getChannel() {
@@ -660,6 +660,9 @@ public abstract class Connection extends Thread {
 	}
 
 	public void joinedChannel(String channel, int flags) {
+		if(!isPrimaryConnection())
+			return;
+		
 		channelName = channel;
 		channelFlags = flags;
 		users.clear();
@@ -668,9 +671,6 @@ public abstract class Connection extends Thread {
 			for(EventHandler eh : eventHandlers)
 				eh.joinedChannel(this, channel);
 		}
-
-		if(!isPrimaryConnection())
-			return;
 		
 		for(Connection c : profile.getConnections()) {
 			if(equals(c))
