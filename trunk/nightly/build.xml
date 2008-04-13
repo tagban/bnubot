@@ -46,7 +46,7 @@
 		<property name="vf.src" value="${project.dir}/src/net/bnubot/version.properties" />
 		<svn>
 			<revert file="${vf.src}"/>
-			<status path="${project.dir}/src" revisionProperty="revision" />
+			<status path="${project.dir}/src" lastChangedRevisionProperty="revision" />
 		</svn>
 		
 		<!-- Get the BUILD_DATE time in seconds -->
