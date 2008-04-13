@@ -560,7 +560,7 @@ public class GuiEventHandler implements EventHandler {
 					"Channel",
 					channel);
 		
-		GuiDesktop.setTitle(this, source.getProductID());
+		GuiDesktop.setTitle(this, firstConnection.getProductID());
 	}
 
 	public void recieveChat(Connection source, BNetUser user, String text) {
@@ -648,18 +648,21 @@ public class GuiEventHandler implements EventHandler {
 	}
 
 	public void titleChanged(Connection source) {
+		BNetUser myUser = source.getMyUser();
+		Profile profile = source.getProfile();
+		
 		// Set the menu text to profile name or logon name
-		if(source.getMyUser() == null)
-			menuBar.setText(source.getProfile().getName());
+		if((myUser == null) || (profile.getConnections().size() != 1))
+			menuBar.setText(profile.getName());
 		else
-			menuBar.setText(source.getMyUser().getFullLogonName());
+			menuBar.setText(myUser.getFullLogonName());
 		
 		// Update the settings menu items
 		for (Entry<Connection, JMenuItem> item : settingsMenuItems.entrySet())
 			item.getValue().setText("Settings (" + item.getKey().toShortString() + ")");
 		
 		// Update the desktop window
-		GuiDesktop.setTitle(this, source.getProductID());
+		GuiDesktop.setTitle(this, firstConnection.getProductID());
 		
 		// Update the tray icon
 		TrayIcon tray = GuiDesktop.getTray();
@@ -751,6 +754,9 @@ public class GuiEventHandler implements EventHandler {
 		return false;
 	}
 
+	/**
+	 * Get the name for the tab on the GuiDesktop
+	 */
 	public String toString() {
 		if(firstConnection == null)
 			return null;
