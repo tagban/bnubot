@@ -139,6 +139,14 @@ public class Profile {
 		return name;
 	}
 
+	public String toString() {
+		switch(cons.size()) {
+		case 0: return name;
+		case 1: return cons.get(0).toString();
+		}
+		return name + ": " + getPrimaryConnection().toString();
+	}
+
 	public void dispose() {
 		chatQueue.dispose();
 		
@@ -217,7 +225,7 @@ public class Profile {
 	 * Gets the Connection which is to be considered the primary
 	 * @return The first connected connection; if all disconnected, the first one; if none, null
 	 */
-	public Connection getPrimaryConnect() {
+	public Connection getPrimaryConnection() {
 		synchronized(cons) {
 			if(cons.size() == 0)
 			// Return the first connected connection
