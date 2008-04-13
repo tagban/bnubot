@@ -1717,6 +1717,11 @@ public class CommandEventHandler implements EventHandler {
 		if(sweepBanInProgress.get(source) == Boolean.TRUE)
 			return;
 		
+		if(text.contains(" was banned by ")
+		|| text.contains(" was unbanned by ")
+		|| text.contains(" was kicked out of the channel by "))
+			return;
+		
 		recieveInfoError(source, text);
 	}
 	
