@@ -24,8 +24,12 @@
 			<checkout url="${svn.url}" destPath="${svn.checkout.dir}"/>
 		</svn>
 	</target>
+	
+	<target name="clean" description="Clean the BIN folder" >
+		<delete dir="${project.dir}/bin"/>
+	</target>
 
-	<target name="build" depends="update">
+	<target name="build" depends="update, clean">
 		<mkdir dir="${project.dir}/bin"/>
 		<javac classpathref="project.classpath"
 			srcdir="${project.dir}/src"
@@ -42,7 +46,7 @@
 		<property name="vf.src" value="${project.dir}/src/net/bnubot/version.properties" />
 		<svn>
 			<revert file="${vf.src}"/>
-			<status path="${svn.checkout.dir}" revisionProperty="revision" />
+			<status path="${project.dir}/src" revisionProperty="revision" />
 		</svn>
 		
 		<!-- Get the BUILD_DATE time in seconds -->
