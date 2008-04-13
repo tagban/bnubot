@@ -216,7 +216,7 @@ public class CommandEventHandler implements EventHandler {
 					Account rsSubjectAccount = Account.get(params[0]);
 					if(rsSubjectAccount == null) {
 						// They don't have an account by that name, check if it's a user
-						BNetUser bnSubject = source.getBNetUser(params[0], user);
+						BNetUser bnSubject = source.getCreateBNetUser(params[0], user);
 						
 						rsSubjectAccount = Account.get(bnSubject);
 						if(rsSubjectAccount == null) {
@@ -586,7 +586,7 @@ public class CommandEventHandler implements EventHandler {
 					return;
 				}
 				
-				BNetUser bnSubject = source.getBNetUser(params[0], user);
+				BNetUser bnSubject = source.getCreateBNetUser(params[0], user);
 				Integer ping = bnSubject.getPing();
 				if(ping == null)
 					user.sendChat("I do not know the ping for " + bnSubject.getFullLogonName(), whisperBack);
@@ -622,7 +622,7 @@ public class CommandEventHandler implements EventHandler {
 					return;
 				}
 				
-				BNetUser bnSubject = source.getBNetUser(params[0], user);
+				BNetUser bnSubject = source.getCreateBNetUser(params[0], user);
 				BNLogin rsSubject = BNLogin.get(bnSubject);
 				if(rsSubject == null) {
 					user.sendChat("I have never seen [" + bnSubject.getFullLogonName() + "] in the channel", whisperBack);
@@ -834,7 +834,7 @@ public class CommandEventHandler implements EventHandler {
 				Account rsSubjectAccount = Account.get(params[0]);
 				if(rsSubjectAccount == null) {
 					//They don't have an account by that name, check if it's a user
-					BNetUser bnSubject = source.getBNetUser(params[0], user);
+					BNetUser bnSubject = source.getCreateBNetUser(params[0], user);
 					BNLogin rsSubject = BNLogin.get(bnSubject);
 					if(rsSubject == null) {
 						user.sendChat("I have never seen [" + bnSubject.getFullAccountName() + "]", whisperBack);
@@ -879,7 +879,7 @@ public class CommandEventHandler implements EventHandler {
 					return;
 				}
 
-				BNetUser bnSubject = source.getBNetUser(params[0], user);
+				BNetUser bnSubject = source.getCreateBNetUser(params[0], user);
 				BNLogin rsSubject = BNLogin.get(bnSubject);
 				if(rsSubject == null) {
 					user.sendChat("I have never seen [" + bnSubject.getFullAccountName() + "] in the channel", whisperBack);
@@ -1127,7 +1127,7 @@ public class CommandEventHandler implements EventHandler {
 					if(rsSubjectAccount != null) {
 						result = rsSubjectAccount.getName();
 					} else {
-						bnSubject = source.getBNetUser(params[0], user);
+						bnSubject = source.getCreateBNetUser(params[0], user);
 						
 						BNLogin rsSubject = BNLogin.get(bnSubject);
 						if(rsSubject == null) {

@@ -19,10 +19,23 @@ import net.bnubot.util.TimeFormatter;
 public class BNFTPConnection {
 	public static final String defaultPath = "downloads/";
 	
+	/**
+	 * Download a file using BNFTP
+	 * @param cs The ConnectionSettings to connect to battle.net with
+	 * @param fileName The file's name
+	 * @return The File, or null if there was an error
+	 */
 	public static File downloadFile(ConnectionSettings cs, String fileName) {
 		return downloadFile(cs, fileName, defaultPath);
 	}
-	
+
+	/**
+	 * Download a file using BNFTP
+	 * @param cs The ConnectionSettings to connect to battle.net with
+	 * @param fileName The file's name
+	 * @param path The folder to download the file to
+	 * @return The File, or null if there was an error
+	 */
 	public static File downloadFile(ConnectionSettings cs, String fileName, String path) {
 		File f = new File(path + fileName);
 		if(f.exists())
@@ -38,7 +51,15 @@ public class BNFTPConnection {
 		}
 		return null;
 	}
-	
+
+
+	/**
+	 * Download a file using BNFTP
+	 * @param s The Socket which has already established a connection to Battle.net
+	 * @param fileName The file's name
+	 * @param path The folder to download the file to
+	 * @return The File, or null if there was an error
+	 */
 	public static File downloadFile(Socket s, String fileName, String path) {
 		try {
 			Out.info(BNFTPConnection.class, "Downloading " + fileName + "...");
