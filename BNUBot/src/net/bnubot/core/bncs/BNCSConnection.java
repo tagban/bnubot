@@ -1214,7 +1214,7 @@ public class BNCSConnection extends Connection {
 						if(myUser.equals(username))
 							user = myUser;
 						else
-							user = getBNetUser(username);
+							user = getBNetUser(username, myUser);
 						if(user == null)
 							user = new BNetUser(this, username, cs.myRealm);
 						
