@@ -86,11 +86,9 @@ public class Profile {
 			if(cons.size() > 0) {
 				Connection primary = cons.get(0);
 
-				// Add secondary EHs
+				// Add EHs
 				for(EventHandler eh : primary.getEventHandlers())
-					con.addSecondaryEventHandler(eh);
-
-				primary.addSlave(con);
+					con.addEventHandler(eh);
 			} else {
 				// Plugins
 				for(Class<? extends EventHandler> plugin : PluginManager.getEnabledPlugins())
@@ -213,5 +211,26 @@ public class Profile {
 
 	public ChatQueue getChatQueue() {
 		return chatQueue;
+	}
+
+	/**
+	 * Gets the Connection which is to be considered the primary
+	 * @return The first connected connection; if all disconnected, the first one; if none, null
+	 */
+	public Connection getPrimaryConnect() {
+		synchronized(cons) {
+			if(cons.size() == 0)
+			// Return the first connected connection
+			for(Connection c : cons)
+				if(c.isConnected())
+					return c;
+			
+			// All are disconnected; return the first one
+			if(cons.size() > 0)
+				return cons.get(0);
+		}
+		
+		// There aren't any connections at all!
+		return null;
 	}
 }

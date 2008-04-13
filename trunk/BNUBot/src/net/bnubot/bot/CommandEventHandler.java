@@ -1047,7 +1047,7 @@ public class CommandEventHandler implements EventHandler {
 		Profile.registerCommand("trigger", new CommandRunnable() {
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
 			throws Exception {
-				char trigger = getTrigger(source);
+				char trigger = source.getTrigger();
 				String output = "0000" + Integer.toString(trigger);
 				output = output.substring(output.length() - 4);
 				output = "Current trigger: " + trigger + " (alt+" + output + ")";
@@ -1342,10 +1342,6 @@ public class CommandEventHandler implements EventHandler {
 		} catch(Exception e) {
 			throw new AccountDoesNotExistException(e.getMessage());
 		}
-	}
-
-	private static char getTrigger(Connection source) {
-		return source.getConnectionSettings().trigger.charAt(0);
 	}
 
 	private static void doKickBan(Connection source, BNetUser user, String param, boolean isBan, boolean whisperBack) {
@@ -1644,19 +1640,7 @@ public class CommandEventHandler implements EventHandler {
 	public void joinedChannel(Connection source, String channel) {}
 
 	public void recieveChat(Connection source, BNetUser user, String text) {
-		if(text == null)
-			return;
-		if(text.length() == 0)
-			return;
-		
 		touchUser(source, user, "chatting in the channel");
-		
-		if(text.equals("?trigger"))
-			parseCommand(source, user, "trigger", GlobalSettings.whisperBack);
-		else
-			if(text.charAt(0) == getTrigger(source)) {
-				parseCommand(source, user, text.substring(1), GlobalSettings.whisperBack);
-			}
 	}
 
 	public void recieveEmote(Connection source, BNetUser user, String text) {}
@@ -1742,17 +1726,7 @@ public class CommandEventHandler implements EventHandler {
 	public void bnetDisconnected(Connection source) {}
 	public void titleChanged(Connection source) {}
 
-	public void whisperRecieved(Connection source, BNetUser user, String text) {
-		if(text == null)
-			return;
-		if(text.length() == 0)
-			return;
-		
-		if(text.charAt(0) == getTrigger(source))
-			text = text.substring(1);
-		
-		parseCommand(source, user, text, true);
-	}
+	public void whisperRecieved(Connection source, BNetUser user, String text) {}
 
 	public void whisperSent(Connection source, BNetUser user, String text) {}
 

@@ -59,8 +59,6 @@ public abstract class Connection extends Thread {
 	protected ConnectionSettings cs;
 	protected Profile profile;
 	protected final Collection<EventHandler> eventHandlers = new ArrayList<EventHandler>();
-	protected final Collection<EventHandler> eventHandlers2 = new ArrayList<EventHandler>();
-	protected final Collection<Connection> slaves = new ArrayList<Connection>();
 	protected final Hashtable<String, BNetUser> users = new Hashtable<String, BNetUser>();
 	protected BNetUser myUser = null;
 	protected ConnectionState connectionState = ConnectionState.ALLOW_CONNECT;
@@ -261,19 +259,9 @@ public abstract class Connection extends Thread {
 	public abstract boolean isOp();
 	public abstract ProductIDs getProductID();
 
-	public void addSlave(Connection c) {
-		slaves.add(c);
-	}
 	public void addEventHandler(EventHandler e) {
 		synchronized(eventHandlers) {
 			eventHandlers.add(e);
-			if(initialized)
-				e.initialize(this);
-		}
-	}
-	public void addSecondaryEventHandler(EventHandler e) {
-		synchronized(eventHandlers2) {
-			eventHandlers2.add(e);
 			if(initialized)
 				e.initialize(this);
 		}
@@ -600,6 +588,23 @@ public abstract class Connection extends Thread {
 		}
 	}
 
+	private boolean isPrimaryConnection() {
+		return equals(profile.getPrimaryConnect());
+	}
+
+	public String getChannel() {
+		return channelName;
+	}
+
+	public BNetUser getBNetUser(String user, BNetUser myRealm) {
+		if(user.indexOf('@') == -1)
+			user += '@' + myRealm.getRealm();
+		BNetUser x = users.get(user.toLowerCase());
+		if(x != null)
+			return x;
+		return new BNetUser(this, user, myRealm.getRealm());
+	}
+
 	/*
 	 * EventHandler methods follow
 	 * 
@@ -652,11 +657,6 @@ public abstract class Connection extends Thread {
 			for(EventHandler eh : eventHandlers)
 				eh.titleChanged(this);
 		}
-
-		synchronized(eventHandlers2) {
-			for(EventHandler eh : eventHandlers2)
-				eh.titleChanged(this);
-		}
 	}
 
 	public void joinedChannel(String channel, int flags) {
@@ -669,22 +669,29 @@ public abstract class Connection extends Thread {
 				eh.joinedChannel(this, channel);
 		}
 
-		synchronized(eventHandlers2) {
-			for(Connection c : slaves)
-				try {
-					if(c.myUser != null) {
-						Out.info(getClass(), "[" + myUser.getFullLogonName() + "] Telling [" + c.myUser.getFullLogonName() + "] to join " + channel);
-						c.sendJoinChannel(channel);
-					}
-				} catch (Exception e) {
-					Out.exception(e);
+		if(!isPrimaryConnection())
+			return;
+		
+		for(Connection c : profile.getConnections()) {
+			if(equals(c))
+				continue;
+			try {
+				if(c.myUser != null) {
+					Out.info(getClass(), "[" + myUser.getFullLogonName() + "] Telling [" + c.myUser.getFullLogonName() + "] to join " + channel);
+					c.sendJoinChannel(channel);
 				}
+			} catch (Exception e) {
+				Out.exception(e);
+			}
 		}
 	}
 
 	public void channelUser(BNetUser user) {
 		checkAddUser(user);
 
+		if(!isPrimaryConnection())
+			return;
+		
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
 				eh.channelUser(this, user);
@@ -694,6 +701,9 @@ public abstract class Connection extends Thread {
 	public void channelJoin(BNetUser user) {
 		checkAddUser(user);
 
+		if(!isPrimaryConnection())
+			return;
+		
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
 				eh.channelJoin(this, user);
@@ -703,6 +713,9 @@ public abstract class Connection extends Thread {
 	public void channelLeave(BNetUser user) {
 		removeUser(user);
 		
+		if(!isPrimaryConnection())
+			return;
+		
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
 				eh.channelLeave(this, user);
@@ -710,13 +723,25 @@ public abstract class Connection extends Thread {
 	}
 
 	public void recieveChat(BNetUser user, String text) {
+		if(!isPrimaryConnection())
+			return;
+		
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
 				eh.recieveChat(this, user, text);
 		}
+		
+		if((text == null) || (text.length() == 0))
+			return;
+		
+		if((text.charAt(0) == getTrigger()) || text.equals("?trigger"))
+			parseCommand(user, text.substring(1), GlobalSettings.whisperBack);
 	}
 
 	public void recieveEmote(BNetUser user, String text) {
+		if(!isPrimaryConnection())
+			return;
+		
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
 				eh.recieveEmote(this, user, text);
@@ -733,11 +758,6 @@ public abstract class Connection extends Thread {
 			for(EventHandler eh : eventHandlers)
 				eh.recieveDebug(this, text);
 		}
-
-		synchronized(eventHandlers2) {
-			for(EventHandler eh : eventHandlers2)
-				eh.recieveDebug(this, text);
-		}
 	}
 
 	public void recieveInfo(String text) {
@@ -748,11 +768,6 @@ public abstract class Connection extends Thread {
 
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
-				eh.recieveInfo(this, text);
-		}
-
-		synchronized(eventHandlers2) {
-			for(EventHandler eh : eventHandlers2)
 				eh.recieveInfo(this, text);
 		}
 		
@@ -786,11 +801,6 @@ public abstract class Connection extends Thread {
 			for(EventHandler eh : eventHandlers)
 				eh.recieveError(this, text);
 		}
-
-		synchronized(eventHandlers2) {
-			for(EventHandler eh : eventHandlers2)
-				eh.recieveError(this, text);
-		}
 	}
 
 	public void whisperSent(BNetUser user, String text) {
@@ -798,11 +808,10 @@ public abstract class Connection extends Thread {
 			for(EventHandler eh : eventHandlers)
 				eh.whisperSent(this, user, text);
 		}
+	}
 
-		synchronized(eventHandlers2) {
-			for(EventHandler eh : eventHandlers2)
-				eh.whisperSent(this, user, text);
-		}
+	public char getTrigger() {
+		return getConnectionSettings().trigger.charAt(0);
 	}
 
 	public void whisperRecieved(BNetUser user, String text) {
@@ -811,10 +820,11 @@ public abstract class Connection extends Thread {
 				eh.whisperRecieved(this, user, text);
 		}
 
-		synchronized(eventHandlers2) {
-			for(EventHandler eh : eventHandlers2)
-				eh.whisperRecieved(this, user, text);
-		}
+		if((text == null) || (text.length() == 0))
+			return;
+		if(text.charAt(0) == getTrigger())
+			text = text.substring(1);
+		parseCommand(user, text, true);
 	}
 
 	// Realms
@@ -836,6 +846,9 @@ public abstract class Connection extends Thread {
 	// Friends
 
 	public void friendsList(FriendEntry[] entries) {
+		if(!isPrimaryConnection())
+			return;
+		
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
 				eh.friendsList(this, entries);
@@ -843,6 +856,9 @@ public abstract class Connection extends Thread {
 	}
 
 	public void friendsUpdate(FriendEntry friend) {
+		if(!isPrimaryConnection())
+			return;
+		
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
 				eh.friendsUpdate(this, friend);
@@ -850,6 +866,9 @@ public abstract class Connection extends Thread {
 	}
 
 	public void friendsAdd(FriendEntry friend) {
+		if(!isPrimaryConnection())
+			return;
+		
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
 				eh.friendsAdd(this, friend);
@@ -857,6 +876,9 @@ public abstract class Connection extends Thread {
 	}
 
 	public void friendsRemove(byte entry) {
+		if(!isPrimaryConnection())
+			return;
+		
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
 				eh.friendsRemove(this, entry);
@@ -864,6 +886,9 @@ public abstract class Connection extends Thread {
 	}
 
 	public void friendsPosition(byte oldPosition, byte newPosition) {
+		if(!isPrimaryConnection())
+			return;
+		
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
 				eh.friendsPosition(this, oldPosition, newPosition);
@@ -873,6 +898,9 @@ public abstract class Connection extends Thread {
 	// Clan
 
 	public void clanMOTD(Object cookie, String text) {
+		if(!isPrimaryConnection())
+			return;
+		
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
 				eh.clanMOTD(this, cookie, text);
@@ -880,6 +908,9 @@ public abstract class Connection extends Thread {
 	}
 
 	public void clanMemberList(ClanMember[] members) {
+		if(!isPrimaryConnection())
+			return;
+		
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
 				eh.clanMemberList(this, members);
@@ -887,6 +918,9 @@ public abstract class Connection extends Thread {
 	}
 
 	public void clanMemberRemoved(String username) {
+		if(!isPrimaryConnection())
+			return;
+		
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
 				eh.clanMemberRemoved(this, username);
@@ -894,6 +928,9 @@ public abstract class Connection extends Thread {
 	}
 
 	public void clanMemberRankChange(byte oldRank, byte newRank, String user) {
+		if(!isPrimaryConnection())
+			return;
+		
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
 				eh.clanMemberRankChange(this, oldRank, newRank, user);
@@ -901,22 +938,12 @@ public abstract class Connection extends Thread {
 	}
 
 	public void clanMemberStatusChange(ClanMember member) {
+		if(!isPrimaryConnection())
+			return;
+		
 		synchronized(eventHandlers) {
-		for(EventHandler eh : eventHandlers)
-			eh.clanMemberStatusChange(this, member);
+			for(EventHandler eh : eventHandlers)
+				eh.clanMemberStatusChange(this, member);
 		}
-	}
-
-	public String getChannel() {
-		return channelName;
-	}
-
-	public BNetUser getBNetUser(String user, BNetUser myRealm) {
-		if(user.indexOf('@') == -1)
-			user += '@' + myRealm.getRealm();
-		BNetUser x = users.get(user.toLowerCase());
-		if(x != null)
-			return x;
-		return new BNetUser(this, user, myRealm.getRealm());
 	}
 }

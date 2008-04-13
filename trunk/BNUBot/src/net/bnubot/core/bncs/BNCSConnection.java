@@ -86,8 +86,6 @@ public class BNCSConnection extends Connection {
 		// We must initialize the EHs in the Connection thread
 		for(EventHandler eh : eventHandlers)
 			eh.initialize(this);
-		for(EventHandler eh : eventHandlers2)
-			eh.initialize(this);
 		
 		initialized = true;
 		
