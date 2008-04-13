@@ -451,11 +451,23 @@ public abstract class Connection extends Thread {
 		return text;
 	}
 
+	/**
+	 * Helper function to send chat to battle.net
+	 * @param text The whole text to be sent out
+	 * @param allowCommands Enables internal bot commands (/cmd, /profile, etc)
+	 */
 	public void sendChat(String text, boolean allowCommands) {
 		sendChat(null, text, allowCommands, true);
 	}
 	
 	public static final int MAX_CHAT_LENGTH = 200;
+	/**
+	 * Helper function to send chat to battle.net
+	 * @param prefix A String to prepend each time the text is split (ex: "/w BNU-Camel ")
+	 * @param text The whole text to be sent out
+	 * @param allowCommands Enables internal bot commands (/cmd, /profile, etc)
+	 * @param enableKeywords Enable keywords (%uptime%, %trigger%, %mp3%, etc)
+	 */
 	public void sendChat(String prefix, String text, boolean allowCommands, boolean enableKeywords) {
 		if(text == null)
 			return;
@@ -558,6 +570,11 @@ public abstract class Connection extends Thread {
 		}
 	}
 
+	/**
+	 * Download a file using BNFTP
+	 * @param filename The file's name
+	 * @return The File, or null if there was an error
+	 */
 	public File downloadFile(String filename) {
 		return BNFTPConnection.downloadFile(cs, filename);
 	}
@@ -578,6 +595,9 @@ public abstract class Connection extends Thread {
 		return initialized;
 	}
 
+	/**
+	 * Destroy and cleanup this Connection
+	 */
 	public void dispose() {
 		disposed = true;
 		disconnect(false);
@@ -588,15 +608,29 @@ public abstract class Connection extends Thread {
 		}
 	}
 
+	/**
+	 * Determine if this Connection is the primary for a Profile
+	 * @return true if the connection is primary
+	 */
 	private boolean isPrimaryConnection() {
 		return equals(profile.getPrimaryConnection());
 	}
 
+	/**
+	 * Get the channel this Connection is in
+	 * @return The channel
+	 */
 	public String getChannel() {
 		return channelName;
 	}
 
-	public BNetUser getBNetUser(String user, BNetUser myRealm) {
+	/**
+	 * Look for a BNetUser in the user list. If it doesn't exist, create a new one
+	 * @param user "User[#N][@Realm]"
+	 * @param myRealm The BNetUser whose realm to use if none is specified
+	 * @return A BNetUser representing the user
+	 */
+	public BNetUser getCreateBNetUser(String user, BNetUser myRealm) {
 		if(user.indexOf('@') == -1)
 			user += '@' + myRealm.getRealm();
 		BNetUser x = users.get(user.toLowerCase());

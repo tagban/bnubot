@@ -1211,9 +1211,7 @@ public class BNCSConnection extends Connection {
 						if(myUser.equals(username))
 							user = myUser;
 						else
-							user = getBNetUser(username, myUser);
-						if(user == null)
-							user = new BNetUser(this, username, cs.myRealm);
+							user = getCreateBNetUser(username, myUser);
 						
 						// Set the flags, ping, statstr
 						user.setFlags(flags);
