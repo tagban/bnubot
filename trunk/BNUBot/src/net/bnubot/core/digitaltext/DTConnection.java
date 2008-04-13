@@ -16,7 +16,6 @@ import java.util.List;
 
 import net.bnubot.bot.gui.settings.ConfigurationFrame;
 import net.bnubot.bot.gui.settings.OperationCancelledException;
-import net.bnubot.core.ChatQueue;
 import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.Profile;
@@ -42,8 +41,8 @@ public class DTConnection extends Connection {
 	
 	private final List<Task> currentTasks = new LinkedList<Task>();
 
-	public DTConnection(ConnectionSettings cs, ChatQueue cq, Profile p) {
-		super(cs, cq, p);
+	public DTConnection(ConnectionSettings cs, Profile p) {
+		super(cs, p);
 	}
 
 	public void run() {

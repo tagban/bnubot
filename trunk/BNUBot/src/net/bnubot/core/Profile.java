@@ -75,7 +75,7 @@ public class Profile {
 			profiles.add(this);
 		}
 		
-		chatQueue = new ChatQueue();
+		chatQueue = new ChatQueue(name);
 		chatQueue.start();
 	}
 
@@ -142,6 +142,8 @@ public class Profile {
 	}
 
 	public void dispose() {
+		chatQueue.dispose();
+		
 		synchronized(cons) {
 			for(Connection con : cons)
 				con.dispose();
@@ -207,5 +209,9 @@ public class Profile {
 				ret.add(command);
 		}
 		return ret;
+	}
+
+	public ChatQueue getChatQueue() {
+		return chatQueue;
 	}
 }

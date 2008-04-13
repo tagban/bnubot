@@ -15,9 +15,10 @@ public class ChatQueue extends Thread {
 	private final List<Connection> cons = new ArrayList<Connection>();
 	private final List<String> queue = new LinkedList<String>();
 	private int lastCon = 0;
+	private boolean disposed = false;
 
-	public ChatQueue() {
-		super(ChatQueue.class.getSimpleName());
+	public ChatQueue(String profileName) {
+		super(ChatQueue.class.getSimpleName() + "-" + profileName);
 		setDaemon(true);
 	}
 
@@ -40,7 +41,7 @@ public class ChatQueue extends Thread {
 	}
 
 	public void run() {
-		while(true) {
+		while(!disposed) {
 			yield();
 			try { sleep(200); } catch(Exception e) {}
 			
@@ -93,5 +94,9 @@ public class ChatQueue extends Thread {
 			return queue.remove(text);
 		}
 		return false;
+	}
+	
+	public void dispose() {
+		disposed = true;
 	}
 }
