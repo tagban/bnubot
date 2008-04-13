@@ -13,15 +13,10 @@ public class BNetUserTest extends TestCase {
 	public void testSimpleConstructor() {
 		BNetUser u = null;
 		try {
-			u = new BNetUser(null, "test");
-			fail("This should throw an IllegalStateException");
-		} catch(IllegalStateException e) {}
+			u = new BNetUser(null, "test", (String)null);
+			fail("This should throw an NullPointerException");
+		} catch(NullPointerException e) {}
 		assertEquals(null, u);
-		
-		u = new BNetUser(null, "testuser@Azeroth");
-		assertEquals(u.getShortLogonName(), "testuser@Azeroth");
-		assertEquals(u.getFullLogonName(), "testuser@Azeroth");
-		assertEquals(u.getFullAccountName(), "testuser@Azeroth");
 	}
 
 	public void testSameRealm() {
@@ -50,20 +45,6 @@ public class BNetUserTest extends TestCase {
 		assertEquals(u.getShortLogonName(), "testuser@Azeroth");
 		assertEquals(u.getFullLogonName(), "testuser@Azeroth");
 		assertEquals(u.getFullAccountName(), "testuser@Azeroth");
-	}
-
-	public void testNoRealm2() {
-		BNetUser u = new BNetUser(null, "testuser", "someone@USEast");
-		assertEquals(u.getShortLogonName(), "testuser");
-		assertEquals(u.getFullLogonName(), "testuser@USEast");
-		assertEquals(u.getFullAccountName(), "testuser@USEast");
-	}
-
-	public void testSameRealm2() {
-		BNetUser u = new BNetUser(null, "testuser@USEast", "someone@USEast");
-		assertEquals(u.getShortLogonName(), "testuser");
-		assertEquals(u.getFullLogonName(), "testuser@USEast");
-		assertEquals(u.getFullAccountName(), "testuser@USEast");
 	}
 
 	public void testSameRealmWithNumber() {
@@ -109,30 +90,30 @@ public class BNetUserTest extends TestCase {
 	}
 	
 	public void testPerspective() {
-		BNetUser u = new BNetUser(null, "testuser@USEast");
-		assertEquals(u.getShortLogonName(), "testuser@USEast");
+		BNetUser u = new BNetUser(null, "testuser", "USEast");
+		assertEquals(u.getShortLogonName(), "testuser");
 		assertEquals(u.getFullLogonName(), "testuser@USEast");
 		assertEquals(u.getFullAccountName(), "testuser@USEast");
 		
-		BNetUser u2 = u.toPerspective(new BNetUser(null, "otherguy@Azeroth"));
+		BNetUser u2 = u.toPerspective(new BNetUser(null, "otherguy", "Azeroth"));
 		assertEquals(u2.getShortLogonName(), "testuser@USEast");
 		assertEquals(u2.getFullLogonName(), "testuser@USEast");
 		assertEquals(u2.getFullAccountName(), "testuser@USEast");
 		
-		BNetUser u3 = u.toPerspective(new BNetUser(null, "otherguy2#4@USEast"));
+		BNetUser u3 = u.toPerspective(new BNetUser(null, "otherguy2#4", "USEast"));
 		assertEquals(u3.getShortLogonName(), "testuser");
 		assertEquals(u3.getFullLogonName(), "testuser@USEast");
 		assertEquals(u3.getFullAccountName(), "testuser@USEast");
 	}
 	
 	public void testIlly() {
-		BNetUser viewer = new BNetUser(null, "BNU-Camel@USEast");
+		BNetUser viewer = new BNetUser(null, "BNU-Camel", "USEast");
 		BNetUser banme = new BNetUser(null, "($@$@$@)", "USEast");
 		assertEquals("($@$@$@)", banme.getShortLogonName(viewer));
 	}
 	
 	public void testIlly2() {
-		BNetUser viewer = new BNetUser(null, "BNU-Camel@Azeroth");
+		BNetUser viewer = new BNetUser(null, "BNU-Camel", "Azeroth");
 		BNetUser banme = new BNetUser(null, "($@$@$@)@USEast", "Azeroth");
 		assertEquals("($@$@$@)@USEast", banme.getShortLogonName(viewer));
 	}

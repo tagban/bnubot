@@ -596,11 +596,7 @@ public class CommandEventHandler implements EventHandler {
 		Profile.registerCommand("pingme", new CommandRunnable() {
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
 			throws Exception {
-				Integer ping = user.getPing();
-				if(ping == null)
-					user.sendChat("I do not know the ping for " + user.getFullLogonName(), whisperBack);
-				else
-					user.sendChat("Your ping is: " + ping, whisperBack);
+				user.sendChat("Your ping is: " + user.getPing(), whisperBack);
 			}});
 		Profile.registerCommand("quit", new CommandRunnable() {
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
