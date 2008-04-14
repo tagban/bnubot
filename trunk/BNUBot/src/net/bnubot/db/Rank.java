@@ -5,14 +5,30 @@
 
 package net.bnubot.db;
 
-import org.apache.cayenne.DataObjectUtils;
-import org.apache.cayenne.query.SelectQuery;
-
 import net.bnubot.db.auto._Rank;
 import net.bnubot.db.conf.DatabaseContext;
 
+import org.apache.cayenne.DataObjectUtils;
+import org.apache.cayenne.query.SQLTemplate;
+
 public class Rank extends _Rank {
 	private static final long serialVersionUID = 6998327103095647711L;
+	private static SQLTemplate maxRank = new SQLTemplate(Rank.class, "SELECT " +
+			"#result('rank.ID' 'int' 'id') " +
+			"FROM rank " +
+			"ORDER BY id DESC");
+	static {
+		maxRank.setFetchLimit(1);
+	}
+
+	/**
+	 * Get the maximum access rank in the database
+	 * @return A Rank with the highest access
+	 */
+	@SuppressWarnings("unchecked")
+	public static Rank getMax() {
+		return (Rank)DatabaseContext.getContext().performQuery(maxRank).get(0);
+	}
 
 	/**
 	 * Get a Rank by access level
@@ -21,12 +37,6 @@ public class Rank extends _Rank {
 	 */
 	public static Rank get(int access) {
 		return DataObjectUtils.objectForPK(DatabaseContext.getContext(), Rank.class, access);
-	}
-
-	public static Rank getMax() {
-		SelectQuery query = new SelectQuery(Rank.class);
-		query.addOrdering(Rank.ID_PK_COLUMN, false);
-		return (Rank)DatabaseContext.getContext().performQuery(query).get(0);
 	}
 	
 	public int getAccess() {

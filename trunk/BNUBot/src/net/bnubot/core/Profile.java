@@ -16,7 +16,9 @@ import net.bnubot.bot.console.ConsoleEventHandler;
 import net.bnubot.bot.gui.GuiEventHandler;
 import net.bnubot.bot.swt.SWTDesktop;
 import net.bnubot.core.commands.CommandRunnable;
+import net.bnubot.db.Account;
 import net.bnubot.db.Command;
+import net.bnubot.db.Mail;
 import net.bnubot.db.Rank;
 import net.bnubot.db.conf.DatabaseContext;
 import net.bnubot.settings.ConnectionSettings;
@@ -32,8 +34,10 @@ public class Profile {
 			throw new IllegalArgumentException("The command " + name + " is already registered");
 		
 		if(Command.get(name) == null) {
+			Rank max = Rank.getMax();
+			
 			Command c = DatabaseContext.getContext().newObject(Command.class);
-			c.setRank(Rank.getMax());
+			c.setRank(max);
 			c.setCmdgroup(null);
 			c.setDescription(null);
 			c.setName(name);
@@ -42,6 +46,14 @@ public class Profile {
 			} catch (Exception e) {
 				throw new IllegalStateException(e);
 			}
+			
+			String message = "Created command " + name + " with access " + max.getAccess() + "; to change, use %trigger%setauth " + name + " <access>";
+			for(Account a : max.getAccountArray())
+				try {
+					Mail.send(a, a, message);
+				} catch (Exception e) {
+					throw new IllegalStateException(e);
+				}
 		}
 		
 		commands.put(name, action);
