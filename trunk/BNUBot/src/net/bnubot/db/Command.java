@@ -5,6 +5,7 @@
 
 package net.bnubot.db;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.bnubot.db.auto._Command;
@@ -52,9 +53,13 @@ public class Command extends _Command {
 	 */
 	@SuppressWarnings("unchecked")
 	public static List<Command> getCommands(int access) {
-		Expression expression = ExpressionFactory.lessOrEqualExp(Command.ACCESS_PROPERTY, new Integer(access));
-		SelectQuery query = new SelectQuery(Command.class, expression);
-		return DatabaseContext.getContext().performQuery(query);
+		SelectQuery query = new SelectQuery(Command.class);
+		List<Command> commands = DatabaseContext.getContext().performQuery(query);
+		List<Command> ret = new ArrayList<Command>(commands.size());
+		for(Command c : commands)
+			if(c.getAccess() <= access)
+				ret.add(c);
+		return ret;
 	}
 
 	/**
@@ -65,10 +70,14 @@ public class Command extends _Command {
 	 */
 	@SuppressWarnings("unchecked")
 	public static List<Command> getCommands(String category, int access) {
-		Expression expression = ExpressionFactory.lessOrEqualExp(Command.ACCESS_PROPERTY, new Integer(access));
-		expression = expression.andExp(ExpressionFactory.matchExp(Command.CMDGROUP_PROPERTY, category));
+		Expression expression = ExpressionFactory.likeIgnoreCaseExp(Command.CMDGROUP_PROPERTY, category);
 		SelectQuery query = new SelectQuery(Command.class, expression);
-		return DatabaseContext.getContext().performQuery(query);
+		List<Command> commands = DatabaseContext.getContext().performQuery(query);
+		List<Command> ret = new ArrayList<Command>(commands.size());
+		for(Command c : commands)
+			if(c.getAccess() <= access)
+				ret.add(c);
+		return ret;
 	}
 
 	/**
@@ -82,5 +91,9 @@ public class Command extends _Command {
 
 	public String toDisplayString() {
 		return getName();
+	}
+	
+	public int getAccess() {
+		return getRank().getAccess();
 	}
 }

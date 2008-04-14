@@ -17,6 +17,7 @@ import net.bnubot.bot.gui.GuiEventHandler;
 import net.bnubot.bot.swt.SWTDesktop;
 import net.bnubot.core.commands.CommandRunnable;
 import net.bnubot.db.Command;
+import net.bnubot.db.Rank;
 import net.bnubot.db.conf.DatabaseContext;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.settings.GlobalSettings;
@@ -32,7 +33,7 @@ public class Profile {
 		
 		if(Command.get(name) == null) {
 			Command c = DatabaseContext.getContext().newObject(Command.class);
-			c.setAccess(36);
+			c.setRank(Rank.getMax());
 			c.setCmdgroup(null);
 			c.setDescription(null);
 			c.setName(name);
