@@ -155,7 +155,7 @@
 	<obj-relationship name="sentMail" source="Account" target="Mail" db-relationship-path="sentMail"/>
 	<obj-relationship name="account" source="BNLogin" target="Account" db-relationship-path="toAccount"/>
 	<obj-relationship name="aliases" source="Command" target="CommandAlias" db-relationship-path="commandAliasArray"/>
-	<obj-relationship name="toRank" source="Command" target="Rank" db-relationship-path="toRank"/>
+	<obj-relationship name="rank" source="Command" target="Rank" db-relationship-path="toRank"/>
 	<obj-relationship name="toCommand" source="CommandAlias" target="Command" db-relationship-path="toCommand"/>
 	<obj-relationship name="sentFrom" source="Mail" target="Account" db-relationship-path="sentFrom"/>
 	<obj-relationship name="sentTo" source="Mail" target="Account" db-relationship-path="sentTo"/>

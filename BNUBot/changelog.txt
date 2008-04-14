@@ -14,6 +14,7 @@
 * ChatQueue: Unban requires ops
 * Fixed logic to decide which connection of a profile is the primary
 * Added relationships to the DB editor
+* Send mail to the bot master when a new command is created
 
 2.0.5 (r1300) 2008-04-09:
 * Added a Cayenne persistence layer to address database problems
