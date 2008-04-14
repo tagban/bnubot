@@ -79,7 +79,6 @@
 		<obj-attribute name="winsW2BN" type="java.lang.Integer" db-attribute-path="winsW2BN"/>
 	</obj-entity>
 	<obj-entity name="Command" className="net.bnubot.db.Command" dbEntityName="command" superClassName="net.bnubot.db.CustomDataObject">
-		<obj-attribute name="access" type="int" db-attribute-path="access"/>
 		<obj-attribute name="cmdgroup" type="java.lang.String" db-attribute-path="cmdgroup"/>
 		<obj-attribute name="description" type="java.lang.String" db-attribute-path="description"/>
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
@@ -130,6 +129,9 @@
 	<db-relationship name="commandAliasArray" source="command" target="command_alias" toMany="true">
 		<db-attribute-pair source="name" target="name"/>
 	</db-relationship>
+	<db-relationship name="toRank" source="command" target="rank" toMany="false">
+		<db-attribute-pair source="access" target="id"/>
+	</db-relationship>
 	<db-relationship name="toCommand" source="command_alias" target="command" toMany="false">
 		<db-attribute-pair source="name" target="name"/>
 	</db-relationship>
@@ -142,6 +144,9 @@
 	<db-relationship name="accountArray" source="rank" target="account" toMany="true">
 		<db-attribute-pair source="id" target="access"/>
 	</db-relationship>
+	<db-relationship name="commandArray" source="rank" target="command" toMany="true">
+		<db-attribute-pair source="id" target="access"/>
+	</db-relationship>
 	<obj-relationship name="bnLogins" source="Account" target="BNLogin" db-relationship-path="aliases"/>
 	<obj-relationship name="rank" source="Account" target="Rank" db-relationship-path="toRank"/>
 	<obj-relationship name="recievedMail" source="Account" target="Mail" db-relationship-path="recievedMail"/>
@@ -149,8 +154,11 @@
 	<obj-relationship name="recruits" source="Account" target="Account" db-relationship-path="recruits"/>
 	<obj-relationship name="sentMail" source="Account" target="Mail" db-relationship-path="sentMail"/>
 	<obj-relationship name="account" source="BNLogin" target="Account" db-relationship-path="toAccount"/>
+	<obj-relationship name="aliases" source="Command" target="CommandAlias" db-relationship-path="commandAliasArray"/>
+	<obj-relationship name="toRank" source="Command" target="Rank" db-relationship-path="toRank"/>
 	<obj-relationship name="toCommand" source="CommandAlias" target="Command" db-relationship-path="toCommand"/>
 	<obj-relationship name="sentFrom" source="Mail" target="Account" db-relationship-path="sentFrom"/>
 	<obj-relationship name="sentTo" source="Mail" target="Account" db-relationship-path="sentTo"/>
 	<obj-relationship name="accountArray" source="Rank" target="Account" db-relationship-path="accountArray"/>
+	<obj-relationship name="commandArray" source="Rank" target="Command" db-relationship-path="commandArray"/>
 </data-map>

@@ -3,6 +3,7 @@ package net.bnubot.db.auto;
 import java.util.List;
 
 import net.bnubot.db.Account;
+import net.bnubot.db.Command;
 import net.bnubot.db.CustomDataObject;
 
 /**
@@ -25,6 +26,7 @@ public abstract class _Rank extends CustomDataObject {
     public static final String SHORT_PREFIX_PROPERTY = "shortPrefix";
     public static final String VERBSTR_PROPERTY = "verbstr";
     public static final String ACCOUNT_ARRAY_PROPERTY = "accountArray";
+    public static final String COMMAND_ARRAY_PROPERTY = "commandArray";
 
     public static final String ID_PK_COLUMN = "id";
 
@@ -115,6 +117,18 @@ public abstract class _Rank extends CustomDataObject {
     @SuppressWarnings("unchecked")
     public List<Account> getAccountArray() {
         return (List<Account>)readProperty("accountArray");
+    }
+
+
+    public void addToCommandArray(Command obj) {
+        addToManyTarget("commandArray", obj, true);
+    }
+    public void removeFromCommandArray(Command obj) {
+        removeToManyTarget("commandArray", obj, true);
+    }
+    @SuppressWarnings("unchecked")
+    public List<Command> getCommandArray() {
+        return (List<Command>)readProperty("commandArray");
     }
 
 

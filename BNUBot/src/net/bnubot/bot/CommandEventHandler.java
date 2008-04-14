@@ -921,10 +921,15 @@ public class CommandEventHandler implements EventHandler {
 					
 					try {
 						int access = Integer.parseInt(params[1]);
-						rsCommand.setAccess(access);
+						Rank rank = Rank.get(access);
+						if(rank == null) {
+							user.sendChat("That access level does not exist!", whisperBack);
+							return;
+						}
+						rsCommand.setRank(rank);
 						rsCommand.updateRow();
 						
-						user.sendChat("Successfully changed the authorization required for command [" + params[0] + "] to " + access, whisperBack);
+						user.sendChat("Successfully changed the authorization required for command [" + rsCommand.getName() + "] to " + access, whisperBack);
 					} catch(NumberFormatException e) {
 						throw new InvalidUseException();
 					}
