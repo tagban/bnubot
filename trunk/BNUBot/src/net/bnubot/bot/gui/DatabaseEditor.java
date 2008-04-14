@@ -18,8 +18,10 @@ import java.util.Map;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -34,7 +36,11 @@ import net.bnubot.db.CustomDataObject;
 import net.bnubot.db.conf.DatabaseContext;
 import net.bnubot.util.Out;
 
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.SelectQuery;
 
 /**
@@ -45,6 +51,7 @@ public class DatabaseEditor {
 	private final Map<String, CustomDataObject> dataMap = new HashMap<String, CustomDataObject>();
 	private CustomDataObject currentRow = null;
 	private final Map<ObjAttribute, getValueDelegate> data = new HashMap<ObjAttribute, getValueDelegate>();
+	private final Map<ObjRelationship, getValueDelegate> dataRel = new HashMap<ObjRelationship, getValueDelegate>();
 	private final JDialog jf = new JDialog();
 	private final JPanel jp = new JPanel(new GridBagLayout());
 	private final DefaultComboBoxModel model = new DefaultComboBoxModel();
@@ -74,6 +81,11 @@ public class DatabaseEditor {
 					for(ObjAttribute attr : data.keySet()) {
 						String key = attr.getName();
 						Object value = data.get(attr).getValue();
+						currentRow.writeProperty(key, value);
+					}
+					for(ObjRelationship rel : dataRel.keySet()) {
+						String key = rel.getName();
+						Object value = dataRel.get(rel).getValue();
 						currentRow.writeProperty(key, value);
 					}
 					currentRow.updateRow();
@@ -130,16 +142,74 @@ public class DatabaseEditor {
 	private void loadData() {
 		jp.removeAll();
 		data.clear();
+		dataRel.clear();
 		int y = 0;
 		
 		currentRow = dataMap.get(jl.getSelectedValue());
 		for (ObjAttribute attr : currentRow.getObjEntity().getAttributes()) {
-			if(attr.getDbAttribute().isGenerated())
+			DbAttribute dbAttribute = attr.getDbAttribute();
+			if(dbAttribute.isGenerated() || dbAttribute.isForeignKey())
 				continue;
 			addField(jp, y++, attr, currentRow);
 		}
+		for (ObjRelationship rel : currentRow.getObjEntity().getRelationships()) {
+			if(rel.isToMany())
+				continue;
+			addField(jp, y++, rel, currentRow);
+		}
 		
 		jf.pack();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void addField(Container jp, int y, ObjRelationship rel, CustomDataObject row) {
+		final Class<?> fieldType = ((ObjEntity)rel.getTargetEntity()).getJavaClass();
+		final String propName = rel.getName();
+		
+		boolean isNullable = true;
+		for(DbRelationship dbr : rel.getDbRelationships())
+			for(DbAttribute dba : dbr.getSourceAttributes()) {
+				if(dba.isMandatory()) {
+					isNullable = false;
+					break;
+				}
+			}
+		
+		final CustomDataObject value = (CustomDataObject)row.readProperty(propName);
+		
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridy = y;
+		gbc.gridx = 0;
+		gbc.fill = GridBagConstraints.BOTH;
+		jp.add(new JLabel(propName), gbc);
+
+		final ConfigCheckBox bNull;
+		gbc.gridx++;
+		if(isNullable) {
+			bNull = new ConfigCheckBox("NULL", value == null);
+			jp.add(bNull, gbc);
+		} else {
+			bNull = null;
+			jp.add(new JLabel(), gbc);
+		}
+		
+		final HashMap<String, CustomDataObject> theseOptions = new HashMap<String, CustomDataObject>();
+		for(CustomDataObject v : (List<CustomDataObject>)DatabaseContext.getContext().performQuery(new SelectQuery(fieldType)))
+			theseOptions.put(v.toDisplayString(), v);
+		ComboBoxModel model = new DefaultComboBoxModel(theseOptions.keySet().toArray());
+		final JComboBox valueComponent = new JComboBox(model);
+		valueComponent.setSelectedItem((value == null) ? null : value.toDisplayString());
+		
+		gbc.gridx++;
+		jp.add(valueComponent, gbc);
+		
+		dataRel.put(rel, new getValueDelegate() {
+			public Object getValue() {
+				if((bNull != null) && bNull.isSelected())
+					return null;
+				String key = (String)valueComponent.getSelectedItem();
+				return theseOptions.get(key);
+			}});
 	}
 	
 	public void addField(Container jp, int y, ObjAttribute attr, CustomDataObject row) {
@@ -161,7 +231,7 @@ public class DatabaseEditor {
 		final ConfigCheckBox bNull;
 		gbc.gridx++;
 		if(isNullable) {
-			bNull = new ConfigCheckBox("NULL", v == null);
+			bNull = new ConfigCheckBox("NULL", value == null);
 			jp.add(bNull, gbc);
 		} else {
 			bNull = null;
