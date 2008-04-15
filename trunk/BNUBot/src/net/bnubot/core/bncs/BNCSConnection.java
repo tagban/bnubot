@@ -2067,13 +2067,6 @@ public class BNCSConnection extends Connection {
 		
 		return toShortString();
 	}
-	
-	public String toShortString() {
-		if(cs.isValid() == null)
-			return cs.username + "@" + cs.myRealm;
-		
-		return profile.getName();
-	}
 
 	public ProductIDs getProductID() {
 		return productID;
