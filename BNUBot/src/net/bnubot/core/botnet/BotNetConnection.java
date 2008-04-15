@@ -29,11 +29,13 @@ import net.bnubot.util.task.Task;
 public class BotNetConnection extends Connection {
 	private InputStream bnInputStream = null;
 	private DataOutputStream bnOutputStream = null;
-	
+
 	private int botNetServerRevision = 0;
+	private int botNetCommunicationRevision = 0;
 	
 	protected void initializeConnection(Task connect) throws Exception {
 		botNetServerRevision = 0;
+		botNetCommunicationRevision = 0;
 		
 		// Set up BotNet
 		connect.updateProgress("Connecting to BotNet");
@@ -64,6 +66,16 @@ public class BotNetConnection extends Connection {
 				BNetInputStream is = pr.getInputStream();
 				
 				switch(pr.packetId) {
+				case PACKET_BOTNETVERSION: {
+					botNetServerRevision = is.readDWord();
+					recieveInfo("BotNet server version is " + botNetServerRevision);
+					
+					BotNetPacket p = new BotNetPacket(BotNetPacketId.PACKET_BOTNETVERSION);
+					p.writeDWord(1);
+					p.writeDWord(1);
+					p.SendPacket(bnOutputStream);
+					break;
+				}
 				case PACKET_LOGON: {
 					int result = is.readDWord();
 					switch(result) {
@@ -80,16 +92,6 @@ public class BotNetConnection extends Connection {
 						return false;
 					}
 				}
-				case PACKET_BOTNETVERSION: {
-					botNetServerRevision = is.readDWord();
-					
-					BotNetPacket p = new BotNetPacket(BotNetPacketId.PACKET_BOTNETVERSION);
-					p.writeDWord(1);
-					p.writeDWord(1);
-					p.SendPacket(bnOutputStream);
-					
-					break;
-				}
 				default:
 					Out.debugAlways(getClass(), "Unexpected packet " + pr.packetId.name() + "\n" + HexDump.hexDump(pr.data));
 					break;
@@ -104,15 +106,92 @@ public class BotNetConnection extends Connection {
 	}
 
 	protected void connectedLoop() throws Exception {
-		BotNetPacket p = new BotNetPacket(BotNetPacketId.PACKET_USERINFO);
-		p.SendPacket(bnOutputStream);
+		// Send PACKET_STATSUPDATE
+		{
+			BotNetPacket p = new BotNetPacket(BotNetPacketId.PACKET_STATSUPDATE);
+			p.writeNTString("BNUBot2"); // bnet username
+			p.writeNTString("<Not Logged On>"); // channel
+			p.writeDWord(-1); // bnet ip address
+			p.writeNTString(" "); // database
+			p.writeDWord(0); // cycling?
+			p.SendPacket(bnOutputStream);
+		}
+		// Send PACKET_USERINFO
+		{
+			BotNetPacket p = new BotNetPacket(BotNetPacketId.PACKET_USERINFO);
+			p.SendPacket(bnOutputStream);
+		}
 		
 		while(isConnected() && !socket.isClosed() && !disposed) {
 			if(bnInputStream.available() > 0) {
 				BotNetPacketReader pr = new BotNetPacketReader(bnInputStream);
-				//BNetInputStream is = pr.getInputStream();
+				BNetInputStream is = pr.getInputStream();
 				
 				switch(pr.packetId) {
+				case PACKET_CHANGEDBPASSWORD: {
+					// Server is acknowledging the communication version
+					botNetCommunicationRevision = is.readDWord();
+					recieveInfo("BotNet communication version is " + botNetCommunicationRevision);
+					break;
+				}
+				case PACKET_IDLE: {
+					BotNetPacket p = new BotNetPacket(BotNetPacketId.PACKET_IDLE);
+					p.SendPacket(bnOutputStream);
+					break;
+				}
+				case PACKET_STATSUPDATE: {
+					int result = is.readDWord();
+					switch(result) {
+					case 0:
+						recieveError("Status update failed");
+						break;
+					case 1:
+						// Success
+						break;
+					default:
+						recieveError("Unknown PACKET_LOGON result 0x" + Integer.toHexString(result));
+						disconnect(false);
+						return;
+					}
+					break;
+				}
+				case PACKET_USERINFO: {
+					if(pr.data.length == 0) {
+						recieveInfo("Complete");
+						break;
+					}
+					
+					int number = is.readDWord();
+					//int dbflag = 0;
+					//int ztff = 0;
+					if(botNetServerRevision >= 4) {
+						/*dbflag =*/ is.readDWord();
+						/*ztff =*/ is.readDWord();
+					}
+					String name = is.readNTString();
+					String channel = is.readNTString();
+					String server = HexDump.DWordToIP(is.readDWord());
+					
+					String account = null;
+					String database = null;
+					if(botNetServerRevision >= 2)
+						account = is.readNTString();
+					if(botNetServerRevision >= 3)
+						database = is.readNTString();
+					
+					StringBuilder sb = new StringBuilder("User [#");
+					sb.append(number).append("] ");
+					sb.append(name).append(" in channel [ ");
+					sb.append(channel).append(" ] of server [ ");
+					sb.append(server).append(" ]");
+					if((account != null) && !account.equals(""))
+						sb.append(" with account [ ").append(account).append(" ]");
+					if((database != null) && !database.equals(""))
+						sb.append(" on database [ ").append(database).append(" ]");
+					
+					recieveInfo(sb.toString());
+					break;
+				}
 				default:
 					Out.debugAlways(getClass(), "Unexpected packet " + pr.packetId.name() + "\n" + HexDump.hexDump(pr.data));
 					break;
