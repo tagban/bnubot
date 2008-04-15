@@ -16,6 +16,7 @@ import net.bnubot.util.BNetInputStream;
 import net.bnubot.util.BNetOutputStream;
 import net.bnubot.util.Out;
 import net.bnubot.util.UserProfile;
+import net.bnubot.util.task.Task;
 
 public class ChatConnection extends Connection {
 	protected Socket s;
@@ -26,7 +27,7 @@ public class ChatConnection extends Connection {
 		super(cs, p);
 	}
 	
-	public void run() {
+	/*public void run() {
 		try {
 			s = new Socket(cs.server, cs.port);
 			is = new BNetInputStream(s.getInputStream());
@@ -59,6 +60,32 @@ public class ChatConnection extends Connection {
 			s.close();
 		} catch (Exception e) {
 			Out.fatalException(e);
+		}
+	}*/
+
+	protected void initializeConnection(Task connect) throws Exception {
+		s = new Socket(cs.server, cs.port);
+		is = new BNetInputStream(s.getInputStream());
+		os = new BNetOutputStream(s.getOutputStream());
+		//Chat
+		//os.writeByte(0x03);
+		//os.writeByte(0x04);
+	}
+
+	protected boolean sendLoginPackets(Task connect) throws Exception {
+		os.writeBytes("c" + cs.username + "\n" + cs.password + "\n");
+		return false;
+	}
+
+	protected void connectedLoop() throws Exception {
+		while(s.isConnected() && !disposed) {
+			if(is.available() > 0) {
+				byte b = is.readByte();
+				Out.info(getClass(), Character.toString((char)b));
+			} else {
+				yield();
+				sleep(200);
+			}
 		}
 	}
 
@@ -128,11 +155,6 @@ public class ChatConnection extends Connection {
 	@Override
 	public void sendWriteUserData(UserProfile profile) throws Exception {
 		throw new UnsupportedFeatureException("Chat clients can not write profiles");
-	}
-
-	@Override
-	public String toShortString() {
-		return toString();
 	}
 
 }
