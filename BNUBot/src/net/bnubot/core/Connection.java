@@ -233,7 +233,12 @@ public abstract class Connection extends Thread {
 		p.getChatQueue().add(this);
 	}
 
-	public abstract String toShortString();
+	public String toShortString() {
+		if(cs.isValid() == null)
+			return cs.username + "@" + cs.myRealm;
+		
+		return profile.getName();
+	}
 
 	public abstract void sendLeaveChat() throws Exception;
 	public abstract void sendJoinChannel(String channel) throws Exception;

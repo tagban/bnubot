@@ -476,13 +476,6 @@ public class DTConnection extends Connection {
 		return out;
 	}
 	
-	public String toShortString() {
-		if(cs.isValid() == null)
-			return cs.username + "@" + cs.myRealm;
-		
-		return profile.getName();
-	}
-	
 	private Task createTask(String title, String currentStep) {
 		Task t = TaskManager.createTask(profile.getName() + ": " + title, currentStep);
 		currentTasks.add(t);
