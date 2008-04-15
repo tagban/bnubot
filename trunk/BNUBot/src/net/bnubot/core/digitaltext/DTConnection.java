@@ -10,14 +10,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.SocketException;
-import java.util.LinkedList;
-import java.util.List;
 
-import net.bnubot.bot.gui.settings.ConfigurationFrame;
-import net.bnubot.bot.gui.settings.OperationCancelledException;
 import net.bnubot.core.Connection;
-import net.bnubot.core.EventHandler;
 import net.bnubot.core.Profile;
 import net.bnubot.core.UnsupportedFeatureException;
 import net.bnubot.core.bncs.ProductIDs;
@@ -30,90 +24,20 @@ import net.bnubot.util.Out;
 import net.bnubot.util.StatString;
 import net.bnubot.util.UserProfile;
 import net.bnubot.util.task.Task;
-import net.bnubot.util.task.TaskManager;
 
 public class DTConnection extends Connection {
 	protected InputStream dtInputStream = null;
 	protected DataOutputStream dtOutputStream = null;
-	
-	protected long lastNullPacket;
-	protected long lastEntryForced;
-	
-	private final List<Task> currentTasks = new LinkedList<Task>();
 
 	public DTConnection(ConnectionSettings cs, Profile p) {
 		super(cs, p);
-	}
-
-	public void run() {
-		// We must initialize the EHs in the Connection thread
-		for(EventHandler eh : eventHandlers)
-			eh.initialize(this);
-		
-		initialized = true;
-		
-		while(!disposed) {
-			try {
-				for(Task t : currentTasks)
-					t.complete();
-				currentTasks.clear();
-				myUser = null;
-				titleChanged();
-				
-				// Wait until we're supposed to connect
-				while(!connectionState.canConnect()) {
-					yield();
-					sleep(200);
-				}
-				
-				Task connect = createTask("Connecting to DigitalText", "Verify connection settings validity");
-				
-				// Check if CS is valid
-				while(cs.isValid() != null)
-					new ConfigurationFrame(cs);
-
-				// Wait a short time before allowing a reconnect
-				waitUntilConnectionSafe(connect);
-				
-				// Double-check if disposal occured
-				if(disposed)
-					break;
-				
-				// Initialize connection to DT server
-				initializeDT(connect);
-				
-				// Log in
-				boolean loggedIn = sendLoginPackets(connect);
-				
-				// Connection established
-				completeTask(connect);
-				if(loggedIn)
-					connectedLoop();
-					
-				// Connection closed
-			} catch(SocketException e) {
-			} catch(OperationCancelledException e) {
-				disposed = true;
-			} catch(Exception e) {
-				recieveError("Unhandled " + e.getClass().getSimpleName() + ": " + e.getMessage());
-				Out.exception(e);
-			}
-
-			disconnect(true);
-		}
-		
-		for(Task t : currentTasks)
-			t.complete();
-		currentTasks.clear();
-		
-		getProfile().dispose();
 	}
 
 	/**
 	 * Initialize the connection, send game id
 	 * @throws Exception
 	 */
-	private void initializeDT(Task connect) throws Exception {
+	protected void initializeConnection(Task connect) throws Exception {
 		// Set up DT
 		connect.updateProgress("Connecting to DigitalText");
 		InetAddress address = MirrorSelector.getClosestMirror(cs.server, cs.port);
@@ -132,7 +56,7 @@ public class DTConnection extends Connection {
 	 * Do the login work up to SID_ENTERCHAT
 	 * @throws Exception
 	 */
-	private boolean sendLoginPackets(Task connect) throws Exception {
+	protected boolean sendLoginPackets(Task connect) throws Exception {
 		DTPacket p = new DTPacket(DTPacketId.PKT_LOGON);
 		p.writeNTString(cs.username);
 		p.writeNTString(cs.password);
@@ -202,11 +126,7 @@ public class DTConnection extends Connection {
 	 * This method is the main loop after recieving SID_ENTERCHAT
 	 * @throws Exception
 	 */
-	private void connectedLoop() throws Exception {
-		lastNullPacket = System.currentTimeMillis();
-		lastEntryForced = lastNullPacket;
-		profile.lastAntiIdle = lastNullPacket;
-		
+	protected void connectedLoop() throws Exception {
 		while(isConnected() && !socket.isClosed() && !disposed) {
 			long timeNow = System.currentTimeMillis();
 			
@@ -474,23 +394,6 @@ public class DTConnection extends Connection {
 		if(channelName != null)
 			out += " - [ #" + channelName + " ]";
 		return out;
-	}
-	
-	private Task createTask(String title, String currentStep) {
-		Task t = TaskManager.createTask(profile.getName() + ": " + title, currentStep);
-		currentTasks.add(t);
-		return t;
-	}
-	
-	/*private Task createTask(String title, int max, String units) {
-		Task t = TaskManager.createTask(title, max, units);
-		currentTasks.add(t);
-		return t;
-	}*/
-	
-	private void completeTask(Task t) {
-		currentTasks.remove(t);
-		t.complete();
 	}
 
 	public ProductIDs getProductID() {

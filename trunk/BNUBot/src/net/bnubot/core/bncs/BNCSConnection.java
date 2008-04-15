@@ -15,7 +15,6 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
@@ -23,10 +22,7 @@ import java.util.TimeZone;
 
 import net.bnubot.bot.CommandResponseCookie;
 import net.bnubot.bot.gui.ProfileEditor;
-import net.bnubot.bot.gui.settings.ConfigurationFrame;
-import net.bnubot.bot.gui.settings.OperationCancelledException;
 import net.bnubot.core.Connection;
-import net.bnubot.core.EventHandler;
 import net.bnubot.core.Profile;
 import net.bnubot.core.UnsupportedFeatureException;
 import net.bnubot.core.bnls.BNLSPacket;
@@ -48,7 +44,6 @@ import net.bnubot.util.StatString;
 import net.bnubot.util.TimeFormatter;
 import net.bnubot.util.UserProfile;
 import net.bnubot.util.task.Task;
-import net.bnubot.util.task.TaskManager;
 
 import org.jbls.Hashing.BrokenSHA1;
 import org.jbls.Hashing.DoubleHash;
@@ -73,93 +68,10 @@ public class BNCSConnection extends Connection {
 	private byte proof_M2[] = null;
 	protected int myClan = 0;
 	protected Byte myClanRank = null;
-	protected long lastNullPacket;
 	protected long lastEntryForced;
-	
-	private final List<Task> currentTasks = new LinkedList<Task>();
 
 	public BNCSConnection(ConnectionSettings cs, Profile p) {
 		super(cs, p);
-	}
-
-	public void run() {
-		// We must initialize the EHs in the Connection thread
-		for(EventHandler eh : eventHandlers)
-			eh.initialize(this);
-		
-		initialized = true;
-		
-		while(!disposed) {
-			try {
-				for(Task t : currentTasks)
-					t.complete();
-				currentTasks.clear();
-				myUser = null;
-				myClan = 0;
-				myClanRank = null;
-				productID = null;
-				titleChanged();
-				
-				// Wait until we're supposed to connect
-				while(!connectionState.canConnect()) {
-					yield();
-					sleep(200);
-				}
-				
-				Task connect = createTask("Connecting to Battle.net", "Verify connection settings validity");
-				
-				// Check if CS is valid
-				while(cs.isValid() != null)
-					new ConfigurationFrame(cs);
-
-				// Wait a short time before allowing a reconnect
-				waitUntilConnectionSafe(connect);
-				
-				// Double-check if disposal occured
-				if(disposed)
-					break;
-				
-				// Set up BNLS, get verbyte
-				try {
-					initializeBNLS(connect);
-				} catch(EOFException e) {
-					completeTask(connect);
-					Out.error(getClass(), "BNLS login failed");
-					disconnect(false);
-					continue;
-				}
-				
-				// Set up BNCS
-				initializeBNCS(connect);
-				
-				// Begin login
-				sendInitialPackets(connect);
-				
-				// Log in to battle.net
-				boolean loggedIn = sendLoginPackets(connect);
-				
-				// Connection established
-				completeTask(connect);
-				if(loggedIn)
-					connectedLoop();
-					
-				// Connection closed
-			} catch(SocketException e) {
-			} catch(OperationCancelledException e) {
-				disposed = true;
-			} catch(Exception e) {
-				recieveError("Unhandled " + e.getClass().getSimpleName() + ": " + e.getMessage());
-				Out.exception(e);
-			}
-
-			disconnect(true);
-		}
-		
-		for(Task t : currentTasks)
-			t.complete();
-		currentTasks.clear();
-		
-		getProfile().dispose();
 	}
 
 	/**
@@ -342,12 +254,30 @@ public class BNCSConnection extends Connection {
 			break;
 		}
 	}
+
+	protected void initializeConnection(Task connect) throws Exception {
+		// Set up BNLS, get verbyte
+		try {
+			initializeBNLS(connect);
+		} catch(EOFException e) {
+			completeTask(connect);
+			Out.error(getClass(), "BNLS login failed");
+			disconnect(false);
+			return;
+		}
+		
+		// Set up BNCS
+		initializeBNCS(connect);
+		
+		// Begin login
+		sendInitialPackets(connect);
+	}
 	
 	/**
 	 * Do the login work up to SID_ENTERCHAT
 	 * @throws Exception
 	 */
-	private boolean sendLoginPackets(Task connect) throws Exception {
+	protected boolean sendLoginPackets(Task connect) throws Exception {
 		while(isConnected() && !socket.isClosed()) {
 			if(bncsInputStream.available() > 0) {
 				BNCSPacketReader pr;
@@ -1084,7 +1014,7 @@ public class BNCSConnection extends Connection {
 	 * This method is the main loop after recieving SID_ENTERCHAT
 	 * @throws Exception
 	 */
-	private void connectedLoop() throws Exception {
+	protected void connectedLoop() throws Exception {
 		lastNullPacket = System.currentTimeMillis();
 		lastEntryForced = lastNullPacket;
 		profile.lastAntiIdle = lastNullPacket;
@@ -2070,22 +2000,5 @@ public class BNCSConnection extends Connection {
 
 	public ProductIDs getProductID() {
 		return productID;
-	}
-	
-	private Task createTask(String title, String currentStep) {
-		Task t = TaskManager.createTask(profile.getName() + ": " + title, currentStep);
-		currentTasks.add(t);
-		return t;
-	}
-	
-	private Task createTask(String title, int max, String units) {
-		Task t = TaskManager.createTask(title, max, units);
-		currentTasks.add(t);
-		return t;
-	}
-	
-	private void completeTask(Task t) {
-		currentTasks.remove(t);
-		t.complete();
 	}
 }
