@@ -13,12 +13,16 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Hashtable;
+import java.util.LinkedList;
 import java.util.List;
 
+import net.bnubot.bot.gui.settings.ConfigurationFrame;
+import net.bnubot.bot.gui.settings.OperationCancelledException;
 import net.bnubot.core.bncs.ProductIDs;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
@@ -33,6 +37,7 @@ import net.bnubot.util.Wildcard;
 import net.bnubot.util.music.MusicController;
 import net.bnubot.util.music.MusicControllerFactory;
 import net.bnubot.util.task.Task;
+import net.bnubot.util.task.TaskManager;
 import net.bnubot.vercheck.CurrentVersion;
 
 public abstract class Connection extends Thread {
@@ -67,6 +72,98 @@ public abstract class Connection extends Thread {
 	protected boolean forceReconnect = false;
 	protected boolean initialized = false;
 	protected boolean disposed = false;
+	
+	protected long lastNullPacket;
+
+	protected Task createTask(String title, String currentStep) {
+		Task t = TaskManager.createTask(profile.getName() + ": " + title, currentStep);
+		currentTasks.add(t);
+		return t;
+	}
+	
+	protected Task createTask(String title, int max, String units) {
+		Task t = TaskManager.createTask(title, max, units);
+		currentTasks.add(t);
+		return t;
+	}
+	
+	protected void completeTask(Task t) {
+		currentTasks.remove(t);
+		t.complete();
+	}
+	
+	private final List<Task> currentTasks = new LinkedList<Task>();
+	public void run() {
+		// We must initialize the EHs in the Connection thread
+		for(EventHandler eh : eventHandlers)
+			eh.initialize(this);
+		
+		initialized = true;
+		
+		while(!disposed) {
+			try {
+				for(Task t : currentTasks)
+					t.complete();
+				currentTasks.clear();
+				myUser = null;
+				titleChanged();
+				
+				// Wait until we're supposed to connect
+				while(!connectionState.canConnect()) {
+					yield();
+					sleep(200);
+				}
+				
+				Task connect = createTask("Connecting to " + cs.server + ":" + cs.port, "Verify connection settings validity");
+				
+				// Check if CS is valid
+				while(cs.isValid() != null)
+					new ConfigurationFrame(cs);
+
+				// Wait a short time before allowing a reconnect
+				waitUntilConnectionSafe(connect);
+				
+				// Double-check if disposal occured
+				if(disposed)
+					break;
+				
+				// Initialize connection to DT server
+				initializeConnection(connect);
+				
+				// Log in
+				boolean loggedIn = sendLoginPackets(connect);
+				
+				// Connection established
+				completeTask(connect);
+				
+				lastNullPacket = System.currentTimeMillis();
+				profile.lastAntiIdle = lastNullPacket;
+				
+				if(loggedIn)
+					connectedLoop();
+					
+				// Connection closed
+			} catch(SocketException e) {
+			} catch(OperationCancelledException e) {
+				disposed = true;
+			} catch(Exception e) {
+				recieveError("Unhandled " + e.getClass().getSimpleName() + ": " + e.getMessage());
+				Out.exception(e);
+			}
+
+			disconnect(true);
+		}
+		
+		for(Task t : currentTasks)
+			t.complete();
+		currentTasks.clear();
+		
+		getProfile().dispose();
+	}
+
+	protected abstract void connectedLoop() throws Exception;
+	protected abstract boolean sendLoginPackets(Task connect) throws Exception;
+	protected abstract void initializeConnection(Task connect) throws Exception;
 
 	private static Hashtable<String, Long> connectionTimes = new Hashtable<String, Long>();
 	/**
