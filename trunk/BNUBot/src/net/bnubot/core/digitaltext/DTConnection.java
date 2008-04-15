@@ -26,8 +26,8 @@ import net.bnubot.util.UserProfile;
 import net.bnubot.util.task.Task;
 
 public class DTConnection extends Connection {
-	protected InputStream dtInputStream = null;
-	protected DataOutputStream dtOutputStream = null;
+	private InputStream dtInputStream = null;
+	private DataOutputStream dtOutputStream = null;
 
 	public DTConnection(ConnectionSettings cs, Profile p) {
 		super(cs, p);

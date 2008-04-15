@@ -53,10 +53,10 @@ import org.jbls.Hashing.SRP;
 public class BNCSConnection extends Connection {
 	public static final String[] clanRanks = {"Initiate", "Peon", "Grunt", "Shaman", "Chieftain"};
 	
-	protected InputStream bnlsInputStream = null;
-	protected OutputStream bnlsOutputStream = null;
-	protected InputStream bncsInputStream = null;
-	protected DataOutputStream bncsOutputStream = null;
+	private InputStream bnlsInputStream = null;
+	private OutputStream bnlsOutputStream = null;
+	private InputStream bncsInputStream = null;
+	private DataOutputStream bncsOutputStream = null;
 	
 	private ProductIDs productID = null;
 	private int verByte;
