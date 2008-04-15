@@ -15,6 +15,7 @@ public class ConnectionSettings implements Serializable {
 	
 	public enum ConnectionType {
 		BNCS,
+		BotNet,
 		DigitalText
 	}
 
@@ -66,6 +67,7 @@ public class ConnectionSettings implements Serializable {
 
 		switch(connectionType) {
 		case DigitalText:
+		case BotNet:
 			break;
 		case BNCS:
 			switch(product) {
@@ -102,6 +104,8 @@ public class ConnectionSettings implements Serializable {
 	private String getMyRealm() {
 		if(connectionType.equals(ConnectionType.DigitalText))
 			return "DigitalText";
+		if(connectionType.equals(ConnectionType.BotNet))
+			return "BotNet";
 		
 		switch(product) {
 		case WAR3:

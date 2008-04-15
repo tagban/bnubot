@@ -278,10 +278,9 @@ public class BNCSConnection extends Connection {
 	 * @throws Exception
 	 */
 	protected boolean sendLoginPackets(Task connect) throws Exception {
-		while(isConnected() && !socket.isClosed()) {
+		while(isConnected() && !socket.isClosed() && !disposed) {
 			if(bncsInputStream.available() > 0) {
-				BNCSPacketReader pr;
-				pr = new BNCSPacketReader(bncsInputStream);
+				BNCSPacketReader pr = new BNCSPacketReader(bncsInputStream);
 				BNetInputStream is = pr.getData();
 				
 				switch(pr.packetId) {
@@ -1049,8 +1048,7 @@ public class BNCSConnection extends Connection {
 			}
 			
 			if(bncsInputStream.available() > 0) {
-				BNCSPacketReader pr;
-				pr = new BNCSPacketReader(bncsInputStream);
+				BNCSPacketReader pr = new BNCSPacketReader(bncsInputStream);
 				BNetInputStream is = pr.getData();
 				
 				switch(pr.packetId) {

@@ -62,10 +62,9 @@ public class DTConnection extends Connection {
 		p.writeNTString(cs.password);
 		p.SendPacket(dtOutputStream);
 		
-		while(isConnected() && !socket.isClosed()) {
+		while(isConnected() && !socket.isClosed() && !disposed) {
 			if(dtInputStream.available() > 0) {
-				DTPacketReader pr;
-				pr = new DTPacketReader(dtInputStream);
+				DTPacketReader pr = new DTPacketReader(dtInputStream);
 				BNetInputStream is = pr.getData();
 				
 				switch(pr.packetId) {
@@ -158,8 +157,7 @@ public class DTConnection extends Connection {
 			}
 			
 			if(dtInputStream.available() > 0) {
-				DTPacketReader pr;
-				pr = new DTPacketReader(dtInputStream);
+				DTPacketReader pr = new DTPacketReader(dtInputStream);
 				BNetInputStream is = pr.getData();
 				
 				switch(pr.packetId) {
