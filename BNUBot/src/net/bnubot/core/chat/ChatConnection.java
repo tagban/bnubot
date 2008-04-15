@@ -19,9 +19,9 @@ import net.bnubot.util.UserProfile;
 import net.bnubot.util.task.Task;
 
 public class ChatConnection extends Connection {
-	protected Socket s;
-	protected BNetInputStream is;
-	protected BNetOutputStream os;
+	private Socket s;
+	private BNetInputStream is;
+	private BNetOutputStream os;
 	
 	public ChatConnection(ConnectionSettings cs, Profile p) {
 		super(cs, p);

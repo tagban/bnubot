@@ -15,6 +15,7 @@ import net.bnubot.core.Profile;
 import net.bnubot.core.UnsupportedFeatureException;
 import net.bnubot.core.bncs.ProductIDs;
 import net.bnubot.settings.ConnectionSettings;
+import net.bnubot.util.BNetInputStream;
 import net.bnubot.util.HexDump;
 import net.bnubot.util.MirrorSelector;
 import net.bnubot.util.Out;
@@ -26,12 +27,16 @@ import net.bnubot.util.task.Task;
  *
  */
 public class BotNetConnection extends Connection {
-	protected InputStream bnInputStream = null;
-	protected DataOutputStream bnOutputStream = null;
+	private InputStream bnInputStream = null;
+	private DataOutputStream bnOutputStream = null;
+	
+	private int botNetServerRevision = 0;
 	
 	protected void initializeConnection(Task connect) throws Exception {
-		// Set up DT
-		connect.updateProgress("Connecting to DigitalText");
+		botNetServerRevision = 0;
+		
+		// Set up BotNet
+		connect.updateProgress("Connecting to BotNet");
 		InetAddress address = MirrorSelector.getClosestMirror(cs.server, cs.port);
 		recieveInfo("Connecting to " + address + ":" + cs.port + ".");
 		socket = new Socket(address, cs.port);
@@ -45,17 +50,46 @@ public class BotNetConnection extends Connection {
 	}
 
 	protected boolean sendLoginPackets(Task connect) throws Exception {
-		BotNetPacket p = new BotNetPacket(BotNetPacketId.PACKET_LOGON);
-		p.writeNTString("RivalBot");
-		p.writeNTString("b8f9b319f223ddcc38");
-		p.SendPacket(bnOutputStream);
+		// Closed-scope for p
+		{
+			BotNetPacket p = new BotNetPacket(BotNetPacketId.PACKET_LOGON);
+			p.writeNTString("RivalBot");
+			p.writeNTString("b8f9b319f223ddcc38");
+			p.SendPacket(bnOutputStream);
+		}
 		
 		while(isConnected() && !socket.isClosed() && !disposed) {
 			if(bnInputStream.available() > 0) {
 				BotNetPacketReader pr = new BotNetPacketReader(bnInputStream);
-				//BNetInputStream is = pr.getInputStream();
+				BNetInputStream is = pr.getInputStream();
 				
 				switch(pr.packetId) {
+				case PACKET_LOGON: {
+					int result = is.readDWord();
+					switch(result) {
+					case 0:
+						recieveError("Logon failed!");
+						disconnect(false);
+						return false;
+					case 1:
+						recieveInfo("Logon success!");
+						return true;
+					default:
+						recieveError("Unknown PACKET_LOGON result 0x" + Integer.toHexString(result));
+						disconnect(false);
+						return false;
+					}
+				}
+				case PACKET_BOTNETVERSION: {
+					botNetServerRevision = is.readDWord();
+					
+					BotNetPacket p = new BotNetPacket(BotNetPacketId.PACKET_BOTNETVERSION);
+					p.writeDWord(1);
+					p.writeDWord(1);
+					p.SendPacket(bnOutputStream);
+					
+					break;
+				}
 				default:
 					Out.debugAlways(getClass(), "Unexpected packet " + pr.packetId.name() + "\n" + HexDump.hexDump(pr.data));
 					break;
@@ -70,6 +104,9 @@ public class BotNetConnection extends Connection {
 	}
 
 	protected void connectedLoop() throws Exception {
+		BotNetPacket p = new BotNetPacket(BotNetPacketId.PACKET_USERINFO);
+		p.SendPacket(bnOutputStream);
+		
 		while(isConnected() && !socket.isClosed() && !disposed) {
 			if(bnInputStream.available() > 0) {
 				BotNetPacketReader pr = new BotNetPacketReader(bnInputStream);
