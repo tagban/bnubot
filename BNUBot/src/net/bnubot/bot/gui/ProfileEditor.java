@@ -18,6 +18,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.SwingUtilities;
 
 import net.bnubot.bot.gui.components.ConfigFactory;
 import net.bnubot.bot.gui.components.ConfigTextArea;
@@ -28,10 +29,10 @@ import net.bnubot.util.UserProfile;
 public class ProfileEditor extends JDialog {
 	private static final long serialVersionUID = 7116099159624394301L;
 	
-	private UserProfile p;
-	private Connection source;
+	private final UserProfile p;
+	private final Connection source;
 	private ConfigTextArea txtUsername;
-	private HashMap<String, ConfigTextArea> txtBoxes = new HashMap<String, ConfigTextArea>();
+	private final HashMap<String, ConfigTextArea> txtBoxes = new HashMap<String, ConfigTextArea>();
 	private JButton btnSave;
 	private JButton btnClose;
 
@@ -39,12 +40,15 @@ public class ProfileEditor extends JDialog {
 		this.p = p;
 		this.source = source;
 		
-		setModal(true);
 		setTitle("Profile of " + p.getUser());
 		initializeGui();
 		pack();
 		setResizable(false);
-		setVisible(true);
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				setModal(true);
+				setVisible(true);
+			}});
 	}
 
 	private void initializeGui() {
