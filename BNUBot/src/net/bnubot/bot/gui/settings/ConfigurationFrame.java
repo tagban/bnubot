@@ -36,17 +36,6 @@ public class ConfigurationFrame extends JDialog {
 	private final ConnectionSettings cs;
 	private boolean pressedCancel = false;
 	
-	final String[] bncsServers = new String[] {
-			"useast.battle.net",
-			"uswest.battle.net",
-			"europe.battle.net",
-			"asia.battle.net",
-			};
-	
-	final String[] dtServers = new String[] {
-			"koolaid.sidoh.org",
-			};
-
 	// Connection
 	private ConfigTextArea txtProfile = null;
 	private ConfigTextArea txtUsername = null;
@@ -341,13 +330,13 @@ public class ConfigurationFrame extends JDialog {
 			cmbProduct.setVisible(false);
 			cmbCDKey.setVisible(false);
 			cmbCDKey2.setVisible(false);
-			for(String server : dtServers)
+			for(String server : ConnectionSettings.dtServers)
 				model.addElement(server);
 			cmbServer.setSelectedItem(cs.server);
 			return;
 		}
 
-		for(String server : bncsServers)
+		for(String server : ConnectionSettings.bncsServers)
 			model.addElement(server);
 		cmbServer.setSelectedItem(cs.server);
 		
