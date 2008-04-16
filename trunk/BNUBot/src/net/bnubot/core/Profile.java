@@ -73,7 +73,12 @@ public class Profile {
 	}
 	
 	private static boolean add(ConnectionSettings cs) throws Exception {
-		return findCreateProfile(cs.profile).insertConnection(cs);
+		Profile p = findCreateProfile(cs.profile);
+		Connection con = ConnectionFactory.createConnection(cs, p.chatQueue, p);
+		p.insertConnection(con);
+		
+		// Add it to the list of connections
+		return p.cons.add(con);
 	}
 
 	private final List<Connection> cons = new ArrayList<Connection>();
@@ -92,8 +97,7 @@ public class Profile {
 		chatQueue.start();
 	}
 
-	private boolean insertConnection(ConnectionSettings cs) throws Exception {
-		Connection con = ConnectionFactory.createConnection(cs, chatQueue, this);
+	public void insertConnection(Connection con) throws Exception {
 		Out.setThreadOutputConnectionIfNone(con);
 		synchronized(cons) {
 			if(cons.size() > 0) {
@@ -142,9 +146,6 @@ public class Profile {
 				Thread.sleep(10);
 				Thread.yield();
 			}
-			
-			// Add it to the list of connections
-			return cons.add(con);
 		}
 	}
 

@@ -64,7 +64,7 @@ public class ChatConnection extends Connection {
 	}*/
 
 	protected void initializeConnection(Task connect) throws Exception {
-		s = new Socket(cs.server, cs.port);
+		s = new Socket(getServer(), getPort());
 		is = new BNetInputStream(s.getInputStream());
 		os = new BNetOutputStream(s.getOutputStream());
 		//Chat

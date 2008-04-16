@@ -8,6 +8,11 @@ package net.bnubot.util;
 import java.security.InvalidParameterException;
 
 public class HexDump {
+	/**
+	 * Turn a DWord in to an IP address
+	 * @param dword The 32-bit IP address
+	 * @return "xxx.xxx.xxx.xxx"
+	 */
 	public static String DWordToIP(int dword) {
 		int bytes[] = new int[4];
 		bytes[0] = 0xFF & ((dword & 0x000000FF) >> 0);
