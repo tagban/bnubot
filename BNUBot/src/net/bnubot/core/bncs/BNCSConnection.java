@@ -261,11 +261,15 @@ public class BNCSConnection extends Connection {
 
 	protected void initializeConnection(Task connect) throws Exception {
 		if(cs.enableBotNet) {
-			try {
-				botnet = new BotNetConnection(this, cs, profile);
-				profile.insertConnection(botnet);
-			} catch (Exception e) {
-				Out.exception(e);
+			if(botnet == null) {
+				try {
+					botnet = new BotNetConnection(this, cs, profile);
+					profile.insertConnection(botnet);
+				} catch (Exception e) {
+					Out.exception(e);
+				}
+			} else {
+				botnet.sendStatusUpdate();
 			}
 		}
 		
@@ -1030,6 +1034,9 @@ public class BNCSConnection extends Connection {
 		lastNullPacket = System.currentTimeMillis();
 		lastEntryForced = lastNullPacket;
 		profile.lastAntiIdle = lastNullPacket;
+
+		if(botnet != null)
+			botnet.sendStatusUpdate();
 		
 		while(isConnected() && !socket.isClosed() && !disposed) {
 			long timeNow = System.currentTimeMillis();
@@ -1190,6 +1197,8 @@ public class BNCSConnection extends Connection {
 						joinedChannel(text, flags);
 						titleChanged();
 						clearQueue();
+						if(botnet != null)
+							botnet.sendStatusUpdate();
 						break;
 					case EID_WHISPERSENT:
 						whisperSent(user, text);

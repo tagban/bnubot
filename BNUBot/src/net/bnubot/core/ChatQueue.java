@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import net.bnubot.core.botnet.BotNetConnection;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.Out;
 
@@ -24,6 +25,8 @@ public class ChatQueue extends Thread {
 	}
 
 	public boolean add(Connection c) {
+		if(c instanceof BotNetConnection)
+			return false;
 		synchronized(cons) {
 			return cons.add(c);
 		}
