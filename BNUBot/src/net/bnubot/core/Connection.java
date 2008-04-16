@@ -314,8 +314,9 @@ public abstract class Connection extends Thread {
 	 */
 	public BNetUser findUser(String pattern, BNetUser perspective) {
 		for(BNetUser user : getUsers()) {
-			String u = user.getShortLogonName(perspective);
-			if(pattern.equalsIgnoreCase(u))
+			if(pattern.equalsIgnoreCase(user.getFullLogonName()))
+				return user;
+			if(pattern.equalsIgnoreCase(user.getShortLogonName(perspective)))
 				return user;
 		}
 		return null;
