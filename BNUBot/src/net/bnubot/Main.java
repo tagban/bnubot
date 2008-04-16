@@ -18,6 +18,8 @@ import net.bnubot.util.Out;
 import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.VersionCheck;
 
+import org.apache.commons.logging.impl.NoOpLog;
+
 public class Main {
 	static {
 		// Force the static initializers of GlobalSettings to run
@@ -37,6 +39,9 @@ public class Main {
 			} catch (FileNotFoundException e) {
 				Out.exception(e);
 			}
+
+		// Disable Cayenne logging!
+		System.setProperty("org.apache.commons.logging.Log", NoOpLog.class.getName()); 
 	}
 
 	public static void main(String[] args) {
