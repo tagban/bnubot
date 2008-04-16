@@ -22,16 +22,49 @@ public class BotNetUser {
 	String database = null;
 
 	public String toString() {
-		StringBuilder sb = new StringBuilder("User [#");
-		sb.append(Integer.toHexString(number)).append("] ");
-		sb.append(name).append(" in channel [ ");
-		sb.append(channel).append(" ]");
+		StringBuilder sb = new StringBuilder();
+		
+		// Formatted username
+		String fmtUser = "*" + name + "%" + number;
+		if((account == null) || (account.length() == 0))
+			return fmtUser;
+		
+		sb.append(account).append(" (").append(fmtUser).append(")");
+		return sb.toString();
+	}
+	
+	public String toStringEx() {
+		StringBuilder sb = new StringBuilder(toString());
+		
+		// ZTFF flags
+		if(ztff != 0)
+			sb.append(" with flags [ 0x").append(Integer.toHexString(ztff)).append(" ]");
+		
+		// Database/dbflags
+		if((database != null) && (database.length() > 0)) {
+			sb.append(" under database ").append(database);
+			if(dbflag != 0) {
+				sb.append(" (with ");
+				//.append(dbflag).append(" ]");
+				if((dbflag & 4) != 0)
+					sb.append("restricted");
+				else if((dbflag & 2) != 0)
+					sb.append("write");
+				else if((dbflag & 1) != 0)
+					sb.append("read");
+				else
+					sb.append("0x").append(Integer.toHexString(dbflag));
+				sb.append(" access");
+			}
+		}
+		
+		// Channel
+		if((channel != null) && (channel.length() > 0))
+			sb.append(" from channel ").append(channel);
+		
+		// Server
 		if(server != -1)
-			sb.append(" of server [ ").append(HexDump.DWordToIP(server)).append(" ]");
-		if((account != null) && !account.equals(""))
-			sb.append(" with account [ ").append(account).append(" ]");
-		if((database != null) && !database.equals(""))
-			sb.append(" on database [ ").append(database).append(" ]");
+			sb.append(" of server ").append(HexDump.DWordToIP(server)).append(".");
 		
 		return sb.toString();
 	}

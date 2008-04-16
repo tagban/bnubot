@@ -122,7 +122,9 @@ public class GuiEventHandler implements EventHandler {
 	public void disable(final Connection source) {
 		if(source == firstConnection)
 			GuiDesktop.remove(this);
-		menuBar.remove(settingsMenuItems.remove(source));
+		JMenuItem mi = settingsMenuItems.remove(source);
+		if(mi != null)
+			menuBar.remove(mi);
 		titleChanged(source);
 	}
 	

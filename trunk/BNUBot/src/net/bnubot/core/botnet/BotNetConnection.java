@@ -153,10 +153,9 @@ public class BotNetConnection extends Connection {
 					break;
 				}
 				case PACKET_USERINFO: {
-					if(pr.data.length == 0) {
-						recieveInfo("Complete");
+					if(pr.data.length == 0)
 						break;
-					}
+					
 					BotNetUser user = new BotNetUser();
 					user.number = is.readDWord();
 					if(botNetServerRevision >= 4) {
@@ -171,7 +170,7 @@ public class BotNetConnection extends Connection {
 					if(botNetServerRevision >= 3)
 						user.database = null;
 					
-					recieveInfo(user.toString());
+					recieveInfo(user.toStringEx());
 					break;
 				}
 				default:

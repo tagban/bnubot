@@ -2024,4 +2024,11 @@ public class BNCSConnection extends Connection {
 	public ProductIDs getProductID() {
 		return productID;
 	}
+	
+	@Override
+	public void dispose() {
+		super.dispose();
+		if(botnet != null)
+			botnet.dispose();
+	}
 }
