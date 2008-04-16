@@ -308,19 +308,6 @@ public abstract class Connection extends Thread {
 		}
 		return ret;
 	}
-	
-	/**
-	 * Find a user
-	 */
-	public BNetUser findUser(String pattern, BNetUser perspective) {
-		for(BNetUser user : getUsers()) {
-			if(pattern.equalsIgnoreCase(user.getFullLogonName()))
-				return user;
-			if(pattern.equalsIgnoreCase(user.getShortLogonName(perspective)))
-				return user;
-		}
-		return null;
-	}
 
 	public Connection(ConnectionSettings cs, Profile p) {
 		super(Connection.class.getSimpleName() + "-" + cs.botNum);
@@ -726,20 +713,30 @@ public abstract class Connection extends Thread {
 	public String getChannel() {
 		return channelName;
 	}
+	
+	/**
+	 * Look for a BNetUser in the user list.
+	 * @param user "User[#N][@Realm]"
+	 * @param perspective The BNetUser whose realm to use if none is specified
+	 * @return A BNetUser representing the user, or null if none is found
+	 */
+	public BNetUser findUser(String user, BNetUser perspective) {
+		if(user.indexOf('@') == -1)
+			user += '@' + perspective.getRealm();
+		return users.get(user.toLowerCase());
+	}
 
 	/**
 	 * Look for a BNetUser in the user list. If it doesn't exist, create a new one
 	 * @param user "User[#N][@Realm]"
-	 * @param myRealm The BNetUser whose realm to use if none is specified
+	 * @param perspective The BNetUser whose realm to use if none is specified
 	 * @return A BNetUser representing the user
 	 */
-	public BNetUser getCreateBNetUser(String user, BNetUser myRealm) {
-		if(user.indexOf('@') == -1)
-			user += '@' + myRealm.getRealm();
-		BNetUser x = users.get(user.toLowerCase());
+	public BNetUser getCreateBNetUser(String user, BNetUser perspective) {
+		BNetUser x = findUser(user, perspective);
 		if(x != null)
 			return x;
-		return new BNetUser(this, user, myRealm.getRealm());
+		return new BNetUser(this, user, perspective);
 	}
 
 	/*
