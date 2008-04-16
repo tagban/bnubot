@@ -165,7 +165,7 @@ public class BotNetConnection extends Connection {
 					}
 					user.name = is.readNTString();
 					user.channel = is.readNTString();
-					user.server = HexDump.DWordToIP(is.readDWord());
+					user.server = is.readDWord();
 					if(botNetServerRevision >= 2)
 						user.account = null;
 					if(botNetServerRevision >= 3)
