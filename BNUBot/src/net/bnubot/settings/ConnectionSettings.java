@@ -140,6 +140,7 @@ public class ConnectionSettings implements Serializable {
 		Settings.write(header, "username", username);
 		Settings.write(header, "password", password);
 		Settings.write(header, "enablePlug", enablePlug);
+		Settings.write(header, "enableBotNet", enableBotNet);
 		Settings.write(header, "cdkey", cdkey);
 		Settings.write(header, "cdkey2", cdkey2);
 		Settings.write(header, "product", product);
@@ -165,20 +166,20 @@ public class ConnectionSettings implements Serializable {
 		username =	Settings.read(header, "username", (String)null);
 		password =	Settings.read(header, "password", (String)null);
 		enablePlug =	Settings.read(header, "enablePlug", false);
+		enableBotNet =	Settings.read(header, "enableBotNet", false);
 		cdkey =		Settings.read(header, "cdkey", (String)null);
 		cdkey2 =	Settings.read(header, "cdkey2", (String)null);
 		product =	Settings.read(header, "product", ProductIDs.STAR);
-		enableBotNet =	Settings.read(header, "enableBotNet", false);
 
 		header = "Profile_" + profile;
-		connectionType = Settings.read(header, "connectionType", ConnectionType.BNCS);
+		connectionType =	Settings.read(header, "connectionType", ConnectionType.BNCS);
 		server =	Settings.read(header, "server", "useast.battle.net");
-		port =		Settings.read(header, "port", 6112);
+		port =	Settings.read(header, "port", 6112);
 		channel =	Settings.read(header, "channel", "Clan BNU");
-		trigger = 	Settings.read(header, "trigger", "!");
-		antiIdle = 	Settings.read(header, "antiidle", "/me is a BNU-Bot %version%");
-		enableAntiIdle = Settings.read(header, "enableAntiidle", false);
-		enableGreetings = Settings.read(header, "enableGreetings", false);
-		antiIdleTimer = Settings.read(header, "antiIdleTimer", 5);
+		trigger =	Settings.read(header, "trigger", "!");
+		antiIdle =	Settings.read(header, "antiidle", "/me is a BNU-Bot %version%");
+		enableAntiIdle =	Settings.read(header, "enableAntiidle", false);
+		enableGreetings =	Settings.read(header, "enableGreetings", false);
+		antiIdleTimer =	Settings.read(header, "antiIdleTimer", 5);
 	}
 }
