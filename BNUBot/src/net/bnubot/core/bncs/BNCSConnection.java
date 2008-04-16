@@ -1176,6 +1176,7 @@ public class BNCSConnection extends Connection {
 						channelName = text;
 						joinedChannel(text, flags);
 						titleChanged();
+						clearQueue();
 						break;
 					case EID_WHISPERSENT:
 						whisperSent(user, text);
@@ -1731,8 +1732,10 @@ public class BNCSConnection extends Connection {
 					if(cmd.equals("w")
 					|| cmd.equals("m")
 					|| cmd.equals("whois")
-					|| cmd.equals("ignre")
-					|| cmd.equals("squelch")) {
+					|| cmd.equals("ignore")
+					|| cmd.equals("squelch")
+					|| cmd.equals("unignore")
+					|| cmd.equals("unsquelch")) {
 						if(theRest.charAt(0) != '*')
 							text = '/' + cmd + " *" + theRest;
 					}

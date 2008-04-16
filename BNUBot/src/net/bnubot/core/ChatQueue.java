@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import net.bnubot.settings.GlobalSettings;
+import net.bnubot.util.Out;
 
 public class ChatQueue extends Thread {
 	private final List<Connection> cons = new ArrayList<Connection>();
@@ -27,72 +28,97 @@ public class ChatQueue extends Thread {
 			return cons.add(c);
 		}
 	}
+	
+	private Connection getNextConnection() {
+		if(lastCon >= cons.size())
+			lastCon = 0;
+		return cons.get(lastCon++);
+	}
 
 	public boolean enqueue(Connection source, String text) {
 		if(GlobalSettings.enableFloodProtect) synchronized(queue) {
 			// Flood protection is enabled
 			return queue.add(text);
 		}
+		
+		if(requiresOps(text)) {
+			if(sendTextOp(text))
+				return true;
+			Out.error(getClass(), "Failed to add command to the queue: " + text);
+			return false;
+		}
+		
 		// Flood protection disabled; send in round-robin pattern
-		if(lastCon >= cons.size())
-			lastCon = 0;
-		cons.get(lastCon++).sendChatCommand(text);
+		getNextConnection().sendChatCommand(text);
 		return true;
+	}
+	
+	public void clear() {
+		int qs = queue.size();
+		if(qs > 0)
+			Out.info(getClass(), "Removing " + qs + " commands from the ChatQueue.");
+		queue.clear();
 	}
 
 	public void run() {
 		while(!disposed) {
-			yield();
-			try { sleep(200); } catch(Exception e) {}
+			try {
+				yield();
+				sleep(100);
+			} catch (InterruptedException e) {}
 			
 			// If there's text in the queue to send
 			while(queue.size() > 0) {
-				if(lastCon >= cons.size()) {
-					lastCon = 0;
+				Connection con = getNextConnection();
+				
+				// Check if the con can send text now
+				if(!con.canSendChat()) {
+					lastCon--;
 					break;
 				}
 				
-				Connection con = cons.get(lastCon++);
+				String text = queue.remove(0);
 				
-				// Check if the con can send text now
-				if(!con.canSendChat())
-					continue;
-				
-				if(con.isOp()) {
+				if(con.isOp() || !requiresOps(text)) {
 					// Write the text out
-					con.sendChatCommand(queue.remove(0));
-				} else {
-					//Find a string we can send
-					sendTextNonOp(con);
+					con.sendChatCommand(text);
+					continue;
 				}
+				
+				if(!sendTextOp(text))
+					Out.error(getClass(), "Failed to send chat, no available operators: " + text);
 			}
 		}
 	}
+	
+	/**
+	 * Determine if Channel Operator status is required to send text
+	 * @param text The text to check
+	 * @return True if Operator status is required
+	 */
+	private boolean requiresOps(String text) {
+		if(!text.startsWith("/"))
+			return false;
+		if(text.startsWith("/kick ")
+		|| text.startsWith("/ban ")
+		|| text.startsWith("/unban ")
+		|| text.startsWith("/c ")
+		|| text.startsWith("/clan "))
+			return true;
+		return false;
+	}
 
-	private boolean sendTextNonOp(Connection con) {
-		for(String text : queue) {
-			// Check if ops is required
-			try {
-				// Only consider strings beginning with a slash
-				if(text.charAt(0) == '/') {
-					String cmd = text.substring(1);
-					int i = cmd.indexOf(' ');
-					if(i != -1) {
-						// Split the text from the slash to the first space
-						cmd = cmd.substring(0, i).toLowerCase();
-
-						// The commands /kick and /ban require ops
-						if(cmd.equals("kick")
-						|| cmd.equals("ban")
-						|| cmd.equals("unban"))
-							continue;
-					}
-				}
-			} catch(Exception e) {}
-
-			// Write the text out
-			con.sendChatCommand(text);
-			return queue.remove(text);
+	private boolean sendTextOp(String text) {
+		for(int i = 0; i < cons.size(); i++) {
+			Connection c = getNextConnection();
+			if(!c.isOp())
+				continue;
+			while(!c.canSendChat())
+				try {
+					yield();
+					sleep(100);
+				} catch (InterruptedException e) {}
+			return true;
 		}
 		return false;
 	}

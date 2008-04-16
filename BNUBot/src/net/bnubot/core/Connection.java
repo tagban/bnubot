@@ -738,6 +738,13 @@ public abstract class Connection extends Thread {
 			return x;
 		return new BNetUser(this, user, perspective);
 	}
+	
+	/**
+	 * Clear all text waiting to send in the ChatQueue
+	 */
+	public void clearQueue() {
+		profile.getChatQueue().clear();
+	}
 
 	/*
 	 * EventHandler methods follow
