@@ -234,19 +234,37 @@ public class BotNetConnection extends Connection {
 	 */
 	public void sendStatusUpdate() throws Exception {
 		BNetUser user = master.getMyUser();
+		String channel = master.getChannel();
+		int ip = -1;
+		if(channel == null)
+			channel = "<Not Logged On>";
+		else
+			ip = master.getIp();
+		
+		sendStatusUpdate(
+				(user == null) ? "BNUBot2" : user.getShortLogonName(),
+				channel,
+				ip,
+				"PubEternalChat",
+				false);
+	}
+	
+	/**
+	 * Send PACKET_STATUSUPDATE
+	 * @param username
+	 * @param channel
+	 * @param ip
+	 * @param database
+	 * @param cycling
+	 * @throws Exception
+	 */
+	private void sendStatusUpdate(String username, String channel, int ip, String database, boolean cycling) throws Exception {
 		BotNetPacket p = new BotNetPacket(BotNetPacketId.PACKET_STATSUPDATE);
-		if(user == null) {
-			p.writeNTString("BNUBot2"); // bnet username
-			p.writeNTString("<Not Logged On>"); // channel
-			p.writeDWord(-1); // bnet ip address
-			p.writeNTString(" "); // database
-		} else {
-			p.writeNTString(user.getShortLogonName());
-			p.writeNTString(master.getChannel());
-			p.writeDWord(master.getIp());
-			p.writeNTString("PubEternalChat");
-		}
-		p.writeDWord(0); // cycling?
+		p.writeNTString(username);
+		p.writeNTString(channel);
+		p.writeDWord(ip); // bnet ip address
+		p.writeNTString(database); // database
+		p.writeDWord(cycling ? 1 : 0); // cycling?
 		p.SendPacket(bnOutputStream);
 	}
 	
