@@ -12,6 +12,17 @@ import net.bnubot.core.bncs.ProductIDs;
 
 public class ConnectionSettings implements Serializable {
 	private static final long serialVersionUID = -8169038278487314919L;
+
+	public static final String[] bncsServers = new String[] {
+			"useast.battle.net",
+			"uswest.battle.net",
+			"europe.battle.net",
+			"asia.battle.net",
+			};
+	
+	public static final String[] dtServers = new String[] {
+			"koolaid.sidoh.org",
+			};
 	
 	public enum ConnectionType {
 		BNCS,

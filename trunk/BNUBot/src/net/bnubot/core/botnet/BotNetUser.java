@@ -4,6 +4,13 @@
  */
 package net.bnubot.core.botnet;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.Map;
+
+import net.bnubot.settings.ConnectionSettings;
+import net.bnubot.util.BNetInputStream;
 import net.bnubot.util.HexDump;
 
 
@@ -12,6 +19,18 @@ import net.bnubot.util.HexDump;
  *
  */
 public class BotNetUser {
+	private static final Map<Integer, InetAddress> servers = new HashMap<Integer, InetAddress>();
+	static {
+		for(String hostname : ConnectionSettings.bncsServers) {
+			try {
+				for(InetAddress ina : InetAddress.getAllByName(hostname))
+					servers.put(
+							BNetInputStream.readDWord(ina.getAddress(), 0),
+							ina);
+			} catch (UnknownHostException e) {}
+		}
+	}
+	
 	int number = 0;
 	int dbflag = 0;
 	int ztff = 0;
@@ -33,12 +52,23 @@ public class BotNetUser {
 		return sb.toString();
 	}
 	
+	public static String getZTFF(int flags) {
+		StringBuilder out = new StringBuilder();
+		int f = 1;
+		for(int i = 0; i < 32; i++) {
+			if((flags & f) != 0)
+				out.append((char)('A' + i));
+			f <<= 1;
+		}
+		return out.toString();
+	}
+	
 	public String toStringEx() {
 		StringBuilder sb = new StringBuilder(toString());
 		
 		// ZTFF flags
 		if(ztff != 0)
-			sb.append(" with flags [ 0x").append(Integer.toHexString(ztff)).append(" ]");
+			sb.append(" with flags ").append(getZTFF(ztff));
 		
 		// Database/dbflags
 		if((database != null) && (database.length() > 0)) {
@@ -54,7 +84,7 @@ public class BotNetUser {
 					sb.append("read");
 				else
 					sb.append("0x").append(Integer.toHexString(dbflag));
-				sb.append(" access");
+				sb.append(" access)");
 			}
 		}
 		
@@ -63,8 +93,15 @@ public class BotNetUser {
 			sb.append(" from channel ").append(channel);
 		
 		// Server
-		if(server != -1)
-			sb.append(" of server ").append(HexDump.DWordToIP(server)).append(".");
+		if(server != -1) {
+			sb.append(" of server ");
+			InetAddress x = servers.get(server);
+			if(x == null)
+				sb.append(HexDump.DWordToIP(server));
+			else
+				sb.append(x);
+			sb.append(".");
+		}
 		
 		return sb.toString();
 	}

@@ -166,9 +166,9 @@ public class BotNetConnection extends Connection {
 					user.channel = is.readNTString();
 					user.server = is.readDWord();
 					if(botNetServerRevision >= 2)
-						user.account = null;
+						user.account = is.readNTString();
 					if(botNetServerRevision >= 3)
-						user.database = null;
+						user.database = is.readNTString();
 					
 					recieveInfo(user.toStringEx());
 					break;
