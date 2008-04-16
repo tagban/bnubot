@@ -28,6 +28,7 @@ import net.bnubot.core.UnsupportedFeatureException;
 import net.bnubot.core.bnls.BNLSPacket;
 import net.bnubot.core.bnls.BNLSPacketId;
 import net.bnubot.core.bnls.BNLSPacketReader;
+import net.bnubot.core.botnet.BotNetConnection;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.clan.ClanRankIDs;
 import net.bnubot.core.clan.ClanStatusIDs;
@@ -52,6 +53,8 @@ import org.jbls.Hashing.SRP;
 
 public class BNCSConnection extends Connection {
 	public static final String[] clanRanks = {"Initiate", "Peon", "Grunt", "Shaman", "Chieftain"};
+	
+	private BotNetConnection botnet = null;
 	
 	private InputStream bnlsInputStream = null;
 	private OutputStream bnlsOutputStream = null;
@@ -148,9 +151,10 @@ public class BNCSConnection extends Connection {
 		
 		// Set up BNCS
 		connect.updateProgress("Connecting to Battle.net");
-		InetAddress address = MirrorSelector.getClosestMirror(cs.server, cs.port);
-		recieveInfo("Connecting to " + address + ":" + cs.port + ".");
-		socket = new Socket(address, cs.port);
+		int port = getPort();
+		InetAddress address = MirrorSelector.getClosestMirror(getServer(), port);
+		recieveInfo("Connecting to " + address + ":" + port + ".");
+		socket = new Socket(address, port);
 		socket.setKeepAlive(true);
 		bncsInputStream = socket.getInputStream();
 		bncsOutputStream = new DataOutputStream(socket.getOutputStream());
@@ -256,6 +260,15 @@ public class BNCSConnection extends Connection {
 	}
 
 	protected void initializeConnection(Task connect) throws Exception {
+		if(cs.enableBotNet) {
+			try {
+				botnet = new BotNetConnection(this, cs, profile);
+				profile.insertConnection(botnet);
+			} catch (Exception e) {
+				Out.exception(e);
+			}
+		}
+		
 		// Set up BNLS, get verbyte
 		try {
 			initializeBNLS(connect);

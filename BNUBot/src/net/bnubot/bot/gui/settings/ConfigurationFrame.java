@@ -53,6 +53,7 @@ public class ConfigurationFrame extends JDialog {
 	private JPasswordField txtPassword = null;
 	private ConfigComboBox cmbProduct = null;
 	private ConfigCheckBox chkPlug = null;
+	private ConfigCheckBox chkBotNet = null;
 	private ConfigComboBox cmbCDKey = null;
 	private ConfigComboBox cmbCDKey2 = null;
 	
@@ -106,6 +107,7 @@ public class ConfigurationFrame extends JDialog {
 					setVisibleFields();
 				}});
 			boxSettings.add(chkPlug = new ConfigCheckBox("Enable Plug (No UDP support)", cs.enablePlug));
+			boxSettings.add(chkBotNet = new ConfigCheckBox("Enable BotNet", cs.enableBotNet));
 			
 			//Initialize CD Keys combo box before setting product
 			CDKey[] CDKeys = KeyManager.getKeys(KeyManager.PRODUCT_ALLNORMAL);
@@ -264,6 +266,7 @@ public class ConfigurationFrame extends JDialog {
 		cs.username = txtUsername.getText();
 		cs.password = new String(txtPassword.getPassword());
 		cs.enablePlug = chkPlug.isSelected();
+		cs.enableBotNet = chkBotNet.isSelected();
 		cs.product = (ProductIDs)cmbProduct.getSelectedItem();
 		CDKey k = (CDKey)cmbCDKey.getSelectedItem();
 		CDKey k2 = (CDKey)cmbCDKey2.getSelectedItem();
@@ -293,6 +296,7 @@ public class ConfigurationFrame extends JDialog {
 		txtUsername.setText(cs.username);
 		txtPassword.setText(cs.password);
 		chkPlug.setSelected(cs.enablePlug);
+		chkBotNet.setSelected(cs.enableBotNet);
 		cmbProduct.setSelectedItem(cs.product);
 		cmbCDKey.setSelectedItem(cs.cdkey);
 		cmbCDKey2.setSelectedItem(cs.cdkey2);
@@ -333,6 +337,7 @@ public class ConfigurationFrame extends JDialog {
 		
 		if((ConnectionType)cmbConnectionType.getSelectedItem() == ConnectionType.DigitalText) {
 			chkPlug.setVisible(false);
+			chkBotNet.setVisible(false);
 			cmbProduct.setVisible(false);
 			cmbCDKey.setVisible(false);
 			cmbCDKey2.setVisible(false);
@@ -383,6 +388,7 @@ public class ConfigurationFrame extends JDialog {
 			chkPlug.setVisible(false);
 			break;
 		}
+		chkBotNet.setVisible(true);
 
 		CDKey[] CDKeys2 = null;
 		switch(cProd) {

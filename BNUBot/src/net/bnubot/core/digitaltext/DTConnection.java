@@ -40,9 +40,10 @@ public class DTConnection extends Connection {
 	protected void initializeConnection(Task connect) throws Exception {
 		// Set up DT
 		connect.updateProgress("Connecting to DigitalText");
-		InetAddress address = MirrorSelector.getClosestMirror(cs.server, cs.port);
-		recieveInfo("Connecting to " + address + ":" + cs.port + ".");
-		socket = new Socket(address, cs.port);
+		int port = getPort();
+		InetAddress address = MirrorSelector.getClosestMirror(getServer(), port);
+		recieveInfo("Connecting to " + address + ":" + port + ".");
+		socket = new Socket(address, port);
 		socket.setKeepAlive(true);
 		dtInputStream = socket.getInputStream();
 		dtOutputStream = new DataOutputStream(socket.getOutputStream());

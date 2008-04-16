@@ -13,9 +13,12 @@ import java.net.Socket;
 import net.bnubot.core.Connection;
 import net.bnubot.core.Profile;
 import net.bnubot.core.UnsupportedFeatureException;
+import net.bnubot.core.bncs.BNCSConnection;
 import net.bnubot.core.bncs.ProductIDs;
 import net.bnubot.settings.ConnectionSettings;
+import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetInputStream;
+import net.bnubot.util.BNetUser;
 import net.bnubot.util.HexDump;
 import net.bnubot.util.MirrorSelector;
 import net.bnubot.util.Out;
@@ -27,11 +30,28 @@ import net.bnubot.util.task.Task;
  *
  */
 public class BotNetConnection extends Connection {
+	private BNCSConnection master;
+	
 	private InputStream bnInputStream = null;
 	private DataOutputStream bnOutputStream = null;
 
 	private int botNetServerRevision = 0;
 	private int botNetCommunicationRevision = 0;
+
+	public BotNetConnection(BNCSConnection master, ConnectionSettings cs, Profile p) {
+		super(cs, p);
+		this.master = master;
+	}
+	
+	@Override
+	protected String getServer() {
+		return GlobalSettings.botNetServer;
+	}
+
+	@Override
+	protected int getPort() {
+		return GlobalSettings.botNetPort;
+	}
 	
 	protected void initializeConnection(Task connect) throws Exception {
 		botNetServerRevision = 0;
@@ -39,9 +59,10 @@ public class BotNetConnection extends Connection {
 		
 		// Set up BotNet
 		connect.updateProgress("Connecting to BotNet");
-		InetAddress address = MirrorSelector.getClosestMirror(cs.server, cs.port);
-		recieveInfo("Connecting to " + address + ":" + cs.port + ".");
-		socket = new Socket(address, cs.port);
+		int port = getPort();
+		InetAddress address = MirrorSelector.getClosestMirror(getServer(), port);
+		recieveInfo("Connecting to " + address + ":" + port + ".");
+		socket = new Socket(address, port);
 		socket.setKeepAlive(true);
 		bnInputStream = socket.getInputStream();
 		bnOutputStream = new DataOutputStream(socket.getOutputStream());
@@ -52,13 +73,7 @@ public class BotNetConnection extends Connection {
 	}
 
 	protected boolean sendLoginPackets(Task connect) throws Exception {
-		// Closed-scope for p
-		{
-			BotNetPacket p = new BotNetPacket(BotNetPacketId.PACKET_LOGON);
-			p.writeNTString("RivalBot");
-			p.writeNTString("b8f9b319f223ddcc38");
-			p.SendPacket(bnOutputStream);
-		}
+		sendLogon("RivalBot", "b8f9b319f223ddcc38");
 		
 		while(isConnected() && !socket.isClosed() && !disposed) {
 			if(bnInputStream.available() > 0) {
@@ -69,11 +84,7 @@ public class BotNetConnection extends Connection {
 				case PACKET_BOTNETVERSION: {
 					botNetServerRevision = is.readDWord();
 					recieveInfo("BotNet server version is " + botNetServerRevision);
-					
-					BotNetPacket p = new BotNetPacket(BotNetPacketId.PACKET_BOTNETVERSION);
-					p.writeDWord(1);
-					p.writeDWord(1);
-					p.SendPacket(bnOutputStream);
+					sendBotNetVersion(1, 1);
 					break;
 				}
 				case PACKET_LOGON: {
@@ -106,21 +117,8 @@ public class BotNetConnection extends Connection {
 	}
 
 	protected void connectedLoop() throws Exception {
-		// Send PACKET_STATSUPDATE
-		{
-			BotNetPacket p = new BotNetPacket(BotNetPacketId.PACKET_STATSUPDATE);
-			p.writeNTString("BNUBot2"); // bnet username
-			p.writeNTString("<Not Logged On>"); // channel
-			p.writeDWord(-1); // bnet ip address
-			p.writeNTString(" "); // database
-			p.writeDWord(0); // cycling?
-			p.SendPacket(bnOutputStream);
-		}
-		// Send PACKET_USERINFO
-		{
-			BotNetPacket p = new BotNetPacket(BotNetPacketId.PACKET_USERINFO);
-			p.SendPacket(bnOutputStream);
-		}
+		sendStatusUpdate();
+		sendUserInfo();
 		
 		while(isConnected() && !socket.isClosed() && !disposed) {
 			if(bnInputStream.available() > 0) {
@@ -135,8 +133,7 @@ public class BotNetConnection extends Connection {
 					break;
 				}
 				case PACKET_IDLE: {
-					BotNetPacket p = new BotNetPacket(BotNetPacketId.PACKET_IDLE);
-					p.SendPacket(bnOutputStream);
+					sendIdle();
 					break;
 				}
 				case PACKET_STATSUPDATE: {
@@ -160,36 +157,21 @@ public class BotNetConnection extends Connection {
 						recieveInfo("Complete");
 						break;
 					}
-					
-					int number = is.readDWord();
-					//int dbflag = 0;
-					//int ztff = 0;
+					BotNetUser user = new BotNetUser();
+					user.number = is.readDWord();
 					if(botNetServerRevision >= 4) {
-						/*dbflag =*/ is.readDWord();
-						/*ztff =*/ is.readDWord();
+						user.dbflag = is.readDWord();
+						user.ztff = is.readDWord();
 					}
-					String name = is.readNTString();
-					String channel = is.readNTString();
-					String server = HexDump.DWordToIP(is.readDWord());
-					
-					String account = null;
-					String database = null;
+					user.name = is.readNTString();
+					user.channel = is.readNTString();
+					user.server = HexDump.DWordToIP(is.readDWord());
 					if(botNetServerRevision >= 2)
-						account = is.readNTString();
+						user.account = null;
 					if(botNetServerRevision >= 3)
-						database = is.readNTString();
+						user.database = null;
 					
-					StringBuilder sb = new StringBuilder("User [#");
-					sb.append(number).append("] ");
-					sb.append(name).append(" in channel [ ");
-					sb.append(channel).append(" ] of server [ ");
-					sb.append(server).append(" ]");
-					if((account != null) && !account.equals(""))
-						sb.append(" with account [ ").append(account).append(" ]");
-					if((database != null) && !database.equals(""))
-						sb.append(" on database [ ").append(database).append(" ]");
-					
-					recieveInfo(sb.toString());
+					recieveInfo(user.toString());
 					break;
 				}
 				default:
@@ -203,16 +185,78 @@ public class BotNetConnection extends Connection {
 		}
 	}
 
-	public BotNetConnection(ConnectionSettings cs, Profile p) {
-		super(cs, p);
-	}
-
 	public ProductIDs getProductID() {
 		return ProductIDs.CHAT;
 	}
 
 	public boolean isOp() {
 		return false;
+	}
+	
+	/**
+	 * Send PACKET_LOGON
+	 * @param user
+	 * @param pass
+	 * @throws Exception
+	 */
+	private void sendLogon(String user, String pass) throws Exception {
+		BotNetPacket p = new BotNetPacket(BotNetPacketId.PACKET_LOGON);
+		p.writeNTString(user);
+		p.writeNTString(pass);
+		p.SendPacket(bnOutputStream);
+	}
+	
+	/**
+	 * Send PACKET_BOTNETVERSION
+	 * @param x
+	 * @param y
+	 * @throws Exception
+	 */
+	private void sendBotNetVersion(int x, int y) throws Exception {
+		BotNetPacket p = new BotNetPacket(BotNetPacketId.PACKET_BOTNETVERSION);
+		p.writeDWord(x);
+		p.writeDWord(y);
+		p.SendPacket(bnOutputStream);
+	}
+	
+	/**
+	 * Send PACKET_IDLE
+	 * @throws Exception
+	 */
+	private void sendIdle() throws Exception {
+		BotNetPacket p = new BotNetPacket(BotNetPacketId.PACKET_IDLE);
+		p.SendPacket(bnOutputStream);
+	}
+	
+	/**
+	 * Send PACKET_STATUSUPDATE
+	 * @throws Exception
+	 */
+	public void sendStatusUpdate() throws Exception {
+		BNetUser user = master.getMyUser();
+		BotNetPacket p = new BotNetPacket(BotNetPacketId.PACKET_STATSUPDATE);
+		if(user == null) {
+			p.writeNTString("BNUBot2"); // bnet username
+			p.writeNTString("<Not Logged On>"); // channel
+			p.writeDWord(-1); // bnet ip address
+			p.writeNTString(" "); // database
+		} else {
+			p.writeNTString(user.getShortLogonName());
+			p.writeNTString(master.getChannel());
+			p.writeDWord(master.getIp());
+			p.writeNTString("PubEternalChat");
+		}
+		p.writeDWord(0); // cycling?
+		p.SendPacket(bnOutputStream);
+	}
+	
+	/**
+	 * Send PACKET_USERINFO
+	 * @throws Exception
+	 */
+	public void sendUserInfo() throws Exception {
+		BotNetPacket p = new BotNetPacket(BotNetPacketId.PACKET_USERINFO);
+		p.SendPacket(bnOutputStream);
 	}
 
 	public void sendClanInvitation(Object cookie, String user) throws Exception { throw new UnsupportedFeatureException(null); }

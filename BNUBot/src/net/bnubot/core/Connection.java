@@ -24,10 +24,12 @@ import java.util.List;
 import net.bnubot.bot.gui.settings.ConfigurationFrame;
 import net.bnubot.bot.gui.settings.OperationCancelledException;
 import net.bnubot.core.bncs.ProductIDs;
+import net.bnubot.core.botnet.BotNetConnection;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.settings.GlobalSettings;
+import net.bnubot.util.BNetInputStream;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.MirrorSelector;
 import net.bnubot.util.Out;
@@ -58,8 +60,8 @@ public abstract class Connection extends Thread {
 		}
 	}
 
-	protected Socket bnlsSocket = null;
 	protected Socket socket = null;
+	protected Socket bnlsSocket = null;
 
 	protected ConnectionSettings cs;
 	protected Profile profile;
@@ -92,11 +94,21 @@ public abstract class Connection extends Thread {
 		t.complete();
 	}
 	
+	protected String getServer() {
+		return cs.server;
+	}
+	
+	protected int getPort() {
+		return cs.port;
+	}
+	
 	private final List<Task> currentTasks = new LinkedList<Task>();
 	public void run() {
-		// We must initialize the EHs in the Connection thread
-		for(EventHandler eh : eventHandlers)
-			eh.initialize(this);
+		if(!(this instanceof BotNetConnection)) {
+			// We must initialize the EHs in the Connection thread
+			for(EventHandler eh : eventHandlers)
+				eh.initialize(this);
+		}
 		
 		initialized = true;
 		
@@ -114,7 +126,7 @@ public abstract class Connection extends Thread {
 					sleep(200);
 				}
 				
-				Task connect = createTask("Connecting to " + cs.server + ":" + cs.port, "Verify connection settings validity");
+				Task connect = createTask("Connecting to " + getServer() + ":" + getPort(), "Verify connection settings validity");
 				
 				// Check if CS is valid
 				while(cs.isValid() != null)
@@ -171,15 +183,16 @@ public abstract class Connection extends Thread {
 	 */
 	protected void waitUntilConnectionSafe(Task connect) {
 		long waitUntil;
+		String server = getServer();
 		synchronized(connectionTimes) {
-			Long lastConnectionTime = connectionTimes.get(cs.server);
+			Long lastConnectionTime = connectionTimes.get(server);
 			if(lastConnectionTime == null) {
-				connectionTimes.put(cs.server, System.currentTimeMillis());
+				connectionTimes.put(server, System.currentTimeMillis());
 				return;
 			}
 			
 			waitUntil = lastConnectionTime + 15000;
-			connectionTimes.put(cs.server, waitUntil);
+			connectionTimes.put(server, waitUntil);
 		}
 
 		final String status = "Stalling to avoid flood: ";
@@ -193,6 +206,10 @@ public abstract class Connection extends Thread {
 			try { sleep(100); } catch (InterruptedException e1) {}
 			yield();
 		}
+	}
+	
+	public int getIp() {
+		return BNetInputStream.readDWord(socket.getInetAddress().getAddress(), 0);
 	}
 
 	private static List<String> antiIdles = new ArrayList<String>();

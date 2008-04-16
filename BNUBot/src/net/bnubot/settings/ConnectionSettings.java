@@ -15,7 +15,6 @@ public class ConnectionSettings implements Serializable {
 	
 	public enum ConnectionType {
 		BNCS,
-		BotNet,
 		DigitalText
 	}
 
@@ -28,6 +27,7 @@ public class ConnectionSettings implements Serializable {
 	public String cdkey;
 	public String cdkey2;
 	public ProductIDs product;
+	public boolean enableBotNet;
 	
 	// Profile-specific stuff
 	public ConnectionType connectionType;
@@ -67,7 +67,6 @@ public class ConnectionSettings implements Serializable {
 
 		switch(connectionType) {
 		case DigitalText:
-		case BotNet:
 			break;
 		case BNCS:
 			switch(product) {
@@ -104,8 +103,6 @@ public class ConnectionSettings implements Serializable {
 	private String getMyRealm() {
 		if(connectionType.equals(ConnectionType.DigitalText))
 			return "DigitalText";
-		if(connectionType.equals(ConnectionType.BotNet))
-			return "BotNet";
 		
 		switch(product) {
 		case WAR3:
@@ -167,10 +164,11 @@ public class ConnectionSettings implements Serializable {
 		profile = 	Settings.read(header, "profile", "Profile" + botNum);
 		username =	Settings.read(header, "username", (String)null);
 		password =	Settings.read(header, "password", (String)null);
-		enablePlug = Settings.read(header, "enablePlug", false);
+		enablePlug =	Settings.read(header, "enablePlug", false);
 		cdkey =		Settings.read(header, "cdkey", (String)null);
 		cdkey2 =	Settings.read(header, "cdkey2", (String)null);
-		product = Settings.read(header, "product", ProductIDs.STAR);
+		product =	Settings.read(header, "product", ProductIDs.STAR);
+		enableBotNet =	Settings.read(header, "enableBotNet", false);
 
 		header = "Profile_" + profile;
 		connectionType = Settings.read(header, "connectionType", ConnectionType.BNCS);

@@ -17,6 +17,7 @@
 * Send mail to the bot master when a new command is created
 * ChatQueue will be cleared when changing channels
 * Never kick/ban without ops
+* Added kP BotNet support
 
 2.0.5 (r1300) 2008-04-09:
 * Added a Cayenne persistence layer to address database problems
