@@ -89,6 +89,7 @@ public class Command extends _Command {
 		return DatabaseContext.getContext().performQuery(commandGroups);
 	}
 
+	@Override
 	public String toDisplayString() {
 		return getName();
 	}

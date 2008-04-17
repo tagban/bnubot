@@ -31,6 +31,7 @@ public class VersionNumber {
 		BUILD_DATE = builddate;
 	}
 
+	@Override
 	public String toString() {
 		if(VER_STRING != null)
 			return VER_STRING;

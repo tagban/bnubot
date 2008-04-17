@@ -38,6 +38,7 @@ public enum ProductIDs {
 		return ordinal();
 	}
 	
+	@Override
 	public String toString() {
 		return this.name;
 	}

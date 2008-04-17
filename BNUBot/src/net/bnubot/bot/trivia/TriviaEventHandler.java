@@ -90,10 +90,12 @@ public class TriviaEventHandler extends EventHandlerImpl {
 		source.recieveInfo("Trivia initialized with " + trivia.size() + " questions");
 	}
 
+	@Override
 	public void bnetConnected(Connection source) {
 		triviaEnabled = false;
 	}
 	
+	@Override
 	public void bnetDisconnected(Connection source) {
 		triviaEnabled = false;
 	}
@@ -303,16 +305,19 @@ public class TriviaEventHandler extends EventHandlerImpl {
 		}
 	}
 	
+	@Override
 	public void initialize(final Connection source) {
 		if(initializedConnection == null) {
 			initializedConnection = source;
 			new Thread() {
+				@Override
 				public void run() {
 					triviaLoop(source);
 				}
 			}.start();
 		}
 	}
+	@Override
 	public void disable(final Connection source) {
 		if(initializedConnection == source)
 			disposed = true;
@@ -330,6 +335,7 @@ public class TriviaEventHandler extends EventHandlerImpl {
 		triviaEnabled = false;
 	}
 	
+	@Override
 	public void joinedChannel(Connection source, String channel) {
 		triviaEnabled = false;
 	}

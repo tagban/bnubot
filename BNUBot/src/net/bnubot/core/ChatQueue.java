@@ -63,6 +63,7 @@ public class ChatQueue extends Thread {
 		queue.clear();
 	}
 
+	@Override
 	public void run() {
 		while(!disposed) {
 			try {

@@ -53,6 +53,7 @@ public class KeyManager {
 			return product;
 		}
 		
+		@Override
 		public String toString() {
 			return key + " - " + comment;
 		}

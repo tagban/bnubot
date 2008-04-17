@@ -16,6 +16,7 @@ public class CLIThread extends Thread {
 		this.c = c;
 	}
 	
+	@Override
 	public void run() {
 		try {
 			String text = "";

@@ -70,6 +70,7 @@ public class TaskGui extends Task {
 	 * Update the count and then update the progress indicator.
 	 * @param currentStep A string indicating the current step of the task
 	 */
+	@Override
 	public void updateProgress(String currentStep) {
 		if(complete) {
 			setString(title + " Complete");
@@ -109,6 +110,7 @@ public class TaskGui extends Task {
 	/**
 	 * Increment the count and then update the progress indicator.
 	 */
+	@Override
 	public void advanceProgress() {
 		setProgress(++count);
 	}
@@ -117,6 +119,7 @@ public class TaskGui extends Task {
 	/**
 	 * Update the count and then update the progress indicator.
 	 */
+	@Override
 	public void setProgress(int step) {
 		count = step;
 		updateProgress(null);
@@ -128,6 +131,7 @@ public class TaskGui extends Task {
 		}
 	}
 	
+	@Override
 	public void complete() {
 		complete = true;
 		TaskManager.complete(this);

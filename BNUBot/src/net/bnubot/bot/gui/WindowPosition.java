@@ -18,9 +18,11 @@ import net.bnubot.settings.Settings;
  */
 public class WindowPosition {
 	private static final ComponentAdapter windowSaver = new ComponentAdapter() {
+		@Override
 		public void componentMoved(ComponentEvent event) {
 			save((Window)event.getSource());
 		}
+		@Override
 		public void componentResized(ComponentEvent event) {
 			save((Window)event.getSource());
 		}};

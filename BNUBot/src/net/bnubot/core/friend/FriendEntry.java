@@ -31,6 +31,7 @@ public class FriendEntry {
 		this.locationName = locationName;
 	}
 	
+	@Override
 	public String toString() {
 		String out = account;
 		if(account == null)

@@ -47,6 +47,7 @@ public class TextWindow extends JScrollPane {
 			setBackground(cs.getBackgroundColor());
 		}
 		
+		@Override
 		public void paintComponents(Graphics g) {
 			if(!disableRedraw)
 				super.paintComponents(g);

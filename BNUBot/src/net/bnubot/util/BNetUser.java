@@ -256,6 +256,7 @@ public class BNetUser {
 	/**
 	 * Returns user-desirable display string
 	 */
+	@Override
 	public String toString() {
 		// Check if we should re-generate the string; cache it for five seconds
 		if((lastToString == null)
@@ -312,6 +313,7 @@ public class BNetUser {
 		return out;
 	}
 	
+	@Override
 	public boolean equals(Object o) {
 		if(o == this)
 			return true;

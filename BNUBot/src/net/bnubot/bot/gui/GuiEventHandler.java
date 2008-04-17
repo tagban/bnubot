@@ -102,6 +102,7 @@ public class GuiEventHandler extends EventHandlerImpl {
 	}
 	
 	private static Map<Connection, JMenuItem> settingsMenuItems = new HashMap<Connection, JMenuItem>();
+	@Override
 	public void initialize(final Connection source) {
 		Out.setThreadOutputConnection(source);
 		
@@ -124,6 +125,7 @@ public class GuiEventHandler extends EventHandlerImpl {
 		titleChanged(source);
 	}
 	
+	@Override
 	public void disable(final Connection source) {
 		if(source == firstConnection)
 			GuiDesktop.remove(this);
@@ -391,6 +393,7 @@ public class GuiEventHandler extends EventHandlerImpl {
 		jsp.setResizeWeight(1); // Make the left side expand when resizing
 		// Add a listener for when the divider moves
 		((BasicSplitPaneUI)jsp.getUI()).getDivider().addComponentListener(new ComponentAdapter() {
+			@Override
 			public void componentMoved(ComponentEvent e) {
 				// If the window is maximized, skip this
 				if(GuiDesktop.getInstance().getExtendedState() == Frame.MAXIMIZED_BOTH)
@@ -559,6 +562,7 @@ public class GuiEventHandler extends EventHandlerImpl {
 		channelTextPane.setText(channel + " (" + userList.count() + ")");
 	}
 
+	@Override
 	public void joinedChannel(Connection source, String channel) {
 		this.channel = channel;
 		userList.clear();
@@ -816,6 +820,7 @@ public class GuiEventHandler extends EventHandlerImpl {
 	/**
 	 * Get the name for the tab on the GuiDesktop
 	 */
+	@Override
 	public String toString() {
 		if(firstConnection == null)
 			return null;

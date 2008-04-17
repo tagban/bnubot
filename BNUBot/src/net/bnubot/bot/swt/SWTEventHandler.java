@@ -139,11 +139,13 @@ public class SWTEventHandler extends EventHandlerImpl {
 		return frame;
 	}
 	
+	@Override
 	public void initialize(Connection source) {
 		if(firstConnection == null)
 			firstConnection = source;
 	}
 	
+	@Override
 	public void disable(Connection source) {
 		//if(source == firstConnection)
 		//	SWTDesktop.remove(this);
@@ -155,10 +157,12 @@ public class SWTEventHandler extends EventHandlerImpl {
 		return this.firstConnection;
 	}
 	
+	@Override
 	public void titleChanged(Connection source) {
 		SWTDesktop.setTitle(this, source.getProductID());
 	}
 
+	@Override
 	public String toString() {
 		if(firstConnection == null)
 			return null;

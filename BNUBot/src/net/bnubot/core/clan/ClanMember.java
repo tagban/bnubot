@@ -30,6 +30,7 @@ public class ClanMember {
 		rank = r;
 	}
 	
+	@Override
 	public String toString() {
 		String out = username;
 		out += " (";
@@ -42,6 +43,7 @@ public class ClanMember {
 		return out;
 	}
 	
+	@Override
 	public boolean equals(Object o) {
 		if(o instanceof String) {
 			if(username.compareToIgnoreCase((String)o) == 0)

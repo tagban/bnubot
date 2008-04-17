@@ -154,6 +154,7 @@ public class XMLElementDecorator {
 		throw new NumberFormatException(contents);
 	}
 	
+	@Override
 	public String toString() {
 		String out;
 		if(children.size() == 0)

@@ -20,6 +20,7 @@ public class SortedProperties extends Properties {
 		}
 	};
 	
+	@Override
 	public synchronized Enumeration<Object> keys() {
 		Vector<Object> keyList = new Vector<Object>(super.keySet());
 		Collections.sort(keyList, comparator);
