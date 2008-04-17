@@ -135,7 +135,7 @@ public class BotNetUser extends BNetUser {
 	public void sendChat(String text, boolean whisperBack) {
 		try {
 			BotNetConnection con = (BotNetConnection)super.con;
-			con.sendWhisper(number, text);
+			con.sendWhisper(this, text);
 		} catch (Exception e) {
 			Out.exception(e);
 		}

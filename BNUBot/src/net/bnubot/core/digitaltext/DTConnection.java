@@ -264,17 +264,17 @@ public class DTConnection extends Connection {
 					switch(chatType) {
 					case 0x00: // Normal
 					case 0x01: // Self talking
-						recieveChat(user, text);
+						recieveChat(null, user, text);
 						break;
 					case 0x02: // Whisper to
-						whisperSent(user, text);
+						whisperSent(null, user, text);
 						break;
 					case 0x03: // Whisper from
-						whisperRecieved(user, text);
+						whisperRecieved(null, user, text);
 						break;
 					case 0x04: // Emote
 					case 0x05: // Self Emote
-						recieveEmote(user, text);
+						recieveEmote(null, user, text);
 						break;
 					default:
 						Out.debugAlways(getClass(), "Unexpected chat type 0x" + Integer.toHexString(chatType) + " from " + username + ": " + text);

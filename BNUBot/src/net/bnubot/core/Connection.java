@@ -878,13 +878,13 @@ public abstract class Connection extends Thread {
 		}
 	}
 
-	public void recieveChat(BNetUser user, String text) {
+	public void recieveChat(String type, BNetUser user, String text) {
 		if(!isPrimaryConnection())
 			return;
 		
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
-				eh.recieveChat(this, user, text);
+				eh.recieveChat(this, type, user, text);
 		}
 		
 		if((text == null) || (text.length() == 0))
@@ -894,13 +894,13 @@ public abstract class Connection extends Thread {
 			parseCommand(user, text.substring(1), GlobalSettings.whisperBack);
 	}
 
-	public void recieveEmote(BNetUser user, String text) {
+	public void recieveEmote(String type, BNetUser user, String text) {
 		if(!isPrimaryConnection())
 			return;
 		
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
-				eh.recieveEmote(this, user, text);
+				eh.recieveEmote(this, type, user, text);
 		}
 	}
 
@@ -959,10 +959,10 @@ public abstract class Connection extends Thread {
 		}
 	}
 
-	public void whisperSent(BNetUser user, String text) {
+	public void whisperSent(String type, BNetUser user, String text) {
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
-				eh.whisperSent(this, user, text);
+				eh.whisperSent(this, type, user, text);
 		}
 	}
 
@@ -970,10 +970,10 @@ public abstract class Connection extends Thread {
 		return getConnectionSettings().trigger.charAt(0);
 	}
 
-	public void whisperRecieved(BNetUser user, String text) {
+	public void whisperRecieved(String type, BNetUser user, String text) {
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
-				eh.whisperRecieved(this, user, text);
+				eh.whisperRecieved(this, type, user, text);
 		}
 
 		if((text == null) || (text.length() == 0))

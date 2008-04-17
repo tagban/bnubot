@@ -30,13 +30,13 @@ public interface EventHandler {
 	public void channelUser(Connection source, BNetUser user);
 	public void channelJoin(Connection source, BNetUser user);
 	public void channelLeave(Connection source, BNetUser user);
-	public void recieveChat(Connection source, BNetUser user, String text);
-	public void recieveEmote(Connection source, BNetUser user, String text);
+	public void recieveChat(Connection source, String type, BNetUser user, String text);
+	public void recieveEmote(Connection source, String type, BNetUser user, String text);
 	public void recieveDebug(Connection source, String text);
 	public void recieveInfo(Connection source, String text);
 	public void recieveError(Connection source, String text);
-	public void whisperSent(Connection source, BNetUser user, String text);
-	public void whisperRecieved(Connection source, BNetUser user, String text);
+	public void whisperSent(Connection source, String type, BNetUser user, String text);
+	public void whisperRecieved(Connection source, String type, BNetUser user, String text);
 	
 	//Realms
 	public void queryRealms2(BNCSConnection source, String[] realms);
