@@ -1502,10 +1502,21 @@ public class CommandEventHandler extends EventHandlerImpl {
 			}
 			
 			Account rsAccount = Account.get(user);
+			Rank rsRank = (rsAccount == null) ? Rank.get(0) : rsAccount.getRank();
+			
+			if(rsRank != null) {
+				// Greetings
+				String greeting = rsRank.getGreeting();
+				if(greeting != null) {
+					greeting = String.format(greeting, user.toString(), user.getPing(), user.getFullAccountName());
+					source.sendChat(greeting, false);
+				}
+			}
+			
 			if(rsAccount == null)
 				return;
 			
-			//check for birthdays
+			//Birthdays
 			Date birthday = rsAccount.getBirthday();
 			if(birthday != null) {
 				SimpleDateFormat sdf = new SimpleDateFormat("M-d");
@@ -1524,15 +1535,12 @@ public class CommandEventHandler extends EventHandlerImpl {
 				}
 			}
 
-			Rank rsRank = rsAccount.getRank();
+			//Mail
+			int umc = Mail.getUnreadCount(rsAccount);
+			if(umc > 0)
+				user.sendChat("You have " + umc + " unread messages; type [ %trigger%mail read ] to retrieve them", true);
+			
 			if(rsRank != null) {
-				// Greetings
-				String greeting = rsRank.getGreeting();
-				if(greeting != null) {
-					greeting = String.format(greeting, user.toString(), user.getPing(), user.getFullAccountName());
-					source.sendChat(greeting, false);
-				}
-
 				// Autopromotions
 				Integer apDays = rsRank.getApDays();
 				// Check that they meet the days requirement
@@ -1611,11 +1619,6 @@ public class CommandEventHandler extends EventHandlerImpl {
 					}
 				}
 			}
-
-			//Mail
-			int umc = Mail.getUnreadCount(rsAccount);
-			if(umc > 0)
-				user.sendChat("You have " + umc + " unread messages; type [ %trigger%mail read ] to retrieve them", true);
 		} catch (Exception e) {
 			Out.exception(e);
 		}
