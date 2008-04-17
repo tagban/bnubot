@@ -38,12 +38,12 @@ public class BotNetList extends JPanel {
 		JLabel database;
 		JPopupMenu menu;
 	}
-	
+
 	private final Hashtable<Integer, UserInfo> users = new Hashtable<Integer, UserInfo>();
 	private final Box box = new Box(BoxLayout.Y_AXIS);
 	private final ColorScheme colors = ColorScheme.getColors();
 	private final GuiEventHandler geh;
-	
+
 	/**
 	 * Get UserInfo from JLabel
 	 * @param lbl The JLabel to look for
@@ -58,44 +58,44 @@ public class BotNetList extends JPanel {
 		}
 		return null;
 	}
-	
+
 	private UserInfo getUI(BotNetUser user) {
 		UserInfo ui = users.get(user.getNumber());
 		if(ui != null)
 			return ui;
-		
+
 		Enumeration<UserInfo> en = users.elements();
 		while(en.hasMoreElements()) {
 			ui = en.nextElement();
 			if(ui.user.equals(user))
 				return ui;
 		}
-		
+
 		return null;
 	}
-	
+
 	public BotNetList(GuiEventHandler geh) {
 		super(new BorderLayout());
 		this.geh = geh;
 		setBackground(colors.getBackgroundColor());
-		
+
 		add(box, BorderLayout.NORTH);
 	}
-	
+
 	public void clear() {
 		box.removeAll();
 		users.clear();
 		validate();
 	}
-	
+
 	public int count() {
 		return users.size();
 	}
-	
+
 	private UserInfo getUserInfo(ActionEvent arg0) {
 		JMenuItem jmi = (JMenuItem) arg0.getSource();
 		JPopupMenu jp = (JPopupMenu) jmi.getParent();
-		
+
 		Enumeration<UserInfo> en = users.elements();
 		while(en.hasMoreElements()) {
 			UserInfo ui = en.nextElement();
@@ -106,13 +106,13 @@ public class BotNetList extends JPanel {
 		}
 		return null;
 	}
-	
+
 	public void showUser(final Connection source, BotNetUser user) {
 		UserInfo ui = getUI(user);
 		if(ui == null) {
 			ui = new UserInfo();
 			ui.user = user;
-			
+
 			ui.menu = new JPopupMenu();
 			ui.menu.add(new JLabel(user.toString() + user.toStringEx()));
 			JMenuItem menuItem = new JMenuItem("Whisper");
@@ -136,21 +136,21 @@ public class BotNetList extends JPanel {
 		if(ui.label == null) {
 			//TODO: Color fg = colors.getUserNameListColor(user.getFlags(), user.equals(source.getMyUser()));
 			Color fg = colors.getUserNameListColor(0, false);
-			
+
 			ui.label = new JLabel(user.toString());
 			ui.label.setForeground(fg);
-			
+
 			ui.database = new JLabel(user.getDatabase());
 			ui.database.setForeground(fg);
-			
+
 			JPanel lbl = new JPanel(new BorderLayout());
 			lbl.setBackground(colors.getBackgroundColor());
 			lbl.add(ui.label, BorderLayout.WEST);
 			lbl.add(Box.createHorizontalGlue(), BorderLayout.CENTER);
 			lbl.add(ui.database, BorderLayout.EAST);
-			
+
 			box.add(lbl);
-			
+
 			ui.label.addMouseListener(new MouseListener() {
 				public void mouseClicked(MouseEvent arg0) {
 					UserInfo ui = getUI((JLabel) arg0.getSource());
@@ -169,7 +169,7 @@ public class BotNetList extends JPanel {
 				public void mouseReleased(MouseEvent arg0) {}
 			});
 		}
-		
+
 		//Check if the user's flags updated
 		/*if(ui.lastFlags != ui.user.getFlags()) {
 			//They did; order the list appropriately
@@ -182,16 +182,16 @@ public class BotNetList extends JPanel {
 				box.remove(x);
 				box.add(x, getInsertPosition(newPriority));
 			}
-			
+
 			Color fg = colors.getUserNameListColor(ui.lastFlags, ui.user.equals(source.getMyUser()));
 			ui.label.setForeground(fg);
 			ui.ping.setForeground(fg);
 		}*/
-		
+
 		BNetIcon[] icons = IconsDotBniReader.getIcons();
 		if(icons != null) {
 			BNetIcon icon = icons[4];
-			
+
 			/* A = superuser, can perform any administrative action
 			 * B = broadcast, may use talk-to-all
 			 * C = connection, may administer botnet connectivity
@@ -208,18 +208,18 @@ public class BotNetList extends JPanel {
 				icon = icons[2]; // Oper
 			if(flags.contains("A"))
 				icon = icons[0]; // Blizzard
-			
+
 			if(icon != null)
 				ui.label.setIcon(icon.getIcon());
 		}
-		
+
 		users.put(user.getNumber(), ui);
 		validate();
 	}
-	
+
 	public void removeUser(BotNetUser user) {
 		UserInfo ui = getUI(user);
-		
+
 		if(ui != null) {
 			box.remove(ui.label.getParent());
 			ui.label = null;

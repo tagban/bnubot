@@ -22,7 +22,7 @@ public class ConfigFactory {
 	public static final Dimension getMaxComponentSize() {
 		return maxComponentSize;
 	}
-	
+
 	public static JLabel makeLabel(String label) {
 		JLabel jl = new JLabel(label);
 		jl.setPreferredSize(preferredLabelSize);

@@ -21,14 +21,14 @@ class MCJDIC implements MusicController {
 			// Make sure the native libraries exist
 			if(!mp.isAvailableMediaPlayer())
 				continue;
-			
+
 			// Initialize the controller
 			mp.init();
-			
+
 			// Start it if it's not running
 			if(!mp.isRunning() && !mp.startPlayerProcess())
 				continue;
-			
+
 			this.mp = mp;
 			break;
 		}

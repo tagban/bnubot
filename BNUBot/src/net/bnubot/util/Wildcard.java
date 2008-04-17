@@ -1,10 +1,10 @@
 /**
  * This file is distributed under the GPL
- * 
+ *
  * This file originated from:
  * http://www.cs.princeton.edu/introcs/72regular/Wildcard.java.html
  * and has been modified to suit my needs.
- * 
+ *
  * $Id$
  */
 
@@ -13,7 +13,7 @@ package net.bnubot.util;
 /*************************************************************************
  *  Compilation:  javac Wildcard.java In.java
  *  Execution:    java Wildcard pattern < wordlist.txt
- *  
+ *
  *  Find all lines in wordlist.txt that match the given pattern by
  *  simulating a nondeterminstic finite state automaton using an
  *  Boolean array states[] which records all states that the NFSA
@@ -34,11 +34,11 @@ public class Wildcard {
 	 *
 	 *  At the beginning of iteration i of main loop
 	 *
-	 *     old[j]    = true if pattern[0..j] matches text[0..i-1] 
+	 *     old[j]    = true if pattern[0..j] matches text[0..i-1]
 	 *
 	 *  By comparing pattern[j] with text[i], the main loop computes
 	 *
-	 *     states[j] = true if pattern[0..j] matches text[0..i] 
+	 *     states[j] = true if pattern[0..j] matches text[0..i]
 	 *
 	 ***********************************************************************/
 	public static boolean matches(String pattern, String text) {

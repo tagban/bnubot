@@ -30,7 +30,7 @@ public class SWTIconViewer {
 		s.setText("Icons");
 		s.setLayout(new RowLayout());
 		s.setBackground(background);
-		
+
 		IconsDotBniReader.initialize(new ConnectionSettings(1));
 		BNetIcon[][] iconss = {
 				IconsDotBniReader.getIcons(),
@@ -42,7 +42,7 @@ public class SWTIconViewer {
 		for(BNetIcon[] icons : iconss) {
 			if(icons == null)
 				continue;
-			
+
 			Group grpIcons = new Group(s, SWT.NULL);
 			GridLayout gridLayout = new GridLayout(2, false);
 			gridLayout.marginHeight = 1;
@@ -53,7 +53,7 @@ public class SWTIconViewer {
 			grpIcons.setBackground(background);
 			for(int i = 0; i < icons.length; i++) {
 				BNetIcon bni = icons[i];
-				
+
 				Label label = new Label(grpIcons, SWT.NULL);
 				label.setImage(bni.getImage());
 				label.pack();
@@ -63,7 +63,7 @@ public class SWTIconViewer {
 					text += " " + HexDump.DWordToPretty(bni.getProducts()[0]);
 				if(bni.getFlags() != 0)
 					text += " 0x" + Integer.toHexString(bni.getFlags());
-				
+
 				label = new Label(grpIcons, SWT.NULL);
 				label.setBackground(background);
 				label.setForeground(foreground);
@@ -80,7 +80,7 @@ public class SWTIconViewer {
 				d.sleep();
 		}
 		d.dispose();
-		
+
 		System.exit(0);
 	}
 }

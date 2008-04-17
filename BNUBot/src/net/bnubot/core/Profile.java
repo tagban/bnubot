@@ -28,14 +28,14 @@ import net.bnubot.util.Out;
 public class Profile {
 	private static final List<Profile> profiles = new ArrayList<Profile>();
 	private static final Dictionary<String, CommandRunnable> commands = new Hashtable<String, CommandRunnable>();
-	
+
 	public static void registerCommand(String name, CommandRunnable action) {
 		if(commands.get(name) != null)
 			throw new IllegalArgumentException("The command " + name + " is already registered");
-		
+
 		if(Command.get(name) == null) {
 			Rank max = Rank.getMax();
-			
+
 			Command c = DatabaseContext.getContext().newObject(Command.class);
 			c.setRank(max);
 			c.setCmdgroup(null);
@@ -46,7 +46,7 @@ public class Profile {
 			} catch (Exception e) {
 				throw new IllegalStateException(e);
 			}
-			
+
 			String message = "Created command " + name + " with access " + max.getAccess() + "; to change, use %trigger%setauth " + name + " <access>";
 			for(Account a : max.getAccountArray())
 				try {
@@ -55,10 +55,10 @@ public class Profile {
 					throw new IllegalStateException(e);
 				}
 		}
-		
+
 		commands.put(name, action);
 	}
-	
+
 	public static CommandRunnable getCommand(String name) {
 		return commands.get(name);
 	}
@@ -71,12 +71,12 @@ public class Profile {
 		}
 		return new Profile(name);
 	}
-	
+
 	private static boolean add(ConnectionSettings cs) throws Exception {
 		Profile p = findCreateProfile(cs.profile);
 		Connection con = ConnectionFactory.createConnection(cs, p.chatQueue, p);
 		p.insertConnection(con);
-		
+
 		// Add it to the list of connections
 		return p.cons.add(con);
 	}
@@ -92,7 +92,7 @@ public class Profile {
 		synchronized(profiles) {
 			profiles.add(this);
 		}
-		
+
 		chatQueue = new ChatQueue(name);
 		chatQueue.start();
 	}
@@ -137,10 +137,10 @@ public class Profile {
 						Out.exception(e);
 					}
 			}
-			
+
 			// Start the Connection thread
 			con.start();
-			
+
 			// Wait for the Connection thread to initialize
 			while(!con.isInitialized()) {
 				Thread.sleep(10);
@@ -164,16 +164,16 @@ public class Profile {
 
 	public void dispose() {
 		chatQueue.dispose();
-		
+
 		synchronized(cons) {
 			for(Connection con : cons)
 				con.dispose();
 		}
-		
+
 		synchronized(profiles) {
 			// Remove this profile from the list
 			profiles.remove(this);
-		
+
 			// Get the highest botnum
 			int max = 0;
 			for(Profile p : profiles)
@@ -205,13 +205,13 @@ public class Profile {
 				}
 			}
 		}
-		
+
 		for(int i = 1; i <= GlobalSettings.numBots; i++)
 			if(!connectionIds.contains(i)) {
 				newConnection(i);
 				return;
 			}
-		
+
 		newConnection(++GlobalSettings.numBots);
 		GlobalSettings.save();
 	}
@@ -222,7 +222,7 @@ public class Profile {
 
 	public static List<String> findCommandsForTabComplete(String containing) {
 		containing = containing.toLowerCase();
-		
+
 		List<String> ret = new ArrayList<String>();
 		for(Enumeration<String> en = commands.keys(); en.hasMoreElements();) {
 			String command = en.nextElement();
@@ -247,12 +247,12 @@ public class Profile {
 			for(Connection c : cons)
 				if(c.isConnected())
 					return c;
-			
+
 			// All are disconnected; return the first one
 			if(cons.size() > 0)
 				return cons.get(0);
 		}
-		
+
 		// There aren't any connections at all!
 		return null;
 	}

@@ -28,7 +28,7 @@ import net.bnubot.util.UserProfile;
 
 public class ProfileEditor extends JDialog {
 	private static final long serialVersionUID = 7116099159624394301L;
-	
+
 	private final UserProfile p;
 	private final Connection source;
 	private ConfigTextArea txtUsername;
@@ -39,7 +39,7 @@ public class ProfileEditor extends JDialog {
 	public ProfileEditor(UserProfile p, Connection source) {
 		this.p = p;
 		this.source = source;
-		
+
 		setTitle("Profile of " + p.getUser());
 		initializeGui();
 		pack();
@@ -53,13 +53,13 @@ public class ProfileEditor extends JDialog {
 
 	private void initializeGui() {
 		boolean enableWrite = source.getMyUser().equals(p.getUser());
-		
+
 		setLayout(new FlowLayout(FlowLayout.LEFT));
 		Box boxAll = new Box(BoxLayout.Y_AXIS);
 		{
 			txtUsername = ConfigFactory.makeText("Username", p.getUser(), boxAll);
 			txtUsername.setEnabled(false);
-			
+
 			for(String key : p.keySet()) {
 				ConfigTextArea cta = ConfigFactory.makeText(key, p.get(key), boxAll);
 				boolean enableThisKey = enableWrite && key.startsWith(UserProfile.PROFILE_);
@@ -67,7 +67,7 @@ public class ProfileEditor extends JDialog {
 				if(enableThisKey)
 					txtBoxes.put(key, cta);
 			}
-			
+
 			Box buttons = new Box(BoxLayout.X_AXIS);
 			{
 				if(enableWrite) {
@@ -94,7 +94,7 @@ public class ProfileEditor extends JDialog {
 		}
 		add(boxAll);
 	}
-	
+
 	public UserProfile getProfile() {
 		return p;
 	}

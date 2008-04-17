@@ -100,7 +100,7 @@ public class VersionNumber {
 		// Check Release
 		if(VER_RELEASE > vn.VER_RELEASE) return 1;
 		if(VER_RELEASE < vn.VER_RELEASE) return -1;
-		
+
 		// Check Build Date
 		if((BUILD_DATE != null) && (vn.BUILD_DATE != null))
 			return BUILD_DATE.compareTo(vn.BUILD_DATE);

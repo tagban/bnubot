@@ -18,14 +18,14 @@ public enum ChannelListPriority {
 	PRIORITY_SPEAKER (2, 0x04),
 	PRIORITY_BLIZZARD_GUEST (1, 0x40),
 	PRIORITY_NORMAL (0, 0);
-	
+
 	private int priority;
 	private int flags;
 	ChannelListPriority(int priority, int flags) {
 		this.priority = priority;
 		this.flags = flags;
 	}
-	
+
 	public static final int getPrioByFlags(int flags) {
 		for(ChannelListPriority p : values())
 			if((p.flags & flags) != 0)
@@ -40,7 +40,7 @@ public enum ChannelListPriority {
 			return new Integer(prio0).compareTo(prio1);
 		}
 	};
-	
+
 	public static void sort(List<BNetUser> users) {
 		Collections.sort(users, bnetSorter);
 	}

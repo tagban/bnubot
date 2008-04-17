@@ -12,7 +12,7 @@ public class DatabaseSettings {
 	public String username;
 	public String password;
 	public String schema;
-	
+
 	public void load() {
 		driver = Settings.read(header, "driver", "org.apache.derby.jdbc.EmbeddedDriver");
 		url = Settings.read(header, "url", "jdbc:derby:database;create=true");
@@ -20,7 +20,7 @@ public class DatabaseSettings {
 		password = Settings.read(header, "password", (String)null);
 		schema = Settings.read(header, "schema", "schema.derby");
 	}
-	
+
 	public void save() {
 		Settings.write(header, "driver", driver);
 		Settings.write(header, "url", url);

@@ -20,24 +20,24 @@ public class BNCSPacketReader {
 	BNCSPacketId packetId;
 	int packetLength;
 	byte data[];
-	
+
 	public BNCSPacketReader(InputStream rawis) throws IOException {
 		BNetInputStream is = new BNetInputStream(rawis);
-		
+
 		byte magic;
 		do {
 			magic = is.readByte();
 		} while(magic != (byte)0xFF);
-		
+
 		packetId = BNCSPacketId.values()[is.readByte() & 0x000000FF];
 		packetLength = is.readWord() & 0x0000FFFF;
 		assert(packetLength >= 4);
-		
+
 		data = new byte[packetLength-4];
 		for(int i = 0; i < packetLength-4; i++) {
 			data[i] = is.readByte();
 		}
-		
+
 		if(GlobalSettings.packetLog) {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			BNetOutputStream os = new BNetOutputStream(baos);
@@ -45,7 +45,7 @@ public class BNCSPacketReader {
 			os.writeByte(packetId.ordinal());
 			os.writeWord(packetLength);
 			os.write(data);
-			
+
 			String msg = "RECV " + packetId.name();
 			if(packetId == BNCSPacketId.SID_CHATEVENT)
 				msg += " " + BNCSChatEventId.values()[BNetInputStream.readDWord(data, 0)].name();
@@ -54,7 +54,7 @@ public class BNCSPacketReader {
 			Out.debugAlways(getClass(), msg);
 		}
 	}
-	
+
 	public BNetInputStream getData() {
 		return new BNetInputStream(new ByteArrayInputStream(data));
 	}

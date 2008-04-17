@@ -30,7 +30,7 @@ public class BNetUser {
 	private int flags = 0;
 	private Integer ping = null;
 	private StatString statString = null;
-	
+
 	private String lastToString = null;
 	private long lastToStringTime = 0;
 
@@ -43,7 +43,7 @@ public class BNetUser {
 	public BNetUser(Connection con, String user, BNetUser perspectiveOf) {
 		this(con, user, perspectiveOf.realm);
 	}
-	
+
 	/**
 	 * Constructor for a BNetUser
 	 * @param con	The connection the user is on
@@ -54,11 +54,11 @@ public class BNetUser {
 		this.con = con;
 		String uAccount;
 		int uNumber = 0;
-		
+
 		int i = myRealm.indexOf('@');
 		if(i != -1)
 			myRealm = myRealm.substring(i + 1);
-		
+
 		i = user.indexOf('#');
 		if(i != -1) {
 			String num = user.substring(i + 1);
@@ -70,30 +70,30 @@ public class BNetUser {
 			} else {
 				user = user.substring(0, i);
 			}
-			
+
 			uNumber = Integer.parseInt(num);
 		}
-		
+
 		String up[] = user.split("@", 2);
 		uAccount = up[0];
 		if(up.length == 2)
 			this.realm = up[1];
 		else
 			this.realm = myRealm;
-		
+
 		// ...
 		shortLogonName = uAccount;
 		if(uNumber != 0)
 			shortLogonName += "#" + uNumber;
 		if(!this.realm.equals(myRealm))
 			shortLogonName += "@" + this.realm;
-		
+
 		// ...
 		fullLogonName = uAccount;
 		if(uNumber != 0)
 			fullLogonName += "#" + uNumber;
 		fullLogonName += "@" + this.realm;
-		
+
 		// ...
 		fullAccountName = uAccount + "@" + this.realm;
 	}
@@ -120,7 +120,7 @@ public class BNetUser {
 		}
 		return fullLogonName;
 	}
-	
+
 	/**
 	 * Gets the full logon name
 	 * @return User[#N]@Realm
@@ -128,7 +128,7 @@ public class BNetUser {
 	public String getFullLogonName() {
 		return fullLogonName;
 	}
-	
+
 	/**
 	 * Gets the full account name
 	 * @return "User@Realm"
@@ -136,7 +136,7 @@ public class BNetUser {
 	public String getFullAccountName() {
 		return fullAccountName;
 	}
-	
+
 	/**
 	 * Resets the pretty name back to null, so it will be re-evaluated next time toString() is called
 	 */
@@ -144,12 +144,12 @@ public class BNetUser {
 		lastToString = null;
 		lastToStringTime = 0;
 	}
-	
+
 	private String getShortPrettyName() {
 		ObjectContext context = DatabaseContext.getContext();
 		if(context == null)
 			return shortLogonName;
-		
+
 		String shortPrettyName = shortLogonName;
 		try {
 			Account account = Account.get(this);
@@ -170,10 +170,10 @@ public class BNetUser {
 		} catch(Exception e) {
 			Out.exception(e);
 		}
-		
+
 		return shortPrettyName;
 	}
-	
+
 	/**
 	 * Equivalent to getShortLogonName if there is no database or if the user isn't in it;
 	 * @return User[#N][@Realm] or [Prefix ][Account (]FullLogonName[)]
@@ -201,10 +201,10 @@ public class BNetUser {
 		} catch(Exception e) {
 			Out.exception(e);
 		}
-		
+
 		return prettyName;
 	}
-	
+
 	/**
 	 * Equivalent to getShortLogonName if there is no database or if the user isn't in it;
 	 * @return User[#N][@Realm] or &lt;Account> [(FullLogonName)]
@@ -225,10 +225,10 @@ public class BNetUser {
 		} catch(Exception e) {
 			Out.exception(e);
 		}
-		
+
 		return prettyName;
 	}
-	
+
 	/**
 	 * Equivalent to getShortLogonName if there is no database or if the user isn't in it;
 	 * @return User[#N][@Realm] or &lt;Account>
@@ -249,10 +249,10 @@ public class BNetUser {
 		} catch(Exception e) {
 			Out.exception(e);
 		}
-		
+
 		return prettyName;
 	}
-	
+
 	/**
 	 * Returns user-desirable display string
 	 */
@@ -264,7 +264,7 @@ public class BNetUser {
 			lastToStringTime = System.currentTimeMillis();
 			lastToString = toString(GlobalSettings.bnUserToString);
 		}
-		
+
 		return lastToString;
 	}
 
@@ -279,7 +279,7 @@ public class BNetUser {
 		}
 		throw new IllegalStateException("Unknown BNetUser.toString(int) type " + GlobalSettings.bnUserToString);
 	}
-	
+
 	public String toStringEx() {
 		String out = toString();
 		if(ping != null)
@@ -312,12 +312,12 @@ public class BNetUser {
 		}
 		return out;
 	}
-	
+
 	@Override
 	public boolean equals(Object o) {
 		if(o == this)
 			return true;
-		
+
 		if(o instanceof BNetUser) {
 			BNetUser u = (BNetUser)o;
 			if(u.fullLogonName.equalsIgnoreCase(fullLogonName))
@@ -331,10 +331,10 @@ public class BNetUser {
 		} else {
 			throw new IllegalArgumentException("Unknown type " + o.getClass().getName());
 		}
-		
+
 		return false;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return fullLogonName.hashCode();
@@ -390,12 +390,12 @@ public class BNetUser {
 			throw new IllegalStateException("Can not send chat; connection is null");
 
 		text = con.cleanText(text, true);
-		
+
 		boolean isMyUser = false;
 		BNetUser myUser = con.getMyUser();
 		if(myUser != null)
 			isMyUser = myUser.equals(this);
-		
+
 		if(whisperBack && isMyUser)
 			con.recieveInfo(text);
 		else {
@@ -405,7 +405,7 @@ public class BNetUser {
 					prefix = "/w " + this.getFullLogonName() + " ";
 				else
 					prefix = "";
-				
+
 				prefix += "[BNU";
 				ReleaseType rt = CurrentVersion.version().getReleaseType();
 				if(rt.isNightly())
@@ -420,7 +420,7 @@ public class BNetUser {
 			} else {
 				prefix = this.toString(GlobalSettings.bnUserToStringCommandResponse) + ": ";
 			}
-		
+
 			con.sendChat(prefix, text, false, true);
 		}
 	}

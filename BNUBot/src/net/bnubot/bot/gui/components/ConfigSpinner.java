@@ -21,11 +21,11 @@ public class ConfigSpinner extends Box {
 		add(Box.createHorizontalGlue());
 		theSpinner.setBorder(BorderFactory.createLoweredBevelBorder());
 	}
-	
+
 	public void setValue(Integer value) {
 		theSpinner.setValue(value);
 	}
-	
+
 	public Integer getValue() {
 		return (Integer)theSpinner.getValue();
 	}

@@ -9,7 +9,7 @@ import net.bnubot.util.Wildcard;
 import junit.framework.TestCase;
 
 public class WildcardTest extends TestCase {
-	
+
 	public void testWildcard() {
 		assertEquals(true, Wildcard.matches("", ""));
 		assertEquals(true, Wildcard.matches("*", ""));
@@ -22,7 +22,7 @@ public class WildcardTest extends TestCase {
 
 		assertEquals(false, Wildcard.matches("d*", "abcd"));
 		assertEquals(false, Wildcard.matches(".", ""));
-		
+
 		// Test the disabled '.' character
 		assertEquals(false, Wildcard.matches(".", "a"));
 	}

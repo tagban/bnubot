@@ -21,12 +21,12 @@ public class BNLSPacket extends BNetOutputStream {
 		super(new ByteArrayOutputStream());
 		this.packetId = packetId;
 	}
-	
+
 	public void SendPacket(OutputStream out) throws IOException, SocketException {
 		byte data[] = ((ByteArrayOutputStream)this.out).toByteArray();
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		BNetOutputStream sckout = new BNetOutputStream(baos);
-		
+
 		try {
 			sckout.writeWord(data.length + 3);
 			sckout.writeByte(packetId.ordinal());
@@ -34,16 +34,16 @@ public class BNLSPacket extends BNetOutputStream {
 		} catch(IOException e) {
 			Out.fatalException(e);
 		}
-		
+
 		data = baos.toByteArray();
-		
+
 		if(GlobalSettings.packetLog) {
 			String msg = "SEND " + packetId.name();
 			if(Out.isDebug())
 				msg += "\n" + HexDump.hexDump(data);
 			Out.debugAlways(getClass(), msg);
 		}
-		
+
 		out.write(data);
 		out.flush();
 	}

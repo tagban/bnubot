@@ -37,14 +37,14 @@ public final class CurrentVersion {
 	private static final String sVerRelease = "VER_RELEASE";
 	private static final String sVerSVNRevision = "VER_SVN_REVISION";
 	private static final String sBuildDate = "BUILD_DATE";
-	
+
 	private static final Integer revision(File f) {
 		if(VER_SVN_SET)
 			return VER_SVN_REVISION;
-		
+
 		if(!f.exists())
 			return null;
-		
+
 		Integer r = null;
 		for(File sf : f.listFiles()) {
 			if(sf.isDirectory()) {
@@ -53,13 +53,13 @@ public final class CurrentVersion {
 					r = r2;
 				continue;
 			}
-			
+
 			int ext = sf.getName().indexOf(".java");
 			if(ext == -1)
 				continue;
 			if(ext != sf.getName().length() - 5)
 				continue;
-			
+
 			try {
 				FileReader fr = new FileReader(sf);
 				do {
@@ -68,7 +68,7 @@ public final class CurrentVersion {
 						Out.error(CurrentVersion.class, "Couldn't find Id: tag in " + sf.getPath());
 						break;
 					}
-					
+
 					// Search for "$Id: "
 					if(i != '$')
 						continue;
@@ -89,12 +89,12 @@ public final class CurrentVersion {
 							break;
 						fileName += (char)c;
 					} while(true);
-					
+
 					if(!sf.getName().equals(fileName)) {
 						Out.error(CurrentVersion.class, "File name in Id: tag doesn't match actual file name: " + sf.getPath());
 						break;
 					}
-					
+
 					// Read in the revision as a String
 					String rev = "";
 					do {
@@ -103,18 +103,18 @@ public final class CurrentVersion {
 							break;
 						if(c > '9')
 							break;
-						
+
 						rev += (char) c;
 					} while(true);
-					
+
 					if(rev.length() == 0)
 						continue;
-					
+
 					// Parse the long
 					int r2 = Integer.parseInt(rev);
 					if((r == null) || (r2 > r))
 						r = r2;
-					
+
 					break;
 				} while(true);
 			} catch(Exception e) {
@@ -123,25 +123,25 @@ public final class CurrentVersion {
 		}
 		return r;
 	}
-	
+
 	private static final Integer revision() {
 		if(!VER_SVN_SET) {
 			VER_SVN_REVISION = revision(new File("src"));
 			VER_SVN_SET = true;
 		}
-		
+
 		return VER_SVN_REVISION;
 	}
-	
+
 	public static boolean fromJar() {
 		version();
 		return fromJar;
 	}
-	
+
 	public static final VersionNumber version() {
 		if(VER != null)
 			return VER;
-		
+
 		try {
 			String vpPath = "/net/bnubot/version.properties";
 			// Eclipse likes to copy version.properties to bin; if it's there, delete it
@@ -165,11 +165,11 @@ public final class CurrentVersion {
 				// Failed to determine the bot version
 				Out.fatalException(new FileNotFoundException(vpPath));
 			}
-			
+
 			Properties versionprops = new SortedProperties();
 			versionprops.load(is);
 			is.close();
-			
+
 			Integer VER_SVN_REVISION_FILE = null;
 			if(versionprops.containsKey(sReleaseType))
 				RELEASE_TYPE = ReleaseType.valueOf((String)versionprops.get(sReleaseType));
@@ -183,11 +183,11 @@ public final class CurrentVersion {
 				VER_RELEASE = Integer.parseInt((String)versionprops.get(sVerRelease));
 			if(versionprops.containsKey(sVerSVNRevision))
 				VER_SVN_REVISION_FILE = Integer.parseInt((String)versionprops.get(sVerSVNRevision));
-			
+
 			// From a JAR has no src folder; from Eclipse has no JAR
 			if(fromJar != (revision() == null))
 				throw new IllegalStateException();
-			
+
 			if(fromJar) {
 				BUILD_DATE = new Date(Long.parseLong(versionprops.getProperty(sBuildDate)));
 				VER_SVN_REVISION = VER_SVN_REVISION_FILE;
@@ -197,13 +197,13 @@ public final class CurrentVersion {
 
 				if((VER_SVN_REVISION_FILE == null) || (VER_SVN_REVISION > VER_SVN_REVISION_FILE)) {
 					Out.info(CurrentVersion.class, "File version (" + VER_SVN_REVISION_FILE + ") does not match calculated (" + VER_SVN_REVISION + ").");
-						
+
 					RELEASE_TYPE = ReleaseType.Development;
 					versionprops.setProperty(sReleaseType, RELEASE_TYPE.name());
 					versionprops.setProperty(sVerSVNRevision, Integer.toString(VER_SVN_REVISION));
 				}
 			}
-			
+
 			VER = new VersionNumber(RELEASE_TYPE, VER_MAJOR, VER_MINOR, VER_REVISION, VER_RELEASE, VER_SVN_REVISION, BUILD_DATE);
 			if(!fromJar)
 				versionprops.store(new FileOutputStream(f), VER.toString());
@@ -225,7 +225,7 @@ public final class CurrentVersion {
 			versionprops.setProperty(sVerRelease, vnCurrent.getRelease().toString());
 			versionprops.setProperty(sVerSVNRevision, vnCurrent.revision().toString());
 			versionprops.setProperty(sBuildDate, Long.toString(vnCurrent.getBuildDate().getTime()));
-			
+
 			File file = new File("src/net/bnubot/version.properties");
 			versionprops.store(new FileOutputStream(file), VER.toString());
 		} catch (Exception e) {

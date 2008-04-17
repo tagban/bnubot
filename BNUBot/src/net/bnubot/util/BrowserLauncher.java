@@ -79,7 +79,7 @@ import java.lang.reflect.Method;
  *
  * @author Eric Albert (<a href="mailto:ejalbert@cs.stanford.edu">ejalbert@cs.stanford.edu</a>)
  * @version 1.4b1 (Released June 20, 2001)
- * 
+ *
  * Changed package name from "edu.stanford.ejalbert".  Ray Fergerson (fergerson@smi.stanford.edu)
  */
 @SuppressWarnings("unchecked")

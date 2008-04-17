@@ -33,7 +33,7 @@ public class TriviaEventHandler extends EventHandlerImpl {
 	private int unanswered = 0;
 	private Connection initializedConnection = null;
 	private boolean disposed = false;
-	
+
 	private void readFile(String fileName) {
 		BufferedReader is = null;
 		try {
@@ -44,7 +44,7 @@ public class TriviaEventHandler extends EventHandlerImpl {
 		} catch (Exception e) {
 			Out.fatalException(e);
 		}
-		
+
 		String defaultCategory = fileName;
 		if(defaultCategory.indexOf('.') != -1)
 			defaultCategory = defaultCategory.split("\\.", 2)[0];
@@ -52,7 +52,7 @@ public class TriviaEventHandler extends EventHandlerImpl {
 			defaultCategory = defaultCategory.split("\\/", 2)[1];
 		while(defaultCategory.indexOf('\\') != -1)
 			defaultCategory = defaultCategory.split("\\\\", 2)[1];
-		
+
 		long linenumber = 0;
 		do {
 			String line = null;
@@ -64,21 +64,21 @@ public class TriviaEventHandler extends EventHandlerImpl {
 			}
 			if(line == null)
 				break;
-			
+
 			line = line.trim();
 			if(line.length() == 0)
 				continue;
-			
+
 			try {
 				trivia.add(new TriviaItem(line, defaultCategory));
 			} catch(IllegalArgumentException e) {
 				Out.error(getClass(), "Failed to parse line #" + linenumber + " from " + fileName + ": " + line);
 			}
 		} while(true);
-		
+
 		try { is.close(); } catch (Exception e) {}
 	}
-	
+
 	private void reloadTrivia(Connection source) {
 		File f = new File("trivia");
 		if(!f.exists())
@@ -86,7 +86,7 @@ public class TriviaEventHandler extends EventHandlerImpl {
 		if(f.isDirectory())
 			for(String fname : f.list())
 				readFile(f.getPath() + System.getProperty("file.separator") + fname);
-		
+
 		source.recieveInfo("Trivia initialized with " + trivia.size() + " questions");
 	}
 
@@ -94,22 +94,22 @@ public class TriviaEventHandler extends EventHandlerImpl {
 	public void bnetConnected(Connection source) {
 		triviaEnabled = false;
 	}
-	
+
 	@Override
 	public void bnetDisconnected(Connection source) {
 		triviaEnabled = false;
 	}
-	
+
 	private void showLeaderBoard(Connection source) {
 		try {
 			ObjectContext context = DatabaseContext.getContext();
 			if(context == null)
 				return;
-			
+
 			List<Account> leaders = Account.getTriviaLeaders();
 			if(leaders == null)
 				return;
-			
+
 			StringBuilder out = new StringBuilder("Trivia Leader Board: ");
 			for(Account a : leaders) {
 				out.append(a.getName()).append('(');
@@ -121,25 +121,25 @@ public class TriviaEventHandler extends EventHandlerImpl {
 			Out.exception(e);
 		}
 	}
-	
+
 	private long getTriviaSum() {
 		long total = 0;
 		for(Account a : Account.getTriviaLeaders())
 			total += a.getTriviaCorrect();
 		return total;
 	}
-	
+
 	private long[] getTriviaTopTwo() {
 		List<Account> leaders = Account.getTriviaLeaders();
 		if((leaders == null) || (leaders.size() == 0))
 			return null;
-		
+
 		if(leaders.size() == 1)
 			return new long[] {leaders.get(0).getTriviaCorrect()};
-		
+
 		return null;
 	}
-	
+
 	private String resetTrivia() {
 		List<Account> leaders = Account.getTriviaLeaders();
 		if((leaders != null) && (leaders.size() > 0)) {
@@ -160,7 +160,7 @@ public class TriviaEventHandler extends EventHandlerImpl {
 		}
 		return null;
 	}
-	
+
 	private void triviaLoop(Connection source) {
 		while(!disposed) {
 			try {
@@ -170,7 +170,7 @@ public class TriviaEventHandler extends EventHandlerImpl {
 						triviaEnabled = false;
 						continue;
 					}
-					
+
 					if(DatabaseContext.getContext() != null) {
 						try {
 							long max[] = getTriviaTopTwo();
@@ -199,10 +199,10 @@ public class TriviaEventHandler extends EventHandlerImpl {
 							Out.exception(e);
 						}
 					}
-					
+
 					triviaCurrent = trivia.remove((int)(Math.random() * trivia.size()));
 					answerUser = null;
-					
+
 					if(true) {
 						String q = "/me";
 						if(triviaCurrent.getCategory() != null)
@@ -212,14 +212,14 @@ public class TriviaEventHandler extends EventHandlerImpl {
 						source.sendChat(q, false);
 						//c.recieveInfo("Answer: " + ti.getAnswer());
 					}
-					
+
 					long timeQuestionAsked = System.currentTimeMillis();
 					long timeElapsed = 0;
 					int numHints = 0;
 					do {
 						if(answerUser != null)
 							break;
-						
+
 						timeElapsed = System.currentTimeMillis() - timeQuestionAsked;
 						timeElapsed /= 1000;
 
@@ -227,12 +227,12 @@ public class TriviaEventHandler extends EventHandlerImpl {
 							source.sendChat("/me - 20 seconds left! Hint: " + triviaCurrent.getHint1(), false);
 							numHints++;
 						}
-						
+
 						if((timeElapsed > 20) && (numHints < 2)) {
 							source.sendChat("/me - 10 seconds left! Hint: " + triviaCurrent.getHint2(), false);
 							numHints++;
 						}
-						
+
 						Thread.sleep(200);
 						Thread.yield();
 					} while((timeElapsed < 30) && triviaEnabled);
@@ -272,16 +272,16 @@ public class TriviaEventHandler extends EventHandlerImpl {
 								}
 							}
 						}
-						
+
 						source.sendChat("/me - \"" + answerUsed + "\" is correct, " + answerUser.toString() + extra, false);
-						
+
 						showLeaderBoard(source);
 					} else {
 						String[] triviaAnswers = triviaCurrent.getAnswers();
 						String correct = " The correct answer was \"" + triviaAnswers[0] + "\"";
 						for(int i = 1; i < triviaAnswers.length; i++)
 							correct += ", or \"" + triviaAnswers[i] + "\"";
-						
+
 						if(triviaEnabled) {
 							unanswered++;
 							source.sendChat("/me - Time's up!" + correct, false);
@@ -298,13 +298,13 @@ public class TriviaEventHandler extends EventHandlerImpl {
 						triviaEnabled = false;
 					}
 				}
-			
+
 				Thread.sleep(1000);
 				Thread.yield();
 			} catch (InterruptedException e) {}
 		}
 	}
-	
+
 	@Override
 	public void initialize(final Connection source) {
 		if(initializedConnection == null) {
@@ -322,24 +322,24 @@ public class TriviaEventHandler extends EventHandlerImpl {
 		if(initializedConnection == source)
 			disposed = true;
 	}
-	
+
 	public void triviaOn(Connection source) {
 		if(trivia.size() == 0)
 			reloadTrivia(source);
-			
+
 		unanswered = 0;
 		triviaEnabled = true;
 	}
-	
+
 	public void triviaOff() {
 		triviaEnabled = false;
 	}
-	
+
 	@Override
 	public void joinedChannel(Connection source, String channel) {
 		triviaEnabled = false;
 	}
-	
+
 	public void recieveChat(Connection source, BNetUser user, String text) {
 		if(!triviaEnabled) {
 			if("trivia on".equals(text)) {

@@ -27,11 +27,11 @@ public class FriendList extends JPanel {
 		FriendEntry entry;
 		JLabel label;
 	}
-	
+
 	private Hashtable<String, FriendInfo> friends = null;
 	private Box b = null;
 	private final ColorScheme cs = ColorScheme.getColors();
-	
+
 	/**
 	 * Get FriendInfo from JLabel
 	 * @param lbl The JLabel to look for
@@ -46,7 +46,7 @@ public class FriendList extends JPanel {
 		}
 		return null;
 	}
-	
+
 	public FriendList() {
 		super(new FlowLayout(FlowLayout.LEFT));
 		this.friends = new Hashtable<String, FriendInfo>();
@@ -54,7 +54,7 @@ public class FriendList extends JPanel {
 		b = new Box(BoxLayout.Y_AXIS);
 		add(b);
 	}
-	
+
 	public void clear() {
 		Enumeration<FriendInfo> e = friends.elements();
 		while(e.hasMoreElements()) {
@@ -65,12 +65,12 @@ public class FriendList extends JPanel {
 		friends.clear();
 		validate();
 	}
-	
+
 	private void setIcon(FriendInfo fi) {
 		BNetIcon icons[] = IconsDotBniReader.getIcons();
 		if(icons == null)
 			return;
-		
+
 		if(fi.entry.getProduct() != 0) {
 			for(BNetIcon element : icons) {
 				if(element.useFor(0, fi.entry.getProduct())) {
@@ -79,14 +79,14 @@ public class FriendList extends JPanel {
 			}
 		}
 	}
-	
+
 	public void showFriends(FriendEntry[] entries) {
 		clear();
-		
+
 		for(FriendEntry fe : entries)
 			add(fe);
 	}
-	
+
 	public void update(FriendEntry friend) {
 		JLabel jl = (JLabel)b.getComponent(friend.getEntry().intValue());
 		FriendInfo fi = get(jl);
@@ -96,12 +96,12 @@ public class FriendList extends JPanel {
 		setIcon(fi);
 		validate();
 	}
-	
+
 	public void add(FriendEntry friend) {
 		FriendInfo fi = new FriendInfo();
 		fi.entryNumber = b.getComponentCount();
 		fi.entry = friend;
-		
+
 		fi.label = new JLabel(friend.toString());
 		fi.label.setForeground(cs.getUserNameListColor(0, false));
 
@@ -109,17 +109,17 @@ public class FriendList extends JPanel {
 
 		b.add(fi.label);
 		validate();
-		
+
 		friends.put(friend.getAccount(), fi);
 	}
-	
+
 	public void position(byte oldPosition, byte newPosition) {
 		JLabel jl = (JLabel)b.getComponent(oldPosition);
 		b.remove(jl);
 		b.add(jl, newPosition);
 		validate();
 	}
-	
+
 	public void remove(byte entry) {
 		JLabel jl = (JLabel)b.getComponent(entry);
 		b.remove(jl);

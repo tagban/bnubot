@@ -34,7 +34,7 @@ public class BNCSWarden {
 	public void processWardenPacket(byte[] payload, OutputStream os)
 			throws IOException {
 		BNCSPacket out = new BNCSPacket(BNCSPacketId.SID_WARDEN);
-		
+
 		//in.readDWord();
 		Buffer warden = new Buffer(incoming.do_crypt(payload));
 		byte opcode = warden.removeByte();
@@ -109,10 +109,10 @@ public class BNCSWarden {
 			/*
 			 * 0x00497FB0, 0x0049C33D, 0x004A2FF7 = 0x193E73E8 0x00497FB0,
 			 * 0x004A2FF7, 0x0049C33D = 0x2183172A
-			 * 
+			 *
 			 * 0x0049C33D, 0x00497FB0, 0x004A2FF7 = 0xD6557DEF 0x0049C33D,
 			 * 0x004A2FF7, 0x00497FB0 = 0xCA841860
-			 * 
+			 *
 			 * 0x004A2FF7, 0x0049C33D, 0x00497FB0 = 0x9F2AD2C3 0x004A2FF7,
 			 * 0x00497FB0, 0x0049C33D = 0xC04CF757
 			 */
@@ -122,7 +122,7 @@ public class BNCSWarden {
 			response.addWord((short) data.length);
 			response.addDWord(checksum);
 			response.addBytes(data);
-			
+
 			out.write(outgoing.do_crypt(response.getBuffer()));
 			out.SendPacket(os);
 			break;

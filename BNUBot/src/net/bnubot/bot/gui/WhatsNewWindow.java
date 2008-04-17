@@ -36,7 +36,7 @@ public class WhatsNewWindow extends JDialog {
 		final JPanel cards = new JPanel(cardLayout);
 		DefaultComboBoxModel model = new DefaultComboBoxModel();
         final String[] changeLog = getText().split("\n\n");
-		
+
 		// Split up the change log by version
 		for(String entry : changeLog) {
 			String[] data = entry.split("\n", 2);
@@ -55,23 +55,23 @@ public class WhatsNewWindow extends JDialog {
 			}});
 		JPanel comboBoxPane = new JPanel();
 		comboBoxPane.add(cb);
-		
+
 		JButton btnOK = new JButton("OK");
 		btnOK.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				dispose();
 			}});
-		
+
 		Box boxAll = new Box(BoxLayout.Y_AXIS);
 		boxAll.add(comboBoxPane);
 		boxAll.add(cards);
 		boxAll.add(btnOK);
 		add(boxAll);
-		
+
 		setTitle("What's new in BNU-Bot " + CurrentVersion.version().toString());
 		setModal(true);
 		setResizable(true);
-		
+
 		pack();
 		WindowPosition.load(this);
 		SwingUtilities.invokeLater(new Runnable() {
@@ -89,7 +89,7 @@ public class WhatsNewWindow extends JDialog {
 				changelog = new FileInputStream(new File("changelog.txt"));
 			byte[] data = new byte[0x100];
 			String out = new String();
-			
+
 			int len;
 			do {
 				len = changelog.read(data);
@@ -97,7 +97,7 @@ public class WhatsNewWindow extends JDialog {
 					break;
 				out += new String(data, 0, len);
 			} while(len > 0);
-			
+
 			return out;
 		} catch(Exception e) {
 			return e.getClass().getSimpleName() + ": " + e.getMessage();

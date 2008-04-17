@@ -31,18 +31,18 @@ public class JARLoader {
 	private static final URLClassLoader loader;
 	static {
 		String folder = "lib";
-		
+
 		File f = new File(folder);
 		if(!f.exists())
 			f.mkdir();
 		if(!f.exists() || !f.isDirectory())
 			Out.fatalException(new FileNotFoundException(f.getName()));
-		
+
 		FilenameFilter fnf = new FilenameFilter() {
 			public boolean accept(File dir, String name) {
 				return name.endsWith(".jar");
 			}};
-		
+
 		String[] files = f.list(fnf);
 		URL[] urls = new URL[files.length];
 		for(int i = 0; i < files.length; i++)
@@ -52,9 +52,9 @@ public class JARLoader {
 			} catch (MalformedURLException e) {
 				Out.exception(e);
 			}
-		
+
 		loader = new URLClassLoader(urls);
-		
+
 		// Look at each JAR
 		for(URL url : urls) {
 			try {
@@ -70,14 +70,14 @@ public class JARLoader {
 							// Convert the filename to an FQ class name
 							name = name.substring(0, name.length() - 6);
 							name = name.replace('/', '.');
-							
+
 							checkClass(name);
 						}
 					} catch(NoClassDefFoundError e) {
 					} catch(ClassNotFoundException e) {
 					} catch(InstantiationException e) {
 					}
-					
+
 				}
 			} catch (Exception e) {
 				Out.exception(e);
@@ -93,7 +93,7 @@ public class JARLoader {
 	private static void checkClass(String name) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
 		// Get a Class for it
 		Class<?> clazz = JARLoader.forName(name);
-		
+
 		for(Class<?> superClazz = clazz; superClazz != null; superClazz = superClazz.getSuperclass()) {
 			// Check if it's a look and feel
 			if(GlobalSettings.enableGUI && superClazz.equals(LookAndFeel.class)) {
@@ -101,7 +101,7 @@ public class JARLoader {
 				UIManager.installLookAndFeel(laf.getName(), name);
 				break;
 			}
-			
+
 			// Check the interfaces
 			for(Class<?> cif : superClazz.getInterfaces()) {
 				// Check if it's a plugin
@@ -112,7 +112,7 @@ public class JARLoader {
 			}
 		}
 	}
-	
+
 	public static Class<?> forName(String name) throws ClassNotFoundException {
 		try {
 			return loader.loadClass(name);

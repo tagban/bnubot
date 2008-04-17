@@ -14,14 +14,14 @@ import net.bnubot.util.BNetUser;
 
 public class ConsoleEventHandler extends EventHandlerImpl {
 	private static final HashMap<Connection, CLIThread> threads = new HashMap<Connection, CLIThread>();
-	
+
 	@Override
 	public synchronized void initialize(Connection source) {
 		CLIThread thread = new CLIThread(source);
 		threads.put(source, thread);
 		thread.start();
 	}
-	
+
 	@Override
 	public void disable(Connection source) {
 		CLIThread thread = threads.get(source);
@@ -39,7 +39,7 @@ public class ConsoleEventHandler extends EventHandlerImpl {
 		if(GlobalSettings.displayChannelUsers)
 			System.out.println(user.toStringEx() + user.getStatString().toString());
 	}
-	
+
 	@Override
 	public void channelJoin(Connection source, BNetUser user) {
 		if(GlobalSettings.displayJoinParts)
@@ -70,7 +70,7 @@ public class ConsoleEventHandler extends EventHandlerImpl {
 	public void whisperSent(Connection source, String type, BNetUser user, String text) {
 		System.out.println("<To: " + user.toString() + "> " + text);
 	}
-	
+
 	@Override
 	public void recieveDebug(Connection source, String text) {
 		System.out.println("(DEBUG) " + text);

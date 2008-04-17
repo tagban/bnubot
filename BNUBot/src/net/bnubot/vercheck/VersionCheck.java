@@ -25,11 +25,11 @@ import org.jbls.util.Constants;
 public class VersionCheck {
 	protected static XMLElementDecorator elem = null;
 	protected static VersionNumber vnLatest = null;
-	
+
 	public static boolean checkVersion() throws Exception {
 		return checkVersion(false, GlobalSettings.releaseType);
 	}
-	
+
 	public static boolean checkVersion(boolean forceDownload, ReleaseType rt) throws Exception {
 		if(CurrentVersion.fromJar()) {
 			String path = System.getProperty("net.bnubot.jarpath", "BNUBot.jar");
@@ -37,7 +37,7 @@ public class VersionCheck {
 				throw new FileNotFoundException(path);
 			return checkVersion(forceDownload, rt, path, null);
 		}
-		
+
 		return checkVersion(false, rt, null, null);
 	}
 
@@ -48,7 +48,7 @@ public class VersionCheck {
 			Out.debug(VersionCheck.class, "No update available.");
 		return cv;
 	}
-	
+
 	/**
 	 * @return whether an update is available
 	 */
@@ -65,7 +65,7 @@ public class VersionCheck {
 			Out.error(VersionCheck.class, "Failed to get latest version: " + e.getClass().getSimpleName() + ".");
 			return false;
 		}
-		
+
 		if(downloadFolder != null)
 			jarFileName = downloadFolder + File.separatorChar + jarFileName;
 
@@ -78,7 +78,7 @@ public class VersionCheck {
 		XMLElementDecorator motd = elem.getPath("bnubot/motd");
 		if((motd != null) && (motd.getString() != null))
 			Out.info(VersionCheck.class, motd.getString());
-		
+
 		if(forceDownload || CurrentVersion.fromJar()) {
 			XMLElementDecorator downloads = elem.getPath("bnubot/downloads");
 			if(downloads != null) {
@@ -99,19 +99,19 @@ public class VersionCheck {
 				}
 			}
 		}
-		
+
 		XMLElementDecorator gamesElem = elem.getPath("bnubot/games");
 		if(gamesElem != null)
 			for(int i = 0; i < Constants.prods.length; i++) {
 				String game = Constants.prods[i];
 				int verByte = Constants.IX86verbytes[i];
-				
+
 				XMLElementDecorator gameElem = gamesElem.getPath(game);
 				if(gameElem == null)
 					continue;
-				
+
 				int vb = gameElem.getPath("verbyte").getInt();
-				
+
 				if(verByte != vb) {
 					Out.error(VersionCheck.class, "Verbyte for game " + game + " is updating from 0x" + Integer.toHexString(verByte) + " to 0x" + Integer.toHexString(vb));
 					Constants.IX86verbytes[i] = vb;
@@ -121,7 +121,7 @@ public class VersionCheck {
 		XMLElementDecorator verLatest = elem.getPath("bnubot/latestVersion");
 		if(verLatest == null)
 			return false;
-		
+
 		vnLatest = new VersionNumber(
 				Enum.valueOf(ReleaseType.class, verLatest.getChild("type").getString()),
 				verLatest.getChild("major").getInt(),
@@ -132,28 +132,28 @@ public class VersionCheck {
 				verLatest.getChild("built").getDate());
 
 		String url = verLatest.getChild("url").getString();
-		
+
 		XMLElementDecorator sha1Element = verLatest.getChild("sha1");
 		SHA1Sum sha1 = null;
 		if((sha1Element != null) && (sha1Element.getString() != null))
 			sha1 = new SHA1Sum(sha1Element.getString());
-		
+
 		if(forceDownload) {
 			if(url == null)
 				return false;
-			
+
 			URLDownloader.downloadURL(new URL(url), new File(jarFileName), sha1, true);
 			return true;
 		}
-			
+
 		if(!vnLatest.isNewerThan(CurrentVersion.version()))
 			return false;
-		
+
 		Out.error(VersionCheck.class, "Latest version: " + vnLatest.toString());
-		
+
 		if(url == null)
 			return true;
-		
+
 		try {
 			if(jarFileName != null) {
 				File thisJar = new File(jarFileName);
@@ -163,17 +163,17 @@ public class VersionCheck {
 						// Find the parent folder
 						String parentFolder = thisJar.getAbsolutePath();
 						parentFolder = parentFolder.substring(0, parentFolder.lastIndexOf(File.separatorChar) + 1);
-						
+
 						// Download to download.jar
 						File to = new File(parentFolder + "download.jar");
 						URLDownloader.downloadURL(new URL(url), to, sha1, true);
 						URLDownloader.flush();
-						
+
 						// Swap the files
 						renameFile(thisJar, new File(parentFolder + CurrentVersion.version().toFileName()));
 						renameFile(to, thisJar);
 						to.delete();
-						
+
 						// Show complete notification
 						JOptionPane.showMessageDialog(null, "Update complete. Please restart BNU-Bot.");
 						System.exit(0);
@@ -184,30 +184,30 @@ public class VersionCheck {
 		} catch(Exception e) {
 			Out.exception(e);
 		}
-		
+
 		Out.error(VersionCheck.class, "Update: " + url);
 		return true;
 	}
-	
+
 	private static void renameFile(File from, File to) throws IOException {
 		if(from.renameTo(to))
 			return;
-		
+
 		// Windows doesn't allow renaming open files; copy the contents instead
 		FileInputStream is = new FileInputStream(from);
 		FileOutputStream os = new FileOutputStream(to);
 		byte[] b = new byte[1024];
-		
+
 		do {
 			int c = is.read(b);
 			if(c == -1)
 				break;
 			os.write(b, 0, c);
 		} while(true);
-		
+
 		os.close();
 		is.close();
-		
+
 		to.setLastModified(from.lastModified());
 	}
 }

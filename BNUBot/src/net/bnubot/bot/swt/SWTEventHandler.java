@@ -29,13 +29,13 @@ import org.eclipse.swt.widgets.Text;
  */
 public class SWTEventHandler extends EventHandlerImpl {
 	/**
-	 * 
+	 *
 	 */
 	private static final int TEXT_HEIGHT = 20;
 	private Connection firstConnection = null;
 	private final Composite frame;
 	private final StyledText mainTextArea;
-	
+
     private static final int limit = 20, percent = 80;
 	public static void buildSplit(final Composite parent, Control c1, Control c2) {
 	    final Sash sash = new Sash(parent, SWT.VERTICAL);
@@ -72,11 +72,11 @@ public class SWTEventHandler extends EventHandlerImpl {
 	    c2Data.bottom = new FormAttachment(100, 0);
 	    c2.setLayoutData(c2Data);
 	}
-	
+
 	public SWTEventHandler(Composite frame) {
 		this.frame = frame;
 		frame.setLayout(new FormLayout());
-		
+
 		// Left
 		Composite sfLeft = new Composite(frame, SWT.NULL);
 		sfLeft.setLayout(new FormLayout());
@@ -84,17 +84,17 @@ public class SWTEventHandler extends EventHandlerImpl {
 		// Right
 		Composite sfRight = new Composite(frame, SWT.NULL);
 		sfRight.setLayout(new FormLayout());
-		
+
 		// Build the split
 		buildSplit(frame, sfLeft, sfRight);
-		
+
 		// Top Left
 		mainTextArea = new StyledText(sfLeft, SWT.V_SCROLL | SWT.WRAP | SWT.BORDER);
 		mainTextArea.setEditable(false);
-		
+
 		// Bottom Left
 		Text textInput = new Text(sfLeft, SWT.SINGLE | SWT.BORDER);
-		
+
 		// Set the layout data
 		FormData fd = new FormData();
 		fd.top = new FormAttachment(0, 0);
@@ -102,7 +102,7 @@ public class SWTEventHandler extends EventHandlerImpl {
 		fd.left = new FormAttachment(0, 0);
 		fd.right = new FormAttachment(100, 0);
 		mainTextArea.setLayoutData(fd);
-		
+
 		fd = new FormData();
 		fd.height = TEXT_HEIGHT;
 		fd.bottom = new FormAttachment(100, 0);
@@ -114,7 +114,7 @@ public class SWTEventHandler extends EventHandlerImpl {
 		Text txtChannel = new Text(sfRight, SWT.NULL);
 		txtChannel.setEditable(false);
 		txtChannel.setText("Top Right");
-		
+
 		// Bottom Right
 		Button btnBottom = new Button(sfRight, SWT.PUSH);
 		btnBottom.setText("Bottom Right");
@@ -126,7 +126,7 @@ public class SWTEventHandler extends EventHandlerImpl {
 		fd.left = new FormAttachment(0, 0);
 		fd.right = new FormAttachment(100, 0);
 		txtChannel.setLayoutData(fd);
-		
+
 		fd = new FormData();
 		fd.top = new FormAttachment(txtChannel);
 		fd.bottom = new FormAttachment(100, 0);
@@ -134,17 +134,17 @@ public class SWTEventHandler extends EventHandlerImpl {
 		fd.right = new FormAttachment(100, 0);
 		btnBottom.setLayoutData(fd);
 	}
-	
+
 	public Composite getFrame() {
 		return frame;
 	}
-	
+
 	@Override
 	public void initialize(Connection source) {
 		if(firstConnection == null)
 			firstConnection = source;
 	}
-	
+
 	@Override
 	public void disable(Connection source) {
 		//if(source == firstConnection)
@@ -156,7 +156,7 @@ public class SWTEventHandler extends EventHandlerImpl {
 	public Connection getFirstConnection() {
 		return this.firstConnection;
 	}
-	
+
 	@Override
 	public void titleChanged(Connection source) {
 		SWTDesktop.setTitle(this, source.getProductID());

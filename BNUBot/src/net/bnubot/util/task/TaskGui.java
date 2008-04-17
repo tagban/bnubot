@@ -31,7 +31,7 @@ public class TaskGui extends Task {
 		this.max = max;
 		this.units = units;
 		this.title = title;
-		
+
 		pb = new JProgressBar(0, max);
 		pb.setString(title);
 		pb.setStringPainted(true);
@@ -39,13 +39,13 @@ public class TaskGui extends Task {
 
 		Dimension d = new Dimension(379, 24);
 		pb.setPreferredSize(d);
-		
+
 		switch(OperatingSystem.userOS) {
 		case OSX:
 			box = new Box(BoxLayout.Y_AXIS);
 			box.add(jl = new JLabel(title));
 			box.add(pb);
-			
+
 			box.setBackground(Color.WHITE);
 			jl.setForeground(Color.BLACK);
 			break;
@@ -55,13 +55,13 @@ public class TaskGui extends Task {
 			break;
 		}
 	}
-	
+
 	protected Component getComponent() {
 		if(box != null)
 			return box;
 		return pb;
 	}
-	
+
 	protected boolean isDeterminant() {
 		return (max != 0);
 	}
@@ -130,7 +130,7 @@ public class TaskGui extends Task {
 			pb.setValue(count);
 		}
 	}
-	
+
 	@Override
 	public void complete() {
 		complete = true;

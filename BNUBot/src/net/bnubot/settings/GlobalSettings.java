@@ -24,25 +24,25 @@ public class GlobalSettings {
 		DISABLED,
 		ENABLED,
 		ALWAYS_DISPLAY_POPUPS;
-		
+
 		public boolean enableTray() {
 			return(this != DISABLED);
 		}
-		
+
 		public boolean alwaysDisplayPopups() {
 			return(this == ALWAYS_DISPLAY_POPUPS);
 		}
 	}
-	
+
 	public static enum TabCompleteMode {
 		CONTAINS_STRING,
 		STARTS_WITH_STRING;
-		
+
 		public boolean beginsWithMode() {
 			return(this == STARTS_WITH_STRING);
 		}
 	}
-	
+
 	public static int numBots;
 	public static byte colorScheme;
 	public static String email;
@@ -83,7 +83,7 @@ public class GlobalSettings {
 	public static int bnUserToStringCommandResponse;
 	public static String botNetServer;
 	public static int botNetPort;
-	
+
 	private static String lookAndFeel;
 	private static String lookAndFeelTheme;
 	private static String[] lookAndFeelThemes;
@@ -91,11 +91,11 @@ public class GlobalSettings {
 
 	static {
 		enableGUI = Settings.read(null, "enableGUI", true);
-		
+
 		if(enableGUI)
 			try {
 				Class<?> PlasticLookAndFeel = JARLoader.forName("com.jgoodies.looks.plastic.PlasticLookAndFeel");
-				
+
 				// getInstalledThemes()
 				Method getInstalledThemes = PlasticLookAndFeel.getMethod("getInstalledThemes");
 				List<?> themes = (List<?>)getInstalledThemes.invoke(null);
@@ -110,10 +110,10 @@ public class GlobalSettings {
 			} catch(Exception e) {
 				Out.exception(e);
 			}
-		
+
 		load();
 	}
-	
+
 	/**
 	 * Set the Look and Feel to the proper LaF, and adjust the ClassLoader
 	 * @param lafi
@@ -130,13 +130,13 @@ public class GlobalSettings {
 				UIManager.setLookAndFeel(laf);
 				UIManager.getDefaults().put("ClassLoader", JARLoader.getClassLoader());
 			}
-			
+
 			lookAndFeel = lafi.getName();
 		} catch(Exception ex) {
 			Out.exception(ex);
 		}
 	}
-	
+
 	/**
 	 * Set the Look and Feel to the named LaF, and adjust the ClassLoader
 	 * @param laf The name of the Look and Feel to swithc to
@@ -149,15 +149,15 @@ public class GlobalSettings {
 			}
 		Out.error(GlobalSettings.class, "Invalid Look and Feel: " + laf);
 	}
-	
+
 	public static String getLookAndFeel() {
 		return lookAndFeel;
 	}
-	
+
 	public static void setLookAndFeelTheme(String laft) {
 		if(setPlasticTheme == null)
 			return;
-		
+
 		try {
 			Class<?> theme = JARLoader.forName("com.jgoodies.looks.plastic.theme." + laft);
 			setPlasticTheme.invoke(null, theme.newInstance());
@@ -168,7 +168,7 @@ public class GlobalSettings {
 			Out.exception(e);
 		}
 	}
-	
+
 	public static String getLookAndFeelTheme() {
 		return lookAndFeelTheme;
 	}
@@ -176,7 +176,7 @@ public class GlobalSettings {
 	public static String[] getLookAndFeelThemes() {
 		return lookAndFeelThemes;
 	}
-	
+
 	public static void save() {
 		Settings.write(null, "numBots", numBots);
 		Settings.write(null, "autoConnect", autoConnect);
@@ -221,10 +221,10 @@ public class GlobalSettings {
 		Settings.write(null, "triviaRoundLength", triviaRoundLength);
 		Settings.write(null, "tsFormat", TimeFormatter.tsFormat);
 		Settings.write(null, "whisperBack", whisperBack);
-		
+
 		Settings.store();
 	}
-	
+
 	public static void load() {
 		numBots = Settings.read(null, "numBots", 1);
 		colorScheme = (byte)Settings.read(null, "colorScheme", 2);
@@ -270,11 +270,11 @@ public class GlobalSettings {
 		bnUserToString = Settings.read(null, "bnUserToString", 3);
 		bnUserToStringUserList = Settings.read(null, "bnUserToStringUserList", 1);
 		bnUserToStringCommandResponse = Settings.read(null, "bnUserToStringCommandResponse", 4);
-		
+
 		// Get the release type to check for when doing version checks
 		ReleaseType currentRelease = CurrentVersion.version().getReleaseType();
 		releaseType = Settings.read(null, "releaseType", currentRelease);
-		
+
 		if(CurrentVersion.fromJar()) {
 			// If from a JAR, force at least Alpha
 			if(releaseType.isDevelopment())

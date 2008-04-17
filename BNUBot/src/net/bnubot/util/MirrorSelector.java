@@ -69,13 +69,13 @@ public class MirrorSelector {
 	public static InetAddress getClosestMirror(String hostname, int port)
 			throws UnknownHostException {
 		InetAddress hosts[] = InetAddress.getAllByName(hostname);
-		
+
 		if(!GlobalSettings.enableMirrorSelector)
 			return hosts[(int)(Math.random() * hosts.length)];
-		
+
 		if (hosts.length == 1)
 			return hosts[0];
-		
+
 		Out.info(MirrorSelector.class, "Searching for fastest of " + hosts.length + " hosts for " + hostname);
 		return selectMirror(hosts, port);
 	}

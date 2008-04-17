@@ -56,7 +56,7 @@ public class Account extends _Account {
 	}
 
 	/**
-	 * Get a List&lt;Account> of users with at minimum access 
+	 * Get a List&lt;Account> of users with at minimum access
 	 * @param rank The minimum access
 	 * @return A List&lt;Account> of the applicable users
 	 */
@@ -68,7 +68,7 @@ public class Account extends _Account {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param recruitAccess
 	 * @return
 	 */
@@ -92,7 +92,7 @@ public class Account extends _Account {
 	 */
 	public static Account create(String name, Rank access, Account recruiter) throws Exception {
 		Date now = new Date(System.currentTimeMillis());
-		
+
 		ObjectContext context = DatabaseContext.getContext();
 		Account account = context.newObject(Account.class);
 		account.setCreated(now);
@@ -105,7 +105,7 @@ public class Account extends _Account {
 		account.updateRow();
 		return account;
 	}
-	
+
 	/**
 	 * Get the Trivia leaderboard
 	 * @return A List&lt;Account> of all users with trivia_correct>0, descending
@@ -132,15 +132,15 @@ public class Account extends _Account {
 		recruitTagSuffix = recruitTagSuffix.toLowerCase();
 		for(BNLogin login : getBnLogins()) {
 			String bnlogin = login.getLogin().toLowerCase();
-			
+
 			// Check prefix
 			if((recruitTagPrefix != null) && !bnlogin.startsWith(recruitTagPrefix))
 				continue;
-			
+
 			// Check suffix
 			if((recruitTagSuffix != null) && !bnlogin.endsWith(recruitTagSuffix))
 				continue;
-			
+
 			// Calculate wins
 			Integer star = login.getWinsSTAR();
 			Integer sexp = login.getWinsSEXP();
@@ -151,12 +151,12 @@ public class Account extends _Account {
 				wins += sexp.intValue();
 			if(w2bn != null)
 				wins += w2bn.intValue();
-			
+
 			// Calculate D2 level
 			Integer d2 = login.getLevelD2();
 			if(d2 != null)
 				d2level = Math.max(d2level, d2.intValue());
-			
+
 			// Calculate W3 level
 			Integer w3 = login.getLevelW3();
 			if(w3 != null)

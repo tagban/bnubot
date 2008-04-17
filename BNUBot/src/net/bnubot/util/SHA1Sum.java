@@ -12,7 +12,7 @@ import java.security.MessageDigest;
 
 public class SHA1Sum {
 	private final byte[] sha1sum;
-	
+
 	public SHA1Sum(String hexStr) throws Exception {
 		if(!hexStr.matches("[0-9a-fA-F]{40}"))
 			throw new Exception("Invalid format: " + hexStr);
@@ -22,7 +22,7 @@ public class SHA1Sum {
 			sha1sum[i] = (byte) Integer.parseInt(hexStr.substring(pos, pos+2), 16);
 		}
 	}
-	
+
 	public SHA1Sum(File f) throws Exception {
 		MessageDigest digest = MessageDigest.getInstance("SHA1");
 		InputStream is = new FileInputStream(f);
@@ -34,18 +34,18 @@ public class SHA1Sum {
 			digest.update(buffer, 0, read);
 		} while(true);
 		sha1sum = digest.digest();
-		
+
 		Out.debug(getClass(), f.getName() + ": " + toString());
 	}
-	
+
 	private static String hexChr(int b) {
 		return Integer.toHexString(b & 0xF);
 	}
-	
+
 	private static String toHex(int b) {
 		return hexChr((b & 0xF0) >> 4) + hexChr(b & 0x0F);
 	}
-	
+
 	@Override
 	public String toString() {
 		String out = "";
@@ -62,15 +62,15 @@ public class SHA1Sum {
 	public boolean equals(Object obj) {
 		if(!(obj instanceof SHA1Sum))
 			return false;
-		
+
 		byte[] obj_sha1sum = ((SHA1Sum)obj).sha1sum;
 		if(sha1sum.length != obj_sha1sum.length)
 			return false;
-		
+
 		for(int i = 0; i < sha1sum.length; i++)
 			if(sha1sum[i] != obj_sha1sum[i])
 				return false;
-		
+
 		return true;
 	}
 }

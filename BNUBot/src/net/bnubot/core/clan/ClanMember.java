@@ -10,26 +10,26 @@ public class ClanMember {
 	byte rank;
 	byte online;
 	String location;
-	
+
 	public ClanMember(String username, byte rank, byte online, String location) {
 		this.username = username;
 		this.rank = rank;
 		this.online = online;
 		this.location = location;
 	}
-	
+
 	public String getUsername() {
 		return username;
 	}
-	
+
 	public byte getRank() {
 		return rank;
 	}
-	
+
 	public void setRank(byte r) {
 		rank = r;
 	}
-	
+
 	@Override
 	public String toString() {
 		String out = username;
@@ -42,7 +42,7 @@ public class ClanMember {
 		out += ")";
 		return out;
 	}
-	
+
 	@Override
 	public boolean equals(Object o) {
 		if(o instanceof String) {
@@ -50,7 +50,7 @@ public class ClanMember {
 				return true;
 			return false;
 		}
-		
+
 		return super.equals(o);
 	}
 }

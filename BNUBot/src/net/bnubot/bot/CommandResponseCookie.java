@@ -13,12 +13,12 @@ import net.bnubot.util.BNetUser;
 public class CommandResponseCookie {
 	BNetUser source;
 	boolean wasWhispered;
-	
+
 	public CommandResponseCookie(BNetUser source, boolean wasWhispered) {
 		this.source = source;
 		this.wasWhispered = wasWhispered;
 	}
-	
+
 	public void sendChat(net.bnubot.core.Connection c, String text) {
 		source.sendChat(text, wasWhispered);
 	}

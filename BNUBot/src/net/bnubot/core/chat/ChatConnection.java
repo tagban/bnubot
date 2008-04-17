@@ -22,29 +22,29 @@ public class ChatConnection extends Connection {
 	private Socket s;
 	private BNetInputStream is;
 	private BNetOutputStream os;
-	
+
 	public ChatConnection(ConnectionSettings cs, Profile p) {
 		super(cs, p);
 	}
-	
+
 	/*public void run() {
 		try {
 			s = new Socket(cs.server, cs.port);
 			is = new BNetInputStream(s.getInputStream());
 			os = new BNetOutputStream(s.getOutputStream());
-			
+
 			//Chat
 			//os.writeByte(0x03);
 			//os.writeByte(0x04);
 			os.writeBytes("c" + cs.username + "\n" + cs.password + "\n");
 
 			os.writeBytes("/join open tech support\n");
-			
+
 			Out.info(getClass(), "Connected to " + cs.server + ":" + cs.port);
-			
-			
+
+
 			os.writeNTString(cs.username);
-			
+
 			while(s.isConnected()) {
 				if(is.available() > 0) {
 					byte b = is.readByte();
@@ -54,9 +54,9 @@ public class ChatConnection extends Connection {
 					sleep(200);
 				}
 			}
-			
+
 			Out.info(getClass(), "Disconnected");
-			
+
 			s.close();
 		} catch (Exception e) {
 			Out.fatalException(e);
@@ -121,13 +121,13 @@ public class ChatConnection extends Connection {
 	@Override
 	public void sendClanInvitation(Object cookie, String user) throws Exception {
 		throw new UnsupportedFeatureException("Chat clients can not use clans");
-		
+
 	}
 
 	@Override
 	public void sendClanRankChange(Object cookie, String user, int newRank) throws Exception {
 		throw new UnsupportedFeatureException("Chat clients can not use clans");
-		
+
 	}
 
 	@Override
@@ -154,7 +154,7 @@ public class ChatConnection extends Connection {
 	public void sendReadUserData(String user) throws Exception {
 		throw new UnsupportedFeatureException("Chat clients can not request profiles");
 	}
-	
+
 	@Override
 	public void sendWriteUserData(UserProfile profile) throws Exception {
 		throw new UnsupportedFeatureException("Chat clients can not write profiles");

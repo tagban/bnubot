@@ -28,7 +28,7 @@ public class Command extends _Command {
 			"#result('cmdgroup' 'String' 'cmdgroup') " +
 			"FROM command " +
 			"GROUP BY cmdgroup ");
-	
+
 	/**
 	 * Get a Command by name
 	 * @param command The name of the Command
@@ -39,7 +39,7 @@ public class Command extends _Command {
 		CommandAlias ca = CommandAlias.get(command);
 		if(ca != null)
 			return ca.getToCommand();
-		
+
 		// No aliases found; check for the real command
 		Expression expression = ExpressionFactory.matchExp(Command.NAME_PROPERTY, command);
 		SelectQuery query = new SelectQuery(Command.class, expression);
@@ -93,7 +93,7 @@ public class Command extends _Command {
 	public String toDisplayString() {
 		return getName();
 	}
-	
+
 	public int getAccess() {
 		return getRank().getAccess();
 	}

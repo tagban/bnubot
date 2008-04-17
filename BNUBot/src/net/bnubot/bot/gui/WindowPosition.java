@@ -39,7 +39,7 @@ public class WindowPosition {
 		w.setBounds(bounds);
 		w.addComponentListener(windowSaver);
 	}
-	
+
 	public static void save(Window w) {
 		String header = w.getClass().getSimpleName();
 		Rectangle bounds = w.getBounds();
@@ -47,7 +47,7 @@ public class WindowPosition {
 			Frame f = (Frame)w;
 			if(f.getExtendedState() == Frame.MAXIMIZED_BOTH)
 				return;
-			
+
 			if(f.isResizable()) {
 				Settings.write(header, "height", bounds.height);
 				Settings.write(header, "width", bounds.width);

@@ -13,14 +13,14 @@ import net.bnubot.util.Out;
 public abstract class ColorScheme {
 	public static final byte COLORSCHEME_STARCRAFT = (byte)0x01;
 	public static final byte COLORSCHEME_DIABLO2 = (byte)0x02;
-	
+
 	public static ColorScheme colors = null;
 	public static ColorScheme getColors() {
 		if(colors == null)
 			return createColorScheme(GlobalSettings.colorScheme);
 		return colors;
 	}
-	
+
 	private static ColorScheme createColorScheme(byte colorScheme) {
 		switch(colorScheme) {
 		case COLORSCHEME_STARCRAFT:
@@ -31,7 +31,7 @@ public abstract class ColorScheme {
 		Out.error(ColorScheme.class, "Unknown ColorScheme id " + Byte.toString(colorScheme));
 		return null;
 	}
-	
+
 	public abstract Color getBackgroundColor();
 	public abstract Color getForegroundColor();
 	public abstract Color getChannelColor();
@@ -41,7 +41,7 @@ public abstract class ColorScheme {
 	public Color getTypeColor() {
 		return Color.BLUE;
 	}
-	
+
 	public abstract Color getUserNameColor(int flags);
 	public abstract Color getSelfUserNameColor(int flags);
 	public abstract Color getUserNameListColor(int flags, boolean myUser);

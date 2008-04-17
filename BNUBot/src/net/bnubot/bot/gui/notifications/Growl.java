@@ -1,6 +1,6 @@
 /**
  * Growl.java
- * 
+ *
  * Version:
  * $Id: Growl.java 914 2007-11-25 12:37:56Z scotta $
  *
@@ -40,7 +40,7 @@ public class Growl {
 		CHANNEL_WHISPER_SENT,
 		};
 	private static final Object[] growlDefaults = growlNotifications;
-	
+
 	// defines
 	/** The name of the growl registration notification for DNC. */
 	public static final String GROWL_APP_REGISTRATION = "GrowlApplicationRegistrationNotification";
@@ -105,7 +105,7 @@ public class Growl {
 			postNotification = NSDistributedNotificationCenter.getMethod("postNotification", String.class, String.class, NSDictionary, boolean.class);
 			setObjectForKey = NSMutableDictionary.getMethod("setObjectForKey", Object.class, Object.class);
 			addEntriesFromDictionary = NSMutableDictionary.getMethod("addEntriesFromDictionary", NSDictionary);
-			
+
 			Out.info(Growl.class, "Growl enabled!");
 			enableGrowl = true;
 		} catch(Exception e) {
@@ -114,10 +114,10 @@ public class Growl {
 	}
 
 	/**
-	 * Convenience method to contruct a growl instance, defers to Growl(String 
-	 * inAppName, NSData inImageData, NSArray inAllNotes, NSArray inDefNotes, 
+	 * Convenience method to contruct a growl instance, defers to Growl(String
+	 * inAppName, NSData inImageData, NSArray inAllNotes, NSArray inDefNotes,
 	 * boolean registerNow) with empty arrays for your notifications.
-	 * 
+	 *
 	 * @param inAppName - The Name of your "Application"
 	 * @param inImagePath - The path to your icon
 	 */
@@ -128,8 +128,8 @@ public class Growl {
 	}
 
 	/**
-	 * Convenience method to contruct a growl instance, defers to Growl(String 
-	 * inAppName, NSData inImageData, NSArray inAllNotes, NSArray inDefNotes, 
+	 * Convenience method to contruct a growl instance, defers to Growl(String
+	 * inAppName, NSData inImageData, NSArray inAllNotes, NSArray inDefNotes,
 	 * boolean registerNow) with empty arrays for your notifications.
 	 *
 	 *
@@ -146,21 +146,21 @@ public class Growl {
 	}
 
 	/**
-	 * Convenience method to contruct a growl instance, defers to Growl(String 
-	 * inAppName, NSData inImageData, NSArray inAllNotes, NSArray inDefNotes, 
+	 * Convenience method to contruct a growl instance, defers to Growl(String
+	 * inAppName, NSData inImageData, NSArray inAllNotes, NSArray inDefNotes,
 	 * boolean registerNow) with empty arrays for your notifications.
 	 *
 	 * @param inAppName - The Name of your "Application"
 	 * @param inImageData - The Data of your "Application"'s icon
 	 * @param inAllNotes - The NSArray of Strings of all your Notifications
 	 * @param inDefNotes - The NSArray of Strings of your default Notifications
-	 * @param registerNow - Since we have all the necessary info we can go ahead 
+	 * @param registerNow - Since we have all the necessary info we can go ahead
 	 *                      and register
 	 */
 	public Growl(String inAppName, Object inImageData, Object[] inAllNotes, Object[] inDefNotes, boolean registerNow) throws Exception {
 		if(!enableGrowl)
 			throw new IllegalStateException("Growl failed to initialize");
-		
+
 		appName = inAppName;
 		appImageData = inImageData;
 		setAllowedNotifications(inAllNotes);
@@ -185,8 +185,8 @@ public class Growl {
 			// Construct our dictionary
 			// Make the arrays of objects then keys
 			Object [] objects = { appName, allNotes, defNotes, appImageData };
-			Object [] keys = { GROWL_APP_NAME, 
-					GROWL_NOTIFICATIONS_ALL, 
+			Object [] keys = { GROWL_APP_NAME,
+					GROWL_NOTIFICATIONS_ALL,
 					GROWL_NOTIFICATIONS_DEFAULT,
 					GROWL_APP_ICON};
 
@@ -212,19 +212,19 @@ public class Growl {
 	 *                             about.
 	 * @param inIconData - The NSData for the icon for this notification, can be null
 	 * @param inTitle - The Title of our Notification as Growl will show it
-	 * @param inDescription - The Description of our Notification as Growl will 
+	 * @param inDescription - The Description of our Notification as Growl will
 	 *                        display it
-	 * @param inExtraInfo - Growl is flexible and allows Display Plugins to do as they 
-	 *                      please with thier own special keys and values, you may use 
-	 *                      them here. These may be ignored by either the user's 
+	 * @param inExtraInfo - Growl is flexible and allows Display Plugins to do as they
+	 *                      please with thier own special keys and values, you may use
+	 *                      them here. These may be ignored by either the user's
 	 *                      preferences or the current Display Plugin. This can be null
 	 * @param inSticky - Whether the Growl notification should be sticky
 	 * @param inIdentifier - Notification identifier for coalescing. This can be null.
 	 *
 	 * @throws Exception When a notification is not known
 	 */
-	public void notifyGrowlOf(String inNotificationName, Object inIconData, 
-			String inTitle, String inDescription, 
+	public void notifyGrowlOf(String inNotificationName, Object inIconData,
+			String inTitle, String inDescription,
 			Object inExtraInfo, boolean inSticky,
 			String inIdentifier) throws Exception {
 		Object noteDict = NSMutableDictionary.newInstance();
@@ -232,7 +232,7 @@ public class Growl {
 		Boolean contains = (Boolean)NSArray.getMethod("containsObject", Object.class).invoke(allNotes, inNotificationName);
 		if (!contains.booleanValue())
 			throw new Exception("Undefined Notification attempted");
-		
+
 		setObjectForKey.invoke(noteDict, inNotificationName, GROWL_NOTIFICATION_NAME);
 		setObjectForKey.invoke(noteDict, inTitle, GROWL_NOTIFICATION_TITLE);
 		setObjectForKey.invoke(noteDict, inDescription, GROWL_NOTIFICATION_DESCRIPTION);
@@ -252,7 +252,7 @@ public class Growl {
 				noteDict,
 				true);
 	}
-	
+
 	public void notifyGrowlOf(String inNotificationName, String inTitle, String inDescription) throws Exception {
 		this.notifyGrowlOf(inNotificationName, null, inTitle, inDescription, null, false, null);
 	}
@@ -272,7 +272,7 @@ public class Growl {
 	 * Set the list of Default Notfiications
 	 *
 	 * @param inDefNotes - The default Notifications
-	 * 
+	 *
 	 * @throws Exception when an element of the array is not in the allowedNotifications
 	 */
 	public void setDefaultNotifications(Object [] inDefNotes) throws Exception {

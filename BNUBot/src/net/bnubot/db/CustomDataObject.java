@@ -20,6 +20,6 @@ public abstract class CustomDataObject extends CayenneDataObject {
 			throw e;
 		}
 	}
-	
+
 	public abstract String toDisplayString();
 }

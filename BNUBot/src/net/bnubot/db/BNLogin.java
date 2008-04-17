@@ -41,9 +41,9 @@ public class BNLogin extends _BNLogin {
 		BNLogin bnl = get(user);
 		if(bnl != null)
 			return bnl;
-		
+
 		Date now = new Date(System.currentTimeMillis());
-		
+
 		bnl = DatabaseContext.getContext().newObject(BNLogin.class);
 		bnl.setCreated(now);
 		bnl.setLastSeen(now);

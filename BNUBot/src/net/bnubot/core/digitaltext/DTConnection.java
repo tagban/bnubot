@@ -48,12 +48,12 @@ public class DTConnection extends Connection {
 		socket.setKeepAlive(true);
 		dtInputStream = socket.getInputStream();
 		dtOutputStream = new DataOutputStream(socket.getOutputStream());
-		
+
 		// Connected
 		connectionState = ConnectionState.CONNECTED;
 		connect.updateProgress("Connected");
 	}
-	
+
 	/**
 	 * Do the login work up to SID_ENTERCHAT
 	 * @throws Exception
@@ -64,16 +64,16 @@ public class DTConnection extends Connection {
 		p.writeNTString(cs.username);
 		p.writeNTString(cs.password);
 		p.SendPacket(dtOutputStream);
-		
+
 		while(isConnected() && !socket.isClosed() && !disposed) {
 			if(dtInputStream.available() > 0) {
 				DTPacketReader pr = new DTPacketReader(dtInputStream);
 				BNetInputStream is = pr.getData();
-				
+
 				switch(pr.packetId) {
 				case PKT_LOGON: {
 					/* (BYTE)	 Status
-					 * 
+					 *
 					 * Status codes:
 					 * 0x00 - (C) Passed
 					 * 0x01 - (A) Failed
@@ -102,28 +102,28 @@ public class DTConnection extends Connection {
 						disconnect(false);
 						break;
 					}
-					
+
 					if(!isConnected())
 						break;
-					
+
 					// We are officially logged in!
 					sendJoinChannel("x86");
-					
+
 					myUser = new BNetUser(this, cs.username, cs.myRealm);
 					titleChanged();
 					return true;
 				}
-				
+
 				default:
 					Out.debugAlways(getClass(), "Unexpected packet " + pr.packetId.name() + "\n" + HexDump.hexDump(pr.data));
 					break;
 				}
 			}
 		}
-		
+
 		return false;
 	}
-	
+
 	/**
 	 * This method is the main loop after recieving SID_ENTERCHAT
 	 * @throws Exception
@@ -132,7 +132,7 @@ public class DTConnection extends Connection {
 	protected void connectedLoop() throws Exception {
 		while(isConnected() && !socket.isClosed() && !disposed) {
 			long timeNow = System.currentTimeMillis();
-			
+
 			//Send null packets every 30 seconds
 			if(true) {
 				long timeSinceNullPacket = timeNow - lastNullPacket;
@@ -144,12 +144,12 @@ public class DTConnection extends Connection {
 					p.SendPacket(dtOutputStream);
 				}
 			}
-			
+
 			//Send anti-idles every 5 minutes
 			if((channelName != null) && cs.enableAntiIdle) {
 				synchronized(profile) {
 					long timeSinceAntiIdle = timeNow - profile.lastAntiIdle;
-					
+
 					//Wait 5 minutes
 					timeSinceAntiIdle /= 1000;
 					timeSinceAntiIdle /= 60;
@@ -159,40 +159,40 @@ public class DTConnection extends Connection {
 					}
 				}
 			}
-			
+
 			if(dtInputStream.available() > 0) {
 				DTPacketReader pr = new DTPacketReader(dtInputStream);
 				BNetInputStream is = pr.getData();
-				
+
 				switch(pr.packetId) {
 				case PKT_ENTERCHANNEL: {
 					/* (CString) 	Channel
 					 * (UInt32)	Flags
 					 * (CString)	MOTD
-					 * 
+					 *
 					 * Flags:
 					 * 0x01 : Registered
 					 * 0x02 : Silent
 					 * 0x04 : Admin
 					 */
-					
+
 					String channel = is.readNTString();
 					int flags = is.readDWord();
 					String motd = is.readNTString();
-					
+
 					joinedChannel(channel, flags);
 					recieveInfo(motd);
 					break;
 				}
-				
+
 				case PKT_CHANNELUSERS: {
 					/* (Byte)		User Count
 					 * (void)		User Data
-					 * 
+					 *
 					 * For each user...
 					 * 	(CString)	Username
 					 * 	(UInt32)	Flags
-					 * 
+					 *
 					 * User Flags:
 					 * 0x01 : Operator
 					 * 0x02 : Ignored
@@ -203,48 +203,48 @@ public class DTConnection extends Connection {
 					for(int i = 0; i < numUsers; i++) {
 						String username = is.readNTString();
 						int flags = is.readDWord();
-						
+
 						channelUser(findCreateBNUser(username, flags));
 					}
 					break;
 				}
-				
+
 				case PKT_USERUPDATE: {
 					/* (CString)	Username
 					 * (UInt32)	Flags
 					 */
 					String username = is.readNTString();
 					int flags = is.readDWord();
-					
+
 					channelUser(findCreateBNUser(username, flags));
 					break;
 				}
-				
+
 				case PKT_CHANNELJOIN: {
 					/* (CString)	Username
 					 * (UInt32)	Flags
 					 */
 					String username = is.readNTString();
 					int flags = is.readDWord();
-					
+
 					channelJoin(findCreateBNUser(username, flags));
 					break;
 				}
-				
+
 				case PKT_CHANNELLEAVE: {
 					/* (CString)	Username
 					 */
 					String username = is.readNTString();
-					
+
 					channelLeave(findCreateBNUser(username, null));
 					break;
 				}
-				
+
 				case PKT_CHANNELCHAT: {
 					/* (Byte)		Chat Type
 					 * (CString)	From
 					 * (CString)	Message
-					 * 
+					 *
 					 * Chat Type values:
 					 * 0x00 : Normal
 					 * 0x01 : Self Talking
@@ -256,14 +256,14 @@ public class DTConnection extends Connection {
 					int chatType = is.readByte();
 					String username = is.readNTString();
 					String text = is.readNTString();
-					
+
 					// Get a BNetUser object for the user
 					BNetUser user = null;
 					if(myUser.equals(username))
 						user = myUser;
 					else
 						user = getCreateBNetUser(username, myUser);
-					
+
 					switch(chatType) {
 					case 0x00: // Normal
 					case 0x01: // Self talking
@@ -283,10 +283,10 @@ public class DTConnection extends Connection {
 						Out.debugAlways(getClass(), "Unexpected chat type 0x" + Integer.toHexString(chatType) + " from " + username + ": " + text);
 						break;
 					}
-					
+
 					break;
 				}
-				
+
 				case PKT_UNKNOWN_0x22: {
 					int unknown = is.readDWord();
 					String text = is.readNTString();
@@ -303,7 +303,7 @@ public class DTConnection extends Connection {
 					}
 					break;
 				}
-				
+
 				default:
 					Out.debugAlways(getClass(), "Unexpected packet " + pr.packetId.name() + "\n" + HexDump.hexDump(pr.data));
 					break;
@@ -324,7 +324,7 @@ public class DTConnection extends Connection {
 	private BNetUser findCreateBNUser(String username, Integer userFlags) {
 		// Create the BNetUser
 		BNetUser user = getCreateBNetUser(username, myUser);
-		
+
 		// Flags
 		if(userFlags != null) {
 			int flags = userFlags.intValue();
@@ -342,14 +342,14 @@ public class DTConnection extends Connection {
 				bnflags |= 0x02;
 			user.setFlags(bnflags);
 		}
-		
+
 		// StatString
 		if(user.getStatString() == null)
 			user.setStatString(new StatString("TAHC"));
-		
+
 		return user;
 	}
-	
+
 	@Override
 	public boolean isOp() {
 		return (myUser.getFlags() & 0x02) == 0x02;
@@ -372,14 +372,14 @@ public class DTConnection extends Connection {
 	public void sendJoinChannel2(String channel) throws Exception {
 		sendJoinChannel(channel);
 	}
-	
+
 	/**
 	 * Send SID_CHATCOMMAND
 	 */
 	@Override
 	public void sendChatCommand(String text) {
 		super.sendChatCommand(text);
-		
+
 		//Write the packet
 		try {
 			DTPacket p = new DTPacket(DTPacketId.PKT_CHANNELCHAT);
@@ -391,12 +391,12 @@ public class DTConnection extends Connection {
 			return;
 		}
 	}
-	
+
 	@Override
 	public String toString() {
 		if(myUser == null)
 			return toShortString();
-		
+
 		String out = myUser.getShortLogonName();
 		if(channelName != null)
 			out += " - [ #" + channelName + " ]";
@@ -407,7 +407,7 @@ public class DTConnection extends Connection {
 	public ProductIDs getProductID() {
 		return ProductIDs.CHAT;
 	}
-	
+
 	@Override
 	public void sendClanInvitation(Object cookie, String user) throws Exception { throw new UnsupportedFeatureException(null); }
 	@Override

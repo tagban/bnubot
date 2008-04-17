@@ -37,7 +37,7 @@ public class SWTDesktop extends Thread {
 	private static SWTEventHandler selectedGui = null;
 	private static TrayItem tray = null;
 	private static CTabFolder tabs = null;
-	
+
 	private static final SWTDesktop instance = new SWTDesktop();
 
 	public static SWTDesktop getInstance() {
@@ -47,7 +47,7 @@ public class SWTDesktop extends Thread {
 	private SWTDesktop() {
 		start();
 	}
-	
+
 	@Override
 	public void run() {
 		if(CurrentVersion.fromJar()) {
@@ -60,16 +60,16 @@ public class SWTDesktop extends Thread {
 				new WhatsNewWindow();
 			}
 		}
-		
+
 		display = new Display();
 		shell = new Shell(display);
 		shell.setLayout(new FillLayout());
 		tabs = new CTabFolder(shell, SWT.TOP);
-		
+
 		setTitle();
 		initializeSystemTray();
 		//WindowPosition.load(this);
-		
+
 		initialized = true;
 
 		shell.pack();
@@ -81,13 +81,13 @@ public class SWTDesktop extends Thread {
 		display.dispose();
 		System.exit(0);
 	}
-	
+
 	private void initializeSystemTray() {
 		/*IconsDotBniReader.initialize(new ConnectionSettings(2));
 		tray = new TrayItem(shell.getDisplay().getSystemTray(), SWT.NULL);
 		tray.setImage(IconsDotBniReader.getIcons()[0].getImage());*/
 	}
-	
+
 	private void setTitle() {
 		String title = "BNU-Bot " + CurrentVersion.version();
 		if(selectedGui != null) {
@@ -95,7 +95,7 @@ public class SWTDesktop extends Thread {
 			title += selectedGui.toString();
 		}
 		setTitle(title);
-		
+
 		if(tray != null)
 			tray.setToolTipText(title);
 	}
@@ -103,7 +103,7 @@ public class SWTDesktop extends Thread {
 	protected static void setTitle(String title) {
 		if(display.isDisposed())
 			return;
-		
+
 		final String setTo = (title == null) ? "NULL" : title;
 		display.syncExec(new Runnable() {
 			public void run() {
@@ -111,10 +111,10 @@ public class SWTDesktop extends Thread {
 					shell.setText(setTo);
 			}});
 	}
-	
+
 	public static void setTitle(final SWTEventHandler seh, ProductIDs product) {
 		instance.setTitle();
-		
+
 		Image img = null;
 		BNetIcon[] icons_bni = IconsDotBniReader.getIcons();
 		if((icons_bni != null) && (product != null)) {
@@ -125,7 +125,7 @@ public class SWTDesktop extends Thread {
 				}
 			}
 		}
-		
+
 		final Image image = img;
 		final Composite component = seh.getFrame();
 		String t = seh.toString();
@@ -146,8 +146,8 @@ public class SWTDesktop extends Thread {
 	public static SWTEventHandler createSWTEventHandler() {
 		while(!initialized)
 			yield();
-		
-		final Holder<SWTEventHandler> eh = new Holder<SWTEventHandler>(null); 
+
+		final Holder<SWTEventHandler> eh = new Holder<SWTEventHandler>(null);
 		display.syncExec(new Runnable() {
 			public void run() {
 				CTabItem tab = new CTabItem(tabs, SWT.CLOSE);
@@ -163,10 +163,10 @@ public class SWTDesktop extends Thread {
 				tabs.setSelection(tab);
 				selectedGui = seh;
 				setTitle(seh.toString());
-				
+
 				// TODO: Set the divider location
 				//seh.setDividerLocation(getDividerLocation());
-				
+
 				// TODO: Add the components to the display
 				//seh.getMenuBar().setVisible(false);
 				//menuBar.add(geh.getMenuBar());

@@ -19,13 +19,13 @@ public class HexDump {
 		bytes[1] = 0xFF & ((dword & 0x0000FF00) >> 8);
 		bytes[2] = 0xFF & ((dword & 0x00FF0000) >> 16);
 		bytes[3] = 0xFF & ((dword & 0xFF000000) >> 24);
-		
+
 		return	Integer.toString(bytes[0]) + "." +
 				Integer.toString(bytes[1]) + "." +
 				Integer.toString(bytes[2]) + "." +
 				Integer.toString(bytes[3]);
 	}
-	
+
 	public static String DWordToPretty(int dword) {
 		byte bytes[] = new byte[4];
 		bytes[3] = (byte)((dword & 0x000000FF) >> 0);
@@ -34,7 +34,7 @@ public class HexDump {
 		bytes[0] = (byte)((dword & 0xFF000000) >> 24);
 		return new String(bytes).replaceAll("\0", "");
 	}
-	
+
 	public static int PrettyToDWord(String pretty) {
 		byte bytes[] = pretty.getBytes();
 		if(bytes.length != 4)
@@ -44,7 +44,7 @@ public class HexDump {
 				((bytes[1] << 16) & 0x00FF0000) |
 				((bytes[0] << 24) & 0xFF000000);
 	}
-	
+
 	public static int StringToDWord(String str) {
 		byte bytes[] = str.getBytes();
 		if(bytes.length != 4)
@@ -54,7 +54,7 @@ public class HexDump {
 				((bytes[2] << 16) & 0x00FF0000) |
 				((bytes[3] << 24) & 0xFF000000);
 	}
-	
+
 	public static String getAlphaNumerics(String in) {
 		String out = new String();
 		for(int i = 0; i < in.length(); i++) {
@@ -66,26 +66,26 @@ public class HexDump {
 		}
 		return out;
 	}
-	
+
 	private static String hexChr(int b) {
 		return Integer.toHexString(b & 0xF);
 	}
-	
+
 	private static String toHex(int b) {
 		return hexChr((b & 0xF0) >> 4) + hexChr(b & 0x0F);
 	}
-	
+
 	private static String toHexWord(int b) {
 		return hexChr((b & 0xF000) >> 12) + hexChr((b & 0x0F00) >> 8) + hexChr((b & 0x00F0) >> 4) + hexChr(b & 0x000F);
 	}
-	
+
 	public static String encode(byte data[]) {
 		String output = new String();
 		for (byte element : data)
 			output += toHex(element);
 		return output;
 	}
-	
+
 	private static byte decode(char c1, char c2) {
 		byte output;
 		if((c1 >= '0') && (c1 <= '9'))
@@ -107,7 +107,7 @@ public class HexDump {
 			throw new IllegalArgumentException("Invalid hex string");
 		return output;
 	}
-	
+
 	public static byte[] decode(String data) {
 		int len = data.length() >> 1;
 		byte[] output = new byte[len];
@@ -116,7 +116,7 @@ public class HexDump {
 			output[offset] = decode(data.charAt(pos++), data.charAt(pos++));
 		return output;
 	}
-	
+
 	public static String hexDump(byte data[]) {
 		String output = new String();
 		for(int offset = 0; offset < data.length; offset += 16) {
@@ -125,11 +125,11 @@ public class HexDump {
 				break;
 			if(end > 16)
 				end = 16;
-			
+
 			if(offset != 0)
 				output += "\n";
 			output += toHexWord(offset) + "  ";
-			
+
 			for(int i = 0; i < 16; i++) {
 				if(i >= end)
 					output += "   ";

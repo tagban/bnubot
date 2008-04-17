@@ -39,11 +39,11 @@ public class StatStringTest extends TestCase {
 		assertEquals(ProductIDs.STAR, ss.getProduct());
 		assertEquals(false, ss.getSpawn());
 		assertEquals(3, ss.getWins().intValue());
-		
+
 		ss = new StatString("RATS 1 2 3 1 5 6 7 8 9");
 		assertEquals(ss.getSpawn(), true);
 	}
-	
+
 	private byte[] append(byte[] arg0, byte[] arg1) {
 		byte[] ret = new byte[arg0.length + arg1.length];
 		int i = 0;
@@ -53,7 +53,7 @@ public class StatStringTest extends TestCase {
 			ret[i++] = b;
 		return ret;
 	}
-	
+
 	public void testD2() {
 		String asdf = "84 80 53 02 02 02 02 0F " +
 		"FF 50 02 02 FF 02 FF FF " +
@@ -63,12 +63,12 @@ public class StatStringTest extends TestCase {
 		byte[] data = HexDump.decode(asdf);
 		data = append("PX2DUSEast,EsO-SILenTNiGhT,".getBytes(), data);
 		data = append(data, new byte[] {0});
-		
+
 		StatString ss = new StatString(new BNetInputStream(new ByteArrayInputStream(data)));
 		assertEquals(20, ss.getCharLevel().intValue());
 		assertEquals(ProductIDs.D2XP, ss.getProduct());
 	}
-	
+
 	public void testW3() {
 		StatString ss = new StatString("3RAW 1R3W 1 UNB");
 		assertEquals(IconIDs.ICON_W3R1, ss.getIcon());

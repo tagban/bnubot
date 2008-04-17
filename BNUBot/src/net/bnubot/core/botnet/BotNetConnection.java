@@ -33,12 +33,12 @@ import net.bnubot.util.task.Task;
  */
 public class BotNetConnection extends Connection {
 	public static final String BOTNET_TYPE = "BotNet";
-	
+
 	private BNCSConnection master;
-	
+
 	private HashMap<Integer, BotNetUser> users = new HashMap<Integer, BotNetUser>();
 	private boolean userInit = false;
-	
+
 	private InputStream bnInputStream = null;
 	private DataOutputStream bnOutputStream = null;
 
@@ -49,7 +49,7 @@ public class BotNetConnection extends Connection {
 		super(cs, p);
 		this.master = master;
 	}
-	
+
 	@Override
 	protected String getServer() {
 		return GlobalSettings.botNetServer;
@@ -59,12 +59,12 @@ public class BotNetConnection extends Connection {
 	protected int getPort() {
 		return GlobalSettings.botNetPort;
 	}
-	
+
 	@Override
 	protected void initializeConnection(Task connect) throws Exception {
 		botNetServerRevision = 0;
 		botNetCommunicationRevision = 0;
-		
+
 		// Set up BotNet
 		connect.updateProgress("Connecting to BotNet");
 		int port = getPort();
@@ -74,7 +74,7 @@ public class BotNetConnection extends Connection {
 		socket.setKeepAlive(true);
 		bnInputStream = socket.getInputStream();
 		bnOutputStream = new DataOutputStream(socket.getOutputStream());
-		
+
 		// Connected
 		connectionState = ConnectionState.CONNECTED;
 		connect.updateProgress("Connected");
@@ -83,12 +83,12 @@ public class BotNetConnection extends Connection {
 	@Override
 	protected boolean sendLoginPackets(Task connect) throws Exception {
 		sendLogon("RivalBot", "b8f9b319f223ddcc38");
-		
+
 		while(isConnected() && !socket.isClosed() && !disposed) {
 			if(bnInputStream.available() > 0) {
 				BotNetPacketReader pr = new BotNetPacketReader(bnInputStream);
 				BNetInputStream is = pr.getInputStream();
-				
+
 				switch(pr.packetId) {
 				case PACKET_BOTNETVERSION: {
 					botNetServerRevision = is.readDWord();
@@ -121,7 +121,7 @@ public class BotNetConnection extends Connection {
 				yield();
 			}
 		}
-		
+
 		return false;
 	}
 
@@ -129,12 +129,12 @@ public class BotNetConnection extends Connection {
 	protected void connectedLoop() throws Exception {
 		sendStatusUpdate();
 		sendUserInfo();
-		
+
 		while(isConnected() && !socket.isClosed() && !disposed) {
 			if(bnInputStream.available() > 0) {
 				BotNetPacketReader pr = new BotNetPacketReader(bnInputStream);
 				BNetInputStream is = pr.getInputStream();
-				
+
 				switch(pr.packetId) {
 				case PACKET_CHANGEDBPASSWORD: {
 					// Server is acknowledging the communication version
@@ -167,7 +167,7 @@ public class BotNetConnection extends Connection {
 						userInit = false;
 						break;
 					}
-					
+
 					int number = is.readDWord();
 					int dbflag = 0, ztff = 0;
 					if(botNetServerRevision >= 4) {
@@ -175,18 +175,18 @@ public class BotNetConnection extends Connection {
 						ztff = is.readDWord();
 					}
 					String name = is.readNTString();
-					
+
 					BotNetUser user = new BotNetUser(this, number, name);
 					user.dbflag = dbflag;
 					user.ztff = ztff;
-					
+
 					user.channel = is.readNTString();
 					user.server = is.readDWord();
 					if(botNetServerRevision >= 2)
 						user.account = is.readNTString();
 					if(botNetServerRevision >= 3)
 						user.database = is.readNTString();
-					
+
 					if(myUser == null)
 						myUser = user;
 
@@ -234,20 +234,20 @@ public class BotNetConnection extends Connection {
 					recieveError("Invalid use of whisper");
 					return;
 				}
-				
+
 				BotNetUser target = getUser(commands[1]);
 				if(target == null) {
 					recieveError("Invalid whisper target");
 					return;
 				}
-				
+
 				sendWhisper(target, commands[2]);
 				return;
 			} else if(commands[0].equals("chat")) {
 				sendChat(false, text.substring(5));
 				return;
 			}
-			
+
 			recieveError("Invalid BotNet command: " + text);
 		} catch(Exception e) {
 			Out.exception(e);
@@ -292,13 +292,13 @@ public class BotNetConnection extends Connection {
 		sendBotNetChat(2, false, target.number, text);
 		super.whisperSent(BOTNET_TYPE, target, text);
 	}
-	
-	
+
+
 	/*
 	 * Sending packets
-	 * 
+	 *
 	 */
-	
+
 	/**
 	 * Send PACKET_LOGON
 	 * @param user
@@ -311,7 +311,7 @@ public class BotNetConnection extends Connection {
 		p.writeNTString(pass);
 		p.SendPacket(bnOutputStream);
 	}
-	
+
 	/**
 	 * Send PACKET_BOTNETVERSION
 	 * @param x
@@ -324,7 +324,7 @@ public class BotNetConnection extends Connection {
 		p.writeDWord(y);
 		p.SendPacket(bnOutputStream);
 	}
-	
+
 	/**
 	 * Send PACKET_IDLE
 	 * @throws Exception
@@ -333,7 +333,7 @@ public class BotNetConnection extends Connection {
 		BotNetPacket p = new BotNetPacket(BotNetPacketId.PACKET_IDLE);
 		p.SendPacket(bnOutputStream);
 	}
-	
+
 	/**
 	 * Send PACKET_STATUSUPDATE
 	 * @throws Exception
@@ -346,7 +346,7 @@ public class BotNetConnection extends Connection {
 			channel = "<Not Logged On>";
 		else
 			ip = master.getIp();
-		
+
 		sendStatusUpdate(
 				(user == null) ? "BNUBot2" : user.getShortLogonName(),
 				channel,
@@ -354,7 +354,7 @@ public class BotNetConnection extends Connection {
 				"PubEternalChat",
 				false);
 	}
-	
+
 	/**
 	 * Send PACKET_STATUSUPDATE
 	 * @param username
@@ -373,7 +373,7 @@ public class BotNetConnection extends Connection {
 		p.writeDWord(cycling ? 1 : 0); // cycling?
 		p.SendPacket(bnOutputStream);
 	}
-	
+
 	/**
 	 * Send PACKET_USERINFO
 	 * @throws Exception
@@ -385,7 +385,7 @@ public class BotNetConnection extends Connection {
 		userInit = true;
 		myUser = null;
 	}
-	
+
 	/**
 	 * Send PACKET_BOTNETCHAT
 	 * @param command 0=broadcast, 1=database chat, 2=whisper
@@ -396,7 +396,7 @@ public class BotNetConnection extends Connection {
 	private void sendBotNetChat(int command, boolean emote, int target, String message) throws Exception {
 		if(message.length() > 496)
 			throw new IllegalStateException("Chat length too long");
-		
+
 		BotNetPacket p = new BotNetPacket(BotNetPacketId.PACKET_BOTNETCHAT);
 		p.writeDWord(command);
 		p.writeDWord(emote ? 1 : 0);
@@ -430,19 +430,19 @@ public class BotNetConnection extends Connection {
 
 	/*
 	 * Event dispatch
-	 * 
+	 *
 	 */
-	
+
 	@Override
 	public void bnetConnected() {
 		users.clear();
-		
+
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
 				eh.botnetConnected(this);
 		}
 	}
-	
+
 	@Override
 	public void bnetDisconnected() {
 		users.clear();
@@ -456,7 +456,7 @@ public class BotNetConnection extends Connection {
 
 	public void botnetUserOnline(BotNetUser user) {
 		users.put(user.number, user);
-		
+
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
 				eh.botnetUserOnline(this, user);
@@ -465,16 +465,16 @@ public class BotNetConnection extends Connection {
 
 	public void botnetUserStatus(BotNetUser user) {
 		users.put(user.number, user);
-		
+
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
 				eh.botnetUserStatus(this, user);
 		}
 	}
-	
+
 	private void botnetUserLogoff(int number) {
 		BotNetUser user = users.remove(number);
-		
+
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
 				eh.botnetUserLogoff(this, user);

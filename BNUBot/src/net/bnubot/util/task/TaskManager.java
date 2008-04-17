@@ -18,7 +18,7 @@ public class TaskManager extends Dialog {
 	private static final long serialVersionUID = 641763656953338296L;
 	private static Box box = null;
 	private static TaskManager tm = null;
-	
+
 	private TaskManager(Frame owner) {
 		super(owner);
 	}
@@ -32,7 +32,7 @@ public class TaskManager extends Dialog {
 		t.updateProgress(currentStep);
 		return t;
 	}
-	
+
 	public static Task createTask(String title, int max, String units) {
 		boolean enableGUI;
 		Frame owner = null;
@@ -44,7 +44,7 @@ public class TaskManager extends Dialog {
 			enableGUI = true;
 			owner = new Frame();
 		}
-		
+
 		if(enableGUI && (tm == null)) {
 			tm = new TaskManager(owner);
 			try { WindowPosition.load(tm); } catch(Throwable t) {}
@@ -53,17 +53,17 @@ public class TaskManager extends Dialog {
 			tm.add(box);
 			tm.setResizable(false);
 		}
-		
+
 		if(tm == null)
 			return new Task();
-		
+
 		TaskGui t = new TaskGui(title, max, units);
 		box.add(t.getComponent());
 		tm.pack();
 		tm.setVisible(true);
 		return t;
 	}
-	
+
 	protected static void complete(TaskGui t) {
 		if(tm != null) {
 			box.remove(t.getComponent());
