@@ -42,7 +42,7 @@ public class TimeFormatter {
 
 		if(time == 0)
 			return ms ? "0ms" : "0s";
-		
+
 		String text = "";
 		if(ms) {
 			if(time < 1000*60) // 60 seconds
@@ -53,7 +53,7 @@ public class TimeFormatter {
 			time /= 1000;
 			time++;
 		}
-		
+
 		if(time > 0) {
 			if(time < 60*60) // 60 minutes
 				text = Long.toString(time % 60) + "s " + text;
@@ -71,7 +71,7 @@ public class TimeFormatter {
 				}
 			}
 		}
-		
+
 		return text.trim();
 	}
 
@@ -89,19 +89,19 @@ public class TimeFormatter {
 
 	private static DateFormat df = DateFormat.getDateInstance();
 	private static DateFormat dtf = DateFormat.getDateTimeInstance();
-	
+
 	public static long parseDate(String d) throws ParseException {
 		return df.parse(d).getTime();
 	}
-	
+
 	public static String formatDate(Date d) {
 		return df.format(d);
 	}
-	
+
 	public static long parseDateTime(String dt) throws ParseException {
 		return dtf.parse(dt).getTime();
 	}
-	
+
 	public static String formatDateTime(Date d) {
 		return dtf.format(d);
 	}

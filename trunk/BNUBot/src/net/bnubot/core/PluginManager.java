@@ -16,16 +16,16 @@ import net.bnubot.util.Out;
 public class PluginManager {
 	private static final List<Class<? extends EventHandler>> plugins = new ArrayList<Class<? extends EventHandler>>();
 	private static final List<Class<? extends EventHandler>> enabledPlugins = new ArrayList<Class<? extends EventHandler>>();
-	
+
 	static {
 		register(HTMLOutputEventHandler.class);
 		register(TriviaEventHandler.class);
 	}
-	
+
 	public static void register(Class<? extends EventHandler> plugin) {
 		Out.info(PluginManager.class, "Registering " + plugin.getName());
 		plugins.add(plugin);
-		
+
 		if(Settings.read(null, plugin.getName(), false))
 			enabledPlugins.add(plugin);
 	}
@@ -49,7 +49,7 @@ public class PluginManager {
 	public static List<Class<? extends EventHandler>> getPlugins() {
 		return plugins;
 	}
-	
+
 	public static List<Class<? extends EventHandler>> getEnabledPlugins() {
 		return enabledPlugins;
 	}

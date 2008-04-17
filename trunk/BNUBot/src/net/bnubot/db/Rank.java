@@ -38,7 +38,7 @@ public class Rank extends _Rank {
 	public static Rank get(int access) {
 		return DataObjectUtils.objectForPK(DatabaseContext.getContext(), Rank.class, access);
 	}
-	
+
 	public int getAccess() {
 		return DataObjectUtils.intPKForObject(this);
 	}

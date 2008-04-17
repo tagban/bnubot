@@ -36,7 +36,7 @@ public class HTMLOutputEventHandler extends EventHandlerImpl {
 	private boolean generationNeeded = false;
 	private Runnable writeUserListRunnable = null;
 	private final ColorScheme cs = ColorScheme.getColors();
-	
+
 	@Override
 	public void bnetDisconnected(Connection source) {
 		writeUserList(source);
@@ -48,33 +48,33 @@ public class HTMLOutputEventHandler extends EventHandlerImpl {
 	@Override
 	public void channelJoin(Connection source, BNetUser user) {
 		writeUserList(source);
-		
+
 		if(GlobalSettings.displayJoinParts)
 			append(source,
 				user.toString() + " has joined the channel" + user.getStatString().toString() + ".",
 				cs.getChannelColor());
 	}
-	
+
 	@Override
 	public void channelLeave(Connection source, BNetUser user) {
 		writeUserList(source);
-		
+
 		if(GlobalSettings.displayJoinParts)
 			append(source,
 				user.toString() + " has left the channel.",
 				cs.getChannelColor());
 	}
-	
+
 	@Override
 	public void channelUser(Connection source, BNetUser user) {
 		writeUserList(source);
-		
+
 		if(GlobalSettings.displayChannelUsers)
 			append(source,
 				user + user.getStatString().toString() + ".",
 				cs.getChannelColor());
 	}
-	
+
 	@Override
 	public void initialize(Connection source) {
 		checkFolder("logs");
@@ -90,7 +90,7 @@ public class HTMLOutputEventHandler extends EventHandlerImpl {
 		if(!f.isDirectory())
 			Out.fatalException(new Exception(fName + " is not a directory!"));
 	}
-	
+
 	@Override
 	public void joinedChannel(Connection source, String channel) {
 		append(source,
@@ -102,21 +102,21 @@ public class HTMLOutputEventHandler extends EventHandlerImpl {
 	public void recieveInfo(Connection source, String text) {}
 	@Override
 	public void recieveDebug(Connection source, String text) {}
-	
+
 	private String getIcon(int product, int icon, int flags) {
 		if((flags & 0x01) != 0)	return "blizrep";
 		if((flags & 0x08) != 0)	return "bnetrep";
 		if((flags & 0x02) != 0)	return "op";
 		if((flags & 0x04) != 0)	return "spkr";
 		if((flags & 0x40) != 0)	return "blizguest";
-		
+
 		if((flags & 0x20) != 0)	return "squelch";
-		
+
 		if(icon != 0)
 			return HexDump.DWordToPretty(icon);
 		return HexDump.DWordToPretty(product);
 	}
-	
+
 	private void writeUserList(final Connection source) {
 		if(writeUserListRunnable == null)
 			writeUserListRunnable = new Runnable() {
@@ -124,12 +124,12 @@ public class HTMLOutputEventHandler extends EventHandlerImpl {
 					if(!generationNeeded)
 						return;
 					generationNeeded = false;
-					
+
 					try {
 						File f = new File("logs/userlist_" + source.getProfile().getName() + ".html");
 						DataOutputStream fos = new DataOutputStream(new FileOutputStream(f));
 						List<BNetUser> users = source.getSortedUsers();
-						
+
 						fos.write("<table><tr><td colspan=\"4\"><b>".getBytes());
 						String channel = source.getChannel();
 						if(channel != null)
@@ -141,7 +141,7 @@ public class HTMLOutputEventHandler extends EventHandlerImpl {
 						for(BNetUser ui : users) {
 							StatString ss = ui.getStatString();
 							String product = getIcon(ss.getProduct().getDword(), ss.getIcon(), ui.getFlags());
-							
+
 							fos.write("<tr>".getBytes());
 							fos.write(("<td><img src=\"images/" + product + ".jpg\"></td>").getBytes());
 							fos.write(("<td>" + ui.toString(GlobalSettings.bnUserToStringUserList) + "</td>").getBytes());
@@ -155,7 +155,7 @@ public class HTMLOutputEventHandler extends EventHandlerImpl {
 					}
 				}
 			};
-		
+
 		generationNeeded = true;
 		SwingUtilities.invokeLater(writeUserListRunnable);
 	}
@@ -176,11 +176,11 @@ public class HTMLOutputEventHandler extends EventHandlerImpl {
 			Out.fatalException(e);
 		}
 	}
-	
+
 	private String getDate() {
 		return getColor(cs.getForegroundColor()) + String.format("[%1$tH:%1$tM:%1$tS] ", new GregorianCalendar(TIME_ZONE));
 	}
-	
+
 	private String getColor(Color col) {
 		String out = "000000";
 		out += Integer.toHexString(col.getRGB());
@@ -188,7 +188,7 @@ public class HTMLOutputEventHandler extends EventHandlerImpl {
 		out = "[COLOR:#" + out + "]";
 		return out;
 	}
-	
+
 	private void append(Connection source, String text, Color col) {
 		String out = "\n";
 		out += getDate();
@@ -196,7 +196,7 @@ public class HTMLOutputEventHandler extends EventHandlerImpl {
 		out += text;
 		logChat(source, out);
 	}
-	
+
 	private void append2(Connection source, String text, Color col, String text2, Color col2) {
 		String out = "\n";
 		out += getDate();
@@ -207,7 +207,7 @@ public class HTMLOutputEventHandler extends EventHandlerImpl {
 		out += text2;
 		logChat(source, out);
 	}
-	
+
 	public void recieveChat(Connection source, BNetUser user, String text) {
 		append2(source,
 			"<" + user.toString() + "> ",

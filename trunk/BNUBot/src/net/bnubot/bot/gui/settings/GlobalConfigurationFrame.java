@@ -67,7 +67,7 @@ public class GlobalConfigurationFrame extends JDialog {
 	private ConfigCheckBox chkEnableMirrorSelector = null;
 	private ConfigCheckBox chkEnableFloodProtect = null;
 	private ConfigCheckBox chkPacketLog = null;
-	
+
 	// Plugins
 	private ConfigTextArea txtTriviaRoundLength = null;
 	private ConfigCheckBox chkEnableCLI = null;
@@ -75,7 +75,7 @@ public class GlobalConfigurationFrame extends JDialog {
 	private ConfigCheckBox chkWhisperBack = null;
 	private List<Class<? extends EventHandler>> plugins = null;
 	private List<ConfigCheckBox> chkEnabledPlugins = null;
-	
+
 	// Display
 	private ConfigComboBox cmbBNUserToString = null;
 	private ConfigComboBox cmbBNUserToStringUserList = null;
@@ -99,7 +99,7 @@ public class GlobalConfigurationFrame extends JDialog {
 	private ConfigCheckBox chkDisplayBattleNetChannels = null;
 	private ConfigCheckBox chkDisplayJoinParts = null;
 	private ConfigCheckBox chkDisplayChannelUsers = null;
-	
+
 	// Debug
 	private ConfigCheckBox chkEnableDebug = null;
 	private ConfigCheckBox chkDebugToGui = null;
@@ -110,7 +110,7 @@ public class GlobalConfigurationFrame extends JDialog {
 	private JButton btnCancel = null;
 	private JButton btnOK = null;
 	private JButton btnApply = null;
-	
+
 	public GlobalConfigurationFrame(boolean keysOnly) throws OperationCancelledException {
 		super();
 		if(keysOnly)
@@ -125,7 +125,7 @@ public class GlobalConfigurationFrame extends JDialog {
 		setResizable(false);
 		WindowPosition.load(this);
 		setVisible(true);
-		
+
 		if(pressedCancel)
 			throw new OperationCancelledException();
 	}
@@ -139,7 +139,7 @@ public class GlobalConfigurationFrame extends JDialog {
 		Integer selecedTab = null;
 		if(tabs != null)
 			selecedTab = tabs.getSelectedIndex();
-		
+
 		Box boxTabsAndButtons = new Box(BoxLayout.Y_AXIS);
 		add(boxTabsAndButtons);
 
@@ -158,14 +158,14 @@ public class GlobalConfigurationFrame extends JDialog {
 		} else {
 			tabs = new JTabbedPane();
 			boxTabsAndButtons.add(tabs);
-			
+
 			tabs.addTab("CD Keys", boxAll);
-			
+
 			boxAll = new Box(BoxLayout.Y_AXIS);
 			{
 				txtBNLSServer = ConfigFactory.makeText("BNLS Server", GlobalSettings.bnlsServer, boxAll);
 				txtEmail = ConfigFactory.makeText("Email", GlobalSettings.email, boxAll);
-				
+
 				Object[] values;
 				if(CurrentVersion.fromJar())
 					values = new ReleaseType[] {
@@ -179,7 +179,7 @@ public class GlobalConfigurationFrame extends JDialog {
 						ReleaseType.Development };
 				cmbReleaseType = ConfigFactory.makeCombo("Version Check", values, false, boxAll);
 				cmbReleaseType.setSelectedItem(GlobalSettings.releaseType);
-	
+
 				boxAll.add(chkAutoConnect = new ConfigCheckBox("Auto Connect", GlobalSettings.autoConnect));
 				boxAll.add(chkAutoRejoin = new ConfigCheckBox("Auto Rejoin After Kicked", GlobalSettings.autoRejoin));
 				boxAll.add(chkEnableMirrorSelector = new ConfigCheckBox("Enable Mirror Selector", GlobalSettings.enableMirrorSelector));
@@ -187,19 +187,19 @@ public class GlobalConfigurationFrame extends JDialog {
 				boxAll.add(chkPacketLog = new ConfigCheckBox("Packet Log", GlobalSettings.packetLog));
 			}
 			tabs.addTab("Settings", boxAll);
-	
+
 			boxAll = new Box(BoxLayout.Y_AXIS);
 			{
 				boxAll.add(new JLabel("You must reopen profiles for these changes to take effect."));
 				boxAll.add(chkEnableCLI = new ConfigCheckBox("Enable Command Line Interface", GlobalSettings.enableCLI));
 				boxAll.add(chkEnableCommands = new ConfigCheckBox("Enable Commands", GlobalSettings.enableCommands));
 				boxAll.add(chkWhisperBack = new ConfigCheckBox("Whisper Command Responses", GlobalSettings.whisperBack));
-				
+
 				plugins = PluginManager.getPlugins();
 				chkEnabledPlugins = new ArrayList<ConfigCheckBox>(plugins.size());
 				for(int i = 0; i < plugins.size(); i++) {
 					Class<? extends EventHandler> plugin = plugins.get(i);
-					
+
 					ConfigCheckBox chkEnablePlugin = new ConfigCheckBox(plugin.getSimpleName(), PluginManager.isEnabled(plugin));
 					boxAll.add(chkEnablePlugin);
 					chkEnabledPlugins.add(chkEnablePlugin);
@@ -207,7 +207,7 @@ public class GlobalConfigurationFrame extends JDialog {
 				txtTriviaRoundLength = ConfigFactory.makeText("Trivia Round Length", Long.toString(GlobalSettings.triviaRoundLength), boxAll);
 			}
 			tabs.addTab("Plugins", boxAll);
-	
+
 			boxAll = new Box(BoxLayout.Y_AXIS);
 			{
 				Object[] values = new String[] {
@@ -223,12 +223,12 @@ public class GlobalConfigurationFrame extends JDialog {
 				cmbBNUserToStringUserList.setSelectedIndex(GlobalSettings.bnUserToStringUserList);
 				cmbBNUserToStringCommandResponse = ConfigFactory.makeCombo("Command Response", values, false, boxAll);
 				cmbBNUserToStringCommandResponse.setSelectedIndex(GlobalSettings.bnUserToStringCommandResponse);
-				
+
 				boxAll.add(chkEnableLegacyIcons = new ConfigCheckBox("Enable Legacy Icons", GlobalSettings.enableLegacyIcons));
-				
+
 				cmbTrayIconMode = ConfigFactory.makeCombo("Tray Icon", TrayIconMode.values(), false, boxAll);
 				cmbTrayIconMode.setSelectedItem(GlobalSettings.trayIconMode);
-	
+
 				boxAll.add(chkTrayMinimizeTo = new ConfigCheckBox("Minimize To System Tray (Java 6+)", GlobalSettings.trayMinimizeTo));
 				boxAll.add(chkTrayDisplayConnectDisconnect = new ConfigCheckBox("Tray: Connect/Disconnect", GlobalSettings.trayDisplayConnectDisconnect));
 				boxAll.add(chkTrayDisplayChannel = new ConfigCheckBox("Tray: Channel", GlobalSettings.trayDisplayChannel));
@@ -237,18 +237,18 @@ public class GlobalConfigurationFrame extends JDialog {
 				boxAll.add(chkTrayDisplayWhisper = new ConfigCheckBox("Tray: Whisper", GlobalSettings.trayDisplayWhisper));
 				boxAll.add(chkEnableTabCompleteUser = new ConfigCheckBox("User Tab Completion", GlobalSettings.enableTabCompleteUser));
 				boxAll.add(chkEnableTabCompleteCommand = new ConfigCheckBox("Command Tab Completion", GlobalSettings.enableTabCompleteCommand));
-				
+
 				cmbTabCompleteMode = ConfigFactory.makeCombo("Tab Complete Mode", TabCompleteMode.values(), false, boxAll);
 				cmbTabCompleteMode.setSelectedItem(GlobalSettings.tabCompleteMode);
-				
+
 				values = new String[] { TimeFormatter.tsFormat, "%1$tH:%1$tM:%1$tS.%1$tL", "%1$tH:%1$tM:%1$tS", "%1$tH:%1$tM" };
 				cmbTSFormat = ConfigFactory.makeCombo("TimeStamp", values, true, boxAll);
 				cmbTSFormat.setSelectedItem(TimeFormatter.tsFormat);
-	
+
 				values = new String[] { "Starcraft", "Diablo 2" };
 				cmbColorScheme = ConfigFactory.makeCombo("Color Scheme", values, false, boxAll);
 				cmbColorScheme.setSelectedIndex(GlobalSettings.colorScheme - 1);
-	
+
 				ArrayList<String> lafs = new ArrayList<String>();
 				for(LookAndFeelInfo lafi : UIManager.getInstalledLookAndFeels())
 					lafs.add(lafi.getName());
@@ -261,7 +261,7 @@ public class GlobalConfigurationFrame extends JDialog {
 								GlobalSettings.setLookAndFeel(lafi);
 					}
 				});
-				
+
 				cmbPlasticTheme = ConfigFactory.makeCombo("Plastic Theme", GlobalSettings.getLookAndFeelThemes(), false, boxAll);
 				cmbPlasticTheme.setSelectedItem(GlobalSettings.getLookAndFeelTheme());
 				cmbPlasticTheme.addItemListener(new ItemListener() {
@@ -269,19 +269,19 @@ public class GlobalConfigurationFrame extends JDialog {
 						GlobalSettings.setLookAndFeelTheme(cmbPlasticTheme.getSelectedItem().toString());
 					}
 				});
-	
+
 				boxAll.add(chkDisplayBattleNetMOTD = new ConfigCheckBox("Display Battle.net MOTD", GlobalSettings.displayBattleNetMOTD));
 				boxAll.add(chkDisplayBattleNetChannels = new ConfigCheckBox("Display Battle.net Channels", GlobalSettings.displayBattleNetChannels));
 				boxAll.add(chkDisplayJoinParts = new ConfigCheckBox("Display Join/Part Messages", GlobalSettings.displayJoinParts));
 				boxAll.add(chkDisplayChannelUsers = new ConfigCheckBox("Display Channel Users On Join", GlobalSettings.displayChannelUsers));
 			}
 			tabs.addTab("Display", boxAll);
-	
+
 			boxAll = new Box(BoxLayout.Y_AXIS);
 			{
 				boxAll.add(chkEnableDebug = new ConfigCheckBox("Enable debug logging", Out.isDebug()));
 				boxAll.add(chkDebugToGui = new ConfigCheckBox("Log debug messages on the GUI", Out.isDebugToGui()));
-				
+
 				Properties props = Out.getProperties();
 				chkDebug = new ArrayList<ConfigCheckBox>(props.size());
 				for (Enumeration<Object> en = props.keys(); en.hasMoreElements();) {
@@ -294,10 +294,10 @@ public class GlobalConfigurationFrame extends JDialog {
 			}
 			tabs.addTab("Debug", boxAll);
 		}
-		
+
 		if(selecedTab != null)
 			tabs.setSelectedIndex(selecedTab);
-		
+
 		Box boxButtons = new Box(BoxLayout.X_AXIS);
 		{
 			btnUndo = new JButton("Undo");
@@ -361,7 +361,7 @@ public class GlobalConfigurationFrame extends JDialog {
 			boxButtons.add(btnApply);
 		}
 		boxTabsAndButtons.add(boxButtons);
-		
+
 		pack();
 	}
 
@@ -405,17 +405,17 @@ public class GlobalConfigurationFrame extends JDialog {
 			GlobalSettings.enableFloodProtect = chkEnableFloodProtect.isSelected();
 			GlobalSettings.packetLog = chkPacketLog.isSelected();
 			GlobalSettings.whisperBack = chkWhisperBack.isSelected();
-			
+
 			// Save debug
 			Out.setDebug(chkEnableDebug.isSelected());
 			Out.setDebugToGui(chkDebugToGui.isSelected());
 			for(ConfigCheckBox chk : chkDebug)
 				Out.setDebug(chk.getText(), chk.isSelected());
-	
+
 			// Save
 			GlobalSettings.save();
 		}
-		
+
 		// Save CD keys
 		try {
 			FileWriter fw = new FileWriter(new File("cdkeys.txt"));
@@ -452,7 +452,7 @@ public class GlobalConfigurationFrame extends JDialog {
 
 	private void load() {
 		loadCDKeys();
-		
+
 		if(!keysOnly) {
 			// Load global settings
 			GlobalSettings.load();
@@ -489,7 +489,7 @@ public class GlobalConfigurationFrame extends JDialog {
 			chkEnableFloodProtect.setSelected(GlobalSettings.enableFloodProtect);
 			chkPacketLog.setSelected(GlobalSettings.packetLog);
 			chkWhisperBack.setSelected(GlobalSettings.whisperBack);
-			
+
 			// Load debug
 			chkDebugToGui.setSelected(Out.isDebugToGui());
 			chkEnableDebug.setSelected(Out.isDebug());

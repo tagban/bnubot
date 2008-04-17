@@ -15,7 +15,7 @@ public class CookieUtilityTest extends TestCase {
 		assertEquals(0, id);
 		Object obj = CookieUtility.destroyCookie(id);
 		assertEquals(null, obj);
-		
+
 		obj = new String("test");
 		id = CookieUtility.createCookie(obj);
 		assertEquals(1, id);

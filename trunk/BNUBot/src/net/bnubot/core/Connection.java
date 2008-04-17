@@ -46,7 +46,7 @@ public abstract class Connection extends Thread {
 		ALLOW_CONNECT,
 		FORCE_CONNECT,
 		CONNECTED;
-		
+
 		public boolean canConnect() {
 			switch(this) {
 			case FORCE_CONNECT:
@@ -72,7 +72,7 @@ public abstract class Connection extends Thread {
 	protected boolean forceReconnect = false;
 	protected boolean initialized = false;
 	protected boolean disposed = false;
-	
+
 	protected long lastNullPacket;
 
 	protected Task createTask(String title, String currentStep) {
@@ -80,26 +80,26 @@ public abstract class Connection extends Thread {
 		currentTasks.add(t);
 		return t;
 	}
-	
+
 	protected Task createTask(String title, int max, String units) {
 		Task t = TaskManager.createTask(title, max, units);
 		currentTasks.add(t);
 		return t;
 	}
-	
+
 	protected void completeTask(Task t) {
 		currentTasks.remove(t);
 		t.complete();
 	}
-	
+
 	protected String getServer() {
 		return cs.server;
 	}
-	
+
 	protected int getPort() {
 		return cs.port;
 	}
-	
+
 	private final List<Task> currentTasks = new LinkedList<Task>();
 	@Override
 	public void run() {
@@ -108,9 +108,9 @@ public abstract class Connection extends Thread {
 			for(EventHandler eh : eventHandlers)
 				eh.initialize(this);
 		}
-		
+
 		initialized = true;
-		
+
 		while(!disposed) {
 			try {
 				for(Task t : currentTasks)
@@ -118,41 +118,41 @@ public abstract class Connection extends Thread {
 				currentTasks.clear();
 				myUser = null;
 				titleChanged();
-				
+
 				// Wait until we're supposed to connect
 				while(!connectionState.canConnect()) {
 					yield();
 					sleep(200);
 				}
-				
+
 				Task connect = createTask("Connecting to " + getServer() + ":" + getPort(), "Verify connection settings validity");
-				
+
 				// Check if CS is valid
 				while(cs.isValid() != null)
 					new ConfigurationFrame(cs);
 
 				// Wait a short time before allowing a reconnect
 				waitUntilConnectionSafe(connect);
-				
+
 				// Double-check if disposal occured
 				if(disposed)
 					break;
-				
+
 				// Initialize connection to DT server
 				initializeConnection(connect);
-				
+
 				// Log in
 				boolean loggedIn = sendLoginPackets(connect);
-				
+
 				// Connection established
 				completeTask(connect);
-				
+
 				lastNullPacket = System.currentTimeMillis();
 				profile.lastAntiIdle = lastNullPacket;
-				
+
 				if(loggedIn)
 					connectedLoop();
-					
+
 				// Connection closed
 			} catch(SocketException e) {
 			} catch(OperationCancelledException e) {
@@ -164,11 +164,11 @@ public abstract class Connection extends Thread {
 
 			disconnect(true);
 		}
-		
+
 		for(Task t : currentTasks)
 			t.complete();
 		currentTasks.clear();
-		
+
 		getProfile().dispose();
 	}
 
@@ -189,7 +189,7 @@ public abstract class Connection extends Thread {
 				connectionTimes.put(server, System.currentTimeMillis());
 				return;
 			}
-			
+
 			waitUntil = lastConnectionTime + 15000;
 			connectionTimes.put(server, waitUntil);
 		}
@@ -199,14 +199,14 @@ public abstract class Connection extends Thread {
 			long timeLeft = waitUntil - System.currentTimeMillis();
 			if(timeLeft <= 0)
 				break;
-			
+
 			connect.updateProgress(status + TimeFormatter.formatTime(timeLeft, false));
-			
+
 			try { sleep(100); } catch (InterruptedException e1) {}
 			yield();
 		}
 	}
-	
+
 	public int getIp() {
 		return BNetInputStream.readDWord(socket.getInetAddress().getAddress(), 0);
 	}
@@ -219,7 +219,7 @@ public abstract class Connection extends Thread {
 				File f = new File("anti-idle.txt");
 				if(!f.exists()) {
 					f.createNewFile();
-					
+
 					FileWriter os = new FileWriter(f);
 					os.write("# Enter anti-idle messages in this file.\r\n");
 					os.write("# \r\n");
@@ -232,7 +232,7 @@ public abstract class Connection extends Thread {
 			} catch (Exception e) {
 				Out.fatalException(e);
 			}
-			
+
 			do {
 				String line = null;
 				try {
@@ -242,18 +242,18 @@ public abstract class Connection extends Thread {
 				}
 				if(line == null)
 					break;
-				
+
 				line = line.trim();
 				if(line.length() == 0)
 					continue;
-				
+
 				if(line.charAt(0) != '#')
 					antiIdles.add(line);
 			} while(true);
-			
+
 			try { is.close(); } catch (Exception e) {}
 		}
-		
+
 		//grab one
 		int i = antiIdles.size();
 		if(i == 0)
@@ -261,21 +261,21 @@ public abstract class Connection extends Thread {
 		i = (int)Math.floor(Math.random() * i);
 		return antiIdles.remove(i);
 	}
-	
+
 	public Collection<EventHandler> getEventHandlers() {
 		return Collections.synchronizedCollection(eventHandlers);
 	}
-	
+
 	public Collection<BNetUser> getUsers() {
 		return users.values();
 	}
-	
+
 	public List<BNetUser> getSortedUsers() {
 		List<BNetUser> x = new ArrayList<BNetUser>(getUsers());
 		ChannelListPriority.sort(x);
 		return x;
 	}
-	
+
 	private BNetUser getUser(BNetUser u) {
 		return users.get(u.getFullLogonName().toLowerCase());
 	}
@@ -289,13 +289,13 @@ public abstract class Connection extends Thread {
 		if(users.remove(user.getFullLogonName().toLowerCase()) == null)
 			Out.error(getClass(), "Tried to remove a user that was not in the list: " + user.toString());
 	}
-	
+
 	/**
 	 * Find users according to TC rules
 	 */
 	public List<String> findUsersForTabComplete(String containing) {
 		containing = containing.toLowerCase();
-		
+
 		List<String> ret = new ArrayList<String>(users.size());
 		for(BNetUser user : getUsers()) {
 			String u = user.getShortLogonName();
@@ -309,13 +309,13 @@ public abstract class Connection extends Thread {
 		}
 		return ret;
 	}
-	
+
 	/**
 	 * Find users according to wildcard rules
 	 */
 	public List<BNetUser> findUsersWildcard(String pattern, BNetUser perspective) {
 		pattern = pattern.toLowerCase();
-		
+
 		List<BNetUser> ret = new ArrayList<BNetUser>(users.size());
 		for(BNetUser user : getUsers()) {
 			String u = user.getShortLogonName(perspective).toLowerCase();
@@ -337,7 +337,7 @@ public abstract class Connection extends Thread {
 	public String toShortString() {
 		if(cs.isValid() == null)
 			return cs.username + "@" + cs.myRealm;
-		
+
 		return profile.getName();
 	}
 
@@ -361,7 +361,7 @@ public abstract class Connection extends Thread {
 		disconnect(true);
 		connectionState = ConnectionState.FORCE_CONNECT;
 	}
-	
+
 	public abstract boolean isOp();
 	public abstract ProductIDs getProductID();
 
@@ -389,7 +389,7 @@ public abstract class Connection extends Thread {
 			bnlsSocket.close();
 			bnlsSocket = null;
 		}
-		
+
 		if(c) {
 			InetAddress address = MirrorSelector.getClosestMirror(GlobalSettings.bnlsServer, GlobalSettings.bnlsPort);
 			recieveInfo("Connecting to " + address + ":" + GlobalSettings.bnlsPort + ".");
@@ -397,7 +397,7 @@ public abstract class Connection extends Thread {
 			bnlsSocket.setKeepAlive(true);
 		}
 	}
-	
+
 	public void connect() {
 		if(isConnected())
 			return;
@@ -407,7 +407,7 @@ public abstract class Connection extends Thread {
 				socket.close();
 				socket = null;
 			}
-			
+
 			String v = cs.isValid();
 			if(v != null) {
 				recieveError(v);
@@ -420,7 +420,7 @@ public abstract class Connection extends Thread {
 		connectionState = ConnectionState.FORCE_CONNECT;
 		bnetConnected();
 	}
-	
+
 	public void disconnect(boolean allowReconnect) {
 		if(!isConnected() && allowReconnect)
 			return;
@@ -544,7 +544,7 @@ public abstract class Connection extends Thread {
 				} catch(Exception e) {
 					e.printStackTrace();
 				}
-				
+
 				if(mp3 == null)
 					mp3 = "[Music Player Error]";
 
@@ -565,7 +565,7 @@ public abstract class Connection extends Thread {
 	public void sendChat(String text, boolean allowCommands) {
 		sendChat(null, text, allowCommands, true);
 	}
-	
+
 	public static final int MAX_CHAT_LENGTH = 200;
 	/**
 	 * Helper function to send chat to battle.net
@@ -581,7 +581,7 @@ public abstract class Connection extends Thread {
 			return;
 		if(!isConnected())
 			return;
-		
+
 		ALLOWCOMMANDS: if(allowCommands) {
 			if(text.charAt(0) == '/') {
 				String postSlash = text.substring(1);
@@ -644,7 +644,7 @@ public abstract class Connection extends Thread {
 					break;
 				default:
 				}
-				
+
 				if(postSlash.length() > 0) {
 					if(parseCommand(myUser, postSlash, true))
 						return;
@@ -659,7 +659,7 @@ public abstract class Connection extends Thread {
 
 		if(text.length() == 0)
 			return;
-		
+
 		//Split up the text in to appropriate sized pieces
 		int pieceSize = MAX_CHAT_LENGTH - (prefix == null ? 0 : prefix.length());
 		ChatQueue cq = profile.getChatQueue();
@@ -692,11 +692,11 @@ public abstract class Connection extends Thread {
 	public BNetUser getMyUser() {
 		return myUser;
 	}
-	
+
 	public Profile getProfile() {
 		return profile;
 	}
-	
+
 	public boolean isInitialized() {
 		return initialized;
 	}
@@ -707,7 +707,7 @@ public abstract class Connection extends Thread {
 	public void dispose() {
 		disposed = true;
 		disconnect(false);
-		
+
 		synchronized(eventHandlers) {
 			for(EventHandler e : eventHandlers)
 				removeEventHandler(e);
@@ -729,7 +729,7 @@ public abstract class Connection extends Thread {
 	public String getChannel() {
 		return channelName;
 	}
-	
+
 	/**
 	 * Look for a BNetUser in the user list.
 	 * @param user "User[#N][@Realm]"
@@ -754,7 +754,7 @@ public abstract class Connection extends Thread {
 			return x;
 		return new BNetUser(this, user, perspective);
 	}
-	
+
 	/**
 	 * Clear all text waiting to send in the ChatQueue
 	 */
@@ -764,11 +764,11 @@ public abstract class Connection extends Thread {
 
 	/*
 	 * EventHandler methods follow
-	 * 
+	 *
 	 */
 	public void bnetConnected() {
 		users.clear();
-		
+
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
 				eh.bnetConnected(this);
@@ -794,12 +794,12 @@ public abstract class Connection extends Thread {
 			String c2 = command.substring(i + 1);
 			while(c2.charAt(0) == ' ')
 				c2 = c2.substring(1);
-			
+
 			boolean ret = parseCommand(user, c1, whisperBack);
 			ret |= parseCommand(user, c2, whisperBack);
 			return ret;
 		}
-		
+
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers) {
 				if(eh.parseCommand(this, user, command, whisperBack))
@@ -819,7 +819,7 @@ public abstract class Connection extends Thread {
 	public void joinedChannel(String channel, int flags) {
 		if(!isPrimaryConnection())
 			return;
-		
+
 		channelName = channel;
 		channelFlags = flags;
 		users.clear();
@@ -828,7 +828,7 @@ public abstract class Connection extends Thread {
 			for(EventHandler eh : eventHandlers)
 				eh.joinedChannel(this, channel);
 		}
-		
+
 		for(Connection c : profile.getConnections()) {
 			if(equals(c))
 				continue;
@@ -848,7 +848,7 @@ public abstract class Connection extends Thread {
 
 		if(!isPrimaryConnection())
 			return;
-		
+
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
 				eh.channelUser(this, user);
@@ -860,7 +860,7 @@ public abstract class Connection extends Thread {
 
 		if(!isPrimaryConnection())
 			return;
-		
+
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
 				eh.channelJoin(this, user);
@@ -869,10 +869,10 @@ public abstract class Connection extends Thread {
 
 	public void channelLeave(BNetUser user) {
 		removeUser(user);
-		
+
 		if(!isPrimaryConnection())
 			return;
-		
+
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
 				eh.channelLeave(this, user);
@@ -882,15 +882,15 @@ public abstract class Connection extends Thread {
 	public void recieveChat(String type, BNetUser user, String text) {
 		if(!isPrimaryConnection())
 			return;
-		
+
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
 				eh.recieveChat(this, type, user, text);
 		}
-		
+
 		if((text == null) || (text.length() == 0))
 			return;
-		
+
 		if((text.charAt(0) == getTrigger()) || text.equals("?trigger"))
 			parseCommand(user, text.substring(1), GlobalSettings.whisperBack);
 	}
@@ -898,7 +898,7 @@ public abstract class Connection extends Thread {
 	public void recieveEmote(String type, BNetUser user, String text) {
 		if(!isPrimaryConnection())
 			return;
-		
+
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
 				eh.recieveEmote(this, type, user, text);
@@ -927,7 +927,7 @@ public abstract class Connection extends Thread {
 			for(EventHandler eh : eventHandlers)
 				eh.recieveInfo(this, text);
 		}
-		
+
 		if(GlobalSettings.autoRejoin
 		&& (myUser != null)
 		&& text.startsWith(myUser.getShortLogonName() + " was kicked out of the channel")) {

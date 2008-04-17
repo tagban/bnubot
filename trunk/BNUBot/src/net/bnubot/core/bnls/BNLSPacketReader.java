@@ -19,14 +19,14 @@ public class BNLSPacketReader {
 	BNLSPacketId packetId;
 	int packetLength;
 	byte data[];
-	
+
 	public BNLSPacketReader(InputStream rawis) throws IOException {
 		BNetInputStream is = new BNetInputStream(rawis);
-		
+
 		packetLength = is.readWord() & 0x0000FFFF;
 		packetId = BNLSPacketId.values()[is.readByte() & 0x000000FF];
 		assert(packetLength >= 3);
-		
+
 		data = new byte[packetLength-3];
 		for(int i = 0; i < packetLength-3; i++)
 			data[i] = is.readByte();
@@ -37,18 +37,18 @@ public class BNLSPacketReader {
 			os.writeWord(packetLength);
 			os.writeByte(packetId.ordinal());
 			os.write(data);
-			
+
 			String msg = "RECV " + packetId.name();
 			if(Out.isDebug())
 				msg += "\n" + HexDump.hexDump(baos.toByteArray());
 			Out.debugAlways(getClass(), msg);
 		}
 	}
-	
+
 	public byte[] getData() {
 		return data;
 	}
-	
+
 	public BNetInputStream getInputStream() {
 		return new BNetInputStream(new ByteArrayInputStream(data));
 	}

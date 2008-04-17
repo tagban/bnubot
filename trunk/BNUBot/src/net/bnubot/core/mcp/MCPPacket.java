@@ -21,12 +21,12 @@ public class MCPPacket extends BNetOutputStream {
 		super(new ByteArrayOutputStream());
 		this.packetId = packetId;
 	}
-	
+
 	public void SendPacket(OutputStream out) {
 		byte data[] = ((ByteArrayOutputStream)this.out).toByteArray();
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		BNetOutputStream sckout = new BNetOutputStream(baos);
-		
+
 		try {
 			sckout.writeWord(data.length + 3);
 			sckout.writeByte(packetId.ordinal());
@@ -34,7 +34,7 @@ public class MCPPacket extends BNetOutputStream {
 		} catch(IOException e) {
 			Out.fatalException(e);
 		}
-		
+
 		data = baos.toByteArray();
 
 		if(GlobalSettings.packetLog) {
@@ -43,7 +43,7 @@ public class MCPPacket extends BNetOutputStream {
 				msg += "\n" + HexDump.hexDump(data);
 			Out.debugAlways(getClass(), msg);
 		}
-		
+
 		try {
 			out.write(data);
 			out.flush();

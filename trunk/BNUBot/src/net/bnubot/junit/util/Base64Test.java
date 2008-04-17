@@ -16,7 +16,7 @@ public class Base64Test extends TestCase {
 	public void testEncode() {
 		assertEquals("YXNkZg==", Base64.encode("asdf"));
 	}
-	
+
 	public void testDecode() {
 		assertEquals("asdf", Base64.decode("YXNkZg=="));
 	}

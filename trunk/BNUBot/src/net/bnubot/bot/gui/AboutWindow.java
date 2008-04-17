@@ -29,27 +29,27 @@ public class AboutWindow extends JDialog {
 		setTitle("About BNU-Bot");
 		setModal(true);
 		setResizable(false);
-		
+
 		pack();
 		WindowPosition.load(this);
 		setVisible(true);
 	}
-	
+
 	private static class ULabel extends JLabel {
 		private static final long serialVersionUID = -2808638250751879735L;
-		
+
 		public ULabel(String caption) {
 			super("<html><u>" + caption + "</u></html>");
 		}
 	}
-	
+
 	private static class LinkLabel extends JLabel {
 		private static final long serialVersionUID = -5801691479517417290L;
 
 		public LinkLabel(String url) {
 			this(url, url);
 		}
-		
+
 		public LinkLabel(String caption, final String url) {
 			super("<html><a href=" + url + ">" + caption + "</a></html>");
 			setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));

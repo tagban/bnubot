@@ -22,7 +22,7 @@ import org.apache.cayenne.query.SelectQuery;
 public class DatabaseContext {
 	private static ThreadLocal<ObjectContext> contexts = new ThreadLocal<ObjectContext>();
 	private static long lastFlush = 0;
-	
+
 	static {
 		try {
 			Configuration.initializeSharedConfiguration();
@@ -30,17 +30,17 @@ public class DatabaseContext {
 			contexts = null;
 		}
 	}
-	
+
 	public static ObjectContext getContext() {
 		if(contexts == null)
 			return null;
-		
+
 		ObjectContext oc = contexts.get();
 		if(oc == null) {
 			oc = DataContext.createDataContext();
 			contexts.set(oc);
 		}
-		
+
 		// Every 20 minutes...
 		long now = System.currentTimeMillis();
 		if(now - lastFlush > 20 * 60 * 1000) {
@@ -49,7 +49,7 @@ public class DatabaseContext {
 		}
 		return oc;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private static void flush(ObjectContext context) {
 		long defaultMaxAge = 90;
@@ -58,12 +58,12 @@ public class DatabaseContext {
 			if(rank != null)
 				defaultMaxAge = rank.getExpireDays();
 		}
-		
+
 		for(BNLogin login : (List<BNLogin>)context.performQuery(new SelectQuery(BNLogin.class))) {
 			long age = login.getLastSeen().getTime();
 			age = System.currentTimeMillis() - age;
 			age /= 86400000l; // convert to days
-			
+
 			long maxAge = defaultMaxAge;
 			Account account = login.getAccount();
 			if(account != null) {
@@ -71,28 +71,28 @@ public class DatabaseContext {
 				if(rank != null)
 					maxAge = rank.getExpireDays();
 			}
-			
+
 			if(age <= maxAge)
 				continue;
-			
+
 			if(account != null)
 				try {
 					Mail.send(account, account, "Your login [ " + login.getLogin() + " ] has been removed due to inactivity (" + age + " days)");
 				} catch (Exception e) {
 					Out.exception(e);
 				}
-				
+
 			Out.error(DatabaseContext.class, "Removing " + login.getLogin() + " due to inactivity (" + age + " days)");
 			context.deleteObject(login);
 		}
-		
+
 		try {
 			context.commitChanges();
 		} catch(Exception e) {
 			context.rollbackChanges();
 			Out.exception(e);
 		}
-		
+
 		for(Account account : (List<Account>)context.performQuery(new SelectQuery(Account.class))) {
 			if(account.getBnLogins().size() != 0)
 				continue;
@@ -101,7 +101,7 @@ public class DatabaseContext {
 				account.setRank(Rank.get(0));
 				continue;
 			}
-			
+
 			Account recruiter = account.getRecruiter();
 			if(recruiter != null)
 				try {
@@ -109,11 +109,11 @@ public class DatabaseContext {
 				} catch (Exception e) {
 					Out.exception(e);
 				}
-			
+
 			Out.error(DatabaseContext.class, "Removing " + account.getName() + " which has no active BNLogins");
 			context.deleteObject(account);
 		}
-		
+
 		try {
 			context.commitChanges();
 		} catch(Exception e) {

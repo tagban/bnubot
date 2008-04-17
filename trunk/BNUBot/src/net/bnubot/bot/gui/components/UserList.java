@@ -45,12 +45,12 @@ public class UserList extends JPanel {
 		JLabel ping;
 		JPopupMenu menu;
 	}
-	
+
 	private final Hashtable<BNetUser, UserInfo> users = new Hashtable<BNetUser, UserInfo>();
 	private final Box box = new Box(BoxLayout.Y_AXIS);
 	private final ColorScheme colors = ColorScheme.getColors();
 	private final GuiEventHandler geh;
-	
+
 	/**
 	 * Get UserInfo from JLabel
 	 * @param lbl The JLabel to look for
@@ -65,40 +65,40 @@ public class UserList extends JPanel {
 		}
 		return null;
 	}
-	
+
 	private UserInfo getUI(BNetUser user) {
 		UserInfo ui = users.get(user);
 		if(ui != null)
 			return ui;
-		
+
 		Enumeration<UserInfo> en = users.elements();
 		while(en.hasMoreElements()) {
 			ui = en.nextElement();
 			if(ui.user.equals(user))
 				return ui;
 		}
-		
+
 		return null;
 	}
-	
+
 	public UserList(GuiEventHandler geh) {
 		super(new BorderLayout());
 		this.geh = geh;
 		setBackground(colors.getBackgroundColor());
-		
+
 		add(box, BorderLayout.NORTH);
 	}
-	
+
 	public void clear() {
 		box.removeAll();
 		users.clear();
 		validate();
 	}
-	
+
 	public int count() {
 		return users.size();
 	}
-	
+
 	private int getInsertPosition(int priority) {
 		for(int i = 0; i < box.getComponentCount(); i++) {
 			Container box2 = (Container)box.getComponent(i);
@@ -114,11 +114,11 @@ public class UserList extends JPanel {
 		}
 		return box.getComponentCount();
 	}
-	
+
 	private UserInfo getUserInfo(ActionEvent arg0) {
 		JMenuItem jmi = (JMenuItem) arg0.getSource();
 		JPopupMenu jp = (JPopupMenu) jmi.getParent();
-		
+
 		Enumeration<UserInfo> en = users.elements();
 		while(en.hasMoreElements()) {
 			UserInfo ui = en.nextElement();
@@ -129,14 +129,14 @@ public class UserList extends JPanel {
 		}
 		return null;
 	}
-	
+
 	public void showUser(final Connection source, BNetUser user) {
 		UserInfo ui = getUI(user);
 		if(ui == null) {
 			ui = new UserInfo();
 			ui.user = user;
 			ui.priority = ChannelListPriority.getPrioByFlags(user.getFlags());
-			
+
 			ui.menu = new JPopupMenu();
 			ui.menu.add(new JLabel(user.toString() + user.getStatString().toString()));
 			JMenuItem menuItem = new JMenuItem("Whisper");
@@ -167,21 +167,21 @@ public class UserList extends JPanel {
 		}
 		if(ui.label == null) {
 			Color fg = colors.getUserNameListColor(user.getFlags(), user.equals(source.getMyUser()));
-			
+
 			ui.label = new JLabel(user.toString(GlobalSettings.bnUserToStringUserList));
 			ui.label.setForeground(fg);
-			
+
 			ui.ping = new JLabel();
 			ui.ping.setForeground(fg);
-			
+
 			JPanel lbl = new JPanel(new BorderLayout());
 			lbl.setBackground(colors.getBackgroundColor());
 			lbl.add(ui.label, BorderLayout.WEST);
 			lbl.add(Box.createHorizontalGlue(), BorderLayout.CENTER);
 			lbl.add(ui.ping, BorderLayout.EAST);
-			
+
 			box.add(lbl, getInsertPosition(ui.priority));
-			
+
 			ui.label.addMouseListener(new MouseListener() {
 				public void mouseClicked(MouseEvent arg0) {
 					JLabel jl = (JLabel) arg0.getSource();
@@ -210,7 +210,7 @@ public class UserList extends JPanel {
 				public void mouseReleased(MouseEvent arg0) {}
 			});
 		}
-		
+
 		//Check if the user's flags updated
 		if(ui.lastFlags != ui.user.getFlags()) {
 			//They did; order the list appropriately
@@ -223,18 +223,18 @@ public class UserList extends JPanel {
 				box.remove(x);
 				box.add(x, getInsertPosition(newPriority));
 			}
-			
+
 			Color fg = colors.getUserNameListColor(ui.lastFlags, ui.user.equals(source.getMyUser()));
 			ui.label.setForeground(fg);
 			ui.ping.setForeground(fg);
 		}
-				
+
 		Icon icon = null;
 		ProductIDs product = user.getStatString().getProduct();
 		int specialIcon = user.getStatString().getIcon();
 		if(specialIcon == product.getDword())
 			specialIcon = 0;
-		
+
 		BNetIcon[] icons = IconsDotBniReader.getIcons();
 		boolean keepThisIcon = false;
 		if(icons != null)
@@ -249,7 +249,7 @@ public class UserList extends JPanel {
 					icon = element.getIcon();
 				}
 			}
-		
+
 		if(!keepThisIcon) {
 			if(GlobalSettings.enableLegacyIcons) {
 				switch(product) {
@@ -268,7 +268,7 @@ public class UserList extends JPanel {
 					icons = null;
 					break;
 				}
-				
+
 				if(icons != null) {
 					switch(product) {
 					case STAR:
@@ -287,7 +287,7 @@ public class UserList extends JPanel {
 					case W2BN:
 						w = Math.max(Math.min(user.getStatString().getWins(), 10), 0);
 						icon = icons[IconsDotBniReader.LEGACY_W2BNWIN + w].getIcon();
-						
+
 						r = user.getStatString().getLadderRank();
 						if(r > 0) {
 							if(r == 1)
@@ -296,7 +296,7 @@ public class UserList extends JPanel {
 								icon = icons[IconsDotBniReader.LEGACY_LADDER].getIcon();
 						}
 						break;
-						
+
 					default:
 						for(BNetIcon element : icons) {
 							if(element.useFor(ui.user.getFlags(), specialIcon)) {
@@ -310,14 +310,14 @@ public class UserList extends JPanel {
 				}
 			}
 		}
-		
+
 		if(icon != null)
 			ui.label.setIcon(icon);
-		
+
 		icons = IconsDotBniReader.getIconsLag();
 		if((icons != null) && (user.getPing() != null)) {
 			int ping = user.getPing().intValue();
-			
+
 			if((user.getFlags() & 0x10) != 0)
 				ui.ping.setIcon(icons[7].getIcon());
 			else if(ping < 0)
@@ -337,14 +337,14 @@ public class UserList extends JPanel {
 			else
 				ui.ping.setIcon(icons[6].getIcon());
 		}
-		
+
 		users.put(user, ui);
 		validate();
 	}
-	
+
 	public void removeUser(BNetUser user) {
 		UserInfo ui = getUI(user);
-		
+
 		if(ui != null) {
 			box.remove(ui.label.getParent());
 			ui.label = null;

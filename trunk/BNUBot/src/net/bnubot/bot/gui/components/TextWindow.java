@@ -46,23 +46,23 @@ public class TextWindow extends JScrollPane {
 			setContentType("text/html");
 			setBackground(cs.getBackgroundColor());
 		}
-		
+
 		@Override
 		public void paintComponents(Graphics g) {
 			if(!disableRedraw)
 				super.paintComponents(g);
 		}
 	}
-	
+
 	private Runnable scrollDown = null;
-	
+
 	private final ColorScheme cs = ColorScheme.getColors();
 	private final JEditorPane jep;
 	private String head;
 	private final String foot;
 	private String html;
 	private boolean disableRedraw = false;
-	
+
 	/**
 	 * When set, a separator will be added before the next line of information
 	 */
@@ -72,7 +72,7 @@ public class TextWindow extends JScrollPane {
 		super(VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_NEVER);
 		jep = new myJEP();
 		((Container)getComponent(0)).add(jep);
-		
+
 		head = "<html><head><style type=\"text/css\">";
 		head += " body	{font-family: verdana, courier, sans-serif; font-size: 10px;}";
 		head += " .timestamp	{color: #" + makeColor(cs.getForegroundColor()) + ";}";
@@ -85,69 +85,69 @@ public class TextWindow extends JScrollPane {
 		foot = "</body></html>";
 		setText();
 	}
-	
+
 	public void setText() {
 		if(html.length() > 0x8000) {
 			int i = html.indexOf("\n", 0);
 			if(i > 0)
 				html = html.substring(i + 6);
 		}
-		
+
 		if(scrollDown == null)
 			scrollDown = new Runnable() {
 				public void run() {
 					disableRedraw = true;
 					jep.setText(head + html + foot);
 					validate();
-					
+
 					try {
 						JScrollBar vsb = getVerticalScrollBar();
 						vsb.setValue(vsb.getMaximum());
 					} catch(Exception e) {}
-					
+
 					disableRedraw = false;
 					validate();
 				}
 			};
-				
+
 		//Scroll to the bottom
 		SwingUtilities.invokeLater(scrollDown);
 	}
-	
+
 	public String makeColor(Color c) {
 		String color = "000000" + Integer.toHexString(c.getRGB());
 		return color.substring(color.length() - 6);
 	}
-	
+
 	public void makeFont(Color c) {
 		html += "<font color=\"#" + makeColor(c) + "\">";
 	}
-	
+
 	public void appendDate() {
 		if(addSeparator) {
 			html += "<hr>\n";
 			addSeparator = false;
 		}
-		
+
 		html += "<font class=\"timestamp\">[";
 		html += TimeFormatter.getTimestamp();
 		html += "] </font>";
 	}
-	
+
 	private static Pattern pattern = null;
 	public String safeHtml(String in) {
 		if(pattern == null)
 			pattern = Pattern.compile("((.|\n)*?)\\b((([a-zA-Z]{3,6}://)|(www.)){1}([a-zA-Z0-9-.]+)([^-]\\.[a-zA-Z]{2,5}){1}((/\\S+){1}|\\s*?)/?)((.|\n)*)");
-		
+
 		try {
 			Matcher matcher = pattern.matcher(in);
-			
+
 			if(matcher.matches())
 				return safeHtml(matcher.group(1))
 					+ "<a href=\"" + matcher.group(3) + "\">" + matcher.group(3) + "</a>"
 					+ safeHtml(matcher.group(11));
 		} catch(StackOverflowError e) {}
-		
+
 		return in
 			.replaceAll("&", "&amp;")
 			.replaceAll("<", "&lt;")
@@ -155,7 +155,7 @@ public class TextWindow extends JScrollPane {
 			.replaceAll("\n", "<br>\n")
 			.replaceAll("  ", " &nbsp;");
 	}
-	
+
 	public void append(String text, Color col) {
 		appendDate();
 		makeFont(col);
@@ -163,7 +163,7 @@ public class TextWindow extends JScrollPane {
 		html += "</font><br>\n";
 		setText();
 	}
-	
+
 	public void append(String text, String clazz) {
 		appendDate();
 		html += "<font class=\"" + clazz + "\">";
@@ -171,7 +171,7 @@ public class TextWindow extends JScrollPane {
 		html += "</font><br>\n";
 		setText();
 	}
-	
+
 	public void append2(String text, Color col, String text2, Color col2) {
 		appendDate();
 		makeFont(col);
@@ -182,7 +182,7 @@ public class TextWindow extends JScrollPane {
 		html += "</font><br>\n";
 		setText();
 	}
-	
+
 	public void append3(String text, Color col, String text2, Color col2, String text3, Color col3) {
 		appendDate();
 		makeFont(col);
@@ -196,35 +196,35 @@ public class TextWindow extends JScrollPane {
 		html += "</font><br>\n";
 		setText();
 	}
-	
+
 	public void addSeparator() {
 		addSeparator = true;
 	}
-	
+
 	public void channelInfo(String text) {
 		append(text, "channel");
 	}
-	
+
 	public void recieveInfo(String text) {
 		append(text, "info");
 	}
-	
+
 	public void recieveError(String text) {
 		append(text, "error");
 	}
-	
+
 	public void recieveDebug(String text) {
 		append(text, "debug");
 	}
-	
+
 	public void userChat(String type, BNetUser user, String text, boolean isSelf) {
 		Color c;
 		if(isSelf)
 			c = cs.getSelfUserNameColor(user.getFlags());
 		else
 			c = cs.getUserNameColor(user.getFlags());
-		
-		if(type == null)		
+
+		if(type == null)
 			append2(
 				"<" + user.toString() + "> ",
 				c,
@@ -239,9 +239,9 @@ public class TextWindow extends JScrollPane {
 				text,
 				cs.getChatColor(user.getFlags()));
 	}
-	
+
 	public void whisperSent(String type, BNetUser user, String text) {
-		if(type == null)		
+		if(type == null)
 			append2(
 				"<To: " + user.toString() + "> ",
 				cs.getUserNameColor(user.getFlags()),
@@ -256,9 +256,9 @@ public class TextWindow extends JScrollPane {
 				text,
 				cs.getWhisperColor(user.getFlags()));
 	}
-	
+
 	public void whisperRecieved(String type, BNetUser user, String text) {
-		if(type == null)		
+		if(type == null)
 			append2(
 				"<From: " + user.toString() + "> ",
 				cs.getUserNameColor(user.getFlags()),
@@ -273,9 +273,9 @@ public class TextWindow extends JScrollPane {
 				text,
 				cs.getWhisperColor(user.getFlags()));
 	}
-	
+
 	public void userEmote(String type, BNetUser user, String text) {
-		if(type == null)		
+		if(type == null)
 			append(
 				"<" + user.toString() + " " + text + ">",
 				cs.getEmoteColor(user.getFlags()));

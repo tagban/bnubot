@@ -21,11 +21,11 @@ public class ConfigCheckBox extends Box {
 		add(Box.createHorizontalGlue());
 		theBox.setBorder(BorderFactory.createLoweredBevelBorder());
 	}
-	
+
 	public void setSelected(boolean b) {
 		theBox.setSelected(b);
 	}
-	
+
 	public boolean isSelected() {
 		return theBox.isSelected();
 	}
@@ -33,7 +33,7 @@ public class ConfigCheckBox extends Box {
 	public void addChangeListener(ChangeListener l) {
 		theBox.addChangeListener(l);
 	}
-	
+
 	public String getText() {
 		return theBox.getText();
 	}

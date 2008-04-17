@@ -11,11 +11,11 @@ import net.bnubot.util.Out;
 public class CLIThread extends Thread {
 	private Connection c;
 	private boolean disabled = false;
-	
+
 	public CLIThread(Connection c) {
 		this.c = c;
 	}
-	
+
 	@Override
 	public void run() {
 		try {
@@ -38,7 +38,7 @@ public class CLIThread extends Thread {
 			Out.fatalException(e);
 		}
 	}
-	
+
 	public void disable() {
 		disabled = true;
 	}

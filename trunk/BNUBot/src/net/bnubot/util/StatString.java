@@ -13,7 +13,7 @@ import net.bnubot.core.bncs.ProductIDs;
 
 public class StatString {
 	private static final String[] D2Classes = {"Amazon", "Sorceress", "Necromancer", "Paladin", "Barbarian", "Druid", "Assassin" };
-	
+
 	private boolean parsed = false;
 	private String[] statString = null;
 	private String[] statString2 = null;
@@ -30,12 +30,12 @@ public class StatString {
 	private int ladderRank = 0;
 	private boolean spawn = false;
 	private BNetInputStream is = null;
-	
+
 	public StatString(String statString) {
 		this.statString = statString.split(" ", 2);
 		if(this.statString.length == 2)
 			this.statString2 = this.statString[1].split(" ");
-		
+
 		try {
 			parse();
 		} catch(Exception e) {
@@ -43,7 +43,7 @@ public class StatString {
 			Out.exception(e);
 		}
 	}
-	
+
 	public StatString(BNetInputStream is) {
 		this.is = is;
 		try {
@@ -52,15 +52,15 @@ public class StatString {
 			Out.exception(e);
 		}
 	}
-	
+
 	public ProductIDs getProduct() {
 		return product;
 	}
-	
+
 	public int getIcon() {
 		return icon;
 	}
-	
+
 	public String getIconName(ProductIDs product, int icon) {
 		switch(product) {
 		// http://www.battle.net/war3/ladder/war3-ladder-info-laddericons.aspx
@@ -71,7 +71,7 @@ public class StatString {
 			case IconIDs.ICON_W3N1:
 			case IconIDs.ICON_W3U1:
 			case IconIDs.ICON_W3R1:	return "Orc Peon";
-			
+
 			case IconIDs.ICON_W3H2:	return "Human Footman";
 			case IconIDs.ICON_W3H3:	return "Human Knight";
 			case IconIDs.ICON_W3H4:	return "Human Archmage";
@@ -103,7 +103,7 @@ public class StatString {
 			case IconIDs.ICON_W3U1:
 			case IconIDs.ICON_W3R1:
 			case IconIDs.ICON_W3D1:	return "Orc Peon";
-			
+
 			case IconIDs.ICON_W3H2:	return "Human Rifleman";
 			case IconIDs.ICON_W3H3:	return "Human Sorceress";
 			case IconIDs.ICON_W3H4:	return "Human Spellbreaker";
@@ -137,15 +137,15 @@ public class StatString {
 			}
 			break;
 		}
-		
+
 		return "Unknown " + HexDump.DWordToPretty(icon);
 	}
-	
+
 	public void parse() throws IOException {
 		if(parsed)
 			return;
 		parsed = true;
-		
+
 		if(is == null) {
 			try {
 				product = ProductIDs.fromDWord(HexDump.StringToDWord(statString[0]));
@@ -193,12 +193,12 @@ public class StatString {
 						break;
 					statString2 = is.readNTString().split(" ");
 				}
-				
+
 				if(statString2.length != 9) {
 					prettyEnd = "\ninvalid length " + statString2.length;
 					return;
 				}
-	
+
 				try {
 					ladderRating = Integer.parseInt(statString2[0]);
 					ladderRank = Integer.parseInt(statString2[1]);
@@ -211,7 +211,7 @@ public class StatString {
 					try {
 						icon = HexDump.StringToDWord(statString2[8]);
 					} catch(Exception e) {}
-		
+
 					if(ladderRating != 0)
 						prettyEnd += ", Ladder rating " + ladderRating;
 					if(ladderRank != 0)
@@ -234,11 +234,11 @@ public class StatString {
 					Out.exception(e);
 				}
 				break;
-	
+
 			case D2DV:
 			case D2XP:
 				byte[] data = null;
-				
+
 				if(is == null) {
 					statString2 = statString[0].substring(4).split(",", 3);
 					data = statString2[2].getBytes();
@@ -261,41 +261,41 @@ public class StatString {
 					if(is.readByte() != 0)
 						throw new IOException("after read 33 bytes of data, no null found");
 				}
-				
+
 				//PX2DUSEast,EsO-SILenTNiGhT,'S
 				//PX2DUSEast,getoutof_myway ,?++T
-				
+
 				prettyStart += ", Realm " + statString2[0];
 				//TODO: Prefix
 				prettyStart += ", ";
-				
+
 			    //                                       CC                                  CL FL AC
 			    //84 80 53 02 02 02 02 0F FF 50 02 02 FF 02 FF FF FF FF FF 4C FF FF FF FF FF 14 E8 84 FF FF 01 FF FF - ?S.....P...L..
 				//84 80 FF FF FF FF FF FF FF FF FF FF FF 03 FF FF FF FF FF FF FF FF FF FF FF 01 C5 80 80 80 01 FF FF - ?..ŀ.
 			    //84 80 3B 02 02 02 02 14 FF FF 03 03 60 03 FF FF FF FF FF FF FF FF FF FF 32 13 E4 84 FF FF 01 FF FF - ?;.......`.2..
 			    //00             05             10             15             20             25             30
-				
+
 				if(data.length != 33)
 					throw new IOException("data.length != 33 (" + data.length + ")");
-				
+
 				byte version = (byte)(data[0] & 0x7F);
 				if(version != 4)
 					throw new IOException("version != 4 (" + version + ")");
-				
+
 				byte charClass = (byte)(data[13]-1);
 				if((charClass < 0) || (charClass > 6))
 					charClass = 7;
 				boolean female = ((charClass == 0) || (charClass == 1) || (charClass == 6));
 			    charLevel = (int)data[25];
-			    
+
 			    byte charFlags = data[26];
 			    boolean hardcore = (charFlags & 0x04) != 0;
 			    boolean dead = (charFlags & 0x08) != 0;
 			    boolean expansion = (charFlags & 0x20) != 0;
 			    boolean ladder = (charFlags & 0x40) != 0;
-			    
+
 			    byte actsCompleted = (byte)((data[27] & 0x3E) >> 2);
-			    
+
 			    byte difficulty;
 			    if(expansion) {
 			    	difficulty = (byte)(actsCompleted / 5);
@@ -304,7 +304,7 @@ public class StatString {
 			    	difficulty = (byte)(actsCompleted / 4);
 			    	actsCompleted = (byte)((actsCompleted % 45) + 1);
 			    }
-			    
+
 			    if(expansion) {
 			        switch(difficulty) {
 			        case 0: break;
@@ -322,20 +322,20 @@ public class StatString {
 		            default: prettyEnd = "??d=" + difficulty; break;
 			        }
 			    }
-			    
+
 			    prettyEnd += statString2[1];
-			    
+
 			    prettyEnd += ", a ";
-			    
+
 			    if(dead)
 			    	prettyEnd += "dead ";
 			    if(hardcore)
 			    	prettyEnd += "hardcore ";
 			    if(ladder)
 			    	prettyEnd += "ladder ";
-			    
+
 			    prettyEnd += "level " + charLevel + " " + D2Classes[charClass] + " (" + (expansion ? "Expansion" : "Classic") + ")";
-			    
+
 			    if(difficulty < 3) {
 			    	prettyEnd += " currently in ";
 			        switch(difficulty) {
@@ -348,10 +348,10 @@ public class StatString {
 			    } else {
 			    	prettyEnd += " who has beaten the game";
 			    }
-				
-				
+
+
 				break;
-				
+
 			case WAR3:
 			case W3XP:
 				if(is != null) {
@@ -359,23 +359,23 @@ public class StatString {
 						break;
 					statString2 = is.readNTString().split(" ");
 				}
-				
+
 				if(statString2.length >= 2) {
 					//3RAW 1R3W 1 UNB
 					icon = HexDump.StringToDWord(statString2[0]);
 					level = Integer.parseInt(statString2[1]);
-	
+
 					if(icon != 0)
 						prettyEnd += ", " + getIconName(product, icon) + " icon";
 					if(level != 0)
 						prettyEnd += ", Level " + level;
-					
+
 					if(statString2.length >= 3) {
 						byte[] bytes = statString2[2].getBytes();
 						String clan = "";
 						for(int j = bytes.length-1; j >= 0; j--)
 							clan += (char)bytes[j];
-							
+
 						prettyEnd += ", in Clan " + clan;
 					}
 				} else {
@@ -383,7 +383,7 @@ public class StatString {
 					prettyEnd += statString[1];
 				}
 				break;
-				
+
 			default:
 				prettyEnd += ", statstr = ";
 				if(is == null) {
@@ -399,37 +399,37 @@ public class StatString {
 	public String toString() {
 		if(pretty != null)
 			return pretty;
-		
+
 		pretty = prettyStart;
-		
+
 		if(pretty == null) {
 			pretty = prettyEnd;
 		} else {
 			if(prettyEnd != null)
 				pretty += prettyEnd;
 		}
-		
+
 		if(pretty == null)
 			pretty = new String();
-		
+
 		return pretty;
 	}
 
 	public String toString2() {
 		if(prettyEnd != null)
 			return prettyEnd;
-		
+
 		return new String();
 	}
-	
+
 	public Integer getWins() {
 		return wins;
 	}
-	
+
 	public Integer getLevel() {
 		return level;
 	}
-	
+
 	public Integer getCharLevel() {
 		return charLevel;
 	}

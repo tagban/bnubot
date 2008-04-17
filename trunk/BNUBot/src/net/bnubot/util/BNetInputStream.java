@@ -47,11 +47,11 @@ public class BNetInputStream extends DataInputStream {
 		qw |= (qw2 << 32l);
 		return qw;
 	}
-	
+
 	public StatString readStatString() {
 		return new StatString(this);
 	}
-	
+
 	public String readCommaTermString() throws IOException {
 		String out = new String();
 		do {
@@ -63,11 +63,11 @@ public class BNetInputStream extends DataInputStream {
 			out += (char)c;
 		} while(true);
 	}
-	
+
 	public String readNTString() throws IOException {
 		return new String(readNTBytes());
 	}
-	
+
 	public String readNTStringUTF8() throws IOException {
 		return readNTString("UTF-8");
 	}
@@ -75,7 +75,7 @@ public class BNetInputStream extends DataInputStream {
 	public String readNTString(String encoding) throws IOException {
 		return new String(readNTBytes(), encoding);
 	}
-	
+
 	public byte[] readNTBytes() throws IOException {
 		int length = 64;
 		int pos = 0;
@@ -88,7 +88,7 @@ public class BNetInputStream extends DataInputStream {
 					out[i] = bb.get(i);
 				return out;
 			}
-			
+
 			pos++;
 			if(pos > length) {
 				length += length;

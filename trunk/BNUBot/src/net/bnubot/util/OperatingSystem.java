@@ -12,7 +12,7 @@ public enum OperatingSystem {
 	OSX,
 	LINUX,
 	UNKNOWN;
-	
+
 	private static OperatingSystem initOS() {
 		String osName = System.getProperty("os.name");
 		if(osName.equals("Mac OS X"))
@@ -23,9 +23,9 @@ public enum OperatingSystem {
 			return LINUX;
 		return UNKNOWN;
 	}
-	
+
 	public static final OperatingSystem userOS = initOS();
-	
+
 	/**
 	 * Get a displayable operating system version
 	 */
@@ -33,7 +33,7 @@ public enum OperatingSystem {
 		Properties p = System.getProperties();
 		String osName = p.getProperty("os.name");
 		String osVersion = p.getProperty("os.version");
-		
+
 		switch(userOS) {
 		case OSX:
 			osName += " " + osVersion;
@@ -54,11 +54,11 @@ public enum OperatingSystem {
 			osName += " " + p.getProperty("sun.os.patch.level");
 			break;
 		}
-		
+
 		osName += " (" + p.getProperty("os.arch") + ")";
 		return osName;
 	}
-	
+
 	public static String javaVersion() {
 		return "Java " + System.getProperties().getProperty("java.version");
 	}

@@ -23,22 +23,22 @@ public class ClanMOTDEditor extends JFrame {
 	Box b;
 	JTextArea txtMOTD;
 	JButton btnSave;
-	
+
 	public ClanMOTDEditor(Connection c) {
 		super("Clan MOTD Editor");
 		this.c = c;
-		
+
 		initializeGui();
-		
+
 		setBounds(0, 0, 300, 150);
 	}
-	
+
 	public void initializeGui() {
 		b = new Box(BoxLayout.Y_AXIS);
 		{
 			txtMOTD = new JTextArea();
 			b.add(txtMOTD);
-			
+
 			btnSave = new JButton("Save");
 			btnSave.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
@@ -53,7 +53,7 @@ public class ClanMOTDEditor extends JFrame {
 		}
 		add(b);
 	}
-	
+
 	public void setMOTD(String text) {
 		txtMOTD.setText(text);
 	}

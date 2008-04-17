@@ -18,19 +18,19 @@ public class TriviaItem {
 	private String hint0;
 	private String hint1;
 	private String hint2;
-	
+
 	private String scrambleWord(String word) {
 		List<Character> bytes = new LinkedList<Character>();
 		for(int i = 0; i < word.length(); i++)
 			bytes.add(word.charAt(i));
-		
+
 		String out = "";
 		while(bytes.size() > 0)
 			out += bytes.remove((int)(Math.random() * bytes.size()));
-		
+
 		return out;
 	}
-	
+
 	private boolean isAlphaNumeric(byte b) {
 		if((b >= 'a') && (b <= 'z'))
 			return true;
@@ -38,10 +38,10 @@ public class TriviaItem {
 			return true;
 		if((b >= '0') && (b <= '9'))
 			return true;
-		
+
 		return false;
 	}
-	
+
 	private void makeHints() {
 		byte[] a = answers[0].getBytes();
 		hint0 = "";
@@ -70,7 +70,7 @@ public class TriviaItem {
 			}
 		}
 	}
-	
+
 	public TriviaItem(String line, String defaultCategory) {
 		if(line.charAt(0) == '/') {
 			// "/category/answer1/answer2//question"
@@ -85,15 +85,15 @@ public class TriviaItem {
 			// "Question*answer*answer2*..."
 			// "Scramble*word"
 			this.category = defaultCategory;
-			
+
 			String splitRegex = "\\*";
-			
+
 			String qa[] = line.split(splitRegex, 2);
 			if(qa.length != 2) {
 				splitRegex = "\\|";
 				qa = line.split(splitRegex, 2);
 			}
-			
+
 			if(qa.length == 2) {
 				if("Scramble".equals(qa[0])) {
 					this.question = "Scramble: " + scrambleWord(qa[1]);
@@ -106,26 +106,26 @@ public class TriviaItem {
 			} else
 				throw new IllegalArgumentException(line);
 		}
-		
+
 		this.answersAlphaNumeric = new String[this.answers.length];
 		for(int i = 0; i < this.answers.length; i++)
 			this.answersAlphaNumeric[i] = HexDump.getAlphaNumerics(this.answers[i]);
-		
+
 		makeHints();
 	}
-	
+
 	public String getCategory() {
 		return category;
 	}
-	
+
 	public String getQuestion() {
 		return question;
 	}
-	
+
 	public String[] getAnswers() {
 		return answers;
 	}
-	
+
 	public String[] getAnswersAlphaNumeric() {
 		return answersAlphaNumeric;
 	}

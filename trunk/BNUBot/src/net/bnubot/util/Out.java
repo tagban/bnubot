@@ -43,7 +43,7 @@ public class Out {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Get the lines of the stack trace relevant to the project
 	 * @param e The exception source
@@ -53,7 +53,7 @@ public class Out {
 		StringWriter sw = new StringWriter();
 		e.printStackTrace(new PrintWriter(sw));
 		String lines[] = sw.toString().trim().split("\n");
-		
+
 		String out = lines[0];
 		boolean ellipsis = false;
 		for(String line : lines) {
@@ -69,14 +69,14 @@ public class Out {
 		}
 		return out;
 	}
-	
+
 	private static Connection getOutConnection() {
 		final Connection oc = outConnection.get();
 		if(oc != null)
 			return oc;
 		return outConnectionDefault;
 	}
-	
+
 	/**
 	 * Display the stack trace in an appropriate location
 	 * @param e The exception source
@@ -106,7 +106,7 @@ public class Out {
 		else
 			e.printStackTrace();
 	}
-	
+
 	/**
 	 * Attempt to popup a window with a stack trace, and exit with code 1
 	 * @param e The exception source
@@ -157,7 +157,7 @@ public class Out {
 		else if(outStream != null)
 			outStream.println("[" + TimeFormatter.getTimestamp() + "] (" + source.getSimpleName() + ") DEBUG " + text);
 	}
-	
+
 	/**
 	 * Displays information
 	 * @param source source of the info
@@ -179,7 +179,7 @@ public class Out {
 	public static void setOutputStream(PrintStream s) {
 		outStream = s;
 	}
-	
+
 	/**
 	 * Sets the Connection for the information to be displayed to for this thread.
 	 * @param g Connection to send messages to
@@ -196,7 +196,7 @@ public class Out {
 		if(outConnection.get() == null)
 			outConnection.set(g);
 	}
-	
+
 	/**
 	 * Sets the Connection for the information to be displayed to when none is specified for the thread
 	 * @param g Connection to send messages to

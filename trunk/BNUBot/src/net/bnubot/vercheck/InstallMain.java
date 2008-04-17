@@ -24,17 +24,17 @@ public class InstallMain {
 				System.exit(0);
 			downloadFolder = jfc.getSelectedFile().getAbsolutePath();
 		} catch(Exception e) {}
-		
+
 		Out.setDebug(true);
-		
+
 		String command = "java -jar \"" + downloadFolder + "/BNUBot.jar\"";
 		String jarFileName = "BNUBot.jar";
-		
+
 		switch(OperatingSystem.userOS) {
 		case OSX:
 			// We're on OSX, so let's try to create an application
 			String appdir = "BNUBot.app";
-			
+
 			jarFileName = "Contents/Resources/Java/" + jarFileName;
 			if(downloadFolder == null)
 				downloadFolder = appdir;
@@ -42,22 +42,22 @@ public class InstallMain {
 				downloadFolder += "/" + appdir;
 			command = downloadFolder + "/Contents/MacOS/JavaApplicationStub";
 			break;
-			
+
 		case WINDOWS:
 			command = downloadFolder + "/BNUBot.exe";
 			break;
 		}
-		
+
 		if(!VersionCheck.checkVersion(true, ReleaseType.Stable, jarFileName, downloadFolder)) {
 			try {
 				JOptionPane.showMessageDialog(null, "Install failed!", "Error", JOptionPane.ERROR_MESSAGE);
 			} catch(Exception e) {}
-			
+
 			System.exit(1);
 		}
-		
+
 		Runtime rt = Runtime.getRuntime();
-		
+
 		// If launching in OSX, chmod the stub
 		if(command.endsWith("/JavaApplicationStub")) {
 			final String cmd_chmod = "chmod 755 " + command;
@@ -66,14 +66,14 @@ public class InstallMain {
 			if(ret != 0)
 				throw new IllegalStateException(Integer.toString(ret));
 		}
-		
+
 		// Ask if we should launch the bot
 		try {
 			int opt = JOptionPane.showConfirmDialog(null, "Install complete. Launch BNU-Bot?", "Installer", JOptionPane.YES_NO_OPTION);
 			if(opt == JOptionPane.NO_OPTION)
 				System.exit(0);
 		} catch(Exception e) {}
-		
+
 		// Launch the program
 		Out.info(InstallMain.class, "Launching: " + command);
 		rt.exec(command);

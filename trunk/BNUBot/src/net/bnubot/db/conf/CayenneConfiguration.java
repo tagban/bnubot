@@ -31,9 +31,9 @@ import org.apache.cayenne.conn.PoolManager;
 public class CayenneConfiguration implements DataSourceFactory {
 	private static final long databaseVersion = 2;		// Current schema version
 	private static final long compatibleVersion = 2;	// Minimum version compatible
-	
+
 	private Connection conn = null;
-	
+
 	public CayenneConfiguration() throws Exception {
 		super();
 	}
@@ -41,7 +41,7 @@ public class CayenneConfiguration implements DataSourceFactory {
 	public DataSource getDataSource(String location) throws Exception {
 		DatabaseSettings settings = new DatabaseSettings();
 		settings.load();
-		
+
 		// Set up the driver, in case it's not on the classpath
 		try {
 			DriverManager.getDriver(settings.url);
@@ -50,7 +50,7 @@ public class CayenneConfiguration implements DataSourceFactory {
 			Driver d = (Driver)JARLoader.forName(settings.driver).newInstance();
 			DriverManager.registerDriver(new DriverShim(d));
 		}
-		
+
 		// Connect
 		Out.debug(getClass(), "Connecting to " + settings.url);
 		PoolManager poolManager = new PoolManager(
@@ -62,14 +62,14 @@ public class CayenneConfiguration implements DataSourceFactory {
 				settings.password,
 				new ConnectionLogger());
 		conn = poolManager.getConnection();
-		
+
 		// Check if the schema is up to par
 		if(!checkSchema())
 			createSchema(settings.schema);
 		//deleteOldUsers();
-		
+
 		conn.close();
-		
+
 		// All done!
 		return poolManager;
 	}
@@ -83,18 +83,18 @@ public class CayenneConfiguration implements DataSourceFactory {
 	private Statement createStatement() throws SQLException {
 		return conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
 	}
-	
+
 	public void close(Statement stmt) throws SQLException {
 		stmt.close();
-			
+
 		/*int i = openStatements.indexOf(stmt);
 		if(i == -1)
 			throw new IllegalStateException("Statement not found in cache");
-		
+
 		openStatements.remove(i);
 		openStmtExcept.remove(i);*/
 	}
-	
+
 	public void close(ResultSet rs) {
 		try {
 			close(rs.getStatement());
@@ -102,7 +102,7 @@ public class CayenneConfiguration implements DataSourceFactory {
 			Out.exception(e);
 		}
 	}
-	
+
 	/**
 	 * Check whether or not the database schema is valid
 	 * @return boolean indicating if database is up to date
@@ -115,41 +115,41 @@ public class CayenneConfiguration implements DataSourceFactory {
 		} catch(SQLException e) {
 			return false;
 		}
-		
+
 		try {
 			if(!rs.next()) {
 				close(rs);
 				return false;
 			}
-			
+
 			long version = rs.getLong(1);
 			if(version >= compatibleVersion) {
 				close(rs);
 				return true;
 			}
-			
+
 			Out.error(getClass(), "Database version is " + version + ", we require " + compatibleVersion);
 		} catch(SQLException e) {
 			Out.exception(e);
 		}
-		
+
 		if(rs != null)
 			close(rs);
 		return false;
 	}
-	
+
 	private void createSchema(String schemaFile) throws SQLException {
 		Out.info(getClass(), "The database requires rebuilding.");
-		
+
 		Statement stmt = createStatement();
-		
+
 		BufferedReader fr;
 		try {
 			fr = new BufferedReader(new FileReader(new File(schemaFile)));
 		} catch (FileNotFoundException e) {
 			throw new SQLException("File not found: " +schemaFile);
 		}
-		
+
 		String query = "";
 		try {
 			while(fr.ready()) {
@@ -157,15 +157,15 @@ public class CayenneConfiguration implements DataSourceFactory {
 					query = fr.readLine();
 				else
 					query += '\n' + fr.readLine();
-						
+
 				if(query.length() == 0)
 					continue;
-				
+
 				if(query.charAt(0) == '#') {
 					query = "";
 					continue;
 				}
-				
+
 				if(query.charAt(query.length()-1) == ';') {
 					query = query.substring(0, query.length()-1);
 					stmt.execute(query);
@@ -187,14 +187,14 @@ public class CayenneConfiguration implements DataSourceFactory {
 			throw e;
 		}
 	}
-	
+
 	/*public void deleteOldUsers() throws SQLException {
 		String SQL;
 		if(conn.getClass().getName().startsWith("org.apache.derby"))
 			SQL = "{fn TIMESTAMPDIFF(SQL_TSI_DAY, CURRENT_TIMESTAMP, lastSeen)}";
 		else
 			SQL = "DATEDIFF(NOW(), lastSeen)";
-		
+
 		SQL =
 			"SELECT login, " + SQL + " as dss, rank.id AS rank, rank.expireDays " +
 				"FROM bnlogin " +
@@ -205,7 +205,7 @@ public class CayenneConfiguration implements DataSourceFactory {
 				"FROM bnlogin " +
 				"WHERE account IS NULL " +
 			"ORDER BY dss DESC";
-	
+
 		ResultSet rsOld = createStatement().executeQuery(SQL);
 		while(rsOld.next()) {
 			long expireDays = rsOld.getLong("expireDays");
@@ -214,13 +214,13 @@ public class CayenneConfiguration implements DataSourceFactory {
 			long dss = rsOld.getLong("dss");
 			if(dss > expireDays) {
 				String login = rsOld.getString("login");
-	
+
 				BNLoginResultSet rsUser = getUser(new BNetUser(null, login));
 				if(rsUser.next()) {
 					Long rank = rsOld.getLong("rank");
 					if(rsOld.wasNull())
 						rank = null;
-					
+
 					String out = "Removing user ";
 					out += login;
 					out += " (";
@@ -232,7 +232,7 @@ public class CayenneConfiguration implements DataSourceFactory {
 					out += expireDays;
 					out += ")";
 					Out.info(getClass(), out);
-	
+
 					//Delete them!
 					rsUser.deleteRow();
 				}
@@ -240,7 +240,7 @@ public class CayenneConfiguration implements DataSourceFactory {
 			}
 		}
 		close(rsOld);
-		
+
 		//Find accounts that are not instrumental to the recruitment tree, and have no accounts
 		AccountResultSet rsAccount = getAccounts();
 		while(rsAccount.next()) {
@@ -256,13 +256,13 @@ public class CayenneConfiguration implements DataSourceFactory {
 				if(logins > 0)
 					continue;
 			}
-			
+
 			// Check if they have recruits
 			if(getAccountRecruits(rsAccount.getId()) > 0)
 				continue;
-			
+
 			Long cb = rsAccount.getCreatedBy();
-			
+
 			String out = "Removing account ";
 			out += rsAccount.getName();
 			out += " (rank=";
@@ -273,7 +273,7 @@ public class CayenneConfiguration implements DataSourceFactory {
 			}
 			out += ")";
 			Out.info(getClass(), out);
-			
+
 			if(cb != null)
 				sendMail(cb, cb, "Your recruit " + rsAccount.getName() + " has been removed due to inactivity");
 

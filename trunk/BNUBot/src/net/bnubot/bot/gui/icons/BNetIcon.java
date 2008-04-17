@@ -20,22 +20,22 @@ public class BNetIcon {
 	java.awt.Image awt_image;
 	Image image;
 	int sortIndex;
-	
+
 	public boolean useFor(int flags, int product) {
 		if((flags & this.flags) != 0)
 			return true;
-		
+
 		if(products == null)
 			return false;
-		
+
 		for(int element : products) {
 			if(product == element)
 				return true;
 		}
-		
+
 		return false;
 	}
-	
+
 	@Override
 	public String toString() {
 		String out = "Icon[flags=0x" + Integer.toHexString(flags)  + ",xSize=" + xSize + ",ySize=" + ySize;
@@ -61,7 +61,7 @@ public class BNetIcon {
 	public java.awt.Image getAWTImage() {
 		return awt_image;
 	}
-	
+
 	public int getSortIndex() {
 		return sortIndex;
 	}
@@ -69,7 +69,7 @@ public class BNetIcon {
 	public int getFlags() {
 		return flags;
 	}
-	
+
 	public int[] getProducts() {
 		return products;
 	}

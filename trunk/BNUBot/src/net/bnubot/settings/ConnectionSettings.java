@@ -19,11 +19,11 @@ public class ConnectionSettings implements Serializable {
 			"europe.battle.net",
 			"asia.battle.net",
 			};
-	
+
 	public static final String[] dtServers = new String[] {
 			"koolaid.sidoh.org",
 			};
-	
+
 	public enum ConnectionType {
 		BNCS,
 		DigitalText
@@ -39,7 +39,7 @@ public class ConnectionSettings implements Serializable {
 	public String cdkey2;
 	public ProductIDs product;
 	public boolean enableBotNet;
-	
+
 	// Profile-specific stuff
 	public ConnectionType connectionType;
 	public String server;
@@ -50,29 +50,29 @@ public class ConnectionSettings implements Serializable {
 	public String trigger;
 	public boolean enableGreetings;
 	public int antiIdleTimer;
-	
+
 	public String myRealm;
-	
+
 	public ConnectionSettings(int botNum) {
 		this.botNum = botNum;
 		load();
 		if(botNum == 1)
 			IconsDotBniReader.initialize(this);
 	}
-	
+
 	public String isValid() {
 		if((server == null) || (server.length() == 0))
 			return "Server not set";
-		
+
 		if(port <= 0)
 			return "Port invalid";
-		
+
 		if((username == null) || (username.length() == 0))
 			return "Username not set";
-		
+
 		if((password == null) || (password.length() == 0))
 			return "Password not set";
-		
+
 		if((channel == null) || (channel.length() == 0))
 			return "Channel unset";
 
@@ -90,31 +90,31 @@ public class ConnectionSettings implements Serializable {
 					return "CD key not set";
 					break;
 			}
-			
+
 			switch(product) {
 			case D2XP:
 			case W3XP:
 				if((cdkey2 == null) || (cdkey2.length() == 0))
 					return "CD key 2 not set";
 			}
-			
+
 			break;
 		}
-		
+
 		myRealm = getMyRealm();
 		if(myRealm == null)
 			return "I don't know what realm I will be on";
-		
+
 		if((trigger == null) || (trigger.length() != 1))
 			return "Trigger invalid";
-		
+
 		return null;
 	}
-	
+
 	private String getMyRealm() {
 		if(connectionType.equals(ConnectionType.DigitalText))
 			return "DigitalText";
-		
+
 		switch(product) {
 		case WAR3:
 		case W3XP: {
@@ -128,7 +128,7 @@ public class ConnectionSettings implements Serializable {
 				return "Kalimdor";
 			break;
 		}
-		
+
 		default: {
 			if(server.equals("useast.battle.net"))
 				return "USEast";
@@ -140,11 +140,11 @@ public class ConnectionSettings implements Serializable {
 				return "Asia";
 			break;
 		}
-		
+
 		}
 		return null;
 	}
-	
+
 	public void save() {
 		String header = Integer.toString(botNum);
 		Settings.write(header, "profile", profile);
@@ -166,13 +166,13 @@ public class ConnectionSettings implements Serializable {
 		Settings.write(header, "enableGreetings", enableGreetings);
 		Settings.write(header, "trigger", trigger);
 		Settings.write(header, "antiIdleTimer", antiIdleTimer);
-		
+
 		Settings.store();
 	}
-	
+
 	public void load() {
 		String header = Integer.toString(botNum);
-		
+
 		profile = 	Settings.read(header, "profile", "Profile" + botNum);
 		username =	Settings.read(header, "username", (String)null);
 		password =	Settings.read(header, "password", (String)null);

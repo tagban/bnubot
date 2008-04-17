@@ -35,7 +35,7 @@ public class ConfigurationFrame extends JDialog {
 
 	private final ConnectionSettings cs;
 	private boolean pressedCancel = false;
-	
+
 	// Connection
 	private ConfigTextArea txtProfile = null;
 	private ConfigTextArea txtUsername = null;
@@ -45,7 +45,7 @@ public class ConfigurationFrame extends JDialog {
 	private ConfigCheckBox chkBotNet = null;
 	private ConfigComboBox cmbCDKey = null;
 	private ConfigComboBox cmbCDKey2 = null;
-	
+
 	// Profile
 	private ConfigComboBox cmbConnectionType = null;
 	private ConfigComboBox cmbServer = null;
@@ -55,7 +55,7 @@ public class ConfigurationFrame extends JDialog {
 	private ConfigTextArea txtAntiIdle = null;
 	private ConfigTextArea txtAntiIdleTimer = null;
 	private ConfigCheckBox chkGreetings = null;
-	
+
 	// Buttons
 	private JButton btnKeys = null;
 	private JButton btnUndo = null;
@@ -73,14 +73,14 @@ public class ConfigurationFrame extends JDialog {
 		setResizable(false);
 		WindowPosition.load(this);
 		setVisible(true);
-		
+
 		if(pressedCancel)
 			throw new OperationCancelledException();
 	}
 
 	private void initializeGui() {
 		getContentPane().removeAll();
-		
+
 		final Box boxAll = new Box(BoxLayout.Y_AXIS);
 		boolean hasCdKeys = true;
 		Box boxSettings = new Box(BoxLayout.Y_AXIS);
@@ -97,7 +97,7 @@ public class ConfigurationFrame extends JDialog {
 				}});
 			boxSettings.add(chkPlug = new ConfigCheckBox("Enable Plug (No UDP support)", cs.enablePlug));
 			boxSettings.add(chkBotNet = new ConfigCheckBox("Enable BotNet", cs.enableBotNet));
-			
+
 			//Initialize CD Keys combo box before setting product
 			CDKey[] CDKeys = KeyManager.getKeys(KeyManager.PRODUCT_ALLNORMAL);
 			if(CDKeys.length == 0)
@@ -105,7 +105,7 @@ public class ConfigurationFrame extends JDialog {
 			cmbCDKey = ConfigFactory.makeCombo("CD key", CDKeys, false, boxSettings);
 			cmbCDKey2 = ConfigFactory.makeCombo("CD key 2", CDKeys, false, boxSettings);
 			cmbConnectionType = ConfigFactory.makeCombo("Connection Type", ConnectionType.values(), false, boxSettings);
-			
+
 			try {
 				cmbProduct.setSelectedItem(cs.product);
 				cmbCDKey.setSelectedItem(cs.cdkey);
@@ -121,21 +121,21 @@ public class ConfigurationFrame extends JDialog {
 				CDKeys = KeyManager.getKeys(KeyManager.PRODUCT_W3XP);
 				break;
 			}
-			
+
 			cmbConnectionType.setSelectedItem(cs.connectionType);
 			cmbConnectionType.addItemListener(new ItemListener() {
 				public void itemStateChanged(ItemEvent e) {
 					setVisibleFields();
 				}});
-			
+
 			cmbServer = ConfigFactory.makeCombo("Server", new String[] {}, false, boxSettings);
 			cmbServer.setSelectedItem(cs.server);
-			
+
 			setVisibleFields();
-			
+
 			txtChannel = ConfigFactory.makeText("Channel", cs.channel, boxSettings);
 			txtTrigger = ConfigFactory.makeText("Trigger", cs.trigger, boxSettings);
-			
+
 			Box boxLine = new Box(BoxLayout.X_AXIS);
 			{
 				boxLine.add(ConfigFactory.makeLabel("Anti-Idle"));
@@ -144,10 +144,10 @@ public class ConfigurationFrame extends JDialog {
 				txtAntiIdle.setMaximumSize(ConfigFactory.getMaxComponentSize());
 			}
 			boxSettings.add(boxLine);
-			
+
 			txtAntiIdleTimer = ConfigFactory.makeText("Anti-Idle Timer", Integer.toString(cs.antiIdleTimer), boxSettings);
 			boxSettings.add(chkGreetings = new ConfigCheckBox("Enable Greetings", cs.enableGreetings));
-			
+
 			boxSettings.add(Box.createVerticalGlue());
 		}
 		boxAll.add(boxSettings);
@@ -169,7 +169,7 @@ public class ConfigurationFrame extends JDialog {
 						}});
 				}
 			});
-			
+
 			btnUndo = new JButton("Undo");
 			btnUndo.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent act) {
@@ -221,7 +221,7 @@ public class ConfigurationFrame extends JDialog {
 			boxButtons.add(btnCancel);
 		}
 		boxAll.add(boxButtons);
-		
+
 		add(boxAll);
 		boolean isBNCS = ((ConnectionType)cmbConnectionType.getSelectedItem()).equals(ConnectionType.BNCS);
 		if(!hasCdKeys && isBNCS) {
@@ -238,7 +238,7 @@ public class ConfigurationFrame extends JDialog {
 				// If they click cancel, just let them proceed
 			}
 		}
-		
+
 		pack();
 	}
 
@@ -267,7 +267,7 @@ public class ConfigurationFrame extends JDialog {
 		cs.connectionType = (ConnectionType)cmbConnectionType.getSelectedItem();
 		cs.server = (String)cmbServer.getSelectedItem();
 		cs.channel = txtChannel.getText();
-		
+
 		// Profile
 		cs.trigger = txtTrigger.getText();
 		cs.antiIdle = txtAntiIdle.getText();
@@ -280,7 +280,7 @@ public class ConfigurationFrame extends JDialog {
 
 	private void load() {
 		cs.load();
-		
+
 		txtProfile.setText(cs.profile);
 		txtUsername.setText(cs.username);
 		txtPassword.setText(cs.password);
@@ -289,7 +289,7 @@ public class ConfigurationFrame extends JDialog {
 		cmbProduct.setSelectedItem(cs.product);
 		cmbCDKey.setSelectedItem(cs.cdkey);
 		cmbCDKey2.setSelectedItem(cs.cdkey2);
-		
+
 		// Profile
 		cmbConnectionType.setSelectedItem(cs.connectionType);
 		cmbServer.setSelectedItem(cs.server);
@@ -323,7 +323,7 @@ public class ConfigurationFrame extends JDialog {
 	private void setVisibleFields() {
 		DefaultComboBoxModel model = (DefaultComboBoxModel)cmbServer.getModel();
 		model.removeAllElements();
-		
+
 		if((ConnectionType)cmbConnectionType.getSelectedItem() == ConnectionType.DigitalText) {
 			chkPlug.setVisible(false);
 			chkBotNet.setVisible(false);
@@ -339,10 +339,10 @@ public class ConfigurationFrame extends JDialog {
 		for(String server : ConnectionSettings.bncsServers)
 			model.addElement(server);
 		cmbServer.setSelectedItem(cs.server);
-		
+
 		cmbProduct.setVisible(true);
 		ProductIDs cProd = (ProductIDs)cmbProduct.getSelectedItem();
-		
+
 		int prod = KeyManager.PRODUCT_ALLNORMAL;
 		switch(cProd) {
 		case STAR:
@@ -362,7 +362,7 @@ public class ConfigurationFrame extends JDialog {
 			prod = KeyManager.PRODUCT_W2BN;
 			break;
 		}
-		
+
 		switch(cProd) {
 		case DSHR:
 		case DRTL:
@@ -400,7 +400,7 @@ public class ConfigurationFrame extends JDialog {
 		case W3XP:
 			cmbCDKey.setVisible(true);
 			cmbCDKey2.setVisible(true);
-			
+
 			if(cmbProduct.getSelectedItem() == ProductIDs.D2XP)
 				CDKeys2 = KeyManager.getKeys(KeyManager.PRODUCT_D2XP);
 			if(cmbProduct.getSelectedItem() == ProductIDs.W3XP)
@@ -418,7 +418,7 @@ public class ConfigurationFrame extends JDialog {
 					cmbCDKey.setSelectedItem(key);
 			}
 		}
-		
+
 
 		DefaultComboBoxModel model2 = (DefaultComboBoxModel)cmbCDKey2.getModel();
 		model2.removeAllElements();
@@ -430,7 +430,7 @@ public class ConfigurationFrame extends JDialog {
 					cmbCDKey.setSelectedItem(key);
 			}
 		}
-		
+
 		pack();
 	}
 }

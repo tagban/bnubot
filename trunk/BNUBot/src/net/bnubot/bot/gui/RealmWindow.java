@@ -24,7 +24,7 @@ import net.bnubot.util.Out;
 
 public class RealmWindow extends EventHandlerImpl implements RealmEventHandler {
 	private static final long serialVersionUID = 3965057306231374646L;
-	
+
 	protected Connection con = null;
 	protected RealmConnection realmCon = null;
 	protected String[] realms = null;
@@ -33,17 +33,17 @@ public class RealmWindow extends EventHandlerImpl implements RealmEventHandler {
 	protected Box b;
 	protected JList lstRealms;
 	protected JList lstCharactorTypes;
-	
+
 	public RealmWindow(String[] realms) {
 		this.realms = realms;
 		jd = new JDialog();
 		initializeGUI();
 		jd.setTitle("Realms");
-		
+
 		jd.pack();
 		jd.setModal(true);
 	}
-	
+
 	public void initializeGUI() {
 		DefaultListModel lm = new DefaultListModel();
 		for(String realm : realms)
@@ -68,7 +68,7 @@ public class RealmWindow extends EventHandlerImpl implements RealmEventHandler {
 			public void mouseExited(MouseEvent arg0) {}
 			public void mousePressed(MouseEvent arg0) {}
 			public void mouseReleased(MouseEvent arg0) {}
-			
+
 		});
 		jd.add(lstRealms);
 
@@ -84,7 +84,7 @@ public class RealmWindow extends EventHandlerImpl implements RealmEventHandler {
 			lm.addElement("Assassin");
 			lstCharactorTypes = new JList(lm);
 			b.add(lstCharactorTypes);
-			
+
 		}
 	}
 
@@ -100,7 +100,7 @@ public class RealmWindow extends EventHandlerImpl implements RealmEventHandler {
 		MCPConnection mcpc = new MCPConnection(MCPChunk1, ip, port, MCPChunk2, uniqueName);
 		mcpc.addRealmEventHandler(this);
 		mcpc.start();
-		
+
 		//remove(lstRealms);
 		//add(b);
 		//validate();

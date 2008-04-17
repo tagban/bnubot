@@ -31,7 +31,7 @@ public class ChatQueue extends Thread {
 			return cons.add(c);
 		}
 	}
-	
+
 	private Connection getNextConnection() {
 		if(lastCon >= cons.size())
 			lastCon = 0;
@@ -43,19 +43,19 @@ public class ChatQueue extends Thread {
 			// Flood protection is enabled
 			return queue.add(text);
 		}
-		
+
 		if(requiresOps(text)) {
 			if(sendTextOp(text))
 				return true;
 			Out.error(getClass(), "Failed to add command to the queue: " + text);
 			return false;
 		}
-		
+
 		// Flood protection disabled; send in round-robin pattern
 		getNextConnection().sendChatCommand(text);
 		return true;
 	}
-	
+
 	public void clear() {
 		int qs = queue.size();
 		if(qs > 0)
@@ -70,31 +70,31 @@ public class ChatQueue extends Thread {
 				yield();
 				sleep(100);
 			} catch (InterruptedException e) {}
-			
+
 			// If there's text in the queue to send
 			while(queue.size() > 0) {
 				Connection con = getNextConnection();
-				
+
 				// Check if the con can send text now
 				if(!con.canSendChat()) {
 					lastCon--;
 					break;
 				}
-				
+
 				String text = queue.remove(0);
-				
+
 				if(con.isOp() || !requiresOps(text)) {
 					// Write the text out
 					con.sendChatCommand(text);
 					continue;
 				}
-				
+
 				if(!sendTextOp(text))
 					Out.error(getClass(), "Failed to send chat, no available operators: " + text);
 			}
 		}
 	}
-	
+
 	/**
 	 * Determine if Channel Operator status is required to send text
 	 * @param text The text to check
@@ -126,7 +126,7 @@ public class ChatQueue extends Thread {
 		}
 		return false;
 	}
-	
+
 	public void dispose() {
 		disposed = true;
 	}

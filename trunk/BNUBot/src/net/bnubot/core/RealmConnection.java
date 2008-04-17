@@ -12,15 +12,15 @@ import java.util.List;
 public abstract class RealmConnection extends Thread implements RealmEventHandler {
 	protected List<RealmEventHandler> realmEventHandlers = new ArrayList<RealmEventHandler>();
 	protected boolean connected = false;
-	
+
 	public void addRealmEventHandler(RealmEventHandler e) {
 		realmEventHandlers.add(e);
 		e.initialize(this);
 	}
-	
+
 	public void setConnected(boolean c) {
 		connected = c;
-		
+
 		if(c)
 			realmConnected();
 		else
@@ -30,19 +30,19 @@ public abstract class RealmConnection extends Thread implements RealmEventHandle
 	public void initialize(RealmConnection rc) {
 		throw new UnsupportedOperationException();
 	}
-	
+
 	public void realmConnected() {
 		Iterator<RealmEventHandler> it = realmEventHandlers.iterator();
 		while(it.hasNext())
 			it.next().realmConnected();
 	}
-	
+
 	public void realmDisconnected() {
 		Iterator<RealmEventHandler> it = realmEventHandlers.iterator();
 		while(it.hasNext())
 			it.next().realmDisconnected();
 	}
-	
+
 	public void recieveRealmError(String text) {
 		Iterator<RealmEventHandler> it = realmEventHandlers.iterator();
 		while(it.hasNext())

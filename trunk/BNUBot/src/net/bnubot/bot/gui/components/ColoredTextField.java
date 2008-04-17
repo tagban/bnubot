@@ -40,7 +40,7 @@ public class ColoredTextField extends JTextField {
 					}});
 			}});
 	}
-	
+
 	public void select2(int start, int end) {
 		super.select(start, end);
 	}

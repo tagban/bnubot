@@ -26,12 +26,12 @@ public class Main {
 		if(GlobalSettings.enableGUI)
 			// Force the Swing GUI to start
 			GuiDesktop.getInstance();
-		
+
 		// Delete the bnubot.pid file on application exit
 		File f = new File("bnubot.pid");
 		if(f.exists())
 			f.deleteOnExit();
-		
+
 		// Set the default log file
 		if(CurrentVersion.fromJar())
 			try {
@@ -41,7 +41,7 @@ public class Main {
 			}
 
 		// Disable Cayenne logging!
-		System.setProperty("org.apache.commons.logging.Log", NoOpLog.class.getName()); 
+		System.setProperty("org.apache.commons.logging.Log", NoOpLog.class.getName());
 	}
 
 	public static void main(String[] args) {
@@ -103,7 +103,7 @@ public class Main {
 			Out.error(Main.class, "Invalid argument: " + args[i]);
 			System.exit(1);
 		}
-		
+
 		if(forceConfig) {
 			try {
 				new GlobalConfigurationFrame();
@@ -114,19 +114,19 @@ public class Main {
 				System.exit(1);
 			}
 		}
-		
+
 		for(int i = 1; i <= GlobalSettings.numBots; i++)
 			Profile.newConnection(i);
-		
+
 		if(CurrentVersion.fromJar() && CurrentVersion.version().getReleaseType().isDevelopment())
 			Out.error(CurrentVersion.class, "WARNING: This is a development build, not for distribution!");
-		
+
 		try {
 			VersionCheck.checkVersion();
 		} catch(Exception e) {
 			Out.exception(e);
 		}
-		
+
 		// Write out any modified settings
 		Settings.store();
 	}

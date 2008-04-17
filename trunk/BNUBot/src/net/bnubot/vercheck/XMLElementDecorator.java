@@ -28,10 +28,10 @@ public class XMLElementDecorator {
 	private final List<XMLElementDecorator> children = new LinkedList<XMLElementDecorator>();
 	private String contents = null;
 	private static XMLElementDecorator elem = null;
-	
+
 	public synchronized static XMLElementDecorator parse(String url) throws Exception {
 		elem = new XMLElementDecorator("root", null);
-		
+
 		XMLReader xr = XMLReaderFactory.createXMLReader();
 		xr.setContentHandler(new ContentHandler() {
 			public void startDocument() throws SAXException {}
@@ -46,7 +46,7 @@ public class XMLElementDecorator {
 			public void endElement(String uri, String localName, String name) throws SAXException {
 				elem = elem.getParent();
 			}
-			
+
 			public void characters(char[] ch, int start, int length) throws SAXException {
 				elem.appendContents(new String(ch, start, length));
 			}
@@ -62,37 +62,37 @@ public class XMLElementDecorator {
 			public void error(SAXParseException arg0) throws SAXException {
 				arg0.printStackTrace();
 			}
-			
+
 			public void fatalError(SAXParseException arg0) throws SAXException {
 				arg0.printStackTrace();
 			}
-			
+
 			public void warning(SAXParseException arg0) throws SAXException {
 				arg0.printStackTrace();
 			}
 		});
-		
+
 		xr.parse(url);
-		
+
 		return elem;
 	}
-	
+
 	public XMLElementDecorator(String name, XMLElementDecorator parent) {
 		this.name = name;
 		this.parent = parent;
 	}
-	
+
 	public void addChild(XMLElementDecorator child) {
 		children.add(child);
 	}
-	
+
 	public XMLElementDecorator getChild(String name) {
 		for(XMLElementDecorator child : children)
 			if(child.getName().equals(name))
 				return child;
 		return null;
 	}
-	
+
 	public XMLElementDecorator[] getChildren(String name) {
 		ArrayList<XMLElementDecorator> matches = new ArrayList<XMLElementDecorator>();
 		for(XMLElementDecorator child : children)
@@ -100,7 +100,7 @@ public class XMLElementDecorator {
 				matches.add(child);
 		return matches.toArray(new XMLElementDecorator[matches.size()]);
 	}
-	
+
 	public XMLElementDecorator getPath(String path) {
 		XMLElementDecorator ed = this;
 		for(String id : path.split("\\/")) {
@@ -118,18 +118,18 @@ public class XMLElementDecorator {
 	public XMLElementDecorator getParent() {
 		return parent;
 	}
-	
+
 	public void appendContents(String contents) {
 		if(this.contents == null)
 			this.contents = contents;
 		else
 			this.contents += contents;
 	}
-	
+
 	public String getString() {
 		return contents;
 	}
-	
+
 	public Integer getInt() {
 		if(contents == null)
 			return null;
@@ -139,21 +139,21 @@ public class XMLElementDecorator {
 			return Integer.parseInt(contents.substring(2), 16);
 		throw new NumberFormatException(contents);
 	}
-	
+
 	public Date getDate() {
 		if(contents == null)
 			return null;
 
 		if(contents.matches("[0-9]+"))
 			return new Date(Long.parseLong(contents));
-		
+
 		try {
 			return new Date(TimeFormatter.parseDate(contents));
 		} catch(ParseException e) {}
-		
+
 		throw new NumberFormatException(contents);
 	}
-	
+
 	@Override
 	public String toString() {
 		String out;
@@ -165,7 +165,7 @@ public class XMLElementDecorator {
 				out += "\n" + child.toString();
 			out = out.replace("\n", "\n\t") + "\n";
 		}
-		
+
 		return "<" + name + ">" + out + "</" + name + ">";
 	}
 }

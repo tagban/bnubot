@@ -32,7 +32,7 @@ public class BotNetUser extends BNetUser {
 			} catch (UnknownHostException e) {}
 		}
 	}
-	
+
 	final int number;
 	int dbflag = 0;
 	int ztff = 0;
@@ -41,7 +41,7 @@ public class BotNetUser extends BNetUser {
 	int server = -1;
 	String account = null;
 	String database = null;
-	
+
 	/**
 	 * @param con
 	 * @param user
@@ -56,15 +56,15 @@ public class BotNetUser extends BNetUser {
 	public int getNumber() {
 		return number;
 	}
-	
+
 	public String getHandle() {
 		return "*" + name + "%" + number;
 	}
-	
+
 	public String getZTFF() {
 		return getZTFF(ztff);
 	}
-	
+
 	public static String getZTFF(int flags) {
 		StringBuilder out = new StringBuilder();
 		int f = 1;
@@ -75,26 +75,26 @@ public class BotNetUser extends BNetUser {
 		}
 		return out.toString();
 	}
-	
+
 	@Override
 	public String toString() {
 		// Formatted username
 		if((account == null) || (account.length() == 0))
 			return getHandle();
-		
+
 		StringBuilder sb = new StringBuilder(account);
 		sb.append(" (").append(getHandle()).append(")");
 		return sb.toString();
 	}
-	
+
 	@Override
 	public String toStringEx() {
 		StringBuilder sb = new StringBuilder(toString());
-		
+
 		// ZTFF flags
 		if(ztff != 0)
 			sb.append(" with flags ").append(getZTFF(ztff));
-		
+
 		// Database/dbflags
 		if((database != null) && (database.length() > 0)) {
 			sb.append(" under database ").append(database);
@@ -112,11 +112,11 @@ public class BotNetUser extends BNetUser {
 				sb.append(" access)");
 			}
 		}
-		
+
 		// Channel
 		if((channel != null) && (channel.length() > 0))
 			sb.append(" from channel ").append(channel);
-		
+
 		// Server
 		if(server != -1) {
 			sb.append(" of server ");
@@ -127,10 +127,10 @@ public class BotNetUser extends BNetUser {
 				sb.append(x);
 			sb.append(".");
 		}
-		
+
 		return sb.toString();
 	}
-	
+
 	@Override
 	public void sendChat(String text, boolean whisperBack) {
 		try {

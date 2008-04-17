@@ -93,19 +93,19 @@ public class GuiEventHandler extends EventHandlerImpl {
 	private String tcAfter = null;
 	private static final int textHeight = 23;
 	private static final int paddingHeight = 4;
-	
+
 	private static final Set<? extends AWTKeyStroke> EMPTY_SET = Collections.emptySet();
-	
+
 	public GuiEventHandler(Connection firstConnection) {
 		this.firstConnection = firstConnection;
 		initializeGui();
 	}
-	
+
 	private static Map<Connection, JMenuItem> settingsMenuItems = new HashMap<Connection, JMenuItem>();
 	@Override
 	public void initialize(final Connection source) {
 		Out.setThreadOutputConnection(source);
-		
+
 		JMenuItem settings = new JMenuItem("Settings");
 		settings.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
@@ -114,7 +114,7 @@ public class GuiEventHandler extends EventHandlerImpl {
 				} catch(OperationCancelledException e) {}
 			}});
 		settingsMenuItems.put(source, settings);
-		
+
 		for(int i = 0; i < menuBar.getMenuComponentCount(); i++) {
 			Object x = menuBar.getMenuComponent(i);
 			if(x instanceof Separator) {
@@ -124,7 +124,7 @@ public class GuiEventHandler extends EventHandlerImpl {
 		}
 		titleChanged(source);
 	}
-	
+
 	@Override
 	public void disable(final Connection source) {
 		if(source == firstConnection)
@@ -134,7 +134,7 @@ public class GuiEventHandler extends EventHandlerImpl {
 			menuBar.remove(mi);
 		titleChanged(source);
 	}
-	
+
 	/**
 	 * Update the list of the TC popup
 	 */
@@ -157,7 +157,7 @@ public class GuiEventHandler extends EventHandlerImpl {
 			tcList.requestFocus();
 		}
 	}
-	
+
 	/**
 	 * Exit TC mode
 	 */
@@ -165,7 +165,7 @@ public class GuiEventHandler extends EventHandlerImpl {
 		// Exit TC mode
 		tcPopupWindow.setVisible(tabComplete = false);
 	}
-	
+
 	/**
 	 * Exit TC mode by selecting a username
 	 * @param selection The selected username
@@ -190,11 +190,11 @@ public class GuiEventHandler extends EventHandlerImpl {
 			start = tcBefore.length() + tcSearch.length();
 		chatTextArea.select(start, end);
 	}
-	
+
 	private void initializeGui() {
 		// Create the panel
 		frame = new JPanel(new BorderLayout());
-		
+
 		// When gained focus, select the chat box
 		frame.addFocusListener(new FocusListener() {
 			public void focusGained(FocusEvent e) {
@@ -202,13 +202,13 @@ public class GuiEventHandler extends EventHandlerImpl {
 			}
 			public void focusLost(FocusEvent e) {}
 		});
-		
+
 		// Create the menu bar.
 		menuBar.setOpaque(true);
 		{
 			JMenu menu;
 			JMenuItem menuItem;
-			
+
 			menuBar.addSeparator();
 
 			menu = new JMenu("Battle.net");
@@ -220,7 +220,7 @@ public class GuiEventHandler extends EventHandlerImpl {
 							con.connect();
 					} });
 				menu.add(menuItem);
-				
+
 				menuItem = new JMenuItem("Reconnect");
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
@@ -228,7 +228,7 @@ public class GuiEventHandler extends EventHandlerImpl {
 							con.reconnect();
 					} });
 				menu.add(menuItem);
-				
+
 				menuItem = new JMenuItem("Disconnect");
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
@@ -238,7 +238,7 @@ public class GuiEventHandler extends EventHandlerImpl {
 				menu.add(menuItem);
 			}
 			menuBar.add(menu);
-			
+
 			menuItem = new JMenuItem("Realms");
 			menuItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent evt) {
@@ -266,7 +266,7 @@ public class GuiEventHandler extends EventHandlerImpl {
 			menuBar.add(menu);
 		}
 		//frame.setJMenuBar(menuBar);
-		
+
 		// Main text area
 		mainTextArea = new TextWindow();
 		// Send chat textbox
@@ -340,7 +340,7 @@ public class GuiEventHandler extends EventHandlerImpl {
 						int start = tcSearch.lastIndexOf(' ') + 1;
 						if(start != 0)
 							tcSearch = tcSearch.substring(start);
-	
+
 						tcBefore = chatTextArea.getText(0, start);
 						tcAfter = chatTextArea.getText(end, chatTextArea.getText().length() - end);
 					} else {
@@ -348,7 +348,7 @@ public class GuiEventHandler extends EventHandlerImpl {
 						tcBefore = chatTextArea.getText();
 						tcAfter = "";
 					}
-					
+
 					tcUpdate();
 				} catch(Exception ex) {
 					Out.exception(ex);
@@ -360,7 +360,7 @@ public class GuiEventHandler extends EventHandlerImpl {
 		channelTextPane.setMaximumSize(new Dimension(Integer.MAX_VALUE, textHeight));
 		channelTextPane.setHorizontalAlignment(JTextField.CENTER);
 		channelTextPane.setEditable(false);
-		
+
 		// The userlist
 		userList = new UserList(this);
 		// Friends list
@@ -377,12 +377,12 @@ public class GuiEventHandler extends EventHandlerImpl {
 		allLists.addTab("Clan", new JScrollPane(clanList));
 		if(botNetList != null)
 			allLists.addTab("BotNet", new JScrollPane(botNetList));
-		
+
 		Box leftSide = new Box(BoxLayout.Y_AXIS);
 		leftSide.add(mainTextArea);
 		leftSide.add(Box.createVerticalStrut(paddingHeight));
 		leftSide.add(chatTextArea);
-		
+
 		Box rightSide = new Box(BoxLayout.Y_AXIS);
 		rightSide.add(channelTextPane);
 		rightSide.add(Box.createVerticalStrut(paddingHeight));
@@ -403,7 +403,7 @@ public class GuiEventHandler extends EventHandlerImpl {
 				Settings.store();
 			}
 		});
-		
+
 		// Add them to the frame
 		frame.add(jsp);
 
@@ -431,7 +431,7 @@ public class GuiEventHandler extends EventHandlerImpl {
 		tcPopupWindow.getContentPane().setLayout(new BorderLayout());
 		((JComponent)tcPopupWindow.getContentPane()).setBorder(BorderFactory.createEtchedBorder());
 		tcPopupWindow.getContentPane().add(tcList);
-		
+
 		// Initialize TC list
 		tcList.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent e) {}
@@ -471,11 +471,11 @@ public class GuiEventHandler extends EventHandlerImpl {
 						// Append the char to the string
 						tcSearch += e.getKeyChar();
 					}
-					
+
 					// Update the TextArea with the new strings
 					chatTextArea.setText(tcBefore + tcSearch + tcAfter);
 					chatTextArea.setCaretPosition(tcBefore.length() + tcSearch.length());
-					
+
 					// Redraw the TC list
 					tcUpdate();
 					break;
@@ -485,7 +485,7 @@ public class GuiEventHandler extends EventHandlerImpl {
 		// Enable tab character
 		tcList.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, EMPTY_SET);
 		tcList.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, EMPTY_SET);
-		
+
 		// Display the window
 		GuiDesktop.add(this);
 	}
@@ -493,7 +493,7 @@ public class GuiEventHandler extends EventHandlerImpl {
 	public JPanel getFrame() {
 		return frame;
 	}
-	
+
 	public JMenu getMenuBar() {
 		return menuBar;
 	}
@@ -503,22 +503,22 @@ public class GuiEventHandler extends EventHandlerImpl {
 		// Require that enableTrayPopups is set
 		if(!GlobalSettings.trayIconMode.enableTray())
 			return;
-		
+
 		// If popups are not always enabled, require that the window is defocused
 		if(!GlobalSettings.trayIconMode.alwaysDisplayPopups())
 			if(GuiDesktop.getInstance().isFocused())
 				return;
-		
+
 		// Require 1 second between tray notifications
 		long timeNow = System.currentTimeMillis();
 		if(timeNow - lastSystemTrayTime < 1000)
 			return;
 		lastSystemTrayTime = timeNow;
-		
+
 		TrayIcon tray = GuiDesktop.getTray();
 		if(tray != null)
 			tray.displayMessage(headline, text, TrayIcon.MessageType.INFO);
-		
+
 		Growl growl = GuiDesktop.getGrowl();
 		if(growl != null)
 			try {
@@ -578,7 +578,7 @@ public class GuiEventHandler extends EventHandlerImpl {
 					Growl.CHANNEL,
 					"Channel",
 					channel);
-		
+
 		GuiDesktop.setTitle(this, firstConnection.getProductID());
 	}
 
@@ -613,7 +613,7 @@ public class GuiEventHandler extends EventHandlerImpl {
 			lastInfoRecieved = now;
 			return;
 		}
-		
+
 		lastInfo = text;
 		lastInfoRecieved = now;
 		mainTextArea.recieveInfo(text);
@@ -679,20 +679,20 @@ public class GuiEventHandler extends EventHandlerImpl {
 	public void titleChanged(Connection source) {
 		BNetUser myUser = source.getMyUser();
 		Profile profile = source.getProfile();
-		
+
 		// Set the menu text to profile name or logon name
 		if((myUser == null) || (profile.getConnections().size() != 1))
 			menuBar.setText(profile.getName());
 		else
 			menuBar.setText(myUser.getFullLogonName());
-		
+
 		// Update the settings menu items
 		for (Entry<Connection, JMenuItem> item : settingsMenuItems.entrySet())
 			item.getValue().setText("Settings (" + item.getKey().toShortString() + ")");
-		
+
 		// Update the desktop window
 		GuiDesktop.setTitle(this, firstConnection.getProductID());
-		
+
 		// Update the tray icon
 		TrayIcon tray = GuiDesktop.getTray();
 		if(tray != null)
@@ -757,11 +757,11 @@ public class GuiEventHandler extends EventHandlerImpl {
 	public void queryRealms2(final BNCSConnection source, String[] realms) {
 		if(realms.length == 0)
 			return;
-		
+
 		final RealmWindow realmWindow = new RealmWindow(realms);
 		final boolean showWindow = (realms.length > 1);
 		final String autoRealm = realms[0];
-		
+
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				source.addEventHandler(realmWindow);
@@ -829,11 +829,11 @@ public class GuiEventHandler extends EventHandlerImpl {
 			return firstConnection.toString();
 		return p.getName();
 	}
-	
+
 	public void setDividerLocation(int arg0) {
 		jsp.setDividerLocation(arg0);
 	}
-	
+
 	public int getDividerLocation() {
 		return jsp.getDividerLocation();
 	}

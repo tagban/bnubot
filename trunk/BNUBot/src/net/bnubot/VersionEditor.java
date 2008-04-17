@@ -29,7 +29,7 @@ public class VersionEditor extends JDialog {
 		new VersionEditor();
 		System.exit(0);
 	}
-	
+
 	VersionNumber vnCurrent = CurrentVersion.version();
 	ConfigComboBox cmbReleaseType;
 	ConfigSpinner spnMajor;
@@ -37,17 +37,17 @@ public class VersionEditor extends JDialog {
 	ConfigSpinner spnRevision;
 	ConfigSpinner spnRelease;
 	JButton btnSave;
-	
+
 	public VersionEditor() throws HeadlessException {
 		super();
-		
+
 		if(CurrentVersion.fromJar())
 			throw new HeadlessException("You may not run the version editor from a JAR");
-		
+
 		setTitle("BNU-Bot Version Editor");
-		
+
 		initializeGui();
-		
+
 		pack();
 		setResizable(false);
 		setModal(true);
@@ -57,14 +57,14 @@ public class VersionEditor extends JDialog {
 	private void initializeGui() {
 		Box boxAll = new Box(BoxLayout.Y_AXIS);
 		add(boxAll);
-		
+
 		cmbReleaseType = ConfigFactory.makeCombo("Release Type", ReleaseType.values(), false, boxAll);
 		cmbReleaseType.setSelectedItem(vnCurrent.getReleaseType());
 		spnMajor = ConfigFactory.makeSpinner("Major", vnCurrent.getMajor(), boxAll);
 		spnMinor = ConfigFactory.makeSpinner("Minor", vnCurrent.getMinor(), boxAll);
 		spnRevision = ConfigFactory.makeSpinner("Revision", vnCurrent.getRevision(), boxAll);
 		spnRelease = ConfigFactory.makeSpinner("Release", vnCurrent.getRelease(), boxAll);
-		
+
 		btnSave = new JButton("Save");
 		btnSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -72,7 +72,7 @@ public class VersionEditor extends JDialog {
 			}});
 		boxAll.add(btnSave);
 	}
-	
+
 	private void save() {
 		vnCurrent.setReleaseType((ReleaseType)cmbReleaseType.getSelectedItem());
 		vnCurrent.setMajor(spnMajor.getValue());

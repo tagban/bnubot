@@ -27,10 +27,10 @@ public class KeyManager {
 	public static final int PRODUCT_D2XP = 10;
 	public static final int PRODUCT_WAR3 = 14;
 	public static final int PRODUCT_W3XP = 18;
-	
+
 	private static List<CDKey> cdkeys = new ArrayList<CDKey>();
 	private static boolean initialized = false;
-	
+
 	public static class CDKey {
 		String key;
 		int product;
@@ -52,30 +52,30 @@ public class KeyManager {
 		public int getProduct() {
 			return product;
 		}
-		
+
 		@Override
 		public String toString() {
 			return key + " - " + comment;
 		}
 	}
-	
+
 	public static void resetInitialized() {
 		initialized = false;
 		cdkeys.clear();
 	}
-	
+
 	private static void initialize() {
 		if(initialized)
 			return;
 		initialized = true;
-		
+
 		File keys = new File("cdkeys.txt");
 		BufferedReader is = null;
 
 		try {
 			if(!keys.exists()) {
 				keys.createNewFile();
-				
+
 				FileWriter os = new FileWriter(keys);
 				os.write("# Enter CD keys in this file.\r\n");
 				os.write("# \r\n");
@@ -93,7 +93,7 @@ public class KeyManager {
 		} catch (Exception e) {
 			Out.fatalException(e);
 		}
-		
+
 		do {
 			String key = null;
 			try {
@@ -103,41 +103,41 @@ public class KeyManager {
 			}
 			if(key == null)
 				break;
-			
+
 			key = key.trim();
 			if(key.length() == 0)
 				continue;
-			
+
 			try {
 				if(key.charAt(0) != '#')  {
 					key = key.replaceAll("\t", " ").trim();
-					
+
 					String comment = "";
 					int i = key.indexOf(" ");
 					if(i != -1) {
 						comment = key.substring(i);
 						key = key.substring(0, i);
 					}
-					
+
 					key = key.replaceAll("-", "");
-					
+
 					Buffer b = org.jbls.Hashing.HashMain.hashKey(0, 0, key);
 					b.removeDWord();	//length
 					int prod = b.removeDWord();	//Product
-					
+
 					cdkeys.add(new CDKey(key, prod, comment));
 				}
 			} catch(Exception e) {
 				Out.info(KeyManager.class, "Couldn't parse cdkeys.txt line: " + key);
 			}
 		} while(true);
-		
+
 		try { is.close(); } catch (Exception e) {}
 	}
-	
+
 	public static CDKey[] getKeys(int product) {
 		initialize();
-		
+
 		List<CDKey> prodKeys = new LinkedList<CDKey>();
 		Iterator<CDKey> it = cdkeys.iterator();
 		while(it.hasNext()) {
@@ -154,7 +154,7 @@ public class KeyManager {
 			} else if(k.getProduct() == product)
 				prodKeys.add(k);
 		}
-		
+
 		return prodKeys.toArray(new CDKey[prodKeys.size()]);
 	}
 }
