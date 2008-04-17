@@ -9,6 +9,7 @@ import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.HashMap;
 
 import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
@@ -32,6 +33,8 @@ import net.bnubot.util.task.Task;
  */
 public class BotNetConnection extends Connection {
 	private BNCSConnection master;
+	
+	private HashMap<Integer, BotNetUser> users = new HashMap<Integer, BotNetUser>();
 	
 	private InputStream bnInputStream = null;
 	private DataOutputStream bnOutputStream = null;
@@ -182,6 +185,11 @@ public class BotNetConnection extends Connection {
 					//recieveInfo(user.toStringEx());
 					break;
 				}
+				case PACKET_USERLOGGINGOFF: {
+					int number = is.readDWord();
+					botnetUserLogoff(number);
+					break;
+				}
 				default:
 					Out.debugAlways(getClass(), "Unexpected packet " + pr.packetId.name() + "\n" + HexDump.hexDump(pr.data));
 					break;
@@ -221,18 +229,31 @@ public class BotNetConnection extends Connection {
 				eh.botnetDisconnected(this);
 		}
 	}
-	
+
 	public void botnetUserOnline(BotNetUser user) {
+		users.put(user.number, user);
+		
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
 				eh.botnetUserOnline(this, user);
 		}
 	}
-	
+
 	public void botnetUserStatus(BotNetUser user) {
+		users.put(user.number, user);
+		
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
 				eh.botnetUserStatus(this, user);
+		}
+	}
+	
+	private void botnetUserLogoff(int number) {
+		BotNetUser user = users.remove(number);
+		
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.botnetUserLogoff(this, user);
 		}
 	}
 	
