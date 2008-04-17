@@ -18,6 +18,7 @@ import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.RealmConnection;
 import net.bnubot.core.RealmEventHandler;
+import net.bnubot.core.bncs.BNCSConnection;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.core.mcp.MCPConnection;
@@ -108,17 +109,17 @@ public class RealmWindow extends JDialog implements EventHandler, RealmEventHand
 	public void channelUser(Connection source, BNetUser user) {}
 	public void channelLeave(Connection source, BNetUser user) {}
 	
-	public void friendsList(Connection source, FriendEntry[] entries) {}
-	public void friendsUpdate(Connection source, FriendEntry friend) {}
-	public void friendsAdd(Connection source, FriendEntry friend) {}
-	public void friendsPosition(Connection source, byte oldPosition, byte newPosition) {}
-	public void friendsRemove(Connection source, byte entry) {}
+	public void friendsList(BNCSConnection source, FriendEntry[] entries) {}
+	public void friendsUpdate(BNCSConnection source, FriendEntry friend) {}
+	public void friendsAdd(BNCSConnection source, FriendEntry friend) {}
+	public void friendsPosition(BNCSConnection source, byte oldPosition, byte newPosition) {}
+	public void friendsRemove(BNCSConnection source, byte entry) {}
 	
-	public void clanMOTD(Connection source, Object cookie, String text) {}
-	public void clanMemberList(Connection source, ClanMember[] members) {}
-	public void clanMemberRemoved(Connection source, String username) {}
-	public void clanMemberStatusChange(Connection source, ClanMember member) {}
-	public void clanMemberRankChange(Connection source, byte oldRank, byte newRank, String user) {}
+	public void clanMOTD(BNCSConnection source, Object cookie, String text) {}
+	public void clanMemberList(BNCSConnection source, ClanMember[] members) {}
+	public void clanMemberRemoved(BNCSConnection source, String username) {}
+	public void clanMemberStatusChange(BNCSConnection source, ClanMember member) {}
+	public void clanMemberRankChange(BNCSConnection source, byte oldRank, byte newRank, String user) {}
 
 	public void joinedChannel(Connection source, String channel) {}
 	public void recieveChat(Connection source, BNetUser user, String text) {}
@@ -129,9 +130,9 @@ public class RealmWindow extends JDialog implements EventHandler, RealmEventHand
 	public void whisperRecieved(Connection source, BNetUser user, String text) {}
 	public void whisperSent(Connection source, BNetUser user, String text) {}
 
-	public void queryRealms2(Connection source, String[] realms) {}
+	public void queryRealms2(BNCSConnection source, String[] realms) {}
 
-	public void logonRealmEx(Connection source, int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName) {
+	public void logonRealmEx(BNCSConnection source, int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName) {
 		MCPConnection mcpc = new MCPConnection(MCPChunk1, ip, port, MCPChunk2, uniqueName);
 		mcpc.addRealmEventHandler(this);
 		mcpc.start();

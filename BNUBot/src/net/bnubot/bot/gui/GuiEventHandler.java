@@ -58,6 +58,7 @@ import net.bnubot.bot.gui.settings.OperationCancelledException;
 import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.Profile;
+import net.bnubot.core.bncs.BNCSConnection;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.settings.GlobalSettings;
@@ -672,27 +673,27 @@ public class GuiEventHandler implements EventHandler {
 			tray.setToolTip(source.toString());
 	}
 
-	public void friendsList(Connection source, FriendEntry[] entries) {
+	public void friendsList(BNCSConnection source, FriendEntry[] entries) {
 		friendList.showFriends(entries);
 	}
 	
-	public void friendsUpdate(Connection source, FriendEntry friend) {
+	public void friendsUpdate(BNCSConnection source, FriendEntry friend) {
 		friendList.update(friend);
 	}
 	
-	public void friendsAdd(Connection source, FriendEntry friend) {
+	public void friendsAdd(BNCSConnection source, FriendEntry friend) {
 		friendList.add(friend);
 	}
 	
-	public void friendsPosition(Connection source, byte oldPosition, byte newPosition) {
+	public void friendsPosition(BNCSConnection source, byte oldPosition, byte newPosition) {
 		friendList.position(oldPosition, newPosition);
 	}
 	
-	public void friendsRemove(Connection source, byte entry) {
+	public void friendsRemove(BNCSConnection source, byte entry) {
 		friendList.remove(entry);
 	}
 
-	public void clanMOTD(Connection source, Object cookie, String text) {
+	public void clanMOTD(BNCSConnection source, Object cookie, String text) {
 		if(cookie instanceof ClanMOTDEditor) {
 			ClanMOTDEditor motd = (ClanMOTDEditor)cookie;
 			motd.setMOTD(text);
@@ -700,23 +701,23 @@ public class GuiEventHandler implements EventHandler {
 		}
 	}
 
-	public void clanMemberList(Connection source, ClanMember[] members) {
+	public void clanMemberList(BNCSConnection source, ClanMember[] members) {
 		clanList.showMembers(members);
 	}
 	
-	public void clanMemberRemoved(Connection source, String username) {
+	public void clanMemberRemoved(BNCSConnection source, String username) {
 		clanList.remove(username);
 	}
 	
-	public void clanMemberStatusChange(Connection source, ClanMember member) {
+	public void clanMemberStatusChange(BNCSConnection source, ClanMember member) {
 		clanList.statusChange(member);
 	}
 	
-	public void clanMemberRankChange(Connection source, byte oldRank, byte newRank, String user) {
+	public void clanMemberRankChange(BNCSConnection source, byte oldRank, byte newRank, String user) {
 		clanList.rankChange(oldRank, newRank, user);
 	}
 	
-	public void queryRealms2(final Connection source, String[] realms) {
+	public void queryRealms2(final BNCSConnection source, String[] realms) {
 		if(realms.length == 0)
 			return;
 		
@@ -738,7 +739,7 @@ public class GuiEventHandler implements EventHandler {
 			} });
 	}
 
-	public void logonRealmEx(Connection source, int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName) {}
+	public void logonRealmEx(BNCSConnection source, int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName) {}
 
 	public void setChatText(String chatText) {
 		chatTextArea.setText(chatText);

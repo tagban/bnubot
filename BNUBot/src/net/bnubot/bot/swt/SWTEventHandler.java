@@ -8,6 +8,7 @@ package net.bnubot.bot.swt;
 import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.Profile;
+import net.bnubot.core.bncs.BNCSConnection;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.util.BNetUser;
@@ -163,22 +164,22 @@ public class SWTEventHandler implements EventHandler {
 	public void channelJoin(Connection source, BNetUser user) {}
 	public void channelLeave(Connection source, BNetUser user) {}
 	public void channelUser(Connection source, BNetUser user) {}
-	public void clanMOTD(Connection source, Object cookie, String text) {}
-	public void clanMemberList(Connection source, ClanMember[] members) {}
-	public void clanMemberRankChange(Connection source, byte oldRank, byte newRank, String user) {}
-	public void clanMemberRemoved(Connection source, String username) {}
-	public void clanMemberStatusChange(Connection source, ClanMember member) {}
-	public void friendsAdd(Connection source, FriendEntry friend) {}
-	public void friendsList(Connection source, FriendEntry[] entries) {}
-	public void friendsPosition(Connection source, byte oldPosition, byte newPosition) {}
-	public void friendsRemove(Connection source, byte entry) {}
-	public void friendsUpdate(Connection source, FriendEntry friend) {}
+	public void clanMOTD(BNCSConnection source, Object cookie, String text) {}
+	public void clanMemberList(BNCSConnection source, ClanMember[] members) {}
+	public void clanMemberRankChange(BNCSConnection source, byte oldRank, byte newRank, String user) {}
+	public void clanMemberRemoved(BNCSConnection source, String username) {}
+	public void clanMemberStatusChange(BNCSConnection source, ClanMember member) {}
+	public void friendsAdd(BNCSConnection source, FriendEntry friend) {}
+	public void friendsList(BNCSConnection source, FriendEntry[] entries) {}
+	public void friendsPosition(BNCSConnection source, byte oldPosition, byte newPosition) {}
+	public void friendsRemove(BNCSConnection source, byte entry) {}
+	public void friendsUpdate(BNCSConnection source, FriendEntry friend) {}
 	public void joinedChannel(Connection source, String channel) {}
-	public void logonRealmEx(Connection source, int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName) {}
+	public void logonRealmEx(BNCSConnection source, int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName) {}
 	public boolean parseCommand(Connection source, BNetUser user, String command, boolean whisperBack) {
 		return false;
 	}
-	public void queryRealms2(Connection source, String[] realms) {}
+	public void queryRealms2(BNCSConnection source, String[] realms) {}
 	public void recieveChat(Connection source, BNetUser user, String text) {}
 	public void recieveDebug(Connection source, String text) {}
 	public void recieveEmote(Connection source, BNetUser user, String text) {}

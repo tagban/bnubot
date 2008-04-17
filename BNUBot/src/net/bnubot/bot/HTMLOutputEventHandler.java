@@ -20,6 +20,7 @@ import javax.swing.SwingUtilities;
 import net.bnubot.bot.gui.colors.ColorScheme;
 import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
+import net.bnubot.core.bncs.BNCSConnection;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.settings.GlobalSettings;
@@ -153,22 +154,22 @@ public class HTMLOutputEventHandler implements EventHandler {
 		SwingUtilities.invokeLater(writeUserListRunnable);
 	}
 
-	public void friendsList(Connection source, FriendEntry[] entries) {}
-	public void friendsUpdate(Connection source, FriendEntry friend) {}
-	public void friendsAdd(Connection source, FriendEntry friend) {}
-	public void friendsPosition(Connection source, byte oldPosition, byte newPosition) {}
-	public void friendsRemove(Connection source, byte entry) {}
+	public void friendsList(BNCSConnection source, FriendEntry[] entries) {}
+	public void friendsUpdate(BNCSConnection source, FriendEntry friend) {}
+	public void friendsAdd(BNCSConnection source, FriendEntry friend) {}
+	public void friendsPosition(BNCSConnection source, byte oldPosition, byte newPosition) {}
+	public void friendsRemove(BNCSConnection source, byte entry) {}
 	
-	public void logonRealmEx(Connection source, int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName) {}
-	public void queryRealms2(Connection source, String[] realms) {}
+	public void logonRealmEx(BNCSConnection source, int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName) {}
+	public void queryRealms2(BNCSConnection source, String[] realms) {}
 
 	public boolean parseCommand(Connection source, BNetUser user, String command, boolean wasWhispered) {return false;}
 
-	public void clanMOTD(Connection source, Object cookie, String text) {}
-	public void clanMemberList(Connection source, ClanMember[] members) {}
-	public void clanMemberRemoved(Connection source, String username) {}
-	public void clanMemberStatusChange(Connection source, ClanMember member) {}
-	public void clanMemberRankChange(Connection source, byte oldRank, byte newRank, String user) {}
+	public void clanMOTD(BNCSConnection source, Object cookie, String text) {}
+	public void clanMemberList(BNCSConnection source, ClanMember[] members) {}
+	public void clanMemberRemoved(BNCSConnection source, String username) {}
+	public void clanMemberStatusChange(BNCSConnection source, ClanMember member) {}
+	public void clanMemberRankChange(BNCSConnection source, byte oldRank, byte newRank, String user) {}
 
 	private void logChat(Connection source, String text) {
 		String fName = "logs/" + source.getProfile().getName() + "/";
