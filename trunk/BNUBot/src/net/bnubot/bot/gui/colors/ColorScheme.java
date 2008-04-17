@@ -38,6 +38,9 @@ public abstract class ColorScheme {
 	public abstract Color getInfoColor();
 	public abstract Color getErrorColor();
 	public abstract Color getDebugColor();
+	public Color getTypeColor() {
+		return Color.BLUE;
+	}
 	
 	public abstract Color getUserNameColor(int flags);
 	public abstract Color getSelfUserNameColor(int flags);

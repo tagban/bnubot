@@ -182,6 +182,20 @@ public class TextWindow extends JScrollPane {
 		setText();
 	}
 	
+	public void append3(String text, Color col, String text2, Color col2, String text3, Color col3) {
+		appendDate();
+		makeFont(col);
+		html += safeHtml(text);
+		html += "</font>";
+		makeFont(col2);
+		html += safeHtml(text2);
+		html += "</font>";
+		makeFont(col3);
+		html += safeHtml(text3);
+		html += "</font><br>\n";
+		setText();
+	}
+	
 	public void addSeparator() {
 		addSeparator = true;
 	}
@@ -202,39 +216,73 @@ public class TextWindow extends JScrollPane {
 		append(text, "debug");
 	}
 	
-	public void userChat(BNetUser user, String text, boolean isSelf) {
+	public void userChat(String type, BNetUser user, String text, boolean isSelf) {
 		Color c;
 		if(isSelf)
 			c = cs.getSelfUserNameColor(user.getFlags());
 		else
 			c = cs.getUserNameColor(user.getFlags());
 		
-		append2(
-			"<" + user.toString() + "> ",
-			c,
-			text,
-			cs.getChatColor(user.getFlags()));
+		if(type == null)		
+			append2(
+				"<" + user.toString() + "> ",
+				c,
+				text,
+				cs.getChatColor(user.getFlags()));
+		else
+			append3(
+				"(" + type + ") ",
+				cs.getTypeColor(),
+				"<" + user.toString() + "> ",
+				c,
+				text,
+				cs.getChatColor(user.getFlags()));
 	}
 	
-	public void whisperSent(BNetUser user, String text) {
-		append2(
-			"<To: " + user.toString() + "> ",
-			cs.getUserNameColor(user.getFlags()),
-			text,
-			cs.getWhisperColor(user.getFlags()));
+	public void whisperSent(String type, BNetUser user, String text) {
+		if(type == null)		
+			append2(
+				"<To: " + user.toString() + "> ",
+				cs.getUserNameColor(user.getFlags()),
+				text,
+				cs.getWhisperColor(user.getFlags()));
+		else
+			append3(
+				"(" + type + ") ",
+				cs.getTypeColor(),
+				"<To: " + user.toString() + "> ",
+				cs.getUserNameColor(user.getFlags()),
+				text,
+				cs.getWhisperColor(user.getFlags()));
 	}
 	
-	public void whisperRecieved(BNetUser user, String text) {
-		append2(
-			"<From: " + user.toString() + "> ",
-			cs.getUserNameColor(user.getFlags()),
-			text,
-			cs.getWhisperColor(user.getFlags()));
+	public void whisperRecieved(String type, BNetUser user, String text) {
+		if(type == null)		
+			append2(
+				"<From: " + user.toString() + "> ",
+				cs.getUserNameColor(user.getFlags()),
+				text,
+				cs.getWhisperColor(user.getFlags()));
+		else
+			append3(
+				"(" + type + ") ",
+				cs.getTypeColor(),
+				"<From: " + user.toString() + "> ",
+				cs.getUserNameColor(user.getFlags()),
+				text,
+				cs.getWhisperColor(user.getFlags()));
 	}
 	
-	public void userEmote(BNetUser user, String text) {
-		append(
-			"<" + user.toString() + " " + text + ">",
-			cs.getEmoteColor(user.getFlags()));
+	public void userEmote(String type, BNetUser user, String text) {
+		if(type == null)		
+			append(
+				"<" + user.toString() + " " + text + ">",
+				cs.getEmoteColor(user.getFlags()));
+		else
+			append2(
+				"(" + type + ") ",
+				cs.getTypeColor(),
+				"<" + user.toString() + " " + text + ">",
+				cs.getEmoteColor(user.getFlags()));
 	}
 }

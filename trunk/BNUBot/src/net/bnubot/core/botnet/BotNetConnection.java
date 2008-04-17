@@ -32,6 +32,8 @@ import net.bnubot.util.task.Task;
  *
  */
 public class BotNetConnection extends Connection {
+	public static final String BOTNET_TYPE = "BotNet";
+	
 	private BNCSConnection master;
 	
 	private HashMap<Integer, BotNetUser> users = new HashMap<Integer, BotNetUser>();
@@ -234,7 +236,7 @@ public class BotNetConnection extends Connection {
 					return;
 				}
 				
-				sendWhisper(target.getNumber(), commands[2]);
+				sendWhisper(target, commands[2]);
 				return;
 			} else if(commands[0].equals("chat")) {
 				sendChat(false, text.substring(5));
@@ -273,17 +275,17 @@ public class BotNetConnection extends Connection {
 	 */
 	public void sendChat(boolean emote, String text) throws Exception {
 		sendBotNetChat(1, emote, 0, text);
-		super.recieveChat(myUser, text);
+		super.recieveChat(BOTNET_TYPE, myUser, text);
 	}
 
 	/**
 	 * Send a whisper
-	 * @param number User to whisper
+	 * @param target User to whisper
 	 * @param text Text to send
 	 */
-	public void sendWhisper(int number, String text) throws Exception {
-		sendBotNetChat(2, false, number, text);
-		super.whisperSent(users.get(number), text);
+	public void sendWhisper(BotNetUser target, String text) throws Exception {
+		sendBotNetChat(2, false, target.number, text);
+		super.whisperSent(BOTNET_TYPE, target, text);
 	}
 	
 	

@@ -1182,10 +1182,10 @@ public class BNCSConnection extends Connection {
 						channelLeave(user);
 						break;
 					case EID_TALK:
-						recieveChat(user, text);
+						recieveChat(null, user, text);
 						break;
 					case EID_EMOTE:
-						recieveEmote(user, text);
+						recieveEmote(null, user, text);
 						break;
 					case EID_INFO:
 						recieveInfo(text);
@@ -1202,10 +1202,10 @@ public class BNCSConnection extends Connection {
 							botnet.sendStatusUpdate();
 						break;
 					case EID_WHISPERSENT:
-						whisperSent(user, text);
+						whisperSent(null, user, text);
 						break;
 					case EID_WHISPER:
-						whisperRecieved(user, text);
+						whisperRecieved(null, user, text);
 						break;
 					case EID_CHANNELDOESNOTEXIST:
 						recieveError("Channel " + text + " does not exist; creating");
@@ -1785,7 +1785,7 @@ public class BNCSConnection extends Connection {
 		}
 
 		if(text.charAt(0) != '/')
-			recieveChat(myUser, text);
+			recieveChat(null, myUser, text);
 	}
 
 	/**

@@ -524,7 +524,8 @@ public class GuiEventHandler extends EventHandlerImpl {
 				Out.exception(e);
 			}
 	}
-	
+
+	@Override
 	public void channelJoin(Connection source, BNetUser user) {
 		userList.showUser(source, user);
 		if(GlobalSettings.displayJoinParts)
@@ -537,6 +538,7 @@ public class GuiEventHandler extends EventHandlerImpl {
 		channelTextPane.setText(channel + " (" + userList.count() + ")");
 	}
 
+	@Override
 	public void channelLeave(Connection source, BNetUser user) {
 		userList.removeUser(user);
 		if(GlobalSettings.displayJoinParts)
@@ -549,6 +551,7 @@ public class GuiEventHandler extends EventHandlerImpl {
 		channelTextPane.setText(channel + " (" + userList.count() + ")");
 	}
 
+	@Override
 	public void channelUser(Connection source, BNetUser user) {
 		if(GlobalSettings.displayChannelUsers)
 			mainTextArea.channelInfo(user.toStringEx() + user.getStatString().toString() + ".");
@@ -575,8 +578,9 @@ public class GuiEventHandler extends EventHandlerImpl {
 		GuiDesktop.setTitle(this, firstConnection.getProductID());
 	}
 
-	public void recieveChat(Connection source, BNetUser user, String text) {
-		mainTextArea.userChat(user, text, user.equals(source.getMyUser()));
+	@Override
+	public void recieveChat(Connection source, String type, BNetUser user, String text) {
+		mainTextArea.userChat(type, user, text, user.equals(source.getMyUser()));
 		if(GlobalSettings.trayDisplayChatEmote)
 			notifySystemTray(
 					Growl.CHANNEL_USER_CHAT,
@@ -584,8 +588,9 @@ public class GuiEventHandler extends EventHandlerImpl {
 					"<" + user.toString() + "> " + text);
 	}
 
-	public void recieveEmote(Connection source, BNetUser user, String text) {
-		mainTextArea.userEmote(user, text);
+	@Override
+	public void recieveEmote(Connection source, String type, BNetUser user, String text) {
+		mainTextArea.userEmote(type, user, text);
 		if(GlobalSettings.trayDisplayChatEmote)
 			notifySystemTray(
 					Growl.CHANNEL_USER_EMOTE,
@@ -595,6 +600,7 @@ public class GuiEventHandler extends EventHandlerImpl {
 
 	private static long lastInfoRecieved = 0;
 	private static String lastInfo = null;
+	@Override
 	public void recieveInfo(Connection source, String text) {
 		long now = System.currentTimeMillis();
 		// Do not allow duplicate info strings unless there's a 50ms delay
@@ -609,17 +615,20 @@ public class GuiEventHandler extends EventHandlerImpl {
 		mainTextArea.recieveInfo(text);
 	}
 
+	@Override
 	public void recieveError(Connection source, String text) {
 		mainTextArea.recieveError(text);
 	}
 
+	@Override
 	public void recieveDebug(Connection source, String text) {
 		mainTextArea.recieveDebug(text);
 	}
 
-	public void whisperRecieved(Connection source, BNetUser user, String text) {
+	@Override
+	public void whisperRecieved(Connection source, String type, BNetUser user, String text) {
 		lastWhisperFrom = user;
-		mainTextArea.whisperRecieved(user, text);
+		mainTextArea.whisperRecieved(type, user, text);
 		if(GlobalSettings.trayDisplayWhisper)
 			notifySystemTray(
 					Growl.CHANNEL_WHISPER_RECIEVED,
@@ -627,9 +636,10 @@ public class GuiEventHandler extends EventHandlerImpl {
 					"<From: " + user.toString() + "> " + text);
 	}
 
-	public void whisperSent(Connection source, BNetUser user, String text) {
+	@Override
+	public void whisperSent(Connection source, String type, BNetUser user, String text) {
 		lastWhisperTo = user;
-		mainTextArea.whisperSent(user, text);
+		mainTextArea.whisperSent(type, user, text);
 		if(GlobalSettings.trayDisplayWhisper)
 			notifySystemTray(
 					Growl.CHANNEL_WHISPER_SENT,
@@ -637,6 +647,7 @@ public class GuiEventHandler extends EventHandlerImpl {
 					"<To: " + user.toString() + "> " + text);
 	}
 
+	@Override
 	public void bnetConnected(Connection source) {
 		userList.clear();
 		channelTextPane.setText(null);
@@ -647,6 +658,7 @@ public class GuiEventHandler extends EventHandlerImpl {
 					source.toString());
 	}
 
+	@Override
 	public void bnetDisconnected(Connection source) {
 		userList.clear();
 		channelTextPane.setText(null);
@@ -659,6 +671,7 @@ public class GuiEventHandler extends EventHandlerImpl {
 					source.toString());
 	}
 
+	@Override
 	public void titleChanged(Connection source) {
 		BNetUser myUser = source.getMyUser();
 		Profile profile = source.getProfile();
@@ -682,26 +695,32 @@ public class GuiEventHandler extends EventHandlerImpl {
 			tray.setToolTip(source.toString());
 	}
 
+	@Override
 	public void friendsList(BNCSConnection source, FriendEntry[] entries) {
 		friendList.showFriends(entries);
 	}
-	
+
+	@Override
 	public void friendsUpdate(BNCSConnection source, FriendEntry friend) {
 		friendList.update(friend);
 	}
-	
+
+	@Override
 	public void friendsAdd(BNCSConnection source, FriendEntry friend) {
 		friendList.add(friend);
 	}
-	
+
+	@Override
 	public void friendsPosition(BNCSConnection source, byte oldPosition, byte newPosition) {
 		friendList.position(oldPosition, newPosition);
 	}
-	
+
+	@Override
 	public void friendsRemove(BNCSConnection source, byte entry) {
 		friendList.remove(entry);
 	}
 
+	@Override
 	public void clanMOTD(BNCSConnection source, Object cookie, String text) {
 		if(cookie instanceof ClanMOTDEditor) {
 			ClanMOTDEditor motd = (ClanMOTDEditor)cookie;
@@ -710,22 +729,27 @@ public class GuiEventHandler extends EventHandlerImpl {
 		}
 	}
 
+	@Override
 	public void clanMemberList(BNCSConnection source, ClanMember[] members) {
 		clanList.showMembers(members);
 	}
-	
+
+	@Override
 	public void clanMemberRemoved(BNCSConnection source, String username) {
 		clanList.remove(username);
 	}
-	
+
+	@Override
 	public void clanMemberStatusChange(BNCSConnection source, ClanMember member) {
 		clanList.statusChange(member);
 	}
-	
+
+	@Override
 	public void clanMemberRankChange(BNCSConnection source, byte oldRank, byte newRank, String user) {
 		clanList.rankChange(oldRank, newRank, user);
 	}
-	
+
+	@Override
 	public void queryRealms2(final BNCSConnection source, String[] realms) {
 		if(realms.length == 0)
 			return;
@@ -747,27 +771,32 @@ public class GuiEventHandler extends EventHandlerImpl {
 					}
 			} });
 	}
-	
+
+	@Override
 	public void botnetConnected(BotNetConnection source) {
 		if(botNetList != null)
 			botNetList.clear();
 	}
-	
+
+	@Override
 	public void botnetDisconnected(BotNetConnection source) {
 		if(botNetList != null)
 			botNetList.clear();
 	}
-	
+
+	@Override
 	public void botnetUserOnline(BotNetConnection source, BotNetUser user) {
 		if(botNetList != null)
 			botNetList.showUser(source, user);
 	}
-	
+
+	@Override
 	public void botnetUserStatus(BotNetConnection source, BotNetUser user) {
 		if(botNetList != null)
 			botNetList.showUser(source, user);
 	}
-	
+
+	@Override
 	public void botnetUserLogoff(BotNetConnection source, BotNetUser user) {
 		if(botNetList != null)
 			botNetList.removeUser(user);
