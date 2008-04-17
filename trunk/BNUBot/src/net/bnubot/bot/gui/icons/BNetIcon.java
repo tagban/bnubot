@@ -36,6 +36,7 @@ public class BNetIcon {
 		return false;
 	}
 	
+	@Override
 	public String toString() {
 		String out = "Icon[flags=0x" + Integer.toHexString(flags)  + ",xSize=" + xSize + ",ySize=" + ySize;
 		if(products != null) {

@@ -52,6 +52,7 @@ public class BNLogin extends _BNLogin {
 		return bnl;
 	}
 
+	@Override
 	public String toDisplayString() {
 		return getLogin();
 	}

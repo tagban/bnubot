@@ -37,12 +37,15 @@ public class HTMLOutputEventHandler extends EventHandlerImpl {
 	private Runnable writeUserListRunnable = null;
 	private final ColorScheme cs = ColorScheme.getColors();
 	
+	@Override
 	public void bnetDisconnected(Connection source) {
 		writeUserList(source);
 	}
 
+	@Override
 	public void titleChanged(Connection source) {}
 
+	@Override
 	public void channelJoin(Connection source, BNetUser user) {
 		writeUserList(source);
 		
@@ -52,6 +55,7 @@ public class HTMLOutputEventHandler extends EventHandlerImpl {
 				cs.getChannelColor());
 	}
 	
+	@Override
 	public void channelLeave(Connection source, BNetUser user) {
 		writeUserList(source);
 		
@@ -61,6 +65,7 @@ public class HTMLOutputEventHandler extends EventHandlerImpl {
 				cs.getChannelColor());
 	}
 	
+	@Override
 	public void channelUser(Connection source, BNetUser user) {
 		writeUserList(source);
 		
@@ -70,10 +75,12 @@ public class HTMLOutputEventHandler extends EventHandlerImpl {
 				cs.getChannelColor());
 	}
 	
+	@Override
 	public void initialize(Connection source) {
 		checkFolder("logs");
 		checkFolder("logs/" + source.getProfile().getName());
 	}
+	@Override
 	public void disable(Connection source) {}
 
 	private void checkFolder(String fName) {
@@ -84,12 +91,16 @@ public class HTMLOutputEventHandler extends EventHandlerImpl {
 			Out.fatalException(new Exception(fName + " is not a directory!"));
 	}
 	
+	@Override
 	public void joinedChannel(Connection source, String channel) {
 		append(source,
 			"Joining channel " + channel + ".", cs.getChannelColor());
 	}
+	@Override
 	public void recieveError(Connection source, String text) {}
+	@Override
 	public void recieveInfo(Connection source, String text) {}
+	@Override
 	public void recieveDebug(Connection source, String text) {}
 	
 	private String getIcon(int product, int icon, int flags) {

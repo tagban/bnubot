@@ -48,6 +48,7 @@ public class SWTDesktop extends Thread {
 		start();
 	}
 	
+	@Override
 	public void run() {
 		if(CurrentVersion.fromJar()) {
 			// If we're launching a new version, pop up the what's new window

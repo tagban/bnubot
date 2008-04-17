@@ -63,6 +63,7 @@ public class ChatConnection extends Connection {
 		}
 	}*/
 
+	@Override
 	protected void initializeConnection(Task connect) throws Exception {
 		s = new Socket(getServer(), getPort());
 		is = new BNetInputStream(s.getInputStream());
@@ -72,11 +73,13 @@ public class ChatConnection extends Connection {
 		//os.writeByte(0x04);
 	}
 
+	@Override
 	protected boolean sendLoginPackets(Task connect) throws Exception {
 		os.writeBytes("c" + cs.username + "\n" + cs.password + "\n");
 		return false;
 	}
 
+	@Override
 	protected void connectedLoop() throws Exception {
 		while(s.isConnected() && !disposed) {
 			if(is.available() > 0) {

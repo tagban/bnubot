@@ -46,6 +46,7 @@ public class Mail extends _Mail {
 		return count;
 	}
 
+	@Override
 	public String toDisplayString() {
 		return getSentFrom().toDisplayString() + "->" + getSentTo().toDisplayString();
 	}

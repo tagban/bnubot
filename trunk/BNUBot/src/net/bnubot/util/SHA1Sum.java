@@ -46,6 +46,7 @@ public class SHA1Sum {
 		return hexChr((b & 0xF0) >> 4) + hexChr(b & 0x0F);
 	}
 	
+	@Override
 	public String toString() {
 		String out = "";
 		for(byte b : sha1sum)
@@ -57,6 +58,7 @@ public class SHA1Sum {
 		return sha1sum;
 	}
 
+	@Override
 	public boolean equals(Object obj) {
 		if(!(obj instanceof SHA1Sum))
 			return false;

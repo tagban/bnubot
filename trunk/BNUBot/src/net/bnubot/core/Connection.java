@@ -101,6 +101,7 @@ public abstract class Connection extends Thread {
 	}
 	
 	private final List<Task> currentTasks = new LinkedList<Task>();
+	@Override
 	public void run() {
 		if(!(this instanceof BotNetConnection)) {
 			// We must initialize the EHs in the Connection thread
@@ -933,6 +934,7 @@ public abstract class Connection extends Thread {
 			final String oldChannel = channelName;
 			recieveError("Will auto-rejoin in 5 seconds...");
 			new Thread() {
+				@Override
 				public void run() {
 					try {
 						sleep(5000);

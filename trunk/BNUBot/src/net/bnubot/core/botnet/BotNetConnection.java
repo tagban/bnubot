@@ -60,6 +60,7 @@ public class BotNetConnection extends Connection {
 		return GlobalSettings.botNetPort;
 	}
 	
+	@Override
 	protected void initializeConnection(Task connect) throws Exception {
 		botNetServerRevision = 0;
 		botNetCommunicationRevision = 0;
@@ -79,6 +80,7 @@ public class BotNetConnection extends Connection {
 		connect.updateProgress("Connected");
 	}
 
+	@Override
 	protected boolean sendLoginPackets(Task connect) throws Exception {
 		sendLogon("RivalBot", "b8f9b319f223ddcc38");
 		
@@ -123,6 +125,7 @@ public class BotNetConnection extends Connection {
 		return false;
 	}
 
+	@Override
 	protected void connectedLoop() throws Exception {
 		sendStatusUpdate();
 		sendUserInfo();
@@ -210,10 +213,12 @@ public class BotNetConnection extends Connection {
 		}
 	}
 
+	@Override
 	public ProductIDs getProductID() {
 		return ProductIDs.CHAT;
 	}
 
+	@Override
 	public boolean isOp() {
 		return false;
 	}
@@ -400,16 +405,27 @@ public class BotNetConnection extends Connection {
 		p.SendPacket(bnOutputStream);
 	}
 
+	@Override
 	public void sendClanInvitation(Object cookie, String user) throws Exception { throw new UnsupportedFeatureException(null); }
+	@Override
 	public void sendClanMOTD(Object cookie) throws Exception { throw new UnsupportedFeatureException(null); }
+	@Override
 	public void sendClanRankChange(Object cookie, String user, int newRank)throws Exception { throw new UnsupportedFeatureException(null); }
+	@Override
 	public void sendClanSetMOTD(String text) throws Exception { throw new UnsupportedFeatureException(null); }
+	@Override
 	public void sendJoinChannel(String channel) throws Exception { throw new UnsupportedFeatureException(null); }
+	@Override
 	public void sendJoinChannel2(String channel) throws Exception { throw new UnsupportedFeatureException(null); }
+	@Override
 	public void sendLeaveChat() throws Exception { throw new UnsupportedFeatureException(null); }
+	@Override
 	public void sendLogonRealmEx(String realmTitle) throws Exception { throw new UnsupportedFeatureException(null); }
+	@Override
 	public void sendQueryRealms2() throws Exception { throw new UnsupportedFeatureException(null); }
+	@Override
 	public void sendReadUserData(String user) throws Exception { throw new UnsupportedFeatureException(null); }
+	@Override
 	public void sendWriteUserData(UserProfile profile) throws Exception { throw new UnsupportedFeatureException(null); }
 
 	/*

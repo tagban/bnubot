@@ -18,30 +18,37 @@ public class StarcraftColorScheme extends ColorScheme {
 	public static final Color SCCyan = Color.CYAN;
 	public static final Color SCYellow = Color.YELLOW;
 
+	@Override
 	public Color getBackgroundColor() {
 		return SCBlack;
 	}
 
+	@Override
 	public Color getForegroundColor() {
 		return SCLtGray;
 	}
 	
+	@Override
 	public Color getChannelColor() {
 		return SCGreen;
 	}
 	
+	@Override
 	public Color getInfoColor() {
 		return SCBlue;
 	}
 	
+	@Override
 	public Color getErrorColor() {
 		return SCRed;
 	}
 	
+	@Override
 	public Color getDebugColor() {
 		return SCYellow;
 	}
 	
+	@Override
 	public Color getUserNameColor(int flags) {
 		if((flags & 0x20) != 0)	return SCRed;
 		if((flags & 0x01) != 0)	return SCCyan; //PRIORITY_BLIZZARD_REP;
@@ -52,10 +59,12 @@ public class StarcraftColorScheme extends ColorScheme {
 		return SCYellow; //PRIORITY_NORMAL;
 	}
 	
+	@Override
 	public Color getSelfUserNameColor(int flags) {
 		return SCCyan; //PRIORITY_NORMAL;
 	}
 	
+	@Override
 	public Color getUserNameListColor(int flags, boolean myUser) {
 		if(myUser)
 			return SCYellow;
@@ -68,6 +77,7 @@ public class StarcraftColorScheme extends ColorScheme {
 		return SCLtGray; //PRIORITY_NORMAL;
 	}
 	
+	@Override
 	public Color getChatColor(int flags) {
 		if((flags & 0x20) != 0)	return SCGray;
 		if((flags & 0x01) != 0)	return SCCyan; //PRIORITY_BLIZZARD_REP;
@@ -79,6 +89,7 @@ public class StarcraftColorScheme extends ColorScheme {
 		return SCWhite; //PRIORITY_NORMAL;
 	}
 	
+	@Override
 	public Color getEmoteColor(int flags) {
 		if((flags & 0x01) != 0)	return SCCyan; //PRIORITY_BLIZZARD_REP;
 		if((flags & 0x08) != 0)	return SCCyan; //PRIORITY_BNET_REP;
@@ -89,6 +100,7 @@ public class StarcraftColorScheme extends ColorScheme {
 		return SCYellow; //PRIORITY_NORMAL;
 	}
 	
+	@Override
 	public Color getWhisperColor(int flags) {
 		if((flags & 0x01) != 0)	return SCCyan; //PRIORITY_BLIZZARD_REP;
 		if((flags & 0x08) != 0)	return SCCyan; //PRIORITY_BNET_REP;

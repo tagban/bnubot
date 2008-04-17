@@ -37,6 +37,7 @@ public class DTConnection extends Connection {
 	 * Initialize the connection, send game id
 	 * @throws Exception
 	 */
+	@Override
 	protected void initializeConnection(Task connect) throws Exception {
 		// Set up DT
 		connect.updateProgress("Connecting to DigitalText");
@@ -57,6 +58,7 @@ public class DTConnection extends Connection {
 	 * Do the login work up to SID_ENTERCHAT
 	 * @throws Exception
 	 */
+	@Override
 	protected boolean sendLoginPackets(Task connect) throws Exception {
 		DTPacket p = new DTPacket(DTPacketId.PKT_LOGON);
 		p.writeNTString(cs.username);
@@ -126,6 +128,7 @@ public class DTConnection extends Connection {
 	 * This method is the main loop after recieving SID_ENTERCHAT
 	 * @throws Exception
 	 */
+	@Override
 	protected void connectedLoop() throws Exception {
 		while(isConnected() && !socket.isClosed() && !disposed) {
 			long timeNow = System.currentTimeMillis();
@@ -347,6 +350,7 @@ public class DTConnection extends Connection {
 		return user;
 	}
 	
+	@Override
 	public boolean isOp() {
 		return (myUser.getFlags() & 0x02) == 0x02;
 	}
@@ -354,6 +358,7 @@ public class DTConnection extends Connection {
 	/**
 	 * Send SID_JOINCHANNEL
 	 */
+	@Override
 	public void sendJoinChannel(String channel) throws Exception {
 		DTPacket p = new DTPacket(DTPacketId.PKT_ENTERCHANNEL);
 		p.writeNTString(channel);
@@ -363,6 +368,7 @@ public class DTConnection extends Connection {
 	/**
 	 * Send SID_JOINCHANNEL with create channel flag
 	 */
+	@Override
 	public void sendJoinChannel2(String channel) throws Exception {
 		sendJoinChannel(channel);
 	}
@@ -370,6 +376,7 @@ public class DTConnection extends Connection {
 	/**
 	 * Send SID_CHATCOMMAND
 	 */
+	@Override
 	public void sendChatCommand(String text) {
 		super.sendChatCommand(text);
 		
@@ -385,6 +392,7 @@ public class DTConnection extends Connection {
 		}
 	}
 	
+	@Override
 	public String toString() {
 		if(myUser == null)
 			return toShortString();
@@ -395,17 +403,27 @@ public class DTConnection extends Connection {
 		return out;
 	}
 
+	@Override
 	public ProductIDs getProductID() {
 		return ProductIDs.CHAT;
 	}
 	
+	@Override
 	public void sendClanInvitation(Object cookie, String user) throws Exception { throw new UnsupportedFeatureException(null); }
+	@Override
 	public void sendClanMOTD(Object cookie) throws Exception { throw new UnsupportedFeatureException(null); }
+	@Override
 	public void sendClanRankChange(Object cookie, String user, int newRank) throws Exception { throw new UnsupportedFeatureException(null); }
+	@Override
 	public void sendClanSetMOTD(String text) throws Exception { throw new UnsupportedFeatureException(null); }
+	@Override
 	public void sendLeaveChat() throws Exception { throw new UnsupportedFeatureException(null); }
+	@Override
 	public void sendLogonRealmEx(String realmTitle) throws Exception { throw new UnsupportedFeatureException(null); }
+	@Override
 	public void sendQueryRealms2() throws Exception { throw new UnsupportedFeatureException(null); }
+	@Override
 	public void sendReadUserData(String user) throws Exception { throw new UnsupportedFeatureException(null); }
+	@Override
 	public void sendWriteUserData(UserProfile profile) throws Exception { throw new UnsupportedFeatureException(null); }
 }

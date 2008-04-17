@@ -165,6 +165,7 @@ public class Account extends _Account {
 		return new long[] {wins, d2level, w3level};
 	}
 
+	@Override
 	public String toDisplayString() {
 		return getName();
 	}
