@@ -52,12 +52,19 @@ public class DatabaseContext {
 	
 	@SuppressWarnings("unchecked")
 	private static void flush(ObjectContext context) {
+		long defaultMaxAge = 90;
+		{
+			Rank rank = Rank.get(0);
+			if(rank != null)
+				defaultMaxAge = rank.getExpireDays();
+		}
+		
 		for(BNLogin login : (List<BNLogin>)context.performQuery(new SelectQuery(BNLogin.class))) {
 			long age = login.getLastSeen().getTime();
 			age = System.currentTimeMillis() - age;
 			age /= 86400000l; // convert to days
 			
-			long maxAge = 90;
+			long maxAge = defaultMaxAge;
 			Account account = login.getAccount();
 			if(account != null) {
 				Rank rank = account.getRank();
