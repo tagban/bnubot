@@ -1740,6 +1740,11 @@ public class BNCSConnection extends Connection {
 	 * Send SID_CHATCOMMAND
 	 */
 	public void sendChatCommand(String text) {
+		if((botnet != null) && text.startsWith("/botnet ")) {
+			botnet.processCommand(text.substring(8));
+			return;
+		}
+		
 		super.sendChatCommand(text);
 
 		switch(productID) {

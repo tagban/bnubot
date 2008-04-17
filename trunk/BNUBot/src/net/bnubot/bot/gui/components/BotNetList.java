@@ -39,7 +39,7 @@ public class BotNetList extends JPanel {
 		JPopupMenu menu;
 	}
 	
-	private final Hashtable<BotNetUser, UserInfo> users = new Hashtable<BotNetUser, UserInfo>();
+	private final Hashtable<Integer, UserInfo> users = new Hashtable<Integer, UserInfo>();
 	private final Box box = new Box(BoxLayout.Y_AXIS);
 	private final ColorScheme colors = ColorScheme.getColors();
 	private final GuiEventHandler geh;
@@ -60,7 +60,7 @@ public class BotNetList extends JPanel {
 	}
 	
 	private UserInfo getUI(BotNetUser user) {
-		UserInfo ui = users.get(user);
+		UserInfo ui = users.get(user.getNumber());
 		if(ui != null)
 			return ui;
 		
@@ -120,7 +120,7 @@ public class BotNetList extends JPanel {
 				public void actionPerformed(ActionEvent arg0) {
 					UserInfo ui = getUserInfo(arg0);
 					if(ui != null)
-						geh.setChatText("/botnet whisper " + ui.user.getHandle() + " ");
+						geh.setChatText("/botnet whisper %" + ui.user.getNumber() + " ");
 				}});
 			ui.menu.add(menuItem);
 			menuItem = new JMenuItem("Whois");
@@ -213,7 +213,7 @@ public class BotNetList extends JPanel {
 				ui.label.setIcon(icon.getIcon());
 		}
 		
-		users.put(user, ui);
+		users.put(user.getNumber(), ui);
 		validate();
 	}
 	
@@ -223,7 +223,7 @@ public class BotNetList extends JPanel {
 		if(ui != null) {
 			box.remove(ui.label.getParent());
 			ui.label = null;
-			users.remove(user);
+			users.remove(user.getNumber());
 			validate();
 		} else {
 			Out.error(getClass(), "Attempted to remove a user that was not in the UserList: " + user);
