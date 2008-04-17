@@ -23,6 +23,7 @@ import java.util.TimeZone;
 import net.bnubot.bot.CommandResponseCookie;
 import net.bnubot.bot.gui.ProfileEditor;
 import net.bnubot.core.Connection;
+import net.bnubot.core.EventHandler;
 import net.bnubot.core.Profile;
 import net.bnubot.core.UnsupportedFeatureException;
 import net.bnubot.core.bnls.BNLSPacket;
@@ -2030,5 +2031,125 @@ public class BNCSConnection extends Connection {
 		super.dispose();
 		if(botnet != null)
 			botnet.dispose();
+	}
+
+	// Realms
+
+	public void queryRealms2(String[] realms) {
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.queryRealms2(this, realms);
+		}
+	}
+
+	public void logonRealmEx(int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName) {
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.logonRealmEx(this, MCPChunk1, ip, port, MCPChunk2, uniqueName);
+		}
+	}
+
+	// Friends
+
+	public void friendsList(FriendEntry[] entries) {
+		if(!isPrimaryConnection())
+			return;
+		
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.friendsList(this, entries);
+		}
+	}
+
+	public void friendsUpdate(FriendEntry friend) {
+		if(!isPrimaryConnection())
+			return;
+		
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.friendsUpdate(this, friend);
+		}
+	}
+
+	public void friendsAdd(FriendEntry friend) {
+		if(!isPrimaryConnection())
+			return;
+		
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.friendsAdd(this, friend);
+		}
+	}
+
+	public void friendsRemove(byte entry) {
+		if(!isPrimaryConnection())
+			return;
+		
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.friendsRemove(this, entry);
+		}
+	}
+
+	public void friendsPosition(byte oldPosition, byte newPosition) {
+		if(!isPrimaryConnection())
+			return;
+		
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.friendsPosition(this, oldPosition, newPosition);
+		}
+	}
+
+	// Clan
+
+	public void clanMOTD(Object cookie, String text) {
+		if(!isPrimaryConnection())
+			return;
+		
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.clanMOTD(this, cookie, text);
+		}
+	}
+
+	public void clanMemberList(ClanMember[] members) {
+		if(!isPrimaryConnection())
+			return;
+		
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.clanMemberList(this, members);
+		}
+	}
+
+	public void clanMemberRemoved(String username) {
+		if(!isPrimaryConnection())
+			return;
+		
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.clanMemberRemoved(this, username);
+		}
+	}
+
+	public void clanMemberRankChange(byte oldRank, byte newRank, String user) {
+		if(!isPrimaryConnection())
+			return;
+		
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.clanMemberRankChange(this, oldRank, newRank, user);
+		}
+	}
+
+	public void clanMemberStatusChange(ClanMember member) {
+		if(!isPrimaryConnection())
+			return;
+		
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.clanMemberStatusChange(this, member);
+		}
 	}
 }

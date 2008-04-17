@@ -25,8 +25,6 @@ import net.bnubot.bot.gui.settings.ConfigurationFrame;
 import net.bnubot.bot.gui.settings.OperationCancelledException;
 import net.bnubot.core.bncs.ProductIDs;
 import net.bnubot.core.botnet.BotNetConnection;
-import net.bnubot.core.clan.ClanMember;
-import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetInputStream;
@@ -719,7 +717,7 @@ public abstract class Connection extends Thread {
 	 * Determine if this Connection is the primary for a Profile
 	 * @return true if the connection is primary
 	 */
-	private boolean isPrimaryConnection() {
+	protected boolean isPrimaryConnection() {
 		return equals(profile.getPrimaryConnection());
 	}
 
@@ -983,125 +981,5 @@ public abstract class Connection extends Thread {
 		if(text.charAt(0) == getTrigger())
 			text = text.substring(1);
 		parseCommand(user, text, true);
-	}
-
-	// Realms
-
-	public void queryRealms2(String[] realms) {
-		synchronized(eventHandlers) {
-			for(EventHandler eh : eventHandlers)
-				eh.queryRealms2(this, realms);
-		}
-	}
-
-	public void logonRealmEx(int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName) {
-		synchronized(eventHandlers) {
-			for(EventHandler eh : eventHandlers)
-				eh.logonRealmEx(this, MCPChunk1, ip, port, MCPChunk2, uniqueName);
-		}
-	}
-
-	// Friends
-
-	public void friendsList(FriendEntry[] entries) {
-		if(!isPrimaryConnection())
-			return;
-		
-		synchronized(eventHandlers) {
-			for(EventHandler eh : eventHandlers)
-				eh.friendsList(this, entries);
-		}
-	}
-
-	public void friendsUpdate(FriendEntry friend) {
-		if(!isPrimaryConnection())
-			return;
-		
-		synchronized(eventHandlers) {
-			for(EventHandler eh : eventHandlers)
-				eh.friendsUpdate(this, friend);
-		}
-	}
-
-	public void friendsAdd(FriendEntry friend) {
-		if(!isPrimaryConnection())
-			return;
-		
-		synchronized(eventHandlers) {
-			for(EventHandler eh : eventHandlers)
-				eh.friendsAdd(this, friend);
-		}
-	}
-
-	public void friendsRemove(byte entry) {
-		if(!isPrimaryConnection())
-			return;
-		
-		synchronized(eventHandlers) {
-			for(EventHandler eh : eventHandlers)
-				eh.friendsRemove(this, entry);
-		}
-	}
-
-	public void friendsPosition(byte oldPosition, byte newPosition) {
-		if(!isPrimaryConnection())
-			return;
-		
-		synchronized(eventHandlers) {
-			for(EventHandler eh : eventHandlers)
-				eh.friendsPosition(this, oldPosition, newPosition);
-		}
-	}
-
-	// Clan
-
-	public void clanMOTD(Object cookie, String text) {
-		if(!isPrimaryConnection())
-			return;
-		
-		synchronized(eventHandlers) {
-			for(EventHandler eh : eventHandlers)
-				eh.clanMOTD(this, cookie, text);
-		}
-	}
-
-	public void clanMemberList(ClanMember[] members) {
-		if(!isPrimaryConnection())
-			return;
-		
-		synchronized(eventHandlers) {
-			for(EventHandler eh : eventHandlers)
-				eh.clanMemberList(this, members);
-		}
-	}
-
-	public void clanMemberRemoved(String username) {
-		if(!isPrimaryConnection())
-			return;
-		
-		synchronized(eventHandlers) {
-			for(EventHandler eh : eventHandlers)
-				eh.clanMemberRemoved(this, username);
-		}
-	}
-
-	public void clanMemberRankChange(byte oldRank, byte newRank, String user) {
-		if(!isPrimaryConnection())
-			return;
-		
-		synchronized(eventHandlers) {
-			for(EventHandler eh : eventHandlers)
-				eh.clanMemberRankChange(this, oldRank, newRank, user);
-		}
-	}
-
-	public void clanMemberStatusChange(ClanMember member) {
-		if(!isPrimaryConnection())
-			return;
-		
-		synchronized(eventHandlers) {
-			for(EventHandler eh : eventHandlers)
-				eh.clanMemberStatusChange(this, member);
-		}
 	}
 }
