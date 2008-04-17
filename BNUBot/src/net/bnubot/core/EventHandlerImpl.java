@@ -12,10 +12,6 @@ import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.util.BNetUser;
 
-/**
- * @author sanderson
- *
- */
 public abstract class EventHandlerImpl implements EventHandler {
 	//Initialization
 	public void initialize(Connection source) {}

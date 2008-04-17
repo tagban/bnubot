@@ -39,17 +39,23 @@ public class BotNetUser {
 	int server = -1;
 	String account = null;
 	String database = null;
+	
+	public String getHandle() {
+		return "*" + name + "%" + number;
+	}
 
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		
 		// Formatted username
-		String fmtUser = "*" + name + "%" + number;
 		if((account == null) || (account.length() == 0))
-			return fmtUser;
+			return getHandle();
 		
-		sb.append(account).append(" (").append(fmtUser).append(")");
+		StringBuilder sb = new StringBuilder(account);
+		sb.append(" (").append(getHandle()).append(")");
 		return sb.toString();
+	}
+	
+	public String getZTFF() {
+		return getZTFF(ztff);
 	}
 	
 	public static String getZTFF(int flags) {
@@ -104,5 +110,9 @@ public class BotNetUser {
 		}
 		
 		return sb.toString();
+	}
+
+	public String getDatabase() {
+		return database;
 	}
 }

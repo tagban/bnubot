@@ -11,6 +11,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 
 import net.bnubot.core.Connection;
+import net.bnubot.core.EventHandler;
 import net.bnubot.core.Profile;
 import net.bnubot.core.UnsupportedFeatureException;
 import net.bnubot.core.bncs.BNCSConnection;
@@ -119,6 +120,7 @@ public class BotNetConnection extends Connection {
 	protected void connectedLoop() throws Exception {
 		sendStatusUpdate();
 		sendUserInfo();
+		boolean userInit = true;
 		
 		while(isConnected() && !socket.isClosed() && !disposed) {
 			if(bnInputStream.available() > 0) {
@@ -153,8 +155,10 @@ public class BotNetConnection extends Connection {
 					break;
 				}
 				case PACKET_USERINFO: {
-					if(pr.data.length == 0)
+					if(pr.data.length == 0) {
+						userInit = false;
 						break;
+					}
 					
 					BotNetUser user = new BotNetUser();
 					user.number = is.readDWord();
@@ -170,7 +174,12 @@ public class BotNetConnection extends Connection {
 					if(botNetServerRevision >= 3)
 						user.database = is.readNTString();
 					
-					recieveInfo(user.toStringEx());
+
+					if(userInit)
+						botnetUserOnline(user);
+					else
+						botnetUserStatus(user);
+					//recieveInfo(user.toStringEx());
 					break;
 				}
 				default:
@@ -190,6 +199,41 @@ public class BotNetConnection extends Connection {
 
 	public boolean isOp() {
 		return false;
+	}
+	
+	@Override
+	public void bnetConnected() {
+		users.clear();
+		
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.botnetConnected(this);
+		}
+	}
+	
+	@Override
+	public void bnetDisconnected() {
+		users.clear();
+		myUser = null;
+
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.botnetDisconnected(this);
+		}
+	}
+	
+	public void botnetUserOnline(BotNetUser user) {
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.botnetUserOnline(this, user);
+		}
+	}
+	
+	public void botnetUserStatus(BotNetUser user) {
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.botnetUserStatus(this, user);
+		}
 	}
 	
 	/**
