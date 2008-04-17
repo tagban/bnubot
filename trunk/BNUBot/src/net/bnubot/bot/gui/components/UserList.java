@@ -53,7 +53,7 @@ public class UserList extends JPanel {
 	
 	/**
 	 * Get UserInfo from JLabel
-	 * @param lbl The JLabel to look fo
+	 * @param lbl The JLabel to look for
 	 * @return The UserInfo, or null if not found
 	 */
 	private UserInfo getUI(JLabel lbl) {

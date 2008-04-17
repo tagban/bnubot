@@ -47,6 +47,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.JPopupMenu.Separator;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
 
+import net.bnubot.bot.gui.components.BotNetList;
 import net.bnubot.bot.gui.components.ClanList;
 import net.bnubot.bot.gui.components.ColoredTextField;
 import net.bnubot.bot.gui.components.FriendList;
@@ -59,6 +60,8 @@ import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandlerImpl;
 import net.bnubot.core.Profile;
 import net.bnubot.core.bncs.BNCSConnection;
+import net.bnubot.core.botnet.BotNetConnection;
+import net.bnubot.core.botnet.BotNetUser;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.settings.GlobalSettings;
@@ -75,6 +78,7 @@ public class GuiEventHandler extends EventHandlerImpl {
 	private UserList userList = null;
 	private FriendList friendList = null;
 	private ClanList clanList = null;
+	private BotNetList botNetList = null;
 	private String channel = null;
 	private final JMenu menuBar = new JMenu();
 	private BNetUser lastWhisperFrom = null;
@@ -361,11 +365,14 @@ public class GuiEventHandler extends EventHandlerImpl {
 		friendList = new FriendList();
 		// Clan list
 		clanList = new ClanList();
+		// BotNet list
+		botNetList = new BotNetList(this);
 
 		JTabbedPane allLists = new JTabbedPane(JTabbedPane.BOTTOM);
 		allLists.addTab("Channel", new JScrollPane(userList));
 		allLists.addTab("Friends", new JScrollPane(friendList));
 		allLists.addTab("Clan", new JScrollPane(clanList));
+		allLists.addTab("BotNet", new JScrollPane(botNetList));
 		
 		Box leftSide = new Box(BoxLayout.Y_AXIS);
 		leftSide.add(mainTextArea);
@@ -737,6 +744,26 @@ public class GuiEventHandler extends EventHandlerImpl {
 						Out.exception(e);
 					}
 			} });
+	}
+	
+	public void botnetConnected(BotNetConnection source) {
+		botNetList.clear();
+	}
+	
+	public void botnetDisconnected(BotNetConnection source) {
+		botNetList.clear();
+	}
+	
+	public void botnetUserOnline(BotNetConnection source, BotNetUser user) {
+		botNetList.showUser(source, user);
+	}
+	
+	public void botnetUserStatus(BotNetConnection source, BotNetUser user) {
+		botNetList.showUser(source, user);
+	}
+	
+	public void botnetUserLogoff(BotNetConnection source, BotNetUser user) {
+		botNetList.removeUser(user);
 	}
 
 	public void setChatText(String chatText) {
