@@ -8,14 +8,11 @@ package net.bnubot.bot.console;
 import java.util.HashMap;
 
 import net.bnubot.core.Connection;
-import net.bnubot.core.EventHandler;
-import net.bnubot.core.bncs.BNCSConnection;
-import net.bnubot.core.clan.ClanMember;
-import net.bnubot.core.friend.FriendEntry;
+import net.bnubot.core.EventHandlerImpl;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetUser;
 
-public class ConsoleEventHandler implements EventHandler {
+public class ConsoleEventHandler extends EventHandlerImpl {
 	private static final HashMap<Connection, CLIThread> threads = new HashMap<Connection, CLIThread>();
 	
 	public synchronized void initialize(Connection source) {
@@ -75,25 +72,4 @@ public class ConsoleEventHandler implements EventHandler {
 	public void recieveError(Connection source, String text) {
 		System.out.println("(ERROR) " + text);
 	}
-
-	public void bnetConnected(Connection source) {}
-	public void bnetDisconnected(Connection source) {}
-	public void titleChanged(Connection source) {}
-
-	public boolean parseCommand(Connection source, BNetUser user, String command, boolean whisperBack) {return false;}
-
-	public void friendsList(BNCSConnection source, FriendEntry[] entries) {}
-	public void friendsUpdate(BNCSConnection source, FriendEntry friend) {}
-	public void friendsAdd(BNCSConnection source, FriendEntry friend) {}
-	public void friendsPosition(BNCSConnection source, byte oldPosition, byte newPosition) {}
-	public void friendsRemove(BNCSConnection source, byte entry) {}
-
-	public void clanMOTD(BNCSConnection source, Object cookie, String text) {}
-	public void clanMemberList(BNCSConnection source, ClanMember[] members) {}
-	public void clanMemberRemoved(BNCSConnection source, String username) {}
-	public void clanMemberStatusChange(BNCSConnection source, ClanMember member) {}
-	public void clanMemberRankChange(BNCSConnection source, byte oldRank, byte newRank, String user) {}
-
-	public void logonRealmEx(BNCSConnection source, int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName) {}
-	public void queryRealms2(BNCSConnection source, String[] realms) {}
 }

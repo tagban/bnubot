@@ -15,15 +15,12 @@ import java.util.Hashtable;
 import java.util.List;
 
 import net.bnubot.core.Connection;
-import net.bnubot.core.EventHandler;
+import net.bnubot.core.EventHandlerImpl;
 import net.bnubot.core.Profile;
-import net.bnubot.core.bncs.BNCSConnection;
-import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.commands.AccountDoesNotExistException;
 import net.bnubot.core.commands.CommandRunnable;
 import net.bnubot.core.commands.InsufficientAccessException;
 import net.bnubot.core.commands.InvalidUseException;
-import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.db.Account;
 import net.bnubot.db.BNLogin;
 import net.bnubot.db.Command;
@@ -40,7 +37,7 @@ import net.bnubot.vercheck.CurrentVersion;
 
 import org.apache.cayenne.ObjectContext;
 
-public class CommandEventHandler implements EventHandler {
+public class CommandEventHandler extends EventHandlerImpl {
 	private static final Hashtable<Connection, Boolean> sweepBanInProgress = new Hashtable<Connection, Boolean>();
 	private static final Hashtable<Connection, Integer> sweepBannedUsers = new Hashtable<Connection, Integer>();
 	
@@ -129,9 +126,6 @@ public class CommandEventHandler implements EventHandler {
 			throw new IllegalStateException("Can not enable commands without a database!");
 		initializeCommands();
 	}
-
-	public void initialize(Connection source) {}
-	public void disable(Connection source) {}
 	
 	public void touchUser(Connection source, BNetUser user, String action) {
 		try {
@@ -1642,14 +1636,14 @@ public class CommandEventHandler implements EventHandler {
 			Out.exception(e);
 		}
 	}
-	
-	public void joinedChannel(Connection source, String channel) {}
 
 	public void recieveChat(Connection source, BNetUser user, String text) {
 		touchUser(source, user, "chatting in the channel");
 	}
 
-	public void recieveEmote(Connection source, BNetUser user, String text) {}
+	public void recieveEmote(Connection source, BNetUser user, String text) {
+		touchUser(source, user, "chatting in the channel");
+	}
 	
 	private String lastInfo = null;
 	private void recieveInfoError(Connection source, String text) {
@@ -1730,29 +1724,4 @@ public class CommandEventHandler implements EventHandler {
 		
 		recieveInfoError(source, text);
 	}
-	
-	public void recieveDebug(Connection source, String text) {}
-
-	public void bnetConnected(Connection source) {}
-	public void bnetDisconnected(Connection source) {}
-	public void titleChanged(Connection source) {}
-
-	public void whisperRecieved(Connection source, BNetUser user, String text) {}
-
-	public void whisperSent(Connection source, BNetUser user, String text) {}
-
-	public void friendsList(BNCSConnection source, FriendEntry[] entries) {}
-	public void friendsUpdate(BNCSConnection source, FriendEntry friend) {}
-	public void friendsAdd(BNCSConnection source, FriendEntry friend) {}
-	public void friendsPosition(BNCSConnection source, byte oldPosition, byte newPosition) {}
-	public void friendsRemove(BNCSConnection source, byte entry) {}
-	
-	public void queryRealms2(BNCSConnection source, String[] realms) {}
-	public void logonRealmEx(BNCSConnection source, int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName) {}
-
-	public void clanMOTD(BNCSConnection source, Object cookie, String text) {}
-	public void clanMemberList(BNCSConnection source, ClanMember[] members) {}
-	public void clanMemberRemoved(BNCSConnection source, String username) {}
-	public void clanMemberStatusChange(BNCSConnection source, ClanMember member) {}
-	public void clanMemberRankChange(BNCSConnection source, byte oldRank, byte newRank, String user) {}
 }

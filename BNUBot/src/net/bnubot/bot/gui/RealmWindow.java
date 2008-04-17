@@ -15,34 +15,33 @@ import javax.swing.JDialog;
 import javax.swing.JList;
 
 import net.bnubot.core.Connection;
-import net.bnubot.core.EventHandler;
+import net.bnubot.core.EventHandlerImpl;
 import net.bnubot.core.RealmConnection;
 import net.bnubot.core.RealmEventHandler;
 import net.bnubot.core.bncs.BNCSConnection;
-import net.bnubot.core.clan.ClanMember;
-import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.core.mcp.MCPConnection;
-import net.bnubot.util.BNetUser;
 import net.bnubot.util.Out;
 
-public class RealmWindow extends JDialog implements EventHandler, RealmEventHandler {
+public class RealmWindow extends EventHandlerImpl implements RealmEventHandler {
 	private static final long serialVersionUID = 3965057306231374646L;
 	
 	protected Connection con = null;
 	protected RealmConnection realmCon = null;
 	protected String[] realms = null;
 
+	protected JDialog jd;
 	protected Box b;
 	protected JList lstRealms;
 	protected JList lstCharactorTypes;
 	
 	public RealmWindow(String[] realms) {
 		this.realms = realms;
+		jd = new JDialog();
 		initializeGUI();
-		setTitle("Realms");
+		jd.setTitle("Realms");
 		
-		pack();
-		setModal(true);
+		jd.pack();
+		jd.setModal(true);
 	}
 	
 	public void initializeGUI() {
@@ -60,7 +59,7 @@ public class RealmWindow extends JDialog implements EventHandler, RealmEventHand
 				Out.debug(RealmWindow.class, "Logging on to realm " + realm);
 				try {
 					con.sendLogonRealmEx(realm);
-					setVisible(false);
+					jd.setVisible(false);
 				} catch (Exception e) {
 					Out.fatalException(e);
 				}
@@ -71,7 +70,7 @@ public class RealmWindow extends JDialog implements EventHandler, RealmEventHand
 			public void mouseReleased(MouseEvent arg0) {}
 			
 		});
-		add(lstRealms);
+		jd.add(lstRealms);
 
 		b = new Box(BoxLayout.Y_AXIS);
 		{
@@ -89,48 +88,12 @@ public class RealmWindow extends JDialog implements EventHandler, RealmEventHand
 		}
 	}
 
-	public void initialize(Connection source) {}
-	public void disable(Connection source) {}
-
 	public void initialize(RealmConnection rc) {
 		this.realmCon = rc;
 	}
 
-	public void bnetConnected(Connection source) {}
-	public void bnetDisconnected(Connection source) {}
-	public void titleChanged(Connection source) {}
-
-	public boolean parseCommand(Connection source, BNetUser user, String command, boolean wasWhispered) {return false;}
-	
 	public void realmConnected() {}
 	public void realmDisconnected() {}
-
-	public void channelJoin(Connection source, BNetUser user) {}
-	public void channelUser(Connection source, BNetUser user) {}
-	public void channelLeave(Connection source, BNetUser user) {}
-	
-	public void friendsList(BNCSConnection source, FriendEntry[] entries) {}
-	public void friendsUpdate(BNCSConnection source, FriendEntry friend) {}
-	public void friendsAdd(BNCSConnection source, FriendEntry friend) {}
-	public void friendsPosition(BNCSConnection source, byte oldPosition, byte newPosition) {}
-	public void friendsRemove(BNCSConnection source, byte entry) {}
-	
-	public void clanMOTD(BNCSConnection source, Object cookie, String text) {}
-	public void clanMemberList(BNCSConnection source, ClanMember[] members) {}
-	public void clanMemberRemoved(BNCSConnection source, String username) {}
-	public void clanMemberStatusChange(BNCSConnection source, ClanMember member) {}
-	public void clanMemberRankChange(BNCSConnection source, byte oldRank, byte newRank, String user) {}
-
-	public void joinedChannel(Connection source, String channel) {}
-	public void recieveChat(Connection source, BNetUser user, String text) {}
-	public void recieveEmote(Connection source, BNetUser user, String text) {}
-	public void recieveError(Connection source, String text) {}
-	public void recieveInfo(Connection source, String text) {}
-	public void recieveDebug(Connection source, String text) {}
-	public void whisperRecieved(Connection source, BNetUser user, String text) {}
-	public void whisperSent(Connection source, BNetUser user, String text) {}
-
-	public void queryRealms2(BNCSConnection source, String[] realms) {}
 
 	public void logonRealmEx(BNCSConnection source, int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName) {
 		MCPConnection mcpc = new MCPConnection(MCPChunk1, ip, port, MCPChunk2, uniqueName);

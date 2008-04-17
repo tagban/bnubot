@@ -6,6 +6,8 @@
 package net.bnubot.core;
 
 import net.bnubot.core.bncs.BNCSConnection;
+import net.bnubot.core.botnet.BotNetConnection;
+import net.bnubot.core.botnet.BotNetUser;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.util.BNetUser;
@@ -54,4 +56,11 @@ public interface EventHandler {
 	public void clanMemberStatusChange(BNCSConnection source, ClanMember member);
 	public void clanMemberRankChange(BNCSConnection source, byte oldRank, byte newRank, String user);
 	//TODO: CLANMEMBERINFORMATION
+	
+	//BotNet
+	public void botnetConnected(BotNetConnection source);
+	public void botnetDisconnected(BotNetConnection source);
+	public void botnetUserOnline(BotNetConnection source, BotNetUser user);
+	public void botnetUserStatus(BotNetConnection source, BotNetUser user);
+	public void botnetUserLogoff(BotNetConnection source, BotNetUser user);
 }

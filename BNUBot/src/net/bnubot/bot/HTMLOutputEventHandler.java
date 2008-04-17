@@ -19,17 +19,14 @@ import javax.swing.SwingUtilities;
 
 import net.bnubot.bot.gui.colors.ColorScheme;
 import net.bnubot.core.Connection;
-import net.bnubot.core.EventHandler;
-import net.bnubot.core.bncs.BNCSConnection;
-import net.bnubot.core.clan.ClanMember;
-import net.bnubot.core.friend.FriendEntry;
+import net.bnubot.core.EventHandlerImpl;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.HexDump;
 import net.bnubot.util.Out;
 import net.bnubot.util.StatString;
 
-public class HTMLOutputEventHandler implements EventHandler {
+public class HTMLOutputEventHandler extends EventHandlerImpl {
 	// TODO Allow the user to customize TimeZone
 	private static final TimeZone TIME_ZONE = TimeZone.getTimeZone("GMT-05");
 	private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -39,8 +36,6 @@ public class HTMLOutputEventHandler implements EventHandler {
 	private boolean generationNeeded = false;
 	private Runnable writeUserListRunnable = null;
 	private final ColorScheme cs = ColorScheme.getColors();
-
-	public void bnetConnected(Connection source) {}
 	
 	public void bnetDisconnected(Connection source) {
 		writeUserList(source);
@@ -153,23 +148,6 @@ public class HTMLOutputEventHandler implements EventHandler {
 		generationNeeded = true;
 		SwingUtilities.invokeLater(writeUserListRunnable);
 	}
-
-	public void friendsList(BNCSConnection source, FriendEntry[] entries) {}
-	public void friendsUpdate(BNCSConnection source, FriendEntry friend) {}
-	public void friendsAdd(BNCSConnection source, FriendEntry friend) {}
-	public void friendsPosition(BNCSConnection source, byte oldPosition, byte newPosition) {}
-	public void friendsRemove(BNCSConnection source, byte entry) {}
-	
-	public void logonRealmEx(BNCSConnection source, int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName) {}
-	public void queryRealms2(BNCSConnection source, String[] realms) {}
-
-	public boolean parseCommand(Connection source, BNetUser user, String command, boolean wasWhispered) {return false;}
-
-	public void clanMOTD(BNCSConnection source, Object cookie, String text) {}
-	public void clanMemberList(BNCSConnection source, ClanMember[] members) {}
-	public void clanMemberRemoved(BNCSConnection source, String username) {}
-	public void clanMemberStatusChange(BNCSConnection source, ClanMember member) {}
-	public void clanMemberRankChange(BNCSConnection source, byte oldRank, byte newRank, String user) {}
 
 	private void logChat(Connection source, String text) {
 		String fName = "logs/" + source.getProfile().getName() + "/";
