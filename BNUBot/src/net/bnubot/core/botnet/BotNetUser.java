@@ -11,14 +11,16 @@ import java.util.Map;
 
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.util.BNetInputStream;
+import net.bnubot.util.BNetUser;
 import net.bnubot.util.HexDump;
+import net.bnubot.util.Out;
 
 
 /**
  * @author sanderson
  *
  */
-public class BotNetUser {
+public class BotNetUser extends BNetUser {
 	private static final Map<Integer, InetAddress> servers = new HashMap<Integer, InetAddress>();
 	static {
 		for(String hostname : ConnectionSettings.bncsServers) {
@@ -31,7 +33,7 @@ public class BotNetUser {
 		}
 	}
 	
-	int number = 0;
+	final int number;
 	int dbflag = 0;
 	int ztff = 0;
 	String name = null;
@@ -40,18 +42,23 @@ public class BotNetUser {
 	String account = null;
 	String database = null;
 	
-	public String getHandle() {
-		return "*" + name + "%" + number;
+	/**
+	 * @param con
+	 * @param user
+	 * @param perspectiveOf
+	 */
+	public BotNetUser(BotNetConnection con, int number, String name) {
+		super(con, name, "BotNet");
+		this.number = number;
+		this.name = name;
 	}
 
-	public String toString() {
-		// Formatted username
-		if((account == null) || (account.length() == 0))
-			return getHandle();
-		
-		StringBuilder sb = new StringBuilder(account);
-		sb.append(" (").append(getHandle()).append(")");
-		return sb.toString();
+	public int getNumber() {
+		return number;
+	}
+	
+	public String getHandle() {
+		return "*" + name + "%" + number;
 	}
 	
 	public String getZTFF() {
@@ -69,6 +76,18 @@ public class BotNetUser {
 		return out.toString();
 	}
 	
+	@Override
+	public String toString() {
+		// Formatted username
+		if((account == null) || (account.length() == 0))
+			return getHandle();
+		
+		StringBuilder sb = new StringBuilder(account);
+		sb.append(" (").append(getHandle()).append(")");
+		return sb.toString();
+	}
+	
+	@Override
 	public String toStringEx() {
 		StringBuilder sb = new StringBuilder(toString());
 		
@@ -110,6 +129,16 @@ public class BotNetUser {
 		}
 		
 		return sb.toString();
+	}
+	
+	@Override
+	public void sendChat(String text, boolean whisperBack) {
+		try {
+			BotNetConnection con = (BotNetConnection)super.con;
+			con.sendWhisper(number, text);
+		} catch (Exception e) {
+			Out.exception(e);
+		}
 	}
 
 	public String getDatabase() {

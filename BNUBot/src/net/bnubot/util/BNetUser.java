@@ -22,7 +22,7 @@ import org.apache.cayenne.ObjectContext;
  * @author scotta
  */
 public class BNetUser {
-	private Connection con;
+	protected final Connection con;
 	private String shortLogonName;	// #=yes, realm=only if different from "myRealm"
 	private String fullLogonName;	// #=yes, realm=yes
 	private final String fullAccountName;	// #=no, realm=yes
