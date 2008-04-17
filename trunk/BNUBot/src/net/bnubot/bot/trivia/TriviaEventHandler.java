@@ -14,10 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import net.bnubot.core.Connection;
-import net.bnubot.core.EventHandler;
-import net.bnubot.core.bncs.BNCSConnection;
-import net.bnubot.core.clan.ClanMember;
-import net.bnubot.core.friend.FriendEntry;
+import net.bnubot.core.EventHandlerImpl;
 import net.bnubot.db.Account;
 import net.bnubot.db.conf.DatabaseContext;
 import net.bnubot.settings.GlobalSettings;
@@ -27,7 +24,7 @@ import net.bnubot.util.Out;
 
 import org.apache.cayenne.ObjectContext;
 
-public class TriviaEventHandler implements EventHandler {
+public class TriviaEventHandler extends EventHandlerImpl {
 	private boolean triviaEnabled = false;
 	private final List<TriviaItem> trivia = new LinkedList<TriviaItem>();
 	private TriviaItem triviaCurrent = null;
@@ -36,8 +33,6 @@ public class TriviaEventHandler implements EventHandler {
 	private int unanswered = 0;
 	private Connection initializedConnection = null;
 	private boolean disposed = false;
-	
-	public TriviaEventHandler() {}
 	
 	private void readFile(String fileName) {
 		BufferedReader is = null;
@@ -95,13 +90,13 @@ public class TriviaEventHandler implements EventHandler {
 		source.recieveInfo("Trivia initialized with " + trivia.size() + " questions");
 	}
 
-	public void bnetConnected(Connection source) {}
-	public void bnetDisconnected(Connection source) {}
-	public void titleChanged(Connection source) {}
-
-	public void channelJoin(Connection source, BNetUser user) {}
-	public void channelLeave(Connection source, BNetUser user) {}
-	public void channelUser(Connection source, BNetUser user) {}
+	public void bnetConnected(Connection source) {
+		triviaEnabled = false;
+	}
+	
+	public void bnetDisconnected(Connection source) {
+		triviaEnabled = false;
+	}
 	
 	private void showLeaderBoard(Connection source) {
 		try {
@@ -335,7 +330,10 @@ public class TriviaEventHandler implements EventHandler {
 		triviaEnabled = false;
 	}
 	
-	public void joinedChannel(Connection source, String channel) {}
+	public void joinedChannel(Connection source, String channel) {
+		triviaEnabled = false;
+	}
+	
 	public void recieveChat(Connection source, BNetUser user, String text) {
 		if(!triviaEnabled) {
 			if("trivia on".equals(text)) {
@@ -360,27 +358,4 @@ public class TriviaEventHandler implements EventHandler {
 			}
 		}
 	}
-	public void recieveEmote(Connection source, BNetUser user, String text) {}
-	public void recieveError(Connection source, String text) {}
-	public void recieveInfo(Connection source, String text) {}
-	public void recieveDebug(Connection source, String text) {}
-	public void whisperRecieved(Connection source, BNetUser user, String text) {}
-	public void whisperSent(Connection source, BNetUser user, String text) {}
-
-	public void friendsList(BNCSConnection source, FriendEntry[] entries) {}
-	public void friendsUpdate(BNCSConnection source, FriendEntry friend) {}
-	public void friendsAdd(BNCSConnection source, FriendEntry friend) {}
-	public void friendsPosition(BNCSConnection source, byte oldPosition, byte newPosition) {}
-	public void friendsRemove(BNCSConnection source, byte entry) {}
-	
-	public void logonRealmEx(BNCSConnection source, int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName) {}
-	public void queryRealms2(BNCSConnection source, String[] realms) {}
-
-	public boolean parseCommand(Connection source, BNetUser user, String command, boolean whisperBack) {return false;}
-
-	public void clanMOTD(BNCSConnection source, Object cookie, String text) {}
-	public void clanMemberList(BNCSConnection source, ClanMember[] members) {}
-	public void clanMemberRemoved(BNCSConnection source, String username) {}
-	public void clanMemberStatusChange(BNCSConnection source, ClanMember member) {}
-	public void clanMemberRankChange(BNCSConnection source, byte oldRank, byte newRank, String user) {}
 }

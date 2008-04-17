@@ -56,7 +56,7 @@ import net.bnubot.bot.gui.notifications.Growl;
 import net.bnubot.bot.gui.settings.ConfigurationFrame;
 import net.bnubot.bot.gui.settings.OperationCancelledException;
 import net.bnubot.core.Connection;
-import net.bnubot.core.EventHandler;
+import net.bnubot.core.EventHandlerImpl;
 import net.bnubot.core.Profile;
 import net.bnubot.core.bncs.BNCSConnection;
 import net.bnubot.core.clan.ClanMember;
@@ -66,7 +66,7 @@ import net.bnubot.settings.Settings;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.Out;
 
-public class GuiEventHandler implements EventHandler {
+public class GuiEventHandler extends EventHandlerImpl {
 	private Connection firstConnection = null;
 	private JPanel frame = null;
 	private TextWindow mainTextArea = null;
@@ -729,7 +729,7 @@ public class GuiEventHandler implements EventHandler {
 			public void run() {
 				source.addEventHandler(realmWindow);
 				if(showWindow)
-					realmWindow.setVisible(true);
+					realmWindow.jd.setVisible(true);
 				else
 					try {
 						source.sendLogonRealmEx(autoRealm);
@@ -738,8 +738,6 @@ public class GuiEventHandler implements EventHandler {
 					}
 			} });
 	}
-
-	public void logonRealmEx(BNCSConnection source, int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName) {}
 
 	public void setChatText(String chatText) {
 		chatTextArea.setText(chatText);
@@ -750,11 +748,6 @@ public class GuiEventHandler implements EventHandler {
 
 	public void focusChat() {
 		chatTextArea.requestFocus();
-	}
-
-	public boolean parseCommand(Connection source, BNetUser user, String command, boolean whisperBack) {
-		//mainTextArea.recieveInfo(String.format("parseCommand(\"%1$s\", \"%2$s\", \"%3$s\")", user.getShortLogonName(), command, param));
-		return false;
 	}
 
 	/**
