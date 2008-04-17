@@ -366,13 +366,15 @@ public class GuiEventHandler extends EventHandlerImpl {
 		// Clan list
 		clanList = new ClanList();
 		// BotNet list
-		botNetList = new BotNetList(this);
+		if(firstConnection.getConnectionSettings().enableBotNet)
+			botNetList = new BotNetList(this);
 
 		JTabbedPane allLists = new JTabbedPane(JTabbedPane.BOTTOM);
 		allLists.addTab("Channel", new JScrollPane(userList));
 		allLists.addTab("Friends", new JScrollPane(friendList));
 		allLists.addTab("Clan", new JScrollPane(clanList));
-		allLists.addTab("BotNet", new JScrollPane(botNetList));
+		if(botNetList != null)
+			allLists.addTab("BotNet", new JScrollPane(botNetList));
 		
 		Box leftSide = new Box(BoxLayout.Y_AXIS);
 		leftSide.add(mainTextArea);
@@ -747,23 +749,28 @@ public class GuiEventHandler extends EventHandlerImpl {
 	}
 	
 	public void botnetConnected(BotNetConnection source) {
-		botNetList.clear();
+		if(botNetList != null)
+			botNetList.clear();
 	}
 	
 	public void botnetDisconnected(BotNetConnection source) {
-		botNetList.clear();
+		if(botNetList != null)
+			botNetList.clear();
 	}
 	
 	public void botnetUserOnline(BotNetConnection source, BotNetUser user) {
-		botNetList.showUser(source, user);
+		if(botNetList != null)
+			botNetList.showUser(source, user);
 	}
 	
 	public void botnetUserStatus(BotNetConnection source, BotNetUser user) {
-		botNetList.showUser(source, user);
+		if(botNetList != null)
+			botNetList.showUser(source, user);
 	}
 	
 	public void botnetUserLogoff(BotNetConnection source, BotNetUser user) {
-		botNetList.removeUser(user);
+		if(botNetList != null)
+			botNetList.removeUser(user);
 	}
 
 	public void setChatText(String chatText) {
