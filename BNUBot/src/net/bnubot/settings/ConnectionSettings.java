@@ -177,7 +177,7 @@ public class ConnectionSettings implements Serializable {
 		username =	Settings.read(header, "username", (String)null);
 		password =	Settings.read(header, "password", (String)null);
 		enablePlug =	Settings.read(header, "enablePlug", false);
-		enableBotNet =	Settings.read(header, "enableBotNet", false);
+		enableBotNet =	Settings.read(header, "enableBotNet", botNum == 1);
 		cdkey =		Settings.read(header, "cdkey", (String)null);
 		cdkey2 =	Settings.read(header, "cdkey2", (String)null);
 		product =	Settings.read(header, "product", ProductIDs.STAR);
