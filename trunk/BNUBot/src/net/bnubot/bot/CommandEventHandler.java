@@ -1685,11 +1685,13 @@ public class CommandEventHandler extends EventHandlerImpl {
 		}
 	}
 
-	public void recieveChat(Connection source, BNetUser user, String text) {
+	@Override
+	public void recieveChat(Connection source, String type, BNetUser user, String text) {
 		touchUser(source, user, "chatting in the channel");
 	}
 
-	public void recieveEmote(Connection source, BNetUser user, String text) {
+	@Override
+	public void recieveEmote(Connection source, String type, BNetUser user, String text) {
 		touchUser(source, user, "chatting in the channel");
 	}
 

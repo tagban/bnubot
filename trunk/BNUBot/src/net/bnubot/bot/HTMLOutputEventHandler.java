@@ -208,7 +208,8 @@ public class HTMLOutputEventHandler extends EventHandlerImpl {
 		logChat(source, out);
 	}
 
-	public void recieveChat(Connection source, BNetUser user, String text) {
+	@Override
+	public void recieveChat(Connection source, String type, BNetUser user, String text) {
 		append2(source,
 			"<" + user.toString() + "> ",
 			cs.getUserNameColor(user.getFlags()),
@@ -216,12 +217,14 @@ public class HTMLOutputEventHandler extends EventHandlerImpl {
 			cs.getChatColor(user.getFlags()));
 	}
 
-	public void recieveEmote(Connection source, BNetUser user, String text) {
+	@Override
+	public void recieveEmote(Connection source, String type, BNetUser user, String text) {
 		append(source,
 			"<" + user.toString() + " " + text + "> ", cs.getEmoteColor(user.getFlags()));
 	}
 
-	public void whisperSent(Connection source, BNetUser user, String text) {
+	@Override
+	public void whisperSent(Connection source, String type, BNetUser user, String text) {
 		append2(source,
 			"<To: " + user.toString() + "> ",
 			cs.getUserNameColor(user.getFlags()),
@@ -229,7 +232,8 @@ public class HTMLOutputEventHandler extends EventHandlerImpl {
 			cs.getWhisperColor(user.getFlags()));
 	}
 
-	public void whisperRecieved(Connection source, BNetUser user, String text) {
+	@Override
+	public void whisperRecieved(Connection source, String type, BNetUser user, String text) {
 		append2(source,
 			"<From: " + user.toString() + "> ",
 			cs.getUserNameColor(user.getFlags()),
