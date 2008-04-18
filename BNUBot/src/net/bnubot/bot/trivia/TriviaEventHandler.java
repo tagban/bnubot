@@ -14,7 +14,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 import net.bnubot.core.Connection;
+import net.bnubot.core.EventHandler;
 import net.bnubot.core.EventHandlerImpl;
+import net.bnubot.core.Profile;
+import net.bnubot.core.commands.CommandRunnable;
 import net.bnubot.db.Account;
 import net.bnubot.db.conf.DatabaseContext;
 import net.bnubot.settings.GlobalSettings;
@@ -33,6 +36,42 @@ public class TriviaEventHandler extends EventHandlerImpl {
 	private int unanswered = 0;
 	private Connection initializedConnection = null;
 	private boolean disposed = false;
+
+	static {
+		Profile.registerCommand("trivia", new CommandRunnable() {
+			@Override
+			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
+			throws Exception {
+				TriviaEventHandler teh = null;
+				for(EventHandler eh : source.getEventHandlers()) {
+					if(!(eh instanceof TriviaEventHandler))
+						continue;
+					teh = (TriviaEventHandler)eh;
+					break;
+				}
+				if(teh == null) {
+					user.sendChat("Trivia is not enabled.", whisperBack);
+					return;
+				}
+
+				if(teh.triviaEnabled) {
+					if("off".equals(param)) {
+						teh.triviaOff();
+						return;
+					}
+					user.sendChat("Use: %trigger%trivia off", whisperBack);
+				} else {
+					if("on".equals(param)) {
+						teh.triviaOn(source);
+						return;
+					} else if("score".equals(param)) {
+						teh.showLeaderBoard(source);
+						return;
+					}
+					user.sendChat("Use: %trigger%trivia ( on | score )", whisperBack);
+				}
+			}});
+	}
 
 	private void readFile(String fileName) {
 		BufferedReader is = null;
@@ -260,15 +299,13 @@ public class TriviaEventHandler extends EventHandlerImpl {
 						if(triviaAnswersAN.length > 1) {
 							extra += " Other acceptable answers were: ";
 							boolean first = true;
-							String answerUsedAN = HexDump.getAlphaNumerics(answerUsed);
-							String[] triviaAnswers = triviaCurrent.getAnswers();
-							for(int i = 0; i < triviaAnswersAN.length; i++) {
-								if(!triviaAnswersAN[i].equals(answerUsedAN)) {
+							for(String answer : triviaCurrent.getAnswers()) {
+								if(!answer.equals(answerUsed)) {
 									if(first)
 										first = false;
 									else
 										extra += ", or ";
-									extra += "\"" + triviaAnswers[i] + "\"";
+									extra += "\"" + answer + "\"";
 								}
 							}
 						}
@@ -341,26 +378,17 @@ public class TriviaEventHandler extends EventHandlerImpl {
 	}
 
 	public void recieveChat(Connection source, BNetUser user, String text) {
-		if(!triviaEnabled) {
-			if("trivia on".equals(text)) {
-				triviaOn(source);
-			} else if("trivia score".equals(text)) {
-				if(!triviaEnabled)
-					showLeaderBoard(source);
-			}
-		} else {
-			if("trivia off".equals(text)) {
-				triviaOff();
-			} else if(triviaCurrent != null) {
-				String textAN = HexDump.getAlphaNumerics(text);
-				String[] triviaAnswers = triviaCurrent.getAnswers();
-				String[] triviaAnswersAN = triviaCurrent.getAnswersAlphaNumeric();
-				for(int i = 0; i < triviaAnswers.length; i++) {
-					if(triviaAnswersAN[i].equalsIgnoreCase(textAN)) {
-						answerUser = user;
-						answerUsed = triviaAnswers[i];
-					}
-				}
+		if(!triviaEnabled)
+			return;
+		if(triviaCurrent == null)
+			return;
+		String textAN = HexDump.getAlphaNumerics(text);
+		String[] triviaAnswers = triviaCurrent.getAnswers();
+		String[] triviaAnswersAN = triviaCurrent.getAnswersAlphaNumeric();
+		for(int i = 0; i < triviaAnswers.length; i++) {
+			if(triviaAnswersAN[i].equalsIgnoreCase(textAN)) {
+				answerUser = user;
+				answerUsed = triviaAnswers[i];
 			}
 		}
 	}
