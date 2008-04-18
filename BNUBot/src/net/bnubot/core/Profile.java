@@ -242,7 +242,6 @@ public class Profile {
 	 */
 	public Connection getPrimaryConnection() {
 		synchronized(cons) {
-			if(cons.size() == 0)
 			// Return the first connected connection
 			for(Connection c : cons)
 				if(c.isConnected())
