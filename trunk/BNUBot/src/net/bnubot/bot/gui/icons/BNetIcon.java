@@ -7,9 +7,9 @@ package net.bnubot.bot.gui.icons;
 
 import javax.swing.Icon;
 
-import org.eclipse.swt.graphics.Image;
-
 import net.bnubot.util.HexDump;
+
+import org.eclipse.swt.graphics.Image;
 
 public class BNetIcon {
 	int flags;

@@ -5,8 +5,8 @@
 
 package net.bnubot.junit.util;
 
-import net.bnubot.util.Wildcard;
 import junit.framework.TestCase;
+import net.bnubot.util.Wildcard;
 
 public class WildcardTest extends TestCase {
 

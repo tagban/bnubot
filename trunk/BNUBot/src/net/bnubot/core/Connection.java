@@ -163,7 +163,6 @@ public abstract class Connection extends Thread {
 			}
 
 			disconnect(true);
-			
 			try {
 				sleep(5000);
 			} catch (Exception e) {}

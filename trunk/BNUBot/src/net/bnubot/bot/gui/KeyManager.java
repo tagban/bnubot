@@ -15,9 +15,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.jbls.util.Buffer;
-
 import net.bnubot.util.Out;
+
+import org.jbls.util.Buffer;
 
 public class KeyManager {
 	public static final int PRODUCT_ALLNORMAL = -1;
