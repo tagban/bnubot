@@ -181,6 +181,7 @@ INSERT INTO command (access, name, description, cmdgroup) VALUES
 (35,	'setrecruiter', NULL, 'accounts'),
 (34,	'sweepban', NULL, 'moderation'),
 (1,		'trigger', 'Current trigger', 'useful'),
+(1,		'trivia', NULL, 'trivia'),
 (34,	'unban', NULL, 'moderation'),
 (1,		'vote', 'cast a vote', 'moderation'),
 (20,	'voteban', 'vote to ban', 'moderation'),
