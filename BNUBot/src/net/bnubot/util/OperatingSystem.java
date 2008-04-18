@@ -33,7 +33,7 @@ public enum OperatingSystem {
 		Properties p = System.getProperties();
 		String osName = p.getProperty("os.name");
 		String osVersion = p.getProperty("os.version");
-		
+
 		if((osVersion != null) && (osVersion.length() != 0))
 			osName += " " + osVersion;
 

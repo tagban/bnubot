@@ -5,9 +5,9 @@
 
 package net.bnubot.junit.vercheck;
 
+import junit.framework.TestCase;
 import net.bnubot.vercheck.ReleaseType;
 import net.bnubot.vercheck.VersionNumber;
-import junit.framework.TestCase;
 
 public class VersionNumberTest extends TestCase {
 	public void testVersionCompare() {

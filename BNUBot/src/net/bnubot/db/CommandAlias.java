@@ -5,13 +5,13 @@
 
 package net.bnubot.db;
 
+import net.bnubot.db.auto._CommandAlias;
+import net.bnubot.db.conf.DatabaseContext;
+
 import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
-
-import net.bnubot.db.auto._CommandAlias;
-import net.bnubot.db.conf.DatabaseContext;
 
 public class CommandAlias extends _CommandAlias {
 	private static final long serialVersionUID = -3633743075279729925L;
