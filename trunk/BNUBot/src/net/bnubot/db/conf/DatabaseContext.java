@@ -84,6 +84,8 @@ public class DatabaseContext {
 
 			Out.error(DatabaseContext.class, "Removing " + login.getLogin() + " due to inactivity (" + age + " days)");
 			context.deleteObject(login);
+
+			Thread.yield();
 		}
 
 		try {
@@ -112,6 +114,8 @@ public class DatabaseContext {
 
 			Out.error(DatabaseContext.class, "Removing " + account.getName() + " which has no active BNLogins");
 			context.deleteObject(account);
+
+			Thread.yield();
 		}
 
 		try {
