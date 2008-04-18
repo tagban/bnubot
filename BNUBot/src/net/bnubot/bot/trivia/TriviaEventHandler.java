@@ -377,18 +377,18 @@ public class TriviaEventHandler extends EventHandlerImpl {
 		triviaEnabled = false;
 	}
 
-	public void recieveChat(Connection source, BNetUser user, String text) {
+	@Override
+	public void recieveChat(Connection source, String type, BNetUser user, String text) {
 		if(!triviaEnabled)
 			return;
 		if(triviaCurrent == null)
 			return;
 		String textAN = HexDump.getAlphaNumerics(text);
-		String[] triviaAnswers = triviaCurrent.getAnswers();
 		String[] triviaAnswersAN = triviaCurrent.getAnswersAlphaNumeric();
-		for(int i = 0; i < triviaAnswers.length; i++) {
+		for(int i = 0; i < triviaAnswersAN.length; i++) {
 			if(triviaAnswersAN[i].equalsIgnoreCase(textAN)) {
 				answerUser = user;
-				answerUsed = triviaAnswers[i];
+				answerUsed = triviaCurrent.getAnswers()[i];
 			}
 		}
 	}
