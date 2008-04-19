@@ -59,6 +59,8 @@ public class DatabaseContext {
 				defaultMaxAge = rank.getExpireDays();
 		}
 
+		boolean debugEnabled = Out.isDebug(DatabaseContext.class);
+
 		for(BNLogin login : (List<BNLogin>)context.performQuery(new SelectQuery(BNLogin.class))) {
 			long age = login.getLastSeen().getTime();
 			age = System.currentTimeMillis() - age;
@@ -80,11 +82,12 @@ public class DatabaseContext {
 					Mail.send(account, account, "Your login [ " + login.getLogin() + " ] has been removed due to inactivity (" + age + " days)");
 				} catch (Exception e) {
 					Out.exception(e);
+					break;
 				}
 
-			Out.error(DatabaseContext.class, "Removing " + login.getLogin() + " due to inactivity (" + age + " days)");
+			if(debugEnabled)
+				Out.debugAlways(DatabaseContext.class, "Removing " + login.getLogin() + " due to inactivity (" + age + " days)");
 			context.deleteObject(login);
-
 			Thread.yield();
 		}
 
@@ -110,11 +113,11 @@ public class DatabaseContext {
 					Mail.send(recruiter, recruiter, "Your recruit [ " + account.getName() + " ] has been removed due to inactivity");
 				} catch (Exception e) {
 					Out.exception(e);
+					break;
 				}
 
 			Out.error(DatabaseContext.class, "Removing " + account.getName() + " which has no active BNLogins");
 			context.deleteObject(account);
-
 			Thread.yield();
 		}
 
