@@ -168,6 +168,9 @@ public class BotNetList extends JPanel {
 				public void mousePressed(MouseEvent arg0) {}
 				public void mouseReleased(MouseEvent arg0) {}
 			});
+		} else {
+			ui.label.setText(user.toString());
+			ui.database.setText(user.getDatabase());
 		}
 
 		//Check if the user's flags updated
