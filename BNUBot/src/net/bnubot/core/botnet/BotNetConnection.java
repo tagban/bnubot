@@ -42,8 +42,8 @@ public class BotNetConnection extends Connection {
 	private InputStream bnInputStream = null;
 	private DataOutputStream bnOutputStream = null;
 
-	private int botNetServerRevision = 0;
-	private int botNetCommunicationRevision = 0;
+	private int serverRevision = 0;
+	private int communicationRevision = 0;
 
 	public BotNetConnection(BNCSConnection master, ConnectionSettings cs, Profile p) {
 		super(cs, p);
@@ -62,8 +62,8 @@ public class BotNetConnection extends Connection {
 
 	@Override
 	protected void initializeConnection(Task connect) throws Exception {
-		botNetServerRevision = 0;
-		botNetCommunicationRevision = 0;
+		serverRevision = 0;
+		communicationRevision = 0;
 
 		// Set up BotNet
 		connect.updateProgress("Connecting to BotNet");
@@ -82,7 +82,8 @@ public class BotNetConnection extends Connection {
 
 	@Override
 	protected boolean sendLoginPackets(Task connect) throws Exception {
-		sendLogon("RivalBot", "b8f9b319f223ddcc38");
+		//sendLogon("RivalBot", "b8f9b319f223ddcc38");
+		sendLogon("EternalChat", "das93kajfdsklah3");
 
 		while(isConnected() && !socket.isClosed() && !disposed) {
 			if(bnInputStream.available() > 0) {
@@ -91,8 +92,8 @@ public class BotNetConnection extends Connection {
 
 				switch(pr.packetId) {
 				case PACKET_BOTNETVERSION: {
-					botNetServerRevision = is.readDWord();
-					recieveInfo("BotNet server version is " + botNetServerRevision);
+					serverRevision = is.readDWord();
+					Out.debug(getClass(), "BotNet server version is " + serverRevision);
 					sendBotNetVersion(1, 1);
 					break;
 				}
@@ -138,8 +139,8 @@ public class BotNetConnection extends Connection {
 				switch(pr.packetId) {
 				case PACKET_CHANGEDBPASSWORD: {
 					// Server is acknowledging the communication version
-					botNetCommunicationRevision = is.readDWord();
-					recieveInfo("BotNet communication version is " + botNetCommunicationRevision);
+					communicationRevision = is.readDWord();
+					Out.debug(getClass(), "BotNet communication version is " + communicationRevision);
 					break;
 				}
 				case PACKET_IDLE: {
@@ -170,7 +171,7 @@ public class BotNetConnection extends Connection {
 
 					int number = is.readDWord();
 					int dbflag = 0, ztff = 0;
-					if(botNetServerRevision >= 4) {
+					if(serverRevision >= 4) {
 						dbflag = is.readDWord();
 						ztff = is.readDWord();
 					}
@@ -182,9 +183,9 @@ public class BotNetConnection extends Connection {
 
 					user.channel = is.readNTString();
 					user.server = is.readDWord();
-					if(botNetServerRevision >= 2)
+					if(serverRevision >= 2)
 						user.account = is.readNTString();
-					if(botNetServerRevision >= 3)
+					if(serverRevision >= 3)
 						user.database = is.readNTString();
 
 					if(myUser == null)
@@ -200,6 +201,32 @@ public class BotNetConnection extends Connection {
 				case PACKET_USERLOGGINGOFF: {
 					int number = is.readDWord();
 					botnetUserLogoff(number);
+					break;
+				}
+				case PACKET_BOTNETCHAT: {
+					int command = is.readDWord();
+					int action = is.readDWord();
+					BotNetUser user = users.get(is.readDWord());
+					String text = is.readNTString();
+
+					switch(command) {
+					case 0: //broadcast
+						recieveChat(BOTNET_TYPE + " Broadcast", user, text);
+						break;
+					case 1: // chat
+						if(action == 0)
+							recieveChat(BOTNET_TYPE, user, text);
+						else
+							recieveEmote(BOTNET_TYPE, user, text);
+						break;
+					case 2: //whisper
+						whisperRecieved(BOTNET_TYPE, user, text);
+						break;
+					default:
+						recieveError("Unknown PACKET_BOTNETCHAT command 0x" + Integer.toHexString(command));
+						disconnect(false);
+						break;
+					}
 					break;
 				}
 				default:
@@ -347,11 +374,20 @@ public class BotNetConnection extends Connection {
 		else
 			ip = master.getIp();
 
+		if((myUser != null) && (myUser instanceof BotNetUser)) {
+			BotNetUser me = (BotNetUser)myUser;
+			me.name = (user == null) ? "BNUBot2" : user.getShortLogonName();
+			me.channel = channel;
+			me.server = ip;
+			me.database = "PubEternalChat";
+			botnetUserStatus(me);
+		}
+
 		sendStatusUpdate(
 				(user == null) ? "BNUBot2" : user.getShortLogonName(),
 				channel,
 				ip,
-				"PubEternalChat",
+				"PubEternalChat f9q07r89iahdfjg47af9od",
 				false);
 	}
 
