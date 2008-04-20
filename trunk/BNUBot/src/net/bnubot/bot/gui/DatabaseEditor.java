@@ -123,12 +123,7 @@ public class DatabaseEditor {
 		box.add(box2);
 
 		for(CustomDataObject row : dataRows) {
-			String disp;
-			try {
-				disp = row.toDisplayString();
-			} catch(Exception e) {
-				disp = Integer.toString(DataObjectUtils.intPKForObject(row));
-			}
+			String disp = getDisplayString(row);
 			model.addElement(disp);
 			dataMap.put(disp, row);
 		}
@@ -143,6 +138,16 @@ public class DatabaseEditor {
 		jf.setVisible(true);
 		jf.setModal(true);
 		jf.setAlwaysOnTop(true);
+	}
+
+	private String getDisplayString(CustomDataObject row) {
+		if(row == null)
+			return "NULL";
+		try {
+			return row.toDisplayString();
+		} catch(Exception e) {
+			return Integer.toString(DataObjectUtils.intPKForObject(row));
+		}
 	}
 
 	private void loadData() {
@@ -201,10 +206,10 @@ public class DatabaseEditor {
 
 		final HashMap<String, CustomDataObject> theseOptions = new HashMap<String, CustomDataObject>();
 		for(CustomDataObject v : (List<CustomDataObject>)DatabaseContext.getContext().performQuery(new SelectQuery(fieldType)))
-			theseOptions.put(v.toDisplayString(), v);
+			theseOptions.put(getDisplayString(v), v);
 		ComboBoxModel model = new DefaultComboBoxModel(theseOptions.keySet().toArray());
 		final JComboBox valueComponent = new JComboBox(model);
-		valueComponent.setSelectedItem((value == null) ? null : value.toDisplayString());
+		valueComponent.setSelectedItem((value == null) ? null : getDisplayString(value));
 
 		gbc.gridx++;
 		jp.add(valueComponent, gbc);
