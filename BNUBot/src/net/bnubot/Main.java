@@ -26,11 +26,7 @@ public class Main {
 		// Set default exception handler
 		Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
 			public void uncaughtException(Thread thread, Throwable t) {
-				try {
-					Out.popupException(t, null);
-				} catch(Throwable th) {
-					Out.exception(t);
-				}
+				Out.exception(t);
 			}});
 
 		// Force the static initializers of GlobalSettings to run
