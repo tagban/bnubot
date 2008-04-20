@@ -42,7 +42,7 @@
 		<db-attribute name="isread" type="TINYINT" isMandatory="true" length="1"/>
 		<db-attribute name="message" type="VARCHAR" length="255"/>
 		<db-attribute name="sent" type="TIMESTAMP" isMandatory="true" length="26"/>
-		<db-attribute name="sentfrom" type="INTEGER" isMandatory="true" length="11"/>
+		<db-attribute name="sentfrom" type="INTEGER" length="11"/>
 		<db-attribute name="sentto" type="INTEGER" isMandatory="true" length="11"/>
 	</db-entity>
 	<db-entity name="rank">
@@ -147,18 +147,18 @@
 	<db-relationship name="commandArray" source="rank" target="command" toMany="true">
 		<db-attribute-pair source="id" target="access"/>
 	</db-relationship>
-	<obj-relationship name="bnLogins" source="Account" target="BNLogin" db-relationship-path="aliases"/>
+	<obj-relationship name="bnLogins" source="Account" target="BNLogin" deleteRule="Nullify" db-relationship-path="aliases"/>
 	<obj-relationship name="rank" source="Account" target="Rank" db-relationship-path="toRank"/>
-	<obj-relationship name="recievedMail" source="Account" target="Mail" db-relationship-path="recievedMail"/>
+	<obj-relationship name="recievedMail" source="Account" target="Mail" deleteRule="Cascade" db-relationship-path="recievedMail"/>
 	<obj-relationship name="recruiter" source="Account" target="Account" db-relationship-path="recruiter"/>
-	<obj-relationship name="recruits" source="Account" target="Account" db-relationship-path="recruits"/>
-	<obj-relationship name="sentMail" source="Account" target="Mail" db-relationship-path="sentMail"/>
+	<obj-relationship name="recruits" source="Account" target="Account" deleteRule="Nullify" db-relationship-path="recruits"/>
+	<obj-relationship name="sentMail" source="Account" target="Mail" deleteRule="Nullify" db-relationship-path="sentMail"/>
 	<obj-relationship name="account" source="BNLogin" target="Account" db-relationship-path="toAccount"/>
-	<obj-relationship name="aliases" source="Command" target="CommandAlias" db-relationship-path="commandAliasArray"/>
+	<obj-relationship name="aliases" source="Command" target="CommandAlias" deleteRule="Deny" db-relationship-path="commandAliasArray"/>
 	<obj-relationship name="rank" source="Command" target="Rank" db-relationship-path="toRank"/>
 	<obj-relationship name="toCommand" source="CommandAlias" target="Command" db-relationship-path="toCommand"/>
 	<obj-relationship name="sentFrom" source="Mail" target="Account" db-relationship-path="sentFrom"/>
 	<obj-relationship name="sentTo" source="Mail" target="Account" db-relationship-path="sentTo"/>
-	<obj-relationship name="accountArray" source="Rank" target="Account" db-relationship-path="accountArray"/>
-	<obj-relationship name="commandArray" source="Rank" target="Command" db-relationship-path="commandArray"/>
+	<obj-relationship name="accountArray" source="Rank" target="Account" deleteRule="Deny" db-relationship-path="accountArray"/>
+	<obj-relationship name="commandArray" source="Rank" target="Command" deleteRule="Deny" db-relationship-path="commandArray"/>
 </data-map>
