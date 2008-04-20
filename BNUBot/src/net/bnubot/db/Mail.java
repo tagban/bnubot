@@ -49,7 +49,8 @@ public class Mail extends _Mail {
 	@Override
 	public String toDisplayString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append(getSentFrom().toDisplayString());
+		if(getSentFrom() != null)
+			sb.append(getSentFrom().toDisplayString());
 		sb.append("->");
 		sb.append(getSentTo().toDisplayString());
 		return getSentFrom().toDisplayString() + "->" + getSentTo().toDisplayString();

@@ -1,3 +1,8 @@
+/**
+ * This file is distributed under the GPL
+ * $Id$
+ */
+
 package net.bnubot.db.auto;
 
 import java.util.List;
