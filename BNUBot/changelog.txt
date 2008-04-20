@@ -15,10 +15,12 @@
 * Fixed logic to decide which connection of a profile is the primary
 * Added relationships to the DB editor
 * Send mail to the bot master when a new command is created
-* ChatQueue will be cleared when changing channels
+* ChatQueue will be cleared when changing channels (Issue 72)
 * Never kick/ban without ops
 * Added kP BotNet support
 * Trivia is now a command
+* Added deletion rules to the Cayenne mapping file
+* Added a default exception handler
 
 2.0.5 (r1300) 2008-04-09:
 * Added a Cayenne persistence layer to address database problems

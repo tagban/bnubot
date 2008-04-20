@@ -8,6 +8,7 @@ package net.bnubot;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
+import java.lang.Thread.UncaughtExceptionHandler;
 
 import net.bnubot.bot.gui.GuiDesktop;
 import net.bnubot.bot.gui.settings.GlobalConfigurationFrame;
@@ -22,6 +23,16 @@ import org.apache.commons.logging.impl.NoOpLog;
 
 public class Main {
 	static {
+		// Set default exception handler
+		Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+			public void uncaughtException(Thread thread, Throwable t) {
+				try {
+					Out.popupException(t, null);
+				} catch(Throwable th) {
+					Out.exception(t);
+				}
+			}});
+
 		// Force the static initializers of GlobalSettings to run
 		if(GlobalSettings.enableGUI)
 			// Force the Swing GUI to start

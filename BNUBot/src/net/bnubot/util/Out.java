@@ -49,7 +49,7 @@ public class Out {
 	 * @param e The exception source
 	 * @return Each line of the exception starting with net.bnubot, and ellipses where lines were trimmed
 	 */
-	private static String getRelevantStack(Exception e) {
+	private static String getRelevantStack(Throwable e) {
 		StringWriter sw = new StringWriter();
 		e.printStackTrace(new PrintWriter(sw));
 		String lines[] = sw.toString().trim().split("\n");
@@ -81,7 +81,7 @@ public class Out {
 	 * Display the stack trace in an appropriate location
 	 * @param e The exception source
 	 */
-	public static void exception(Exception e) {
+	public static void exception(Throwable e) {
 		final Connection oc = getOutConnection();
 		if(oc != null)
 			error(e.getClass(), e.getMessage());
@@ -95,7 +95,7 @@ public class Out {
 	 * Display a popup with the exception
 	 * @param e
 	 */
-	public static void popupException(Exception e, Component parent) {
+	public static void popupException(Throwable e, Component parent) {
 		JOptionPane.showMessageDialog(
 				parent,
 				getRelevantStack(e),
@@ -111,7 +111,7 @@ public class Out {
 	 * Attempt to popup a window with a stack trace, and exit with code 1
 	 * @param e The exception source
 	 */
-	public static void fatalException(Exception e) {
+	public static void fatalException(Throwable e) {
 		try {
 			JOptionPane.showMessageDialog(null, getRelevantStack(e), e.getClass().getSimpleName(), JOptionPane.ERROR_MESSAGE);
 		} catch(Exception e1) {}
