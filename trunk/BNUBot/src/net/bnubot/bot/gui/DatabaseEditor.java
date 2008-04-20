@@ -36,6 +36,7 @@ import net.bnubot.db.CustomDataObject;
 import net.bnubot.db.conf.DatabaseContext;
 import net.bnubot.util.Out;
 
+import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
@@ -122,7 +123,12 @@ public class DatabaseEditor {
 		box.add(box2);
 
 		for(CustomDataObject row : dataRows) {
-			final String disp = row.toDisplayString();
+			String disp;
+			try {
+				disp = row.toDisplayString();
+			} catch(Exception e) {
+				disp = Integer.toString(DataObjectUtils.intPKForObject(row));
+			}
 			model.addElement(disp);
 			dataMap.put(disp, row);
 		}
