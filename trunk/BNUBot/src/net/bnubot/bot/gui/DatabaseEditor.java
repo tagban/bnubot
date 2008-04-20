@@ -37,6 +37,7 @@ import net.bnubot.db.conf.DatabaseContext;
 import net.bnubot.util.Out;
 
 import org.apache.cayenne.DataObjectUtils;
+import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
@@ -49,6 +50,8 @@ import org.apache.cayenne.query.SelectQuery;
  *
  */
 public class DatabaseEditor {
+	private final ObjectContext context;
+
 	private final Map<String, CustomDataObject> dataMap = new HashMap<String, CustomDataObject>();
 	private CustomDataObject currentRow = null;
 	private final Map<ObjAttribute, getValueDelegate> data = new HashMap<ObjAttribute, getValueDelegate>();
@@ -64,7 +67,10 @@ public class DatabaseEditor {
 
 	@SuppressWarnings("unchecked")
 	public DatabaseEditor(Class<? extends CustomDataObject> clazz) throws Exception {
-		List<CustomDataObject>dataRows = DatabaseContext.getContext().performQuery(new SelectQuery(clazz));
+		context = DatabaseContext.getContext();
+		if(context == null)
+			throw new IllegalStateException("No database is initialized");
+		List<CustomDataObject>dataRows = context.performQuery(new SelectQuery(clazz));
 
 		jf.setTitle(clazz.getSimpleName() + " Editor");
 		Box box = new Box(BoxLayout.X_AXIS);
@@ -91,9 +97,7 @@ public class DatabaseEditor {
 					}
 					currentRow.updateRow();
 				} catch(Exception ex) {
-					jf.setModal(false);
 					Out.popupException(ex, jf);
-					jf.setModal(true);
 				}
 			}});
 		box3.add(btnSave);
@@ -111,9 +115,7 @@ public class DatabaseEditor {
 					currentRow.getObjectContext().deleteObject(currentRow);
 					currentRow.updateRow();
 				} catch(Exception ex) {
-					jf.setModal(false);
 					Out.popupException(ex, jf);
-					jf.setModal(true);
 				}
 			}});
 		box3.add(btnDelete);
@@ -205,7 +207,7 @@ public class DatabaseEditor {
 		}
 
 		final HashMap<String, CustomDataObject> theseOptions = new HashMap<String, CustomDataObject>();
-		for(CustomDataObject v : (List<CustomDataObject>)DatabaseContext.getContext().performQuery(new SelectQuery(fieldType)))
+		for(CustomDataObject v : (List<CustomDataObject>)context.performQuery(new SelectQuery(fieldType)))
 			theseOptions.put(getDisplayString(v), v);
 		ComboBoxModel model = new DefaultComboBoxModel(theseOptions.keySet().toArray());
 		final JComboBox valueComponent = new JComboBox(model);

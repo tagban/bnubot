@@ -15,6 +15,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Properties;
 
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
 import net.bnubot.bot.gui.GuiDesktop;
@@ -96,11 +97,23 @@ public class Out {
 	 * @param e
 	 */
 	public static void popupException(Throwable e, Component parent) {
+		JDialog jd = null;
+		boolean isModal = false;
+		if((parent != null) && (parent instanceof JDialog)) {
+			jd = (JDialog)parent;
+			isModal = jd.isModal();
+			jd.setModal(false);
+		}
+
 		JOptionPane.showMessageDialog(
 				parent,
 				getRelevantStack(e),
 				e.getClass().getName(),
 				JOptionPane.ERROR_MESSAGE);
+
+		if(isModal)
+			jd.setModal(true);
+
 		if(outStream != null)
 			e.printStackTrace(outStream);
 		else
