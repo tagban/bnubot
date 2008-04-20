@@ -303,7 +303,6 @@ public class GuiDesktop extends JFrame {
 					new DatabaseEditor(clazz);
 				} catch(Exception e) {
 					Out.exception(e);
-					Out.error(GuiDesktop.class, "There is no database initialized.");
 				}
 			} });
 		menu.add(menuItem);
