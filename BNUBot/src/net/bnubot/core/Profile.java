@@ -50,7 +50,7 @@ public class Profile {
 			String message = "Created command " + name + " with access " + max.getAccess() + "; to change, use %trigger%setauth " + name + " <access>";
 			for(Account a : max.getAccountArray())
 				try {
-					Mail.send(a, a, message);
+					Mail.send(null, a, message);
 				} catch (Exception e) {
 					throw new IllegalStateException(e);
 				}

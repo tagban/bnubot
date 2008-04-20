@@ -79,7 +79,7 @@ public class DatabaseContext {
 
 			if(account != null)
 				try {
-					Mail.send(account, account, "Your login [ " + login.getLogin() + " ] has been removed due to inactivity (" + age + " days)");
+					Mail.send(null, account, "Your login [ " + login.getLogin() + " ] has been removed due to inactivity (" + age + " days)");
 				} catch (Exception e) {
 					Out.exception(e);
 					break;
@@ -110,7 +110,7 @@ public class DatabaseContext {
 			Account recruiter = account.getRecruiter();
 			if(recruiter != null)
 				try {
-					Mail.send(recruiter, recruiter, "Your recruit [ " + account.getName() + " ] has been removed due to inactivity");
+					Mail.send(null, recruiter, "Your recruit [ " + account.getName() + " ] has been removed due to inactivity");
 				} catch (Exception e) {
 					Out.exception(e);
 					break;

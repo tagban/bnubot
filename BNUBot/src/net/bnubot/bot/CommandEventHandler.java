@@ -506,6 +506,7 @@ public class CommandEventHandler extends EventHandlerImpl {
 						}
 
 						List<Mail> rsMail = commanderAccount.getRecievedMail();
+						// Sort the mail by sent date
 						Collections.sort(rsMail, new Comparator<Mail>() {
 							public int compare(Mail arg0, Mail arg1) {
 								return arg0.getSent().compareTo(arg1.getSent());
@@ -1272,8 +1273,10 @@ public class CommandEventHandler extends EventHandlerImpl {
 		message.append(id);
 		message.append(" of ");
 		message.append(size);
-		message.append(": From ");
-		message.append(m.getSentFrom().getName());
+		if(m.getSentFrom() != null) {
+			message.append(" from ");
+			message.append(m.getSentFrom().getName());
+		}
 		message.append(" [");
 		message.append(TimeFormatter.formatTime(System.currentTimeMillis() - m.getSent().getTime()));
 		message.append(" ago]: ");
@@ -1632,7 +1635,7 @@ public class CommandEventHandler extends EventHandlerImpl {
 							source.sendChat("Congratulations " + user.toString() + ", you just recieved a promotion! Your rank is now " + rank + ".", false);
 							String apMail = rsRank.getApMail();
 							if((apMail != null) && (apMail.length() > 0))
-								Mail.send(rsAccount, rsAccount, apMail);
+								Mail.send(null, rsAccount, apMail);
 						} else {
 							user.sendChat("You need " + Long.toString(apRS - rs) + " more recruitment points to recieve a promotion!", true);
 						}
