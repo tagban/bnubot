@@ -6,6 +6,7 @@
 package net.bnubot.util;
 
 import java.awt.Component;
+import java.awt.Dialog;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -15,7 +16,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Properties;
 
-import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
 import net.bnubot.bot.gui.GuiDesktop;
@@ -97,12 +97,12 @@ public class Out {
 	 * @param e
 	 */
 	public static void popupException(Throwable e, Component parent) {
-		JDialog jd = null;
+		Dialog dialog = null;
 		boolean isModal = false;
-		if((parent != null) && (parent instanceof JDialog)) {
-			jd = (JDialog)parent;
-			isModal = jd.isModal();
-			jd.setModal(false);
+		if((parent != null) && (parent instanceof Dialog)) {
+			dialog = (Dialog)parent;
+			isModal = dialog.isModal();
+			dialog.setModal(false);
 		}
 
 		JOptionPane.showMessageDialog(
@@ -112,7 +112,7 @@ public class Out {
 				JOptionPane.ERROR_MESSAGE);
 
 		if(isModal)
-			jd.setModal(true);
+			dialog.setModal(true);
 
 		if(outStream != null)
 			e.printStackTrace(outStream);
