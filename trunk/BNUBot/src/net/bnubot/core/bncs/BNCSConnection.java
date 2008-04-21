@@ -260,6 +260,7 @@ public class BNCSConnection extends Connection {
 		}
 	}
 
+	@Override
 	protected void initializeConnection(Task connect) throws Exception {
 		if(cs.enableBotNet) {
 			if(botnet == null) {
@@ -295,6 +296,7 @@ public class BNCSConnection extends Connection {
 	 * Do the login work up to SID_ENTERCHAT
 	 * @throws Exception
 	 */
+	@Override
 	protected boolean sendLoginPackets(Task connect) throws Exception {
 		while(isConnected() && !socket.isClosed() && !disposed) {
 			if(bncsInputStream.available() > 0) {
@@ -1031,6 +1033,7 @@ public class BNCSConnection extends Connection {
 	 * This method is the main loop after recieving SID_ENTERCHAT
 	 * @throws Exception
 	 */
+	@Override
 	protected void connectedLoop() throws Exception {
 		lastNullPacket = System.currentTimeMillis();
 		lastEntryForced = lastNullPacket;
@@ -1686,6 +1689,7 @@ public class BNCSConnection extends Connection {
 			recieveInfo("Channels: " + channelList + ".");
 	}
 
+	@Override
 	public boolean isOp() {
 		return (myUser.getFlags() & 0x02) == 0x02;
 	}
@@ -1709,6 +1713,7 @@ public class BNCSConnection extends Connection {
 	/**
 	 * Send SID_LEAVECHAT
 	 */
+	@Override
 	public void sendLeaveChat() throws Exception {
 		BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_LEAVECHAT);
 		p.SendPacket(bncsOutputStream);
@@ -1719,6 +1724,7 @@ public class BNCSConnection extends Connection {
 	/**
 	 * Send SID_JOINCHANNEL
 	 */
+	@Override
 	public void sendJoinChannel(String channel) throws Exception {
 		BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_JOINCHANNEL);
 		p.writeDWord(0); // nocreate join
@@ -1729,6 +1735,7 @@ public class BNCSConnection extends Connection {
 	/**
 	 * Send SID_JOINCHANNEL with create channel flag
 	 */
+	@Override
 	public void sendJoinChannel2(String channel) throws Exception {
 		BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_JOINCHANNEL);
 		p.writeDWord(2); // force join
@@ -1739,6 +1746,7 @@ public class BNCSConnection extends Connection {
 	/**
 	 * Send SID_CHATCOMMAND
 	 */
+	@Override
 	public void sendChatCommand(String text) {
 		if((botnet != null) && text.startsWith("/botnet ")) {
 			botnet.processCommand(text.substring(8));
@@ -1791,6 +1799,7 @@ public class BNCSConnection extends Connection {
 	/**
 	 * Send SID_CLANINVITATION
 	 */
+	@Override
 	public void sendClanInvitation(Object cookie, String user) throws Exception {
 		switch(productID) {
 		case WAR3:
@@ -1814,6 +1823,7 @@ public class BNCSConnection extends Connection {
 	/**
 	 * Send SID_CLANRANKCHANGE
 	 */
+	@Override
 	public void sendClanRankChange(Object cookie, String user, int newRank) throws Exception {
 		switch(productID) {
 		case WAR3:
@@ -1833,6 +1843,7 @@ public class BNCSConnection extends Connection {
 	/**
 	 * Send SID_CLANMOTD
 	 */
+	@Override
 	public void sendClanMOTD(Object cookie) throws Exception {
 		switch(productID) {
 		case WAR3:
@@ -1850,6 +1861,7 @@ public class BNCSConnection extends Connection {
 	/**
 	 * Send SID_CLANSETMOTD
 	 */
+	@Override
 	public void sendClanSetMOTD(String text) throws Exception {
 		switch(productID) {
 		case WAR3:
@@ -1868,6 +1880,7 @@ public class BNCSConnection extends Connection {
 	/**
 	 * Send SID_QUERYREALMS2
 	 */
+	@Override
 	public void sendQueryRealms2() throws Exception {
 		switch(productID) {
 		case D2DV:
@@ -1888,6 +1901,7 @@ public class BNCSConnection extends Connection {
 	/**
 	 * Send SID_LOGONREALMEX
 	 */
+	@Override
 	public void sendLogonRealmEx(String realmTitle) throws Exception {
 		switch(productID) {
 		case D2DV:
@@ -1937,6 +1951,7 @@ public class BNCSConnection extends Connection {
 	/**
 	 * Send SID_READUSERDATA
 	 */
+	@Override
 	public void sendReadUserData(String user) throws Exception {
 		/* (DWORD)		 Number of Accounts
 		 * (DWORD)		 Number of Keys
@@ -1973,6 +1988,7 @@ public class BNCSConnection extends Connection {
 	/**
 	 * Send SID_WRITEUSERDATA
 	 */
+	@Override
 	public void sendWriteUserData(UserProfile profile) throws Exception {
 		/* (DWORD) Number of accounts
 		 * (DWORD) Number of keys
@@ -2004,6 +2020,7 @@ public class BNCSConnection extends Connection {
 		p.SendPacket(bncsOutputStream);
 	}
 
+	@Override
 	public String toString() {
 		if(myUser != null) {
 			String out = new String();
@@ -2027,6 +2044,7 @@ public class BNCSConnection extends Connection {
 		return toShortString();
 	}
 
+	@Override
 	public ProductIDs getProductID() {
 		return productID;
 	}
