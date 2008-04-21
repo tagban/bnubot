@@ -1,4 +1,4 @@
-2.0.5.1:
+2.0.6 (r1400) 2008-04-21:
 * Added auto-rejoin afer being kicked (Issue 52)
 * Added 'search' and 'searchrank' commands
 * Force Cayenne to use the DriverManager to get a driver
