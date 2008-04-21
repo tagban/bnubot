@@ -81,8 +81,11 @@ public class GlobalSettings {
 	public static int bnUserToString;
 	public static int bnUserToStringUserList;
 	public static int bnUserToStringCommandResponse;
+
 	public static String botNetServer;
 	public static int botNetPort;
+	public static String botNetUsername;
+	public static String botNetPassword;
 
 	private static String lookAndFeel;
 	private static String lookAndFeelTheme;
@@ -183,6 +186,8 @@ public class GlobalSettings {
 		Settings.write(null, "autoRejoin", autoRejoin);
 		Settings.write(null, "botNetServer", botNetServer);
 		Settings.write(null, "botNetPort", botNetPort);
+		Settings.write(null, "botNetUsername", botNetUsername);
+		Settings.write(null, "botNetPassword", botNetPassword);
 		Settings.write(null, "bnlsserver", bnlsServer);
 		Settings.write(null, "bnlsport", bnlsPort);
 		Settings.write(null, "colorScheme", colorScheme);
@@ -235,6 +240,8 @@ public class GlobalSettings {
 		autoRejoin = Settings.read(null, "autoRejoin", true);
 		botNetServer = Settings.read(null, "botNetServer", "botnet.valhallalegends.com");
 		botNetPort = Settings.read(null, "botNetPort", 0x5555);
+		botNetUsername = Settings.read(null, "botNetUsername", null);
+		botNetPassword = Settings.read(null, "botNetPassword", null);
 		displayBattleNetMOTD = Settings.read(null, "displayBattleNetMOTD", true);
 		displayBattleNetChannels = Settings.read(null, "displayBattleNetChannels", false);
 		displayJoinParts = Settings.read(null, "displayJoinParts", true);

@@ -6,7 +6,7 @@
 package net.bnubot.bot.swt;
 
 import net.bnubot.core.Connection;
-import net.bnubot.core.EventHandlerImpl;
+import net.bnubot.core.EventHandler;
 import net.bnubot.core.Profile;
 
 import org.eclipse.swt.SWT;
@@ -27,7 +27,7 @@ import org.eclipse.swt.widgets.Text;
  * @author sanderson
  *
  */
-public class SWTEventHandler extends EventHandlerImpl {
+public class SWTEventHandler extends EventHandler {
 	/**
 	 *
 	 */

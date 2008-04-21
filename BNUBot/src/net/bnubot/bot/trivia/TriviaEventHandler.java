@@ -15,7 +15,6 @@ import java.util.List;
 
 import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
-import net.bnubot.core.EventHandlerImpl;
 import net.bnubot.core.Profile;
 import net.bnubot.core.commands.CommandRunnable;
 import net.bnubot.db.Account;
@@ -27,7 +26,7 @@ import net.bnubot.util.Out;
 
 import org.apache.cayenne.ObjectContext;
 
-public class TriviaEventHandler extends EventHandlerImpl {
+public class TriviaEventHandler extends EventHandler {
 	private boolean triviaEnabled = false;
 	private final List<TriviaItem> trivia = new LinkedList<TriviaItem>();
 	private TriviaItem triviaCurrent = null;
@@ -378,7 +377,7 @@ public class TriviaEventHandler extends EventHandlerImpl {
 	}
 
 	@Override
-	public void recieveChat(Connection source, String type, BNetUser user, String text) {
+	public void recieveChat(Connection source, BNetUser user, String text) {
 		if(!triviaEnabled)
 			return;
 		if(triviaCurrent == null)

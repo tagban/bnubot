@@ -172,6 +172,17 @@ public class TextWindow extends JScrollPane {
 		setText();
 	}
 
+	public void append2(String text, Color col, String text2, String clazz) {
+		appendDate();
+		makeFont(col);
+		html += safeHtml(text);
+		html += "</font>";
+		html += "<font class=\"" + clazz + "\">";
+		html += safeHtml(text2);
+		html += "</font><br>\n";
+		setText();
+	}
+
 	public void append2(String text, Color col, String text2, Color col2) {
 		appendDate();
 		makeFont(col);
@@ -205,16 +216,37 @@ public class TextWindow extends JScrollPane {
 		append(text, "channel");
 	}
 
-	public void recieveInfo(String text) {
-		append(text, "info");
+	public void recieveInfo(String type, String text) {
+		if(type == null)
+			append(text, "info");
+		else
+			append2(
+					"(" + type + ") ",
+					cs.getTypeColor(),
+					text,
+					"info");
 	}
 
-	public void recieveError(String text) {
-		append(text, "error");
+	public void recieveError(String type, String text) {
+		if(type == null)
+			append(text, "error");
+		else
+			append2(
+					"(" + type + ") ",
+					cs.getTypeColor(),
+					text,
+					"error");
 	}
 
-	public void recieveDebug(String text) {
-		append(text, "debug");
+	public void recieveDebug(String type, String text) {
+		if(type == null)
+			append(text, "debug");
+		else
+			append2(
+					"(" + type + ") ",
+					cs.getTypeColor(),
+					text,
+					"debug");
 	}
 
 	public void userChat(String type, BNetUser user, String text, boolean isSelf) {

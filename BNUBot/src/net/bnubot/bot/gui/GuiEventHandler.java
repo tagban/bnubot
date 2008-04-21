@@ -57,7 +57,7 @@ import net.bnubot.bot.gui.notifications.Growl;
 import net.bnubot.bot.gui.settings.ConfigurationFrame;
 import net.bnubot.bot.gui.settings.OperationCancelledException;
 import net.bnubot.core.Connection;
-import net.bnubot.core.EventHandlerImpl;
+import net.bnubot.core.EventHandler;
 import net.bnubot.core.Profile;
 import net.bnubot.core.bncs.BNCSConnection;
 import net.bnubot.core.botnet.BotNetConnection;
@@ -69,7 +69,7 @@ import net.bnubot.settings.Settings;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.Out;
 
-public class GuiEventHandler extends EventHandlerImpl {
+public class GuiEventHandler extends EventHandler {
 	private Connection firstConnection = null;
 	private JPanel frame = null;
 	private TextWindow mainTextArea = null;
@@ -583,8 +583,8 @@ public class GuiEventHandler extends EventHandlerImpl {
 	}
 
 	@Override
-	public void recieveChat(Connection source, String type, BNetUser user, String text) {
-		mainTextArea.userChat(type, user, text, user.equals(source.getMyUser()));
+	public void recieveChat(Connection source, BNetUser user, String text) {
+		mainTextArea.userChat(source.getType(), user, text, user.equals(source.getMyUser()));
 		if(GlobalSettings.trayDisplayChatEmote)
 			notifySystemTray(
 					Growl.CHANNEL_USER_CHAT,
@@ -593,8 +593,8 @@ public class GuiEventHandler extends EventHandlerImpl {
 	}
 
 	@Override
-	public void recieveEmote(Connection source, String type, BNetUser user, String text) {
-		mainTextArea.userEmote(type, user, text);
+	public void recieveEmote(Connection source, BNetUser user, String text) {
+		mainTextArea.userEmote(source.getType(), user, text);
 		if(GlobalSettings.trayDisplayChatEmote)
 			notifySystemTray(
 					Growl.CHANNEL_USER_EMOTE,
@@ -616,23 +616,23 @@ public class GuiEventHandler extends EventHandlerImpl {
 
 		lastInfo = text;
 		lastInfoRecieved = now;
-		mainTextArea.recieveInfo(text);
+		mainTextArea.recieveInfo(source.getType(), text);
 	}
 
 	@Override
 	public void recieveError(Connection source, String text) {
-		mainTextArea.recieveError(text);
+		mainTextArea.recieveError(source.getType(), text);
 	}
 
 	@Override
 	public void recieveDebug(Connection source, String text) {
-		mainTextArea.recieveDebug(text);
+		mainTextArea.recieveDebug(source.getType(), text);
 	}
 
 	@Override
-	public void whisperRecieved(Connection source, String type, BNetUser user, String text) {
+	public void whisperRecieved(Connection source, BNetUser user, String text) {
 		lastWhisperFrom = user;
-		mainTextArea.whisperRecieved(type, user, text);
+		mainTextArea.whisperRecieved(source.getType(), user, text);
 		if(GlobalSettings.trayDisplayWhisper)
 			notifySystemTray(
 					Growl.CHANNEL_WHISPER_RECIEVED,
@@ -641,9 +641,9 @@ public class GuiEventHandler extends EventHandlerImpl {
 	}
 
 	@Override
-	public void whisperSent(Connection source, String type, BNetUser user, String text) {
+	public void whisperSent(Connection source, BNetUser user, String text) {
 		lastWhisperTo = user;
-		mainTextArea.whisperSent(type, user, text);
+		mainTextArea.whisperSent(source.getType(), user, text);
 		if(GlobalSettings.trayDisplayWhisper)
 			notifySystemTray(
 					Growl.CHANNEL_WHISPER_SENT,
@@ -666,7 +666,7 @@ public class GuiEventHandler extends EventHandlerImpl {
 	public void bnetDisconnected(Connection source) {
 		userList.clear();
 		channelTextPane.setText(null);
-		mainTextArea.recieveError("Disconnected from battle.net.");
+		recieveError(source, "Disconnected from battle.net.");
 		mainTextArea.addSeparator();
 		if(GlobalSettings.trayDisplayConnectDisconnect)
 			notifySystemTray(

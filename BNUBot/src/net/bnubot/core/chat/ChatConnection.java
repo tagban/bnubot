@@ -27,6 +27,11 @@ public class ChatConnection extends Connection {
 		super(cs, p);
 	}
 
+	@Override
+	public String getType() {
+		return null;
+	}
+
 	/*public void run() {
 		try {
 			s = new Socket(cs.server, cs.port);

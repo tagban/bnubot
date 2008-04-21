@@ -51,6 +51,11 @@ public class BotNetConnection extends Connection {
 	}
 
 	@Override
+	public String getType() {
+		return BOTNET_TYPE;
+	}
+
+	@Override
 	protected String getServer() {
 		return GlobalSettings.botNetServer;
 	}
@@ -85,6 +90,8 @@ public class BotNetConnection extends Connection {
 		//sendLogon("RivalBot", "b8f9b319f223ddcc38");
 		sendLogon("EternalChat", "das93kajfdsklah3");
 
+		boolean loggedon = false;
+
 		while(isConnected() && !socket.isClosed() && !disposed) {
 			if(bnInputStream.available() > 0) {
 				BotNetPacketReader pr = new BotNetPacketReader(bnInputStream);
@@ -106,12 +113,24 @@ public class BotNetConnection extends Connection {
 						return false;
 					case 1:
 						recieveInfo("Logon success!");
-						return true;
+						loggedon = true;
+						if(communicationRevision != 0)
+							return true;
+						break;
 					default:
 						recieveError("Unknown PACKET_LOGON result 0x" + Integer.toHexString(result));
 						disconnect(false);
 						return false;
 					}
+					break;
+				}
+				case PACKET_CHANGEDBPASSWORD: {
+					// Server is acknowledging the communication version
+					communicationRevision = is.readDWord();
+					Out.debug(getClass(), "BotNet communication version is " + communicationRevision);
+					if(loggedon)
+						return true;
+					break;
 				}
 				default:
 					Out.debugAlways(getClass(), "Unexpected packet " + pr.packetId.name() + "\n" + HexDump.hexDump(pr.data));
@@ -128,6 +147,12 @@ public class BotNetConnection extends Connection {
 
 	@Override
 	protected void connectedLoop() throws Exception {
+		{
+			String user = GlobalSettings.botNetUsername;
+			String pass = GlobalSettings.botNetPassword;
+			if((user != null) && (pass != null) && (user.length() > 0) && (pass.length() > 0))
+				sendAccount(0, user, pass, null);
+		}
 		sendStatusUpdate();
 		sendUserInfo();
 
@@ -137,12 +162,6 @@ public class BotNetConnection extends Connection {
 				BNetInputStream is = pr.getInputStream();
 
 				switch(pr.packetId) {
-				case PACKET_CHANGEDBPASSWORD: {
-					// Server is acknowledging the communication version
-					communicationRevision = is.readDWord();
-					Out.debug(getClass(), "BotNet communication version is " + communicationRevision);
-					break;
-				}
 				case PACKET_IDLE: {
 					sendIdle();
 					break;
@@ -158,6 +177,37 @@ public class BotNetConnection extends Connection {
 						break;
 					default:
 						recieveError("Unknown PACKET_LOGON result 0x" + Integer.toHexString(result));
+						disconnect(false);
+						return;
+					}
+					break;
+				}
+				case PACKET_ACCOUNT: {
+					int command = is.readDWord();
+					int result = is.readDWord();
+					switch(result) {
+					case 0:
+						switch(command) {
+						case 0:
+							recieveError("Account logon failed");
+							break;
+						case 1:
+							recieveError("Password change failed");
+							break;
+						case 2:
+							recieveError("Account create failed");
+							break;
+						default:
+							recieveError("Unknown PACKET_ACCOUNT command 0x" + Integer.toHexString(command));
+							break;
+						}
+						recieveError("Status update failed");
+						break;
+					case 1:
+						// Success
+						break;
+					default:
+						recieveError("Unknown PACKET_ACCOUNT result 0x" + Integer.toHexString(result));
 						disconnect(false);
 						return;
 					}
@@ -211,22 +261,34 @@ public class BotNetConnection extends Connection {
 
 					switch(command) {
 					case 0: //broadcast
-						recieveChat(BOTNET_TYPE + " Broadcast", user, text);
+						// TODO: change this to recieveBroadcast()
+						recieveChat(user, text);
 						break;
 					case 1: // chat
 						if(action == 0)
-							recieveChat(BOTNET_TYPE, user, text);
+							recieveChat(user, text);
 						else
-							recieveEmote(BOTNET_TYPE, user, text);
+							recieveEmote(user, text);
 						break;
 					case 2: //whisper
-						whisperRecieved(BOTNET_TYPE, user, text);
+						whisperRecieved(user, text);
 						break;
 					default:
 						recieveError("Unknown PACKET_BOTNETCHAT command 0x" + Integer.toHexString(command));
 						disconnect(false);
 						break;
 					}
+					break;
+				}
+
+				case PACKET_COMMAND: {
+					// PROTOCOL VIOLATION!
+					int err = is.readDWord();
+					byte id = is.readByte();
+					int lenOffending = is.readWord();
+					int lenUnprocessed = is.readWord();
+					recieveError("Protocol violation: err=" + err + ", packet=" + BotNetPacketId.values()[id].name() + ", offending packet len=" + lenOffending + ", unprocessed data len=" + lenUnprocessed);
+					disconnect(false);
 					break;
 				}
 				default:
@@ -307,7 +369,7 @@ public class BotNetConnection extends Connection {
 	 */
 	public void sendChat(boolean emote, String text) throws Exception {
 		sendBotNetChat(1, emote, 0, text);
-		super.recieveChat(BOTNET_TYPE, myUser, text);
+		super.recieveChat(myUser, text);
 	}
 
 	/**
@@ -317,7 +379,7 @@ public class BotNetConnection extends Connection {
 	 */
 	public void sendWhisper(BotNetUser target, String text) throws Exception {
 		sendBotNetChat(2, false, target.number, text);
-		super.whisperSent(BOTNET_TYPE, target, text);
+		super.whisperSent(target, text);
 	}
 
 
@@ -336,6 +398,33 @@ public class BotNetConnection extends Connection {
 		BotNetPacket p = new BotNetPacket(BotNetPacketId.PACKET_LOGON);
 		p.writeNTString(user);
 		p.writeNTString(pass);
+		p.SendPacket(bnOutputStream);
+	}
+
+	/**
+	 * Send PACKET_ACCOUNT
+	 * @param command 0: login, 1: change password, 2: account create
+	 * @param username Username to use
+	 * @param password Current password to use
+	 * @param newPassword New password (used for command 1 only)
+	 * @throws Exception If an error occurred
+	 */
+	private void sendAccount(int command, String username, String password, String newPassword) throws Exception {
+		BotNetPacket p = new BotNetPacket(BotNetPacketId.PACKET_ACCOUNT);
+		p.writeDWord(command);
+		p.writeNTString(username);
+		p.writeNTString(password);
+		switch(command) {
+		case 0: // login
+			break;
+		case 1: // change password
+			p.writeNTString(newPassword);
+			break;
+		case 2: // account create
+			break;
+		default:
+			throw new IllegalStateException("Unknown PACKET_ACCOUNT command 0x" + Integer.toHexString(command));
+		}
 		p.SendPacket(bnOutputStream);
 	}
 
@@ -376,7 +465,11 @@ public class BotNetConnection extends Connection {
 
 		if((myUser != null) && (myUser instanceof BotNetUser)) {
 			BotNetUser me = (BotNetUser)myUser;
-			me.name = (user == null) ? "BNUBot2" : user.getShortLogonName();
+			me.name = GlobalSettings.botNetUsername;
+			if((me.name == null) || (me.name.length() == 0))
+				me.name = "BNUBot2";
+			if(user != null)
+				me.name = user.getShortLogonName();
 			me.channel = channel;
 			me.server = ip;
 			me.database = "PubEternalChat";
@@ -470,7 +563,7 @@ public class BotNetConnection extends Connection {
 	 */
 
 	@Override
-	public void bnetConnected() {
+	public void connected() {
 		users.clear();
 
 		synchronized(eventHandlers) {
@@ -480,7 +573,7 @@ public class BotNetConnection extends Connection {
 	}
 
 	@Override
-	public void bnetDisconnected() {
+	public void disconnected() {
 		users.clear();
 		myUser = null;
 
