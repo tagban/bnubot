@@ -144,7 +144,7 @@ public class UserList extends JPanel {
 				public void actionPerformed(ActionEvent arg0) {
 					UserInfo ui = getUserInfo(arg0);
 					if(ui != null)
-						geh.setChatText("/w " + ui.user.getShortLogonName() + " ");
+						geh.setChatText(ui.user.getWhisperCommand());
 				}});
 			ui.menu.add(menuItem);
 			menuItem = new JMenuItem("Whois");

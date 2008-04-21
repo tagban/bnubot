@@ -120,7 +120,7 @@ public class BotNetList extends JPanel {
 				public void actionPerformed(ActionEvent arg0) {
 					UserInfo ui = getUserInfo(arg0);
 					if(ui != null)
-						geh.setChatText("/botnet whisper %" + ui.user.getNumber() + " ");
+						geh.setChatText(ui.user.getWhisperCommand());
 				}});
 			ui.menu.add(menuItem);
 			menuItem = new JMenuItem("Whois");

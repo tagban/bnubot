@@ -144,4 +144,9 @@ public class BotNetUser extends BNetUser {
 	public String getDatabase() {
 		return database;
 	}
+
+	@Override
+	public String getWhisperCommand() {
+		return "/botnet whisper %" + this.number + " ";
+	}
 }
