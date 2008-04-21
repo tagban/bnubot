@@ -15,7 +15,7 @@ import java.util.Hashtable;
 import java.util.List;
 
 import net.bnubot.core.Connection;
-import net.bnubot.core.EventHandlerImpl;
+import net.bnubot.core.EventHandler;
 import net.bnubot.core.Profile;
 import net.bnubot.core.commands.AccountDoesNotExistException;
 import net.bnubot.core.commands.CommandRunnable;
@@ -37,7 +37,7 @@ import net.bnubot.vercheck.CurrentVersion;
 
 import org.apache.cayenne.ObjectContext;
 
-public class CommandEventHandler extends EventHandlerImpl {
+public class CommandEventHandler extends EventHandler {
 	private static final Hashtable<Connection, Boolean> sweepBanInProgress = new Hashtable<Connection, Boolean>();
 	private static final Hashtable<Connection, Integer> sweepBannedUsers = new Hashtable<Connection, Integer>();
 
@@ -1689,12 +1689,12 @@ public class CommandEventHandler extends EventHandlerImpl {
 	}
 
 	@Override
-	public void recieveChat(Connection source, String type, BNetUser user, String text) {
+	public void recieveChat(Connection source, BNetUser user, String text) {
 		touchUser(source, user, "chatting in the channel");
 	}
 
 	@Override
-	public void recieveEmote(Connection source, String type, BNetUser user, String text) {
+	public void recieveEmote(Connection source, BNetUser user, String text) {
 		touchUser(source, user, "chatting in the channel");
 	}
 

@@ -149,4 +149,11 @@ public class BotNetUser extends BNetUser {
 	public String getWhisperCommand() {
 		return "/botnet whisper %" + this.number + " ";
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if(o instanceof BotNetUser)
+			return number == ((BotNetUser)o).number;
+		return false;
+	}
 }

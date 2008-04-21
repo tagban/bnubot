@@ -78,6 +78,11 @@ public class BNCSConnection extends Connection {
 		super(cs, p);
 	}
 
+	@Override
+	public String getType() {
+		return null;
+	}
+
 	/**
 	 * Connect to BNLS and get verbyte
 	 * @throws IOException
@@ -1185,10 +1190,10 @@ public class BNCSConnection extends Connection {
 						channelLeave(user);
 						break;
 					case EID_TALK:
-						recieveChat(null, user, text);
+						recieveChat(user, text);
 						break;
 					case EID_EMOTE:
-						recieveEmote(null, user, text);
+						recieveEmote(user, text);
 						break;
 					case EID_INFO:
 						recieveInfo(text);
@@ -1205,10 +1210,10 @@ public class BNCSConnection extends Connection {
 							botnet.sendStatusUpdate();
 						break;
 					case EID_WHISPERSENT:
-						whisperSent(null, user, text);
+						whisperSent(user, text);
 						break;
 					case EID_WHISPER:
-						whisperRecieved(null, user, text);
+						whisperRecieved(user, text);
 						break;
 					case EID_CHANNELDOESNOTEXIST:
 						recieveError("Channel " + text + " does not exist; creating");
@@ -1793,7 +1798,7 @@ public class BNCSConnection extends Connection {
 		}
 
 		if(text.charAt(0) != '/')
-			recieveChat(null, myUser, text);
+			recieveChat(myUser, text);
 	}
 
 	/**

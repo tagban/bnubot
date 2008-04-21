@@ -8,11 +8,11 @@ package net.bnubot.bot.console;
 import java.util.HashMap;
 
 import net.bnubot.core.Connection;
-import net.bnubot.core.EventHandlerImpl;
+import net.bnubot.core.EventHandler;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetUser;
 
-public class ConsoleEventHandler extends EventHandlerImpl {
+public class ConsoleEventHandler extends EventHandler {
 	private static final HashMap<Connection, CLIThread> threads = new HashMap<Connection, CLIThread>();
 
 	@Override
@@ -52,22 +52,22 @@ public class ConsoleEventHandler extends EventHandlerImpl {
 	}
 
 	@Override
-	public void recieveChat(Connection source, String type, BNetUser user, String text) {
+	public void recieveChat(Connection source, BNetUser user, String text) {
 		System.out.println("<" + user.toString() + "> " + text);
 	}
 
 	@Override
-	public void recieveEmote(Connection source, String type, BNetUser user, String text) {
+	public void recieveEmote(Connection source, BNetUser user, String text) {
 		System.out.println("<" + user.toString() + " " + text + ">");
 	}
 
 	@Override
-	public void whisperRecieved(Connection source, String type, BNetUser user, String text) {
+	public void whisperRecieved(Connection source, BNetUser user, String text) {
 		System.out.println("<From: " + user.toString() + "> " + text);
 	}
 
 	@Override
-	public void whisperSent(Connection source, String type, BNetUser user, String text) {
+	public void whisperSent(Connection source, BNetUser user, String text) {
 		System.out.println("<To: " + user.toString() + "> " + text);
 	}
 

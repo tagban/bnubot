@@ -33,6 +33,11 @@ public class DTConnection extends Connection {
 		super(cs, p);
 	}
 
+	@Override
+	public String getType() {
+		return null;
+	}
+
 	/**
 	 * Initialize the connection, send game id
 	 * @throws Exception
@@ -267,17 +272,17 @@ public class DTConnection extends Connection {
 					switch(chatType) {
 					case 0x00: // Normal
 					case 0x01: // Self talking
-						recieveChat(null, user, text);
+						recieveChat(user, text);
 						break;
 					case 0x02: // Whisper to
-						whisperSent(null, user, text);
+						whisperSent(user, text);
 						break;
 					case 0x03: // Whisper from
-						whisperRecieved(null, user, text);
+						whisperRecieved(user, text);
 						break;
 					case 0x04: // Emote
 					case 0x05: // Self Emote
-						recieveEmote(null, user, text);
+						recieveEmote(user, text);
 						break;
 					default:
 						Out.debugAlways(getClass(), "Unexpected chat type 0x" + Integer.toHexString(chatType) + " from " + username + ": " + text);

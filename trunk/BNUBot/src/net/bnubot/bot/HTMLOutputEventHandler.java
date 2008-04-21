@@ -19,14 +19,14 @@ import javax.swing.SwingUtilities;
 
 import net.bnubot.bot.gui.colors.ColorScheme;
 import net.bnubot.core.Connection;
-import net.bnubot.core.EventHandlerImpl;
+import net.bnubot.core.EventHandler;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.HexDump;
 import net.bnubot.util.Out;
 import net.bnubot.util.StatString;
 
-public class HTMLOutputEventHandler extends EventHandlerImpl {
+public class HTMLOutputEventHandler extends EventHandler {
 	// TODO Allow the user to customize TimeZone
 	private static final TimeZone TIME_ZONE = TimeZone.getTimeZone("GMT-05");
 	private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -209,7 +209,7 @@ public class HTMLOutputEventHandler extends EventHandlerImpl {
 	}
 
 	@Override
-	public void recieveChat(Connection source, String type, BNetUser user, String text) {
+	public void recieveChat(Connection source, BNetUser user, String text) {
 		append2(source,
 			"<" + user.toString() + "> ",
 			cs.getUserNameColor(user.getFlags()),
@@ -218,13 +218,13 @@ public class HTMLOutputEventHandler extends EventHandlerImpl {
 	}
 
 	@Override
-	public void recieveEmote(Connection source, String type, BNetUser user, String text) {
+	public void recieveEmote(Connection source, BNetUser user, String text) {
 		append(source,
 			"<" + user.toString() + " " + text + "> ", cs.getEmoteColor(user.getFlags()));
 	}
 
 	@Override
-	public void whisperSent(Connection source, String type, BNetUser user, String text) {
+	public void whisperSent(Connection source, BNetUser user, String text) {
 		append2(source,
 			"<To: " + user.toString() + "> ",
 			cs.getUserNameColor(user.getFlags()),
@@ -233,7 +233,7 @@ public class HTMLOutputEventHandler extends EventHandlerImpl {
 	}
 
 	@Override
-	public void whisperRecieved(Connection source, String type, BNetUser user, String text) {
+	public void whisperRecieved(Connection source, BNetUser user, String text) {
 		append2(source,
 			"<From: " + user.toString() + "> ",
 			cs.getUserNameColor(user.getFlags()),

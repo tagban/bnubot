@@ -119,14 +119,14 @@ public class DatabaseEditor {
 						JOptionPane.QUESTION_MESSAGE);
 				if(option != JOptionPane.YES_OPTION)
 					return;
-				
+
 				try {
 					String disp = getDisplayString(currentRow);
 					dataMap.remove(disp);
-					
+
 					currentRow.getObjectContext().deleteObject(currentRow);
 					currentRow.updateRow();
-					
+
 					model.removeElement(disp);
 				} catch(Exception ex) {
 					Out.popupException(ex, jf);
@@ -176,7 +176,7 @@ public class DatabaseEditor {
 		currentRow = dataMap.get(jl.getSelectedValue());
 		if(currentRow == null)
 			return;
-		
+
 		ObjEntity objEntity = currentRow.getObjEntity();
 		for (ObjAttribute attr : objEntity.getAttributes()) {
 			DbAttribute dbAttribute = attr.getDbAttribute();

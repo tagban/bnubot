@@ -367,6 +367,7 @@ public abstract class Connection extends Thread {
 
 	public abstract boolean isOp();
 	public abstract ProductIDs getProductID();
+	public abstract String getType();
 
 	public void addEventHandler(EventHandler e) {
 		synchronized(eventHandlers) {
@@ -421,7 +422,7 @@ public abstract class Connection extends Thread {
 		}
 
 		connectionState = ConnectionState.FORCE_CONNECT;
-		bnetConnected();
+		connected();
 	}
 
 	public void disconnect(boolean allowReconnect) {
@@ -438,7 +439,7 @@ public abstract class Connection extends Thread {
 		}
 
 		connectionState = allowReconnect ? ConnectionState.ALLOW_CONNECT : ConnectionState.DO_NOT_ALLOW_CONNECT;
-		bnetDisconnected();
+		disconnected();
 	}
 
 	protected long lastChatTime = 0;
@@ -769,7 +770,7 @@ public abstract class Connection extends Thread {
 	 * EventHandler methods follow
 	 *
 	 */
-	public void bnetConnected() {
+	public void connected() {
 		users.clear();
 
 		synchronized(eventHandlers) {
@@ -778,7 +779,7 @@ public abstract class Connection extends Thread {
 		}
 	}
 
-	public void bnetDisconnected() {
+	public void disconnected() {
 		channelName = null;
 		channelFlags = 0;
 		users.clear();
@@ -882,13 +883,13 @@ public abstract class Connection extends Thread {
 		}
 	}
 
-	public void recieveChat(String type, BNetUser user, String text) {
+	public void recieveChat(BNetUser user, String text) {
 		if(!isPrimaryConnection())
 			return;
 
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
-				eh.recieveChat(this, type, user, text);
+				eh.recieveChat(this, user, text);
 		}
 
 		if((text == null) || (text.length() == 0))
@@ -898,13 +899,13 @@ public abstract class Connection extends Thread {
 			parseCommand(user, text.substring(1), GlobalSettings.whisperBack);
 	}
 
-	public void recieveEmote(String type, BNetUser user, String text) {
+	public void recieveEmote(BNetUser user, String text) {
 		if(!isPrimaryConnection())
 			return;
 
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
-				eh.recieveEmote(this, type, user, text);
+				eh.recieveEmote(this, user, text);
 		}
 	}
 
@@ -964,10 +965,10 @@ public abstract class Connection extends Thread {
 		}
 	}
 
-	public void whisperSent(String type, BNetUser user, String text) {
+	public void whisperSent(BNetUser user, String text) {
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
-				eh.whisperSent(this, type, user, text);
+				eh.whisperSent(this, user, text);
 		}
 	}
 
@@ -975,10 +976,10 @@ public abstract class Connection extends Thread {
 		return getConnectionSettings().trigger.charAt(0);
 	}
 
-	public void whisperRecieved(String type, BNetUser user, String text) {
+	public void whisperRecieved(BNetUser user, String text) {
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
-				eh.whisperRecieved(this, type, user, text);
+				eh.whisperRecieved(this, user, text);
 		}
 
 		if((text == null) || (text.length() == 0))
