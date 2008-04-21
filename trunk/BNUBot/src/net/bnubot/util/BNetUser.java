@@ -399,33 +399,36 @@ public class BNetUser {
 		if(whisperBack && isMyUser)
 			con.recieveInfo(text);
 		else {
-			String prefix;
+			StringBuilder prefix = new StringBuilder();
 			if(whisperBack || isMyUser) {
 				if(whisperBack)
-					prefix = "/w " + this.getFullLogonName() + " ";
-				else
-					prefix = "";
+					prefix.append(getWhisperCommand());
 
-				prefix += "[BNU";
+				prefix.append("[BNU");
 				ReleaseType rt = CurrentVersion.version().getReleaseType();
 				if(rt.isNightly())
-					prefix += " Nightly";
+					prefix.append(" Nightly");
 				else if(rt.isAlpha())
-					prefix += " Alpha";
+					prefix.append(" Alpha");
 				else if(rt.isBeta())
-					prefix += " Beta";
+					prefix.append(" Beta");
 				else if(rt.isReleaseCandidate())
-					prefix += " RC";
-				prefix += "] ";
+					prefix.append(" RC");
+				prefix.append("] ");
 			} else {
-				prefix = this.toString(GlobalSettings.bnUserToStringCommandResponse) + ": ";
+				prefix.append(this.toString(GlobalSettings.bnUserToStringCommandResponse));
+				prefix.append(": ");
 			}
 
-			con.sendChat(prefix, text, false, true);
+			con.sendChat(prefix.toString(), text, false, true);
 		}
 	}
 
 	public String getRealm() {
 		return realm;
+	}
+
+	public String getWhisperCommand() {
+		return "/w " + this.getFullLogonName() + " ";
 	}
 }

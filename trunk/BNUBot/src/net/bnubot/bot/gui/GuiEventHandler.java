@@ -305,12 +305,12 @@ public class GuiEventHandler extends EventHandlerImpl {
 					if(lastWhisperFrom != null) {
 						String txt = chatTextArea.getText().trim();
 						if("/r".equals(txt))
-							chatTextArea.setText("/w " + lastWhisperFrom.getShortLogonName());
+							chatTextArea.setText(lastWhisperFrom.getWhisperCommand().trim());
 					}
 					if(lastWhisperTo != null) {
 						String txt = chatTextArea.getText().trim();
 						if("/rw".equals(txt))
-							chatTextArea.setText("/w " + lastWhisperTo.getShortLogonName());
+							chatTextArea.setText(lastWhisperTo.getWhisperCommand().trim());
 					}
 					if("/cmd".equals(chatTextArea.getText()) && GlobalSettings.enableTabCompleteCommand) {
 						tabComplete = true;
