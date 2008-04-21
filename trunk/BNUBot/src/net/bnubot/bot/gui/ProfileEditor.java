@@ -5,10 +5,6 @@
 
 package net.bnubot.bot.gui;
 
-/* Some Theory Eventually I actually want to have 2 tabs on this profile editor let it view stats like
- * some clients allow bleh, but for now we will grab the selected user in the lists username
- * compare it with current bots username, enable editable only if it matches.
- */
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

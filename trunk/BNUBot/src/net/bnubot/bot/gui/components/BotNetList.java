@@ -134,8 +134,8 @@ public class BotNetList extends JPanel {
 			ui.menu.add(Box.createHorizontalGlue());
 		}
 		if(ui.label == null) {
-			//TODO: Color fg = colors.getUserNameListColor(user.getFlags(), user.equals(source.getMyUser()));
-			Color fg = colors.getUserNameListColor(0, false);
+			//TODO: user.getFlags()
+			Color fg = colors.getUserNameListColor(0, user.equals(source.getMyUser()));
 
 			ui.label = new JLabel(user.toString());
 			ui.label.setForeground(fg);
