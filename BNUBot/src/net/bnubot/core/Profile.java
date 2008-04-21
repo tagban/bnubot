@@ -24,6 +24,7 @@ import net.bnubot.db.conf.DatabaseContext;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.Out;
+import net.bnubot.vercheck.VersionCheck;
 
 public class Profile {
 	private static final List<Profile> profiles = new ArrayList<Profile>();
@@ -137,6 +138,15 @@ public class Profile {
 						Out.exception(e);
 					}
 			}
+
+			// If this is the first bot
+			if(con.getConnectionSettings().botNum == 1)
+				try {
+					// Do the version check now; no force
+					VersionCheck.checkVersion(false);
+				} catch(Exception e) {
+					Out.exception(e);
+				}
 
 			// Start the Connection thread
 			con.start();

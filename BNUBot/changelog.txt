@@ -18,10 +18,12 @@
 * ChatQueue will be cleared when changing channels (Issue 72)
 * Never kick/ban without ops
 * Added kP BotNet support
+* Disabled Cayenne logging
 * Trivia is now a command
 * Added deletion rules to the Cayenne mapping file
 * Added a default exception handler
 * Confirm row deletion in DatabaseEditor
+* Version check will complete before connection to battle.net
 
 2.0.5 (r1300) 2008-04-09:
 * Added a Cayenne persistence layer to address database problems

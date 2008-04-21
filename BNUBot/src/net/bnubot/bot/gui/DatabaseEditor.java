@@ -146,6 +146,7 @@ public class DatabaseEditor {
 
 		jl.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent e) {
+				context.rollbackChanges();
 				loadData();
 			}});
 
@@ -176,13 +177,14 @@ public class DatabaseEditor {
 		if(currentRow == null)
 			return;
 		
-		for (ObjAttribute attr : currentRow.getObjEntity().getAttributes()) {
+		ObjEntity objEntity = currentRow.getObjEntity();
+		for (ObjAttribute attr : objEntity.getAttributes()) {
 			DbAttribute dbAttribute = attr.getDbAttribute();
 			if(dbAttribute.isGenerated() || dbAttribute.isForeignKey())
 				continue;
 			addField(jp, y++, attr, currentRow);
 		}
-		for (ObjRelationship rel : currentRow.getObjEntity().getRelationships()) {
+		for (ObjRelationship rel : objEntity.getRelationships()) {
 			if(rel.isToMany())
 				continue;
 			addField(jp, y++, rel, currentRow);

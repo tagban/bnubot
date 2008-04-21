@@ -17,7 +17,6 @@ import net.bnubot.settings.GlobalSettings;
 import net.bnubot.settings.Settings;
 import net.bnubot.util.Out;
 import net.bnubot.vercheck.CurrentVersion;
-import net.bnubot.vercheck.VersionCheck;
 
 import org.apache.commons.logging.impl.NoOpLog;
 
@@ -127,12 +126,6 @@ public class Main {
 
 		if(CurrentVersion.fromJar() && CurrentVersion.version().getReleaseType().isDevelopment())
 			Out.error(CurrentVersion.class, "WARNING: This is a development build, not for distribution!");
-
-		try {
-			VersionCheck.checkVersion();
-		} catch(Exception e) {
-			Out.exception(e);
-		}
 
 		// Write out any modified settings
 		Settings.store();

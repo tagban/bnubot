@@ -261,7 +261,7 @@ public class GuiDesktop extends JFrame {
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent event) {
 						try {
-							VersionCheck.checkVersion();
+							VersionCheck.checkVersion(true);
 						} catch (Exception e) {
 							Out.exception(e);
 						}

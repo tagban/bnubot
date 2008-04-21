@@ -15,6 +15,7 @@ import java.net.URL;
 import javax.swing.JOptionPane;
 
 import net.bnubot.settings.GlobalSettings;
+import net.bnubot.settings.Settings;
 import net.bnubot.util.OperatingSystem;
 import net.bnubot.util.Out;
 import net.bnubot.util.SHA1Sum;
@@ -23,14 +24,34 @@ import net.bnubot.util.URLDownloader;
 import org.jbls.util.Constants;
 
 public class VersionCheck {
+	private static final String VERSION_CHECK_TIME = "versionCheckTime";
+
 	protected static XMLElementDecorator elem = null;
 	protected static VersionNumber vnLatest = null;
 
-	public static boolean checkVersion() throws Exception {
+	/**
+	 * Helper method to the version check
+	 * @param force If enabled, do the version check no matter what. Otherwise, only do it once every six hours
+	 * @return True if there was an update; false if none available or no version check was performed
+	 * @throws Exception If an error occurred
+	 */
+	public static boolean checkVersion(boolean force) throws Exception {
+		if(!force) {
+			final long lastVersionCheck = Settings.read(null, VERSION_CHECK_TIME, 0l);
+			long now = System.currentTimeMillis();
+			// Wait 6 hours
+			if(now - lastVersionCheck < 6 * 60 * 60 * 1000)
+				return false;
+		}
+
 		return checkVersion(false, GlobalSettings.releaseType);
 	}
 
-	public static boolean checkVersion(boolean forceDownload, ReleaseType rt) throws Exception {
+	/**
+	 * Helper method to the version check
+	 * @see #doCheckVersion(boolean, ReleaseType, String, String)
+	 */
+	private static boolean checkVersion(boolean forceDownload, ReleaseType rt) throws Exception {
 		if(CurrentVersion.fromJar()) {
 			String path = System.getProperty("net.bnubot.jarpath", "BNUBot.jar");
 			if(!new File(path).exists())
@@ -41,7 +62,12 @@ public class VersionCheck {
 		return checkVersion(false, rt, null, null);
 	}
 
-	public static boolean checkVersion(boolean forceDownload, ReleaseType rt, String jarFileName, String downloadFolder) throws Exception {
+	/**
+	 * Helper method to the version check
+	 * This method is protected because it is used by InstallMain
+	 * @see #doCheckVersion(boolean, ReleaseType, String, String)
+	 */
+	protected static boolean checkVersion(boolean forceDownload, ReleaseType rt, String jarFileName, String downloadFolder) throws Exception {
 		boolean cv = doCheckVersion(forceDownload, rt, jarFileName, downloadFolder);
 		URLDownloader.flush();
 		if(!cv)
@@ -50,9 +76,18 @@ public class VersionCheck {
 	}
 
 	/**
+	 * Go ahead and do the version check for real now
+	 * @param forceDownload Install mode: don't ask any questions, just download everything
+	 * @param rt The ReleaseType to check for
+	 * @param jarFileName Location of BNUBot.jar
+	 * @param downloadFolder Location of the install path
 	 * @return whether an update is available
+	 * @throws Exception if an error occurred
 	 */
-	public static boolean doCheckVersion(boolean forceDownload, ReleaseType rt, String jarFileName, String downloadFolder) throws Exception {
+	private static boolean doCheckVersion(boolean forceDownload, ReleaseType rt, String jarFileName, String downloadFolder) throws Exception {
+		Settings.write(null, VERSION_CHECK_TIME, System.currentTimeMillis());
+		Settings.store();
+
 		try {
 			String url = "http://www.clanbnu.net/bnubot/version.php?";
 			if(!forceDownload && (CurrentVersion.version().revision() != null))
