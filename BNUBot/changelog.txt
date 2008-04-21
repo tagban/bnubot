@@ -21,6 +21,7 @@
 * Trivia is now a command
 * Added deletion rules to the Cayenne mapping file
 * Added a default exception handler
+* Confirm row deletion in DatabaseEditor
 
 2.0.5 (r1300) 2008-04-09:
 * Added a Cayenne persistence layer to address database problems

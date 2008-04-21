@@ -266,7 +266,6 @@ public class StatString {
 				//PX2DUSEast,getoutof_myway ,?++T
 
 				prettyStart += ", Realm " + statString2[0];
-				//TODO: Prefix
 				prettyStart += ", ";
 
 			    //                                       CC                                  CL FL AC

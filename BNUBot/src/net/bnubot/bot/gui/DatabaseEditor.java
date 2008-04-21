@@ -25,6 +25,7 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
@@ -110,10 +111,23 @@ public class DatabaseEditor {
 		JButton btnDelete = new JButton("Delete");
 		btnDelete.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// TODO: Confirm
+				int option = JOptionPane.showConfirmDialog(
+						jf,
+						"Are you sure you want to delete this row?",
+						"Delete row?",
+						JOptionPane.YES_NO_OPTION,
+						JOptionPane.QUESTION_MESSAGE);
+				if(option != JOptionPane.YES_OPTION)
+					return;
+				
 				try {
+					String disp = getDisplayString(currentRow);
+					dataMap.remove(disp);
+					
 					currentRow.getObjectContext().deleteObject(currentRow);
 					currentRow.updateRow();
+					
+					model.removeElement(disp);
 				} catch(Exception ex) {
 					Out.popupException(ex, jf);
 				}
@@ -159,6 +173,9 @@ public class DatabaseEditor {
 		int y = 0;
 
 		currentRow = dataMap.get(jl.getSelectedValue());
+		if(currentRow == null)
+			return;
+		
 		for (ObjAttribute attr : currentRow.getObjEntity().getAttributes()) {
 			DbAttribute dbAttribute = attr.getDbAttribute();
 			if(dbAttribute.isGenerated() || dbAttribute.isForeignKey())

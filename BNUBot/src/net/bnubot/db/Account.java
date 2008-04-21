@@ -122,7 +122,7 @@ public class Account extends _Account {
 	 * Get the list of wins/levels for a user's account
 	 * @param recruitTagPrefix (optional) The required BNetUser logon prefix
 	 * @param recruitTagSuffix (optional) The required BNetUser logon suffix
-	 * @return TODO
+	 * @return long[3] {wins, d2level, w3level}
 	 */
 	public long[] getWinsLevels(String recruitTagPrefix, String recruitTagSuffix) {
 		long wins = 0;
