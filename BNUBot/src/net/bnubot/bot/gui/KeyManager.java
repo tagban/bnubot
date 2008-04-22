@@ -11,7 +11,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -94,6 +94,7 @@ public class KeyManager {
 			Out.fatalException(e);
 		}
 
+		String lastComment = "";
 		do {
 			String key = null;
 			try {
@@ -115,8 +116,10 @@ public class KeyManager {
 					String comment = "";
 					int i = key.indexOf(" ");
 					if(i != -1) {
-						comment = key.substring(i);
+						comment = key.substring(i).trim();
 						key = key.substring(0, i);
+					} else {
+						comment = lastComment;
 					}
 
 					key = key.replaceAll("-", "");
@@ -126,6 +129,8 @@ public class KeyManager {
 					int prod = b.removeDWord();	//Product
 
 					cdkeys.add(new CDKey(key, prod, comment));
+				} else {
+					lastComment = key.substring(1).trim();
 				}
 			} catch(Exception e) {
 				Out.info(KeyManager.class, "Couldn't parse cdkeys.txt line: " + key);
@@ -133,15 +138,73 @@ public class KeyManager {
 		} while(true);
 
 		try { is.close(); } catch (Exception e) {}
+
+		try {
+			File keys2 = new File("cdkeys.processed.txt");
+			if(!keys2.exists())
+				keys2.createNewFile();
+
+			FileWriter os = new FileWriter(keys2);
+			os.write("# " + new Date().toString() + "\r\n");
+
+			int[] prods = new int[] {
+					PRODUCT_STAR,
+					PRODUCT_W2BN,
+					PRODUCT_D2DV,
+					PRODUCT_D2XP,
+					PRODUCT_WAR3,
+					PRODUCT_W3XP };
+			for(int prod : prods) {
+				os.write("\n");
+				switch(prod) {
+				case PRODUCT_STAR: os.write("# STAR\r\n"); break;
+				case PRODUCT_W2BN: os.write("# W2BN\r\n"); break;
+				case PRODUCT_D2DV: os.write("# D2DV\r\n"); break;
+				case PRODUCT_D2XP: os.write("# D2XP\r\n"); break;
+				case PRODUCT_WAR3: os.write("# WAR3\r\n"); break;
+				case PRODUCT_W3XP: os.write("# W3XP\r\n"); break;
+				default: os.write("# ??? " + prod + "\r\n"); break;
+				}
+
+				for(CDKey k : getKeys(prod))
+					os.write(formatKey(k.key) + " " + k.comment + "\r\n");
+			}
+			os.close();
+		} catch(Exception e) {
+			Out.exception(e);
+		}
+	}
+
+	private static String formatKey(String key) {
+		key = key.toUpperCase();
+		switch(key.length()) {
+		case 13: // 4-5-4 (sc)
+			key = key.substring(0, 4) + "-"
+				+ key.substring(4, 9) + "-"
+				+ key.substring(9);
+			break;
+		case 16: // 4-4-4-4 (w2/d2/lod)
+			key = key.substring(0, 4) + "-"
+				+ key.substring(4, 8) + "-"
+				+ key.substring(8, 12) + "-"
+				+ key.substring(12);
+			break;
+		case 26: // 6-4-6-4-6 (w3/tft)
+			key = key.substring(0, 6) + "-"
+				+ key.substring(6, 10) + "-"
+				+ key.substring(10, 16) + "-"
+				+ key.substring(16, 20) + "-"
+				+ key.substring(20);
+			break;
+		}
+		return key;
 	}
 
 	public static CDKey[] getKeys(int product) {
 		initialize();
 
 		List<CDKey> prodKeys = new LinkedList<CDKey>();
-		Iterator<CDKey> it = cdkeys.iterator();
-		while(it.hasNext()) {
-			CDKey k = it.next();
+		for(CDKey k : cdkeys) {
 			if(product == PRODUCT_ALLNORMAL) {
 				switch(k.getProduct()) {
 				case PRODUCT_STAR:
