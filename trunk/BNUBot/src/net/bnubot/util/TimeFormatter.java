@@ -18,7 +18,11 @@ public class TimeFormatter {
 	 * Simply displays a nicely formatted timestamp.
 	 */
 	public static String getTimestamp() {
-		return String.format(tsFormat, Calendar.getInstance());
+		try {
+			return String.format(tsFormat, Calendar.getInstance());
+		} catch(NoSuchMethodError e) {
+			return "";
+		}
 	}
 
 	/**
