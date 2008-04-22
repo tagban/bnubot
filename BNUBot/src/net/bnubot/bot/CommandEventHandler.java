@@ -1554,8 +1554,10 @@ public class CommandEventHandler extends EventHandler {
 				// Greetings
 				String greeting = rsRank.getGreeting();
 				if(greeting != null) {
-					greeting = String.format(greeting, user.toString(), user.getPing(), user.getFullAccountName());
-					source.sendChat(greeting, false);
+					try {
+						greeting = String.format(greeting, user.toString(), user.getPing(), user.getFullAccountName());
+						source.sendChat(greeting, false);
+					} catch(NoSuchMethodError e) {}
 				}
 			}
 

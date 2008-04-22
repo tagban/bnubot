@@ -178,7 +178,11 @@ public class HTMLOutputEventHandler extends EventHandler {
 	}
 
 	private String getDate() {
-		return getColor(cs.getForegroundColor()) + String.format("[%1$tH:%1$tM:%1$tS] ", new GregorianCalendar(TIME_ZONE));
+		try {
+			return getColor(cs.getForegroundColor()) + String.format("[%1$tH:%1$tM:%1$tS] ", new GregorianCalendar(TIME_ZONE));
+		} catch(NoSuchMethodError e) {
+			return "";
+		}
 	}
 
 	private String getColor(Color col) {
