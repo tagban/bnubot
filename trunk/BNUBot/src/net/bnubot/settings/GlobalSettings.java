@@ -240,8 +240,8 @@ public class GlobalSettings {
 		autoRejoin = Settings.read(null, "autoRejoin", true);
 		botNetServer = Settings.read(null, "botNetServer", "botnet.valhallalegends.com");
 		botNetPort = Settings.read(null, "botNetPort", 0x5555);
-		botNetUsername = Settings.read(null, "botNetUsername", null);
-		botNetPassword = Settings.read(null, "botNetPassword", null);
+		botNetUsername = Settings.read(null, "botNetUsername", (String)null);
+		botNetPassword = Settings.read(null, "botNetPassword", (String)null);
 		displayBattleNetMOTD = Settings.read(null, "displayBattleNetMOTD", true);
 		displayBattleNetChannels = Settings.read(null, "displayBattleNetChannels", false);
 		displayJoinParts = Settings.read(null, "displayJoinParts", true);
