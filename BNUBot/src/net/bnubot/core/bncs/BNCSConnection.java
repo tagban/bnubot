@@ -30,6 +30,8 @@ import net.bnubot.core.bnls.BNLSPacket;
 import net.bnubot.core.bnls.BNLSPacketId;
 import net.bnubot.core.bnls.BNLSPacketReader;
 import net.bnubot.core.botnet.BotNetConnection;
+import net.bnubot.core.clan.ClanCreationInvitationCookie;
+import net.bnubot.core.clan.ClanInvitationCookie;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.clan.ClanRankIDs;
 import net.bnubot.core.clan.ClanStatusIDs;
@@ -1534,7 +1536,18 @@ public class BNCSConnection extends Connection {
 					break;
 				}
 				// SID_CLANINVITEMULTIPLE
-				// SID_CLANCREATIONINVITATION
+				case SID_CLANCREATIONINVITATION: {
+					int cookie = is.readDWord();
+					int clanTag = is.readDWord();
+					String clanName = is.readNTString();
+					String inviter = is.readNTString();
+
+					dispatchRecieveInfo("You were invited to create Clan " + HexDump.DWordToPretty(clanTag) + " (" + clanName + ") with " + inviter);
+
+					ClanCreationInvitationCookie c = new ClanCreationInvitationCookie(this, cookie, clanTag, clanName, inviter);
+					dispatchClanCreationInvitation(c);
+					break;
+				}
 				// SID_CLANDISBAND
 				// SID_CLANMAKECHIEFTAIN
 
@@ -1574,7 +1587,9 @@ public class BNCSConnection extends Connection {
 
 				case SID_CLANINVITATIONRESPONSE: {
 					/*
-					 * (DWORD) Cookie (DWORD) Clan tag (STRING) Clan name
+					 * (DWORD) Cookie
+					 * (DWORD) Clan tag
+					 * (STRING) Clan name
 					 * (STRING) Inviter
 					 */
 					int cookie = is.readDWord();
@@ -1582,20 +1597,10 @@ public class BNCSConnection extends Connection {
 					String clanName = is.readNTString();
 					String inviter = is.readNTString();
 
-					dispatchRecieveInfo("You were invited to Clan " + HexDump.DWordToPretty(clanTag) + " (" + clanName + ") by " + inviter);
+					dispatchRecieveInfo("You were invited to join Clan " + HexDump.DWordToPretty(clanTag) + " (" + clanName + ") by " + inviter);
 
-					/*
-					 * (DWORD) Cookie (DWORD) Clan tag (STRING) Inviter (BYTE)
-					 * Response
-					 *
-					 * Response: 0x04: Decline 0x06: Accept
-					 */
-					BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_CLANINVITATIONRESPONSE);
-					p.writeDWord(cookie);
-					p.writeDWord(clanTag);
-					p.writeNTString(inviter);
-					p.writeByte(0x06);
-					p.SendPacket(bncsOutputStream);
+					ClanInvitationCookie c = new ClanInvitationCookie(this, cookie, clanTag, clanName, inviter);
+					dispatchClanInvitation(c);
 					break;
 				}
 
@@ -1854,22 +1859,57 @@ public class BNCSConnection extends Connection {
 	}
 
 	/**
-	 * Send SID_CLANFINDCANDIDATES
+	 * Require WAR3 or W3XP
+	 * @throws UnsupportedFeatureException
 	 */
-	@Override
-	public void sendClanFindCandidates(Object cookie, int clanTag)
-			throws Exception {
+	private void requireW3() throws UnsupportedFeatureException {
 		switch (productID) {
 		case WAR3:
 		case W3XP:
-			break;
-		default:
-			throw new UnsupportedFeatureException(
-					"Only WAR3/W3XP support clans.");
+			return;
 		}
+		throw new UnsupportedFeatureException(
+				"Only WAR3/W3XP support this feature");
+	}
 
-		if (myClan != null)
-			throw new IllegalStateException("You are already in a clan");
+	/**
+	 * Require the user be on W3 and in or out of a clan
+	 * @param inClan if true, require the use to be in a clan; false for out of clan
+	 */
+	private void requireInClan(boolean inClan) throws UnsupportedFeatureException, IllegalStateException {
+		requireW3();
+
+		if(inClan) {
+			// The user must be in a clan
+			if(myClan == null)
+				throw new IllegalStateException("You are not in a clan");
+		} else {
+			// The user must not be in a clan
+			if(myClan != null)
+				throw new IllegalStateException("You are already in a clan");
+		}
+	}
+
+	/**
+	 * Require D2DV or D2XP
+	 * @throws UnsupportedFeatureException
+	 */
+	private void requireD2() throws UnsupportedFeatureException {
+		switch (productID) {
+		case D2DV:
+		case D2XP:
+			return;
+		}
+		throw new UnsupportedFeatureException(
+				"Only D2DV/D2XP support this feature");
+	}
+
+	/**
+	 * Send SID_CLANFINDCANDIDATES
+	 */
+	@Override
+	public void sendClanFindCandidates(Object cookie, int clanTag) throws Exception {
+		requireInClan(false);
 
 		BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_CLANFINDCANDIDATES);
 		p.writeDWord(CookieUtility.createCookie(cookie)); // Cookie
@@ -1878,21 +1918,59 @@ public class BNCSConnection extends Connection {
 	}
 
 	/**
+	 * Send SID_CLANINVITEMULTIPLE
+	 * Use this method to create a clan; invite 9 users
+	 * Invitees will reiceve SID_CLANCREATIONINVITATION
+	 */
+	@Override
+	public void sendClanInviteMultiple(Object cookie, String clanName, int clanTag, List<String> invitees) throws Exception {
+		requireInClan(false);
+
+		if(invitees.size() != 9)
+			throw new IllegalStateException("You should invite exactly 9 people");
+
+		BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_CLANINVITEMULTIPLE);
+		p.writeDWord(CookieUtility.createCookie(cookie)); // Cookie
+		p.writeNTString(clanName); // Clan name
+		p.writeDWord(clanTag); // Clan tag
+		p.writeByte(invitees.size()); // Number of users to invite
+		for(String user : invitees)
+			p.writeNTString(user); // Usernames to invite
+		p.SendPacket(bncsOutputStream);
+	}
+
+	/**
+	 * Send SID_CLANCREATIONINVITATION
+	 * Accept or decline an invitation to create a clan
+	 * @param response 0x04 = Decline, 0x06 = Accept
+	 * TODO Verify these response codes are correct
+	 */
+	@Override
+	public void sendClanCreationInvitation(int cookie, int clanTag, String inviter, int response) throws Exception {
+		requireW3();
+
+		switch(response) {
+		case 4: // decline
+		case 6: // accept
+			break;
+		default:
+			throw new IllegalStateException("Unknown response code 0x" + Integer.toHexString(response));
+		}
+
+		BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_CLANINVITATIONRESPONSE);
+		p.writeDWord(cookie);
+		p.writeDWord(clanTag);
+		p.writeNTString(inviter);
+		p.writeByte(response);
+		p.SendPacket(bncsOutputStream);
+	}
+
+	/**
 	 * Send SID_CLANINVITATION
 	 */
 	@Override
 	public void sendClanInvitation(Object cookie, String user) throws Exception {
-		switch (productID) {
-		case WAR3:
-		case W3XP:
-			break;
-		default:
-			throw new UnsupportedFeatureException(
-					"Only WAR3/W3XP support clans.");
-		}
-
-		if (myClanRank == null)
-			throw new IllegalStateException("Must be in a clan");
+		requireInClan(true);
 		if (myClanRank < 3)
 			throw new IllegalStateException("Must be " + clanRanks[3] + " or "
 					+ clanRanks[4] + " to invite");
@@ -1909,14 +1987,7 @@ public class BNCSConnection extends Connection {
 	@Override
 	public void sendClanRankChange(Object cookie, String user, int newRank)
 			throws Exception {
-		switch (productID) {
-		case WAR3:
-		case W3XP:
-			break;
-		default:
-			throw new UnsupportedFeatureException(
-					"Only WAR3/W3XP support clans.");
-		}
+		requireW3();
 
 		BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_CLANRANKCHANGE);
 		p.writeDWord(CookieUtility.createCookie(cookie)); // Cookie
@@ -1930,17 +2001,33 @@ public class BNCSConnection extends Connection {
 	 */
 	@Override
 	public void sendClanMOTD(Object cookie) throws Exception {
-		switch (productID) {
-		case WAR3:
-		case W3XP:
-			break;
-		default:
-			throw new UnsupportedFeatureException(
-					"Only WAR3/W3XP support MOTD.");
-		}
+		requireW3();
 
 		BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_CLANMOTD);
 		p.writeDWord(CookieUtility.createCookie(cookie));
+		p.SendPacket(bncsOutputStream);
+	}
+
+	/**
+	 * Send SID_CLANINVITATIONRESPONSE
+	 * @param response 0x04 = Decline, 0x06 = Accept
+	 */
+	public void sendClanInvitationResponse(int cookie, int clanTag, String inviter, int response) throws Exception {
+		requireW3();
+
+		switch(response) {
+		case 4: // decline
+		case 6: // accept
+			break;
+		default:
+			throw new IllegalStateException("Unknown response code 0x" + Integer.toHexString(response));
+		}
+
+		BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_CLANINVITATIONRESPONSE);
+		p.writeDWord(cookie);
+		p.writeDWord(clanTag);
+		p.writeNTString(inviter);
+		p.writeByte(response);
 		p.SendPacket(bncsOutputStream);
 	}
 
@@ -1949,14 +2036,7 @@ public class BNCSConnection extends Connection {
 	 */
 	@Override
 	public void sendClanSetMOTD(String text) throws Exception {
-		switch (productID) {
-		case WAR3:
-		case W3XP:
-			break;
-		default:
-			throw new UnsupportedFeatureException(
-					"Only WAR3/W3XP support MOTD.");
-		}
+		requireW3();
 
 		BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_CLANSETMOTD);
 		p.writeDWord(0); // Cookie
@@ -1969,14 +2049,7 @@ public class BNCSConnection extends Connection {
 	 */
 	@Override
 	public void sendQueryRealms2() throws Exception {
-		switch (productID) {
-		case D2DV:
-		case D2XP:
-			break;
-		default:
-			throw new UnsupportedFeatureException(
-					"Only D2DV/D2XP support realms");
-		}
+		requireD2();
 
 		/*
 		 * (DWORD) Unused (0) (DWORD) Unused (0) (STRING) Unknown (empty)
@@ -1990,14 +2063,7 @@ public class BNCSConnection extends Connection {
 	 */
 	@Override
 	public void sendLogonRealmEx(String realmTitle) throws Exception {
-		switch (productID) {
-		case D2DV:
-		case D2XP:
-			break;
-		default:
-			throw new UnsupportedFeatureException(
-					"Only D2DV/D2XP support realms");
-		}
+		requireD2();
 
 		/*
 		 * (DWORD) Client key (DWORD[5]) Hashed realm password (STRING) Realm
@@ -2268,6 +2334,20 @@ public class BNCSConnection extends Connection {
 		synchronized (eventHandlers) {
 			for (EventHandler eh : eventHandlers)
 				eh.clanFindCandidates(this, cookie, result, candidates);
+		}
+	}
+
+	public void dispatchClanCreationInvitation(ClanCreationInvitationCookie c) {
+		synchronized (eventHandlers) {
+			for (EventHandler eh : eventHandlers)
+				eh.clanCreationInvitation(this, c);
+		}
+	}
+
+	public void dispatchClanInvitation(ClanInvitationCookie c) {
+		synchronized (eventHandlers) {
+			for (EventHandler eh : eventHandlers)
+				eh.clanInvitation(this, c);
 		}
 	}
 }

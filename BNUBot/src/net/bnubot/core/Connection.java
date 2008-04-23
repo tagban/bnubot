@@ -361,11 +361,16 @@ public abstract class Connection extends Thread {
 	public void sendJoinChannel2(String channel) throws Exception { throw new UnsupportedFeatureException(null); }
 	public void sendQueryRealms2() throws Exception { throw new UnsupportedFeatureException(null); }
 	public void sendLogonRealmEx(String realmTitle) throws Exception { throw new UnsupportedFeatureException(null); }
+
 	public void sendClanFindCandidates(Object cookie, int clanTag) throws Exception { throw new UnsupportedFeatureException(null); }
+	public void sendClanInviteMultiple(Object cookie, String clanName, int clanTag, List<String> invitees) throws Exception { throw new UnsupportedFeatureException(null); }
+	public void sendClanCreationInvitation(int cookie, int clanTag, String inviter, int response) throws Exception { throw new UnsupportedFeatureException(null); }
 	public void sendClanInvitation(Object cookie, String user) throws Exception { throw new UnsupportedFeatureException(null); }
+
 	public void sendClanRankChange(Object cookie, String user, int newRank) throws Exception { throw new UnsupportedFeatureException(null); }
 	public void sendClanMOTD(Object cookie) throws Exception { throw new UnsupportedFeatureException(null); }
 	public void sendClanSetMOTD(String text) throws Exception { throw new UnsupportedFeatureException(null); }
+
 	public void sendReadUserData(String user) throws Exception { throw new UnsupportedFeatureException(null); }
 	public void sendWriteUserData(UserProfile profile) throws Exception { throw new UnsupportedFeatureException(null); }
 
