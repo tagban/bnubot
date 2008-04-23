@@ -1153,7 +1153,7 @@ public class CommandEventHandler extends EventHandler {
 			@Override
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
 			throws Exception {
-				source.parseCommand(user, "whois " + user.getShortLogonName(), whisperBack);
+				source.dispatchParseCommand(user, "whois " + user.getShortLogonName(), whisperBack);
 			}});
 		Profile.registerCommand("whois", new CommandRunnable() {
 			@Override
@@ -1311,7 +1311,7 @@ public class CommandEventHandler extends EventHandler {
 
 			if(rsCommand == null) {
 				if(!whisperBack)
-					source.recieveError("Command " + command + " not found in database");
+					source.dispatchRecieveError("Command " + command + " not found in database");
 				return false;
 			}
 			command = rsCommand.getName();
@@ -1329,14 +1329,14 @@ public class CommandEventHandler extends EventHandler {
 
 				int requiredAccess = rsCommand.getAccess();
 				if(commanderAccess < requiredAccess) {
-					source.recieveError("Insufficient access (" + commanderAccess + "/" + requiredAccess + ")");
+					source.dispatchRecieveError("Insufficient access (" + commanderAccess + "/" + requiredAccess + ")");
 					return false;
 				}
 			}
 
 			CommandRunnable cr = Profile.getCommand(command);
 			if(cr == null) {
-				source.recieveError("Command " + command + " has no associated runnable");
+				source.dispatchRecieveError("Command " + command + " has no associated runnable");
 				return false;
 			}
 

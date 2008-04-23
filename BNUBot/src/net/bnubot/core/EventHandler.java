@@ -1,9 +1,11 @@
 /**
  * This file is distributed under the GPL
- * $Id$
+ * $Id: EventHandler.java 1381 2008-04-17 21:24:31Z scotta $
  */
 
 package net.bnubot.core;
+
+import java.util.List;
 
 import net.bnubot.core.bncs.BNCSConnection;
 import net.bnubot.core.botnet.BotNetConnection;
@@ -57,6 +59,8 @@ public abstract class EventHandler {
 	public void clanMemberRemoved(BNCSConnection source, String username) {}
 	public void clanMemberStatusChange(BNCSConnection source, ClanMember member) {}
 	public void clanMemberRankChange(BNCSConnection source, byte oldRank, byte newRank, String user) {}
+
+	public void clanFindCandidates(BNCSConnection source, Object cookie, String result, List<String> candidates) {}
 
 	//BotNet
 	public void botnetConnected(BotNetConnection source) {}
