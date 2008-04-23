@@ -81,7 +81,6 @@ public class BotNetConnection extends Connection {
 		bnOutputStream = new DataOutputStream(socket.getOutputStream());
 
 		// Connected
-		connectionState = ConnectionState.CONNECTED;
 		connect.updateProgress("Connected");
 	}
 
