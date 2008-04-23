@@ -1,6 +1,7 @@
 2.0.6.1:
 * Added BotNet account login
 * CDKeys are now dumped to cdkeys.processed.txt in a well-formatted way
+* Added /accept and /decline for W3 clan management
 
 2.0.6 (r1400) 2008-04-21:
 * Added auto-rejoin afer being kicked (Issue 52)
