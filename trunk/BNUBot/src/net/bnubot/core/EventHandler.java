@@ -1,6 +1,6 @@
 /**
  * This file is distributed under the GPL
- * $Id: EventHandler.java 1381 2008-04-17 21:24:31Z scotta $
+ * $Id:EventHandler.java 1409 2008-04-23 18:56:38Z scotta $
  */
 
 package net.bnubot.core;
@@ -10,6 +10,8 @@ import java.util.List;
 import net.bnubot.core.bncs.BNCSConnection;
 import net.bnubot.core.botnet.BotNetConnection;
 import net.bnubot.core.botnet.BotNetUser;
+import net.bnubot.core.clan.ClanCreationInvitationCookie;
+import net.bnubot.core.clan.ClanInvitationCookie;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.util.BNetUser;
@@ -61,6 +63,8 @@ public abstract class EventHandler {
 	public void clanMemberRankChange(BNCSConnection source, byte oldRank, byte newRank, String user) {}
 
 	public void clanFindCandidates(BNCSConnection source, Object cookie, String result, List<String> candidates) {}
+	public void clanCreationInvitation(BNCSConnection connection, ClanCreationInvitationCookie c) {}
+	public void clanInvitation(BNCSConnection connection, ClanInvitationCookie c) {}
 
 	//BotNet
 	public void botnetConnected(BotNetConnection source) {}
