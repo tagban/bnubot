@@ -95,6 +95,7 @@ public class BNCSConnection extends Connection {
 		bnlsInputStream = bnlsSocket.getInputStream();
 		bnlsOutputStream = bnlsSocket.getOutputStream();
 		myClan = null;
+		myClanRank = null;
 
 		// Log in to BNLS
 		connect.updateProgress("Logging in to BNLS");
@@ -928,21 +929,7 @@ public class BNCSConnection extends Connection {
 				}
 
 				case SID_CLANINFO: {
-					/*
-					 * (BYTE) Unknown (0) (DWORD) Clan tag (BYTE) Rank
-					 */
-					is.readByte();
-					myClan = is.readDWord();
-					myClanRank = is.readByte();
-					dispatchTitleChanged();
-
-					// TODO: clanInfo(myClan, myClanRank);
-
-					// Get clan list
-					BNCSPacket p = new BNCSPacket(
-							BNCSPacketId.SID_CLANMEMBERLIST);
-					p.writeDWord(0); // Cookie
-					p.SendPacket(bncsOutputStream);
+					recvClanInfo(is);
 					break;
 				}
 
@@ -970,6 +957,31 @@ public class BNCSConnection extends Connection {
 		}
 
 		return false;
+	}
+
+	/**
+	 * @param is
+	 * @throws IOException
+	 * @throws SocketException
+	 */
+	private void recvClanInfo(BNetInputStream is) throws IOException,
+			SocketException {
+		/*
+		 * (BYTE) Unknown (0)
+		 * (DWORD) Clan tag
+		 * (BYTE) Rank
+		 */
+		is.readByte();
+		myClan = is.readDWord();
+		myClanRank = is.readByte();
+		dispatchTitleChanged();
+
+		// TODO: dispatchClanInfo(myClan, myClanRank);
+
+		// Get clan list
+		BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_CLANMEMBERLIST);
+		p.writeDWord(0); // Cookie
+		p.SendPacket(bncsOutputStream);
 	}
 
 	/**
@@ -1310,9 +1322,12 @@ public class BNCSConnection extends Connection {
 				 */
 				case SID_QUERYREALMS2: {
 					/*
-					 * (DWORD) Unknown0 (DWORD) Number of Realms
+					 * (DWORD) Unknown0
+					 * (DWORD) Number of Realms
 					 *
-					 * For each realm: (DWORD) UnknownR0 (STRING) Realm Name
+					 * For each realm:
+					 * (DWORD) UnknownR0
+					 * (STRING) Realm Name
 					 * (STRING) Realm Description
 					 */
 					is.readDWord();
@@ -1329,9 +1344,14 @@ public class BNCSConnection extends Connection {
 
 				case SID_LOGONREALMEX: {
 					/*
-					 * (DWORD) Cookie (DWORD) Status (DWORD[2]) MCP Chunk 1
-					 * (DWORD) IP (DWORD) Port (DWORD[12]) MCP Chunk 2 (STRING)
-					 * BNCS unique name (WORD) Unknown
+					 * (DWORD) Cookie
+					 * (DWORD) Status
+					 * (DWORD[2]) MCP Chunk 1
+					 * (DWORD) IP
+					 * (DWORD) Port
+					 * (DWORD[12]) MCP Chunk 2
+					 * (STRING) BNCS unique name
+					 * (WORD) Unknown
 					 */
 					if(pr.packetLength < 12)
 						throw new Exception("pr.packetLength < 12");
@@ -1384,8 +1404,10 @@ public class BNCSConnection extends Connection {
 
 				case SID_READUSERDATA: {
 					/*
-					 * (DWORD) Number of accounts (DWORD) Number of keys (DWORD)
-					 * Request ID (STRING[]) Requested Key Values
+					 * (DWORD) Number of accounts
+					 * (DWORD) Number of keys
+					 * (DWORD) Request ID
+					 * (STRING[]) Requested Key Values
 					 */
 					int numAccounts = is.readDWord();
 					int numKeys = is.readDWord();
@@ -1430,8 +1452,12 @@ public class BNCSConnection extends Connection {
 					/*
 					 * (BYTE) Number of Entries
 					 *
-					 * For each member: (STRING) Account (BYTE) Status (BYTE)
-					 * Location (DWORD) ProductID (STRING) Location name
+					 * For each member:
+					 * (STRING) Account
+					 * (BYTE) Status
+					 * (BYTE) Location
+					 * (DWORD) ProductID
+					 * (STRING) Location name
 					 */
 					byte numEntries = is.readByte();
 					FriendEntry[] entries = new FriendEntry[numEntries];
@@ -1452,8 +1478,11 @@ public class BNCSConnection extends Connection {
 
 				case SID_FRIENDSUPDATE: {
 					/*
-					 * (BYTE) Entry number (BYTE) Friend Location (BYTE) Friend
-					 * Status (DWORD) ProductID (STRING) Location
+					 * (BYTE) Entry number
+					 * (BYTE) Friend Location
+					 * (BYTE) Friend Status
+					 * (DWORD) ProductID
+					 * (STRING) Location
 					 */
 					byte fEntry = is.readByte();
 					byte fLocation = is.readByte();
@@ -1467,8 +1496,11 @@ public class BNCSConnection extends Connection {
 
 				case SID_FRIENDSADD: {
 					/*
-					 * (STRING) Account (BYTE) Friend Type (BYTE) Friend Status
-					 * (DWORD) ProductID (STRING) Location
+					 * (STRING) Account
+					 * (BYTE) Friend Type
+					 * (BYTE) Friend Status
+					 * (DWORD) ProductID
+					 * (STRING) Location
 					 */
 					String fAccount = is.readNTString();
 					byte fLocation = is.readByte();
@@ -1492,7 +1524,8 @@ public class BNCSConnection extends Connection {
 
 				case SID_FRIENDSPOSITION: {
 					/*
-					 * (BYTE) Old Position (BYTE) New Position
+					 * (BYTE) Old Position
+					 * (BYTE) New Position
 					 */
 					byte oldPosition = is.readByte();
 					byte newPosition = is.readByte();
@@ -1504,6 +1537,11 @@ public class BNCSConnection extends Connection {
 				/*
 				 * .--------. | Clan | '--------'
 				 */
+
+				case SID_CLANINFO: {
+					recvClanInfo(is);
+					break;
+				}
 
 				case SID_CLANFINDCANDIDATES: {
 					Object cookie = CookieUtility.destroyCookie(is.readDWord());
@@ -1541,8 +1579,6 @@ public class BNCSConnection extends Connection {
 					int clanTag = is.readDWord();
 					String clanName = is.readNTString();
 					String inviter = is.readNTString();
-
-					dispatchRecieveInfo("You were invited to create Clan " + HexDump.DWordToPretty(clanTag) + " (" + clanName + ") with " + inviter);
 
 					ClanCreationInvitationCookie c = new ClanCreationInvitationCookie(this, cookie, clanTag, clanName, inviter);
 					dispatchClanCreationInvitation(c);
@@ -1597,8 +1633,6 @@ public class BNCSConnection extends Connection {
 					String clanName = is.readNTString();
 					String inviter = is.readNTString();
 
-					dispatchRecieveInfo("You were invited to join Clan " + HexDump.DWordToPretty(clanTag) + " (" + clanName + ") by " + inviter);
-
 					ClanInvitationCookie c = new ClanInvitationCookie(this, cookie, clanTag, clanName, inviter);
 					dispatchClanInvitation(c);
 					break;
@@ -1637,7 +1671,9 @@ public class BNCSConnection extends Connection {
 
 				case SID_CLANMOTD: {
 					/*
-					 * (DWORD) Cookie (DWORD) Unknown (0) (STRING) MOTD
+					 * (DWORD) Cookie
+					 * (DWORD) Unknown (0)
+					 * (STRING) MOTD
 					 */
 					int cookieId = is.readDWord();
 					is.readDWord();
@@ -1650,10 +1686,14 @@ public class BNCSConnection extends Connection {
 
 				case SID_CLANMEMBERLIST: {
 					/*
-					 * (DWORD) Cookie (BYTE) Number of Members
+					 * (DWORD) Cookie
+					 * (BYTE) Number of Members
 					 *
-					 * For each member: (STRING) Username (BYTE) Rank (BYTE)
-					 * Online Status (STRING) Location
+					 * For each member:
+					 * (STRING) Username
+					 * (BYTE) Rank
+					 * (BYTE) Online Status
+					 * (STRING) Location
 					 */
 					is.readDWord();
 					byte numMembers = is.readByte();
@@ -1683,8 +1723,10 @@ public class BNCSConnection extends Connection {
 
 				case SID_CLANMEMBERSTATUSCHANGE: {
 					/*
-					 * (STRING) Username (BYTE) Rank (BYTE) Status (STRING)
-					 * Location
+					 * (STRING) Username
+					 * (BYTE) Rank
+					 * (BYTE) Status
+					 * (STRING) Location
 					 */
 					String username = is.readNTString();
 					byte rank = is.readByte();
@@ -1697,8 +1739,9 @@ public class BNCSConnection extends Connection {
 
 				case SID_CLANMEMBERRANKCHANGE: {
 					/*
-					 * (BYTE) Old rank (BYTE) New rank (STRING) Clan member who
-					 * changed your rank
+					 * (BYTE) Old rank
+					 * (BYTE) New rank
+					 * (STRING) Clan member who changed your rank
 					 */
 					byte oldRank = is.readByte();
 					byte newRank = is.readByte();
@@ -2052,7 +2095,9 @@ public class BNCSConnection extends Connection {
 		requireD2();
 
 		/*
-		 * (DWORD) Unused (0) (DWORD) Unused (0) (STRING) Unknown (empty)
+		 * (DWORD) Unused (0)
+		 * (DWORD) Unused (0)
+		 * (STRING) Unknown (empty)
 		 */
 		BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_QUERYREALMS2);
 		p.SendPacket(bncsOutputStream);
@@ -2066,8 +2111,9 @@ public class BNCSConnection extends Connection {
 		requireD2();
 
 		/*
-		 * (DWORD) Client key (DWORD[5]) Hashed realm password (STRING) Realm
-		 * title
+		 * (DWORD) Client key
+		 * (DWORD[5]) Hashed realm password
+		 * (STRING) Realm title
 		 */
 		int[] hash = DoubleHash
 				.doubleHash("password", clientToken, serverToken);
@@ -2108,8 +2154,11 @@ public class BNCSConnection extends Connection {
 	@Override
 	public void sendReadUserData(String user) throws Exception {
 		/*
-		 * (DWORD) Number of Accounts (DWORD) Number of Keys (DWORD) Request ID
-		 * (STRING[]) Requested Accounts (STRING[]) Requested Keys
+		 * (DWORD) Number of Accounts
+		 * (DWORD) Number of Keys
+		 * (DWORD) Request ID
+		 * (STRING[]) Requested Accounts
+		 * (STRING[]) Requested Keys
 		 */
 		List<String> keys = new ArrayList<String>(7);
 		keys.add(user);
@@ -2144,8 +2193,11 @@ public class BNCSConnection extends Connection {
 	@Override
 	public void sendWriteUserData(UserProfile profile) throws Exception {
 		/*
-		 * (DWORD) Number of accounts (DWORD) Number of keys (STRING) []
-		 * Accounts to update (STRING) [] Keys to update (STRING) [] New values
+		 * (DWORD) Number of accounts
+		 * (DWORD) Number of keys
+		 * (STRING[]) Accounts to update
+		 * (STRING[]) Keys to update
+		 * (STRING[]) New values
 		 */
 		if (!myUser.equals(profile.getUser()))
 			throw new Exception("You may only write your own profile!");
@@ -2176,10 +2228,13 @@ public class BNCSConnection extends Connection {
 		if (myUser != null) {
 			String out = new String();
 
-			if (myClanRank != null) {
+			if(myClan != null) {
 				out += "Clan ";
 				out += HexDump.DWordToPretty(myClan);
 				out += " ";
+			}
+
+			if(myClanRank != null) {
 				out += clanRanks[myClanRank];
 				out += " ";
 			}
@@ -2338,6 +2393,7 @@ public class BNCSConnection extends Connection {
 	}
 
 	public void dispatchClanCreationInvitation(ClanCreationInvitationCookie c) {
+		lastAcceptDecline = c;
 		synchronized (eventHandlers) {
 			for (EventHandler eh : eventHandlers)
 				eh.clanCreationInvitation(this, c);
@@ -2345,6 +2401,7 @@ public class BNCSConnection extends Connection {
 	}
 
 	public void dispatchClanInvitation(ClanInvitationCookie c) {
+		lastAcceptDecline = c;
 		synchronized (eventHandlers) {
 			for (EventHandler eh : eventHandlers)
 				eh.clanInvitation(this, c);

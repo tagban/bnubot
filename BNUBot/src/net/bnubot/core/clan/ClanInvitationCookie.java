@@ -5,13 +5,15 @@
 
 package net.bnubot.core.clan;
 
+import net.bnubot.core.AcceptOrDecline;
 import net.bnubot.core.bncs.BNCSConnection;
+import net.bnubot.util.HexDump;
 
 /**
  * @author sanderson
  *
  */
-public class ClanInvitationCookie {
+public class ClanInvitationCookie implements AcceptOrDecline {
 	private final BNCSConnection source;
 	private final int cookie;
 	public final int clanTag;
@@ -24,13 +26,18 @@ public class ClanInvitationCookie {
 		this.clanTag = clanTag;
 		this.clanName = clanName;
 		this.inviter = inviter;
+
+		source.dispatchRecieveInfo("You were invited to join Clan " + HexDump.DWordToPretty(clanTag) + " (" + clanName + ") by " + inviter);
+		source.dispatchRecieveInfo("Type /accept or /decline to respond.");
 	}
 
 	public void accept() throws Exception {
 		source.sendClanInvitationResponse(cookie, clanTag, inviter, 0x06);
+		source.dispatchRecieveInfo("You have accepted the invitation to join Clan " + HexDump.DWordToPretty(clanTag));
 	}
 
 	public void decline() throws Exception {
 		source.sendClanInvitationResponse(cookie, clanTag, inviter, 0x04);
+		source.dispatchRecieveInfo("You have declined the invitation to join Clan " + HexDump.DWordToPretty(clanTag));
 	}
 }

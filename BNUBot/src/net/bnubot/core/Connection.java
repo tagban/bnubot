@@ -76,6 +76,8 @@ public abstract class Connection extends Thread {
 
 	protected long lastNullPacket;
 
+	protected AcceptOrDecline lastAcceptDecline = null;
+
 	protected Task createTask(String title, String currentStep) {
 		Task t = TaskManager.createTask(profile.getName() + ": " + title, currentStep);
 		currentTasks.add(t);
@@ -614,6 +616,14 @@ public abstract class Connection extends Thread {
 				case '/':
 					dispatchParseCommand(myUser, postSlash.substring(1), false);
 					return;
+				case 'a':
+					if(command[0].equals("accept"))
+						try {
+							lastAcceptDecline.accept();
+							lastAcceptDecline = null;
+							return;
+						} catch(Exception e) {}
+					break;
 				case 'c':
 					if(command[0].equals("cmd")) {
 						if(command.length == 2) {
@@ -621,6 +631,14 @@ public abstract class Connection extends Thread {
 							return;
 						}
 					}
+					break;
+				case 'd':
+					if(command[0].equals("decline"))
+						try {
+							lastAcceptDecline.decline();
+							lastAcceptDecline = null;
+							return;
+						} catch(Exception e) {}
 					break;
 				case 'j':
 					try {
