@@ -143,7 +143,7 @@ public class Out {
 	public static void error(Class<?> source, String text) {
 		final Connection oc = getOutConnection();
 		if(oc != null)
-			oc.recieveError("(" + source.getSimpleName() + ") " + text);
+			oc.dispatchRecieveError("(" + source.getSimpleName() + ") " + text);
 		else if(outStream != null)
 			outStream.println("[" + TimeFormatter.getTimestamp() + "] (" + source.getSimpleName() + ") ERROR " + text);
 	}
@@ -166,7 +166,7 @@ public class Out {
 	public static void debugAlways(Class<?> source, String text) {
 		final Connection oc = getOutConnection();
 		if(debugToGui && (oc != null))
-			oc.recieveDebug("(" + source.getSimpleName() + ") " + text);
+			oc.dispatchRecieveDebug("(" + source.getSimpleName() + ") " + text);
 		else if(outStream != null)
 			outStream.println("[" + TimeFormatter.getTimestamp() + "] (" + source.getSimpleName() + ") DEBUG " + text);
 	}
@@ -179,7 +179,7 @@ public class Out {
 	public static void info(Class<?> source, String text) {
 		final Connection oc = getOutConnection();
 		if(oc != null)
-			oc.recieveInfo("(" + source.getSimpleName() + ") " + text);
+			oc.dispatchRecieveInfo("(" + source.getSimpleName() + ") " + text);
 		else if(outStream != null)
 			outStream.println("[" + TimeFormatter.getTimestamp() + "] (" + source.getSimpleName() + ") INFO " + text);
 	}

@@ -41,7 +41,7 @@ public class DTConnection extends Connection {
 		connect.updateProgress("Connecting to DigitalText");
 		int port = getPort();
 		InetAddress address = MirrorSelector.getClosestMirror(getServer(), port);
-		recieveInfo("Connecting to " + address + ":" + port + ".");
+		dispatchRecieveInfo("Connecting to " + address + ":" + port + ".");
 		socket = new Socket(address, port);
 		socket.setKeepAlive(true);
 		dtInputStream = socket.getInputStream();
@@ -81,21 +81,21 @@ public class DTConnection extends Connection {
 					int status = is.readByte();
 					switch(status) {
 					case 0x00:
-						recieveInfo("Login accepted.");
+						dispatchRecieveInfo("Login accepted.");
 						break;
 					case 0x01:
-						recieveError("Login failed");
+						dispatchRecieveError("Login failed");
 						disconnect(false);
 						break;
 					case 0x02:
-						recieveInfo("Login created.");
+						dispatchRecieveInfo("Login created.");
 						break;
 					case 0x03:
-						recieveError("That account is already logged in.");
+						dispatchRecieveError("That account is already logged in.");
 						disconnect(false);
 						break;
 					default:
-						recieveError("Unknown PKT_LOGON status 0x" + Integer.toHexString(status));
+						dispatchRecieveError("Unknown PKT_LOGON status 0x" + Integer.toHexString(status));
 						disconnect(false);
 						break;
 					}
@@ -107,7 +107,7 @@ public class DTConnection extends Connection {
 					sendJoinChannel("x86");
 
 					myUser = new BNetUser(this, cs.username, cs.myRealm);
-					titleChanged();
+					dispatchTitleChanged();
 					return true;
 				}
 
@@ -177,8 +177,8 @@ public class DTConnection extends Connection {
 					int flags = is.readDWord();
 					String motd = is.readNTString();
 
-					joinedChannel(channel, flags);
-					recieveInfo(motd);
+					dispatchJoinedChannel(channel, flags);
+					dispatchRecieveInfo(motd);
 					break;
 				}
 
@@ -201,7 +201,7 @@ public class DTConnection extends Connection {
 						String username = is.readNTString();
 						int flags = is.readDWord();
 
-						channelUser(findCreateBNUser(username, flags));
+						dispatchChannelUser(findCreateBNUser(username, flags));
 					}
 					break;
 				}
@@ -213,7 +213,7 @@ public class DTConnection extends Connection {
 					String username = is.readNTString();
 					int flags = is.readDWord();
 
-					channelUser(findCreateBNUser(username, flags));
+					dispatchChannelUser(findCreateBNUser(username, flags));
 					break;
 				}
 
@@ -224,7 +224,7 @@ public class DTConnection extends Connection {
 					String username = is.readNTString();
 					int flags = is.readDWord();
 
-					channelJoin(findCreateBNUser(username, flags));
+					dispatchChannelJoin(findCreateBNUser(username, flags));
 					break;
 				}
 
@@ -233,7 +233,7 @@ public class DTConnection extends Connection {
 					 */
 					String username = is.readNTString();
 
-					channelLeave(findCreateBNUser(username, null));
+					dispatchChannelLeave(findCreateBNUser(username, null));
 					break;
 				}
 
@@ -264,17 +264,17 @@ public class DTConnection extends Connection {
 					switch(chatType) {
 					case 0x00: // Normal
 					case 0x01: // Self talking
-						recieveChat(user, text);
+						dispatchRecieveChat(user, text);
 						break;
 					case 0x02: // Whisper to
-						whisperSent(user, text);
+						dispatchWhisperSent(user, text);
 						break;
 					case 0x03: // Whisper from
-						whisperRecieved(user, text);
+						dispatchWhisperRecieved(user, text);
 						break;
 					case 0x04: // Emote
 					case 0x05: // Self Emote
-						recieveEmote(user, text);
+						dispatchRecieveEmote(user, text);
 						break;
 					default:
 						Out.debugAlways(getClass(), "Unexpected chat type 0x" + Integer.toHexString(chatType) + " from " + username + ": " + text);
@@ -289,10 +289,10 @@ public class DTConnection extends Connection {
 					String text = is.readNTString();
 					switch(unknown) {
 					case 0x00:
-						recieveInfo(text);
+						dispatchRecieveInfo(text);
 						break;
 					case 0x01:
-						recieveError(text);
+						dispatchRecieveError(text);
 						break;
 					default:
 						Out.debugAlways(getClass(), "0x" + Integer.toHexString(unknown) + ": " + text);

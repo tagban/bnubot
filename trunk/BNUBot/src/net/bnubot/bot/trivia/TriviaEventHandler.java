@@ -125,7 +125,7 @@ public class TriviaEventHandler extends EventHandler {
 			for(String fname : f.list())
 				readFile(f.getPath() + System.getProperty("file.separator") + fname);
 
-		source.recieveInfo("Trivia initialized with " + trivia.size() + " questions");
+		source.dispatchRecieveInfo("Trivia initialized with " + trivia.size() + " questions");
 	}
 
 	@Override

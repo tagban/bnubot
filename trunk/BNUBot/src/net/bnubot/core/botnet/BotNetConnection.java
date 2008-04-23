@@ -72,7 +72,7 @@ public class BotNetConnection extends Connection {
 		connect.updateProgress("Connecting to BotNet");
 		int port = getPort();
 		InetAddress address = MirrorSelector.getClosestMirror(getServer(), port);
-		recieveInfo("Connecting to " + address + ":" + port + ".");
+		dispatchRecieveInfo("Connecting to " + address + ":" + port + ".");
 		socket = new Socket(address, port);
 		socket.setKeepAlive(true);
 		bnInputStream = socket.getInputStream();
@@ -105,17 +105,17 @@ public class BotNetConnection extends Connection {
 					int result = is.readDWord();
 					switch(result) {
 					case 0:
-						recieveError("Logon failed!");
+						dispatchRecieveError("Logon failed!");
 						disconnect(false);
 						return false;
 					case 1:
-						recieveInfo("Logon success!");
+						dispatchRecieveInfo("Logon success!");
 						loggedon = true;
 						if(communicationRevision != 0)
 							return true;
 						break;
 					default:
-						recieveError("Unknown PACKET_LOGON result 0x" + Integer.toHexString(result));
+						dispatchRecieveError("Unknown PACKET_LOGON result 0x" + Integer.toHexString(result));
 						disconnect(false);
 						return false;
 					}
@@ -167,13 +167,13 @@ public class BotNetConnection extends Connection {
 					int result = is.readDWord();
 					switch(result) {
 					case 0:
-						recieveError("Status update failed");
+						dispatchRecieveError("Status update failed");
 						break;
 					case 1:
 						// Success
 						break;
 					default:
-						recieveError("Unknown PACKET_LOGON result 0x" + Integer.toHexString(result));
+						dispatchRecieveError("Unknown PACKET_LOGON result 0x" + Integer.toHexString(result));
 						disconnect(false);
 						return;
 					}
@@ -186,25 +186,25 @@ public class BotNetConnection extends Connection {
 					case 0:
 						switch(command) {
 						case 0:
-							recieveError("Account logon failed");
+							dispatchRecieveError("Account logon failed");
 							break;
 						case 1:
-							recieveError("Password change failed");
+							dispatchRecieveError("Password change failed");
 							break;
 						case 2:
-							recieveError("Account create failed");
+							dispatchRecieveError("Account create failed");
 							break;
 						default:
-							recieveError("Unknown PACKET_ACCOUNT command 0x" + Integer.toHexString(command));
+							dispatchRecieveError("Unknown PACKET_ACCOUNT command 0x" + Integer.toHexString(command));
 							break;
 						}
-						recieveError("Status update failed");
+						dispatchRecieveError("Status update failed");
 						break;
 					case 1:
 						// Success
 						break;
 					default:
-						recieveError("Unknown PACKET_ACCOUNT result 0x" + Integer.toHexString(result));
+						dispatchRecieveError("Unknown PACKET_ACCOUNT result 0x" + Integer.toHexString(result));
 						disconnect(false);
 						return;
 					}
@@ -239,15 +239,15 @@ public class BotNetConnection extends Connection {
 						myUser = user;
 
 					if(userInit)
-						botnetUserOnline(user);
+						dispatchBotnetUserOnline(user);
 					else
-						botnetUserStatus(user);
+						dispatchBotnetUserStatus(user);
 					//recieveInfo(user.toStringEx());
 					break;
 				}
 				case PACKET_USERLOGGINGOFF: {
 					int number = is.readDWord();
-					botnetUserLogoff(number);
+					dispatchBotnetUserLogoff(number);
 					break;
 				}
 				case PACKET_BOTNETCHAT: {
@@ -259,19 +259,19 @@ public class BotNetConnection extends Connection {
 					switch(command) {
 					case 0: //broadcast
 						// TODO: change this to recieveBroadcast()
-						recieveChat(user, text);
+						dispatchRecieveChat(user, text);
 						break;
 					case 1: // chat
 						if(action == 0)
-							recieveChat(user, text);
+							dispatchRecieveChat(user, text);
 						else
-							recieveEmote(user, text);
+							dispatchRecieveEmote(user, text);
 						break;
 					case 2: //whisper
-						whisperRecieved(user, text);
+						dispatchWhisperRecieved(user, text);
 						break;
 					default:
-						recieveError("Unknown PACKET_BOTNETCHAT command 0x" + Integer.toHexString(command));
+						dispatchRecieveError("Unknown PACKET_BOTNETCHAT command 0x" + Integer.toHexString(command));
 						disconnect(false);
 						break;
 					}
@@ -284,7 +284,7 @@ public class BotNetConnection extends Connection {
 					byte id = is.readByte();
 					int lenOffending = is.readWord();
 					int lenUnprocessed = is.readWord();
-					recieveError("Protocol violation: err=" + err + ", packet=" + BotNetPacketId.values()[id].name() + ", offending packet len=" + lenOffending + ", unprocessed data len=" + lenUnprocessed);
+					dispatchRecieveError("Protocol violation: err=" + err + ", packet=" + BotNetPacketId.values()[id].name() + ", offending packet len=" + lenOffending + ", unprocessed data len=" + lenUnprocessed);
 					disconnect(false);
 					break;
 				}
@@ -317,13 +317,13 @@ public class BotNetConnection extends Connection {
 			String[] commands = text.split(" ", 3);
 			if(commands[0].equals("whisper")) {
 				if(commands.length != 3) {
-					recieveError("Invalid use of whisper");
+					dispatchRecieveError("Invalid use of whisper");
 					return;
 				}
 
 				BotNetUser target = getUser(commands[1]);
 				if(target == null) {
-					recieveError("Invalid whisper target");
+					dispatchRecieveError("Invalid whisper target");
 					return;
 				}
 
@@ -334,7 +334,7 @@ public class BotNetConnection extends Connection {
 				return;
 			}
 
-			recieveError("Invalid BotNet command: " + text);
+			dispatchRecieveError("Invalid BotNet command: " + text);
 		} catch(Exception e) {
 			Out.exception(e);
 		}
@@ -366,7 +366,7 @@ public class BotNetConnection extends Connection {
 	 */
 	public void sendChat(boolean emote, String text) throws Exception {
 		sendBotNetChat(1, emote, 0, text);
-		super.recieveChat(myUser, text);
+		super.dispatchRecieveChat(myUser, text);
 	}
 
 	/**
@@ -376,7 +376,7 @@ public class BotNetConnection extends Connection {
 	 */
 	public void sendWhisper(BotNetUser target, String text) throws Exception {
 		sendBotNetChat(2, false, target.number, text);
-		super.whisperSent(target, text);
+		super.dispatchWhisperSent(target, text);
 	}
 
 
@@ -470,7 +470,7 @@ public class BotNetConnection extends Connection {
 			me.channel = channel;
 			me.server = ip;
 			me.database = "PubEternalChat";
-			botnetUserStatus(me);
+			dispatchBotnetUserStatus(me);
 		}
 
 		sendStatusUpdate(
@@ -537,7 +537,7 @@ public class BotNetConnection extends Connection {
 	 */
 
 	@Override
-	public void connected() {
+	public void dispatchConnected() {
 		users.clear();
 
 		synchronized(eventHandlers) {
@@ -547,7 +547,7 @@ public class BotNetConnection extends Connection {
 	}
 
 	@Override
-	public void disconnected() {
+	public void dispatchDisconnected() {
 		users.clear();
 		myUser = null;
 
@@ -557,7 +557,7 @@ public class BotNetConnection extends Connection {
 		}
 	}
 
-	public void botnetUserOnline(BotNetUser user) {
+	public void dispatchBotnetUserOnline(BotNetUser user) {
 		users.put(user.number, user);
 
 		synchronized(eventHandlers) {
@@ -566,7 +566,7 @@ public class BotNetConnection extends Connection {
 		}
 	}
 
-	public void botnetUserStatus(BotNetUser user) {
+	public void dispatchBotnetUserStatus(BotNetUser user) {
 		users.put(user.number, user);
 
 		synchronized(eventHandlers) {
@@ -575,7 +575,7 @@ public class BotNetConnection extends Connection {
 		}
 	}
 
-	private void botnetUserLogoff(int number) {
+	private void dispatchBotnetUserLogoff(int number) {
 		BotNetUser user = users.remove(number);
 
 		synchronized(eventHandlers) {

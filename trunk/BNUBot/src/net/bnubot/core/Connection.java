@@ -118,7 +118,7 @@ public abstract class Connection extends Thread {
 					t.complete();
 				currentTasks.clear();
 				myUser = null;
-				titleChanged();
+				dispatchTitleChanged();
 
 				// Wait until we're supposed to connect
 				while(!connectionState.canConnect()) {
@@ -127,7 +127,7 @@ public abstract class Connection extends Thread {
 				}
 
 				connectionState = ConnectionState.CONNECTING;
-				titleChanged();
+				dispatchTitleChanged();
 				Task connect = createTask("Connecting to " + getServer() + ":" + getPort(), "Verify connection settings validity");
 
 				// Check if CS is valid
@@ -164,7 +164,7 @@ public abstract class Connection extends Thread {
 			} catch(OperationCancelledException e) {
 				disposed = true;
 			} catch(Exception e) {
-				recieveError("Unhandled " + e.getClass().getSimpleName() + ": " + e.getMessage());
+				dispatchRecieveError("Unhandled " + e.getClass().getSimpleName() + ": " + e.getMessage());
 				Out.exception(e);
 			}
 
@@ -361,6 +361,7 @@ public abstract class Connection extends Thread {
 	public void sendJoinChannel2(String channel) throws Exception { throw new UnsupportedFeatureException(null); }
 	public void sendQueryRealms2() throws Exception { throw new UnsupportedFeatureException(null); }
 	public void sendLogonRealmEx(String realmTitle) throws Exception { throw new UnsupportedFeatureException(null); }
+	public void sendClanFindCandidates(Object cookie, int clanTag) throws Exception { throw new UnsupportedFeatureException(null); }
 	public void sendClanInvitation(Object cookie, String user) throws Exception { throw new UnsupportedFeatureException(null); }
 	public void sendClanRankChange(Object cookie, String user, int newRank) throws Exception { throw new UnsupportedFeatureException(null); }
 	public void sendClanMOTD(Object cookie) throws Exception { throw new UnsupportedFeatureException(null); }
@@ -410,7 +411,7 @@ public abstract class Connection extends Thread {
 
 		if(c) {
 			InetAddress address = MirrorSelector.getClosestMirror(GlobalSettings.bnlsServer, GlobalSettings.bnlsPort);
-			recieveInfo("Connecting to " + address + ":" + GlobalSettings.bnlsPort + ".");
+			dispatchRecieveInfo("Connecting to " + address + ":" + GlobalSettings.bnlsPort + ".");
 			bnlsSocket = new Socket(address, GlobalSettings.bnlsPort);
 			bnlsSocket.setKeepAlive(true);
 		}
@@ -428,7 +429,7 @@ public abstract class Connection extends Thread {
 
 			String v = cs.isValid();
 			if(v != null) {
-				recieveError(v);
+				dispatchRecieveError(v);
 				return;
 			}
 		} catch(IOException e) {
@@ -436,7 +437,7 @@ public abstract class Connection extends Thread {
 		}
 
 		connectionState = ConnectionState.FORCE_CONNECT;
-		connected();
+		dispatchConnected();
 	}
 
 	public void disconnect(boolean allowReconnect) {
@@ -453,7 +454,7 @@ public abstract class Connection extends Thread {
 		}
 
 		connectionState = allowReconnect ? ConnectionState.ALLOW_CONNECT : ConnectionState.DO_NOT_ALLOW_CONNECT;
-		disconnected();
+		dispatchDisconnected();
 	}
 
 	protected long lastChatTime = 0;
@@ -606,12 +607,12 @@ public abstract class Connection extends Thread {
 				String[] command = postSlash.split(" ", 2);
 				switch(command[0].charAt(0)) {
 				case '/':
-					parseCommand(myUser, postSlash.substring(1), false);
+					dispatchParseCommand(myUser, postSlash.substring(1), false);
 					return;
 				case 'c':
 					if(command[0].equals("cmd")) {
 						if(command.length == 2) {
-							parseCommand(myUser, command[1], true);
+							dispatchParseCommand(myUser, command[1], true);
 							return;
 						}
 					}
@@ -664,7 +665,7 @@ public abstract class Connection extends Thread {
 				}
 
 				if(postSlash.length() > 0) {
-					if(parseCommand(myUser, postSlash, true))
+					if(dispatchParseCommand(myUser, postSlash, true))
 						return;
 				}
 			}
@@ -748,6 +749,10 @@ public abstract class Connection extends Thread {
 		return channelName;
 	}
 
+	public char getTrigger() {
+		return getConnectionSettings().trigger.charAt(0);
+	}
+
 	/**
 	 * Look for a BNetUser in the user list.
 	 * @param user "User[#N][@Realm]"
@@ -784,7 +789,7 @@ public abstract class Connection extends Thread {
 	 * EventHandler methods follow
 	 *
 	 */
-	public void connected() {
+	protected void dispatchConnected() {
 		users.clear();
 
 		synchronized(eventHandlers) {
@@ -793,7 +798,7 @@ public abstract class Connection extends Thread {
 		}
 	}
 
-	public void disconnected() {
+	protected void dispatchDisconnected() {
 		channelName = null;
 		channelFlags = 0;
 		users.clear();
@@ -805,7 +810,7 @@ public abstract class Connection extends Thread {
 		}
 	}
 
-	public boolean parseCommand(BNetUser user, String command, boolean whisperBack) {
+	public boolean dispatchParseCommand(BNetUser user, String command, boolean whisperBack) {
 		int i = command.indexOf(';');
 		if(i != -1) {
 			String c1 = command.substring(0, i);
@@ -813,8 +818,8 @@ public abstract class Connection extends Thread {
 			while(c2.charAt(0) == ' ')
 				c2 = c2.substring(1);
 
-			boolean ret = parseCommand(user, c1, whisperBack);
-			ret |= parseCommand(user, c2, whisperBack);
+			boolean ret = dispatchParseCommand(user, c1, whisperBack);
+			ret |= dispatchParseCommand(user, c2, whisperBack);
 			return ret;
 		}
 
@@ -827,14 +832,14 @@ public abstract class Connection extends Thread {
 		return false;
 	}
 
-	public void titleChanged() {
+	protected void dispatchTitleChanged() {
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
 				eh.titleChanged(this);
 		}
 	}
 
-	public void joinedChannel(String channel, int flags) {
+	protected void dispatchJoinedChannel(String channel, int flags) {
 		if(!isPrimaryConnection())
 			return;
 
@@ -861,7 +866,7 @@ public abstract class Connection extends Thread {
 		}
 	}
 
-	public void channelUser(BNetUser user) {
+	protected void dispatchChannelUser(BNetUser user) {
 		checkAddUser(user);
 
 		if(!isPrimaryConnection())
@@ -873,7 +878,7 @@ public abstract class Connection extends Thread {
 		}
 	}
 
-	public void channelJoin(BNetUser user) {
+	protected void dispatchChannelJoin(BNetUser user) {
 		checkAddUser(user);
 
 		if(!isPrimaryConnection())
@@ -885,7 +890,7 @@ public abstract class Connection extends Thread {
 		}
 	}
 
-	public void channelLeave(BNetUser user) {
+	protected void dispatchChannelLeave(BNetUser user) {
 		removeUser(user);
 
 		if(!isPrimaryConnection())
@@ -897,7 +902,7 @@ public abstract class Connection extends Thread {
 		}
 	}
 
-	public void recieveChat(BNetUser user, String text) {
+	protected void dispatchRecieveChat(BNetUser user, String text) {
 		if(!isPrimaryConnection())
 			return;
 
@@ -910,10 +915,10 @@ public abstract class Connection extends Thread {
 			return;
 
 		if((text.charAt(0) == getTrigger()) || text.equals("?trigger"))
-			parseCommand(user, text.substring(1), GlobalSettings.whisperBack);
+			dispatchParseCommand(user, text.substring(1), GlobalSettings.whisperBack);
 	}
 
-	public void recieveEmote(BNetUser user, String text) {
+	protected void dispatchRecieveEmote(BNetUser user, String text) {
 		if(!isPrimaryConnection())
 			return;
 
@@ -923,7 +928,7 @@ public abstract class Connection extends Thread {
 		}
 	}
 
-	public void recieveDebug(String text) {
+	public void dispatchRecieveDebug(String text) {
 		if(text == null)
 			return;
 		if(text.length() == 0)
@@ -935,7 +940,7 @@ public abstract class Connection extends Thread {
 		}
 	}
 
-	public void recieveInfo(String text) {
+	public void dispatchRecieveInfo(String text) {
 		if(text == null)
 			return;
 		if(text.length() == 0)
@@ -950,7 +955,7 @@ public abstract class Connection extends Thread {
 		&& (myUser != null)
 		&& text.startsWith(myUser.getShortLogonName() + " was kicked out of the channel")) {
 			final String oldChannel = channelName;
-			recieveError("Will auto-rejoin in 5 seconds...");
+			dispatchRecieveError("Will auto-rejoin in 5 seconds...");
 			new Thread() {
 				@Override
 				public void run() {
@@ -959,7 +964,7 @@ public abstract class Connection extends Thread {
 						if(channelName.equalsIgnoreCase("The Void"))
 							sendJoinChannel(oldChannel);
 						else
-							recieveError("Auto-rejoin cancelled.");
+							dispatchRecieveError("Auto-rejoin cancelled.");
 					} catch(Exception e) {
 						Out.exception(e);
 					}
@@ -967,7 +972,7 @@ public abstract class Connection extends Thread {
 		}
 	}
 
-	public void recieveError(String text) {
+	public void dispatchRecieveError(String text) {
 		if(text == null)
 			return;
 		if(text.length() == 0)
@@ -979,18 +984,14 @@ public abstract class Connection extends Thread {
 		}
 	}
 
-	public void whisperSent(BNetUser user, String text) {
+	protected void dispatchWhisperSent(BNetUser user, String text) {
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
 				eh.whisperSent(this, user, text);
 		}
 	}
 
-	public char getTrigger() {
-		return getConnectionSettings().trigger.charAt(0);
-	}
-
-	public void whisperRecieved(BNetUser user, String text) {
+	protected void dispatchWhisperRecieved(BNetUser user, String text) {
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
 				eh.whisperRecieved(this, user, text);
@@ -1000,6 +1001,6 @@ public abstract class Connection extends Thread {
 			return;
 		if(text.charAt(0) == getTrigger())
 			text = text.substring(1);
-		parseCommand(user, text, true);
+		dispatchParseCommand(user, text, true);
 	}
 }

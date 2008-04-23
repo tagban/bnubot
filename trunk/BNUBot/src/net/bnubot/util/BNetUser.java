@@ -397,7 +397,7 @@ public class BNetUser {
 			isMyUser = myUser.equals(this);
 
 		if(whisperBack && isMyUser)
-			con.recieveInfo(text);
+			con.dispatchRecieveInfo(text);
 		else {
 			StringBuilder prefix = new StringBuilder();
 			if(whisperBack || isMyUser) {
