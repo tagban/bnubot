@@ -167,7 +167,6 @@ public class BNCSConnection extends Connection {
 
 		// Game
 		bncsOutputStream.writeByte(0x01);
-		connectionState = ConnectionState.CONNECTED;
 		connect.updateProgress("Connected");
 	}
 

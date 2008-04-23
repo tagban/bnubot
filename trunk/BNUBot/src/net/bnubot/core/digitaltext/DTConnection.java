@@ -55,7 +55,6 @@ public class DTConnection extends Connection {
 		dtOutputStream = new DataOutputStream(socket.getOutputStream());
 
 		// Connected
-		connectionState = ConnectionState.CONNECTED;
 		connect.updateProgress("Connected");
 	}
 

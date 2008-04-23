@@ -45,6 +45,7 @@ public abstract class Connection extends Thread {
 		DO_NOT_ALLOW_CONNECT,
 		ALLOW_CONNECT,
 		FORCE_CONNECT,
+		CONNECTING,
 		CONNECTED;
 
 		public boolean canConnect() {
@@ -125,6 +126,8 @@ public abstract class Connection extends Thread {
 					sleep(200);
 				}
 
+				connectionState = ConnectionState.CONNECTING;
+				titleChanged();
 				Task connect = createTask("Connecting to " + getServer() + ":" + getPort(), "Verify connection settings validity");
 
 				// Check if CS is valid
@@ -133,6 +136,8 @@ public abstract class Connection extends Thread {
 
 				// Wait a short time before allowing a reconnect
 				waitUntilConnectionSafe(connect);
+				if(!connectionState.equals(ConnectionState.CONNECTING))
+					continue;
 
 				// Double-check if disposal occured
 				if(disposed)
@@ -140,6 +145,7 @@ public abstract class Connection extends Thread {
 
 				// Initialize connection to DT server
 				initializeConnection(connect);
+				connectionState = ConnectionState.CONNECTED;
 
 				// Log in
 				boolean loggedIn = sendLoginPackets(connect);
@@ -201,6 +207,9 @@ public abstract class Connection extends Thread {
 		while(!disposed) {
 			long timeLeft = waitUntil - System.currentTimeMillis();
 			if(timeLeft <= 0)
+				break;
+
+			if(!connectionState.equals(ConnectionState.CONNECTING))
 				break;
 
 			connect.updateProgress(status + TimeFormatter.formatTime(timeLeft, false));
@@ -338,8 +347,11 @@ public abstract class Connection extends Thread {
 	}
 
 	public String toShortString() {
+		if(myUser != null)
+			return myUser.getFullLogonName();
+
 		if(cs.isValid() == null)
-			return cs.username + "@" + cs.myRealm;
+			return cs.username + "@" + cs.myRealm + " " + connectionState.name();
 
 		return profile.getName();
 	}
