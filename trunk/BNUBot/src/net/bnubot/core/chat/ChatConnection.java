@@ -9,13 +9,11 @@ import java.net.Socket;
 
 import net.bnubot.core.Connection;
 import net.bnubot.core.Profile;
-import net.bnubot.core.UnsupportedFeatureException;
 import net.bnubot.core.bncs.ProductIDs;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.util.BNetInputStream;
 import net.bnubot.util.BNetOutputStream;
 import net.bnubot.util.Out;
-import net.bnubot.util.UserProfile;
 import net.bnubot.util.task.Task;
 
 public class ChatConnection extends Connection {
@@ -25,11 +23,6 @@ public class ChatConnection extends Connection {
 
 	public ChatConnection(ConnectionSettings cs, Profile p) {
 		super(cs, p);
-	}
-
-	@Override
-	public String getType() {
-		return null;
 	}
 
 	/*public void run() {
@@ -103,66 +96,8 @@ public class ChatConnection extends Connection {
 	}
 
 	@Override
-	public void sendLeaveChat() throws Exception {
-	}
-
-	@Override
-	public void sendJoinChannel(String channel) throws Exception {
-	}
-
-	@Override
-	public void sendJoinChannel2(String channel) throws Exception {
-	}
-
-	@Override
-	public void reconnect() {
-	}
-
-	@Override
-	public void sendClanMOTD(Object cookie) throws Exception {
-		throw new UnsupportedFeatureException("Chat clients can not use clans");
-	}
-
-	@Override
-	public void sendClanInvitation(Object cookie, String user) throws Exception {
-		throw new UnsupportedFeatureException("Chat clients can not use clans");
-
-	}
-
-	@Override
-	public void sendClanRankChange(Object cookie, String user, int newRank) throws Exception {
-		throw new UnsupportedFeatureException("Chat clients can not use clans");
-
-	}
-
-	@Override
-	public void sendClanSetMOTD(String text) throws Exception {
-		throw new UnsupportedFeatureException("Chat clients can not use clans");
-	}
-
-	@Override
 	public ProductIDs getProductID() {
 		return ProductIDs.CHAT;
-	}
-
-	@Override
-	public void sendLogonRealmEx(String realmTitle) throws Exception {
-		throw new UnsupportedFeatureException("Chat clients can not use realms");
-	}
-
-	@Override
-	public void sendQueryRealms2() throws Exception {
-		throw new UnsupportedFeatureException("Chat clients can not use realms");
-	}
-
-	@Override
-	public void sendReadUserData(String user) throws Exception {
-		throw new UnsupportedFeatureException("Chat clients can not request profiles");
-	}
-
-	@Override
-	public void sendWriteUserData(UserProfile profile) throws Exception {
-		throw new UnsupportedFeatureException("Chat clients can not write profiles");
 	}
 
 }
