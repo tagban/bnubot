@@ -356,17 +356,17 @@ public abstract class Connection extends Thread {
 		return profile.getName();
 	}
 
-	public abstract void sendLeaveChat() throws Exception;
-	public abstract void sendJoinChannel(String channel) throws Exception;
-	public abstract void sendJoinChannel2(String channel) throws Exception;
-	public abstract void sendQueryRealms2() throws Exception;
-	public abstract void sendLogonRealmEx(String realmTitle) throws Exception;
-	public abstract void sendClanInvitation(Object cookie, String user) throws Exception;
-	public abstract void sendClanRankChange(Object cookie, String user, int newRank) throws Exception;
-	public abstract void sendClanMOTD(Object cookie) throws Exception;
-	public abstract void sendClanSetMOTD(String text) throws Exception;
-	public abstract void sendReadUserData(String user) throws Exception;
-	public abstract void sendWriteUserData(UserProfile profile) throws Exception;
+	public void sendLeaveChat() throws Exception { throw new UnsupportedFeatureException(null); }
+	public void sendJoinChannel(String channel) throws Exception { throw new UnsupportedFeatureException(null); }
+	public void sendJoinChannel2(String channel) throws Exception { throw new UnsupportedFeatureException(null); }
+	public void sendQueryRealms2() throws Exception { throw new UnsupportedFeatureException(null); }
+	public void sendLogonRealmEx(String realmTitle) throws Exception { throw new UnsupportedFeatureException(null); }
+	public void sendClanInvitation(Object cookie, String user) throws Exception { throw new UnsupportedFeatureException(null); }
+	public void sendClanRankChange(Object cookie, String user, int newRank) throws Exception { throw new UnsupportedFeatureException(null); }
+	public void sendClanMOTD(Object cookie) throws Exception { throw new UnsupportedFeatureException(null); }
+	public void sendClanSetMOTD(String text) throws Exception { throw new UnsupportedFeatureException(null); }
+	public void sendReadUserData(String user) throws Exception { throw new UnsupportedFeatureException(null); }
+	public void sendWriteUserData(UserProfile profile) throws Exception { throw new UnsupportedFeatureException(null); }
 
 	public void sendProfile(BNetUser user) throws Exception {
 		sendReadUserData(user.getFullAccountName());
@@ -379,7 +379,9 @@ public abstract class Connection extends Thread {
 
 	public abstract boolean isOp();
 	public abstract ProductIDs getProductID();
-	public abstract String getType();
+	public String getType() {
+		return null;
+	}
 
 	public void addEventHandler(EventHandler e) {
 		synchronized(eventHandlers) {

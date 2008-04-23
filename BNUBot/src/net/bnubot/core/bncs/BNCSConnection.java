@@ -78,11 +78,6 @@ public class BNCSConnection extends Connection {
 		super(cs, p);
 	}
 
-	@Override
-	public String getType() {
-		return null;
-	}
-
 	/**
 	 * Connect to BNLS and get verbyte
 	 * @throws IOException

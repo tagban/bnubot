@@ -14,7 +14,6 @@ import java.util.HashMap;
 import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.Profile;
-import net.bnubot.core.UnsupportedFeatureException;
 import net.bnubot.core.bncs.BNCSConnection;
 import net.bnubot.core.bncs.ProductIDs;
 import net.bnubot.settings.ConnectionSettings;
@@ -24,7 +23,6 @@ import net.bnubot.util.BNetUser;
 import net.bnubot.util.HexDump;
 import net.bnubot.util.MirrorSelector;
 import net.bnubot.util.Out;
-import net.bnubot.util.UserProfile;
 import net.bnubot.util.task.Task;
 
 /**
@@ -532,29 +530,6 @@ public class BotNetConnection extends Connection {
 		p.writeNTString(message);
 		p.SendPacket(bnOutputStream);
 	}
-
-	@Override
-	public void sendClanInvitation(Object cookie, String user) throws Exception { throw new UnsupportedFeatureException(null); }
-	@Override
-	public void sendClanMOTD(Object cookie) throws Exception { throw new UnsupportedFeatureException(null); }
-	@Override
-	public void sendClanRankChange(Object cookie, String user, int newRank)throws Exception { throw new UnsupportedFeatureException(null); }
-	@Override
-	public void sendClanSetMOTD(String text) throws Exception { throw new UnsupportedFeatureException(null); }
-	@Override
-	public void sendJoinChannel(String channel) throws Exception { throw new UnsupportedFeatureException(null); }
-	@Override
-	public void sendJoinChannel2(String channel) throws Exception { throw new UnsupportedFeatureException(null); }
-	@Override
-	public void sendLeaveChat() throws Exception { throw new UnsupportedFeatureException(null); }
-	@Override
-	public void sendLogonRealmEx(String realmTitle) throws Exception { throw new UnsupportedFeatureException(null); }
-	@Override
-	public void sendQueryRealms2() throws Exception { throw new UnsupportedFeatureException(null); }
-	@Override
-	public void sendReadUserData(String user) throws Exception { throw new UnsupportedFeatureException(null); }
-	@Override
-	public void sendWriteUserData(UserProfile profile) throws Exception { throw new UnsupportedFeatureException(null); }
 
 	/*
 	 * Event dispatch

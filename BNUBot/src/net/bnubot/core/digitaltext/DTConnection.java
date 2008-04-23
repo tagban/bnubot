@@ -13,7 +13,6 @@ import java.net.Socket;
 
 import net.bnubot.core.Connection;
 import net.bnubot.core.Profile;
-import net.bnubot.core.UnsupportedFeatureException;
 import net.bnubot.core.bncs.ProductIDs;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.util.BNetInputStream;
@@ -22,7 +21,6 @@ import net.bnubot.util.HexDump;
 import net.bnubot.util.MirrorSelector;
 import net.bnubot.util.Out;
 import net.bnubot.util.StatString;
-import net.bnubot.util.UserProfile;
 import net.bnubot.util.task.Task;
 
 public class DTConnection extends Connection {
@@ -31,11 +29,6 @@ public class DTConnection extends Connection {
 
 	public DTConnection(ConnectionSettings cs, Profile p) {
 		super(cs, p);
-	}
-
-	@Override
-	public String getType() {
-		return null;
 	}
 
 	/**
@@ -411,23 +404,4 @@ public class DTConnection extends Connection {
 	public ProductIDs getProductID() {
 		return ProductIDs.CHAT;
 	}
-
-	@Override
-	public void sendClanInvitation(Object cookie, String user) throws Exception { throw new UnsupportedFeatureException(null); }
-	@Override
-	public void sendClanMOTD(Object cookie) throws Exception { throw new UnsupportedFeatureException(null); }
-	@Override
-	public void sendClanRankChange(Object cookie, String user, int newRank) throws Exception { throw new UnsupportedFeatureException(null); }
-	@Override
-	public void sendClanSetMOTD(String text) throws Exception { throw new UnsupportedFeatureException(null); }
-	@Override
-	public void sendLeaveChat() throws Exception { throw new UnsupportedFeatureException(null); }
-	@Override
-	public void sendLogonRealmEx(String realmTitle) throws Exception { throw new UnsupportedFeatureException(null); }
-	@Override
-	public void sendQueryRealms2() throws Exception { throw new UnsupportedFeatureException(null); }
-	@Override
-	public void sendReadUserData(String user) throws Exception { throw new UnsupportedFeatureException(null); }
-	@Override
-	public void sendWriteUserData(UserProfile profile) throws Exception { throw new UnsupportedFeatureException(null); }
 }
