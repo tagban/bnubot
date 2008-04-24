@@ -55,13 +55,14 @@ public class TextWindow extends JScrollPane {
 		}
 	}
 
-	private Runnable scrollDown = null;
 
-	private final ColorScheme cs = ColorScheme.getColors();
+	private static final ColorScheme cs = ColorScheme.getColors();
+	private static String head = null;
+	private static final String foot = "</body></html>";
+
+	private Runnable scrollDown = null;
 	private final JEditorPane jep;
-	private String head;
-	private final String foot;
-	private String html;
+	private String html = "";
 	private boolean disableRedraw = false;
 
 	/**
@@ -74,6 +75,12 @@ public class TextWindow extends JScrollPane {
 		jep = new myJEP();
 		((Container)getComponent(0)).add(jep);
 
+		if(head == null)
+			resetHead();
+		setText();
+	}
+
+	public static void resetHead() {
 		head = "<html><head><style type=\"text/css\">";
 		head += " body	{font-family: " + GlobalSettings.guiFontFamily + ", verdana, courier, sans-serif; font-size: " + GlobalSettings.guiFontSize + "px;}";
 		head += " .timestamp	{color: #" + makeColor(cs.getForegroundColor()) + ";}";
@@ -82,9 +89,6 @@ public class TextWindow extends JScrollPane {
 		head += " .error	{color: #" + makeColor(cs.getErrorColor()) + ";}";
 		head += " .debug	{font-family: courier; color: #" + makeColor(cs.getDebugColor()) + ";}";
 		head += "</style></head><body>";
-		html = "";
-		foot = "</body></html>";
-		setText();
 	}
 
 	public void setText() {
@@ -115,7 +119,7 @@ public class TextWindow extends JScrollPane {
 		SwingUtilities.invokeLater(scrollDown);
 	}
 
-	public String makeColor(Color c) {
+	public static String makeColor(Color c) {
 		String color = "000000" + Integer.toHexString(c.getRGB());
 		return color.substring(color.length() - 6);
 	}
