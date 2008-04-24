@@ -6,7 +6,7 @@
 package net.bnubot.core;
 
 /**
- * @author sanderson
+ * @author scotta
  *
  */
 public interface AcceptOrDecline {

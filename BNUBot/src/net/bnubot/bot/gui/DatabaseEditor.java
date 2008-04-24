@@ -47,7 +47,7 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.SelectQuery;
 
 /**
- * @author sanderson
+ * @author scotta
  *
  */
 public class DatabaseEditor {

@@ -10,7 +10,7 @@ import net.bnubot.core.bncs.BNCSConnection;
 import net.bnubot.util.HexDump;
 
 /**
- * @author sanderson
+ * @author scotta
  *
  */
 public class ClanCreationInvitationCookie implements AcceptOrDecline {

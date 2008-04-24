@@ -26,7 +26,7 @@ import net.bnubot.util.Out;
 import net.bnubot.util.task.Task;
 
 /**
- * @author sanderson
+ * @author scotta
  *
  */
 public class BotNetConnection extends Connection {

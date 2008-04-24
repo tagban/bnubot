@@ -57,6 +57,8 @@ public class GlobalSettings {
 	public static boolean displayChannelUsers;
 	public static boolean enableCLI;
 	public static boolean enableGUI;
+	public static String guiFontFamily;
+	public static int guiFontSize;
 	public static boolean enableSWT;
 	public static TrayIconMode trayIconMode;
 	public static boolean trayMinimizeTo;
@@ -199,6 +201,8 @@ public class GlobalSettings {
 		Settings.write(null, "enableMirrorSelector", enableMirrorSelector);
 		Settings.write(null, "enableCLI", enableCLI);
 		Settings.write(null, "enableGUI", enableGUI);
+		Settings.write(null, "guiFontFamily", guiFontFamily);
+		Settings.write(null, "guiFontSize", guiFontSize);
 		Settings.write(null, "enableSWT", enableSWT);
 		Settings.write(null, "trayIconMode", trayIconMode);
 		Settings.write(null, "trayMinimizeTo", trayMinimizeTo);
@@ -249,6 +253,8 @@ public class GlobalSettings {
 		email =	Settings.read(null, "email", (String)null);
 		enableCLI = Settings.read(null, "enableCLI", false);
 		enableGUI = Settings.read(null, "enableGUI", true);
+		guiFontFamily = Settings.read(null, "guiFontFamily", "verdana");
+		guiFontSize = Settings.read(null, "guiFontSize", 10);
 		enableSWT = Settings.read(null, "enableSWT", false);
 		trayIconMode = Settings.read(null, "trayIconMode", TrayIconMode.ENABLED);
 		trayMinimizeTo = Settings.read(null, "trayMinimizeTo", true);

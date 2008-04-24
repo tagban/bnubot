@@ -11,7 +11,7 @@ import javax.swing.SwingUtilities;
 import net.bnubot.bot.gui.colors.ColorScheme;
 
 /**
- * @author sanderson
+ * @author scotta
  *
  */
 public class ColoredTextField extends JTextField {
