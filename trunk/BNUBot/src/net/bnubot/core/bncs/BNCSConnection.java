@@ -54,6 +54,10 @@ import org.jbls.Hashing.DoubleHash;
 import org.jbls.Hashing.HashMain;
 import org.jbls.Hashing.SRP;
 
+/**
+ * Represents a connection to a Battle.Net Chat Server (BNCS)
+ * @author scotta
+ */
 public class BNCSConnection extends Connection {
 	public static final String[] clanRanks = { "Initiate", "Peon", "Grunt",
 			"Shaman", "Chieftain" };

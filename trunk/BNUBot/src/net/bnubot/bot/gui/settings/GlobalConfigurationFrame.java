@@ -76,11 +76,10 @@ public class GlobalConfigurationFrame extends JDialog {
 	private List<Class<? extends EventHandler>> plugins = null;
 	private List<ConfigCheckBox> chkEnabledPlugins = null;
 
-	// Display
+	// Display 1
 	private ConfigComboBox cmbBNUserToString = null;
 	private ConfigComboBox cmbBNUserToStringUserList = null;
 	private ConfigComboBox cmbBNUserToStringCommandResponse = null;
-	private ConfigCheckBox chkEnableLegacyIcons = null;
 	private ConfigComboBox cmbTrayIconMode = null;
 	private ConfigCheckBox chkTrayMinimizeTo = null;
 	private ConfigCheckBox chkTrayDisplayConnectDisconnect = null;
@@ -88,9 +87,12 @@ public class GlobalConfigurationFrame extends JDialog {
 	private ConfigCheckBox chkTrayDisplayJoinPart = null;
 	private ConfigCheckBox chkTrayDisplayChatEmote = null;
 	private ConfigCheckBox chkTrayDisplayWhisper = null;
+	private ConfigComboBox cmbTabCompleteMode = null;
 	private ConfigCheckBox chkEnableTabCompleteUser = null;
 	private ConfigCheckBox chkEnableTabCompleteCommand = null;
-	private ConfigComboBox cmbTabCompleteMode = null;
+
+	// Display 2
+	private ConfigCheckBox chkEnableLegacyIcons = null;
 	private ConfigComboBox cmbTSFormat = null;
 	private ConfigComboBox cmbColorScheme = null;
 	private ConfigComboBox cmbLookAndFeel = null;
@@ -99,6 +101,8 @@ public class GlobalConfigurationFrame extends JDialog {
 	private ConfigCheckBox chkDisplayBattleNetChannels = null;
 	private ConfigCheckBox chkDisplayJoinParts = null;
 	private ConfigCheckBox chkDisplayChannelUsers = null;
+	private ConfigTextArea txtGuiFontFamily = null;
+	private ConfigTextArea txtGuiFontSize = null;
 
 	// Debug
 	private ConfigCheckBox chkEnableDebug = null;
@@ -224,8 +228,6 @@ public class GlobalConfigurationFrame extends JDialog {
 				cmbBNUserToStringCommandResponse = ConfigFactory.makeCombo("Command Response", values, false, boxAll);
 				cmbBNUserToStringCommandResponse.setSelectedIndex(GlobalSettings.bnUserToStringCommandResponse);
 
-				boxAll.add(chkEnableLegacyIcons = new ConfigCheckBox("Enable Legacy Icons", GlobalSettings.enableLegacyIcons));
-
 				cmbTrayIconMode = ConfigFactory.makeCombo("Tray Icon", TrayIconMode.values(), false, boxAll);
 				cmbTrayIconMode.setSelectedItem(GlobalSettings.trayIconMode);
 
@@ -235,13 +237,20 @@ public class GlobalConfigurationFrame extends JDialog {
 				boxAll.add(chkTrayDisplayJoinPart = new ConfigCheckBox("Tray: Join/Part", GlobalSettings.trayDisplayJoinPart));
 				boxAll.add(chkTrayDisplayChatEmote = new ConfigCheckBox("Tray: Chat/Emote", GlobalSettings.trayDisplayChatEmote));
 				boxAll.add(chkTrayDisplayWhisper = new ConfigCheckBox("Tray: Whisper", GlobalSettings.trayDisplayWhisper));
-				boxAll.add(chkEnableTabCompleteUser = new ConfigCheckBox("User Tab Completion", GlobalSettings.enableTabCompleteUser));
-				boxAll.add(chkEnableTabCompleteCommand = new ConfigCheckBox("Command Tab Completion", GlobalSettings.enableTabCompleteCommand));
 
 				cmbTabCompleteMode = ConfigFactory.makeCombo("Tab Complete Mode", TabCompleteMode.values(), false, boxAll);
 				cmbTabCompleteMode.setSelectedItem(GlobalSettings.tabCompleteMode);
 
-				values = new String[] { TimeFormatter.tsFormat, "%1$tH:%1$tM:%1$tS.%1$tL", "%1$tH:%1$tM:%1$tS", "%1$tH:%1$tM" };
+				boxAll.add(chkEnableTabCompleteUser = new ConfigCheckBox("User Tab Completion", GlobalSettings.enableTabCompleteUser));
+				boxAll.add(chkEnableTabCompleteCommand = new ConfigCheckBox("Command Tab Completion", GlobalSettings.enableTabCompleteCommand));
+			}
+			tabs.addTab("Display 1", boxAll);
+
+			boxAll = new Box(BoxLayout.Y_AXIS);
+			{
+				boxAll.add(chkEnableLegacyIcons = new ConfigCheckBox("Enable Legacy Icons", GlobalSettings.enableLegacyIcons));
+
+				Object[] values = new String[] { TimeFormatter.tsFormat, "%1$tH:%1$tM:%1$tS.%1$tL", "%1$tH:%1$tM:%1$tS", "%1$tH:%1$tM" };
 				cmbTSFormat = ConfigFactory.makeCombo("TimeStamp", values, true, boxAll);
 				cmbTSFormat.setSelectedItem(TimeFormatter.tsFormat);
 
@@ -274,8 +283,10 @@ public class GlobalConfigurationFrame extends JDialog {
 				boxAll.add(chkDisplayBattleNetChannels = new ConfigCheckBox("Display Battle.net Channels", GlobalSettings.displayBattleNetChannels));
 				boxAll.add(chkDisplayJoinParts = new ConfigCheckBox("Display Join/Part Messages", GlobalSettings.displayJoinParts));
 				boxAll.add(chkDisplayChannelUsers = new ConfigCheckBox("Display Channel Users On Join", GlobalSettings.displayChannelUsers));
+				txtGuiFontFamily = ConfigFactory.makeText("GUI Font Family", GlobalSettings.guiFontFamily, boxAll);
+				txtGuiFontSize = ConfigFactory.makeText("GUI Font Size", Integer.toString(GlobalSettings.guiFontSize), boxAll);
 			}
-			tabs.addTab("Display", boxAll);
+			tabs.addTab("Display 2", boxAll);
 
 			boxAll = new Box(BoxLayout.Y_AXIS);
 			{
@@ -383,6 +394,8 @@ public class GlobalConfigurationFrame extends JDialog {
 			GlobalSettings.displayBattleNetChannels = chkDisplayBattleNetChannels.isSelected();
 			GlobalSettings.displayJoinParts = chkDisplayJoinParts.isSelected();
 			GlobalSettings.displayChannelUsers = chkDisplayChannelUsers.isSelected();
+			GlobalSettings.guiFontFamily = txtGuiFontFamily.getText();
+			GlobalSettings.guiFontSize = Integer.parseInt(txtGuiFontSize.getText());
 			GlobalSettings.trayIconMode = (TrayIconMode)cmbTrayIconMode.getSelectedItem();
 			GlobalSettings.trayMinimizeTo = chkTrayMinimizeTo.isSelected();
 			GlobalSettings.trayDisplayConnectDisconnect = chkTrayDisplayConnectDisconnect.isSelected();
@@ -467,6 +480,12 @@ public class GlobalConfigurationFrame extends JDialog {
 			chkAutoConnect.setSelected(GlobalSettings.autoConnect);
 			chkAutoRejoin.setSelected(GlobalSettings.autoRejoin);
 			chkEnableMirrorSelector.setSelected(GlobalSettings.enableMirrorSelector);
+			chkDisplayBattleNetMOTD.setSelected(GlobalSettings.displayBattleNetMOTD);
+			chkDisplayBattleNetChannels.setSelected(GlobalSettings.displayBattleNetChannels);
+			chkDisplayJoinParts.setSelected(GlobalSettings.displayJoinParts);
+			chkDisplayChannelUsers.setSelected(GlobalSettings.displayChannelUsers);
+			txtGuiFontFamily.setText(GlobalSettings.guiFontFamily);
+			txtGuiFontSize.setText(Integer.toString(GlobalSettings.guiFontSize));
 			chkEnableLegacyIcons.setSelected(GlobalSettings.enableLegacyIcons);
 			chkEnableTabCompleteUser.setSelected(GlobalSettings.enableTabCompleteUser);
 			chkEnableTabCompleteCommand.setSelected(GlobalSettings.enableTabCompleteCommand);

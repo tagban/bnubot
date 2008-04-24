@@ -10,7 +10,7 @@ import javax.swing.JTextArea;
 import net.bnubot.bot.gui.colors.ColorScheme;
 
 /**
- * @author sanderson
+ * @author scotta
  *
  */
 public class ColoredTextArea extends JTextArea {

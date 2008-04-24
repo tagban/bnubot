@@ -15,7 +15,7 @@ import net.bnubot.util.HexDump;
 import net.bnubot.util.StatString;
 
 /**
- * @author sanderson
+ * @author scotta
  *
  */
 public class StatStringTest extends TestCase {

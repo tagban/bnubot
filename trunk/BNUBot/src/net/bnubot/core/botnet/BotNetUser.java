@@ -17,7 +17,7 @@ import net.bnubot.util.Out;
 
 
 /**
- * @author sanderson
+ * @author scotta
  *
  */
 public class BotNetUser extends BNetUser {
