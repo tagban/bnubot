@@ -38,6 +38,7 @@ import net.bnubot.bot.gui.components.ConfigCheckBox;
 import net.bnubot.bot.gui.components.ConfigComboBox;
 import net.bnubot.bot.gui.components.ConfigFactory;
 import net.bnubot.bot.gui.components.ConfigTextArea;
+import net.bnubot.bot.gui.components.TextWindow;
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.PluginManager;
 import net.bnubot.settings.GlobalSettings;
@@ -396,6 +397,7 @@ public class GlobalConfigurationFrame extends JDialog {
 			GlobalSettings.displayChannelUsers = chkDisplayChannelUsers.isSelected();
 			GlobalSettings.guiFontFamily = txtGuiFontFamily.getText();
 			GlobalSettings.guiFontSize = Integer.parseInt(txtGuiFontSize.getText());
+			TextWindow.resetHead();
 			GlobalSettings.trayIconMode = (TrayIconMode)cmbTrayIconMode.getSelectedItem();
 			GlobalSettings.trayMinimizeTo = chkTrayMinimizeTo.isSelected();
 			GlobalSettings.trayDisplayConnectDisconnect = chkTrayDisplayConnectDisconnect.isSelected();
