@@ -23,6 +23,7 @@ import java.util.Properties;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -35,8 +36,8 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import net.bnubot.bot.gui.KeyManager;
 import net.bnubot.bot.gui.WindowPosition;
 import net.bnubot.bot.gui.components.ConfigCheckBox;
-import net.bnubot.bot.gui.components.ConfigComboBox;
 import net.bnubot.bot.gui.components.ConfigFactory;
+import net.bnubot.bot.gui.components.ConfigSpinner;
 import net.bnubot.bot.gui.components.ConfigTextArea;
 import net.bnubot.bot.gui.components.TextWindow;
 import net.bnubot.core.EventHandler;
@@ -62,7 +63,7 @@ public class GlobalConfigurationFrame extends JDialog {
 	// Settings
 	private ConfigTextArea txtEmail = null;
 	private ConfigTextArea txtBNLSServer = null;
-	private ConfigComboBox cmbReleaseType = null;
+	private JComboBox cmbReleaseType = null;
 	private ConfigCheckBox chkAutoConnect = null;
 	private ConfigCheckBox chkAutoRejoin = null;
 	private ConfigCheckBox chkEnableMirrorSelector = null;
@@ -70,7 +71,7 @@ public class GlobalConfigurationFrame extends JDialog {
 	private ConfigCheckBox chkPacketLog = null;
 
 	// Plugins
-	private ConfigTextArea txtTriviaRoundLength = null;
+	private ConfigSpinner spnTriviaRoundLength = null;
 	private ConfigCheckBox chkEnableCLI = null;
 	private ConfigCheckBox chkEnableCommands = null;
 	private ConfigCheckBox chkWhisperBack = null;
@@ -78,32 +79,32 @@ public class GlobalConfigurationFrame extends JDialog {
 	private List<ConfigCheckBox> chkEnabledPlugins = null;
 
 	// Display 1
-	private ConfigComboBox cmbBNUserToString = null;
-	private ConfigComboBox cmbBNUserToStringUserList = null;
-	private ConfigComboBox cmbBNUserToStringCommandResponse = null;
-	private ConfigComboBox cmbTrayIconMode = null;
+	private JComboBox cmbBNUserToString = null;
+	private JComboBox cmbBNUserToStringUserList = null;
+	private JComboBox cmbBNUserToStringCommandResponse = null;
+	private JComboBox cmbTrayIconMode = null;
 	private ConfigCheckBox chkTrayMinimizeTo = null;
 	private ConfigCheckBox chkTrayDisplayConnectDisconnect = null;
 	private ConfigCheckBox chkTrayDisplayChannel = null;
 	private ConfigCheckBox chkTrayDisplayJoinPart = null;
 	private ConfigCheckBox chkTrayDisplayChatEmote = null;
 	private ConfigCheckBox chkTrayDisplayWhisper = null;
-	private ConfigComboBox cmbTabCompleteMode = null;
+	private JComboBox cmbTabCompleteMode = null;
 	private ConfigCheckBox chkEnableTabCompleteUser = null;
 	private ConfigCheckBox chkEnableTabCompleteCommand = null;
 
 	// Display 2
 	private ConfigCheckBox chkEnableLegacyIcons = null;
-	private ConfigComboBox cmbTSFormat = null;
-	private ConfigComboBox cmbColorScheme = null;
-	private ConfigComboBox cmbLookAndFeel = null;
-	private ConfigComboBox cmbPlasticTheme = null;
+	private JComboBox cmbTSFormat = null;
+	private JComboBox cmbColorScheme = null;
+	private JComboBox cmbLookAndFeel = null;
+	private JComboBox cmbPlasticTheme = null;
 	private ConfigCheckBox chkDisplayBattleNetMOTD = null;
 	private ConfigCheckBox chkDisplayBattleNetChannels = null;
 	private ConfigCheckBox chkDisplayJoinParts = null;
 	private ConfigCheckBox chkDisplayChannelUsers = null;
 	private ConfigTextArea txtGuiFontFamily = null;
-	private ConfigTextArea txtGuiFontSize = null;
+	private ConfigSpinner spnGuiFontSize = null;
 
 	// Debug
 	private ConfigCheckBox chkEnableDebug = null;
@@ -209,7 +210,7 @@ public class GlobalConfigurationFrame extends JDialog {
 					boxAll.add(chkEnablePlugin);
 					chkEnabledPlugins.add(chkEnablePlugin);
 				}
-				txtTriviaRoundLength = ConfigFactory.makeText("Trivia Round Length", Long.toString(GlobalSettings.triviaRoundLength), boxAll);
+				spnTriviaRoundLength = ConfigFactory.makeSpinner("Trivia Round Length", new Integer(GlobalSettings.triviaRoundLength), boxAll);
 			}
 			tabs.addTab("Plugins", boxAll);
 
@@ -285,7 +286,7 @@ public class GlobalConfigurationFrame extends JDialog {
 				boxAll.add(chkDisplayJoinParts = new ConfigCheckBox("Display Join/Part Messages", GlobalSettings.displayJoinParts));
 				boxAll.add(chkDisplayChannelUsers = new ConfigCheckBox("Display Channel Users On Join", GlobalSettings.displayChannelUsers));
 				txtGuiFontFamily = ConfigFactory.makeText("GUI Font Family", GlobalSettings.guiFontFamily, boxAll);
-				txtGuiFontSize = ConfigFactory.makeText("GUI Font Size", Integer.toString(GlobalSettings.guiFontSize), boxAll);
+				spnGuiFontSize = ConfigFactory.makeSpinner("GUI Font Size", new Integer(GlobalSettings.guiFontSize), boxAll);
 			}
 			tabs.addTab("Display 2", boxAll);
 
@@ -396,7 +397,7 @@ public class GlobalConfigurationFrame extends JDialog {
 			GlobalSettings.displayJoinParts = chkDisplayJoinParts.isSelected();
 			GlobalSettings.displayChannelUsers = chkDisplayChannelUsers.isSelected();
 			GlobalSettings.guiFontFamily = txtGuiFontFamily.getText();
-			GlobalSettings.guiFontSize = Integer.parseInt(txtGuiFontSize.getText());
+			GlobalSettings.guiFontSize = spnGuiFontSize.getValue().intValue();
 			TextWindow.resetHead();
 			GlobalSettings.trayIconMode = (TrayIconMode)cmbTrayIconMode.getSelectedItem();
 			GlobalSettings.trayMinimizeTo = chkTrayMinimizeTo.isSelected();
@@ -410,7 +411,7 @@ public class GlobalConfigurationFrame extends JDialog {
 			GlobalSettings.enableTabCompleteUser = chkEnableTabCompleteUser.isSelected();
 			GlobalSettings.enableTabCompleteCommand = chkEnableTabCompleteCommand.isSelected();
 			GlobalSettings.enableCLI = chkEnableCLI.isSelected();
-			GlobalSettings.triviaRoundLength = Integer.parseInt(txtTriviaRoundLength.getText());
+			GlobalSettings.triviaRoundLength = spnTriviaRoundLength.getValue().intValue();
 			GlobalSettings.enableCommands = chkEnableCommands.isSelected();
 			for(int i = 0; i < plugins.size(); i++) {
 				Class<? extends EventHandler> plugin = plugins.get(i);
@@ -487,7 +488,7 @@ public class GlobalConfigurationFrame extends JDialog {
 			chkDisplayJoinParts.setSelected(GlobalSettings.displayJoinParts);
 			chkDisplayChannelUsers.setSelected(GlobalSettings.displayChannelUsers);
 			txtGuiFontFamily.setText(GlobalSettings.guiFontFamily);
-			txtGuiFontSize.setText(Integer.toString(GlobalSettings.guiFontSize));
+			spnGuiFontSize.setValue(new Integer(GlobalSettings.guiFontSize));
 			chkEnableLegacyIcons.setSelected(GlobalSettings.enableLegacyIcons);
 			chkEnableTabCompleteUser.setSelected(GlobalSettings.enableTabCompleteUser);
 			chkEnableTabCompleteCommand.setSelected(GlobalSettings.enableTabCompleteCommand);
@@ -500,7 +501,7 @@ public class GlobalConfigurationFrame extends JDialog {
 			chkTrayDisplayChatEmote.setSelected(GlobalSettings.trayDisplayChatEmote);
 			chkTrayDisplayWhisper.setSelected(GlobalSettings.trayDisplayWhisper);
 			cmbTabCompleteMode.setSelectedItem(GlobalSettings.tabCompleteMode);
-			txtTriviaRoundLength.setText(Long.toString(GlobalSettings.triviaRoundLength));
+			spnTriviaRoundLength.setValue(new Integer(GlobalSettings.triviaRoundLength));
 			chkEnableCommands.setSelected(GlobalSettings.enableCommands);
 			for(int i = 0; i < plugins.size(); i++) {
 				Class<? extends EventHandler> plugin = plugins.get(i);

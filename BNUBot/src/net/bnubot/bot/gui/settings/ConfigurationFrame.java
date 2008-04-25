@@ -14,6 +14,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
@@ -23,7 +24,6 @@ import net.bnubot.bot.gui.KeyManager;
 import net.bnubot.bot.gui.WindowPosition;
 import net.bnubot.bot.gui.KeyManager.CDKey;
 import net.bnubot.bot.gui.components.ConfigCheckBox;
-import net.bnubot.bot.gui.components.ConfigComboBox;
 import net.bnubot.bot.gui.components.ConfigFactory;
 import net.bnubot.bot.gui.components.ConfigTextArea;
 import net.bnubot.core.bncs.ProductIDs;
@@ -40,15 +40,15 @@ public class ConfigurationFrame extends JDialog {
 	private ConfigTextArea txtProfile = null;
 	private ConfigTextArea txtUsername = null;
 	private JPasswordField txtPassword = null;
-	private ConfigComboBox cmbProduct = null;
+	private JComboBox cmbProduct = null;
 	private ConfigCheckBox chkPlug = null;
 	private ConfigCheckBox chkBotNet = null;
-	private ConfigComboBox cmbCDKey = null;
-	private ConfigComboBox cmbCDKey2 = null;
+	private JComboBox cmbCDKey = null;
+	private JComboBox cmbCDKey2 = null;
 
 	// Profile
-	private ConfigComboBox cmbConnectionType = null;
-	private ConfigComboBox cmbServer = null;
+	private JComboBox cmbConnectionType = null;
+	private JComboBox cmbServer = null;
 	private ConfigTextArea txtChannel = null;
 	private ConfigTextArea txtTrigger = null;
 	private ConfigCheckBox chkAntiIdle = null;

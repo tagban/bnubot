@@ -8,6 +8,7 @@ package net.bnubot.bot.gui.components;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.InputVerifier;
 import javax.swing.JSpinner;
 
 public class ConfigSpinner extends Box {
@@ -28,5 +29,10 @@ public class ConfigSpinner extends Box {
 
 	public Integer getValue() {
 		return (Integer)theSpinner.getValue();
+	}
+
+	@Override
+	public void setInputVerifier(InputVerifier inputVerifier) {
+		theSpinner.setInputVerifier(inputVerifier);
 	}
 }
