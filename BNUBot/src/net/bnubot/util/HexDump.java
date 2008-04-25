@@ -37,6 +37,15 @@ public class HexDump {
 
 	public static int PrettyToDWord(String pretty) {
 		byte bytes[] = pretty.getBytes();
+
+		// If the string was between 1 and 3 chars long
+		if((bytes.length > 0) && (bytes.length < 4)) {
+			bytes = new byte[] {0, 0, 0, 0};
+			int i = 0;
+			for(byte b : pretty.getBytes())
+				bytes[i++] = b;
+		}
+
 		if(bytes.length != 4)
 			throw new InvalidParameterException("bytes.length != 4");
         return	((bytes[3] << 0) & 0x000000FF) |

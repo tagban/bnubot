@@ -1555,26 +1555,26 @@ public class BNCSConnection extends Connection {
 					for(int i = 0 ; i < numCandidates; i++)
 						candidates.add(is.readNTString());
 
-					String result;
 					switch(status) {
 					case 0x00:
-						result = "Success";
+						if(numCandidates < 9)
+							dispatchRecieveError("Insufficient elegible W3 players (" + numCandidates + "/9).");
+						else
+							dispatchClanFindCandidates(cookie, candidates);
 						break;
 					case 0x01:
-						result = "Clan tag already taken";
+						dispatchRecieveError("Clan tag already taken");
 						break;
 					case 0x08:
-						result = "Already in a clan";
+						dispatchRecieveError("Already in a clan");
 						break;
 					case 0x0a:
-						result = "Invalid clan tag";
+						dispatchRecieveError("Invalid clan tag");
 						break;
 					default:
-						result = "Unknown response 0x" + Integer.toHexString(status);
+						dispatchRecieveError("Unknown response 0x" + Integer.toHexString(status));
 						break;
 					}
-
-					dispatchClanFindCandidates(cookie, result, candidates);
 					break;
 				}
 				// SID_CLANINVITEMULTIPLE
@@ -2389,10 +2389,10 @@ public class BNCSConnection extends Connection {
 		}
 	}
 
-	protected void dispatchClanFindCandidates(Object cookie, String result, List<String> candidates) {
+	protected void dispatchClanFindCandidates(Object cookie, List<String> candidates) {
 		synchronized (eventHandlers) {
 			for (EventHandler eh : eventHandlers)
-				eh.clanFindCandidates(this, cookie, result, candidates);
+				eh.clanFindCandidates(this, cookie, candidates);
 		}
 	}
 

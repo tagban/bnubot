@@ -62,7 +62,7 @@ public abstract class EventHandler {
 	public void clanMemberStatusChange(BNCSConnection source, ClanMember member) {}
 	public void clanMemberRankChange(BNCSConnection source, byte oldRank, byte newRank, String user) {}
 
-	public void clanFindCandidates(BNCSConnection source, Object cookie, String result, List<String> candidates) {}
+	public void clanFindCandidates(BNCSConnection source, Object cookie, List<String> candidates) {}
 	public void clanCreationInvitation(BNCSConnection connection, ClanCreationInvitationCookie c) {}
 	public void clanInvitation(BNCSConnection connection, ClanInvitationCookie c) {}
 
