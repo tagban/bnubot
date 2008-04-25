@@ -13,9 +13,9 @@ import java.util.Date;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 
-import net.bnubot.bot.gui.components.ConfigComboBox;
 import net.bnubot.bot.gui.components.ConfigFactory;
 import net.bnubot.bot.gui.components.ConfigSpinner;
 import net.bnubot.vercheck.CurrentVersion;
@@ -31,7 +31,7 @@ public class VersionEditor extends JDialog {
 	}
 
 	VersionNumber vnCurrent = CurrentVersion.version();
-	ConfigComboBox cmbReleaseType;
+	JComboBox cmbReleaseType;
 	ConfigSpinner spnMajor;
 	ConfigSpinner spnMinor;
 	ConfigSpinner spnRevision;

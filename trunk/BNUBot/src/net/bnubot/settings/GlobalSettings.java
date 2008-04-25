@@ -72,7 +72,7 @@ public class GlobalSettings {
 	public static TabCompleteMode tabCompleteMode;
 	public static boolean enableLegacyIcons;
 	public static boolean enableCommands;
-	public static long triviaRoundLength;
+	public static int triviaRoundLength;
 	public static boolean enableFloodProtect;
 	public static boolean packetLog;
 	public static boolean whisperBack;

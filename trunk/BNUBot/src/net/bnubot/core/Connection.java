@@ -108,8 +108,10 @@ public abstract class Connection extends Thread {
 	public void run() {
 		if(!(this instanceof BotNetConnection)) {
 			// We must initialize the EHs in the Connection thread
-			for(EventHandler eh : eventHandlers)
-				eh.initialize(this);
+			synchronized(eventHandlers) {
+				for(EventHandler eh : eventHandlers)
+					eh.initialize(this);
+			}
 		}
 
 		initialized = true;

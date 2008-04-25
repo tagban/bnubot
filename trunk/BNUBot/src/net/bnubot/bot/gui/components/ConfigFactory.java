@@ -9,6 +9,7 @@ import java.awt.Dimension;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 
@@ -52,10 +53,9 @@ public class ConfigFactory {
 		return pass;
 	}
 
-	public static ConfigComboBox makeCombo(String label, Object[] values, boolean editable, Box parent) {
-		ConfigComboBox cmb = new ConfigComboBox(values);
+	public static JComboBox makeCombo(String label, Object[] values, boolean editable, Box parent) {
+		JComboBox cmb = new JComboBox(values);
 		cmb.setEditable(editable);
-		cmb.setBorder(null);
 		cmb.setMaximumSize(maxComponentSize);
 
 		Box boxLine = new Box(BoxLayout.X_AXIS);
@@ -67,7 +67,6 @@ public class ConfigFactory {
 
 	public static ConfigSpinner makeSpinner(String label, Integer value, Box parent) {
 		ConfigSpinner spinner = new ConfigSpinner(value);
-		spinner.setBorder(null);
 		spinner.setMaximumSize(maxComponentSize);
 
 		Box boxLine = new Box(BoxLayout.X_AXIS);
