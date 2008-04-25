@@ -1,6 +1,6 @@
 /**
  * This file is distributed under the GPL
- * $Id:EventHandler.java 1409 2008-04-23 18:56:38Z scotta $
+ * $Id$
  */
 
 package net.bnubot.core;
