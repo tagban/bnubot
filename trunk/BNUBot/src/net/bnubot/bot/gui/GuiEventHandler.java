@@ -38,6 +38,7 @@ import javax.swing.JDialog;
 import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -67,6 +68,7 @@ import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.settings.Settings;
 import net.bnubot.util.BNetUser;
+import net.bnubot.util.HexDump;
 import net.bnubot.util.Out;
 
 public class GuiEventHandler extends EventHandler {
@@ -93,6 +95,8 @@ public class GuiEventHandler extends EventHandler {
 	private String tcAfter = null;
 	private static final int textHeight = 23;
 	private static final int paddingHeight = 4;
+
+	private int clanTag = 0;
 
 	private static final Set<? extends AWTKeyStroke> EMPTY_SET = Collections.emptySet();
 
@@ -252,6 +256,19 @@ public class GuiEventHandler extends EventHandler {
 
 			menu = new JMenu("Clan");
 			{
+				menuItem = new JMenuItem("Create a clan");
+				menuItem.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent event) {
+						try {
+							String ct = JOptionPane.showInputDialog(frame, "Clan tag (maximum of 4 characters):", "Create a clan", JOptionPane.INFORMATION_MESSAGE);
+							clanTag = HexDump.PrettyToDWord(ct);
+							firstConnection.sendClanFindCandidates(null, clanTag);
+						} catch(Exception e) {
+							Out.exception(e);
+						}
+					} });
+				menu.add(menuItem);
+
 				menuItem = new JMenuItem("Edit MOTD");
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent event) {
@@ -751,6 +768,20 @@ public class GuiEventHandler extends EventHandler {
 	@Override
 	public void clanMemberRankChange(BNCSConnection source, byte oldRank, byte newRank, String user) {
 		clanList.rankChange(oldRank, newRank, user);
+	}
+
+	@Override
+	public void clanFindCandidates(BNCSConnection source, Object cookie, List<String> candidates) {
+		if(clanTag == 0)
+			return;
+		String clanName = JOptionPane.showInputDialog(frame, "Clan name?", "Create a clan", JOptionPane.INFORMATION_MESSAGE);
+
+		// Just go ahead and invite everyone
+		try {
+			source.sendClanInviteMultiple(null, clanName, clanTag, candidates);
+		} catch(Exception e) {
+			Out.exception(e);
+		}
 	}
 
 	@Override
