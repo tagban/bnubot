@@ -166,6 +166,8 @@ public class StatString {
 		prettyStart = " using ";
 		prettyStart += product.toString();
 
+		StringBuilder prettyEnd = new StringBuilder();
+
 		if((is != null) || (statString.length > 1) || (statString[0].length() > 4)) {
 			switch(product) {
 			case STAR:
@@ -195,7 +197,7 @@ public class StatString {
 				}
 
 				if(statString2.length != 9) {
-					prettyEnd = "\ninvalid length " + statString2.length;
+					this.prettyEnd = "\ninvalid length " + statString2.length;
 					return;
 				}
 
@@ -213,23 +215,23 @@ public class StatString {
 					} catch(Exception e) {}
 
 					if(ladderRating != 0)
-						prettyEnd += ", Ladder rating " + ladderRating;
+						prettyEnd.append(", Ladder rating " + ladderRating);
 					if(ladderRank != 0)
-						prettyEnd += ", Ladder rank " + ladderRank;
+						prettyEnd.append(", Ladder rank " + ladderRank);
 					if(wins != 0)
-						prettyEnd += ", " + wins + " wins";
+						prettyEnd.append(", " + wins + " wins");
 					if(spawn)
-						prettyEnd += ", Spawn";
+						prettyEnd.append(", Spawn");
 					if(unknown5 != 0)
-						prettyEnd += ", unknown5=" + unknown5;
+						prettyEnd.append(", unknown5=").append(unknown5);
 					if((highLadderRating != 0) && (highLadderRating != ladderRating))
-						prettyEnd += ", Ladder highest ever rating " + highLadderRating;
+						prettyEnd.append(", Ladder highest ever rating ").append(highLadderRating);
 					if(unknown7 != 0)
-						prettyEnd += ", unknown7=" + unknown7;
+						prettyEnd.append(", unknown7=").append(unknown7);
 					if(unknown8 != 0)
-						prettyEnd += ", unknown8=" + unknown8;
+						prettyEnd.append(", unknown8=").append(unknown8);
 					if((icon != 0) && (icon != product.getDword()))
-						prettyEnd += ", " + HexDump.DWordToPretty(icon) + " icon";
+						prettyEnd.append(", ").append(HexDump.DWordToPretty(icon)).append(" icon");
 				} catch(Exception e) {
 					Out.exception(e);
 				}
@@ -244,7 +246,7 @@ public class StatString {
 					data = statString2[2].getBytes();
 
 					if(statString2.length != 3) {
-						prettyEnd = "unknown statstr2 len: " + statString2.length;
+						prettyEnd.append("unknown statstr2 len: ").append(statString2.length);
 						break;
 					}
 				} else {
@@ -301,51 +303,66 @@ public class StatString {
 			    	actsCompleted = (byte)((actsCompleted % 5) + 1);
 			    } else {
 			    	difficulty = (byte)(actsCompleted / 4);
-			    	actsCompleted = (byte)((actsCompleted % 45) + 1);
+			    	actsCompleted = (byte)((actsCompleted % 4) + 1);
 			    }
 
 			    if(expansion) {
 			        switch(difficulty) {
 			        case 0: break;
-		            case 1: prettyEnd = hardcore ? "Destroyer " : "Slayer "; break;
-		            case 2: prettyEnd = hardcore ? "Conquer " : "Champion " ; break;
-		            case 3: prettyEnd = hardcore ? "Guardian " : (female ? "Matriarch " : "Patriarch "); break;
-		            default: prettyEnd = "?d=" + difficulty; break;
+		            case 1: prettyEnd.append(hardcore ? "Destroyer " : "Slayer "); break;
+		            case 2: prettyEnd.append(hardcore ? "Conquer " : "Champion "); break;
+		            case 3: prettyEnd.append(hardcore ? "Guardian " : (female ? "Matriarch " : "Patriarch ")); break;
+		            default: prettyEnd.append("?d=").append(difficulty); break;
 			        }
 			    } else {
 			        switch(difficulty) {
 		        	case 0: break;
-		            case 1: prettyEnd = (female ? (hardcore ? "Countess " : "Dame ") : (hardcore ? "Count " : "Sir ")); break;
-		            case 2: prettyEnd = (female ? (hardcore ? "Duchess " : "Lady ") : (hardcore ? "Duke " : "Lord ")); break;
-		            case 3: prettyEnd = (female ? (hardcore ? "Queen " : "Baroness ") : (hardcore ? "King " : "Baron ")); break;
-		            default: prettyEnd = "??d=" + difficulty; break;
+		            case 1: prettyEnd.append(female ? (hardcore ? "Countess " : "Dame ") : (hardcore ? "Count " : "Sir ")); break;
+		            case 2: prettyEnd.append(female ? (hardcore ? "Duchess " : "Lady ") : (hardcore ? "Duke " : "Lord ")); break;
+		            case 3: prettyEnd.append(female ? (hardcore ? "Queen " : "Baroness ") : (hardcore ? "King " : "Baron ")); break;
+		            default: prettyEnd.append("??d=").append(difficulty); break;
 			        }
 			    }
 
-			    prettyEnd += statString2[1];
+			    prettyEnd.append(statString2[1]);
 
-			    prettyEnd += ", a ";
+			    prettyEnd.append(", a ");
 
+			    // Dead
 			    if(dead)
-			    	prettyEnd += "dead ";
-			    if(hardcore)
-			    	prettyEnd += "hardcore ";
-			    if(ladder)
-			    	prettyEnd += "ladder ";
+			    	prettyEnd.append("dead ");
 
-			    prettyEnd += "level " + charLevel + " " + D2Classes[charClass] + " (" + (expansion ? "Expansion" : "Classic") + ")";
+			    // Hardcore/softcore
+			    if(hardcore)
+			    	prettyEnd.append("hardcore ");
+			    else
+			    	prettyEnd.append("softcore ");
+
+			    // Ladder/non-ladder
+			    if(!ladder)
+			    	prettyEnd.append("non-");
+			    prettyEnd.append("ladder ");
+
+				prettyEnd.append("level ").append(charLevel);
+				prettyEnd.append(" ").append(D2Classes[charClass]);
+				prettyEnd.append(" (");
+				if(expansion)
+					prettyEnd.append("Expansion");
+				else
+					prettyEnd.append("Classic");
+				prettyEnd.append(")");
 
 			    if(difficulty < 3) {
-			    	prettyEnd += " currently in ";
+			    	prettyEnd.append(" currently in ");
 			        switch(difficulty) {
-			            case 0: prettyEnd += "Normal"; break;
-			            case 1: prettyEnd += "Nightmare"; break;
-			            case 2: prettyEnd += "Hell"; break;
-			            default: prettyEnd += "?"; break;
+			            case 0: prettyEnd.append("Normal"); break;
+			            case 1: prettyEnd.append("Nightmare"); break;
+			            case 2: prettyEnd.append("Hell"); break;
+			            default: prettyEnd.append("?"); break;
 			        }
-			        prettyEnd += " act " + actsCompleted;
+			        prettyEnd.append(" act ").append(actsCompleted);
 			    } else {
-			    	prettyEnd += " who has beaten the game";
+			    	prettyEnd.append(" who has beaten the game");
 			    }
 
 
@@ -365,9 +382,9 @@ public class StatString {
 					level = Integer.parseInt(statString2[1]);
 
 					if(icon != 0)
-						prettyEnd += ", " + getIconName(product, icon) + " icon";
+						prettyEnd.append(", ").append(getIconName(product, icon)).append(" icon");
 					if(level != 0)
-						prettyEnd += ", Level " + level;
+						prettyEnd.append(", Level ").append(level);
 
 					if(statString2.length >= 3) {
 						byte[] bytes = statString2[2].getBytes();
@@ -375,26 +392,28 @@ public class StatString {
 						for(int j = bytes.length-1; j >= 0; j--)
 							clan += (char)bytes[j];
 
-						prettyEnd += ", in Clan " + clan;
+						prettyEnd.append(", in Clan ").append(clan);
 					}
 				} else {
-					prettyEnd += "\n";
-					prettyEnd += statString[1];
+					prettyEnd.append("\n");
+					prettyEnd.append(statString[1]);
 				}
 				break;
 
 			default:
-				prettyEnd += ", statstr = ";
+				prettyEnd.append(", statstr = ");
 				if(is == null) {
-					prettyEnd += statString[1];
+					prettyEnd.append(statString[1]);
 				} else {
-					prettyEnd += is.readNTString();
+					prettyEnd.append(is.readNTString());
 				}
 				break;
 			}
+			this.prettyEnd = prettyEnd.toString();
 		}
 	}
 
+	@Override
 	public String toString() {
 		if(pretty != null)
 			return pretty;
