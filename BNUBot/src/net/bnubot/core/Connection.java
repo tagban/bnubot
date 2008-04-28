@@ -720,15 +720,6 @@ public abstract class Connection extends Thread {
 		}
 	}
 
-	/**
-	 * Download a file using BNFTP
-	 * @param filename The file's name
-	 * @return The File, or null if there was an error
-	 */
-	public File downloadFile(String filename) {
-		return BNFTPConnection.downloadFile(cs, filename);
-	}
-
 	public ConnectionSettings getConnectionSettings() {
 		return cs;
 	}
