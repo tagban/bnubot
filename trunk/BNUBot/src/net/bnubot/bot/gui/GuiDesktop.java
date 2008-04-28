@@ -260,11 +260,16 @@ public class GuiDesktop extends JFrame {
 				menuItem = new JMenuItem("Check for updates");
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent event) {
-						try {
-							VersionCheck.checkVersion(true);
-						} catch (Exception e) {
-							Out.exception(e);
-						}
+						new Thread() {
+							@Override
+							public void run() {
+								try {
+									VersionCheck.checkVersion(true);
+								} catch (Exception e) {
+									Out.exception(e);
+								}
+							}
+						}.start();
 					} });
 				menu.add(menuItem);
 
