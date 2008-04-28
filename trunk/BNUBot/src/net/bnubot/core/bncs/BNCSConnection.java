@@ -1322,7 +1322,9 @@ public class BNCSConnection extends Connection {
 				}
 
 				/*
-				 * .----------. | Realms | '----------'
+				 * .----------.
+				 * |  Realms  |
+				 * '----------'
 				 */
 				case SID_QUERYREALMS2: {
 					/*
@@ -1403,7 +1405,9 @@ public class BNCSConnection extends Connection {
 				}
 
 				/*
-				 * .-----------. | Profile | '-----------'
+				 * .-----------.
+				 * |  Profile  |
+				 * '-----------'
 				 */
 
 				case SID_READUSERDATA: {
@@ -1449,7 +1453,9 @@ public class BNCSConnection extends Connection {
 				}
 
 				/*
-				 * .-----------. | Friends | '-----------'
+				 * .-----------.
+				 * |  Friends  |
+				 * '-----------'
 				 */
 
 				case SID_FRIENDSLIST: {
@@ -1539,7 +1545,9 @@ public class BNCSConnection extends Connection {
 				}
 
 				/*
-				 * .--------. | Clan | '--------'
+				 * .--------.
+				 * |  Clan  |
+				 * '--------'
 				 */
 
 				case SID_CLANINFO: {

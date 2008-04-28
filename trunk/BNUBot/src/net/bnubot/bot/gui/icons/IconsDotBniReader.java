@@ -118,13 +118,17 @@ public class IconsDotBniReader {
 		if(f.exists())
 			icons_W3XP = readIconsDotBni(f);
 
-		f = BNFTPConnection.downloadFile(cs, "icons_STAR.bni");
-		if((f != null) && f.exists())
-			icons_STAR = readIconsDotBni(f);
+		try {
+			f = BNFTPConnection.downloadFile(cs, "icons_STAR.bni");
+			if((f != null) && f.exists())
+				icons_STAR = readIconsDotBni(f);
+		} catch(Exception e) {}
 
-		f = BNFTPConnection.downloadFile(cs, "Icons.bni");
-		if((f != null) && f.exists())
-			icons = readIconsDotBni(f);
+		try {
+			f = BNFTPConnection.downloadFile(cs, "Icons.bni");
+			if((f != null) && f.exists())
+				icons = readIconsDotBni(f);
+		} catch(Exception e) {}
 
 		f = new File("downloads/icons_lag.bni");
 		if(f.exists())
