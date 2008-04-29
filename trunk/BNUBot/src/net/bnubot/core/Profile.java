@@ -6,6 +6,7 @@
 package net.bnubot.core;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -105,8 +106,11 @@ public class Profile {
 				Connection primary = cons.get(0);
 
 				// Add EHs
-				for(EventHandler eh : primary.getEventHandlers())
-					con.addEventHandler(eh);
+				Collection<EventHandler> eventHandlers = primary.getEventHandlers();
+				synchronized(eventHandlers) {
+					for(EventHandler eh : eventHandlers)
+						con.addEventHandler(eh);
+				}
 			} else {
 				// Plugins
 				for(Class<? extends EventHandler> plugin : PluginManager.getEnabledPlugins())

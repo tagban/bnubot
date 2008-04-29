@@ -64,7 +64,7 @@ public abstract class Connection extends Thread {
 
 	protected ConnectionSettings cs;
 	protected Profile profile;
-	protected final Collection<EventHandler> eventHandlers = new ArrayList<EventHandler>();
+	protected final Collection<EventHandler> eventHandlers = Collections.synchronizedList(new ArrayList<EventHandler>());
 	protected final Hashtable<String, BNetUser> users = new Hashtable<String, BNetUser>();
 	protected BNetUser myUser = null;
 	protected ConnectionState connectionState = ConnectionState.ALLOW_CONNECT;
@@ -278,8 +278,18 @@ public abstract class Connection extends Thread {
 		return antiIdles.remove(i);
 	}
 
+	/**
+	 * It is imperative that you synchronize on this collection<br>
+	 * <code>
+	 * Collection<EventHandler> ehs = [Connection].getEventHandlers();
+	 * synchronized(ehs) {
+	 * 		...
+	 * }
+	 * </code>
+	 * @return A synchronized Collection<EventHandler>
+	 */
 	public Collection<EventHandler> getEventHandlers() {
-		return Collections.synchronizedCollection(eventHandlers);
+		return eventHandlers;
 	}
 
 	public Collection<BNetUser> getUsers() {
@@ -399,13 +409,6 @@ public abstract class Connection extends Thread {
 			if(initialized)
 				e.initialize(this);
 		}
-	}
-
-	public void removeEventHandler(EventHandler e) {
-		synchronized(eventHandlers) {
-			eventHandlers.remove(e);
-		}
-		e.disable(this);
 	}
 
 	public boolean isConnected() {
@@ -744,8 +747,10 @@ public abstract class Connection extends Thread {
 		disconnect(false);
 
 		synchronized(eventHandlers) {
-			for(EventHandler e : eventHandlers)
-				removeEventHandler(e);
+			for(EventHandler e : new ArrayList<EventHandler>(eventHandlers)) {
+				eventHandlers.remove(e);
+				e.disable(this);
+			}
 		}
 	}
 
