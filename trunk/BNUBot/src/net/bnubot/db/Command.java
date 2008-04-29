@@ -35,15 +35,19 @@ public class Command extends _Command {
 	 * @return The Command, or NULL if the command is not in the database
 	 */
 	public static Command get(String command) {
-		// Check for aliases
-		CommandAlias ca = CommandAlias.get(command);
-		if(ca != null)
-			return ca.getToCommand();
+		try {
+			// Check for aliases
+			CommandAlias ca = CommandAlias.get(command);
+			if(ca != null)
+				return ca.getToCommand();
 
-		// No aliases found; check for the real command
-		Expression expression = ExpressionFactory.matchExp(Command.NAME_PROPERTY, command);
-		SelectQuery query = new SelectQuery(Command.class, expression);
-		return (Command)DataObjectUtils.objectForQuery(DatabaseContext.getContext(), query);
+			// No aliases found; check for the real command
+			Expression expression = ExpressionFactory.matchExp(Command.NAME_PROPERTY, command);
+			SelectQuery query = new SelectQuery(Command.class, expression);
+			return (Command)DataObjectUtils.objectForQuery(DatabaseContext.getContext(), query);
+		} catch(Exception e) {
+			return null;
+		}
 	}
 
 	/**

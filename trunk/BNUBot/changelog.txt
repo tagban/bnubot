@@ -7,6 +7,7 @@
 * Statstring performance improvements
 * Fixed a bug where the version check progress display wouldn't update
 * Improved plugin synchronization
+* Improved database exception handling
 
 2.0.6 (r1400) 2008-04-21:
 * Added auto-rejoin afer being kicked (Issue 52)
