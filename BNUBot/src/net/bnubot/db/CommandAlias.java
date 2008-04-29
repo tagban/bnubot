@@ -7,6 +7,7 @@ package net.bnubot.db;
 
 import net.bnubot.db.auto._CommandAlias;
 import net.bnubot.db.conf.DatabaseContext;
+import net.bnubot.util.Out;
 
 import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.exp.Expression;
@@ -22,9 +23,14 @@ public class CommandAlias extends _CommandAlias {
 	 * @return The CommandAlias, or NULL if the command alias is not in the database
 	 */
 	public static CommandAlias get(String command) {
-		Expression expression = ExpressionFactory.matchExp(CommandAlias.ALIAS_PROPERTY, command);
-		SelectQuery query = new SelectQuery(CommandAlias.class, expression);
-		return (CommandAlias)DataObjectUtils.objectForQuery(DatabaseContext.getContext(), query);
+		try {
+			Expression expression = ExpressionFactory.matchExp(CommandAlias.ALIAS_PROPERTY, command);
+			SelectQuery query = new SelectQuery(CommandAlias.class, expression);
+			return (CommandAlias)DataObjectUtils.objectForQuery(DatabaseContext.getContext(), query);
+		} catch(Exception e) {
+			Out.exception(e);
+			return null;
+		}
 	}
 
 	@Override

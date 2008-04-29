@@ -11,6 +11,7 @@ import java.util.List;
 import net.bnubot.db.auto._Account;
 import net.bnubot.db.conf.DatabaseContext;
 import net.bnubot.util.BNetUser;
+import net.bnubot.util.Out;
 
 import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.ObjectContext;
@@ -36,12 +37,17 @@ public class Account extends _Account {
 	/**
 	 * Get an Account by name
 	 * @param name The name
-	 * @return The Account
+	 * @return The Account or NULL
 	 */
 	public static Account get(String name) {
-		Expression expression = ExpressionFactory.likeIgnoreCaseExp(Account.NAME_PROPERTY, name);
-		SelectQuery query = new SelectQuery(Account.class, expression);
-		return (Account)DataObjectUtils.objectForQuery(DatabaseContext.getContext(), query);
+		try {
+			Expression expression = ExpressionFactory.likeIgnoreCaseExp(Account.NAME_PROPERTY, name);
+			SelectQuery query = new SelectQuery(Account.class, expression);
+			return (Account)DataObjectUtils.objectForQuery(DatabaseContext.getContext(), query);
+		} catch(Exception e) {
+			Out.exception(e);
+			return null;
+		}
 	}
 
 	/**

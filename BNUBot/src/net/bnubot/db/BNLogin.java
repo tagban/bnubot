@@ -26,9 +26,13 @@ public class BNLogin extends _BNLogin {
 	 * @return The BNLogin, or NULL if the user is not in the database
 	 */
 	public static BNLogin get(BNetUser user) {
-		Expression expr = ExpressionFactory.likeIgnoreCaseExp(BNLogin.LOGIN_PROPERTY, user.getFullAccountName());
-		SelectQuery query = new SelectQuery(BNLogin.class, expr);
-		return (BNLogin)DataObjectUtils.objectForQuery(DatabaseContext.getContext(), query);
+		try {
+			Expression expr = ExpressionFactory.likeIgnoreCaseExp(BNLogin.LOGIN_PROPERTY, user.getFullAccountName());
+			SelectQuery query = new SelectQuery(BNLogin.class, expr);
+			return (BNLogin)DataObjectUtils.objectForQuery(DatabaseContext.getContext(), query);
+		} catch(Exception e) {
+			return null;
+		}
 	}
 
 	/**
