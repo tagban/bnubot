@@ -16,7 +16,6 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
@@ -64,7 +63,7 @@ public abstract class Connection extends Thread {
 
 	protected ConnectionSettings cs;
 	protected Profile profile;
-	protected final Collection<EventHandler> eventHandlers = Collections.synchronizedList(new ArrayList<EventHandler>());
+	protected final Collection<EventHandler> eventHandlers = new ArrayList<EventHandler>();
 	protected final Hashtable<String, BNetUser> users = new Hashtable<String, BNetUser>();
 	protected BNetUser myUser = null;
 	protected ConnectionState connectionState = ConnectionState.ALLOW_CONNECT;
