@@ -429,6 +429,6 @@ public class BNetUser {
 	}
 
 	public String getWhisperCommand() {
-		return "/w " + this.getFullLogonName() + " ";
+		return "/w " + fullLogonName + " ";
 	}
 }
