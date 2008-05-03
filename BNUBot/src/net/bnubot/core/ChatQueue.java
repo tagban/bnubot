@@ -122,6 +122,7 @@ public class ChatQueue extends Thread {
 					yield();
 					sleep(100);
 				} catch (InterruptedException e) {}
+			c.sendChatCommand(text);
 			return true;
 		}
 		return false;
