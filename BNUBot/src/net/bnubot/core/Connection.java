@@ -398,9 +398,10 @@ public abstract class Connection extends Thread {
 
 	public abstract boolean isOp();
 	public abstract ProductIDs getProductID();
-	public String getType() {
+	public String getDisplayType() {
 		return null;
 	}
+	public abstract String getServerType();
 
 	public void addEventHandler(EventHandler e) {
 		synchronized(eventHandlers) {
@@ -960,7 +961,7 @@ public abstract class Connection extends Thread {
 		}
 	}
 
-	public void dispatchRecieveInfo(String text) {
+	public void dispatchRecieveServerInfo(String text) {
 		if(text == null)
 			return;
 		if(text.length() == 0)
@@ -968,7 +969,7 @@ public abstract class Connection extends Thread {
 
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
-				eh.recieveInfo(this, text);
+				eh.recieveServerInfo(this, text);
 		}
 
 		if(GlobalSettings.autoRejoin
@@ -989,6 +990,30 @@ public abstract class Connection extends Thread {
 						Out.exception(e);
 					}
 				}}.start();
+		}
+	}
+
+	public void dispatchRecieveInfo(String text) {
+		if(text == null)
+			return;
+		if(text.length() == 0)
+			return;
+
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.recieveInfo(this, text);
+		}
+	}
+
+	public void dispatchRecieveServerError(String text) {
+		if(text == null)
+			return;
+		if(text.length() == 0)
+			return;
+
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.recieveServerError(this, text);
 		}
 	}
 

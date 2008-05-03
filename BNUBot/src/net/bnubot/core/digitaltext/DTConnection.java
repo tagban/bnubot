@@ -24,11 +24,17 @@ import net.bnubot.util.StatString;
 import net.bnubot.util.task.Task;
 
 public class DTConnection extends Connection {
+	private static final String DT_TYPE = "DigitalText";
 	private InputStream dtInputStream = null;
 	private DataOutputStream dtOutputStream = null;
 
 	public DTConnection(ConnectionSettings cs, Profile p) {
 		super(cs, p);
+	}
+
+	@Override
+	public String getServerType() {
+		return DT_TYPE;
 	}
 
 	/**

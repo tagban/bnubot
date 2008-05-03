@@ -31,6 +31,11 @@ public abstract class EventHandler {
 		return false;
 	}
 
+	//General output
+	public void recieveDebug(Connection source, String text) {}
+	public void recieveInfo(Connection source, String text) {}
+	public void recieveError(Connection source, String text) {}
+
 	//Channel events
 	public void joinedChannel(Connection source, String channel) {}
 	public void channelUser(Connection source, BNetUser user) {}
@@ -38,9 +43,8 @@ public abstract class EventHandler {
 	public void channelLeave(Connection source, BNetUser user) {}
 	public void recieveChat(Connection source, BNetUser user, String text) {}
 	public void recieveEmote(Connection source, BNetUser user, String text) {}
-	public void recieveDebug(Connection source, String text) {}
-	public void recieveInfo(Connection source, String text) {}
-	public void recieveError(Connection source, String text) {}
+	public void recieveServerInfo(Connection source, String text) {}
+	public void recieveServerError(Connection source, String text) {}
 	public void whisperSent(Connection source, BNetUser user, String text) {}
 	public void whisperRecieved(Connection source, BNetUser user, String text) {}
 

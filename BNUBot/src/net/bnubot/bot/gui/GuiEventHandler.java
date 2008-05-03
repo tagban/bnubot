@@ -601,7 +601,7 @@ public class GuiEventHandler extends EventHandler {
 
 	@Override
 	public void recieveChat(Connection source, BNetUser user, String text) {
-		mainTextArea.userChat(source.getType(), user, text, user.equals(source.getMyUser()));
+		mainTextArea.userChat(source.getDisplayType(), user, text, user.equals(source.getMyUser()));
 		if(GlobalSettings.trayDisplayChatEmote)
 			notifySystemTray(
 					Growl.CHANNEL_USER_CHAT,
@@ -611,7 +611,7 @@ public class GuiEventHandler extends EventHandler {
 
 	@Override
 	public void recieveEmote(Connection source, BNetUser user, String text) {
-		mainTextArea.userEmote(source.getType(), user, text);
+		mainTextArea.userEmote(source.getDisplayType(), user, text);
 		if(GlobalSettings.trayDisplayChatEmote)
 			notifySystemTray(
 					Growl.CHANNEL_USER_EMOTE,
@@ -619,10 +619,15 @@ public class GuiEventHandler extends EventHandler {
 					"<" + user.toString() + " " + text + ">");
 	}
 
+	@Override
+	public void recieveInfo(Connection source, String text) {
+		mainTextArea.recieveInfo(source.getDisplayType(), text);
+	}
+
 	private static long lastInfoRecieved = 0;
 	private static String lastInfo = null;
 	@Override
-	public void recieveInfo(Connection source, String text) {
+	public void recieveServerInfo(Connection source, String text) {
 		long now = System.currentTimeMillis();
 		// Do not allow duplicate info strings unless there's a 50ms delay
 		if((now - lastInfoRecieved < 50)
@@ -633,23 +638,28 @@ public class GuiEventHandler extends EventHandler {
 
 		lastInfo = text;
 		lastInfoRecieved = now;
-		mainTextArea.recieveInfo(source.getType(), text);
+		mainTextArea.recieveInfo(source.getServerType(), text);
 	}
 
 	@Override
 	public void recieveError(Connection source, String text) {
-		mainTextArea.recieveError(source.getType(), text);
+		mainTextArea.recieveError(source.getDisplayType(), text);
+	}
+
+	@Override
+	public void recieveServerError(Connection source, String text) {
+		mainTextArea.recieveError(source.getServerType(), text);
 	}
 
 	@Override
 	public void recieveDebug(Connection source, String text) {
-		mainTextArea.recieveDebug(source.getType(), text);
+		mainTextArea.recieveDebug(source.getDisplayType(), text);
 	}
 
 	@Override
 	public void whisperRecieved(Connection source, BNetUser user, String text) {
 		lastWhisperFrom = user;
-		mainTextArea.whisperRecieved(source.getType(), user, text);
+		mainTextArea.whisperRecieved(source.getDisplayType(), user, text);
 		if(GlobalSettings.trayDisplayWhisper)
 			notifySystemTray(
 					Growl.CHANNEL_WHISPER_RECIEVED,
@@ -660,7 +670,7 @@ public class GuiEventHandler extends EventHandler {
 	@Override
 	public void whisperSent(Connection source, BNetUser user, String text) {
 		lastWhisperTo = user;
-		mainTextArea.whisperSent(source.getType(), user, text);
+		mainTextArea.whisperSent(source.getDisplayType(), user, text);
 		if(GlobalSettings.trayDisplayWhisper)
 			notifySystemTray(
 					Growl.CHANNEL_WHISPER_SENT,

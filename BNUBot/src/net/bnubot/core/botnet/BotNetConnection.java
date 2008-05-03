@@ -30,7 +30,7 @@ import net.bnubot.util.task.Task;
  *
  */
 public class BotNetConnection extends Connection {
-	public static final String BOTNET_TYPE = "BotNet";
+	private static final String BOTNET_TYPE = "BotNet";
 
 	private BNCSConnection master;
 
@@ -49,7 +49,12 @@ public class BotNetConnection extends Connection {
 	}
 
 	@Override
-	public String getType() {
+	public String getDisplayType() {
+		return BOTNET_TYPE;
+	}
+
+	@Override
+	public String getServerType() {
 		return BOTNET_TYPE;
 	}
 

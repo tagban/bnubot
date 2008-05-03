@@ -61,6 +61,7 @@ import org.jbls.Hashing.SRP;
 public class BNCSConnection extends Connection {
 	public static final String[] clanRanks = { "Initiate", "Peon", "Grunt",
 			"Shaman", "Chieftain" };
+	private static final String BNCS_TYPE = "Battle.net";
 
 	private BotNetConnection botnet = null;
 
@@ -83,6 +84,11 @@ public class BNCSConnection extends Connection {
 
 	public BNCSConnection(ConnectionSettings cs, Profile p) {
 		super(cs, p);
+	}
+
+	@Override
+	public String getServerType() {
+		return BNCS_TYPE;
 	}
 
 	/**
@@ -1263,10 +1269,10 @@ public class BNCSConnection extends Connection {
 						dispatchRecieveEmote(user, text);
 						break;
 					case EID_INFO:
-						dispatchRecieveInfo(text);
+						dispatchRecieveServerInfo(text);
 						break;
 					case EID_ERROR:
-						dispatchRecieveError(text);
+						dispatchRecieveServerError(text);
 						break;
 					case EID_CHANNEL:
 						channelName = text;
