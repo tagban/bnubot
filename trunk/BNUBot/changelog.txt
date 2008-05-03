@@ -2,12 +2,14 @@
 * Added BotNet account login
 * CDKeys are now dumped to cdkeys.processed.txt in a well-formatted way
 * Added /accept and /decline for W3 clan management
+* Added a simple clan creation utility
 * Added options to customize the GUI font size and family
 * Switched some relevant settings to spinners in the GUI
 * Statstring performance improvements
 * Fixed a bug where the version check progress display wouldn't update
 * Improved plugin synchronization
 * Improved database exception handling
+* Battle.net info/error messages are marked as such
 * Fixed a bug where the ChatQueue wouldn't send ops commands
 
 2.0.6 (r1400) 2008-04-21:
