@@ -2410,7 +2410,7 @@ public class BNCSConnection extends Connection {
 		}
 	}
 
-	public void dispatchClanCreationInvitation(ClanCreationInvitationCookie c) {
+	protected void dispatchClanCreationInvitation(ClanCreationInvitationCookie c) {
 		lastAcceptDecline = c;
 		synchronized (eventHandlers) {
 			for (EventHandler eh : eventHandlers)
@@ -2418,7 +2418,7 @@ public class BNCSConnection extends Connection {
 		}
 	}
 
-	public void dispatchClanInvitation(ClanInvitationCookie c) {
+	protected void dispatchClanInvitation(ClanInvitationCookie c) {
 		lastAcceptDecline = c;
 		synchronized (eventHandlers) {
 			for (EventHandler eh : eventHandlers)
