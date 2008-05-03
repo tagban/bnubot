@@ -85,4 +85,14 @@ public class ConsoleEventHandler extends EventHandler {
 	public void recieveError(Connection source, String text) {
 		System.out.println("(ERROR) " + text);
 	}
+
+	@Override
+	public void recieveServerInfo(Connection source, String text) {
+		System.out.println("(INFO) " + text);
+	}
+
+	@Override
+	public void recieveServerError(Connection source, String text) {
+		System.out.println("(ERROR) " + text);
+	}
 }

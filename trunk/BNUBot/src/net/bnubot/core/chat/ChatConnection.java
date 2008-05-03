@@ -17,12 +17,18 @@ import net.bnubot.util.Out;
 import net.bnubot.util.task.Task;
 
 public class ChatConnection extends Connection {
+	private static final String CHAT_TYPE = "Chat";
 	private Socket s;
 	private BNetInputStream is;
 	private BNetOutputStream os;
 
 	public ChatConnection(ConnectionSettings cs, Profile p) {
 		super(cs, p);
+	}
+
+	@Override
+	public String getServerType() {
+		return CHAT_TYPE;
 	}
 
 	/*public void run() {
