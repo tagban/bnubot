@@ -66,7 +66,15 @@ public class TelnetEventHandler extends EventHandler implements Runnable {
 
 		@Override
 		public void run() {
-			Connection pri = profile.getPrimaryConnection();
+			Connection pri = null;
+			do {
+				try {
+					sleep(1000);
+				} catch (InterruptedException e) {}
+				if(profile != null)
+					pri = profile.getPrimaryConnection();
+			} while(pri == null);
+
 			try {
 				InputStream is = socket.getInputStream();
 				OutputStream os = socket.getOutputStream();
