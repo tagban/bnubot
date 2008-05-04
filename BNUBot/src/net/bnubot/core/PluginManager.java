@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.bnubot.bot.HTMLOutputEventHandler;
+import net.bnubot.bot.TelnetEventHandler;
 import net.bnubot.bot.trivia.TriviaEventHandler;
 import net.bnubot.settings.Settings;
 import net.bnubot.util.Out;
@@ -20,6 +21,7 @@ public class PluginManager {
 	static {
 		register(HTMLOutputEventHandler.class);
 		register(TriviaEventHandler.class);
+		register(TelnetEventHandler.class);
 	}
 
 	public static void register(Class<? extends EventHandler> plugin) {
