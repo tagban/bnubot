@@ -84,7 +84,7 @@ public class HexDump {
 		return hexChr((b & 0xF0) >> 4) + hexChr(b & 0x0F);
 	}
 
-	private static String toHexWord(int b) {
+	public static String toHexWord(int b) {
 		return hexChr((b & 0xF000) >> 12) + hexChr((b & 0x0F00) >> 8) + hexChr((b & 0x00F0) >> 4) + hexChr(b & 0x000F);
 	}
 
