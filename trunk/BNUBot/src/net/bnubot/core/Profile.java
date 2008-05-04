@@ -114,7 +114,11 @@ public class Profile {
 			} else {
 				// Plugins
 				for(Class<? extends EventHandler> plugin : PluginManager.getEnabledPlugins())
-					con.addEventHandler(plugin.newInstance());
+					try {
+						con.addEventHandler(plugin.newInstance());
+					} catch(Exception e) {
+						Out.exception(e);
+					}
 
 				// CLI
 				if(GlobalSettings.enableCLI)
