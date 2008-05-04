@@ -64,7 +64,7 @@ public abstract class Connection extends Thread {
 	protected ConnectionSettings cs;
 	protected Profile profile;
 	protected final Collection<EventHandler> eventHandlers = new ArrayList<EventHandler>();
-	protected final Hashtable<String, BNetUser> users = new Hashtable<String, BNetUser>();
+	protected final Collection<BNetUser> users = new LinkedList<BNetUser>();
 	protected BNetUser myUser = null;
 	protected ConnectionState connectionState = ConnectionState.ALLOW_CONNECT;
 	protected String channelName = null;
@@ -292,7 +292,7 @@ public abstract class Connection extends Thread {
 	}
 
 	public Collection<BNetUser> getUsers() {
-		return users.values();
+		return users;
 	}
 
 	public List<BNetUser> getSortedUsers() {
@@ -302,16 +302,19 @@ public abstract class Connection extends Thread {
 	}
 
 	private BNetUser getUser(BNetUser u) {
-		return users.get(u.getFullLogonName().toLowerCase());
+		for(BNetUser user : users)
+			if(user.equals(u))
+				return user;
+		return null;
 	}
 
 	private void checkAddUser(BNetUser user) {
 		if(getUser(user) == null)
-			users.put(user.getFullLogonName().toLowerCase(), user);
+			users.add(user);
 	}
 
 	private void removeUser(BNetUser user) {
-		if(users.remove(user.getFullLogonName().toLowerCase()) == null)
+		if(!users.remove(user))
 			Out.error(getClass(), "Tried to remove a user that was not in the list: " + user.toString());
 	}
 
@@ -783,7 +786,10 @@ public abstract class Connection extends Thread {
 	public BNetUser findUser(String user, BNetUser perspective) {
 		if(user.indexOf('@') == -1)
 			user += '@' + perspective.getRealm();
-		return users.get(user.toLowerCase());
+		for(BNetUser u : users)
+			if(u.equals(user))
+				return u;
+		return null;
 	}
 
 	/**
