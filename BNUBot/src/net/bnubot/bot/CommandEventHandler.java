@@ -1149,6 +1149,14 @@ public class CommandEventHandler extends EventHandler {
 
 				startVote(source, user, param, whisperBack, Boolean.FALSE);
 			}});
+		Profile.registerCommand("whisperback", new CommandRunnable() {
+			@Override
+			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
+			throws Exception {
+				boolean wb = !GlobalSettings.whisperBack;
+				GlobalSettings.whisperBack = wb;
+				user.sendChat("WhisperBack is now " + (wb ? "on" : "off"), wb);
+			}});
 		Profile.registerCommand("whoami", new CommandRunnable() {
 			@Override
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
