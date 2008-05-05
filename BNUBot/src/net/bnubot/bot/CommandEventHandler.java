@@ -1344,9 +1344,13 @@ public class CommandEventHandler extends EventHandler {
 			if(param != null)
 				params = param.split(" ");
 
-			lastCommandUser = user;
-			lastCommandTime = System.currentTimeMillis();
-			lastCommandWhisperBack = whisperBack;
+			if(!user.equals(source.getMyUser())) {
+				lastCommandUser = user;
+				lastCommandTime = System.currentTimeMillis();
+				lastCommandWhisperBack = whisperBack;
+			} else {
+				lastCommandUser = null;
+			}
 
 			cr.run(source,
 					user,
