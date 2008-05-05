@@ -12,6 +12,7 @@
 * Battle.net info/error messages are marked as such
 * Fixed a bug where the ChatQueue wouldn't send ops commands
 * Added a telnet plugin compatible with the Battle.net chat protocol
+* Added a 'whisperback' command
 
 2.0.6 (r1400) 2008-04-21:
 * Added auto-rejoin afer being kicked (Issue 52)
