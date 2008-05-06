@@ -39,7 +39,7 @@ public abstract class ColorScheme {
 	public abstract Color getErrorColor();
 	public abstract Color getDebugColor();
 	public Color getTypeColor() {
-		return Color.BLUE;
+		return Diablo2ColorScheme.D2Purple;
 	}
 
 	public abstract Color getUserNameColor(int flags);
