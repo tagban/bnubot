@@ -1729,7 +1729,7 @@ public class CommandEventHandler extends EventHandler {
 	}
 
 	@Override
-	public void recieveError(Connection source, String text) {
+	public void recieveServerError(Connection source, String text) {
 		recieveInfoError(source, text);
 	}
 
@@ -1748,7 +1748,7 @@ public class CommandEventHandler extends EventHandler {
 	}
 
 	@Override
-	public void recieveInfo(Connection source, String text) {
+	public void recieveServerInfo(Connection source, String text) {
 		if(sweepBanInProgress.get(source) == Boolean.TRUE) {
 			boolean turnItOff = true;
 
