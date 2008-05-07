@@ -12,8 +12,8 @@ import java.net.SocketException;
 
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetOutputStream;
-import net.bnubot.util.HexDump;
 import net.bnubot.util.Out;
+import net.bnubot.util.crypto.HexDump;
 
 public class BNCSPacket extends BNetOutputStream {
 	BNCSPacketId packetId;

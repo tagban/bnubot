@@ -3,10 +3,10 @@
  * $Id$
  */
 
-package net.bnubot.junit.util;
+package net.bnubot.junit.util.crypto;
 
 import junit.framework.TestCase;
-import net.bnubot.util.Base64;
+import net.bnubot.util.crypto.Base64;
 
 /**
  * @author scotta

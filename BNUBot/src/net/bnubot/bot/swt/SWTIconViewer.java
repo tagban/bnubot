@@ -8,7 +8,7 @@ package net.bnubot.bot.swt;
 import net.bnubot.bot.gui.icons.BNetIcon;
 import net.bnubot.bot.gui.icons.IconsDotBniReader;
 import net.bnubot.settings.ConnectionSettings;
-import net.bnubot.util.HexDump;
+import net.bnubot.util.crypto.HexDump;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;

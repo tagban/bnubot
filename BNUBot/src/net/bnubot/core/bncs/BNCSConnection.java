@@ -41,12 +41,13 @@ import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetInputStream;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.CookieUtility;
-import net.bnubot.util.HexDump;
 import net.bnubot.util.MirrorSelector;
 import net.bnubot.util.Out;
 import net.bnubot.util.StatString;
 import net.bnubot.util.TimeFormatter;
 import net.bnubot.util.UserProfile;
+import net.bnubot.util.crypto.GenericCrypto;
+import net.bnubot.util.crypto.HexDump;
 import net.bnubot.util.task.Task;
 
 import org.jbls.Hashing.BrokenSHA1;
@@ -1214,7 +1215,7 @@ public class BNCSConnection extends Connection {
 							statstr = null;
 						break;
 					default:
-						text = is.readNTString();
+						text = GenericCrypto.decode(is.readNTBytes());
 						break;
 					}
 
@@ -1908,6 +1909,7 @@ public class BNCSConnection extends Connection {
 		try {
 			BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_CHATCOMMAND);
 			p.writeNTString(text);
+			//p.writeNTString(text);
 			p.SendPacket(bncsOutputStream);
 		} catch (IOException e) {
 			Out.exception(e);

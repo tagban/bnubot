@@ -65,25 +65,7 @@ public class BNetInputStream extends DataInputStream {
 	}
 
 	public String readNTString() throws IOException {
-		byte[] data = readNTBytes();
-
-		// MC encryption
-		if(data.length > 1 && data[0] == (byte)0xB8) {
-			for(int i = 1; i < data.length; i++) {
-				//asdf[i] -= asdf[0] + i;
-				int b = data[i] & 0xFF;
-				if((b >= '0' + 0xC2) && (b <= '9' + 0xC2))
-					data[i] = (byte)(b - 0xC2);
-				if((b >= 'a' + 0x77) && (b <= 'z' + 0x77))
-					data[i] = (byte)(b - 0x77);
-				if((b >= 'A' + 0x7D) && (b <= 'Z' + 0x7D))
-					data[i] = (byte)(b - 0x7D);
-			}
-			return "{MC} " + new String(data, 1, data.length-1);
-		}
-		System.out.println(HexDump.hexDump(data));
-
-		return new String(data);
+		return new String(readNTBytes());
 	}
 
 	public String readNTStringUTF8() throws IOException {

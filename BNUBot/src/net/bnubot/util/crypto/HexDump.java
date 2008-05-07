@@ -3,7 +3,7 @@
  * $Id$
  */
 
-package net.bnubot.util;
+package net.bnubot.util.crypto;
 
 import java.security.InvalidParameterException;
 

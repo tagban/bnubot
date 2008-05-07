@@ -21,8 +21,8 @@ import net.bnubot.core.EventHandler;
 import net.bnubot.core.Profile;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.util.BNetUser;
-import net.bnubot.util.HexDump;
 import net.bnubot.util.Out;
+import net.bnubot.util.crypto.HexDump;
 
 public class TelnetEventHandler extends EventHandler implements Runnable {
 	private static boolean initialized = false;

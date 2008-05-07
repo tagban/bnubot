@@ -22,9 +22,9 @@ import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetUser;
-import net.bnubot.util.HexDump;
 import net.bnubot.util.Out;
 import net.bnubot.util.StatString;
+import net.bnubot.util.crypto.HexDump;
 
 public class HTMLOutputEventHandler extends EventHandler {
 	// TODO Allow the user to customize TimeZone

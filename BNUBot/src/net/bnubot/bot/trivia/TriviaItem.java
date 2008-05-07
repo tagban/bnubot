@@ -8,7 +8,7 @@ package net.bnubot.bot.trivia;
 import java.util.LinkedList;
 import java.util.List;
 
-import net.bnubot.util.HexDump;
+import net.bnubot.util.crypto.HexDump;
 
 public class TriviaItem {
 	private String category;
