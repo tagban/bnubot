@@ -27,6 +27,8 @@ public class GenericCrypto {
 	public static String decode(byte[] data) {
 		if(data.length > 1 && data[0] == (byte)0xB8)
 			return "{MC} " + MCEncryption.decode(data);
+		if(data.length > 1 && data[0] == (byte)0xA3)
+			return "{HEX} " + new String(HexDump.decode(data, 1, data.length));
 		return new String(data);
 	}
 
@@ -34,8 +36,10 @@ public class GenericCrypto {
 		byte[] data = input.getBytes();
 		if((crypto & CRYPTO_MC) != 0)
 			data = concat((byte)0xB8, MCEncryption.encode(data));
+//		if((crypto & CRYPTO_BASE64) != 0)
+//			data = concat((byte)0x00, Base64.encode(data));
 		if((crypto & CRYPTO_HEX) != 0)
-			data = concat((byte)0x00, HexDump.encode(data).getBytes());
+			data = concat((byte)0xA3, HexDump.encode(data).getBytes());
 		return data;
 	}
 }

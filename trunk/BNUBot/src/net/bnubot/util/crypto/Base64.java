@@ -32,14 +32,14 @@ package net.bnubot.util.crypto;
 public class Base64 {
 
 	// Mapping table from 6-bit nibbles to Base64 characters.
-	private static char[] map1 = new char[64];
+	private static byte[] map1 = new byte[64];
 	static {
 		int i = 0;
-		for (char c = 'A'; c <= 'Z'; c++)
+		for (byte c = 'A'; c <= 'Z'; c++)
 			map1[i++] = c;
-		for (char c = 'a'; c <= 'z'; c++)
+		for (byte c = 'a'; c <= 'z'; c++)
 			map1[i++] = c;
-		for (char c = '0'; c <= '9'; c++)
+		for (byte c = '0'; c <= '9'; c++)
 			map1[i++] = c;
 		map1[i++] = '+';
 		map1[i++] = '/';
@@ -72,7 +72,7 @@ public class Base64 {
 	 * @param in an array containing the data bytes to be encoded.
 	 * @return A character array with the Base64 encoded data.
 	 */
-	public static char[] encode(byte[] in) {
+	public static byte[] encode(byte[] in) {
 		return encode(in, in.length);
 	}
 
@@ -84,10 +84,10 @@ public class Base64 {
 	 * @param iLen number of bytes to process in <code>in</code>.
 	 * @return A character array with the Base64 encoded data.
 	 */
-	public static char[] encode(byte[] in, int iLen) {
+	public static byte[] encode(byte[] in, int iLen) {
 		int oDataLen = (iLen * 4 + 2) / 3; // output length without padding
 		int oLen = ((iLen + 2) / 3) * 4; // output length including padding
-		char[] out = new char[oLen];
+		byte[] out = new byte[oLen];
 		int ip = 0;
 		int op = 0;
 		while (ip < iLen) {
@@ -100,9 +100,9 @@ public class Base64 {
 			int o3 = i2 & 0x3F;
 			out[op++] = map1[o0];
 			out[op++] = map1[o1];
-			out[op] = op < oDataLen ? map1[o2] : '=';
+			out[op] = (byte)(op < oDataLen ? map1[o2] : '=');
 			op++;
-			out[op] = op < oDataLen ? map1[o3] : '=';
+			out[op] = (byte)(op < oDataLen ? map1[o3] : '=');
 			op++;
 		}
 		return out;

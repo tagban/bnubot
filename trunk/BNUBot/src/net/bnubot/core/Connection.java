@@ -649,6 +649,13 @@ public abstract class Connection extends Thread {
 							return;
 						} catch(Exception e) {}
 					break;
+				case 'h':
+					if(command[0].equals("hex")) {
+						enabledCryptos ^= GenericCrypto.CRYPTO_HEX;
+						dispatchRecieveInfo("HEX crypto " + (((enabledCryptos & GenericCrypto.CRYPTO_HEX) != 0) ? "enabled" : "disabled"));
+						return;
+					}
+					break;
 				case 'j':
 					try {
 						if(command[0].equals("j")) {
@@ -671,7 +678,7 @@ public abstract class Connection extends Thread {
 				case 'm':
 					if(command[0].equals("mc")) {
 						enabledCryptos ^= GenericCrypto.CRYPTO_MC;
-						dispatchRecieveInfo("MC encryption " + (((enabledCryptos & GenericCrypto.CRYPTO_MC) != 0) ? "enabled" : "disabled"));
+						dispatchRecieveInfo("MC crypto " + (((enabledCryptos & GenericCrypto.CRYPTO_MC) != 0) ? "enabled" : "disabled"));
 						return;
 					}
 					break;
@@ -942,6 +949,8 @@ public abstract class Connection extends Thread {
 	protected void dispatchRecieveChat(BNetUser user, String text) {
 		if(!isPrimaryConnection())
 			return;
+
+		text = GenericCrypto.decode(text.getBytes());
 
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
