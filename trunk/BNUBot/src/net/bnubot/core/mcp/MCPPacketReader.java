@@ -13,8 +13,8 @@ import java.io.InputStream;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetInputStream;
 import net.bnubot.util.BNetOutputStream;
-import net.bnubot.util.HexDump;
 import net.bnubot.util.Out;
+import net.bnubot.util.crypto.HexDump;
 
 public class MCPPacketReader {
 	MCPPacketID packetId;

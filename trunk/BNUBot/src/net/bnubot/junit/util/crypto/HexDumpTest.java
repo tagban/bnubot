@@ -3,11 +3,11 @@
  * $Id$
  */
 
-package net.bnubot.junit.util;
+package net.bnubot.junit.util.crypto;
 
 import junit.framework.TestCase;
 import net.bnubot.core.bncs.ProductIDs;
-import net.bnubot.util.HexDump;
+import net.bnubot.util.crypto.HexDump;
 
 public class HexDumpTest extends TestCase {
 

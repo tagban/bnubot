@@ -17,10 +17,10 @@ import net.bnubot.core.bncs.ProductIDs;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.util.BNetInputStream;
 import net.bnubot.util.BNetUser;
-import net.bnubot.util.HexDump;
 import net.bnubot.util.MirrorSelector;
 import net.bnubot.util.Out;
 import net.bnubot.util.StatString;
+import net.bnubot.util.crypto.HexDump;
 import net.bnubot.util.task.Task;
 
 public class DTConnection extends Connection {

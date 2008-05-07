@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
@@ -33,6 +32,7 @@ import net.bnubot.util.Out;
 import net.bnubot.util.TimeFormatter;
 import net.bnubot.util.UserProfile;
 import net.bnubot.util.Wildcard;
+import net.bnubot.util.crypto.GenericCrypto;
 import net.bnubot.util.music.MusicController;
 import net.bnubot.util.music.MusicControllerFactory;
 import net.bnubot.util.task.Task;
@@ -76,6 +76,7 @@ public abstract class Connection extends Thread {
 	protected long lastNullPacket;
 
 	protected AcceptOrDecline lastAcceptDecline = null;
+	protected int enabledCryptos = 0;
 
 	protected Task createTask(String title, String currentStep) {
 		Task t = TaskManager.createTask(profile.getName() + ": " + title, currentStep);
@@ -667,6 +668,13 @@ public abstract class Connection extends Thread {
 						break ALLOWCOMMANDS;
 					}
 					break;
+				case 'm':
+					if(command[0].equals("mc")) {
+						enabledCryptos ^= GenericCrypto.CRYPTO_MC;
+						dispatchRecieveInfo("MC encryption " + (((enabledCryptos & GenericCrypto.CRYPTO_MC) != 0) ? "enabled" : "disabled"));
+						return;
+					}
+					break;
 				case 'p':
 					if(command[0].equals("profile")) {
 						try {
@@ -702,13 +710,15 @@ public abstract class Connection extends Thread {
 			}
 		}
 
-		try {
-			text = new String(text.getBytes(), "UTF-8");
-		} catch (UnsupportedEncodingException e) {}
+//		try {
+//			text = new String(text.getBytes(), "UTF-8");
+//		} catch (UnsupportedEncodingException e) {}
 		text = cleanText(text, enableKeywords);
 
 		if(text.length() == 0)
 			return;
+
+		text = new String(GenericCrypto.encode(text, enabledCryptos));
 
 		//Split up the text in to appropriate sized pieces
 		int pieceSize = MAX_CHAT_LENGTH - (prefix == null ? 0 : prefix.length());

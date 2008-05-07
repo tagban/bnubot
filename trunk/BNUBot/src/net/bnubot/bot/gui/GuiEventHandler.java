@@ -68,8 +68,8 @@ import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.settings.Settings;
 import net.bnubot.util.BNetUser;
-import net.bnubot.util.HexDump;
 import net.bnubot.util.Out;
+import net.bnubot.util.crypto.HexDump;
 
 public class GuiEventHandler extends EventHandler {
 	private Connection firstConnection = null;

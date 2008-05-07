@@ -22,8 +22,8 @@ import net.bnubot.db.Account;
 import net.bnubot.db.conf.DatabaseContext;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetUser;
-import net.bnubot.util.HexDump;
 import net.bnubot.util.Out;
+import net.bnubot.util.crypto.HexDump;
 
 import org.apache.cayenne.ObjectContext;
 

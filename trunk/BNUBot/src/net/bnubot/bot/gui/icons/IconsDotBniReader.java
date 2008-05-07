@@ -26,8 +26,8 @@ import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetInputStream;
 import net.bnubot.util.BNetOutputStream;
-import net.bnubot.util.HexDump;
 import net.bnubot.util.Out;
+import net.bnubot.util.crypto.HexDump;
 
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;

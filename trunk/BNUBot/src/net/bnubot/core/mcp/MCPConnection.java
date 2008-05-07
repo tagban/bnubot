@@ -14,10 +14,10 @@ import java.net.Socket;
 import net.bnubot.core.RealmConnection;
 import net.bnubot.util.BNetInputStream;
 import net.bnubot.util.BNetOutputStream;
-import net.bnubot.util.HexDump;
 import net.bnubot.util.Out;
 import net.bnubot.util.StatString;
 import net.bnubot.util.TimeFormatter;
+import net.bnubot.util.crypto.HexDump;
 
 public class MCPConnection extends RealmConnection {
 	protected int[] MCPChunk1;

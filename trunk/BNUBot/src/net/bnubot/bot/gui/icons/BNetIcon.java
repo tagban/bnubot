@@ -7,7 +7,7 @@ package net.bnubot.bot.gui.icons;
 
 import javax.swing.Icon;
 
-import net.bnubot.util.HexDump;
+import net.bnubot.util.crypto.HexDump;
 
 import org.eclipse.swt.graphics.Image;
 

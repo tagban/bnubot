@@ -9,6 +9,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import net.bnubot.util.crypto.HexDump;
+
 public class BNetOutputStream extends DataOutputStream {
 
 	public BNetOutputStream(OutputStream out) {

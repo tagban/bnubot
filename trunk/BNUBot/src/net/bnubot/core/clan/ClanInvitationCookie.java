@@ -7,7 +7,7 @@ package net.bnubot.core.clan;
 
 import net.bnubot.core.AcceptOrDecline;
 import net.bnubot.core.bncs.BNCSConnection;
-import net.bnubot.util.HexDump;
+import net.bnubot.util.crypto.HexDump;
 
 /**
  * @author scotta
