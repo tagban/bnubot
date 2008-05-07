@@ -46,7 +46,6 @@ import net.bnubot.util.Out;
 import net.bnubot.util.StatString;
 import net.bnubot.util.TimeFormatter;
 import net.bnubot.util.UserProfile;
-import net.bnubot.util.crypto.GenericCrypto;
 import net.bnubot.util.crypto.HexDump;
 import net.bnubot.util.task.Task;
 
@@ -1215,7 +1214,7 @@ public class BNCSConnection extends Connection {
 							statstr = null;
 						break;
 					default:
-						text = GenericCrypto.decode(is.readNTBytes());
+						text = is.readNTString();
 						break;
 					}
 

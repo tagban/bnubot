@@ -95,7 +95,7 @@ public class HexDump {
 		return output;
 	}
 
-	private static byte decode(char c1, char c2) {
+	private static byte decode(byte c1, byte c2) {
 		byte output;
 		if((c1 >= '0') && (c1 <= '9'))
 			output = (byte)(c1 - '0');
@@ -118,11 +118,15 @@ public class HexDump {
 	}
 
 	public static byte[] decode(String data) {
-		int len = data.length() >> 1;
+		return decode(data.getBytes(), 0, data.length());
+	}
+
+	public static byte[] decode(byte[] data, int o, int l) {
+		int len = l >> 1;
 		byte[] output = new byte[len];
-		int pos = 0;
+		int pos = o;
 		for(int offset = 0; offset < len; offset++)
-			output[offset] = decode(data.charAt(pos++), data.charAt(pos++));
+			output[offset] = decode(data[pos++], data[pos++]);
 		return output;
 	}
 
