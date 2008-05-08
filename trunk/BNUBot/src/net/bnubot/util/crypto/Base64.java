@@ -116,7 +116,7 @@ public class Base64 {
 	 * @throws IllegalArgumentException if the input is not valid Base64 encoded data.
 	 */
 	public static String decode(String s) {
-		return new String(decode(s.toCharArray()));
+		return new String(decode(s.getBytes()));
 	}
 
 	/**
@@ -127,7 +127,7 @@ public class Base64 {
 	 * @return An array containing the decoded data bytes.
 	 * @throws IllegalArgumentException if the input is not valid Base64 encoded data.
 	 */
-	public static byte[] decode(char[] in) {
+	public static byte[] decode(byte[] in) {
 		int iLen = in.length;
 		if (iLen % 4 != 0)
 			throw new IllegalArgumentException("Length of Base64 encoded input string is not a multiple of 4.");

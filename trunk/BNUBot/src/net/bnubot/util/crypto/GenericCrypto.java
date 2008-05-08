@@ -5,10 +5,6 @@
 
 package net.bnubot.util.crypto;
 
-/**
- * @author sanderson
- *
- */
 public class GenericCrypto {
 	public static final int CRYPTO_HEX = 0x01;
 	public static final int CRYPTO_BASE64 = 0x02;
@@ -34,25 +30,28 @@ public class GenericCrypto {
 
 	public static String decode(byte[] data) {
 		System.out.println(HexDump.hexDump(data));
-		if(data.length > 1 && data[0] == (byte)0xB7)
-			return "{REVERSE} " + new String(ReverseCrypto.decode(removeFirst(data)));
-		if(data.length > 1 && data[0] == (byte)0xB8)
-			return "{MC} " + new String(MCEncryption.decode(removeFirst(data)));
-		if(data.length > 1 && data[0] == (byte)0xA3)
-			return "{HEX} " + new String(HexDump.decode(data, 1, data.length));
+		if(data.length <= 1)
+			return new String(data);
+		switch(data[0]) {
+		case (byte)0xB7: return "{REVERSE} " + decode(ReverseCrypto.decode(removeFirst(data)));
+		case (byte)0xB8: return "{MC} " + decode(MCEncryption.decode(removeFirst(data)));
+		case (byte)0xA3: return "{HEX} " + decode(HexDump.decode(data, 1, data.length));
+		case (byte)0xE6: return "{B64} " + decode(Base64.decode(removeFirst(data)));
+		}
 		return new String(data);
 	}
 
 	public static byte[] encode(String input, int crypto) {
 		byte[] data = input.getBytes();
-		if((crypto & CRYPTO_MC) != 0)
-			data = concat((byte)0xB8, MCEncryption.encode(data));
-//		if((crypto & CRYPTO_BASE64) != 0)
-//			data = concat((byte)0x00, Base64.encode(data));
-		if((crypto & CRYPTO_HEX) != 0)
-			data = concat((byte)0xA3, HexDump.encode(data).getBytes());
+		// DM is xA4
 		if((crypto & CRYPTO_REVERSE) != 0)
 			data = concat((byte)0xB7, ReverseCrypto.encode(data));
+		if((crypto & CRYPTO_MC) != 0)
+			data = concat((byte)0xB8, MCEncryption.encode(data));
+		if((crypto & CRYPTO_HEX) != 0)
+			data = concat((byte)0xA3, HexDump.encode(data).getBytes());
+		if((crypto & CRYPTO_BASE64) != 0)
+			data = concat((byte)0xE6, Base64.encode(data));
 		return data;
 	}
 }
