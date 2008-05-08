@@ -5,7 +5,7 @@
 
 package net.bnubot.bot.gui.components;
 
-import java.awt.FlowLayout;
+import java.awt.BorderLayout;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
@@ -81,11 +81,11 @@ public class ClanList extends JPanel {
 	}
 
 	public ClanList() {
-		super(new FlowLayout(FlowLayout.LEFT));
+		super(new BorderLayout());
 		this.members = new Hashtable<String, ClanMemberInfo>();
 		setBackground(cs.getBackgroundColor());
 		b = new Box(BoxLayout.Y_AXIS);
-		add(b);
+		add(b, BorderLayout.NORTH);
 	}
 
 	public void clear() {
@@ -100,39 +100,14 @@ public class ClanList extends JPanel {
 	}
 
 	private void setIcon(ClanMemberInfo cmi) {
-		BNetIcon iconsWAR3[] = IconsDotBniReader.getIconsWAR3();
-		BNetIcon iconsW3XP[] = IconsDotBniReader.getIconsW3XP();
-
-		// 0 - Init - WAR3-W3D3 (2)
-		// 1 - Peon - WAR3-W3O1 (10)
-		// 2 - Grunt - WAR3-W302 (11)
-		// 3 - Shaman - W3XP-W303 (20)
-		// 4 - Chieftain - WAR3-W3R3 (17)
-
-		Icon icon = null;
 		try {
-			switch(cmi.entry.getRank()) {
-			case 0: icon = iconsWAR3[2].getIcon(); break;
-			case 1: icon = iconsWAR3[10].getIcon(); break;
-			case 2: icon = iconsWAR3[11].getIcon(); break;
-			case 3: icon = iconsW3XP[20].getIcon(); break;
-			case 4: icon = iconsWAR3[17].getIcon(); break;
-			}
-		} catch(NullPointerException e) {
-			BNetIcon icons[] = IconsDotBniReader.getIcons();
-			if(icons != null) {
-				switch(cmi.entry.getRank()) {
-				case 0: icon = icons[11].getIcon(); break;
-				case 1: icon = icons[9].getIcon(); break;
-				case 2: icon = icons[15].getIcon(); break;
-				case 3: icon = icons[2].getIcon(); break;
-				case 4: icon = icons[0].getIcon(); break;
-				}
-			}
+			BNetIcon icons[] = IconsDotBniReader.getIconsClan();
+			Icon icon = icons[cmi.entry.getRank()].getIcon();
+			if(icon != null)
+				cmi.label.setIcon(icon);
+		} catch(Exception e) {
+			Out.exception(e);
 		}
-
-		if(icon != null)
-			cmi.label.setIcon(icon);
 	}
 
 	public void showMembers(ClanMember[] members) {
