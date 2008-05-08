@@ -17,8 +17,13 @@ public class Rank extends _Rank {
 			"#result('rank.ID' 'int' 'id') " +
 			"FROM rank " +
 			"ORDER BY id DESC");
+	private static SQLTemplate minRank = new SQLTemplate(Rank.class, "SELECT " +
+			"#result('rank.ID' 'int' 'id') " +
+			"FROM rank " +
+			"ORDER BY id ASC");
 	static {
 		maxRank.setFetchLimit(1);
+		minRank.setFetchLimit(1);
 	}
 
 	/**
@@ -28,6 +33,10 @@ public class Rank extends _Rank {
 	@SuppressWarnings("unchecked")
 	public static Rank getMax() {
 		return (Rank)DatabaseContext.getContext().performQuery(maxRank).get(0);
+	}
+
+	public static Rank getMin() {
+		return (Rank)DatabaseContext.getContext().performQuery(minRank).get(0);
 	}
 
 	/**
