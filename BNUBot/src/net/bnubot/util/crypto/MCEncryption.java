@@ -1,15 +1,10 @@
 /**
  * This file is distributed under the GPL
- * $Id$
+ * $Id: MCEncryption.java 1438 2008-05-08 05:36:02Z scotta $
  */
 
 package net.bnubot.util.crypto;
 
-
-/**
- * @author sanderson
- *
- */
 public class MCEncryption {
 	public static byte[] decode(byte[] data) {
 		for(int i = 0; i < data.length; i++) {

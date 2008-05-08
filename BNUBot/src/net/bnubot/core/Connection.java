@@ -633,6 +633,13 @@ public abstract class Connection extends Thread {
 							return;
 						} catch(Exception e) {}
 					break;
+				case 'b':
+					if(command[0].equals("b64") || command[0].equals("base64")) {
+						enabledCryptos ^= GenericCrypto.CRYPTO_BASE64;
+						dispatchRecieveInfo("Base64 crypto " + (((enabledCryptos & GenericCrypto.CRYPTO_BASE64) != 0) ? "enabled" : "disabled"));
+						return;
+					}
+					break;
 				case 'c':
 					if(command[0].equals("cmd")) {
 						if(command.length == 2) {
