@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.LinkedList;
 import java.util.List;
 
 import net.bnubot.core.Connection;
@@ -1166,13 +1167,9 @@ public class CommandEventHandler extends EventHandler {
 					if((params == null) || (params.length != 1))
 						throw new InvalidUseException();
 
-					BNetUser bnSubject = null;
 					Account rsSubjectAccount = Account.get(params[0]);
-					String result = null;
-					if(rsSubjectAccount != null) {
-						result = rsSubjectAccount.getName();
-					} else {
-						bnSubject = source.getCreateBNetUser(params[0], user);
+					if(rsSubjectAccount == null) {
+						BNetUser bnSubject = source.getCreateBNetUser(params[0], user);
 
 						BNLogin rsSubject = BNLogin.get(bnSubject);
 						if(rsSubject == null) {
@@ -1185,30 +1182,29 @@ public class CommandEventHandler extends EventHandler {
 							user.sendChat("User [" + params[0] + "] has no account", whisperBack);
 							return;
 						}
-
-						result = bnSubject.toString();
 					}
+
+					List<String> clauses = new LinkedList<String>();
 
 					// Access
 					Rank rsSubjectRank = rsSubjectAccount.getRank();
 					if(rsSubjectRank != null) {
-						if(bnSubject == null) {
-							String prefix = rsSubjectRank.getShortPrefix();
-							if(prefix == null)
-								prefix = rsSubjectRank.getPrefix();
+						String prefix = rsSubjectRank.getShortPrefix();
+						if(prefix == null)
+							prefix = rsSubjectRank.getPrefix();
 
-							if(prefix == null)
-								prefix = "";
-							else
-								prefix += " ";
+						if(prefix == null)
+							prefix = "";
+						else
+							prefix += " ";
 
-							result = prefix + rsSubjectAccount.getName();
-						}
-
+						String result = prefix + rsSubjectAccount.getName();
 						result += " " + rsSubjectRank.getVerbstr();
 						result += " (" + rsSubjectAccount.getAccess() + ")";
+
+						clauses.add(result);
 					} else {
-						result += " has access " + rsSubjectAccount.getAccess();
+						clauses.add(rsSubjectAccount.getName() + " has access " + rsSubjectAccount.getAccess());
 					}
 
 					// Birthday
@@ -1217,7 +1213,7 @@ public class CommandEventHandler extends EventHandler {
 						double age = System.currentTimeMillis() - subjectBirthday.getTime();
 						age /= 1000 * 60 * 60 * 24 * 365.24;
 						age = Math.floor(age * 100) / 100;
-						result += ", is " + Double.toString(age) + " years old";
+						clauses.add("is " + Double.toString(age) + " years old");
 					}
 
 					// Last seen
@@ -1233,31 +1229,31 @@ public class CommandEventHandler extends EventHandler {
 					}
 
 					if(lastSeen != null) {
-						result += ", was last seen [ ";
-						result += TimeFormatter.formatTime(System.currentTimeMillis() - lastSeen.getTime());
-						result += " ] ago";
+						clauses.add("was last seen [ " + TimeFormatter.formatTime(System.currentTimeMillis() - lastSeen.getTime()) + " ] ago");
 					}
 
 					// Recruiter
 					Account rsCreatorAccount = rsSubjectAccount.getRecruiter();
 					if(rsCreatorAccount != null) {
-						result += ", was recruited by ";
-						result += rsCreatorAccount.getName();
+						clauses.add("was recruited by " + rsCreatorAccount.getName());
 					}
 
-					boolean andHasAliases = false;
+					String aliases = null;
 					for(BNLogin alias : rsSubjectAccount.getBnLogins()) {
-						if((bnSubject != null) && bnSubject.equals(alias.getLogin()))
-							continue;
-
-						result += ", ";
-						if(!andHasAliases) {
-							andHasAliases = true;
-							result += "and has aliases ";
-						}
-
-						result += alias.getLogin();
+						if(aliases == null)
+							aliases = "has aliases ";
+						else
+							aliases += ", ";
+						aliases += alias.getLogin();
 					}
+					if(aliases != null)
+						clauses.add(aliases);
+
+					String result = clauses.remove(0);
+					while(clauses.size() > 1)
+						result += ", " + clauses.remove(0);
+					while(clauses.size() > 0)
+						result += ", and " + clauses.remove(0);
 
 					user.sendChat(result, whisperBack);
 				} catch(InvalidUseException e) {

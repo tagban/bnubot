@@ -272,7 +272,7 @@ public class BNetUser {
 		switch(type) {
 		case 0: return getFullLogonName();		// BNLogin@Gateway
 		case 1: return getShortLogonName();		// BNLogin
-		case 2: return getShortPrettyName();	// Prefix Account
+		case 2: return getShortPrettyName();	// ShortPrefix Account
 		case 3: return getPrettyName();			// Prefix Account (BNLogin)
 		case 4: return getAccountOrLogin();		// Account
 		case 5: return getAccountAndLogin();	// Account (BNLogin)

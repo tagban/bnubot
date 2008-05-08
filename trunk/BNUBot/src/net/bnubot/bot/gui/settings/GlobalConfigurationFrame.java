@@ -219,7 +219,7 @@ public class GlobalConfigurationFrame extends JDialog {
 				Object[] values = new String[] {
 					"BNLogin@Gateway",
 					"BNLogin",
-					"Prefix Account",
+					"ShortPrefix Account",
 					"Prefix Account (BNLogin)",
 					"Account",
 					"Account (BNLogin)" };
