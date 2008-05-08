@@ -13,6 +13,7 @@
 * Fixed a bug where the ChatQueue wouldn't send ops commands
 * Added a telnet plugin compatible with the Battle.net chat protocol
 * Added a 'whisperback' command
+* Added MC, Hex, and Base64 encryption - type /mc, /hex, or /b64 to toggle
 
 2.0.6 (r1400) 2008-04-21:
 * Added auto-rejoin afer being kicked (Issue 52)
