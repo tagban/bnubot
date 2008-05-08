@@ -5,7 +5,7 @@
 
 package net.bnubot.bot.gui.components;
 
-import java.awt.FlowLayout;
+import java.awt.BorderLayout;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
@@ -48,11 +48,11 @@ public class FriendList extends JPanel {
 	}
 
 	public FriendList() {
-		super(new FlowLayout(FlowLayout.LEFT));
+		super(new BorderLayout());
 		this.friends = new Hashtable<String, FriendInfo>();
 		setBackground(cs.getBackgroundColor());
 		b = new Box(BoxLayout.Y_AXIS);
-		add(b);
+		add(b, BorderLayout.NORTH);
 	}
 
 	public void clear() {

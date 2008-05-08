@@ -42,6 +42,7 @@ public class IconsDotBniReader {
 	private static BNetIcon[] icons_W3XP = null;
 	private static BNetIcon[] legacy_icons = null;
 	private static BNetIcon[] icons_lag = null;
+	private static BNetIcon[] icons_clan = null;
 
 	public static final int LEGACY_STARWIN = 0;
 	public static final int LEGACY_LADDER = 11;
@@ -51,7 +52,7 @@ public class IconsDotBniReader {
 
 	private static JFrame util = null;
 
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 		BNetIcon[] icons = new BNetIcon[8];
 		for(int i = 0; i < 8; i++)
 			icons[i] = new BNetIcon();
@@ -61,8 +62,20 @@ public class IconsDotBniReader {
 		}
 		icons[7].icon = new ImageIcon("lagplug.jpeg");
 		icons[7].products = new int[] {HexDump.PrettyToDWord("PLUG")};
-		IconsDotBniReader.writeIconsDotBni(new File("icons_lag.bni"), icons);
-	}
+		writeIconsDotBni(new File("icons_lag.bni"), icons);
+
+		BNetIcon[] icons = new BNetIcon[5];
+		for(int i = 0; i < 5; i++) {
+			icons[i] = new BNetIcon();
+			icons[i].icon = new ImageIcon("icon" + i + ".png");
+			icons[i].products = new int[] {HexDump.PrettyToDWord("ICO" + i)};
+		}
+		writeIconsDotBni(new File("downloads/icons_clan.bni"), icons);
+
+		initialize(new ConnectionSettings(1));
+		showWindow();
+		util.show();
+	}*/
 
 	public static void showWindow() {
 		if(!initialized)
@@ -71,7 +84,7 @@ public class IconsDotBniReader {
 			initializedWindow = true;
 			util.setLayout(new FlowLayout(FlowLayout.CENTER));
 
-			BNetIcon[][] iconss = {icons, icons_STAR, icons_WAR3, icons_W3XP, legacy_icons, icons_lag};
+			BNetIcon[][] iconss = {icons, icons_STAR, icons_WAR3, icons_W3XP, legacy_icons, icons_lag, icons_clan};
 			for(BNetIcon[] icons : iconss) {
 				if(icons == null)
 					continue;
@@ -133,6 +146,10 @@ public class IconsDotBniReader {
 		f = new File("downloads/icons_lag.bni");
 		if(f.exists())
 			icons_lag = readIconsDotBni(f);
+
+		f = new File("downloads/icons_clan.bni");
+		if(f.exists())
+			icons_clan = readIconsDotBni(f);
 	}
 
 	public static BNetIcon[] getIcons() {
@@ -157,6 +174,10 @@ public class IconsDotBniReader {
 
 	public static BNetIcon[] getIconsLag() {
 		return icons_lag;
+	}
+
+	public static BNetIcon[] getIconsClan() {
+		return icons_clan;
 	}
 
 	private static int getRealPixelPosition(int i, int height, int width) {

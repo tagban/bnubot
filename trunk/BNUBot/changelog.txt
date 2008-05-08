@@ -14,6 +14,7 @@
 * Added a telnet plugin compatible with the Battle.net chat protocol
 * Added a 'whisperback' command
 * Added MC, Hex, and Base64 encryption - type /mc, /hex, or /b64 to toggle
+* Added real clan icons
 
 2.0.6 (r1400) 2008-04-21:
 * Added auto-rejoin afer being kicked (Issue 52)
@@ -40,7 +41,7 @@
 * Added deletion rules to the Cayenne mapping file
 * Added a default exception handler
 * Confirm row deletion in DatabaseEditor
-* Version check will complete before connection to battle.net
+* Version check will complete before connecting to battle.net
 
 2.0.5 (r1300) 2008-04-09:
 * Added a Cayenne persistence layer to address database problems
