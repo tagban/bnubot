@@ -652,7 +652,7 @@ public abstract class Connection extends Thread {
 				case 'h':
 					if(command[0].equals("hex")) {
 						enabledCryptos ^= GenericCrypto.CRYPTO_HEX;
-						dispatchRecieveInfo("HEX crypto " + (((enabledCryptos & GenericCrypto.CRYPTO_HEX) != 0) ? "enabled" : "disabled"));
+						dispatchRecieveInfo("Hex crypto " + (((enabledCryptos & GenericCrypto.CRYPTO_HEX) != 0) ? "enabled" : "disabled"));
 						return;
 					}
 					break;
@@ -698,6 +698,13 @@ public abstract class Connection extends Thread {
 				case 'q':
 					if(command[0].equals("quote")) {
 						sendChat(prefix, command[1], false, false);
+						return;
+					}
+					break;
+				case 'r':
+					if(command[0].equals("reverse")) {
+						enabledCryptos ^= GenericCrypto.CRYPTO_REVERSE;
+						dispatchRecieveInfo("Reverse crypto " + (((enabledCryptos & GenericCrypto.CRYPTO_REVERSE) != 0) ? "enabled" : "disabled"));
 						return;
 					}
 					break;

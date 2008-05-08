@@ -14,6 +14,7 @@ public class GenericCrypto {
 	public static final int CRYPTO_BASE64 = 0x02;
 	public static final int CRYPTO_DM = 0x04;
 	public static final int CRYPTO_MC = 0x08;
+	public static final int CRYPTO_REVERSE = 0x10;
 
 	private static byte[] concat(byte b0, byte[] b1) {
 		byte[] out = new byte[1 + b1.length];
@@ -24,9 +25,19 @@ public class GenericCrypto {
 		return out;
 	}
 
+	private static byte[] removeFirst(byte[] data) {
+		byte[] out = new byte[data.length - 1];
+		for(int i = 1; i < data.length; i++)
+			out[i-1] = data[i];
+		return out;
+	}
+
 	public static String decode(byte[] data) {
+		System.out.println(HexDump.hexDump(data));
+		if(data.length > 1 && data[0] == (byte)0xB7)
+			return "{REVERSE} " + new String(ReverseCrypto.decode(removeFirst(data)));
 		if(data.length > 1 && data[0] == (byte)0xB8)
-			return "{MC} " + MCEncryption.decode(data);
+			return "{MC} " + new String(MCEncryption.decode(removeFirst(data)));
 		if(data.length > 1 && data[0] == (byte)0xA3)
 			return "{HEX} " + new String(HexDump.decode(data, 1, data.length));
 		return new String(data);
@@ -40,6 +51,8 @@ public class GenericCrypto {
 //			data = concat((byte)0x00, Base64.encode(data));
 		if((crypto & CRYPTO_HEX) != 0)
 			data = concat((byte)0xA3, HexDump.encode(data).getBytes());
+		if((crypto & CRYPTO_REVERSE) != 0)
+			data = concat((byte)0xB7, ReverseCrypto.encode(data));
 		return data;
 	}
 }

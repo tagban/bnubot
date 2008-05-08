@@ -11,8 +11,8 @@ package net.bnubot.util.crypto;
  *
  */
 public class MCEncryption {
-	public static String decode(byte[] data) {
-		for(int i = 1; i < data.length; i++) {
+	public static byte[] decode(byte[] data) {
+		for(int i = 0; i < data.length; i++) {
 			int b = data[i] & 0xFF;
 			if((b >= '0' + 0xC2) && (b <= '9' + 0xC2))
 				data[i] = (byte)(b - 0xC2);
@@ -21,7 +21,7 @@ public class MCEncryption {
 			if((b >= 'A' + 0x7D) && (b <= 'Z' + 0x7D))
 				data[i] = (byte)(b - 0x7D);
 		}
-		return new String(data, 1, data.length - 1);
+		return data;
 	}
 
 	public static byte[] encode(byte[] data) {
