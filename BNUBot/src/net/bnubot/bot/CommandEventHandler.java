@@ -704,19 +704,14 @@ public class CommandEventHandler extends EventHandler {
 						output += " has recruited: ";
 					}
 
-					List<Account> rsRecruits = subjectAccount.getRecruits();
-					// Remove accounts below the threshold
-					for(Account recruit : rsRecruits) {
-						if(recruit.getAccess() < GlobalSettings.recruitAccess)
-							rsRecruits.remove(recruit);
+					if(subjectAccount.getRecruits().size() == 0)
+						output += "no one";
+					for(Account recruit : subjectAccount.getRecruits()) {
+						// Remove accounts below the threshold
+						if(recruit.getAccess() >= GlobalSettings.recruitAccess)
+							output += recruit.getName() + "(" + recruit.getAccess() + ") ";
 					}
 
-					if(rsRecruits.size() > 0) {
-						for(Account recruit : rsRecruits)
-							output += recruit.getName() + "(" + recruit.getAccess() + ") ";
-					} else {
-						output += "no one";
-					}
 
 					output = output.trim();
 					user.sendChat(output, whisperBack);
