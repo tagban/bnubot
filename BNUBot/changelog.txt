@@ -15,7 +15,9 @@
 * Added a 'whisperback' command
 * Added MC, Hex, and Base64 encryption - type /mc, /hex, or /b64 to toggle
 * Added real clan icons
-* Fixed a bug in the 'recruits' command
+* Fixed a bug in the 'recruits' command (Issue 77)
+* Fixed a bug in the 'whois' command
+* Added a Lockdown plugin (requires ops in a clan channel to function)
 
 2.0.6 (r1400) 2008-04-21:
 * Added auto-rejoin afer being kicked (Issue 52)
