@@ -42,11 +42,11 @@ public class LockdownEventHandler extends EventHandler {
 		}
 	}
 
-	private void floodDetected(final Connection source, BNetUser user) {
-		source.dispatchRecieveDebug("Enabling channel lockdown due to flood detection from " + user.getFullLogonName());
-		source.sendChat(null, "/c priv", false, false);
+	private void floodDetected(Connection source, BNetUser user) {
+		startLockdown(source);
 		source.sendChat("/f m Flood detected from " + user.getFullLogonName(), false);
 
+		// Shitlist the user
 		try {
 			BNLogin bnlUser = BNLogin.get(user);
 			if((bnlUser != null) && (bnlUser.getAccount() == null)) {
@@ -58,7 +58,15 @@ public class LockdownEventHandler extends EventHandler {
 		} catch(Exception e) {
 			Out.exception(e);
 		}
+	}
 
+	private void startLockdown(final Connection source) {
+		if(lockdownEnabled)
+			return;
+		lockdownEnabled = true;
+
+		source.sendChat("/c priv", false);
+		source.sendChat("/o igpub", false);
 
 		new Thread() {
 			@Override
@@ -69,9 +77,17 @@ public class LockdownEventHandler extends EventHandler {
 					yield();
 				}
 				// Timeout period is over; turn off
-				source.sendChat(null, "/c pub", false, false);
+				endLockdown(source);
 			}
 		}.start();
+	}
+
+	private void endLockdown(final Connection source) {
+		if(!lockdownEnabled)
+			return;
+		source.sendChat("/c pub", false);
+		source.sendChat("/o unigpub", false);
+		lockdownEnabled = false;
 	}
 
 	@Override
@@ -93,6 +109,7 @@ public class LockdownEventHandler extends EventHandler {
 	@Override
 	public void bnetConnected(Connection source) {
 		source.sendChat("/c pub", false);
+		source.sendChat("/o unigpub", false);
 	}
 
 	@Override
