@@ -51,6 +51,7 @@ public class GlobalSettings {
 	public static boolean enableMirrorSelector;
 	public static boolean autoConnect;
 	public static boolean autoRejoin;
+	public static boolean displaySlashCommands;
 	public static boolean displayBattleNetMOTD;
 	public static boolean displayBattleNetChannels;
 	public static boolean displayJoinParts;
@@ -193,6 +194,7 @@ public class GlobalSettings {
 		Settings.write(null, "bnlsserver", bnlsServer);
 		Settings.write(null, "bnlsport", bnlsPort);
 		Settings.write(null, "colorScheme", colorScheme);
+		Settings.write(null, "displaySlashCommands", displaySlashCommands);
 		Settings.write(null, "displayBattleNetMOTD", displayBattleNetMOTD);
 		Settings.write(null, "displayBattleNetChannels", displayBattleNetChannels);
 		Settings.write(null, "displayJoinParts", displayJoinParts);
@@ -246,6 +248,7 @@ public class GlobalSettings {
 		botNetPort = Settings.read(null, "botNetPort", 0x5555);
 		botNetUsername = Settings.read(null, "botNetUsername", (String)null);
 		botNetPassword = Settings.read(null, "botNetPassword", (String)null);
+		displaySlashCommands = Settings.read(null, "displaySlashCommands", false);
 		displayBattleNetMOTD = Settings.read(null, "displayBattleNetMOTD", true);
 		displayBattleNetChannels = Settings.read(null, "displayBattleNetChannels", false);
 		displayJoinParts = Settings.read(null, "displayJoinParts", true);
