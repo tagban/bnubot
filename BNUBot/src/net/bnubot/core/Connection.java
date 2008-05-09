@@ -598,7 +598,7 @@ public abstract class Connection extends Thread {
 	 * @param allowCommands Enables internal bot commands (/cmd, /profile, etc)
 	 */
 	public void sendChat(String text, boolean allowCommands) {
-		sendChat(null, text, allowCommands, true);
+		sendChat(null, text, allowCommands, true, 0);
 	}
 
 	public static final int MAX_CHAT_LENGTH = 200;
@@ -609,7 +609,7 @@ public abstract class Connection extends Thread {
 	 * @param allowCommands Enables internal bot commands (/cmd, /profile, etc)
 	 * @param enableKeywords Enable keywords (%uptime%, %trigger%, %mp3%, etc)
 	 */
-	public void sendChat(String prefix, String text, boolean allowCommands, boolean enableKeywords) {
+	public void sendChat(String prefix, String text, boolean allowCommands, boolean enableKeywords, int priority) {
 		if(text == null)
 			return;
 		if(text.length() == 0)
@@ -704,7 +704,7 @@ public abstract class Connection extends Thread {
 					break;
 				case 'q':
 					if(command[0].equals("quote")) {
-						sendChat(prefix, command[1], false, false);
+						sendChat(prefix, command[1], false, false, priority);
 						return;
 					}
 					break;
@@ -753,7 +753,8 @@ public abstract class Connection extends Thread {
 				i -= 3;
 			}
 
-			cq.enqueue(this, piece);
+
+			cq.enqueue(this, piece, priority);
 		}
 	}
 

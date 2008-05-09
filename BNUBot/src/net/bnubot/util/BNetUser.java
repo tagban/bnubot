@@ -384,6 +384,22 @@ public class BNetUser {
 	 * @throws IllegalStateException <code>if(con == null)</code>
 	 */
 	public void sendChat(String text, boolean whisperBack) {
+		int priority = 0;
+
+		Account account = Account.get(this);
+		if(account != null)
+			priority = account.getAccess();
+
+		sendChat(text, whisperBack, priority);
+	}
+
+	/**
+	 * Send chat to a user in command response style - either whispered, or formatted with the user's name
+	 * @param text The message to send
+	 * @param whisperBack Whether to whisper the message
+	 * @throws IllegalStateException <code>if(con == null)</code>
+	 */
+	public void sendChat(String text, boolean whisperBack, int priority) {
 		if(text == null)
 			return;
 		if(con == null)
@@ -420,7 +436,7 @@ public class BNetUser {
 				prefix.append(": ");
 			}
 
-			con.sendChat(prefix.toString(), text, false, true);
+			con.sendChat(prefix.toString(), text, false, true, priority);
 		}
 	}
 

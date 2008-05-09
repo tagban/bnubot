@@ -6,6 +6,8 @@
 package net.bnubot.core;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -14,8 +16,27 @@ import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.Out;
 
 public class ChatQueue extends Thread {
+	private class QueueEntry implements Comparable<QueueEntry> {
+		public final String text;
+		public final Integer priority;
+
+		public QueueEntry(String text, int priority) {
+			this.text = text;
+			this.priority = new Integer(priority);
+		}
+
+		public int compareTo(QueueEntry o) {
+			return priority.compareTo(o.priority);
+		}
+	}
+
+	private static final Comparator<QueueEntry> queueComparator = new Comparator<QueueEntry>() {
+		public int compare(QueueEntry o1, QueueEntry o2) {
+			return o1.priority.compareTo(o2.priority);
+		}};
+
 	private final List<Connection> cons = new ArrayList<Connection>();
-	private final List<String> queue = new LinkedList<String>();
+	private final List<QueueEntry> queue = new LinkedList<QueueEntry>();
 	private int lastCon = 0;
 	private boolean disposed = false;
 
@@ -38,16 +59,20 @@ public class ChatQueue extends Thread {
 		return cons.get(lastCon++);
 	}
 
-	public boolean enqueue(Connection source, String text) {
+	public boolean enqueue(Connection source, String text, int priority) {
 		if(GlobalSettings.enableFloodProtect) synchronized(queue) {
 			// Flood protection is enabled
-			return queue.add(text);
+			if(queue.add(new QueueEntry(text, priority))) {
+				Collections.sort(queue, queueComparator);
+				return true;
+			}
+			return false;
 		}
 
 		if(requiresOps(text)) {
 			if(sendTextOp(text))
 				return true;
-			Out.error(getClass(), "Failed to add command to the queue: " + text);
+			Out.error(getClass(), "Failed send command: " + text);
 			return false;
 		}
 
@@ -81,7 +106,7 @@ public class ChatQueue extends Thread {
 					break;
 				}
 
-				String text = queue.remove(0);
+				String text = queue.remove(0).text;
 
 				if(con.isOp() || !requiresOps(text)) {
 					// Write the text out
