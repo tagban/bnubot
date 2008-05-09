@@ -118,11 +118,6 @@ public class CommandEventHandler extends EventHandler {
 		}
 	}
 
-
-	private long lastCommandTime = 0;
-	private BNetUser lastCommandUser = null;
-	private boolean lastCommandWhisperBack = true;
-
 	public CommandEventHandler() {
 		if(DatabaseContext.getContext() == null)
 			throw new IllegalStateException("Can not enable commands without a database!");
@@ -767,6 +762,7 @@ public class CommandEventHandler extends EventHandler {
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
 			throws Exception {
 				source.sendChat(param, false);
+				setInfoForwarding(source, user, whisperBack);
 			}});
 		Profile.registerCommand("search", new CommandRunnable() {
 			@Override
@@ -1096,6 +1092,7 @@ public class CommandEventHandler extends EventHandler {
 
 				BNetUser target = new BNetUser(source, params[0], user.getFullAccountName());
 				source.sendChat("/unban " + target.getFullLogonName(), false);
+				setInfoForwarding(source, user, whisperBack);
 			}});
 		Profile.registerCommand("vote", new CommandRunnable() {
 			@Override
@@ -1343,14 +1340,6 @@ public class CommandEventHandler extends EventHandler {
 			if(param != null)
 				params = param.split(" ");
 
-			if(!user.equals(source.getMyUser())) {
-				lastCommandUser = user;
-				lastCommandTime = System.currentTimeMillis();
-				lastCommandWhisperBack = whisperBack;
-			} else {
-				lastCommandUser = null;
-			}
-
 			cr.run(source,
 					user,
 					param,
@@ -1419,6 +1408,7 @@ public class CommandEventHandler extends EventHandler {
 
 			// Send the command
 			source.sendChat(out, false);
+			setInfoForwarding(source, user, whisperBack);
 		} else {
 			// Wildcard kick/ban
 			List<BNetUser> users = source.findUsersWildcard(params[0], user);
@@ -1440,6 +1430,7 @@ public class CommandEventHandler extends EventHandler {
 
 				// Send the command
 				source.sendChat(out, false);
+				setInfoForwarding(source, user, whisperBack);
 			}
 
 			if(numSkipped > 0)
@@ -1703,7 +1694,34 @@ public class CommandEventHandler extends EventHandler {
 		touchUser(source, user, "chatting in the channel");
 	}
 
+
+	private static long lastCommandTime = 0;
+	private static BNetUser lastCommandUser = null;
+	private static boolean lastCommandWhisperBack = true;
+
+	/**
+	 * Set the user to forward info/error messages to
+	 * @param source
+	 * @param user
+	 * @param whisperBack
+	 */
+	private static void setInfoForwarding(Connection source, BNetUser user, boolean whisperBack) {
+		if(!user.equals(source.getMyUser())) {
+			lastCommandUser = user;
+			lastCommandTime = System.currentTimeMillis();
+			lastCommandWhisperBack = whisperBack;
+		} else {
+			// Do not allow forwarding messages to self
+			lastCommandUser = null;
+		}
+	}
+
 	private String lastInfo = null;
+	/**
+	 * Forward info/error messages to the last user who issued a command
+	 * @param source
+	 * @param text
+	 */
 	private void recieveInfoError(Connection source, String text) {
 		if(lastCommandUser == null)
 			return;
