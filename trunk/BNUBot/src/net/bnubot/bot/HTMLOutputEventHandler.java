@@ -96,12 +96,37 @@ public class HTMLOutputEventHandler extends EventHandler {
 		append(source,
 			"Joining channel " + channel + ".", cs.getChannelColor());
 	}
+
 	@Override
-	public void recieveError(Connection source, String text) {}
+	public void recieveError(Connection source, String text) {
+		append(source,
+			text,
+			cs.getErrorColor());
+	}
+
 	@Override
-	public void recieveInfo(Connection source, String text) {}
+	public void recieveServerError(Connection source, String text) {
+		this.recieveError(source, text);
+	}
+
 	@Override
-	public void recieveDebug(Connection source, String text) {}
+	public void recieveInfo(Connection source, String text) {
+		append(source,
+			text,
+			cs.getInfoColor());
+	}
+
+	@Override
+	public void recieveServerInfo(Connection source, String text) {
+		this.recieveInfo(source, text);
+	}
+
+	@Override
+	public void recieveDebug(Connection source, String text) {
+		append(source,
+				text,
+				cs.getDebugColor());
+	}
 
 	private String getIcon(int product, int icon, int flags) {
 		if((flags & 0x01) != 0)	return "blizrep";
