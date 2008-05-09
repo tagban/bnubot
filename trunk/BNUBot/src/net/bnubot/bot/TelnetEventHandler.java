@@ -13,6 +13,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,6 +74,8 @@ public class TelnetEventHandler extends EventHandler implements Runnable {
 				} catch (InterruptedException e) {}
 				if(profile != null)
 					pri = profile.getPrimaryConnection();
+				if((pri != null) && (pri.getMyUser() == null))
+					pri = null;
 			} while(pri == null);
 
 			try {
@@ -92,6 +95,8 @@ public class TelnetEventHandler extends EventHandler implements Runnable {
 					}
 					if((b != 'c') && (b != 3))
 						break;
+
+					Out.debug(TelnetEventHandler.class, "Connection established from " + socket.getRemoteSocketAddress().toString());
 
 					sendInternal("Username: ");
 					String username = br.readLine();
@@ -116,6 +121,7 @@ public class TelnetEventHandler extends EventHandler implements Runnable {
 				} while(false);
 
 				if(connected) {
+					Out.debug(TelnetEventHandler.class, "Login accepted from " + socket.getRemoteSocketAddress().toString());
 					send("2010 NAME " + pri.getMyUser().getShortLogonName());
 					send("1007 CHANNEL \"" + pri.getChannel() + "\"");
 					for(BNetUser user : pri.getUsers())
@@ -123,14 +129,19 @@ public class TelnetEventHandler extends EventHandler implements Runnable {
 				} else
 					send("Login failed");
 
-				while(connected) {
-					if(!socket.isConnected())
-						break;
-					pri.sendChat(br.readLine(), true);
+				try {
+					while(connected) {
+						if(!socket.isConnected())
+							break;
+						pri.sendChat(br.readLine(), true);
+					}
+				} catch(SocketException e) {
+					Out.debug(TelnetEventHandler.class, socket.getRemoteSocketAddress().toString() + " " + e.getMessage());
 				}
 			} catch(Exception e) {
 				Out.exception(e);
 			}
+			Out.debug(TelnetEventHandler.class, "Connection closed from " + socket.getRemoteSocketAddress().toString());
 
 			try {
 				socket.close();
