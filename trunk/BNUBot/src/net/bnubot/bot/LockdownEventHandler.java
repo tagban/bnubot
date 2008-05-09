@@ -7,6 +7,8 @@ package net.bnubot.bot;
 
 import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
+import net.bnubot.core.Profile;
+import net.bnubot.core.commands.CommandRunnable;
 import net.bnubot.db.Account;
 import net.bnubot.db.BNLogin;
 import net.bnubot.db.Rank;
@@ -18,6 +20,32 @@ import net.bnubot.util.Out;
  *
  */
 public class LockdownEventHandler extends EventHandler {
+	private static final String CHANNEL_CLOSED = "The clan channel is now private and only clan members may enter.";
+	private static final String CHANNEL_OPEN = "The clan channel is now public and anyone can enter.";
+
+	static {
+		Profile.registerCommand("lockdown", new CommandRunnable() {
+			@Override
+			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
+			throws Exception {
+				LockdownEventHandler leh = null;
+				for(EventHandler eh : source.getEventHandlers())
+					if(eh instanceof LockdownEventHandler) {
+						leh = (LockdownEventHandler)eh;
+						break;
+					}
+				if(leh == null) {
+					user.sendChat("Failed to locate lockdown module", whisperBack);
+					return;
+				}
+				if(leh.lockdownEnabled)
+					leh.endLockdown(source);
+				else
+					leh.startLockdown(source);
+			}
+			});
+	}
+
 	public static final long LOCKDOWN_DURATION = 30 * 1000; // 30 seconds
 
 	private BNetUser flooder = null;
@@ -25,7 +53,19 @@ public class LockdownEventHandler extends EventHandler {
 	private long floodActions = 0;
 
 	private boolean lockdownEnabled = false;
-	private long lockdownDisableTime = 0;
+	private Connection lockdownThreadSource = null;
+	private final Thread lockdownThread = new Thread() {
+		@Override
+		public void run() {
+			long lockdownDisableTime = System.currentTimeMillis() + LOCKDOWN_DURATION;
+			while(System.currentTimeMillis() < lockdownDisableTime) {
+				try { sleep(3000); } catch (Exception e) {}
+				yield();
+			}
+			// Timeout period is over; turn off
+			endLockdown(lockdownThreadSource);
+		}
+	};
 
 	private void floodEvent(Connection source, BNetUser user) {
 		long now = System.currentTimeMillis();
@@ -60,48 +100,31 @@ public class LockdownEventHandler extends EventHandler {
 		}
 	}
 
-	private void startLockdown(final Connection source) {
+	private void startLockdown(Connection source) {
 		if(lockdownEnabled)
 			return;
-		lockdownEnabled = true;
-
 		source.sendChat("/c priv", false);
-		source.sendChat("/o igpub", false);
-
-		new Thread() {
-			@Override
-			public void run() {
-				lockdownDisableTime = System.currentTimeMillis() + LOCKDOWN_DURATION;
-				while(System.currentTimeMillis() < lockdownDisableTime) {
-					try { sleep(3000); } catch (Exception e) {}
-					yield();
-				}
-				// Timeout period is over; turn off
-				endLockdown(source);
-			}
-		}.start();
 	}
 
 	private void endLockdown(final Connection source) {
 		if(!lockdownEnabled)
 			return;
 		source.sendChat("/c pub", false);
-		source.sendChat("/o unigpub", false);
-		lockdownEnabled = false;
 	}
 
 	@Override
 	public void recieveServerInfo(Connection source, String text) {
-		if(lockdownEnabled && "The clan channel is now public and anyone can enter.".equals(text)) {
+		if(lockdownEnabled && CHANNEL_OPEN.equals(text)) {
 			lockdownEnabled = false;
 			source.sendChat("Lockdown disabled!", false);
 			return;
 		}
 
-		if(!lockdownEnabled && "The clan channel is now private and only clan members may enter.".equals(text)) {
+		if(!lockdownEnabled && CHANNEL_CLOSED.equals(text)) {
 			lockdownEnabled = true;
-			source.sendChat("Lockdown enabled! Auto-disabling in 30 seconds.", false);
-			lockdownDisableTime = System.currentTimeMillis() + LOCKDOWN_DURATION;
+			source.sendChat("Lockdown enabled!", false);
+			lockdownThreadSource = source;
+			lockdownThread.start();
 			return;
 		}
 	}
