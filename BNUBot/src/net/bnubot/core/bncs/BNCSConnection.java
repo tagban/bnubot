@@ -1916,7 +1916,7 @@ public class BNCSConnection extends Connection {
 			return;
 		}
 
-		if (text.charAt(0) != '/')
+		if(GlobalSettings.displaySlashCommands || text.charAt(0) != '/')
 			dispatchRecieveChat(myUser, text);
 	}
 
