@@ -132,7 +132,7 @@ public class BotNetUser extends BNetUser {
 	}
 
 	@Override
-	public void sendChat(String text, boolean whisperBack) {
+	public void sendChat(String text, boolean whisperBack, int priority) {
 		try {
 			BotNetConnection con = (BotNetConnection)super.con;
 			con.sendWhisper(this, text);
