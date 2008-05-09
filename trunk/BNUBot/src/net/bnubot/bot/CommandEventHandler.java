@@ -1186,9 +1186,9 @@ public class CommandEventHandler extends EventHandler {
 					// Access
 					Rank rsSubjectRank = rsSubjectAccount.getRank();
 					if(rsSubjectRank != null) {
-						String prefix = rsSubjectRank.getPrefix();
+						String prefix = rsSubjectRank.getShortPrefix();
 						if(prefix == null)
-							prefix = rsSubjectRank.getShortPrefix();
+							prefix = rsSubjectRank.getPrefix();
 
 						if(prefix == null)
 							prefix = "";
