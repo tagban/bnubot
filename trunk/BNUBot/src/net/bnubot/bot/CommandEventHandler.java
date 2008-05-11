@@ -1199,7 +1199,7 @@ public class CommandEventHandler extends EventHandler {
 						if(rsSubjectRank.getVerbstr() != null)
 							result += " " + rsSubjectRank.getVerbstr();
 						else
-							result += " is a " + prefix;
+							result += " is a " + rsSubjectRank.getPrefix();
 						result += " (" + rsSubjectAccount.getAccess() + ")";
 
 						clauses.add(result);
