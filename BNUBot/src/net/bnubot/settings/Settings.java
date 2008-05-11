@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.Properties;
+import java.util.TimeZone;
 
 import net.bnubot.util.Out;
 import net.bnubot.util.SortedProperties;
@@ -54,6 +55,10 @@ public class Settings {
 		return Long.parseLong(read(header, setting, Long.toString(defaultValue)));
 	}
 
+	public static TimeZone read(String header, String setting, TimeZone defaultValue) {
+		return TimeZone.getTimeZone(read(header, setting, defaultValue.getID()));
+	}
+
 	/**
 	 * This method will not handle a NULL value for defaultValue
 	 */
@@ -94,6 +99,10 @@ public class Settings {
 
 	public static void write(String header, String setting, long value) {
 		write(header, setting, Long.toString(value));
+	}
+
+	public static void write(String header, String setting, TimeZone value) {
+		write(header, setting, value.getID());
 	}
 
 	public static <T extends Enum<T>> void write(String header, String setting, T value) {

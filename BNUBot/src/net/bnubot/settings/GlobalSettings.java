@@ -231,6 +231,7 @@ public class GlobalSettings {
 		Settings.write(null, "releaseType", releaseType);
 		Settings.write(null, "triviaRoundLength", triviaRoundLength);
 		Settings.write(null, "tsFormat", TimeFormatter.tsFormat);
+		Settings.write(null, "timeZone", TimeFormatter.timeZone);
 		Settings.write(null, "whisperBack", whisperBack);
 
 		Settings.store();
@@ -283,6 +284,7 @@ public class GlobalSettings {
 			setLookAndFeel(Settings.read(null, "lookAndFeel", "JGoodies Plastic XP"));
 		}
 		TimeFormatter.tsFormat = Settings.read(null, "tsFormat", TimeFormatter.tsFormat);
+		TimeFormatter.timeZone = Settings.read(null, "timeZone", TimeFormatter.timeZone);
 		bnUserToString = Settings.read(null, "bnUserToString", 3);
 		bnUserToStringUserList = Settings.read(null, "bnUserToStringUserList", 1);
 		bnUserToStringCommandResponse = Settings.read(null, "bnUserToStringCommandResponse", 4);
