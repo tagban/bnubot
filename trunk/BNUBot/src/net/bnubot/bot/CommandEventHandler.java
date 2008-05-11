@@ -577,10 +577,10 @@ public class CommandEventHandler extends EventHandler {
 
 					String message = "[Sent to ranks " + rank + "+] " + params[1];
 
-					Account[] rsAccounts = (Account[]) Account.getRanked(rank).toArray();
+					List<Account> rsAccounts = Account.getRanked(rank);
 					for(Account a : rsAccounts)
 						Mail.send(commanderAccount, a, message);
-					user.sendChat("Mail queued for delivery to " + rsAccounts.length + " accounts", whisperBack);
+					user.sendChat("Mail queued for delivery to " + rsAccounts.size() + " accounts", whisperBack);
 				} catch(InvalidUseException e) {
 					user.sendChat("Use: %trigger%mailall <minimum rank> <message>", whisperBack);
 				}

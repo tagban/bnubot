@@ -68,7 +68,7 @@ public class Account extends _Account {
 	 */
 	@SuppressWarnings("unchecked")
 	public static List<Account> getRanked(int rank) {
-		Expression expression = ExpressionFactory.greaterOrEqualDbExp(Account.RANK_PROPERTY, rank);
+		Expression expression = ExpressionFactory.greaterOrEqualExp(Account.RANK_PROPERTY, rank);
 		SelectQuery query = new SelectQuery(Account.class, expression);
 		return DatabaseContext.getContext().performQuery(query);
 	}
