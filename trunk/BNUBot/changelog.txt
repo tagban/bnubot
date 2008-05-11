@@ -20,6 +20,7 @@
 * Added a Lockdown plugin (requires ops in a clan channel to function)
 * Modified the ChatQueue to use priority
 * Added logging of debug, info, and error messages
+* Fixed a bug with mailall
 
 2.0.6 (r1400) 2008-04-21:
 * Added auto-rejoin afer being kicked (Issue 52)
