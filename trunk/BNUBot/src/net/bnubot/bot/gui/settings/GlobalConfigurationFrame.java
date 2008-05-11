@@ -16,9 +16,11 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
+import java.util.TimeZone;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -64,6 +66,7 @@ public class GlobalConfigurationFrame extends JDialog {
 	private ConfigTextArea txtEmail = null;
 	private ConfigTextArea txtBNLSServer = null;
 	private JComboBox cmbReleaseType = null;
+	private JComboBox cmbTimeZone = null;
 	private ConfigCheckBox chkAutoConnect = null;
 	private ConfigCheckBox chkAutoRejoin = null;
 	private ConfigCheckBox chkEnableMirrorSelector = null;
@@ -185,6 +188,13 @@ public class GlobalConfigurationFrame extends JDialog {
 						ReleaseType.Development };
 				cmbReleaseType = ConfigFactory.makeCombo("Version Check", values, false, boxAll);
 				cmbReleaseType.setSelectedItem(GlobalSettings.releaseType);
+
+				List<String> tzs = new ArrayList<String>();
+				for(String x : TimeZone.getAvailableIDs())
+					tzs.add(x);
+				Collections.sort(tzs);
+				cmbTimeZone = ConfigFactory.makeCombo("TimeZone", tzs.toArray(), false, boxAll);
+				cmbTimeZone.setSelectedItem(TimeFormatter.timeZone.getID());
 
 				boxAll.add(chkAutoConnect = new ConfigCheckBox("Auto Connect", GlobalSettings.autoConnect));
 				boxAll.add(chkAutoRejoin = new ConfigCheckBox("Auto Rejoin After Kicked", GlobalSettings.autoRejoin));
@@ -389,6 +399,7 @@ public class GlobalConfigurationFrame extends JDialog {
 			GlobalSettings.bnUserToStringUserList = cmbBNUserToStringUserList.getSelectedIndex();
 			GlobalSettings.bnUserToStringCommandResponse = cmbBNUserToStringCommandResponse.getSelectedIndex();
 			GlobalSettings.releaseType = (ReleaseType)cmbReleaseType.getSelectedItem();
+			TimeFormatter.timeZone = TimeZone.getTimeZone((String)cmbTimeZone.getSelectedItem());
 			GlobalSettings.autoConnect = chkAutoConnect.isSelected();
 			GlobalSettings.autoRejoin = chkAutoRejoin.isSelected();
 			GlobalSettings.enableMirrorSelector = chkEnableMirrorSelector.isSelected();
@@ -480,6 +491,7 @@ public class GlobalConfigurationFrame extends JDialog {
 			cmbBNUserToStringUserList.setSelectedIndex(GlobalSettings.bnUserToStringUserList);
 			cmbBNUserToStringCommandResponse.setSelectedIndex(GlobalSettings.bnUserToStringCommandResponse);
 			cmbReleaseType.setSelectedItem(GlobalSettings.releaseType);
+			cmbTimeZone.setSelectedItem(TimeFormatter.timeZone.getID());
 			chkAutoConnect.setSelected(GlobalSettings.autoConnect);
 			chkAutoRejoin.setSelected(GlobalSettings.autoRejoin);
 			chkEnableMirrorSelector.setSelected(GlobalSettings.enableMirrorSelector);

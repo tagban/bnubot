@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.TimeZone;
 
 public class TimeFormatter {
+	public static TimeZone timeZone = TimeZone.getDefault();
 	public static String tsFormat = "%1$tH:%1$tM:%1$tS.%1$tL";
 
 	/**
@@ -19,7 +20,7 @@ public class TimeFormatter {
 	 */
 	public static String getTimestamp() {
 		try {
-			return String.format(tsFormat, Calendar.getInstance());
+			return String.format(tsFormat, Calendar.getInstance(timeZone));
 		} catch(NoSuchMethodError e) {
 			return "";
 		}
@@ -87,7 +88,7 @@ public class TimeFormatter {
 	public static Date fileTime(long ft) {
 		// Date.parse("1/1/1601") == 11644455600000L
 		long date = ft / 10000 - 11644455600000L;
-		date += TimeZone.getDefault().getOffset(date);
+		date += timeZone.getOffset(date);
 		return new Date(date);
 	}
 
@@ -95,18 +96,22 @@ public class TimeFormatter {
 	private static DateFormat dtf = DateFormat.getDateTimeInstance();
 
 	public static long parseDate(String d) throws ParseException {
+		df.setCalendar(Calendar.getInstance(timeZone));
 		return df.parse(d).getTime();
 	}
 
 	public static String formatDate(Date d) {
+		df.setCalendar(Calendar.getInstance(timeZone));
 		return df.format(d);
 	}
 
 	public static long parseDateTime(String dt) throws ParseException {
+		dtf.setCalendar(Calendar.getInstance(timeZone));
 		return dtf.parse(dt).getTime();
 	}
 
 	public static String formatDateTime(Date d) {
+		dtf.setCalendar(Calendar.getInstance(timeZone));
 		return dtf.format(d);
 	}
 }
