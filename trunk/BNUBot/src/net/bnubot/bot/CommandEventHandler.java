@@ -1281,6 +1281,8 @@ public class CommandEventHandler extends EventHandler {
 		message.append(" ago]: ");
 		message.append(m.getMessage());
 
+		user.sendChat(message.toString(), true);
+
 		m.setIsread(true);
 		try {
 			m.updateRow();
@@ -1288,8 +1290,6 @@ public class CommandEventHandler extends EventHandler {
 			Out.exception(e);
 			user.sendChat("Failed to set mail read", whisperBack);
 		}
-
-		user.sendChat(message.toString(), true);
 	}
 
 	@Override
