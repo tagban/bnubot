@@ -33,6 +33,20 @@ public class CommandAlias extends _CommandAlias {
 		}
 	}
 
+	public static CommandAlias create(Command command, String alias) {
+		CommandAlias ca = DatabaseContext.getContext().newObject(CommandAlias.class);
+		ca.setAlias(alias);
+		ca.setToCommand(command);
+		command.addToAliases(ca);
+		try {
+			ca.updateRow();
+			return ca;
+		} catch(Exception e) {
+			Out.exception(e);
+			return null;
+		}
+	}
+
 	@Override
 	public String toDisplayString() {
 		return getAlias();
