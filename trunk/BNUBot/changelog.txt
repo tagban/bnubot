@@ -23,6 +23,7 @@
 * Fixed a bug with mailall
 * Added timezone support
 * The command DNE error is now a debug message
+* Added a 'clearqueue' command
 
 2.0.6 (r1400) 2008-04-21:
 * Added auto-rejoin afer being kicked (Issue 52)

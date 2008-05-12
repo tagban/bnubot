@@ -406,6 +406,12 @@ public class CommandEventHandler extends EventHandler {
 			throws Exception {
 				doKickBan(source, user, param, true, whisperBack);
 			}});
+		Profile.registerCommand("clearqueue", new CommandRunnable() {
+			@Override
+			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
+			throws Exception {
+				source.clearQueue();
+			}});
 		Profile.registerCommand("createaccount", new CommandRunnable() {
 			@Override
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
