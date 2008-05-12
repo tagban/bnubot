@@ -1309,8 +1309,7 @@ public class CommandEventHandler extends EventHandler {
 			Command rsCommand = Command.get(command);
 
 			if(rsCommand == null) {
-				if(!whisperBack)
-					source.dispatchRecieveError("Command " + command + " not found in database");
+				Out.debug(CommandEventHandler.class, "Command " + command + " not found in database");
 				return false;
 			}
 			command = rsCommand.getName();
