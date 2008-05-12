@@ -17,7 +17,6 @@ import net.bnubot.db.CustomDataObject;
 public abstract class _CommandAlias extends CustomDataObject {
 
     public static final String ALIAS_PROPERTY = "alias";
-    public static final String NAME_PROPERTY = "name";
     public static final String TO_COMMAND_PROPERTY = "toCommand";
 
     public static final String ALIAS_PK_COLUMN = "alias";
@@ -27,13 +26,6 @@ public abstract class _CommandAlias extends CustomDataObject {
     }
     public String getAlias() {
         return (String)readProperty("alias");
-    }
-
-    public void setName(String name) {
-        writeProperty("name", name);
-    }
-    public String getName() {
-        return (String)readProperty("name");
     }
 
     public void setToCommand(Command toCommand) {

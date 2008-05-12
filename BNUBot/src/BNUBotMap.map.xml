@@ -85,7 +85,6 @@
 	</obj-entity>
 	<obj-entity name="CommandAlias" className="net.bnubot.db.CommandAlias" dbEntityName="command_alias" superClassName="net.bnubot.db.CustomDataObject">
 		<obj-attribute name="alias" type="java.lang.String" db-attribute-path="alias"/>
-		<obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
 	</obj-entity>
 	<obj-entity name="Mail" className="net.bnubot.db.Mail" dbEntityName="mail" superClassName="net.bnubot.db.CustomDataObject">
 		<obj-attribute name="isread" type="boolean" db-attribute-path="isread"/>
