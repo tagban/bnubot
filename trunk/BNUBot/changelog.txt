@@ -4,26 +4,20 @@
 * Added /accept and /decline for W3 clan management
 * Added a simple clan creation utility
 * Added options to customize the GUI font size and family
-* Switched some relevant settings to spinners in the GUI
-* Statstring performance improvements
 * Fixed a bug where the version check progress display wouldn't update
-* Improved plugin synchronization
-* Improved database exception handling
 * Battle.net info/error messages are marked as such
 * Fixed a bug where the ChatQueue wouldn't send ops commands
-* Added a telnet plugin compatible with the Battle.net chat protocol
-* Added a 'whisperback' command
+* Added a telnet plugin compatible with the Battle.net CHAT protocol
+* Added 'whisperback' and 'clearqueue' commands
 * Added MC, Hex, and Base64 encryption - type /mc, /hex, or /b64 to toggle
-* Added real clan icons
+* Added real clan icons (initiate, peon, grunt, shaman, chieftain)
 * Fixed a bug in the 'recruits' command (Issue 77)
-* Fixed a bug in the 'whois' command
+* Fixed several bugs with the 'whois' command
 * Added a Lockdown plugin (requires ops in a clan channel to function)
-* Modified the ChatQueue to use priority
-* Added logging of debug, info, and error messages
-* Fixed a bug with mailall
+* Modified the ChatQueue to use priorities
+* Added logging of debug, info, and error messages via HTMLOutputEventHandler
+* Fixed a bug in the 'mailall' command
 * Added timezone support
-* The command DNE error is now a debug message
-* Added a 'clearqueue' command
 
 2.0.6 (r1400) 2008-04-21:
 * Added auto-rejoin afer being kicked (Issue 52)
