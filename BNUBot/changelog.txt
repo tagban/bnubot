@@ -22,6 +22,7 @@
 * Added logging of debug, info, and error messages
 * Fixed a bug with mailall
 * Added timezone support
+* The command DNE error is now a debug message
 
 2.0.6 (r1400) 2008-04-21:
 * Added auto-rejoin afer being kicked (Issue 52)
