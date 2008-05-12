@@ -12,6 +12,7 @@ import net.bnubot.core.commands.CommandRunnable;
 import net.bnubot.db.Account;
 import net.bnubot.db.BNLogin;
 import net.bnubot.db.Rank;
+import net.bnubot.db.conf.DatabaseContext;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.Out;
 
@@ -22,8 +23,20 @@ import net.bnubot.util.Out;
 public class LockdownEventHandler extends EventHandler {
 	private static final String CHANNEL_CLOSED = "The clan channel is now private and only clan members may enter.";
 	private static final String CHANNEL_OPEN = "The clan channel is now public and anyone can enter.";
+	public static final long LOCKDOWN_DURATION = 60 * 1000; // 1 minue
 
-	static {
+	public LockdownEventHandler() {
+		if(DatabaseContext.getContext() == null)
+			throw new IllegalStateException("Can not enable lockdown without a database!");
+		initializeCommands();
+	}
+
+	private static boolean commandsInitialized = false;
+	public static void initializeCommands() {
+		if(commandsInitialized)
+			return;
+		commandsInitialized = true;
+
 		Profile.registerCommand("lockdown", new CommandRunnable() {
 			@Override
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
@@ -45,8 +58,6 @@ public class LockdownEventHandler extends EventHandler {
 			}
 			});
 	}
-
-	public static final long LOCKDOWN_DURATION = 30 * 1000; // 30 seconds
 
 	private BNetUser flooder = null;
 	private long floodStartTime = 0;
