@@ -84,6 +84,13 @@ public class BNCSConnection extends Connection {
 
 	public BNCSConnection(ConnectionSettings cs, Profile p) {
 		super(cs, p);
+
+		if (cs.enableBotNet)
+			try {
+				botnet = new BotNetConnection(this, cs, profile);
+			} catch (Exception e) {
+				Out.exception(e);
+			}
 	}
 
 	@Override
@@ -290,17 +297,10 @@ public class BNCSConnection extends Connection {
 
 	@Override
 	protected void initializeConnection(Task connect) throws Exception {
-		if (cs.enableBotNet) {
-			if (botnet == null) {
-				try {
-					botnet = new BotNetConnection(this, cs, profile);
-					profile.insertConnection(botnet);
-				} catch (Exception e) {
-					Out.exception(e);
-				}
-			} else {
-				botnet.sendStatusUpdate();
-			}
+		if(botnet != null) {
+			if(!profile.getConnections().contains(botnet))
+				profile.insertConnection(botnet);
+			botnet.sendStatusUpdate();
 		}
 
 		// Set up BNLS, get verbyte
