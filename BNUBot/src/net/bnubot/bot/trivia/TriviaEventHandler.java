@@ -37,7 +37,18 @@ public class TriviaEventHandler extends EventHandler {
 	private Connection initializedConnection = null;
 	private boolean disposed = false;
 
-	static {
+	public TriviaEventHandler() {
+		if(DatabaseContext.getContext() == null)
+			throw new IllegalStateException("Can not enable trivia without a database!");
+		initializeCommands();
+	}
+
+	private static boolean commandsInitialized = false;
+	public static void initializeCommands() {
+		if(commandsInitialized)
+			return;
+		commandsInitialized = true;
+
 		Profile.registerCommand("trivia", new CommandRunnable() {
 			@Override
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
