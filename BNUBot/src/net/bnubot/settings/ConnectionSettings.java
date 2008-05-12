@@ -111,7 +111,7 @@ public class ConnectionSettings implements Serializable {
 		return null;
 	}
 
-	private String getMyRealm() {
+	public String getMyRealm() {
 		if(connectionType.equals(ConnectionType.DigitalText))
 			return "DigitalText";
 

@@ -127,13 +127,13 @@ public class LockdownEventHandler extends EventHandler {
 	public void recieveServerInfo(Connection source, String text) {
 		if(lockdownEnabled && CHANNEL_OPEN.equals(text)) {
 			lockdownEnabled = false;
-			source.sendChat("Lockdown disabled!", false);
+			source.sendChat("Lockdown disabled.", false);
 			return;
 		}
 
 		if(!lockdownEnabled && CHANNEL_CLOSED.equals(text)) {
 			lockdownEnabled = true;
-			source.sendChat("Lockdown enabled!", false);
+			source.sendChat("Lockdown enabled.", false);
 			lockdownThreadSource = source;
 			lockdownThread.start();
 			return;
