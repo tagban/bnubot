@@ -18,6 +18,7 @@
 * Added logging of debug, info, and error messages via HTMLOutputEventHandler
 * Fixed a bug in the 'mailall' command
 * Added timezone support
+* Fixed a bug where BotNet would leak in to its own profile tab (Issue 75)
 
 2.0.6 (r1400) 2008-04-21:
 * Added auto-rejoin afer being kicked (Issue 52)
