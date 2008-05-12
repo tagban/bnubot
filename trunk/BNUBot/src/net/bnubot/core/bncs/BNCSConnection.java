@@ -1275,10 +1275,12 @@ public class BNCSConnection extends Connection {
 						dispatchRecieveServerError(text);
 						break;
 					case EID_CHANNEL:
+						// Don't clear the queue if we're connecting for the first time or rejoining
+						if((channelName != null) && !channelName.equals(text))
+							clearQueue();
 						channelName = text;
 						dispatchJoinedChannel(text, flags);
 						dispatchTitleChanged();
-						clearQueue();
 						if(botnet != null)
 							botnet.sendStatusUpdate();
 						break;
