@@ -614,8 +614,6 @@ public abstract class Connection extends Thread {
 			return;
 		if(text.length() == 0)
 			return;
-		if(!isConnected())
-			return;
 
 		ALLOWCOMMANDS: if(allowCommands) {
 			if(text.charAt(0) == '/') {
@@ -729,6 +727,11 @@ public abstract class Connection extends Thread {
 						return;
 				}
 			}
+		}
+
+		if(!isConnected()) {
+			dispatchRecieveError("Can not send chat: " + text);
+			return;
 		}
 
 //		try {
