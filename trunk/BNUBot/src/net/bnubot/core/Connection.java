@@ -621,7 +621,8 @@ public abstract class Connection extends Thread {
 				String[] command = postSlash.split(" ", 2);
 				switch(command[0].charAt(0)) {
 				case '/':
-					dispatchParseCommand(myUser, postSlash.substring(1), false);
+					if(myUser != null)
+						dispatchParseCommand(myUser, postSlash.substring(1), false);
 					return;
 				case 'a':
 					if(command[0].equals("accept"))
@@ -641,7 +642,10 @@ public abstract class Connection extends Thread {
 				case 'c':
 					if(command[0].equals("cmd")) {
 						if(command.length == 2) {
-							dispatchParseCommand(myUser, command[1], true);
+							BNetUser user = myUser;
+							if(user == null)
+								user = new BNetUser(this, cs.username, cs.getMyRealm());
+							dispatchParseCommand(user, command[1], true);
 							return;
 						}
 					}
@@ -723,7 +727,10 @@ public abstract class Connection extends Thread {
 				}
 
 				if(postSlash.length() > 0) {
-					if(dispatchParseCommand(myUser, postSlash, true))
+					BNetUser user = myUser;
+					if(user == null)
+						user = new BNetUser(this, cs.username, cs.getMyRealm());
+					if(dispatchParseCommand(user, postSlash, true))
 						return;
 				}
 			}

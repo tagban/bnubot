@@ -457,6 +457,11 @@ public class BotNetConnection extends Connection {
 	 * @throws Exception
 	 */
 	public void sendStatusUpdate() throws Exception {
+		if(!isConnected()) {
+			connect();
+			return;
+		}
+
 		BNetUser user = master.getMyUser();
 		String channel = master.getChannel();
 		int ip = -1;
