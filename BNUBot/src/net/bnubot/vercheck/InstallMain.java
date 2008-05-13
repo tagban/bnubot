@@ -64,7 +64,7 @@ public class InstallMain {
 			Out.info(InstallMain.class, "Fixing JavaApplicationStub: " + cmd_chmod);
 			int ret = rt.exec(cmd_chmod).waitFor();
 			if(ret != 0)
-				throw new IllegalStateException(Integer.toString(ret));
+				throw new IllegalStateException("Failed to execute command [ " + cmd_chmod + " ] error code: " + ret);
 		}
 
 		// Ask if we should launch the bot
