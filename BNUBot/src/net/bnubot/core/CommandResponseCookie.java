@@ -3,7 +3,7 @@
  * $Id$
  */
 
-package net.bnubot.bot;
+package net.bnubot.core;
 
 import net.bnubot.util.BNetUser;
 
@@ -19,7 +19,7 @@ public class CommandResponseCookie {
 		this.wasWhispered = wasWhispered;
 	}
 
-	public void sendChat(net.bnubot.core.Connection c, String text) {
+	public void sendChat(String text) {
 		source.sendChat(text, wasWhispered);
 	}
 }

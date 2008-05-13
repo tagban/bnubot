@@ -20,8 +20,8 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.TimeZone;
 
-import net.bnubot.bot.CommandResponseCookie;
 import net.bnubot.bot.gui.ProfileEditor;
+import net.bnubot.core.CommandResponseCookie;
 import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.Profile;
@@ -1632,7 +1632,7 @@ public class BNCSConnection extends Connection {
 					}
 
 					if(cookie instanceof CommandResponseCookie)
-						((CommandResponseCookie)cookie).sendChat(this, result);
+						((CommandResponseCookie)cookie).sendChat(result);
 					else
 						Out.info(getClass(), result);
 
