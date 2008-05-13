@@ -211,7 +211,7 @@ public class VersionCheck {
 
 						// Show complete notification
 						JOptionPane.showMessageDialog(null, "Update complete. Please restart BNU-Bot.");
-						System.exit(0);
+						restart();
 					}
 					return true;
 				}
@@ -244,5 +244,30 @@ public class VersionCheck {
 		is.close();
 
 		to.setLastModified(from.lastModified());
+	}
+
+	/**
+	 * This method NEVER returns normally!
+	 */
+	public static void restart() {
+		String command;
+		switch(OperatingSystem.userOS) {
+		case WINDOWS:
+			command = "BNUBot.exe";
+			break;
+		case OSX:
+			command = "Contents/MacOS/JavaApplicationStub";
+			break;
+		default:
+			command = "./run.sh";
+			break;
+		}
+		try {
+			System.err.println(command);
+			Runtime.getRuntime().exec(command);
+		} catch (IOException e) {
+			Out.exception(e);
+		}
+		System.exit(0);
 	}
 }
