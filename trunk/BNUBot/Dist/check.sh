@@ -1,11 +1,13 @@
 #!/bin/sh
 PIDFILE=bnubot.pid
 if [ -f $PIDFILE ] ; then
-	echo "it is still running"
-else
-	echo "starting a new one"
-	java -cp `ls -1 lib/*.jar | tr '\n' ':'`BNUBot.jar net.bnubot.Main -logfile log.txt 2> stderr.txt &
-	pid=$!
-	echo $pid > $PIDFILE
+    PID=`cat $PIDFILE`
+    echo "Found $PIDFILE: looking for pid $PID"
+    if [ "$(ps -ef | grep java | grep $PID | grep -v grep | wc -l)" -ge 1 ]; then
+        echo "it is still running"
+        exit
+    fi
 fi
 
+# We determined that BNUBot is not running
+./run.sh
