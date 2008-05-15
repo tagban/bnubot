@@ -25,7 +25,7 @@ import net.bnubot.bot.gui.WindowPosition;
 import net.bnubot.bot.gui.KeyManager.CDKey;
 import net.bnubot.bot.gui.components.ConfigCheckBox;
 import net.bnubot.bot.gui.components.ConfigFactory;
-import net.bnubot.bot.gui.components.ConfigTextArea;
+import net.bnubot.bot.gui.components.ConfigTextField;
 import net.bnubot.core.bncs.ProductIDs;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.settings.ConnectionSettings.ConnectionType;
@@ -37,8 +37,8 @@ public class ConfigurationFrame extends JDialog {
 	private boolean pressedCancel = false;
 
 	// Connection
-	private ConfigTextArea txtProfile = null;
-	private ConfigTextArea txtUsername = null;
+	private ConfigTextField txtProfile = null;
+	private ConfigTextField txtUsername = null;
 	private JPasswordField txtPassword = null;
 	private JComboBox cmbProduct = null;
 	private ConfigCheckBox chkPlug = null;
@@ -49,11 +49,11 @@ public class ConfigurationFrame extends JDialog {
 	// Profile
 	private JComboBox cmbConnectionType = null;
 	private JComboBox cmbServer = null;
-	private ConfigTextArea txtChannel = null;
-	private ConfigTextArea txtTrigger = null;
+	private ConfigTextField txtChannel = null;
+	private ConfigTextField txtTrigger = null;
 	private ConfigCheckBox chkAntiIdle = null;
-	private ConfigTextArea txtAntiIdle = null;
-	private ConfigTextArea txtAntiIdleTimer = null;
+	private ConfigTextField txtAntiIdle = null;
+	private ConfigTextField txtAntiIdleTimer = null;
 	private ConfigCheckBox chkGreetings = null;
 
 	// Buttons
@@ -140,7 +140,7 @@ public class ConfigurationFrame extends JDialog {
 			{
 				boxLine.add(ConfigFactory.makeLabel("Anti-Idle"));
 				boxLine.add(chkAntiIdle = new ConfigCheckBox("Enable", cs.enableAntiIdle));
-				boxLine.add(txtAntiIdle = new ConfigTextArea(cs.antiIdle));
+				boxLine.add(txtAntiIdle = new ConfigTextField(cs.antiIdle));
 				txtAntiIdle.setMaximumSize(ConfigFactory.getMaxComponentSize());
 			}
 			boxSettings.add(boxLine);

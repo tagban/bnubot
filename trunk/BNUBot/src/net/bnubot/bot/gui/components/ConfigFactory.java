@@ -30,8 +30,8 @@ public class ConfigFactory {
 		return jl;
 	}
 
-	public static ConfigTextArea makeText(String label, String value, Box parent) {
-		ConfigTextArea txt = new ConfigTextArea(value);
+	public static ConfigTextField makeText(String label, String value, Box parent) {
+		ConfigTextField txt = new ConfigTextField(value);
 		txt.setMaximumSize(maxComponentSize);
 		txt.setPreferredSize(preferredTextSize);
 

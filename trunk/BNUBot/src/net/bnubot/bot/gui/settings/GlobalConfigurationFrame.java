@@ -41,6 +41,7 @@ import net.bnubot.bot.gui.components.ConfigCheckBox;
 import net.bnubot.bot.gui.components.ConfigFactory;
 import net.bnubot.bot.gui.components.ConfigSpinner;
 import net.bnubot.bot.gui.components.ConfigTextArea;
+import net.bnubot.bot.gui.components.ConfigTextField;
 import net.bnubot.bot.gui.components.TextWindow;
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.PluginManager;
@@ -63,8 +64,8 @@ public class GlobalConfigurationFrame extends JDialog {
 	private ConfigTextArea txtCDKeys = null;
 
 	// Settings
-	private ConfigTextArea txtEmail = null;
-	private ConfigTextArea txtBNLSServer = null;
+	private ConfigTextField txtEmail = null;
+	private ConfigTextField txtBNLSServer = null;
 	private JComboBox cmbReleaseType = null;
 	private JComboBox cmbTimeZone = null;
 	private ConfigCheckBox chkAutoConnect = null;
@@ -106,7 +107,7 @@ public class GlobalConfigurationFrame extends JDialog {
 	private ConfigCheckBox chkDisplayBattleNetChannels = null;
 	private ConfigCheckBox chkDisplayJoinParts = null;
 	private ConfigCheckBox chkDisplayChannelUsers = null;
-	private ConfigTextArea txtGuiFontFamily = null;
+	private ConfigTextField txtGuiFontFamily = null;
 	private ConfigSpinner spnGuiFontSize = null;
 
 	// Debug
