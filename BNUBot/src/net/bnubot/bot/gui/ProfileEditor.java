@@ -17,7 +17,7 @@ import javax.swing.JDialog;
 import javax.swing.SwingUtilities;
 
 import net.bnubot.bot.gui.components.ConfigFactory;
-import net.bnubot.bot.gui.components.ConfigTextArea;
+import net.bnubot.bot.gui.components.ConfigTextField;
 import net.bnubot.core.Connection;
 import net.bnubot.util.Out;
 import net.bnubot.util.UserProfile;
@@ -27,8 +27,8 @@ public class ProfileEditor extends JDialog {
 
 	private final UserProfile p;
 	private final Connection source;
-	private ConfigTextArea txtUsername;
-	private final HashMap<String, ConfigTextArea> txtBoxes = new HashMap<String, ConfigTextArea>();
+	private ConfigTextField txtUsername;
+	private final HashMap<String, ConfigTextField> txtBoxes = new HashMap<String, ConfigTextField>();
 	private JButton btnSave;
 	private JButton btnClose;
 
@@ -57,7 +57,7 @@ public class ProfileEditor extends JDialog {
 			txtUsername.setEnabled(false);
 
 			for(String key : p.keySet()) {
-				ConfigTextArea cta = ConfigFactory.makeText(key, p.get(key), boxAll);
+				ConfigTextField cta = ConfigFactory.makeText(key, p.get(key), boxAll);
 				boolean enableThisKey = enableWrite && key.startsWith(UserProfile.PROFILE_);
 				cta.setEnabled(enableThisKey);
 				if(enableThisKey)

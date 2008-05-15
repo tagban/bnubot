@@ -32,7 +32,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import net.bnubot.bot.gui.components.ConfigCheckBox;
-import net.bnubot.bot.gui.components.ConfigTextArea;
+import net.bnubot.bot.gui.components.ConfigTextField;
 import net.bnubot.db.CustomDataObject;
 import net.bnubot.db.conf.DatabaseContext;
 import net.bnubot.util.Out;
@@ -274,7 +274,7 @@ public class DatabaseEditor {
 		if(fieldType.equals(Boolean.class))
 			valueComponent = new ConfigCheckBox(null, ((Boolean)value).booleanValue());
 		else
-			valueComponent = new ConfigTextArea(v);
+			valueComponent = new ConfigTextField(v);
 		gbc.gridx++;
 		jp.add(valueComponent, gbc);
 
@@ -289,7 +289,7 @@ public class DatabaseEditor {
 				if(fieldType.equals(Boolean.class))
 					return new Boolean(((ConfigCheckBox)valueComponent).isSelected());
 
-				String value = ((ConfigTextArea)valueComponent).getText();
+				String value = ((ConfigTextField)valueComponent).getText();
 				if(fieldType.equals(String.class))
 					return value;
 				if(fieldType.equals(Integer.class) || fieldType.equals(int.class))
