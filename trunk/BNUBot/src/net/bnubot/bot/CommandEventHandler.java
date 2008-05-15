@@ -1148,7 +1148,8 @@ public class CommandEventHandler extends EventHandler {
 			@Override
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
 			throws Exception {
-				VersionCheck.checkVersion(true);
+				if(!VersionCheck.checkVersion(true))
+					user.sendChat("There was no update available", whisperBack);
 			}});
 		Profile.registerCommand("vote", new CommandRunnable() {
 			@Override
