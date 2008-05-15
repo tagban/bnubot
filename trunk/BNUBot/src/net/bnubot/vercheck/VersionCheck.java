@@ -204,6 +204,19 @@ public class VersionCheck {
 						URLDownloader.downloadURL(new URL(url), to, sha1, true);
 						URLDownloader.flush();
 
+						String command;
+						switch(OperatingSystem.userOS) {
+						case WINDOWS:
+							command = "BNUBot.exe";
+							break;
+						case OSX:
+							command = "Contents/MacOS/JavaApplicationStub";
+							break;
+						default:
+							command = "./run.sh";
+							break;
+						}
+
 						// Swap the files
 						renameFile(thisJar, new File(parentFolder + CurrentVersion.version().toFileName()));
 						renameFile(to, thisJar);
@@ -211,7 +224,14 @@ public class VersionCheck {
 
 						// Show complete notification
 						JOptionPane.showMessageDialog(null, "Update complete. Please restart BNU-Bot.");
-						restart();
+
+						try {
+							System.err.println(command);
+							Runtime.getRuntime().exec(command);
+						} catch (IOException e) {
+							Out.exception(e);
+						}
+						System.exit(0);
 					}
 					return true;
 				}
@@ -244,30 +264,5 @@ public class VersionCheck {
 		is.close();
 
 		to.setLastModified(from.lastModified());
-	}
-
-	/**
-	 * This method NEVER returns normally!
-	 */
-	public static void restart() {
-		String command;
-		switch(OperatingSystem.userOS) {
-		case WINDOWS:
-			command = "BNUBot.exe";
-			break;
-		case OSX:
-			command = "Contents/MacOS/JavaApplicationStub";
-			break;
-		default:
-			command = "./run.sh";
-			break;
-		}
-		try {
-			System.err.println(command);
-			Runtime.getRuntime().exec(command);
-		} catch (IOException e) {
-			Out.exception(e);
-		}
-		System.exit(0);
 	}
 }
