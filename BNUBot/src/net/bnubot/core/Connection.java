@@ -419,6 +419,10 @@ public abstract class Connection extends Thread {
 		return (connectionState == ConnectionState.CONNECTED);
 	}
 
+	private boolean isConnecting() {
+		return (connectionState == ConnectionState.CONNECTING);
+	}
+
 	public void setBNLSConnected(boolean c) throws IOException {
 		if(bnlsSocket != null) {
 			bnlsSocket.close();
@@ -434,7 +438,7 @@ public abstract class Connection extends Thread {
 	}
 
 	public void connect() {
-		if(isConnected())
+		if(isConnected() || isConnecting())
 			return;
 
 		try {
@@ -923,6 +927,8 @@ public abstract class Connection extends Thread {
 
 		for(Connection c : profile.getConnections()) {
 			if(equals(c))
+				continue;
+			if(c instanceof BotNetConnection)
 				continue;
 			try {
 				if(c.myUser != null) {
