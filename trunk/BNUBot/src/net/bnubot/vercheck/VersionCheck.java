@@ -189,55 +189,67 @@ public class VersionCheck {
 		if(url == null)
 			return true;
 
-		try {
-			if(jarFileName != null) {
-				File thisJar = new File(jarFileName);
-				if(thisJar.exists()) {
-					String msg = "BNU-Bot version " + vnLatest.toString() + " is available.\nWould you like to update?";
-					if(JOptionPane.showConfirmDialog(null, msg, "BNU-Bot update available", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
-						// Find the parent folder
-						String parentFolder = thisJar.getAbsolutePath();
-						parentFolder = parentFolder.substring(0, parentFolder.lastIndexOf(File.separatorChar) + 1);
-
-						// Download to download.jar
-						File to = new File(parentFolder + "download.jar");
-						URLDownloader.downloadURL(new URL(url), to, sha1, true);
-						URLDownloader.flush();
-
-						String command;
-						switch(OperatingSystem.userOS) {
-						case WINDOWS:
-							command = "BNUBot.exe";
-							break;
-						case OSX:
-							command = "Contents/MacOS/JavaApplicationStub";
-							break;
-						default:
-							command = "./run.sh";
-							break;
-						}
-
-						// Swap the files
-						renameFile(thisJar, new File(parentFolder + CurrentVersion.version().toFileName()));
-						renameFile(to, thisJar);
-						to.delete();
-
-						// Show complete notification
-						JOptionPane.showMessageDialog(null, "Update complete. Please restart BNU-Bot.");
-
-						try {
-							System.err.println(command);
-							Runtime.getRuntime().exec(command);
-						} catch (IOException e) {
-							Out.exception(e);
-						}
-						System.exit(0);
+		if(jarFileName != null) {
+			File thisJar = new File(jarFileName);
+			if(thisJar.exists()) {
+				boolean doUpdate = true;
+				try {
+					if(GlobalSettings.enableGUI) {
+						String msg = "BNU-Bot version " + vnLatest.toString() + " is available.\nWould you like to update?";
+						doUpdate = JOptionPane.showConfirmDialog(null, msg, "BNU-Bot update available", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION;
 					}
-					return true;
+				} catch(Exception e) {
+					// GUI is probably broken
+					Out.exception(e);
 				}
+				if(doUpdate) {
+					// Find the parent folder
+					String parentFolder = thisJar.getAbsolutePath();
+					parentFolder = parentFolder.substring(0, parentFolder.lastIndexOf(File.separatorChar) + 1);
+
+					// Download to download.jar
+					File to = new File(parentFolder + "download.jar");
+					URLDownloader.downloadURL(new URL(url), to, sha1, true);
+					URLDownloader.flush();
+
+					String command;
+					switch(OperatingSystem.userOS) {
+					case WINDOWS:
+						command = "BNUBot.exe";
+						break;
+					case OSX:
+						command = "Contents/MacOS/JavaApplicationStub";
+						break;
+					default:
+						command = "./run.sh";
+						break;
+					}
+
+					// Swap the files
+					renameFile(thisJar, new File(parentFolder + CurrentVersion.version().toFileName()));
+					renameFile(to, thisJar);
+					to.delete();
+
+					// Show complete notification
+					try {
+						if(GlobalSettings.enableGUI)
+							JOptionPane.showMessageDialog(null, "Update complete. BNU-Bot will now attempt to restart.");
+					} catch(Exception e) {
+						// GUI is probably broken
+						Out.exception(e);
+					}
+
+					try {
+						System.err.println(command);
+						Runtime.getRuntime().exec(command);
+					} catch (IOException e) {
+						// Restart failed; oh well, nothing we can do about it now!
+						Out.exception(e);
+					}
+					System.exit(0);
+				}
+				return true;
 			}
-		} catch(Exception e) {
-			Out.exception(e);
 		}
 
 		Out.error(VersionCheck.class, "Update: " + url);

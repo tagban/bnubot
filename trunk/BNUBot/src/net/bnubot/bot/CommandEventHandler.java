@@ -37,6 +37,7 @@ import net.bnubot.util.OperatingSystem;
 import net.bnubot.util.Out;
 import net.bnubot.util.TimeFormatter;
 import net.bnubot.vercheck.CurrentVersion;
+import net.bnubot.vercheck.VersionCheck;
 
 import org.apache.cayenne.ObjectContext;
 
@@ -1142,6 +1143,12 @@ public class CommandEventHandler extends EventHandler {
 				BNetUser target = new BNetUser(source, params[0], user.getFullAccountName());
 				source.sendChat("/unban " + target.getFullLogonName(), false);
 				setInfoForwarding(source, user, whisperBack);
+			}});
+		Profile.registerCommand("update", new CommandRunnable() {
+			@Override
+			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
+			throws Exception {
+				VersionCheck.checkVersion(true);
 			}});
 		Profile.registerCommand("vote", new CommandRunnable() {
 			@Override
