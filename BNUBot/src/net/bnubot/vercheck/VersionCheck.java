@@ -261,6 +261,8 @@ public class VersionCheck {
 					}
 
 					if(bnSubject != null) {
+						bnSubject.sendChat("Updated to " + vnLatest.toString() + "; restarting", whisperBack);
+
 						long target = System.currentTimeMillis() + 10000;
 						ChatQueue cq = bnSubject.getConnection().getProfile().getChatQueue();
 						while((cq.size() > 0) && (target > System.currentTimeMillis())) {
