@@ -267,7 +267,6 @@ public class VersionCheck {
 							Thread.sleep(100);
 							Thread.yield();
 						}
-						Thread.sleep(10000);
 					}
 
 					try {
