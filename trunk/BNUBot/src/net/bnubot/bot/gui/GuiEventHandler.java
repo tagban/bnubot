@@ -532,17 +532,18 @@ public class GuiEventHandler extends EventHandler {
 			return;
 		lastSystemTrayTime = timeNow;
 
-		TrayIcon tray = GuiDesktop.getTray();
-		if(tray != null)
-			tray.displayMessage(headline, text, TrayIcon.MessageType.INFO);
-
 		Growl growl = GuiDesktop.getGrowl();
-		if(growl != null)
+		if(growl != null) {
 			try {
 				growl.notifyGrowlOf(gt, headline, text);
 			} catch (Exception e) {
 				Out.exception(e);
 			}
+		} else {
+			TrayIcon tray = GuiDesktop.getTray();
+			if(tray != null)
+				tray.displayMessage(headline, text, TrayIcon.MessageType.INFO);
+		}
 	}
 
 	@Override
