@@ -449,4 +449,9 @@ public class BNetUser {
 	public String getWhisperCommand() {
 		return "/w " + fullLogonName + " ";
 	}
+
+	public Connection getConnection() {
+		// TODO Auto-generated method stub
+		return con;
+	}
 }
