@@ -298,7 +298,7 @@ public class BNCSConnection extends Connection {
 	@Override
 	protected void initializeConnection(Task connect) throws Exception {
 		if(botnet != null) {
-			if(!profile.getConnections().contains(botnet)) {
+			if(!botnet.isAlive()) {
 				profile.insertConnection(botnet);
 				profile.getConnections().add(botnet);
 			}

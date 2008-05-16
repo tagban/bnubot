@@ -74,10 +74,13 @@ public class Profile {
 		return new Profile(name);
 	}
 
-	private static void add(ConnectionSettings cs) throws Exception {
+	private static boolean add(ConnectionSettings cs) throws Exception {
 		Profile p = findCreateProfile(cs.profile);
 		Connection con = ConnectionFactory.createConnection(cs, p.chatQueue, p);
 		p.insertConnection(con);
+
+		// Add it to the list of connections
+		return p.cons.add(con);
 	}
 
 	private final List<Connection> cons = new ArrayList<Connection>();
@@ -155,9 +158,6 @@ public class Profile {
 
 			// Start the Connection thread
 			con.start();
-
-			// Add it to the list of connections
-			cons.add(con);
 
 			// Wait for the Connection thread to initialize
 			while(!con.isInitialized()) {
