@@ -55,6 +55,7 @@ import net.bnubot.db.Rank;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.settings.Settings;
 import net.bnubot.settings.GlobalSettings.TrayIconMode;
+import net.bnubot.util.OperatingSystem;
 import net.bnubot.util.Out;
 import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.VersionCheck;
@@ -314,27 +315,23 @@ public class GuiDesktop extends JFrame {
 	}
 
 	private void initializeSystemTray() {
-		if(tray != null)
-			return;
-		if(growl != null)
+		if((tray != null) || (growl != null) || !GlobalSettings.trayIconMode.enableTray())
 			return;
 
-		if(!GlobalSettings.trayIconMode.enableTray())
-			return;
+		try {
+			if(OperatingSystem.userOS == OperatingSystem.OSX)
+				growl = new Growl("BNU-Bot", "Contents/Resources/Icon.icns");
+		} catch(Exception ex) {
+			Out.exception(ex);
+			Out.error(GuiEventHandler.class, "Growl is not supported");
+			GlobalSettings.trayIconMode = TrayIconMode.DISABLED;
+		}
 
 		try {
 			if(!SystemTray.isSupported())
 				throw new NoClassDefFoundError();
 		} catch(NoClassDefFoundError e) {
-			Out.error(GuiEventHandler.class, "System tray is not supported; trying growl");
-
-			try {
-				growl = new Growl("BNU-Bot", "Contents/Resources/Icon.icns");
-			} catch(Exception ex) {
-				Out.exception(ex);
-				Out.error(GuiEventHandler.class, "Growl is not supported either");
-				GlobalSettings.trayIconMode = TrayIconMode.DISABLED;
-			}
+			Out.error(GuiEventHandler.class, "SystemTray is not supported! This requires Java 6+");
 			return;
 		}
 
@@ -369,19 +366,20 @@ public class GuiDesktop extends JFrame {
 
 		tray = new TrayIcon(image);
 		tray.setPopupMenu(pm);
-		tray.addMouseListener(new MouseListener() {
-			public void mouseClicked(MouseEvent e) {
-				if(e.getButton() == MouseEvent.BUTTON1) {
-					setVisible(!isVisible());
-					if(isVisible())
-						toFront();
+		if(OperatingSystem.userOS != OperatingSystem.OSX)
+			tray.addMouseListener(new MouseListener() {
+				public void mouseClicked(MouseEvent e) {
+					if(e.getButton() == MouseEvent.BUTTON1) {
+						setVisible(!isVisible());
+						if(isVisible())
+							toFront();
+					}
 				}
-			}
-			public void mouseEntered(MouseEvent e) {}
-			public void mouseExited(MouseEvent e) {}
-			public void mousePressed(MouseEvent e) {}
-			public void mouseReleased(MouseEvent e) {}
-		});
+				public void mouseEntered(MouseEvent e) {}
+				public void mouseExited(MouseEvent e) {}
+				public void mousePressed(MouseEvent e) {}
+				public void mouseReleased(MouseEvent e) {}
+			});
 		tray.setImageAutoSize(true);
 
 		try {
