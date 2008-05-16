@@ -45,6 +45,10 @@ public class ChatQueue extends Thread {
 		setDaemon(true);
 	}
 
+	public int size() {
+		return queue.size();
+	}
+
 	public boolean add(Connection c) {
 		if(c instanceof BotNetConnection)
 			return false;
