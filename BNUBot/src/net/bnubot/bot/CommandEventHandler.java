@@ -309,7 +309,7 @@ public class CommandEventHandler extends EventHandler {
 					}
 					user.sendChat(out, whisperBack);
 				} catch(InvalidUseException e) {
-					user.sendChat("Use: %trigger%add <command> <alias1> [alias2] [alias3...]", whisperBack);
+					user.sendChat("Use: %trigger%addalias <command> <alias1> [alias2] [alias3...]", whisperBack);
 				}
 			}});
 		Profile.registerCommand("allseen", new CommandRunnable() {

@@ -30,7 +30,6 @@
 		<db-attribute name="access" type="INTEGER" isMandatory="true" length="11"/>
 		<db-attribute name="cmdgroup" type="VARCHAR" length="32"/>
 		<db-attribute name="description" type="VARCHAR" length="255"/>
-		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true" length="11"/>
 		<db-attribute name="name" type="VARCHAR" isPrimaryKey="true" isMandatory="true" length="32"/>
 	</db-entity>
 	<db-entity name="command_alias">
