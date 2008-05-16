@@ -275,10 +275,6 @@ public class VersionCheck {
 					} catch (Throwable e) {
 						// Restart failed; oh well, nothing we can do about it now!
 						Out.exception(e);
-						if(bnSubject != null) {
-							bnSubject.sendChat(e.getClass().getSimpleName() + ": " + e.getMessage(), whisperBack);
-							Thread.sleep(4000);
-						}
 					}
 					System.exit(0);
 				}
