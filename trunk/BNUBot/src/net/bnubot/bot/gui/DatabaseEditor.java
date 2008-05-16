@@ -162,9 +162,11 @@ public class DatabaseEditor {
 			return "NULL";
 		try {
 			return row.toDisplayString();
-		} catch(Exception e) {
+		} catch(Exception e) {}
+		try {
 			return Integer.toString(DataObjectUtils.intPKForObject(row));
-		}
+		} catch(Exception e) {};
+		return DataObjectUtils.pkForObject(row).toString();
 	}
 
 	private void loadData() {
