@@ -1146,9 +1146,9 @@ public class CommandEventHandler extends EventHandler {
 			}});
 		Profile.registerCommand("update", new CommandRunnable() {
 			@Override
-			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
+			public void run(Connection source, final BNetUser user, String param, String[] params, final boolean whisperBack, Account commanderAccount, boolean superUser)
 			throws Exception {
-				if(!VersionCheck.checkVersion(true))
+				if(!VersionCheck.checkVersion(true, user, whisperBack))
 					user.sendChat("There was no update available", whisperBack);
 			}});
 		Profile.registerCommand("vote", new CommandRunnable() {

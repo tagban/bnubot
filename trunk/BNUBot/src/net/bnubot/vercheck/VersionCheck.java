@@ -14,8 +14,10 @@ import java.net.URL;
 
 import javax.swing.JOptionPane;
 
+import net.bnubot.core.ChatQueue;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.settings.Settings;
+import net.bnubot.util.BNetUser;
 import net.bnubot.util.OperatingSystem;
 import net.bnubot.util.Out;
 import net.bnubot.util.SHA1Sum;
@@ -36,6 +38,10 @@ public class VersionCheck {
 	 * @throws Exception If an error occurred
 	 */
 	public static boolean checkVersion(boolean force) throws Exception {
+		return checkVersion(force, null, false);
+	}
+
+	public static boolean checkVersion(boolean force, BNetUser bnSubject, boolean whisperBack) throws Exception {
 		if(!force) {
 			final long lastVersionCheck = Settings.read(null, VERSION_CHECK_TIME, 0l);
 			long now = System.currentTimeMillis();
@@ -44,22 +50,22 @@ public class VersionCheck {
 				return false;
 		}
 
-		return checkVersion(false, GlobalSettings.releaseType);
+		return checkVersion(false, GlobalSettings.releaseType, bnSubject, whisperBack);
 	}
 
 	/**
 	 * Helper method to the version check
 	 * @see #doCheckVersion(boolean, ReleaseType, String, String)
 	 */
-	private static boolean checkVersion(boolean forceDownload, ReleaseType rt) throws Exception {
+	private static boolean checkVersion(boolean forceDownload, ReleaseType rt, BNetUser bnSubject, boolean whisperBack) throws Exception {
 		if(CurrentVersion.fromJar()) {
 			String path = System.getProperty("net.bnubot.jarpath", "BNUBot.jar");
 			if(!new File(path).exists())
 				throw new FileNotFoundException(path);
-			return checkVersion(forceDownload, rt, path, null);
+			return checkVersion(forceDownload, rt, path, null, bnSubject, whisperBack);
 		}
 
-		return checkVersion(false, rt, null, null);
+		return checkVersion(false, rt, null, null, bnSubject, whisperBack);
 	}
 
 	/**
@@ -68,10 +74,17 @@ public class VersionCheck {
 	 * @see #doCheckVersion(boolean, ReleaseType, String, String)
 	 */
 	protected static boolean checkVersion(boolean forceDownload, ReleaseType rt, String jarFileName, String downloadFolder) throws Exception {
-		boolean cv = doCheckVersion(forceDownload, rt, jarFileName, downloadFolder);
+		return checkVersion(forceDownload, rt, jarFileName, downloadFolder, null, false);
+	}
+
+	private static boolean checkVersion(boolean forceDownload, ReleaseType rt, String jarFileName, String downloadFolder, BNetUser bnSubject, boolean whisperBack) throws Exception {
+		boolean cv = doCheckVersion(forceDownload, rt, jarFileName, downloadFolder, bnSubject, whisperBack);
 		URLDownloader.flush();
 		if(!cv)
-			Out.debug(VersionCheck.class, "No update available.");
+			if(bnSubject == null)
+				Out.debug(VersionCheck.class, "No update available.");
+			else
+				bnSubject.sendChat("No update available.", whisperBack);
 		return cv;
 	}
 
@@ -81,10 +94,12 @@ public class VersionCheck {
 	 * @param rt The ReleaseType to check for
 	 * @param jarFileName Location of BNUBot.jar
 	 * @param downloadFolder Location of the install path
+	 * @param bnSubject The user to send information to
+	 * @param whisperBack Was the initial command a whisper?
 	 * @return whether an update is available
 	 * @throws Exception if an error occurred
 	 */
-	private static boolean doCheckVersion(boolean forceDownload, ReleaseType rt, String jarFileName, String downloadFolder) throws Exception {
+	private static boolean doCheckVersion(boolean forceDownload, ReleaseType rt, String jarFileName, String downloadFolder, BNetUser bnSubject, boolean whisperBack) throws Exception {
 		Settings.write(null, VERSION_CHECK_TIME, System.currentTimeMillis());
 		Settings.store();
 
@@ -97,7 +112,10 @@ public class VersionCheck {
 			Out.debug(VersionCheck.class, "Requesting latest version from " + url);
 			elem = XMLElementDecorator.parse(url);
 		} catch(Exception e) {
-			Out.error(VersionCheck.class, "Failed to get latest version: " + e.getClass().getSimpleName() + ".");
+			if(bnSubject == null)
+				Out.error(VersionCheck.class, "Failed to get latest version: " + e.getClass().getSimpleName() + ".");
+			else
+				bnSubject.sendChat("Failed to get latest version: " + e.getClass().getSimpleName() + ".", whisperBack);
 			return false;
 		}
 
@@ -106,7 +124,10 @@ public class VersionCheck {
 
 		XMLElementDecorator error = elem.getChild("error");
 		if(error != null) {
-			Out.error(VersionCheck.class, error.getString());
+			if(bnSubject == null)
+				Out.error(VersionCheck.class, error.getString());
+			else
+				bnSubject.sendChat(error.getString(), whisperBack);
 			return false;
 		}
 
@@ -194,7 +215,7 @@ public class VersionCheck {
 			if(thisJar.exists()) {
 				boolean doUpdate = true;
 				try {
-					if(GlobalSettings.enableGUI) {
+					if((bnSubject == null) && GlobalSettings.enableGUI) {
 						String msg = "BNU-Bot version " + vnLatest.toString() + " is available.\nWould you like to update?";
 						doUpdate = JOptionPane.showConfirmDialog(null, msg, "BNU-Bot update available", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION;
 					}
@@ -239,12 +260,25 @@ public class VersionCheck {
 						Out.exception(e);
 					}
 
+					if(bnSubject != null) {
+						long target = System.currentTimeMillis() + 10000;
+						ChatQueue cq = bnSubject.getConnection().getProfile().getChatQueue();
+						while((cq.size() > 0) && (target > System.currentTimeMillis())) {
+							Thread.sleep(100);
+							Thread.yield();
+						}
+						Thread.sleep(10000);
+					}
+
 					try {
-						System.err.println(command);
 						Runtime.getRuntime().exec(command);
-					} catch (IOException e) {
+					} catch (Throwable e) {
 						// Restart failed; oh well, nothing we can do about it now!
 						Out.exception(e);
+						if(bnSubject != null) {
+							bnSubject.sendChat(e.getClass().getSimpleName() + ": " + e.getMessage(), whisperBack);
+							Thread.sleep(4000);
+						}
 					}
 					System.exit(0);
 				}
