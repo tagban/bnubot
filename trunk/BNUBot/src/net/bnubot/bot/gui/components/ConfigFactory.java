@@ -5,6 +5,7 @@
 
 package net.bnubot.bot.gui.components;
 
+import java.awt.Container;
 import java.awt.Dimension;
 
 import javax.swing.Box;
@@ -30,7 +31,7 @@ public class ConfigFactory {
 		return jl;
 	}
 
-	public static ConfigTextField makeText(String label, String value, Box parent) {
+	public static ConfigTextField makeText(String label, String value, Container parent) {
 		ConfigTextField txt = new ConfigTextField(value);
 		txt.setMaximumSize(maxComponentSize);
 		txt.setPreferredSize(preferredTextSize);

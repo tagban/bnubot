@@ -31,6 +31,7 @@ import org.apache.cayenne.conn.PoolManager;
 public class CayenneConfiguration implements DataSourceFactory {
 	private static final long databaseVersion = 2;		// Current schema version
 	private static final long compatibleVersion = 2;	// Minimum version compatible
+	public static boolean firstRun = false;
 
 	private Connection conn = null;
 
@@ -64,8 +65,10 @@ public class CayenneConfiguration implements DataSourceFactory {
 		conn = poolManager.getConnection();
 
 		// Check if the schema is up to par
-		if(!checkSchema())
+		if(!checkSchema()) {
+			firstRun = true;
 			createSchema(settings.schema);
+		}
 		//deleteOldUsers();
 
 		conn.close();
@@ -112,26 +115,16 @@ public class CayenneConfiguration implements DataSourceFactory {
 		ResultSet rs = null;
 		try {
 			rs = createStatement().executeQuery("SELECT version FROM dbVersion");
-		} catch(SQLException e) {
-			return false;
-		}
+			if(rs.next()) {
+				long version = rs.getLong(1);
+				if(version >= compatibleVersion) {
+					close(rs);
+					return true;
+				}
 
-		try {
-			if(!rs.next()) {
-				close(rs);
-				return false;
+				Out.error(getClass(), "Database version is " + version + ", we require " + compatibleVersion);
 			}
-
-			long version = rs.getLong(1);
-			if(version >= compatibleVersion) {
-				close(rs);
-				return true;
-			}
-
-			Out.error(getClass(), "Database version is " + version + ", we require " + compatibleVersion);
-		} catch(SQLException e) {
-			Out.exception(e);
-		}
+		} catch(SQLException e) {}
 
 		if(rs != null)
 			close(rs);

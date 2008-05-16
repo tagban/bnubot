@@ -52,6 +52,7 @@ import net.bnubot.db.CommandAlias;
 import net.bnubot.db.CustomDataObject;
 import net.bnubot.db.Mail;
 import net.bnubot.db.Rank;
+import net.bnubot.db.conf.CayenneConfiguration;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.settings.Settings;
 import net.bnubot.settings.GlobalSettings.TrayIconMode;
@@ -86,6 +87,10 @@ public class GuiDesktop extends JFrame {
 				Settings.store();
 				new WhatsNewWindow();
 			}
+		}
+
+		if(CayenneConfiguration.firstRun) {
+			new DatabaseWizard();
 		}
 
 		setTitle();
