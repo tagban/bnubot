@@ -276,6 +276,8 @@ public class CommandEventHandler extends EventHandler {
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
 			throws Exception {
 				try {
+					if(params == null)
+						throw new InvalidUseException();
 					if(params.length < 2)
 						throw new InvalidUseException();
 
