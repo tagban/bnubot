@@ -241,6 +241,13 @@ public class CommandEventHandler extends EventHandler {
 					}
 
 					int targetAccess = Integer.parseInt(params[1]);
+					Rank originalRank = rsSubjectAccount.getRank();
+					int originalAccess = originalRank.getAccess();
+					if(targetAccess == originalAccess) {
+						user.sendChat("That would have no effect", whisperBack);
+						return;
+					}
+
 					Rank targetRank = Rank.get(targetAccess);
 					if(targetRank == null) {
 						user.sendChat("Invalid rank: " + targetAccess, whisperBack);
@@ -258,11 +265,14 @@ public class CommandEventHandler extends EventHandler {
 							throw new InsufficientAccessException("to add users beyond " + (commanderAccess - 1));
 					}
 
+
 					rsSubjectAccount.setRank(targetRank);
 					rsSubjectAccount.setLastRankChange(new Timestamp(System.currentTimeMillis()));
 					try {
 						rsSubjectAccount.updateRow();
-						user.sendChat("Added user [" + rsSubjectAccount.getName() + "] successfully with access " + targetAccess, whisperBack);
+						user.sendChat(rsSubjectAccount.getName() + "'s rank has changed from "
+								+ originalRank.getPrefix() + " (" + originalAccess + ") to "
+								+ targetRank.getPrefix() + " (" + targetAccess + ")", whisperBack);
 					} catch(Exception e) {
 						Out.exception(e);
 						user.sendChat("Failed: " + e.getMessage(), whisperBack);
