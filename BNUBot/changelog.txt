@@ -22,9 +22,10 @@
 * Fixed a bug that prevented using commands while disconnected (Issue 79)
 * Added an 'addalias' command (Issue 82)
 * The bot will attempt to re-launch itself after downloading an update
-* Added an 'update' command
+* Added an 'update' command, along with auto-restart
 * Fixed a bug where newlines were allowed in settings fields
-* Growl will be used in preference of the SystemTray API
+* Growl will be used in preference of the SystemTray API (OSX/Java6 compatibility)
+* Improved the 'add' command to display info about the previous/new ranks
 
 2.0.6 (r1400) 2008-04-21:
 * Added auto-rejoin afer being kicked (Issue 52)
