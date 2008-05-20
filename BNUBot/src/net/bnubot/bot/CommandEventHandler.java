@@ -7,6 +7,7 @@ package net.bnubot.bot;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -44,6 +45,47 @@ import org.apache.cayenne.ObjectContext;
 public class CommandEventHandler extends EventHandler {
 	private static final Hashtable<Connection, Boolean> sweepBanInProgress = new Hashtable<Connection, Boolean>();
 	private static final Hashtable<Connection, Integer> sweepBannedUsers = new Hashtable<Connection, Integer>();
+
+	private static final Hashtable<Connection, List<TimeBan>> timeBanUsers = new Hashtable<Connection, List<TimeBan>>();
+	private static final Thread timeBanThread = new Thread() {
+		@Override
+		public void run() {
+			while(true) {
+				for(Connection con : timeBanUsers.keySet()) {
+					List<TimeBan> tbs = timeBanUsers.get(con);
+					synchronized(tbs) {
+						for(TimeBan tb : tbs)
+							if(tb.isOver()) {
+								con.sendChat("/unban " + tb.getSubject().getFullLogonName(), false);
+								tbs.remove(tb);
+							}
+					}
+				}
+				try {
+					sleep(5000);
+				} catch (InterruptedException e) {}
+				yield();
+			}
+		};
+	};
+	private static class TimeBan {
+		BNetUser subject;
+		long endTime;
+		public TimeBan(BNetUser subject, long endTime) {
+			this.subject = subject;
+			this.endTime = endTime;
+			if(!timeBanThread.isAlive())
+				timeBanThread.start();
+		}
+
+		public BNetUser getSubject() {
+			return subject;
+		}
+
+		public boolean isOver() {
+			return endTime <= System.currentTimeMillis();
+		}
+	}
 
 	private static final Hashtable<Connection, Vote> votes = new Hashtable<Connection, Vote>();
 	private static class Vote extends Thread {
@@ -1132,6 +1174,37 @@ public class CommandEventHandler extends EventHandler {
 				sweepBannedUsers.put(source, 0);
 				source.sendChat("/who " + param, false);
 			}});
+		Profile.registerCommand("timeban", new CommandRunnable() {
+			@Override
+			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
+			throws Exception {
+				try {
+					if((params == null) || (params.length < 2))
+						throw new InvalidUseException();
+					params = param.split(" ", 2);
+
+					BNetUser bnSubject = source.findUser(params[0], user);
+					if(bnSubject == null) {
+						user.sendChat("User not found", whisperBack);
+						return;
+					}
+
+					long duration;
+					try {
+						duration = TimeFormatter.parseDuration(params[1]);
+					} catch(NumberFormatException e) {
+						throw new InvalidUseException();
+					}
+					if(duration < 30 * TimeFormatter.SECOND) {
+						user.sendChat("You may not timeban for less than 30 seconds", whisperBack);
+						return;
+					}
+
+					doTimeBan(source, user, bnSubject, duration);
+				} catch(InvalidUseException e) {
+					user.sendChat("Use: %trigger%timeban <user>[@realm] [#days] [#hours] ... -- example: %trigger%timeban c0ke@USEast 100days", whisperBack);
+				}
+			}});
 		Profile.registerCommand("trigger", new CommandRunnable() {
 			@Override
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
@@ -1325,7 +1398,7 @@ public class CommandEventHandler extends EventHandler {
 
 					user.sendChat(result, whisperBack);
 				} catch(InvalidUseException e) {
-					user.sendChat("Use: %trigger%whois <user>[@realm]", whisperBack);
+					user.sendChat("Use: %trigger%whois ( <account> | <user>[@realm] )", whisperBack);
 				}
 			}});
 		/*Profile.registerCommand("", new CommandRunnable() {
@@ -1505,6 +1578,19 @@ public class CommandEventHandler extends EventHandler {
 
 			if(numSkipped > 0)
 				user.sendChat("Skipped " + numSkipped + " users with operator status.", whisperBack);
+		}
+	}
+
+	private static void doTimeBan(Connection source, BNetUser user, BNetUser bnSubject, long duration) {
+		source.sendChat("/ban " + bnSubject.getFullLogonName() + " TimeBan from " + user.toString() + " " + TimeFormatter.formatTime(duration, false), false);
+
+		List<TimeBan> tbs = timeBanUsers.get(source);
+		if(tbs == null) {
+			tbs = new ArrayList<TimeBan>();
+			timeBanUsers.put(source, tbs);
+		}
+		synchronized(tbs) {
+			tbs.add(new TimeBan(bnSubject, System.currentTimeMillis() + duration));
 		}
 	}
 
