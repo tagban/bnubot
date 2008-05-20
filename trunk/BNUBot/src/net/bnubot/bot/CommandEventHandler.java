@@ -142,7 +142,7 @@ public class CommandEventHandler extends EventHandler {
 	}
 
 	private static boolean commandsInitialized = false;
-	public static void initializeCommands() {
+	private static void initializeCommands() {
 		if(commandsInitialized)
 			return;
 		commandsInitialized = true;

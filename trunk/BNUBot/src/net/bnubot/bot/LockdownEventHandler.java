@@ -5,6 +5,9 @@
 
 package net.bnubot.bot;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.Profile;
@@ -55,13 +58,20 @@ public class LockdownEventHandler extends EventHandler {
 					leh.endLockdown(source);
 				else
 					leh.startLockdown(source);
-			}
-			});
+			} });
 	}
 
+	// Algorithm 1: single-user floods
 	private BNetUser flooder = null;
 	private long floodStartTime = 0;
 	private long floodActions = 0;
+	private static final long SINGLEUSER_ACTIONS = 3;
+	private static final long SINGLEUSER_TIME = 500;
+
+	// Algorithm 2: multi-user floods
+	private List<Long> multiUserActions = new LinkedList<Long>();
+	private static final long MULTIUSER_SIZE_LIMIT = 20;
+	private static final long MULTIUSER_TIME_LIMIT = 5000;
 
 	private boolean lockdownEnabled = false;
 	private Connection lockdownThreadSource = null;
@@ -81,14 +91,26 @@ public class LockdownEventHandler extends EventHandler {
 	private void floodEvent(Connection source, BNetUser user) {
 		long now = System.currentTimeMillis();
 
-		// Expire the flood timer after 500ms
-		if(now - floodStartTime > 500) {
+		// Detect multi-user floods
+		multiUserActions.add(new Long(now));
+		while(multiUserActions.size() > MULTIUSER_SIZE_LIMIT)
+			multiUserActions.remove(0);
+		long earlyThreshold = now - MULTIUSER_TIME_LIMIT;
+		while(multiUserActions.get(0) < earlyThreshold)
+			multiUserActions.remove(0);
+		if(multiUserActions.size() == MULTIUSER_SIZE_LIMIT) {
+			floodDetected(source, user);
+			return;
+		}
+
+		// Detect single-user floods
+		if(now - floodStartTime > SINGLEUSER_TIME) {
 			flooder = user;
 			floodActions = 1;
 			floodStartTime = now;
 		} else if(user.equals(flooder)) {
 			floodActions++;
-			if(floodActions >= 3)
+			if(floodActions >= SINGLEUSER_ACTIONS)
 				floodDetected(source, user);
 		}
 	}
