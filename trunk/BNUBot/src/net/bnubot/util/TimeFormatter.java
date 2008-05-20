@@ -12,6 +12,12 @@ import java.util.Date;
 import java.util.TimeZone;
 
 public class TimeFormatter {
+	public static final long SECOND = 1000;
+	public static final long MINUTE = 60 * SECOND;
+	public static final long HOUR = 60 * MINUTE;
+	public static final long DAY = 24 * HOUR;
+	public static final long WEEK = 7 * DAY;
+
 	public static TimeZone timeZone = TimeZone.getDefault();
 	public static String tsFormat = "%1$tH:%1$tM:%1$tS.%1$tL";
 
@@ -78,6 +84,71 @@ public class TimeFormatter {
 		}
 
 		return text.trim();
+	}
+
+	public static long parseDuration(String duration)
+	throws NumberFormatException {
+		long out = 0;
+		for(String part : duration.split(" ")) {
+			if(part.length() == 0)
+				continue;
+
+			int i = 0;
+			for(; i < part.length(); i++) {
+				char c = part.charAt(i);
+				if((c < '0') || (c > '9'))
+					break;
+			}
+			long base = Long.parseLong(part.substring(0, i));
+			String unit = part.substring(i).toLowerCase();
+
+			switch(unit.charAt(0)) {
+			case 's':
+				if("s".equals(unit)
+				|| "second".equals(unit)
+				|| "seconds".equals(unit)) {
+					out += base * SECOND;
+					continue;
+				}
+				break;
+			case 'm':
+				if("m".equals(unit)
+				|| "min".equals(unit)
+				|| "mins".equals(unit)
+				|| "minute".equals(unit)
+				|| "minutes".equals(unit)) {
+					out += base * MINUTE;
+					continue;
+				}
+				break;
+			case 'h':
+				if("h".equals(unit)
+				|| "hour".equals(unit)
+				|| "hours".equals(unit)) {
+					out += base * HOUR;
+					continue;
+				}
+				break;
+			case 'd':
+				if("d".equals(unit)
+				|| "day".equals(unit)
+				|| "days".equals(unit)) {
+					out += base * DAY;
+					continue;
+				}
+				break;
+			case 'w':
+				if("w".equals(unit)
+				|| "week".equals(unit)
+				|| "weeks".equals(unit)) {
+					out += base * WEEK;
+					continue;
+				}
+				break;
+			}
+			throw new NumberFormatException("Invalid unit: " + unit);
+		}
+		return out;
 	}
 
 	/**
