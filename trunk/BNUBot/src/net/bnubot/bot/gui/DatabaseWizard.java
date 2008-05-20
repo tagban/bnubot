@@ -1,26 +1,36 @@
 /**
- *
+ * This file is distributed under the GPL
+ * $Id$
  */
+
 package net.bnubot.bot.gui;
 
 import java.awt.CardLayout;
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import net.bnubot.bot.gui.components.ConfigFactory;
+import net.bnubot.bot.gui.components.ConfigTextField;
+import net.bnubot.db.Account;
+import net.bnubot.db.BNLogin;
+import net.bnubot.db.Rank;
 import net.bnubot.settings.GlobalSettings;
+import net.bnubot.util.BNetUser;
+import net.bnubot.util.Out;
 
 /**
- * @author sanderson
+ * @author scotta
  *
  */
 public class DatabaseWizard extends JDialog {
@@ -39,23 +49,6 @@ public class DatabaseWizard extends JDialog {
 		System.exit(0);
 	}
 
-	private class Centralizer extends Box {
-		private static final long serialVersionUID = -7876228470253276798L;
-
-		public Centralizer(Component contents) {
-			super(BoxLayout.X_AXIS);
-
-			Box b = new Box(BoxLayout.Y_AXIS);
-			b.add(Box.createVerticalGlue());
-			b.add(contents);
-			b.add(Box.createVerticalGlue());
-
-			add(Box.createHorizontalGlue());
-			add(b);
-			add(Box.createHorizontalGlue());
-		}
-	}
-
 	private int currentStep = 0;
 	public DatabaseWizard() {
 		final CardLayout cardLayout = new CardLayout();
@@ -67,7 +60,10 @@ public class DatabaseWizard extends JDialog {
 				"<hr/><br/>" +
 				"This is the database configuration wizard." +
 				"</html>"));
-		cards.add("0", new Centralizer(jp));
+		cards.add("0", jp);
+
+		final ConfigTextField accountName;
+		final ConfigTextField[] bnLogins = new ConfigTextField[5];
 
 		jp = new JPanel();
 		{
@@ -77,18 +73,44 @@ public class DatabaseWizard extends JDialog {
 					"<hr/><br/>" +
 					"Create a super-user account to store your battle.net handles.<br/>" +
 					"You should not use your battle.net logon name for this.<br/>" +
+					"<br/>" +
 					"</html>"));
-			/*final ConfigTextField accountName =*/ ConfigFactory.makeText("Account", "Example", jp);
+			accountName = ConfigFactory.makeText("Account", "Example", jp);
 		}
-		cards.add("1", new Centralizer(jp));
+		cards.add("1", jp);
 
 		jp = new JPanel();
-		jp.add(new JLabel("step 2 46895"));
-		cards.add("2", new Centralizer(jp));
+		{
+			jp.setLayout(new BoxLayout(jp, BoxLayout.Y_AXIS));
+			jp.add(new JLabel("<html>" +
+					"<h1>Step 2</h1>" +
+					"<hr/><br/>" +
+					"Associate your battle.net handles with your account.<br/>" +
+					"You must include the user namespace (the part following the @ symbol):<br/>" +
+					"<ul><li>useast.battle.net: USEast / Azeroth</li>" +
+					"<li>uswest.battle.net: USWest / Lordaeron</li>" +
+					"<li>europe.battle.net: Europe / Northrend</li>" +
+					"<li>asia.battle.net: Asia / Kalimdor</li></ul>" +
+					"You may leave boxes blank if you have fewer than five handles.<br/>" +
+					"<br/>" +
+					"</html>"));
+			bnLogins[0] = ConfigFactory.makeText("BNet Login 1", "BNU-Camel@USEast", jp);
+			bnLogins[1] = ConfigFactory.makeText("BNet Login 2", "BNU-Camel@Azeroth", jp);
+			bnLogins[2] = ConfigFactory.makeText("BNet Login 3", "BNU-Camel@USWest", jp);
+			bnLogins[3] = ConfigFactory.makeText("BNet Login 4", "BNU-Camel@Lordaeron", jp);
+			bnLogins[4] = ConfigFactory.makeText("BNet Login 5", "", jp);
+		}
+		cards.add("2", jp);
 
 		jp = new JPanel();
-		jp.add(new JLabel("step 3 46895"));
-		cards.add("3", new Centralizer(jp));
+		jp.add(new JLabel("<html>" +
+				"<h1>Conclusion</h1>" +
+				"<hr/><br/>" +
+				"This is the conclusion.<br/>" +
+				"Explain how to use createaccount and setaccount commands.<br/>" +
+				"<br/>" +
+				"</html>"));
+		cards.add("3", jp);
 
 		final JButton btnBack = new JButton("< Back");
 		btnBack.setEnabled(false);
@@ -120,8 +142,37 @@ public class DatabaseWizard extends JDialog {
 			}});
 
 		btnFinish.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				dispose();
+			public void actionPerformed(ActionEvent event) {
+				try {
+					String account = accountName.getText();
+					List<String> logins = new ArrayList<String>(bnLogins.length);
+					for(ConfigTextField l : bnLogins) {
+						String login = l.getText();
+						if(login.length() <= 0)
+							continue;
+						if(login.indexOf('@') == -1) {
+							JOptionPane.showMessageDialog(DatabaseWizard.this,
+									"Invalid BNetLogin: " + login,
+									"Invalid BNetLogin",
+									JOptionPane.ERROR_MESSAGE);
+							return;
+						}
+
+						logins.add(login);
+					}
+
+					Account a = Account.create(account, Rank.getMax(), null);
+					a.updateRow();
+					for(String l : logins) {
+						BNLogin bnl = BNLogin.getCreate(new BNetUser(null, l, l));
+						bnl.setAccount(a);
+						bnl.updateRow();
+					}
+
+					dispose();
+				} catch(Exception e) {
+					Out.popupException(e, DatabaseWizard.this);
+				}
 			}});
 
 		Box boxButtons = new Box(BoxLayout.X_AXIS);
