@@ -55,7 +55,7 @@ public class CommandEventHandler extends EventHandler {
 					List<TimeBan> tbs = timeBanUsers.get(con);
 					synchronized(tbs) {
 						for(TimeBan tb : tbs)
-							if(tb.isOver()) {
+							if(tb.getTimeLeft() <= 0) {
 								con.sendChat("/unban " + tb.getSubject().getFullLogonName(), false);
 								tbs.remove(tb);
 							}
@@ -82,8 +82,8 @@ public class CommandEventHandler extends EventHandler {
 			return subject;
 		}
 
-		public boolean isOver() {
-			return endTime <= System.currentTimeMillis();
+		public long getTimeLeft() {
+			return endTime - System.currentTimeMillis();
 		}
 	}
 
@@ -1620,6 +1620,16 @@ public class CommandEventHandler extends EventHandler {
 
 	@Override
 	public void channelJoin(Connection source, BNetUser user) {
+		List<TimeBan> timeBans = timeBanUsers.get(source);
+		if(timeBans != null)
+			synchronized(timeBans) {
+				for(TimeBan tb : timeBans)
+					if(tb.getSubject().equals(user)) {
+						source.sendChat("/ban " + user.getFullLogonName() + " TimeBan: " + TimeFormatter.formatTime(tb.getTimeLeft(), false) + " left", false);
+						return;
+					}
+			}
+
 		if(!source.getConnectionSettings().enableGreetings)
 			return;
 
