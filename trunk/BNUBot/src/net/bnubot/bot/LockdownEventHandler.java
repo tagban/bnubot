@@ -20,7 +20,7 @@ import net.bnubot.util.BNetUser;
 import net.bnubot.util.Out;
 
 /**
- * @author sanderson
+ * @author scotta
  *
  */
 public class LockdownEventHandler extends EventHandler {

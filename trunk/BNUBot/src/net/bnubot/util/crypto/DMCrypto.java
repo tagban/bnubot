@@ -8,7 +8,7 @@ package net.bnubot.util.crypto;
 import net.bnubot.util.Out;
 
 /**
- * @author sanderson
+ * @author scotta
  *
  */
 public class DMCrypto {
