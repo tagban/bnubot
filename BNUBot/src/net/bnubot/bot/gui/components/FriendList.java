@@ -18,6 +18,7 @@ import net.bnubot.bot.gui.colors.ColorScheme;
 import net.bnubot.bot.gui.icons.BNetIcon;
 import net.bnubot.bot.gui.icons.IconsDotBniReader;
 import net.bnubot.core.friend.FriendEntry;
+import net.bnubot.util.Out;
 
 public class FriendList extends JPanel {
 	private static final long serialVersionUID = 609660115699769279L;
@@ -88,13 +89,17 @@ public class FriendList extends JPanel {
 	}
 
 	public void update(FriendEntry friend) {
-		JLabel jl = (JLabel)b.getComponent(friend.getEntry().intValue());
-		FriendInfo fi = get(jl);
-		friend.setAccount(fi.entry.getAccount());
-		fi.entry = friend;
-		fi.label.setText(friend.toString());
-		setIcon(fi);
-		validate();
+		try {
+			JLabel jl = (JLabel)b.getComponent(friend.getEntry().intValue());
+			FriendInfo fi = get(jl);
+			friend.setAccount(fi.entry.getAccount());
+			fi.entry = friend;
+			fi.label.setText(friend.toString());
+			setIcon(fi);
+			validate();
+		} catch(Exception e) {
+			Out.exception(e);
+		}
 	}
 
 	public void add(FriendEntry friend) {
