@@ -46,20 +46,17 @@ public class CommandEventHandler extends EventHandler {
 	private static final Hashtable<Connection, Boolean> sweepBanInProgress = new Hashtable<Connection, Boolean>();
 	private static final Hashtable<Connection, Integer> sweepBannedUsers = new Hashtable<Connection, Integer>();
 
-	private static final Hashtable<Connection, List<TimeBan>> timeBanUsers = new Hashtable<Connection, List<TimeBan>>();
+	private static final List<TimeBan> timeBannedUsers = new ArrayList<TimeBan>();
 	private static final Thread timeBanThread = new Thread() {
 		@Override
 		public void run() {
 			while(true) {
-				for(Connection con : timeBanUsers.keySet()) {
-					List<TimeBan> tbs = timeBanUsers.get(con);
-					synchronized(tbs) {
-						for(TimeBan tb : tbs)
-							if(tb.getTimeLeft() <= 0) {
-								con.sendChat("/unban " + tb.getSubject().getFullLogonName(), false);
-								tbs.remove(tb);
-							}
-					}
+				synchronized(timeBannedUsers) {
+					for(TimeBan tb : timeBannedUsers)
+						if(tb.getTimeLeft() <= 0) {
+							tb.getSource().sendChat("/unban " + tb.getSubject().getFullLogonName(), false);
+							timeBannedUsers.remove(tb);
+						}
 				}
 				try {
 					sleep(5000);
@@ -69,13 +66,19 @@ public class CommandEventHandler extends EventHandler {
 		};
 	};
 	private static class TimeBan {
+		Connection source;
 		BNetUser subject;
 		long endTime;
-		public TimeBan(BNetUser subject, long endTime) {
+		public TimeBan(Connection source, BNetUser subject, long endTime) {
+			this.source = source;
 			this.subject = subject;
 			this.endTime = endTime;
 			if(!timeBanThread.isAlive())
 				timeBanThread.start();
+		}
+
+		public Connection getSource() {
+			return source;
 		}
 
 		public BNetUser getSubject() {
@@ -1228,6 +1231,20 @@ public class CommandEventHandler extends EventHandler {
 				BNetUser target = new BNetUser(source, params[0], user.getFullAccountName());
 				source.sendChat("/unban " + target.getFullLogonName(), false);
 				setInfoForwarding(source, user, whisperBack);
+
+				synchronized(timeBannedUsers) {
+					TimeBan targetTimeBan = null;
+					for(TimeBan tb : timeBannedUsers) {
+						if(tb.getSubject().equals(target)) {
+							targetTimeBan = tb;
+							break;
+						}
+					}
+					if(targetTimeBan != null) {
+						timeBannedUsers.remove(targetTimeBan);
+						user.sendChat("Ending timeban on " + target.getFullLogonName(), whisperBack);
+					}
+				}
 			}});
 		Profile.registerCommand("update", new CommandRunnable() {
 			@Override
@@ -1584,13 +1601,8 @@ public class CommandEventHandler extends EventHandler {
 	private static void doTimeBan(Connection source, BNetUser user, BNetUser bnSubject, long duration) {
 		source.sendChat("/ban " + bnSubject.getFullLogonName() + " TimeBan from " + user.toString() + " " + TimeFormatter.formatTime(duration, false), false);
 
-		List<TimeBan> tbs = timeBanUsers.get(source);
-		if(tbs == null) {
-			tbs = new ArrayList<TimeBan>();
-			timeBanUsers.put(source, tbs);
-		}
-		synchronized(tbs) {
-			tbs.add(new TimeBan(bnSubject, System.currentTimeMillis() + duration));
+		synchronized(timeBannedUsers) {
+			timeBannedUsers.add(new TimeBan(source, bnSubject, System.currentTimeMillis() + duration));
 		}
 	}
 
@@ -1620,15 +1632,13 @@ public class CommandEventHandler extends EventHandler {
 
 	@Override
 	public void channelJoin(Connection source, BNetUser user) {
-		List<TimeBan> timeBans = timeBanUsers.get(source);
-		if(timeBans != null)
-			synchronized(timeBans) {
-				for(TimeBan tb : timeBans)
-					if(tb.getSubject().equals(user)) {
-						source.sendChat("/ban " + user.getFullLogonName() + " TimeBan: " + TimeFormatter.formatTime(tb.getTimeLeft(), false) + " left", false);
-						return;
-					}
-			}
+		synchronized(timeBannedUsers) {
+			for(TimeBan tb : timeBannedUsers)
+				if(tb.getSubject().equals(user)) {
+					source.sendChat("/ban " + user.getFullLogonName() + " TimeBan: " + TimeFormatter.formatTime(tb.getTimeLeft(), false) + " left", false);
+					return;
+				}
+		}
 
 		if(!source.getConnectionSettings().enableGreetings)
 			return;
