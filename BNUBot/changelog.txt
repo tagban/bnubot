@@ -26,6 +26,7 @@
 * Fixed a bug where newlines were allowed in settings fields
 * Growl will be used in preference of the SystemTray API (OSX/Java6 compatibility)
 * Improved the 'add' command to display info about the previous/new ranks
+* Added a database configuration wizard
 
 2.0.6 (r1400) 2008-04-21:
 * Added auto-rejoin afer being kicked (Issue 52)
