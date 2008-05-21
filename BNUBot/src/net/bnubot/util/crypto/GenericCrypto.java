@@ -36,7 +36,12 @@ public class GenericCrypto {
 		case (byte)0xB7: return "{REVERSE} " + decode(ReverseCrypto.decode(removeFirst(data)));
 		case (byte)0xB8: return "{MC} " + decode(MCCrypto.decode(removeFirst(data)));
 		case (byte)0xA4: return "{DM} " + decode(DMCrypto.decode(removeFirst(data)));
-		case (byte)0xA3: return "{HEX} " + decode(HexDump.decode(data, 1, data.length));
+		case (byte)0xA3:
+			try {
+				return "{HEX} " + decode(HexDump.decode(data, 1, data.length));
+			} catch(Exception e) {
+				return "{INVALID HEX} " + data;
+			}
 		case (byte)0xE6: return "{B64} " + decode(Base64.decode(removeFirst(data)));
 		}
 		return new String(data);
