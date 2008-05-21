@@ -106,15 +106,12 @@ public abstract class Connection extends Thread {
 	private final List<Task> currentTasks = new LinkedList<Task>();
 	@Override
 	public final void run() {
-		if(!(this instanceof BotNetConnection)) {
-			// We must initialize the EHs in the Connection thread
-			synchronized(eventHandlers) {
-				for(EventHandler eh : eventHandlers)
-					eh.initialize(this);
-			}
+		// We must initialize the EHs in the Connection thread
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.initialize(this);
+			initialized = true;
 		}
-
-		initialized = true;
 
 		while(!disposed) {
 			try {
