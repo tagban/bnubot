@@ -85,7 +85,7 @@ public class BNCSConnection extends Connection {
 	public BNCSConnection(ConnectionSettings cs, Profile p) {
 		super(cs, p);
 
-		if (cs.enableBotNet)
+		if(cs.enableBotNet)
 			try {
 				botnet = new BotNetConnection(this, cs, profile);
 			} catch (Exception e) {
@@ -297,13 +297,8 @@ public class BNCSConnection extends Connection {
 
 	@Override
 	protected void initializeConnection(Task connect) throws Exception {
-		if(botnet != null) {
-			if(!botnet.isAlive()) {
-				profile.insertConnection(botnet);
-				profile.getConnections().add(botnet);
-			}
+		if(botnet != null)
 			botnet.sendStatusUpdate();
-		}
 
 		// Set up BNLS, get verbyte
 		try {
@@ -2294,8 +2289,7 @@ public class BNCSConnection extends Connection {
 		}
 	}
 
-	protected void dispatchLogonRealmEx(int[] MCPChunk1, int ip, int port,
-			int[] MCPChunk2, String uniqueName) {
+	protected void dispatchLogonRealmEx(int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName) {
 		synchronized (eventHandlers) {
 			for (EventHandler eh : eventHandlers)
 				eh.logonRealmEx(this, MCPChunk1, ip, port, MCPChunk2,
