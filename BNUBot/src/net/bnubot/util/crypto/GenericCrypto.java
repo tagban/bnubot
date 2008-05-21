@@ -40,7 +40,7 @@ public class GenericCrypto {
 			try {
 				return "{HEX} " + decode(HexDump.decode(data, 1, data.length));
 			} catch(Exception e) {
-				return "{INVALID HEX} " + data;
+				return "{INVALID HEX} " + new String(data);
 			}
 		case (byte)0xE6: return "{B64} " + decode(Base64.decode(removeFirst(data)));
 		}
