@@ -54,7 +54,7 @@ public class StatStringTest extends TestCase {
 		return ret;
 	}
 
-	public void testD2() {
+	public void testD2() throws Exception {
 		String asdf = "84 80 53 02 02 02 02 0F " +
 		"FF 50 02 02 FF 02 FF FF " +
 		"FF FF FF 4C FF FF FF FF " +
