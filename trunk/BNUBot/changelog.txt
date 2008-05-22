@@ -28,6 +28,7 @@
 * Improved the 'add' command to display info about the previous/new ranks
 * Added a database configuration wizard
 * Added a 'timeban' command
+* Alt+V toggles join/part notifications (Issue 76)
 
 2.0.6 (r1400) 2008-04-21:
 * Added auto-rejoin afer being kicked (Issue 52)
