@@ -14,6 +14,7 @@ import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
 import net.bnubot.JARLoader;
+import net.bnubot.bot.gui.GuiDesktop;
 import net.bnubot.util.Out;
 import net.bnubot.util.TimeFormatter;
 import net.bnubot.vercheck.CurrentVersion;
@@ -54,7 +55,7 @@ public class GlobalSettings {
 	public static boolean displaySlashCommands;
 	public static boolean displayBattleNetMOTD;
 	public static boolean displayBattleNetChannels;
-	public static boolean displayJoinParts;
+	private static boolean displayJoinParts;
 	public static boolean displayChannelUsers;
 	public static boolean enableCLI;
 	public static boolean enableGUI;
@@ -301,5 +302,15 @@ public class GlobalSettings {
 			// Non-jar is always development
 			releaseType = ReleaseType.Development;
 		}
+	}
+
+	public static boolean getDisplayJoinParts() {
+		return displayJoinParts;
+	}
+
+	public static void setDisplayJoinParts(boolean displayJoinParts) {
+		GlobalSettings.displayJoinParts = displayJoinParts;
+		if(enableGUI)
+			GuiDesktop.updateDisplayJoinPartsMenuChecked();
 	}
 }

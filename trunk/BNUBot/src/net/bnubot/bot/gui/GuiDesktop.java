@@ -18,6 +18,7 @@ import java.awt.TrayIcon;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -28,12 +29,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.Icon;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -70,7 +73,8 @@ public class GuiDesktop extends JFrame {
 	private static TrayIcon tray = null;
 	private static Growl growl = null;
 	private static final int KEYMASK = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
-	private static final JMenuItem mnuDebug = new JMenuItem();
+	private static final JCheckBoxMenuItem mnuDebug = new JCheckBoxMenuItem("Enable debug logging");
+	private static final JCheckBoxMenuItem mnuDisplayJoinParts = new JCheckBoxMenuItem("Display join/parts", GlobalSettings.getDisplayJoinParts());
 
 	// This must be the last thing to initialize
 	private static final GuiDesktop instance = new GuiDesktop();
@@ -227,6 +231,20 @@ public class GuiDesktop extends JFrame {
 			}
 			menuBar.add(menu);
 
+			menu = new JMenu("Display");
+			{
+				updateDisplayJoinPartsMenuChecked();
+				mnuDisplayJoinParts.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						GlobalSettings.setDisplayJoinParts(!GlobalSettings.getDisplayJoinParts());
+					} });
+				// Alt+V
+				mnuDisplayJoinParts.setAccelerator(
+						KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.ALT_DOWN_MASK));
+				menu.add(mnuDisplayJoinParts);
+			}
+			menuBar.add(menu);
+
 			menu = new JMenu("Database");
 			{
 				addDatabaseEditor(menu, Account.class);
@@ -247,11 +265,12 @@ public class GuiDesktop extends JFrame {
 					} });
 				menu.add(menuItem);
 
-				updateDebugMenuText();
+				updateDebugMenuChecked();
 				mnuDebug.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent event) {
 						Out.setDebug(!Out.isDebug());
 					}});
+				mnuDebug.setText("Enable debug logging");
 				menu.add(mnuDebug);
 			}
 			menuBar.add(menu);
@@ -472,8 +491,17 @@ public class GuiDesktop extends JFrame {
 	/**
 	 * Set the debug menu item text
 	 */
-	public static void updateDebugMenuText() {
-		mnuDebug.setText((Out.isDebug() ? "Dis" : "En") + "able debug logging");
+	public static void updateDebugMenuChecked() {
+		mnuDebug.setState(Out.isDebug());
+	}
+
+	public static void updateDisplayJoinPartsMenuChecked() {
+		boolean djp = GlobalSettings.getDisplayJoinParts();
+		if(djp == mnuDisplayJoinParts.getState())
+			return;
+		mnuDisplayJoinParts.setState(djp);
+		if(selectedGui != null)
+			selectedGui.channelInfo("Join/part notifications " + (djp ? "en" : "dis") + "abled.");
 	}
 
 	/**
