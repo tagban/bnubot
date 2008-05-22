@@ -56,10 +56,11 @@ public class DatabaseWizard extends JDialog {
 
 		JPanel jp = new JPanel();
 		jp.add(new JLabel("<html>" +
-				"<h1>Introduction</h1>" +
-				"<hr/><br/>" +
-				"This is the database configuration wizard." +
-				"</html>"));
+					"<h1>Introduction</h1>" +
+					"<hr/><br/>" +
+					"This is the database configuration wizard. This wizard will assist you in setting up your<br/>" +
+					"database by helping you to configure your first account. To begin, click Next." +
+					"</html>"));
 		cards.add("0", jp);
 
 		final ConfigTextField accountName;
@@ -72,10 +73,13 @@ public class DatabaseWizard extends JDialog {
 					"<h1>Step 1</h1>" +
 					"<hr/><br/>" +
 					"Create a super-user account to store your battle.net handles.<br/>" +
-					"You should not use your battle.net logon name for this.<br/>" +
+					"You should not use your battle.net logon name for this, but a canonical name.<br/>" +
+					"For example, my Battle.net account is BNU-Camel@Azeroth, so my account name is Camel.<br/>" +
+					"I might also choose to use Scott for a more formal name. Users will use this canonical<br/>" +
+					"name for things like sending you mail, so try to keep it simple.<br/>" +
 					"<br/>" +
 					"</html>"));
-			accountName = ConfigFactory.makeText("Account", "Example", jp);
+			accountName = ConfigFactory.makeText("Account", "Camel", jp);
 		}
 		cards.add("1", jp);
 
@@ -103,19 +107,34 @@ public class DatabaseWizard extends JDialog {
 		cards.add("2", jp);
 
 		jp = new JPanel();
-		jp.add(new JLabel("<html>" +
-				"<h1>Conclusion</h1>" +
-				"<hr/><br/>" +
-				"This is the conclusion.<br/>" +
-				"Explain how to use createaccount and setaccount commands.<br/>" +
-				"<br/>" +
-				"</html>"));
+		{
+			jp.add(new JLabel("<html>" +
+					"<h1>Conclusion</h1>" +
+					"<hr/><br/>" +
+					"When you click Finish, the new data will be added to the database.<br/>" +
+					"<br/>" +
+					"To create more accounts, you can use commands directly through the bot window.<br/>" +
+					"<br/>" +
+					"Example:<br/>" +
+					"/createaccount Camel<br/>" +
+					"/setaccount BNU-Camel@Azeroth Camel<br/>" +
+					"<br/>" +
+					"You can also use the shortened versions (aliases) of these commands:<br/>" +
+					"/ca Camel<br/>" +
+					"/sa BNU-CameL@Azeroth Camel<br/>" +
+					"<br/>" +
+					"Be sure to check out the database editors, on the Database menu, as well.<br/>" +
+					"You can customize greetings, autopromtions, and how long bnet logins remain<br/>" +
+					"in the database before being deleted (expireDays) with the rank editor.<br/>" +
+					"</html>"));
+		}
 		cards.add("3", jp);
 
 		final JButton btnBack = new JButton("< Back");
 		btnBack.setEnabled(false);
 		final JButton btnNext = new JButton("Next >");
 		final JButton btnFinish = new JButton("Finish");
+		btnFinish.setEnabled(false);
 
 		btnBack.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -161,7 +180,9 @@ public class DatabaseWizard extends JDialog {
 						logins.add(login);
 					}
 
-					Account a = Account.create(account, Rank.getMax(), null);
+					Account a = Account.get(account);
+					if(a == null)
+						a = Account.create(account, Rank.getMax(), null);
 					a.updateRow();
 					for(String l : logins) {
 						BNLogin bnl = BNLogin.getCreate(new BNetUser(null, l, l));
