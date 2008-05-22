@@ -228,7 +228,7 @@ public class Out {
 		globalDebug = debug;
 		try {
 			if(GlobalSettings.enableGUI)
-				GuiDesktop.updateDebugMenuText();
+				GuiDesktop.updateDebugMenuChecked();
 			debug(Out.class, "Debug logging " + (debug ? "en" : "dis") + "abled");
 			Settings.write(null, "debug", debug);
 			Settings.store();

@@ -549,7 +549,7 @@ public class GuiEventHandler extends EventHandler {
 	@Override
 	public void channelJoin(Connection source, BNetUser user) {
 		userList.showUser(source, user);
-		if(GlobalSettings.displayJoinParts)
+		if(GlobalSettings.getDisplayJoinParts())
 			mainTextArea.channelInfo(user.toStringEx() + " has joined the channel" + user.getStatString().toString() + ".");
 		if(GlobalSettings.trayDisplayJoinPart)
 			notifySystemTray(
@@ -562,7 +562,7 @@ public class GuiEventHandler extends EventHandler {
 	@Override
 	public void channelLeave(Connection source, BNetUser user) {
 		userList.removeUser(user);
-		if(GlobalSettings.displayJoinParts)
+		if(GlobalSettings.getDisplayJoinParts())
 			mainTextArea.channelInfo(user.toStringEx() + " has left the channel.");
 		if(GlobalSettings.trayDisplayJoinPart)
 			notifySystemTray(
@@ -882,5 +882,9 @@ public class GuiEventHandler extends EventHandler {
 
 	public Connection getFirstConnection() {
 		return firstConnection;
+	}
+
+	public void channelInfo(String text) {
+		mainTextArea.channelInfo(text);
 	}
 }

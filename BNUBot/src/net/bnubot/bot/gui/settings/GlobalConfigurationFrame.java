@@ -294,7 +294,7 @@ public class GlobalConfigurationFrame extends JDialog {
 
 				boxAll.add(chkDisplayBattleNetMOTD = new ConfigCheckBox("Display Battle.net MOTD", GlobalSettings.displayBattleNetMOTD));
 				boxAll.add(chkDisplayBattleNetChannels = new ConfigCheckBox("Display Battle.net Channels", GlobalSettings.displayBattleNetChannels));
-				boxAll.add(chkDisplayJoinParts = new ConfigCheckBox("Display Join/Part Messages", GlobalSettings.displayJoinParts));
+				boxAll.add(chkDisplayJoinParts = new ConfigCheckBox("Display Join/Part Messages", GlobalSettings.getDisplayJoinParts()));
 				boxAll.add(chkDisplayChannelUsers = new ConfigCheckBox("Display Channel Users On Join", GlobalSettings.displayChannelUsers));
 				txtGuiFontFamily = ConfigFactory.makeText("GUI Font Family", GlobalSettings.guiFontFamily, boxAll);
 				spnGuiFontSize = ConfigFactory.makeSpinner("GUI Font Size", new Integer(GlobalSettings.guiFontSize), boxAll);
@@ -406,7 +406,7 @@ public class GlobalConfigurationFrame extends JDialog {
 			GlobalSettings.enableMirrorSelector = chkEnableMirrorSelector.isSelected();
 			GlobalSettings.displayBattleNetMOTD = chkDisplayBattleNetMOTD.isSelected();
 			GlobalSettings.displayBattleNetChannels = chkDisplayBattleNetChannels.isSelected();
-			GlobalSettings.displayJoinParts = chkDisplayJoinParts.isSelected();
+			GlobalSettings.setDisplayJoinParts(chkDisplayJoinParts.isSelected());
 			GlobalSettings.displayChannelUsers = chkDisplayChannelUsers.isSelected();
 			GlobalSettings.guiFontFamily = txtGuiFontFamily.getText();
 			GlobalSettings.guiFontSize = spnGuiFontSize.getValue().intValue();
@@ -498,7 +498,7 @@ public class GlobalConfigurationFrame extends JDialog {
 			chkEnableMirrorSelector.setSelected(GlobalSettings.enableMirrorSelector);
 			chkDisplayBattleNetMOTD.setSelected(GlobalSettings.displayBattleNetMOTD);
 			chkDisplayBattleNetChannels.setSelected(GlobalSettings.displayBattleNetChannels);
-			chkDisplayJoinParts.setSelected(GlobalSettings.displayJoinParts);
+			chkDisplayJoinParts.setSelected(GlobalSettings.getDisplayJoinParts());
 			chkDisplayChannelUsers.setSelected(GlobalSettings.displayChannelUsers);
 			txtGuiFontFamily.setText(GlobalSettings.guiFontFamily);
 			spnGuiFontSize.setValue(new Integer(GlobalSettings.guiFontSize));

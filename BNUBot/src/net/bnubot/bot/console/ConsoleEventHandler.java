@@ -42,12 +42,12 @@ public class ConsoleEventHandler extends EventHandler {
 
 	@Override
 	public void channelJoin(Connection source, BNetUser user) {
-		if(GlobalSettings.displayJoinParts)
+		if(GlobalSettings.getDisplayJoinParts())
 			System.out.println(user.toStringEx() + " has joined the channel" + user.getStatString().toString() + ".");
 	}
 	@Override
 	public void channelLeave(Connection source, BNetUser user) {
-		if(GlobalSettings.displayJoinParts)
+		if(GlobalSettings.getDisplayJoinParts())
 			System.out.println(user.toStringEx() + " has left the channel.");
 	}
 
