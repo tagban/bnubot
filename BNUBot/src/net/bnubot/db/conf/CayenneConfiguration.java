@@ -20,7 +20,9 @@ import java.sql.Statement;
 import javax.sql.DataSource;
 
 import net.bnubot.JARLoader;
+import net.bnubot.bot.gui.DatabaseWizard;
 import net.bnubot.settings.DatabaseSettings;
+import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.Out;
 
 import org.apache.cayenne.access.ConnectionLogger;
@@ -31,7 +33,6 @@ import org.apache.cayenne.conn.PoolManager;
 public class CayenneConfiguration implements DataSourceFactory {
 	private static final long databaseVersion = 2;		// Current schema version
 	private static final long compatibleVersion = 2;	// Minimum version compatible
-	public static boolean firstRun = false;
 
 	private Connection conn = null;
 
@@ -66,10 +67,10 @@ public class CayenneConfiguration implements DataSourceFactory {
 
 		// Check if the schema is up to par
 		if(!checkSchema()) {
-			firstRun = true;
 			createSchema(settings.schema);
+			if(GlobalSettings.enableGUI)
+				new DatabaseWizard();
 		}
-		//deleteOldUsers();
 
 		conn.close();
 
@@ -180,99 +181,4 @@ public class CayenneConfiguration implements DataSourceFactory {
 			throw e;
 		}
 	}
-
-	/*public void deleteOldUsers() throws SQLException {
-		String SQL;
-		if(conn.getClass().getName().startsWith("org.apache.derby"))
-			SQL = "{fn TIMESTAMPDIFF(SQL_TSI_DAY, CURRENT_TIMESTAMP, lastSeen)}";
-		else
-			SQL = "DATEDIFF(NOW(), lastSeen)";
-
-		SQL =
-			"SELECT login, " + SQL + " as dss, rank.id AS rank, rank.expireDays " +
-				"FROM bnlogin " +
-				"JOIN account ON (bnlogin.account=account.id) " +
-				"JOIN rank ON (account.access=rank.id) " +
-			"UNION " +
-			"SELECT login, " + SQL + " as dss, 0 AS rank, 90 AS expireDays " +
-				"FROM bnlogin " +
-				"WHERE account IS NULL " +
-			"ORDER BY dss DESC";
-
-		ResultSet rsOld = createStatement().executeQuery(SQL);
-		while(rsOld.next()) {
-			long expireDays = rsOld.getLong("expireDays");
-			if(expireDays == 0)
-				continue;
-			long dss = rsOld.getLong("dss");
-			if(dss > expireDays) {
-				String login = rsOld.getString("login");
-
-				BNLoginResultSet rsUser = getUser(new BNetUser(null, login));
-				if(rsUser.next()) {
-					Long rank = rsOld.getLong("rank");
-					if(rsOld.wasNull())
-						rank = null;
-
-					String out = "Removing user ";
-					out += login;
-					out += " (";
-					if((rank != null) && (rank != 0))
-						out += "rank=" + rank + ", ";
-					out += "dss=";
-					out += dss;
-					out += "/";
-					out += expireDays;
-					out += ")";
-					Out.info(getClass(), out);
-
-					//Delete them!
-					rsUser.deleteRow();
-				}
-				close(rsUser);
-			}
-		}
-		close(rsOld);
-
-		//Find accounts that are not instrumental to the recruitment tree, and have no accounts
-		AccountResultSet rsAccount = getAccounts();
-		while(rsAccount.next()) {
-			//Check number of connected logins
-			{
-				PreparedStatement ps = prepareStatement("SELECT COUNT(*) FROM bnlogin WHERE bnlogin.account=?");
-				ps.setLong(1, rsAccount.getId());
-				ResultSet rsLogins = ps.executeQuery();
-				if(!rsLogins.next())
-					throw new SQLException("fetch failed");
-				long logins = rsLogins.getLong(1);
-				close(rsLogins);
-				if(logins > 0)
-					continue;
-			}
-
-			// Check if they have recruits
-			if(getAccountRecruits(rsAccount.getId()) > 0)
-				continue;
-
-			Long cb = rsAccount.getCreatedBy();
-
-			String out = "Removing account ";
-			out += rsAccount.getName();
-			out += " (rank=";
-			out += rsAccount.getAccess();
-			if(cb != null) {
-				out += ", createdby=";
-				out += cb;
-			}
-			out += ")";
-			Out.info(getClass(), out);
-
-			if(cb != null)
-				sendMail(cb, cb, "Your recruit " + rsAccount.getName() + " has been removed due to inactivity");
-
-			//Restore the cursor to the appropriate row
-			deleteAccount(rsAccount.getId());
-		}
-		close(rsAccount);
-	}*/
 }
