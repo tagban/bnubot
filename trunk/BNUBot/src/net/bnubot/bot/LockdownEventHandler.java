@@ -65,7 +65,7 @@ public class LockdownEventHandler extends EventHandler {
 	private BNetUser flooder = null;
 	private long floodStartTime = 0;
 	private long floodActions = 0;
-	private static final long SINGLEUSER_ACTIONS = 3;
+	private static final long SINGLEUSER_ACTIONS = 4;
 	private static final long SINGLEUSER_TIME = 500;
 
 	// Algorithm 2: multi-user floods
