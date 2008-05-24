@@ -20,6 +20,7 @@ import net.bnubot.core.CommandResponseCookie;
 import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.Profile;
+import net.bnubot.core.Connection.ConnectionState;
 import net.bnubot.core.commands.AccountDoesNotExistException;
 import net.bnubot.core.commands.CommandRunnable;
 import net.bnubot.core.commands.InsufficientAccessException;
@@ -539,7 +540,7 @@ public class CommandEventHandler extends EventHandler {
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
 			throws Exception {
 				for(Connection con : source.getProfile().getConnections())
-					con.disconnect(false);
+					con.disconnect(ConnectionState.DO_NOT_ALLOW_CONNECT);
 			}});
 		Profile.registerCommand("home", new CommandRunnable() {
 			@Override

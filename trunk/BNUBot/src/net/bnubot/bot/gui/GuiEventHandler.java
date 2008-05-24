@@ -60,6 +60,7 @@ import net.bnubot.bot.gui.settings.OperationCancelledException;
 import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.Profile;
+import net.bnubot.core.Connection.ConnectionState;
 import net.bnubot.core.bncs.BNCSConnection;
 import net.bnubot.core.botnet.BotNetConnection;
 import net.bnubot.core.botnet.BotNetUser;
@@ -237,7 +238,7 @@ public class GuiEventHandler extends EventHandler {
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						for(Connection con : firstConnection.getProfile().getConnections())
-							con.disconnect(false);
+							con.disconnect(ConnectionState.DO_NOT_ALLOW_CONNECT);
 					} });
 				menu.add(menuItem);
 			}
