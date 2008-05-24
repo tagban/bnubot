@@ -42,17 +42,20 @@ import net.bnubot.vercheck.CurrentVersion;
 public abstract class Connection extends Thread {
 	public enum ConnectionState {
 		DO_NOT_ALLOW_CONNECT,
+		LONG_PAUSE_BEFORE_CONNECT,
 		ALLOW_CONNECT,
 		FORCE_CONNECT,
 		CONNECTING,
 		CONNECTED;
 
-		public boolean canConnect() {
+		public boolean canConnect(long timeWaiting) {
 			switch(this) {
 			case FORCE_CONNECT:
 				return true;
 			case ALLOW_CONNECT:
 				return GlobalSettings.autoConnect;
+			case LONG_PAUSE_BEFORE_CONNECT:
+				return timeWaiting > (1000l * 60l);
 			}
 			return false;
 		}
@@ -122,7 +125,8 @@ public abstract class Connection extends Thread {
 				dispatchTitleChanged();
 
 				// Wait until we're supposed to connect
-				while(!connectionState.canConnect()) {
+				long waitStartTime = System.currentTimeMillis();
+				while(!connectionState.canConnect(System.currentTimeMillis() - waitStartTime)) {
 					yield();
 					sleep(200);
 				}
@@ -392,11 +396,6 @@ public abstract class Connection extends Thread {
 		sendReadUserData(user.getFullAccountName());
 	}
 
-	public void reconnect() {
-		disconnect(true);
-		connectionState = ConnectionState.FORCE_CONNECT;
-	}
-
 	public abstract boolean isOp();
 	public abstract ProductIDs getProductID();
 	public String getDisplayType() {
@@ -457,21 +456,39 @@ public abstract class Connection extends Thread {
 		dispatchConnected();
 	}
 
+	public void reconnect() {
+		disconnect(ConnectionState.FORCE_CONNECT);
+	}
+
+	@Deprecated
 	public void disconnect(boolean allowReconnect) {
-		if(!isConnected() && allowReconnect)
-			return;
+		disconnect(allowReconnect ? ConnectionState.ALLOW_CONNECT : ConnectionState.DO_NOT_ALLOW_CONNECT);
+	}
+
+	public void disconnect(ConnectionState newState) {
+		switch(connectionState) {
+		case CONNECTED:
+		case CONNECTING:
+			break;
+		default:
+			switch(newState) {
+			case ALLOW_CONNECT:
+			case LONG_PAUSE_BEFORE_CONNECT:
+				return;
+			}
+		}
+
+		connectionState = newState;
 
 		try {
 			if(socket != null) {
 				socket.close();
 				socket = null;
+				dispatchDisconnected();
 			}
 		} catch(IOException e) {
 			Out.fatalException(e);
 		}
-
-		connectionState = allowReconnect ? ConnectionState.ALLOW_CONNECT : ConnectionState.DO_NOT_ALLOW_CONNECT;
-		dispatchDisconnected();
 	}
 
 	protected long lastChatTime = 0;
