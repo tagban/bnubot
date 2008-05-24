@@ -462,7 +462,7 @@ public abstract class Connection extends Thread {
 
 	@Deprecated
 	public void disconnect(boolean allowReconnect) {
-		disconnect(allowReconnect ? ConnectionState.ALLOW_CONNECT : ConnectionState.DO_NOT_ALLOW_CONNECT);
+		disconnect(allowReconnect ? ConnectionState.ALLOW_CONNECT : ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 	}
 
 	public void disconnect(ConnectionState newState) {
