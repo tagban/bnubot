@@ -18,6 +18,6 @@ Place the trivia files in the trivia folder. The bot accepts trivia in the follo
  * `Scramble*<word>`
 
 == Enabling trivia ==
-Simply type "trivia on" without a trigger.
-To turn it off, type "trivia off".
-To view the leaderboard, type "trivia score".
+Simply type "!trivia on" where ! is your trigger.
+To turn it off, type "!trivia off".
+To view the leaderboard, type "!trivia score".
