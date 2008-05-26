@@ -29,6 +29,8 @@
 * Added a database configuration wizard
 * Added a 'timeban' command
 * Alt+V toggles join/part notifications (Issue 76)
+* Auto-promotions can now apply to users with no account (one is auto-created)
+* Fixed a bug with greetings for users with #x in their logon handle
 
 2.0.6 (r1400) 2008-04-21:
 * Added auto-rejoin afer being kicked (Issue 52)
