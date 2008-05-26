@@ -1722,15 +1722,6 @@ public class CommandEventHandler extends EventHandler {
 			Rank rsRank = (rsAccount == null) ? Rank.get(0) : rsAccount.getRank();
 
 			if(rsRank != null) {
-				// Greetings
-				String greeting = rsRank.getGreeting();
-				if(greeting != null) {
-					try {
-						greeting = String.format(greeting, user.toString(), user.getPing(), user.getFullLogonName());
-						source.sendChat(greeting, false);
-					} catch(NoSuchMethodError e) {}
-				}
-
 				// Autopromotions
 				Integer apDays = rsRank.getApDays();
 				// Check that they meet the days requirement
@@ -1776,8 +1767,11 @@ public class CommandEventHandler extends EventHandler {
 							int rank = 0;
 							if(rsAccount != null)
 								rank = rsAccount.getAccess();
-							else
-								rsAccount = createAccount(user.getFullAccountName(), null, rsUser);
+							else {
+								String name = user.getFullAccountName();
+								name = name.substring(0, name.indexOf('@')-1);
+								rsAccount = createAccount(name, null, rsUser);
+							}
 							// Give them a promotion
 							rsRank = Rank.get(++rank);
 							rsAccount.setRank(rsRank);
@@ -1820,6 +1814,15 @@ public class CommandEventHandler extends EventHandler {
 						msg += " to recieve a promotion!";
 						user.sendChat(msg, true);
 					}
+				}
+
+				// Greetings
+				String greeting = rsRank.getGreeting();
+				if(greeting != null) {
+					try {
+						greeting = String.format(greeting, user.toString(), user.getPing(), user.getFullLogonName());
+						source.sendChat(greeting, false);
+					} catch(NoSuchMethodError e) {}
 				}
 			}
 
