@@ -271,14 +271,13 @@ public class CommandEventHandler extends EventHandler {
 							}
 
 							try {
-								createAccount(params[0], commanderAccount, rsSubject);
+								rsSubjectAccount = createAccount(params[0], commanderAccount, rsSubject);
 							} catch(AccountDoesNotExistException e) {
 								user.sendChat(e.getMessage(), whisperBack);
 								return;
 							}
 
 							// Re-load the account
-							rsSubjectAccount = Account.get(bnSubject);
 							if(rsSubjectAccount == null) {
 								user.sendChat("Failed to create account for an unknown reason", whisperBack);
 								return;
@@ -1519,7 +1518,7 @@ public class CommandEventHandler extends EventHandler {
 		return true;
 	}
 
-	private static void createAccount(String accountName, Account recruiter, BNLogin rsSubject)
+	private static Account createAccount(String accountName, Account recruiter, BNLogin rsSubject)
 	throws AccountDoesNotExistException {
 		Account rsSubjectAccount = Account.get(accountName);
 		if(rsSubjectAccount != null)
@@ -1537,6 +1536,7 @@ public class CommandEventHandler extends EventHandler {
 
 		try {
 			rsSubjectAccount.updateRow();
+			return rsSubjectAccount;
 		} catch(Exception e) {
 			throw new AccountDoesNotExistException(e.getMessage());
 		}
@@ -1730,47 +1730,21 @@ public class CommandEventHandler extends EventHandler {
 						source.sendChat(greeting, false);
 					} catch(NoSuchMethodError e) {}
 				}
-			}
 
-			if(rsAccount == null)
-				return;
-
-			//Birthdays
-			Date birthday = rsAccount.getBirthday();
-			if(birthday != null) {
-				SimpleDateFormat sdf = new SimpleDateFormat("M-d");
-
-				Calendar cal = Calendar.getInstance();
-				Date today = cal.getTime();
-				String s1 = sdf.format(today);
-				String s2 = sdf.format(birthday);
-
-				if(s1.equals(s2)) {
-					cal.setTime(birthday);
-					int age = cal.get(Calendar.YEAR);
-					cal.setTime(today);
-					age = cal.get(Calendar.YEAR) - age;
-					source.sendChat("Happy birthday, " + user.toString() + "! Today, you are " + age + " years old!", false);
-				}
-			}
-
-			//Mail
-			int umc = Mail.getUnreadCount(rsAccount);
-			if(umc > 0)
-				user.sendChat("You have " + umc + " unread messages; type [ %trigger%mail read ] to retrieve them", true);
-
-			if(rsRank != null) {
 				// Autopromotions
 				Integer apDays = rsRank.getApDays();
 				// Check that they meet the days requirement
 				apBlock: if((apDays != null) && (apDays != 0)) {
-					if(rsAccount.getLastRankChange() != null) {
-						double timeElapsed = System.currentTimeMillis() - rsAccount.getLastRankChange().getTime();
-						timeElapsed /= 1000 * 60 * 60 * 24;
+					double timeElapsed = 0;
+					if(rsAccount == null) {
+						timeElapsed = rsUser.getCreated().getTime();
+					} else if(rsAccount.getLastRankChange() == null) {
+						timeElapsed = rsAccount.getLastRankChange().getTime();
+					}
 
-						if(timeElapsed < apDays)
-							break apBlock;
-					} else
+					timeElapsed = System.currentTimeMillis() - timeElapsed;
+					timeElapsed /= 1000 * 60 * 60 * 24;
+					if(timeElapsed < apDays)
 						break apBlock;
 
 					Integer apWins = rsRank.getApWins();
@@ -1780,7 +1754,11 @@ public class CommandEventHandler extends EventHandler {
 					|| (apD2Level == null)
 					|| (apW3Level == null))
 						break apBlock;
-					long wins[] = rsAccount.getWinsLevels(GlobalSettings.recruitTagPrefix, GlobalSettings.recruitTagSuffix);
+					long wins[];
+					if(rsAccount == null)
+						wins = new long[] {0, 0, 0};
+					else
+						wins = rsAccount.getWinsLevels(GlobalSettings.recruitTagPrefix, GlobalSettings.recruitTagSuffix);
 
 					boolean condition = false;
 					condition |= ((apWins > 0) && (wins[0] >= apWins));
@@ -1790,10 +1768,16 @@ public class CommandEventHandler extends EventHandler {
 
 					if(condition) {
 						// Check RS
-						long rs = rsAccount.getRecruitScore(GlobalSettings.recruitAccess);
+						long rs = 0;
+						if(rsAccount != null)
+							rsAccount.getRecruitScore(GlobalSettings.recruitAccess);
 						Integer apRS = rsRank.getApRecruitScore();
 						if((apRS == null) || (apRS == 0) || (rs >= apRS)) {
-							int rank = rsAccount.getAccess();
+							int rank = 0;
+							if(rsAccount != null)
+								rank = rsAccount.getAccess();
+							else
+								rsAccount = createAccount(user.getFullAccountName(), null, rsUser);
 							// Give them a promotion
 							rank++;
 							rsAccount.setRank(Rank.get(rank));
@@ -1838,6 +1822,33 @@ public class CommandEventHandler extends EventHandler {
 					}
 				}
 			}
+
+			if(rsAccount == null)
+				return;
+
+			//Birthdays
+			Date birthday = rsAccount.getBirthday();
+			if(birthday != null) {
+				SimpleDateFormat sdf = new SimpleDateFormat("M-d");
+
+				Calendar cal = Calendar.getInstance();
+				Date today = cal.getTime();
+				String s1 = sdf.format(today);
+				String s2 = sdf.format(birthday);
+
+				if(s1.equals(s2)) {
+					cal.setTime(birthday);
+					int age = cal.get(Calendar.YEAR);
+					cal.setTime(today);
+					age = cal.get(Calendar.YEAR) - age;
+					source.sendChat("Happy birthday, " + user.toString() + "! Today, you are " + age + " years old!", false);
+				}
+			}
+
+			//Mail
+			int umc = Mail.getUnreadCount(rsAccount);
+			if(umc > 0)
+				user.sendChat("You have " + umc + " unread messages; type [ %trigger%mail read ] to retrieve them", true);
 		} catch (Exception e) {
 			Out.exception(e);
 		}
