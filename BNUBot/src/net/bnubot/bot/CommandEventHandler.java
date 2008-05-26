@@ -1779,8 +1779,8 @@ public class CommandEventHandler extends EventHandler {
 							else
 								rsAccount = createAccount(user.getFullAccountName(), null, rsUser);
 							// Give them a promotion
-							rank++;
-							rsAccount.setRank(Rank.get(rank));
+							rsRank = Rank.get(++rank);
+							rsAccount.setRank(rsRank);
 							rsAccount.setLastRankChange(new Date(System.currentTimeMillis()));
 							try {
 								rsAccount.updateRow();
@@ -1789,7 +1789,7 @@ public class CommandEventHandler extends EventHandler {
 								break apBlock;
 							}
 							user.resetPrettyName();	//Reset the presentable name
-							source.sendChat("Congratulations " + user.toString() + ", you just recieved a promotion! Your rank is now " + rank + ".", false);
+							source.sendChat("Congratulations " + user.toString(GlobalSettings.bnUserToStringCommandResponse) + ", you've recieved a promotion! Your rank is now " + rsRank.getPrefix() + " (" + rank + ").", false);
 							String apMail = rsRank.getApMail();
 							if((apMail != null) && (apMail.length() > 0))
 								Mail.send(null, rsAccount, apMail);
