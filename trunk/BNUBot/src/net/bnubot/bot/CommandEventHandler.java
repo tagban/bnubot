@@ -1726,7 +1726,7 @@ public class CommandEventHandler extends EventHandler {
 				String greeting = rsRank.getGreeting();
 				if(greeting != null) {
 					try {
-						greeting = String.format(greeting, user.toString(), user.getPing(), user.getFullAccountName());
+						greeting = String.format(greeting, user.toString(), user.getPing(), user.getFullLogonName());
 						source.sendChat(greeting, false);
 					} catch(NoSuchMethodError e) {}
 				}
