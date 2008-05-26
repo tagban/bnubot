@@ -1769,7 +1769,7 @@ public class CommandEventHandler extends EventHandler {
 								rank = rsAccount.getAccess();
 							else {
 								String name = user.getFullAccountName();
-								name = name.substring(0, name.indexOf('@')-1);
+								name = name.substring(0, name.indexOf('@'));
 								rsAccount = createAccount(name, null, rsUser);
 							}
 							// Give them a promotion
