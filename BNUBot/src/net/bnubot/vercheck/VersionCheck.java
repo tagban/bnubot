@@ -253,7 +253,7 @@ public class VersionCheck {
 
 					// Show complete notification
 					try {
-						if(GlobalSettings.enableGUI)
+						if((bnSubject == null) && GlobalSettings.enableGUI)
 							JOptionPane.showMessageDialog(null, "Update complete. BNU-Bot will now attempt to restart.");
 					} catch(Exception e) {
 						// GUI is probably broken
@@ -263,6 +263,7 @@ public class VersionCheck {
 					if(bnSubject != null) {
 						bnSubject.sendChat("Updated to " + vnLatest.toString() + "; restarting", whisperBack);
 
+						// Wait a maximum of 10 seconds dfor the queue to empty
 						long target = System.currentTimeMillis() + 10000;
 						ChatQueue cq = bnSubject.getConnection().getProfile().getChatQueue();
 						while((cq.size() > 0) && (target > System.currentTimeMillis())) {
