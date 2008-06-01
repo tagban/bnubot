@@ -1,3 +1,8 @@
+/**
+ * This file is distributed under the GPL
+ * $Id$
+ */
+
 package net.bnubot.webbot.client;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
