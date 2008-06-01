@@ -27,10 +27,14 @@ public class PluginManager {
 	}
 
 	public static void register(Class<? extends EventHandler> plugin) {
+		register(plugin, Settings.read(null, plugin.getName(), false));
+	}
+
+	public static void register(Class<? extends EventHandler> plugin, boolean enable) {
 		Out.info(PluginManager.class, "Registering " + plugin.getName());
 		plugins.add(plugin);
 
-		if(Settings.read(null, plugin.getName(), false))
+		if(enable)
 			enabledPlugins.add(plugin);
 	}
 
