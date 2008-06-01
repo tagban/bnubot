@@ -1,3 +1,8 @@
+/**
+ * This file is distributed under the GPL
+ * $Id$
+ */
+
 package net.bnubot.webbot.client.types;
 
 import com.google.gwt.user.client.rpc.IsSerializable;

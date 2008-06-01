@@ -1,3 +1,8 @@
+/**
+ * This file is distributed under the GPL
+ * $Id$
+ */
+
 package net.bnubot.webbot.client.types;
 
 import net.bnubot.webbot.client.types.events.BeanChatEvent;
