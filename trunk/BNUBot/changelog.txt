@@ -9,7 +9,7 @@
 * Fixed a bug where the ChatQueue wouldn't send ops commands
 * Added a telnet plugin compatible with the Battle.net CHAT protocol
 * Added 'whisperback' and 'clearqueue' commands
-* Added MC, Hex, and Base64 encryption - type /mc, /hex, or /b64 to toggle
+* Added DM, MC, Hex, and Base64 encryption - type /dm, /mc, /hex, or /b64 to toggle
 * Added real clan icons (initiate, peon, grunt, shaman, chieftain)
 * Fixed a bug in the 'recruits' command (Issue 77)
 * Fixed several bugs with the 'whois' command
