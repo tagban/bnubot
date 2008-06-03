@@ -675,6 +675,11 @@ public abstract class Connection extends Thread {
 							lastAcceptDecline = null;
 							return;
 						} catch(Exception e) {}
+					if(command[0].equals("dm")) {
+						enabledCryptos ^= GenericCrypto.CRYPTO_DM;
+						dispatchRecieveInfo("DM crypto " + (((enabledCryptos & GenericCrypto.CRYPTO_DM) != 0) ? "enabled" : "disabled"));
+						return;
+					}
 					break;
 				case 'h':
 					if(command[0].equals("hex")) {
