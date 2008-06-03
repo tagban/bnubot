@@ -15,6 +15,7 @@ public class BNUBotTestSuite {
 
 		suite.addTestSuite(net.bnubot.junit.util.BNetUserTest.class);
 		suite.addTestSuite(net.bnubot.junit.util.crypto.Base64Test.class);
+		suite.addTestSuite(net.bnubot.junit.util.crypto.DMCryptoTest.class);
 		suite.addTestSuite(net.bnubot.junit.util.CookieUtilityTest.class);
 		suite.addTestSuite(net.bnubot.junit.util.crypto.HexDumpTest.class);
 		suite.addTestSuite(net.bnubot.junit.util.StatStringTest.class);
