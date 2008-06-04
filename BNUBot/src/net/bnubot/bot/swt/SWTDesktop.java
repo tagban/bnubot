@@ -8,6 +8,8 @@ package net.bnubot.bot.swt;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.ws.Holder;
+
 import net.bnubot.bot.gui.WhatsNewWindow;
 import net.bnubot.bot.gui.icons.BNetIcon;
 import net.bnubot.bot.gui.icons.IconsDotBniReader;
@@ -128,28 +130,36 @@ public class SWTDesktop extends Thread {
 	}
 
 	public static SWTEventHandler createSWTEventHandler() {
-		CTabItem tab = new CTabItem(tabs, SWT.CLOSE);
-		Composite composite = new Composite(tabs, SWT.NULL);
-		final SWTEventHandler seh = new SWTEventHandler(composite);
-		tab.addDisposeListener(new DisposeListener() {
-			public void widgetDisposed(DisposeEvent arg0) {
-				try {
-					seh.getFirstConnection().getProfile().dispose();
-				} catch(Exception e) {}
-			}});
-		tab.setControl(composite);
-		tabs.setSelection(tab);
-		selectedGui = seh;
-		setTitle(seh.toString());
+		final Holder<SWTEventHandler> eh = new Holder<SWTEventHandler>(null);
+		display.syncExec(new Runnable() {
+			public void run() {
+				CTabItem tab = new CTabItem(tabs, SWT.CLOSE);
+				Composite composite = new Composite(tabs, SWT.NULL);
+				final SWTEventHandler seh = new SWTEventHandler(composite);
+				tab.addDisposeListener(new DisposeListener() {
+					public void widgetDisposed(DisposeEvent arg0) {
+						try {
+							seh.getFirstConnection().getProfile().dispose();
+						} catch(Exception e) {}
+					}});
+				tab.setControl(composite);
+				tabs.setSelection(tab);
+				selectedGui = seh;
+				setTitle(seh.toString());
 
-		// TODO: Set the divider location
-		//seh.setDividerLocation(getDividerLocation());
+				// TODO: Set the divider location
+				//seh.setDividerLocation(getDividerLocation());
 
-		// TODO: Add the components to the display
-		//seh.getMenuBar().setVisible(false);
-		//menuBar.add(geh.getMenuBar());
-		guis.add(seh);
+				// TODO: Add the components to the display
+				//seh.getMenuBar().setVisible(false);
+				//menuBar.add(geh.getMenuBar());
+				guis.add(seh);
 
-		return seh;
+				eh.value = seh;
+			}
+		});
+		while(eh.value == null)
+			yield();
+		return eh.value;
 	}
 }

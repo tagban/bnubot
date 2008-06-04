@@ -118,12 +118,8 @@ public class Main {
 			}
 		}
 
-		Display display = null;
-		if(GlobalSettings.enableSWT) {
-			display = Display.getDefault();
-			while(display.readAndDispatch())
-				System.out.print("x");
-		}
+		while(Display.getCurrent().readAndDispatch())
+			System.out.print("x");
 
 		for(int i = 1; i <= GlobalSettings.numBots; i++)
 			Profile.newConnection(i);
@@ -135,11 +131,13 @@ public class Main {
 		Settings.store();
 
 		// SWT requires the main thread to be the event thread
-		if(display != null) {
+		if(GlobalSettings.enableSWT) {
+			Display display = Display.getCurrent();
 			while(!display.isDisposed()) {
 				if(!display.readAndDispatch())
 					display.sleep();
 			}
+			System.exit(0);
 		}
 	}
 }

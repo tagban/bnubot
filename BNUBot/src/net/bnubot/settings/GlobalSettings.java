@@ -15,6 +15,7 @@ import javax.swing.UIManager.LookAndFeelInfo;
 
 import net.bnubot.JARLoader;
 import net.bnubot.bot.gui.GuiDesktop;
+import net.bnubot.bot.swt.SWTDesktop;
 import net.bnubot.util.Out;
 import net.bnubot.util.TimeFormatter;
 import net.bnubot.vercheck.CurrentVersion;
@@ -260,6 +261,8 @@ public class GlobalSettings {
 			setLookAndFeelTheme(Settings.read(null, "lookAndFeelTheme", "SkyKrupp"));
 			setLookAndFeel(Settings.read(null, "lookAndFeel", "JGoodies Plastic XP"));
 		}
+		if(GlobalSettings.enableSWT)
+			SWTDesktop.getInstance();
 		TimeFormatter.tsFormat = Settings.read(null, "tsFormat", TimeFormatter.tsFormat);
 		TimeFormatter.timeZone = Settings.read(null, "timeZone", TimeFormatter.timeZone);
 		bnUserToString = Settings.read(null, "bnUserToString", 3);
