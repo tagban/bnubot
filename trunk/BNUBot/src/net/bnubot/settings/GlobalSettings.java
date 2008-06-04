@@ -93,33 +93,8 @@ public class GlobalSettings {
 
 	private static String lookAndFeel;
 	private static String lookAndFeelTheme;
-	private static String[] lookAndFeelThemes;
+	private static String[] lookAndFeelThemes = null;
 	private static Method setPlasticTheme = null;
-
-	static {
-		enableGUI = Settings.read(null, "enableGUI", true);
-
-		if(enableGUI)
-			try {
-				Class<?> PlasticLookAndFeel = JARLoader.forName("com.jgoodies.looks.plastic.PlasticLookAndFeel");
-
-				// getInstalledThemes()
-				Method getInstalledThemes = PlasticLookAndFeel.getMethod("getInstalledThemes");
-				List<?> themes = (List<?>)getInstalledThemes.invoke(null);
-				List<String> themes2 = new ArrayList<String>(themes.size());
-				for(Object theme : themes)
-					themes2.add(theme.getClass().getSimpleName());
-				lookAndFeelThemes = themes2.toArray(new String[themes2.size()]);
-
-				// setPlasticTheme(PlasticTheme)
-				Class<?> PlasticTheme = JARLoader.forName("com.jgoodies.looks.plastic.PlasticTheme");
-				setPlasticTheme = PlasticLookAndFeel.getMethod("setPlasticTheme", PlasticTheme);
-			} catch(Exception e) {
-				Out.exception(e);
-			}
-
-		load();
-	}
 
 	/**
 	 * Set the Look and Feel to the proper LaF, and adjust the ClassLoader
@@ -281,6 +256,7 @@ public class GlobalSettings {
 		recruitTagPrefix =	Settings.read(null, "recruitTagPrefix", "BNU-");
 		recruitTagSuffix =	Settings.read(null, "recruitTagSuffix", (String)null);
 		if(enableGUI) {
+			GuiDesktop.getInstance();
 			setLookAndFeelTheme(Settings.read(null, "lookAndFeelTheme", "SkyKrupp"));
 			setLookAndFeel(Settings.read(null, "lookAndFeel", "JGoodies Plastic XP"));
 		}
@@ -302,6 +278,25 @@ public class GlobalSettings {
 			// Non-jar is always development
 			releaseType = ReleaseType.Development;
 		}
+
+		if(lookAndFeelThemes == null)
+			try {
+				Class<?> PlasticLookAndFeel = JARLoader.forName("com.jgoodies.looks.plastic.PlasticLookAndFeel");
+
+				// getInstalledThemes()
+				Method getInstalledThemes = PlasticLookAndFeel.getMethod("getInstalledThemes");
+				List<?> themes = (List<?>)getInstalledThemes.invoke(null);
+				List<String> themes2 = new ArrayList<String>(themes.size());
+				for(Object theme : themes)
+					themes2.add(theme.getClass().getSimpleName());
+				lookAndFeelThemes = themes2.toArray(new String[themes2.size()]);
+
+				// setPlasticTheme(PlasticTheme)
+				Class<?> PlasticTheme = JARLoader.forName("com.jgoodies.looks.plastic.PlasticTheme");
+				setPlasticTheme = PlasticLookAndFeel.getMethod("setPlasticTheme", PlasticTheme);
+			} catch(Exception e) {
+				Out.exception(e);
+			}
 	}
 
 	public static boolean getDisplayJoinParts() {
