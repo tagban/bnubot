@@ -16,7 +16,7 @@ import net.bnubot.util.SortedProperties;
 import net.bnubot.vercheck.CurrentVersion;
 
 public class Settings {
-	private static final File propsFile = new File("settings.ini");
+	public static final File propsFile = new File("settings.ini");
 	private static final Properties props = new SortedProperties();
 	private static boolean anythingChanged = false;
 

@@ -44,7 +44,9 @@ public class TextWindow extends JScrollPane {
 				}
 			});
 			setEditable(false);
-			setContentType("text/html");
+			try {
+				setContentType("text/html");
+			} catch(Exception e) {}
 			setBackground(cs.getBackgroundColor());
 		}
 

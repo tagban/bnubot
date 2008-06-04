@@ -8,8 +8,6 @@ package net.bnubot.bot.swt;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.ws.Holder;
-
 import net.bnubot.bot.gui.WhatsNewWindow;
 import net.bnubot.bot.gui.icons.BNetIcon;
 import net.bnubot.bot.gui.icons.IconsDotBniReader;
@@ -30,7 +28,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TrayItem;
 
 public class SWTDesktop extends Thread {
-	private static boolean initialized = false;
 	private static Display display = null;
 	private static Shell shell = null;
 	private static final List<SWTEventHandler> guis = new ArrayList<SWTEventHandler>();
@@ -45,11 +42,6 @@ public class SWTDesktop extends Thread {
 	}
 
 	private SWTDesktop() {
-		start();
-	}
-
-	@Override
-	public void run() {
 		if(CurrentVersion.fromJar()) {
 			// If we're launching a new version, pop up the what's new window
 			long currentVersionBuilt = CurrentVersion.version().getBuildDate().getTime();
@@ -61,7 +53,7 @@ public class SWTDesktop extends Thread {
 			}
 		}
 
-		display = new Display();
+		display = Display.getDefault();
 		shell = new Shell(display);
 		shell.setLayout(new FillLayout());
 		tabs = new CTabFolder(shell, SWT.TOP);
@@ -70,16 +62,8 @@ public class SWTDesktop extends Thread {
 		initializeSystemTray();
 		//WindowPosition.load(this);
 
-		initialized = true;
-
 		shell.pack();
 		shell.open();
-		while(!shell.isDisposed()) {
-			if(!display.readAndDispatch())
-				display.sleep();
-		}
-		display.dispose();
-		System.exit(0);
 	}
 
 	private void initializeSystemTray() {
@@ -144,39 +128,28 @@ public class SWTDesktop extends Thread {
 	}
 
 	public static SWTEventHandler createSWTEventHandler() {
-		while(!initialized)
-			yield();
+		CTabItem tab = new CTabItem(tabs, SWT.CLOSE);
+		Composite composite = new Composite(tabs, SWT.NULL);
+		final SWTEventHandler seh = new SWTEventHandler(composite);
+		tab.addDisposeListener(new DisposeListener() {
+			public void widgetDisposed(DisposeEvent arg0) {
+				try {
+					seh.getFirstConnection().getProfile().dispose();
+				} catch(Exception e) {}
+			}});
+		tab.setControl(composite);
+		tabs.setSelection(tab);
+		selectedGui = seh;
+		setTitle(seh.toString());
 
-		final Holder<SWTEventHandler> eh = new Holder<SWTEventHandler>(null);
-		display.syncExec(new Runnable() {
-			public void run() {
-				CTabItem tab = new CTabItem(tabs, SWT.CLOSE);
-				Composite composite = new Composite(tabs, SWT.NULL);
-				final SWTEventHandler seh = new SWTEventHandler(composite);
-				tab.addDisposeListener(new DisposeListener() {
-					public void widgetDisposed(DisposeEvent arg0) {
-						try {
-							seh.getFirstConnection().getProfile().dispose();
-						} catch(Exception e) {}
-					}});
-				tab.setControl(composite);
-				tabs.setSelection(tab);
-				selectedGui = seh;
-				setTitle(seh.toString());
+		// TODO: Set the divider location
+		//seh.setDividerLocation(getDividerLocation());
 
-				// TODO: Set the divider location
-				//seh.setDividerLocation(getDividerLocation());
+		// TODO: Add the components to the display
+		//seh.getMenuBar().setVisible(false);
+		//menuBar.add(geh.getMenuBar());
+		guis.add(seh);
 
-				// TODO: Add the components to the display
-				//seh.getMenuBar().setVisible(false);
-				//menuBar.add(geh.getMenuBar());
-				guis.add(seh);
-
-				eh.value = seh;
-			}
-		});
-		while(eh.value == null)
-			yield();
-		return eh.value;
+		return seh;
 	}
 }

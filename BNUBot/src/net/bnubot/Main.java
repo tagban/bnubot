@@ -10,7 +10,6 @@ import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.lang.Thread.UncaughtExceptionHandler;
 
-import net.bnubot.bot.gui.GuiDesktop;
 import net.bnubot.bot.gui.settings.GlobalConfigurationFrame;
 import net.bnubot.core.Profile;
 import net.bnubot.settings.GlobalSettings;
@@ -19,6 +18,7 @@ import net.bnubot.util.Out;
 import net.bnubot.vercheck.CurrentVersion;
 
 import org.apache.commons.logging.impl.NoOpLog;
+import org.eclipse.swt.widgets.Display;
 
 public class Main {
 	static {
@@ -27,11 +27,6 @@ public class Main {
 			public void uncaughtException(Thread thread, Throwable t) {
 				Out.exception(t);
 			}});
-
-		// Force the static initializers of GlobalSettings to run
-		if(GlobalSettings.enableGUI)
-			// Force the Swing GUI to start
-			GuiDesktop.getInstance();
 
 		// Delete the bnubot.pid file on application exit
 		File f = new File("bnubot.pid");
@@ -51,7 +46,9 @@ public class Main {
 	}
 
 	public static void main(String[] args) {
-		boolean forceConfig = !new File("settings.ini").exists();
+		boolean forceConfig = !Settings.propsFile.exists();
+		GlobalSettings.load();
+
 		for(int i = 0; i < args.length; i++) {
 			if(args[i].charAt(0) == '-') {
 				switch(args[i].charAt(1)) {
@@ -121,6 +118,13 @@ public class Main {
 			}
 		}
 
+		Display display = null;
+		if(GlobalSettings.enableSWT) {
+			display = Display.getDefault();
+			while(display.readAndDispatch())
+				System.out.print("x");
+		}
+
 		for(int i = 1; i <= GlobalSettings.numBots; i++)
 			Profile.newConnection(i);
 
@@ -129,5 +133,13 @@ public class Main {
 
 		// Write out any modified settings
 		Settings.store();
+
+		// SWT requires the main thread to be the event thread
+		if(display != null) {
+			while(!display.isDisposed()) {
+				if(!display.readAndDispatch())
+					display.sleep();
+			}
+		}
 	}
 }

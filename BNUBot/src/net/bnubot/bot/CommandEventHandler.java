@@ -64,7 +64,7 @@ public class CommandEventHandler extends EventHandler {
 				} catch (InterruptedException e) {}
 				yield();
 			}
-		};
+		}
 	};
 	private static class TimeBan {
 		Connection source;
