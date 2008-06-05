@@ -20,7 +20,6 @@ import javax.swing.UIManager;
 
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.PluginManager;
-import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.Out;
 
 /**
@@ -96,7 +95,7 @@ public class JARLoader {
 
 		for(Class<?> superClazz = clazz; superClazz != null; superClazz = superClazz.getSuperclass()) {
 			// Check if it's a look and feel
-			if(GlobalSettings.enableGUI && superClazz.equals(LookAndFeel.class)) {
+			if(superClazz.equals(LookAndFeel.class)) {
 				LookAndFeel laf = (LookAndFeel)clazz.newInstance();
 				UIManager.installLookAndFeel(laf.getName(), name);
 				break;

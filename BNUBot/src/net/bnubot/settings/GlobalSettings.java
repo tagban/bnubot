@@ -257,9 +257,9 @@ public class GlobalSettings {
 		recruitTagPrefix =	Settings.read(null, "recruitTagPrefix", "BNU-");
 		recruitTagSuffix =	Settings.read(null, "recruitTagSuffix", (String)null);
 		if(enableGUI) {
-			GuiDesktop.getInstance();
 			setLookAndFeelTheme(Settings.read(null, "lookAndFeelTheme", "SkyKrupp"));
 			setLookAndFeel(Settings.read(null, "lookAndFeel", "JGoodies Plastic XP"));
+			GuiDesktop.getInstance();
 		}
 		if(GlobalSettings.enableSWT)
 			SWTDesktop.getInstance();
