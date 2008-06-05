@@ -46,9 +46,10 @@ public class Main {
 	}
 
 	public static void main(String[] args) {
-		boolean forceConfig = !Settings.propsFile.exists();
+		JARLoader.getClassLoader();
 		GlobalSettings.load();
 
+		boolean forceConfig = !Settings.propsFile.exists();
 		for(int i = 0; i < args.length; i++) {
 			if(args[i].charAt(0) == '-') {
 				switch(args[i].charAt(1)) {
