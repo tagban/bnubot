@@ -20,6 +20,7 @@ import javax.swing.UIManager;
 
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.PluginManager;
+import net.bnubot.settings.Settings;
 import net.bnubot.util.Out;
 
 /**
@@ -29,7 +30,7 @@ import net.bnubot.util.Out;
 public class JARLoader {
 	private static final URLClassLoader loader;
 	static {
-		String folder = "lib";
+		String folder = Settings.getRootPath() + "lib";
 
 		File f = new File(folder);
 		if(!f.exists())

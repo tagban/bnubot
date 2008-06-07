@@ -227,7 +227,7 @@ public class ConfigurationFrame extends JDialog {
 		if(!hasCdKeys && isBNCS) {
 			// Offer cd key window
 			JOptionPane.showMessageDialog(this,
-					"You have no CD keys in cdkeys.txt.",
+					"You have no CD keys.",
 					"Error",
 					JOptionPane.ERROR_MESSAGE);
 			try {

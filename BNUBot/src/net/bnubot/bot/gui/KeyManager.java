@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import net.bnubot.settings.Settings;
 import net.bnubot.util.Out;
 
 import org.jbls.util.Buffer;
@@ -69,7 +70,7 @@ public class KeyManager {
 			return;
 		initialized = true;
 
-		File keys = new File("cdkeys.txt");
+		File keys = Settings.keysFile;
 		BufferedReader is = null;
 
 		try {
@@ -133,7 +134,7 @@ public class KeyManager {
 					lastComment = key.substring(1).trim();
 				}
 			} catch(Exception e) {
-				Out.info(KeyManager.class, "Couldn't parse cdkeys.txt line: " + key);
+				Out.info(KeyManager.class, "Couldn't parse line: " + key);
 			}
 		} while(true);
 

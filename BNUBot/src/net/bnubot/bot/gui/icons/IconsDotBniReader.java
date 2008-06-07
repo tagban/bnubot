@@ -24,6 +24,7 @@ import javax.swing.JLabel;
 import net.bnubot.core.BNFTPConnection;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.settings.GlobalSettings;
+import net.bnubot.settings.Settings;
 import net.bnubot.util.BNetInputStream;
 import net.bnubot.util.BNetOutputStream;
 import net.bnubot.util.Out;
@@ -119,15 +120,15 @@ public class IconsDotBniReader {
 
 		File f;
 
-		f = new File("downloads/legacy_icons.bni");
+		f = new File(Settings.getRootPath() + "downloads/legacy_icons.bni");
 		if(f.exists())
 			legacy_icons = readIconsDotBni(f);
 
-		f = new File("downloads/war3_icons.bni");
+		f = new File(Settings.getRootPath() + "downloads/war3_icons.bni");
 		if(f.exists())
 			icons_WAR3 = readIconsDotBni(f);
 
-		f = new File("downloads/w3xp_icons.bni");
+		f = new File(Settings.getRootPath() + "downloads/w3xp_icons.bni");
 		if(f.exists())
 			icons_W3XP = readIconsDotBni(f);
 
@@ -143,11 +144,11 @@ public class IconsDotBniReader {
 				icons = readIconsDotBni(f);
 		} catch(Exception e) {}
 
-		f = new File("downloads/icons_lag.bni");
+		f = new File(Settings.getRootPath() + "downloads/icons_lag.bni");
 		if(f.exists())
 			icons_lag = readIconsDotBni(f);
 
-		f = new File("downloads/icons_clan.bni");
+		f = new File(Settings.getRootPath() + "downloads/icons_clan.bni");
 		if(f.exists())
 			icons_clan = readIconsDotBni(f);
 	}

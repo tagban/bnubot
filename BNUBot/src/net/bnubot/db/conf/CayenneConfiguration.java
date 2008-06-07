@@ -23,6 +23,7 @@ import net.bnubot.JARLoader;
 import net.bnubot.bot.gui.DatabaseWizard;
 import net.bnubot.settings.DatabaseSettings;
 import net.bnubot.settings.GlobalSettings;
+import net.bnubot.settings.Settings;
 import net.bnubot.util.Out;
 
 import org.apache.cayenne.access.ConnectionLogger;
@@ -139,7 +140,7 @@ public class CayenneConfiguration implements DataSourceFactory {
 
 		BufferedReader fr;
 		try {
-			fr = new BufferedReader(new FileReader(new File(schemaFile)));
+			fr = new BufferedReader(new FileReader(new File(Settings.getRootPath() + schemaFile)));
 		} catch (FileNotFoundException e) {
 			throw new SQLException("File not found: " +schemaFile);
 		}

@@ -16,7 +16,8 @@ import net.bnubot.util.SortedProperties;
 import net.bnubot.vercheck.CurrentVersion;
 
 public class Settings {
-	public static final File propsFile = new File("settings.ini");
+	public static final File keysFile = new File(getRootPath() + "cdkeys.txt");
+	public static final File propsFile = new File(getRootPath() + "settings.ini");
 	private static final Properties props = new SortedProperties();
 	private static boolean anythingChanged = false;
 
@@ -32,6 +33,13 @@ public class Settings {
 		if(header == null)
 			return "general_" + setting;
 		return header + "_" + setting;
+	}
+
+	public static String getRootPath() {
+		String out = System.getProperty("net.bnubot.rootpath");
+		if(out != null)
+			return out;
+		return "";
 	}
 
 	public static String read(String header, String setting, String defaultValue) {
