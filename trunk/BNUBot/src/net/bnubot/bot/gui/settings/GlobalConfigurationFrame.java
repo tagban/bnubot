@@ -11,7 +11,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -46,6 +45,7 @@ import net.bnubot.bot.gui.components.TextWindow;
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.PluginManager;
 import net.bnubot.settings.GlobalSettings;
+import net.bnubot.settings.Settings;
 import net.bnubot.settings.GlobalSettings.TabCompleteMode;
 import net.bnubot.settings.GlobalSettings.TrayIconMode;
 import net.bnubot.util.Out;
@@ -446,7 +446,7 @@ public class GlobalConfigurationFrame extends JDialog {
 
 		// Save CD keys
 		try {
-			FileWriter fw = new FileWriter(new File("cdkeys.txt"));
+			FileWriter fw = new FileWriter(Settings.keysFile);
 			fw.write(txtCDKeys.getText());
 			fw.close();
 
@@ -461,8 +461,7 @@ public class GlobalConfigurationFrame extends JDialog {
 	private void loadCDKeys() {
 		String keys = null;
 		try {
-			File f = new File("cdkeys.txt");
-			BufferedReader br = new BufferedReader(new FileReader(f));
+			BufferedReader br = new BufferedReader(new FileReader(Settings.keysFile));
 			while(true) {
 				String l = br.readLine();
 				if(l == null)
