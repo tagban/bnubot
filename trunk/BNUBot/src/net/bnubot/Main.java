@@ -119,9 +119,10 @@ public class Main {
 			}
 		}
 
-		Display display = Display.getCurrent();
-		if(display != null)
+		if(GlobalSettings.enableSWT) {
+			Display display = Display.getCurrent();
 			while(display.readAndDispatch());
+		}
 
 		for(int i = 1; i <= GlobalSettings.numBots; i++)
 			Profile.newConnection(i);
@@ -134,6 +135,7 @@ public class Main {
 
 		// SWT requires the main thread to be the event thread
 		if(GlobalSettings.enableSWT) {
+			Display display = Display.getCurrent();
 			while(!display.isDisposed()) {
 				if(!display.readAndDispatch())
 					display.sleep();
