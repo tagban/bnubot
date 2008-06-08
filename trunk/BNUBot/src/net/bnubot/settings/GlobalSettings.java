@@ -230,8 +230,8 @@ public class GlobalSettings {
 				// setPlasticTheme(PlasticTheme)
 				Class<?> PlasticTheme = JARLoader.forName("com.jgoodies.looks.plastic.PlasticTheme");
 				setPlasticTheme = PlasticLookAndFeel.getMethod("setPlasticTheme", PlasticTheme);
-			} catch(Exception e) {
-				Out.exception(e);
+			} catch(Throwable t) {
+				Out.exception(t);
 			}
 
 		numBots = Settings.read(null, "numBots", 1);
