@@ -74,10 +74,7 @@ public class JARLoader {
 
 							checkClass(name);
 						}
-					} catch(NoClassDefFoundError e) {
-					} catch(ClassNotFoundException e) {
-					} catch(InstantiationException e) {
-					} catch(HeadlessException e) {}
+					} catch(Throwable t) {}
 				}
 			} catch (Exception e) {
 				Out.exception(e);
