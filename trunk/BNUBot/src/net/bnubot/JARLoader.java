@@ -5,6 +5,7 @@
 
 package net.bnubot;
 
+import java.awt.HeadlessException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
@@ -76,8 +77,7 @@ public class JARLoader {
 					} catch(NoClassDefFoundError e) {
 					} catch(ClassNotFoundException e) {
 					} catch(InstantiationException e) {
-					}
-
+					} catch(HeadlessException e) {}
 				}
 			} catch (Exception e) {
 				Out.exception(e);
@@ -90,7 +90,7 @@ public class JARLoader {
 	 * @param name The fully qualified class name
 	 */
 	@SuppressWarnings("unchecked")
-	private static void checkClass(String name) throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+	private static void checkClass(String name) throws ClassNotFoundException, InstantiationException, IllegalAccessException, HeadlessException {
 		// Get a Class for it
 		Class<?> clazz = JARLoader.forName(name);
 
