@@ -64,6 +64,9 @@ public class BNCSConnection extends Connection {
 	private static final String BNCS_TYPE = "Battle.net";
 
 	private BotNetConnection botnet = null;
+	public BotNetConnection getBotNet() {
+		return botnet;
+	}
 
 	private InputStream bnlsInputStream = null;
 	private OutputStream bnlsOutputStream = null;
@@ -1873,11 +1876,6 @@ public class BNCSConnection extends Connection {
 	 */
 	@Override
 	public void sendChatCommand(String text) {
-		if ((botnet != null) && text.startsWith("/botnet ")) {
-			botnet.processCommand(text.substring(8));
-			return;
-		}
-
 		super.sendChatCommand(text);
 
 		switch (productID) {
