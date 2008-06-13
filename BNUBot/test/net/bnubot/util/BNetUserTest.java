@@ -3,7 +3,7 @@
  * $Id$
  */
 
-package net.bnubot.junit.util;
+package net.bnubot.util;
 
 import junit.framework.TestCase;
 import net.bnubot.util.BNetUser;
