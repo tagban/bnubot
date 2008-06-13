@@ -175,7 +175,7 @@ public abstract class Connection extends Thread {
 				Out.exception(e);
 			}
 
-			disconnect(true);
+			disconnect(ConnectionState.ALLOW_CONNECT);
 			try {
 				sleep(5000);
 			} catch (Exception e) {}
@@ -460,11 +460,6 @@ public abstract class Connection extends Thread {
 
 	public void reconnect() {
 		disconnect(ConnectionState.FORCE_CONNECT);
-	}
-
-	@Deprecated
-	public void disconnect(boolean allowReconnect) {
-		disconnect(allowReconnect ? ConnectionState.ALLOW_CONNECT : ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 	}
 
 	public void disconnect(ConnectionState newState) {
@@ -838,7 +833,7 @@ public abstract class Connection extends Thread {
 	 */
 	public void dispose() {
 		disposed = true;
-		disconnect(false);
+		disconnect(ConnectionState.DO_NOT_ALLOW_CONNECT);
 
 		synchronized(eventHandlers) {
 			for(EventHandler e : new ArrayList<EventHandler>(eventHandlers)) {
