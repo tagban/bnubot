@@ -868,7 +868,10 @@ public class CommandEventHandler extends EventHandler {
 			@Override
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
 			throws Exception {
-				source.sendChat(param);
+				int priority = 0;
+				if(commanderAccount != null)
+					priority = commanderAccount.getAccess();
+				source.sendChat(param, priority);
 				setInfoForwarding(source, user, whisperBack);
 			}});
 		Profile.registerCommand("search", new CommandRunnable() {
