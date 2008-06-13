@@ -162,6 +162,8 @@ public class TriviaEventHandler extends EventHandler {
 			List<Account> leaders = Account.getTriviaLeaders();
 			if(leaders == null)
 				return;
+			if(leaders.size() == 0)
+				return;
 
 			StringBuilder out = new StringBuilder("Trivia Leader Board: ");
 			for(Account a : leaders) {
