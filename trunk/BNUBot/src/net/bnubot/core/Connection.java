@@ -542,11 +542,11 @@ public abstract class Connection extends Thread {
 
 	public String cleanText(String text, boolean enableKeywords) {
 		//Remove all chars under 0x20
-		byte[] data = text.getBytes();
+		char[] data = text.toCharArray();
 		text = "";
-		for(byte element : data) {
+		for(char element : data) {
 			if(element >= 0x20)
-				text += (char)element;
+				text += element;
 		}
 
 		boolean somethingDone = true;
@@ -793,7 +793,8 @@ public abstract class Connection extends Thread {
 		if(text.length() == 0)
 			return;
 
-		text = new String(GenericCrypto.encode(text, enabledCryptos));
+		if(enabledCryptos != 0)
+			text = new String(GenericCrypto.encode(text, enabledCryptos));
 
 		//Split up the text in to appropriate sized pieces
 		int pieceSize = MAX_CHAT_LENGTH - (prefix == null ? 0 : prefix.length());
