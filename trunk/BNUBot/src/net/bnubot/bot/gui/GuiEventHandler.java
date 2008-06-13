@@ -302,7 +302,7 @@ public class GuiEventHandler extends EventHandler {
 					try {
 						for(String element : chatTextArea.getText().split("\n")) {
 							if(element.trim().length() > 0)
-								firstConnection.sendChat(element, true);
+								firstConnection.sendChatInternal(element);
 						}
 						chatTextArea.setText(null);
 						return;

@@ -55,7 +55,7 @@ public class CommandEventHandler extends EventHandler {
 				synchronized(timeBannedUsers) {
 					for(TimeBan tb : timeBannedUsers)
 						if(tb.getTimeLeft() <= 0) {
-							tb.getSource().sendChat("/unban " + tb.getSubject().getFullLogonName(), false);
+							tb.getSource().sendChat("/unban " + tb.getSubject().getFullLogonName());
 							timeBannedUsers.remove(tb);
 						}
 				}
@@ -123,7 +123,7 @@ public class CommandEventHandler extends EventHandler {
 		}
 
 		private void send(String text) {
-			connection.sendChat(text, false);
+			connection.sendChat(text);
 		}
 
 		@Override
@@ -783,7 +783,7 @@ public class CommandEventHandler extends EventHandler {
 				}
 
 				bnSubject.resetPrettyName();
-				source.sendChat("Welcome to the clan, " + bnSubject.toString() + "!", false);
+				source.sendChat("Welcome to the clan, " + bnSubject.toString() + "!");
 			}});
 		Profile.registerCommand("recruits", new CommandRunnable() {
 			@Override
@@ -868,7 +868,7 @@ public class CommandEventHandler extends EventHandler {
 			@Override
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
 			throws Exception {
-				source.sendChat(param, false);
+				source.sendChat(param);
 				setInfoForwarding(source, user, whisperBack);
 			}});
 		Profile.registerCommand("search", new CommandRunnable() {
@@ -1175,7 +1175,7 @@ public class CommandEventHandler extends EventHandler {
 				}
 				sweepBanInProgress.put(source, true);
 				sweepBannedUsers.put(source, 0);
-				source.sendChat("/who " + param, false);
+				source.sendChat("/who " + param);
 			}});
 		Profile.registerCommand("timeban", new CommandRunnable() {
 			@Override
@@ -1229,7 +1229,7 @@ public class CommandEventHandler extends EventHandler {
 				}
 
 				BNetUser target = new BNetUser(source, params[0], user.getFullAccountName());
-				source.sendChat("/unban " + target.getFullLogonName(), false);
+				source.sendChat("/unban " + target.getFullLogonName());
 				setInfoForwarding(source, user, whisperBack);
 
 				synchronized(timeBannedUsers) {
@@ -1455,7 +1455,7 @@ public class CommandEventHandler extends EventHandler {
 		Out.debug(getClass(), user.toString() + ": " + command + " [" + whisperBack + "]");
 
 		try {
-			// Grab the obsolete 'param' string
+			// Grab the part of the command string after the space
 			String param = null;
 			{
 				String[] paramHelper = command.split(" ", 2);
@@ -1464,12 +1464,12 @@ public class CommandEventHandler extends EventHandler {
 					param = paramHelper[1];
 			}
 
+			// Check if the command exists
 			Command rsCommand = Command.get(command);
-
-			if(rsCommand == null) {
-				Out.debug(CommandEventHandler.class, "Command " + command + " not found in database");
+			if(rsCommand == null)
 				return false;
-			}
+
+			//Reset the command to the case in the database
 			command = rsCommand.getName();
 
 			//Don't ask questions if they are a super-user
@@ -1568,7 +1568,7 @@ public class CommandEventHandler extends EventHandler {
 			out += " " + reason;
 
 			// Send the command
-			source.sendChat(out, false);
+			source.sendChat(out);
 			setInfoForwarding(source, user, whisperBack);
 		} else {
 			// Wildcard kick/ban
@@ -1590,7 +1590,7 @@ public class CommandEventHandler extends EventHandler {
 				out += u.getFullLogonName() + " " + reason;
 
 				// Send the command
-				source.sendChat(out, false);
+				source.sendChat(out);
 				setInfoForwarding(source, user, whisperBack);
 			}
 
@@ -1600,7 +1600,7 @@ public class CommandEventHandler extends EventHandler {
 	}
 
 	private static void doTimeBan(Connection source, BNetUser user, BNetUser bnSubject, long duration) {
-		source.sendChat("/ban " + bnSubject.getFullLogonName() + " TimeBan from " + user.toString() + " " + TimeFormatter.formatTime(duration, false), false);
+		source.sendChat("/ban " + bnSubject.getFullLogonName() + " TimeBan from " + user.toString() + " " + TimeFormatter.formatTime(duration, false));
 
 		synchronized(timeBannedUsers) {
 			timeBannedUsers.add(new TimeBan(source, bnSubject, System.currentTimeMillis() + duration));
@@ -1636,7 +1636,7 @@ public class CommandEventHandler extends EventHandler {
 		synchronized(timeBannedUsers) {
 			for(TimeBan tb : timeBannedUsers)
 				if(tb.getSubject().equals(user)) {
-					source.sendChat("/ban " + user.getFullLogonName() + " TimeBan: " + TimeFormatter.formatTime(tb.getTimeLeft(), false) + " left", false);
+					source.sendChat("/ban " + user.getFullLogonName() + " TimeBan: " + TimeFormatter.formatTime(tb.getTimeLeft(), false) + " left");
 					return;
 				}
 		}
@@ -1783,7 +1783,7 @@ public class CommandEventHandler extends EventHandler {
 								break apBlock;
 							}
 							user.resetPrettyName();	//Reset the presentable name
-							source.sendChat("Congratulations " + user.toString(GlobalSettings.bnUserToStringCommandResponse) + ", you've recieved a promotion! Your rank is now " + rsRank.getPrefix() + " (" + rank + ").", false);
+							source.sendChat("Congratulations " + user.toString(GlobalSettings.bnUserToStringCommandResponse) + ", you've recieved a promotion! Your rank is now " + rsRank.getPrefix() + " (" + rank + ").");
 							String apMail = rsRank.getApMail();
 							if((apMail != null) && (apMail.length() > 0))
 								Mail.send(null, rsAccount, apMail);
@@ -1821,7 +1821,7 @@ public class CommandEventHandler extends EventHandler {
 				if(greeting != null) {
 					try {
 						greeting = String.format(greeting, user.toString(), user.getPing(), user.getFullLogonName());
-						source.sendChat(greeting, false);
+						source.sendChat(greeting);
 					} catch(NoSuchMethodError e) {}
 				}
 			}
@@ -1844,7 +1844,7 @@ public class CommandEventHandler extends EventHandler {
 					int age = cal.get(Calendar.YEAR);
 					cal.setTime(today);
 					age = cal.get(Calendar.YEAR) - age;
-					source.sendChat("Happy birthday, " + user.toString() + "! Today, you are " + age + " years old!", false);
+					source.sendChat("Happy birthday, " + user.toString() + "! Today, you are " + age + " years old!");
 				}
 			}
 
@@ -1956,7 +1956,7 @@ public class CommandEventHandler extends EventHandler {
 				if(text.substring(0, 17).equals("Users in channel ")) {
 					if(sweepBannedUsers.get(source) == 0) {
 						turnItOff = false;
-						source.sendChat("Sweepbanning channel " + text.substring(17, text.length() - 1), false);
+						source.sendChat("Sweepbanning channel " + text.substring(17, text.length() - 1));
 					}
 				}
 			}
@@ -1965,15 +1965,15 @@ public class CommandEventHandler extends EventHandler {
 			if(users.length == 2) {
 				if(users[0].indexOf(' ') == -1) {
 					if(users[1].indexOf(' ') == -1) {
-						source.sendChat("/ban " + removeOpUserBrackets(users[0]), false);
-						source.sendChat("/ban " + removeOpUserBrackets(users[1]), false);
+						source.sendChat("/ban " + removeOpUserBrackets(users[0]));
+						source.sendChat("/ban " + removeOpUserBrackets(users[1]));
 						sweepBannedUsers.put(source, sweepBannedUsers.get(source) + 2);
 						turnItOff = false;
 					}
 				}
 			} else {
 				if(text.indexOf(' ') == -1) {
-					source.sendChat("/ban " + removeOpUserBrackets(text), false);
+					source.sendChat("/ban " + removeOpUserBrackets(text));
 					sweepBannedUsers.put(source, sweepBannedUsers.get(source) + 1);
 					turnItOff = true;
 				}

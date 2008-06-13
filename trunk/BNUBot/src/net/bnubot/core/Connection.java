@@ -617,17 +617,7 @@ public abstract class Connection extends Thread {
 	 * @param text The whole text to be sent out
 	 */
 	public void sendChat(String text) {
-		sendChat(null, text, false, true, 0);
-	}
-
-	/**
-	 * Helper function to send chat to battle.net
-	 * @param text The whole text to be sent out
-	 * @param allowCommands Enables internal bot commands (/cmd, /profile, etc)
-	 */
-	@Deprecated
-	public void sendChat(String text, boolean allowCommands) {
-		sendChat(null, text, allowCommands, true, 0);
+		sendChat(text, 0);
 	}
 
 	/**
@@ -637,6 +627,15 @@ public abstract class Connection extends Thread {
 	 */
 	public void sendChat(String text, int priority) {
 		sendChat(null, text, false, true, priority);
+	}
+
+	/**
+	 * Helper function to send chat to battle.net, or parse internal commands
+	 * such as /cmd, /profile, /botnet, etc
+	 * @param text The whole text to be sent out
+	 */
+	public void sendChatInternal(String text) {
+		sendChat(null, text, true, true, 0);
 	}
 
 	public static final int MAX_CHAT_LENGTH = 200;
