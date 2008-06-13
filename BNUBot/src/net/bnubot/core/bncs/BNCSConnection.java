@@ -1900,7 +1900,10 @@ public class BNCSConnection extends Connection {
 		// Write the packet
 		try {
 			BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_CHATCOMMAND);
-			p.writeNTString(text);
+			if(enabledCryptos == 0)
+				p.writeNTString(text.getBytes("UTF-8"));
+			else
+				p.writeNTString(text);
 			//p.writeNTString(text);
 			p.SendPacket(bncsOutputStream);
 		} catch (IOException e) {

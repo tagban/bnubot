@@ -28,10 +28,19 @@ public class GenericCrypto {
 		return out;
 	}
 
-	public static String decode(byte[] data) {
+	private static String decode(byte[] data) {
+		return decode(new String(data).toCharArray());
+	}
+
+	public static String decode(char[] original) {
 		//System.out.println(HexDump.hexDump(data));
-		if(data.length <= 1)
-			return new String(data);
+		if(original.length <= 1)
+			return new String(original);
+
+		byte[] data = new byte[original.length];
+		for(int i = 0; i < original.length; i++)
+			data[i] = (byte)original[i];
+
 		switch(data[0]) {
 		case (byte)0xB7: return "{REVERSE} " + decode(ReverseCrypto.decode(removeFirst(data)));
 		case (byte)0xB8: return "{MC} " + decode(MCCrypto.decode(removeFirst(data)));
@@ -44,7 +53,7 @@ public class GenericCrypto {
 			}
 		case (byte)0xE6: return "{B64} " + decode(Base64.decode(removeFirst(data)));
 		}
-		return new String(data);
+		return new String(original);
 	}
 
 	public static byte[] encode(String input, int crypto) {
