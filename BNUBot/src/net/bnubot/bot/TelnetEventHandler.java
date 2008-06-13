@@ -133,7 +133,7 @@ public class TelnetEventHandler extends EventHandler implements Runnable {
 					while(connected) {
 						if(!socket.isConnected())
 							break;
-						pri.sendChat(br.readLine(), true);
+						pri.sendChatInternal(br.readLine());
 					}
 				} catch(SocketException e) {
 					Out.debug(TelnetEventHandler.class, socket.getRemoteSocketAddress().toString() + " " + e.getMessage());

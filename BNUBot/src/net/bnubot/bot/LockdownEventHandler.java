@@ -117,7 +117,7 @@ public class LockdownEventHandler extends EventHandler {
 
 	private void floodDetected(Connection source, BNetUser user) {
 		startLockdown(source);
-		source.sendChat("/f m Flood detected from " + user.getFullLogonName(), false);
+		source.sendChat("/f m Flood detected from " + user.getFullLogonName());
 
 		// Shitlist the user
 		try {
@@ -136,26 +136,26 @@ public class LockdownEventHandler extends EventHandler {
 	private void startLockdown(Connection source) {
 		if(lockdownEnabled)
 			return;
-		source.sendChat("/c priv", false);
+		source.sendChat("/c priv", Integer.MAX_VALUE);
 	}
 
 	private void endLockdown(final Connection source) {
 		if(!lockdownEnabled)
 			return;
-		source.sendChat("/c pub", false);
+		source.sendChat("/c pub", Integer.MAX_VALUE);
 	}
 
 	@Override
 	public void recieveServerInfo(Connection source, String text) {
 		if(lockdownEnabled && CHANNEL_OPEN.equals(text)) {
 			lockdownEnabled = false;
-			source.sendChat("Lockdown disabled.", false);
+			source.sendChat("Lockdown disabled.");
 			return;
 		}
 
 		if(!lockdownEnabled && CHANNEL_CLOSED.equals(text)) {
 			lockdownEnabled = true;
-			source.sendChat("Lockdown enabled.", false);
+			source.sendChat("Lockdown enabled.");
 			lockdownThreadSource = source;
 			lockdownThread.start();
 			return;
@@ -164,8 +164,8 @@ public class LockdownEventHandler extends EventHandler {
 
 	@Override
 	public void bnetConnected(Connection source) {
-		source.sendChat("/c pub", false);
-		source.sendChat("/o unigpub", false);
+		source.sendChat("/c pub");
+		source.sendChat("/o unigpub");
 	}
 
 	@Override

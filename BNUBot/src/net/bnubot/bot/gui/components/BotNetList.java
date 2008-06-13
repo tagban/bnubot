@@ -128,7 +128,7 @@ public class BotNetList extends JPanel {
 				public void actionPerformed(ActionEvent arg0) {
 					UserInfo ui = getUserInfo(arg0);
 					if(ui != null)
-						source.sendChat("/botnet whois " + ui.user.getHandle(), false);
+						source.sendChatInternal("/botnet whois " + ui.user.getHandle());
 				}});
 			ui.menu.add(menuItem);
 			ui.menu.add(Box.createHorizontalGlue());
