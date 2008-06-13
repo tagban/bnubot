@@ -1210,7 +1210,7 @@ public class BNCSConnection extends Connection {
 							statstr = null;
 						break;
 					default:
-						text = is.readNTString();
+						text = is.readNTStringUTF8();
 						break;
 					}
 
