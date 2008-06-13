@@ -3,7 +3,7 @@
  * $Id$
  */
 
-package net.bnubot.junit.vercheck;
+package net.bnubot.vercheck;
 
 import junit.framework.TestCase;
 import net.bnubot.vercheck.ReleaseType;

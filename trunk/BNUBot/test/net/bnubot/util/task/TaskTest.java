@@ -3,7 +3,7 @@
  * $Id$
  */
 
-package net.bnubot.junit.util.task;
+package net.bnubot.util.task;
 
 import junit.framework.TestCase;
 import net.bnubot.util.task.Task;

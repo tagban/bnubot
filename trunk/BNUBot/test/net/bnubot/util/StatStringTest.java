@@ -3,7 +3,7 @@
  * $Id$
  */
 
-package net.bnubot.junit.util;
+package net.bnubot.util;
 
 import java.io.ByteArrayInputStream;
 

@@ -3,7 +3,7 @@
  * $Id$
  */
 
-package net.bnubot.junit.util.crypto;
+package net.bnubot.util.crypto;
 
 import junit.framework.TestCase;
 import net.bnubot.util.crypto.Base64;
