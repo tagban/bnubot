@@ -21,6 +21,7 @@ import java.util.List;
 
 import net.bnubot.bot.gui.settings.ConfigurationFrame;
 import net.bnubot.bot.gui.settings.OperationCancelledException;
+import net.bnubot.core.bncs.BNCSConnection;
 import net.bnubot.core.bncs.ProductIDs;
 import net.bnubot.core.botnet.BotNetConnection;
 import net.bnubot.settings.ConnectionSettings;
@@ -151,6 +152,7 @@ public abstract class Connection extends Thread {
 				// Initialize connection to DT server
 				initializeConnection(connect);
 				connectionState = ConnectionState.CONNECTED;
+				dispatchTitleChanged();
 
 				// Log in
 				boolean loggedIn = sendLoginPackets(connect);
@@ -613,10 +615,28 @@ public abstract class Connection extends Thread {
 	/**
 	 * Helper function to send chat to battle.net
 	 * @param text The whole text to be sent out
+	 */
+	public void sendChat(String text) {
+		sendChat(null, text, false, true, 0);
+	}
+
+	/**
+	 * Helper function to send chat to battle.net
+	 * @param text The whole text to be sent out
 	 * @param allowCommands Enables internal bot commands (/cmd, /profile, etc)
 	 */
+	@Deprecated
 	public void sendChat(String text, boolean allowCommands) {
 		sendChat(null, text, allowCommands, true, 0);
+	}
+
+	/**
+	 * Helper function to send chat to battle.net
+	 * @param text The whole text to be sent out
+	 * @param priority The priority with which to queue the chat
+	 */
+	public void sendChat(String text, int priority) {
+		sendChat(null, text, false, true, priority);
 	}
 
 	public static final int MAX_CHAT_LENGTH = 200;
@@ -655,6 +675,13 @@ public abstract class Connection extends Thread {
 						enabledCryptos ^= GenericCrypto.CRYPTO_BASE64;
 						dispatchRecieveInfo("Base64 crypto " + (((enabledCryptos & GenericCrypto.CRYPTO_BASE64) != 0) ? "enabled" : "disabled"));
 						return;
+					}
+					if(command[0].equals("botnet") && (this instanceof BNCSConnection)) {
+						BotNetConnection botnet = ((BNCSConnection)this).getBotNet();
+						if(botnet != null) {
+							botnet.processCommand(text.substring(8));
+							return;
+						}
 					}
 					break;
 				case 'c':
