@@ -111,7 +111,7 @@ public class BotNetConnection extends Connection {
 					switch(result) {
 					case 0:
 						dispatchRecieveError("Logon failed!");
-						disconnect(false);
+						disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 						return false;
 					case 1:
 						dispatchRecieveInfo("Logon success!");
@@ -121,7 +121,7 @@ public class BotNetConnection extends Connection {
 						break;
 					default:
 						dispatchRecieveError("Unknown PACKET_LOGON result 0x" + Integer.toHexString(result));
-						disconnect(false);
+						disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 						return false;
 					}
 					break;
@@ -179,7 +179,7 @@ public class BotNetConnection extends Connection {
 						break;
 					default:
 						dispatchRecieveError("Unknown PACKET_LOGON result 0x" + Integer.toHexString(result));
-						disconnect(false);
+						disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 						return;
 					}
 					break;
@@ -210,7 +210,7 @@ public class BotNetConnection extends Connection {
 						break;
 					default:
 						dispatchRecieveError("Unknown PACKET_ACCOUNT result 0x" + Integer.toHexString(result));
-						disconnect(false);
+						disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 						return;
 					}
 					break;
@@ -277,7 +277,7 @@ public class BotNetConnection extends Connection {
 						break;
 					default:
 						dispatchRecieveError("Unknown PACKET_BOTNETCHAT command 0x" + Integer.toHexString(command));
-						disconnect(false);
+						disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 						break;
 					}
 					break;
@@ -290,7 +290,7 @@ public class BotNetConnection extends Connection {
 					int lenOffending = is.readWord();
 					int lenUnprocessed = is.readWord();
 					dispatchRecieveError("Protocol violation: err=" + err + ", packet=" + BotNetPacketId.values()[id].name() + ", offending packet len=" + lenOffending + ", unprocessed data len=" + lenUnprocessed);
-					disconnect(false);
+					disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 					break;
 				}
 				default:

@@ -293,7 +293,7 @@ public class BNCSConnection extends Connection {
 
 		default:
 			dispatchRecieveError("Don't know how to connect with product " + productID);
-			disconnect(false);
+			disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 			break;
 		}
 	}
@@ -309,7 +309,7 @@ public class BNCSConnection extends Connection {
 		} catch (EOFException e) {
 			completeTask(connect);
 			Out.error(getClass(), "BNLS login failed");
-			disconnect(false);
+			disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 			return;
 		}
 
@@ -450,26 +450,22 @@ public class BNCSConnection extends Connection {
 						bnlsSocket.close();
 						bnlsSocket = null;
 					} catch (UnknownHostException e) {
-						dispatchRecieveError("BNLS connection failed: "
-								+ e.getMessage());
-						disconnect(true);
+						dispatchRecieveError("BNLS connection failed: " + e.getMessage());
+						disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 						break;
 					}
 
-					if ((exeVersion == 0) || (exeHash == 0)
-							|| (exeInfo == null) || (exeInfo.length == 0)) {
-						dispatchRecieveError("Checkrevision failed.");
-						disconnect(true);
+					if ((exeVersion == 0) || (exeHash == 0) || (exeInfo == null) || (exeInfo.length == 0)) {
+						dispatchRecieveError("CheckRevision failed.");
+						disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 						break;
 					}
 
 					// Respond
 					if (nlsRevision != null) {
-						connect
-								.updateProgress("CheckRevision/CD Key challenge");
+						connect.updateProgress("CheckRevision/CD Key challenge");
 
-						BNCSPacket p = new BNCSPacket(
-								BNCSPacketId.SID_AUTH_CHECK);
+						BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_AUTH_CHECK);
 						p.writeDWord(clientToken);
 						p.writeDWord(exeVersion);
 						p.writeDWord(exeHash);
@@ -563,7 +559,7 @@ public class BNCSConnection extends Connection {
 										+ Integer.toHexString(result));
 								break;
 							}
-							disconnect(false);
+							disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 							break;
 						}
 						dispatchRecieveInfo("Passed CD key challenge and CheckRevision.");
@@ -585,7 +581,7 @@ public class BNCSConnection extends Connection {
 										+ Integer.toHexString(result));
 								break;
 							}
-							disconnect(false);
+							disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 							break;
 						}
 						dispatchRecieveInfo("Passed CheckRevision.");
@@ -626,7 +622,7 @@ public class BNCSConnection extends Connection {
 									+ Integer.toHexString(result));
 							break;
 						}
-						disconnect(false);
+						disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 						break;
 					}
 
@@ -657,7 +653,7 @@ public class BNCSConnection extends Connection {
 
 						if (srp == null) {
 							dispatchRecieveError("SRP is not initialized!");
-							disconnect(false);
+							disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 							break;
 						}
 
@@ -680,12 +676,12 @@ public class BNCSConnection extends Connection {
 						break;
 					case 0x05:
 						dispatchRecieveError("Account requires upgrade");
-						disconnect(false);
+						disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 						break;
 					default:
 						dispatchRecieveError("Unknown SID_AUTH_ACCOUNTLOGON status 0x"
 								+ Integer.toHexString(status));
-						disconnect(false);
+						disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 						break;
 					}
 
@@ -694,7 +690,7 @@ public class BNCSConnection extends Connection {
 
 					if (srp == null) {
 						dispatchRecieveError("SRP is not initialized!");
-						disconnect(false);
+						disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 						break;
 					}
 
@@ -762,7 +758,7 @@ public class BNCSConnection extends Connection {
 						break;
 					case 0x02:
 						dispatchRecieveError("Incorrect password.");
-						disconnect(false);
+						disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 						break;
 					case 0x0E:
 						dispatchRecieveError("An email address should be registered for this account.");
@@ -771,12 +767,12 @@ public class BNCSConnection extends Connection {
 						break;
 					case 0x0F:
 						dispatchRecieveError("Custom bnet error: " + additionalInfo);
-						disconnect(false);
+						disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 						break;
 					default:
 						dispatchRecieveError("Unknown SID_AUTH_ACCOUNTLOGONPROOF status: 0x"
 								+ Integer.toHexString(status));
-						disconnect(false);
+						disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 						break;
 					}
 					if (!isConnected())
@@ -824,16 +820,16 @@ public class BNCSConnection extends Connection {
 						break;
 					case 0x02: // Invalid password;
 						dispatchRecieveError("Incorrect password.");
-						disconnect(false);
+						disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 						break;
 					case 0x06: // Account is closed
 						dispatchRecieveError("Your account is closed.");
-						disconnect(false);
+						disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 						break;
 					default:
 						dispatchRecieveError("Unknown SID_LOGONRESPONSE2 result 0x"
 								+ Integer.toHexString(result));
-						disconnect(false);
+						disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 						break;
 					}
 					break;
@@ -867,24 +863,24 @@ public class BNCSConnection extends Connection {
 						break;
 					case 0x02:
 						dispatchRecieveError("Name contained invalid characters");
-						disconnect(false);
+						disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 						break;
 					case 0x03:
 						dispatchRecieveError("Name contained a banned word");
-						disconnect(false);
+						disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 						break;
 					case 0x04:
 						dispatchRecieveError("Account already exists");
-						disconnect(false);
+						disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 						break;
 					case 0x06:
 						dispatchRecieveError("Name did not contain enough alphanumeric characters");
-						disconnect(false);
+						disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 						break;
 					default:
 						dispatchRecieveError("Unknown SID_CREATEACCOUNT2 status 0x"
 								+ Integer.toHexString(status));
-						disconnect(false);
+						disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 						break;
 					}
 					break;
@@ -1325,7 +1321,7 @@ public class BNCSConnection extends Connection {
 
 				case SID_FLOODDETECTED: {
 					dispatchRecieveError("You have been disconnected for flooding.");
-					disconnect(true);
+					disconnect(ConnectionState.ALLOW_CONNECT);
 					break;
 				}
 
@@ -1909,7 +1905,7 @@ public class BNCSConnection extends Connection {
 			p.SendPacket(bncsOutputStream);
 		} catch (IOException e) {
 			Out.exception(e);
-			disconnect(true);
+			disconnect(ConnectionState.ALLOW_CONNECT);
 			return;
 		}
 

@@ -91,18 +91,18 @@ public class DTConnection extends Connection {
 						break;
 					case 0x01:
 						dispatchRecieveError("Login failed");
-						disconnect(false);
+						disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 						break;
 					case 0x02:
 						dispatchRecieveInfo("Login created.");
 						break;
 					case 0x03:
 						dispatchRecieveError("That account is already logged in.");
-						disconnect(false);
+						disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 						break;
 					default:
 						dispatchRecieveError("Unknown PKT_LOGON status 0x" + Integer.toHexString(status));
-						disconnect(false);
+						disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 						break;
 					}
 
@@ -390,7 +390,7 @@ public class DTConnection extends Connection {
 			p.SendPacket(dtOutputStream);
 		} catch(IOException e) {
 			Out.exception(e);
-			disconnect(true);
+			disconnect(ConnectionState.ALLOW_CONNECT);
 			return;
 		}
 	}
