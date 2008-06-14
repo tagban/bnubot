@@ -929,7 +929,7 @@ public abstract class Connection extends Thread {
 		if(i != -1) {
 			String c1 = command.substring(0, i);
 			String c2 = command.substring(i + 1);
-			while(c2.charAt(0) == ' ')
+			while((c2.length() > 0) && (c2.charAt(0) == ' '))
 				c2 = c2.substring(1);
 
 			boolean ret = dispatchParseCommand(user, c1, whisperBack);
