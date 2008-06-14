@@ -1022,7 +1022,7 @@ public abstract class Connection extends Thread {
 		if(!isPrimaryConnection())
 			return;
 
-		text = GenericCrypto.decode(text.toCharArray());
+		text = GenericCrypto.decode(text);
 
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
