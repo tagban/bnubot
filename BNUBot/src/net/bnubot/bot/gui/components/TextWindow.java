@@ -93,11 +93,11 @@ public class TextWindow extends JScrollPane {
 		head += "</style></head><body>";
 	}
 
-	public void setText() {
-		if(html.length() > 0x8000) {
+	private void setText() {
+		while(html.length() > 0x8000) {
 			int i = html.indexOf("\n", 0);
 			if(i > 0)
-				html = html.substring(i + 6);
+				html = html.substring(i + 1);
 		}
 
 		if(scrollDown == null)
@@ -121,16 +121,16 @@ public class TextWindow extends JScrollPane {
 		SwingUtilities.invokeLater(scrollDown);
 	}
 
-	public static String makeColor(Color c) {
+	private static String makeColor(Color c) {
 		String color = "000000" + Integer.toHexString(c.getRGB());
 		return color.substring(color.length() - 6);
 	}
 
-	public void makeFont(Color c) {
+	private void makeFont(Color c) {
 		html += "<font color=\"#" + makeColor(c) + "\">";
 	}
 
-	public void appendDate() {
+	private void appendDate() {
 		if(addSeparator) {
 			html += "<hr>\n";
 			addSeparator = false;
@@ -142,7 +142,7 @@ public class TextWindow extends JScrollPane {
 	}
 
 	private static Pattern pattern = null;
-	public String safeHtml(String in) {
+	private String safeHtml(String in) {
 		if(pattern == null)
 			pattern = Pattern.compile("((.|\n)*?)\\b((([a-zA-Z]{3,6}://)|(www.)){1}([a-zA-Z0-9-.]+)([^-]\\.[a-zA-Z]{2,5}){1}((/\\S+){1}|\\s*?)/?)((.|\n)*)");
 
@@ -163,7 +163,7 @@ public class TextWindow extends JScrollPane {
 			.replaceAll("  ", " &nbsp;");
 	}
 
-	public void append(String text, Color col) {
+	private void append(String text, Color col) {
 		appendDate();
 		makeFont(col);
 		html += safeHtml(text);
@@ -171,7 +171,7 @@ public class TextWindow extends JScrollPane {
 		setText();
 	}
 
-	public void append(String text, String clazz) {
+	private void append(String text, String clazz) {
 		appendDate();
 		html += "<font class=\"" + clazz + "\">";
 		html += safeHtml(text);
@@ -179,7 +179,7 @@ public class TextWindow extends JScrollPane {
 		setText();
 	}
 
-	public void append2(String text, Color col, String text2, String clazz) {
+	private void append2(String text, Color col, String text2, String clazz) {
 		appendDate();
 		makeFont(col);
 		html += safeHtml(text);
@@ -190,7 +190,7 @@ public class TextWindow extends JScrollPane {
 		setText();
 	}
 
-	public void append2(String text, Color col, String text2, Color col2) {
+	private void append2(String text, Color col, String text2, Color col2) {
 		appendDate();
 		makeFont(col);
 		html += safeHtml(text);
@@ -201,7 +201,7 @@ public class TextWindow extends JScrollPane {
 		setText();
 	}
 
-	public void append3(String text, Color col, String text2, Color col2, String text3, Color col3) {
+	private void append3(String text, Color col, String text2, Color col2, String text3, Color col3) {
 		appendDate();
 		makeFont(col);
 		html += safeHtml(text);
