@@ -5,6 +5,7 @@
 
 package net.bnubot.util.crypto;
 
+
 public class GenericCrypto {
 	public static final int CRYPTO_REVERSE = 0x01;
 	public static final int CRYPTO_MC = 0x02;
@@ -29,31 +30,33 @@ public class GenericCrypto {
 	}
 
 	private static String decode(byte[] data) {
-		return decode(new String(data).toCharArray());
+		return decode(new String(data));
 	}
 
-	public static String decode(char[] original) {
-		//System.out.println(HexDump.hexDump(data));
-		if(original.length <= 1)
-			return new String(original);
+	public static String decode(String text) {
+		try {
+			//System.out.println(HexDump.hexDump(data));
+			if(text.length() <= 1)
+				return text;
 
-		byte[] data = new byte[original.length];
-		for(int i = 0; i < original.length; i++)
-			data[i] = (byte)original[i];
+			byte[] data = text.getBytes();
 
-		switch(data[0]) {
-		case (byte)0xB7: return "{REVERSE} " + decode(ReverseCrypto.decode(removeFirst(data)));
-		case (byte)0xB8: return "{MC} " + decode(MCCrypto.decode(removeFirst(data)));
-		case (byte)0xA4: return "{DM} " + decode(DMCrypto.decode(removeFirst(data)));
-		case (byte)0xA3:
-			try {
-				return "{HEX} " + decode(HexDump.decode(data, 1, data.length));
-			} catch(Exception e) {
-				return "{INVALID HEX} " + new String(data);
+			switch(data[0]) {
+			case (byte)0xB7: return "{REVERSE} " + decode(ReverseCrypto.decode(removeFirst(data)));
+			case (byte)0xB8: return "{MC} " + decode(MCCrypto.decode(removeFirst(data)));
+			case (byte)0xA4: return "{DM} " + decode(DMCrypto.decode(removeFirst(data)));
+			case (byte)0xA3:
+				try {
+					return "{HEX} " + decode(HexDump.decode(data, 1, data.length));
+				} catch(Exception e) {
+					return "{INVALID HEX} " + new String(data);
+				}
+			case (byte)0xE6: return "{B64} " + decode(Base64.decode(removeFirst(data)));
 			}
-		case (byte)0xE6: return "{B64} " + decode(Base64.decode(removeFirst(data)));
+		} catch(Exception e) {
+			// This could get annoying for non-english users, so we won't report the exception
 		}
-		return new String(original);
+		return text;
 	}
 
 	public static byte[] encode(String input, int crypto) {
