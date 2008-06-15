@@ -1772,6 +1772,10 @@ public class CommandEventHandler extends EventHandler {
 								name = name.substring(0, name.indexOf('@'));
 								rsAccount = createAccount(name, null, rsUser);
 							}
+
+							// Store the old AP mail message
+							String apMail = rsRank.getApMail();
+
 							// Give them a promotion
 							rsRank = Rank.get(++rank);
 							rsAccount.setRank(rsRank);
@@ -1784,7 +1788,6 @@ public class CommandEventHandler extends EventHandler {
 							}
 							user.resetPrettyName();	//Reset the presentable name
 							source.sendChat("Congratulations " + user.toString(GlobalSettings.bnUserToStringCommandResponse) + ", you've recieved a promotion! Your rank is now " + rsRank.getPrefix() + " (" + rank + ").");
-							String apMail = rsRank.getApMail();
 							if((apMail != null) && (apMail.length() > 0))
 								Mail.send(null, rsAccount, apMail);
 						} else {
