@@ -1479,12 +1479,9 @@ public class CommandEventHandler extends EventHandler {
 			boolean superUser = user.equals(source.getMyUser());
 			Account commanderAccount = Account.get(user);
 			if(!superUser) {
-				if(commanderAccount == null)
-					return false;
-
-				int commanderAccess = commanderAccount.getAccess();
-				if(commanderAccess <= 0)
-					return false;
+				int commanderAccess = 0;
+				if(commanderAccount != null)
+					commanderAccess = commanderAccount.getAccess();
 
 				int requiredAccess = rsCommand.getAccess();
 				if(commanderAccess < requiredAccess) {
