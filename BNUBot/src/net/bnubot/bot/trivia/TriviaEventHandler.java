@@ -226,7 +226,7 @@ public class TriviaEventHandler extends EventHandler {
 						continue;
 					}
 
-					if(DatabaseContext.getContext() != null) {
+					if((DatabaseContext.getContext() != null) && (GlobalSettings.triviaRoundLength > 0)) {
 						try {
 							long max[] = getTriviaTopTwo();
 							if(max != null) {
@@ -328,7 +328,8 @@ public class TriviaEventHandler extends EventHandler {
 
 						source.sendChat("/me - \"" + answerUsed + "\" is correct, " + answerUser.toString() + extra);
 
-						showLeaderBoard(source);
+						if(GlobalSettings.triviaRoundLength > 0)
+							showLeaderBoard(source);
 					} else {
 						String[] triviaAnswers = triviaCurrent.getAnswers();
 						String correct = " The correct answer was \"" + triviaAnswers[0] + "\"";
