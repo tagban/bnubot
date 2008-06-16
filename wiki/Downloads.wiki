@@ -1,6 +1,10 @@
 ﻿#summary How to download and install BNU-Bot
 #labels Featured,Phase-Deploy
 
+= Read the instructions fully before asking questions! =
+The majority of the questions people ask after installing the bot are already answered here, so save yourself the embarrassment and read the whole thing before asking!
+
+
 = What do I need? ==
 == Java Runtime Environment ==
 If you don't already have a JRE (Java Runtime Environment) version 1.5 or newer, download one from Sun's website: [http://java.sun.com/javase/downloads/index.jsp]. Note that the JDK appears above the JRE; you do not need the larger JDK package.
@@ -43,12 +47,12 @@ There is a wiki page documenting the available commands in BNU-Bot: [Commands]
 There is a wiki page documenting how to use trivia in BNU-Bot: [Trivia]
 
 == Ask questions ==
-There is a support form for BNU-Bot on clanbnu.net's forums: [http://forums.clanbnu.net/index.php?board=23.0]
+There is a support form for BNU-Bot on clanbnu.net's forums: [http://forums.clanbnu.net/index.php?board=23.0]. Please be sure to check the recent topics to see if your question has already been answered, since most issues pop up there shortly after being discovered.
 
 == Report a bug ==
 If you experience a bug, please consult the support forum before reporting an issue. It's very likely that someone else has had the same problem, and there is already a known solution.
 
-If you are confident that you are reporting a new issue, visit the issue tracker on this website, and file a new issue: [http://code.google.com/p/bnubot/issues/list]. Please include a stack trace, which you can find in log.txt, if applicable. A complete stack trace looks like this:
+If you are confident that you are reporting a new issue, visit the issue tracker on this website, and file a new issue: [http://code.google.com/p/bnubot/issues/list]. Please include a complete stack trace, which you can find in log.txt, if applicable. A stack trace looks like this:
 {{{
 java.lang.Exception: java.lang.NoClassDefFoundError: org/eclipse/swt/graphics/ImageData
 	at net.bnubot.bot.gui.icons.IconsDotBniReader.readIconsDotBni(IconsDotBniReader.java:369)
@@ -60,7 +64,7 @@ Caused by: java.lang.NoClassDefFoundError: org/eclipse/swt/graphics/ImageData
 	at net.bnubot.bot.gui.icons.IconsDotBniReader.readIconsDotBni(IconsDotBniReader.java:360)
 	... 4 more
 }}}
-In this case, the exception was caused by a missing SWT dependency, which is okay since I was using the Swing GUI (the default).
+In this case, the exception was caused by a missing SWT dependency, which is okay since this particular exception is handled properly, and is only displayed as a reminder that the feature is incomplete.
 
 == Request new features ==
 You may request new features by filing an issue on this website: [http://code.google.com/p/bnubot/issues/list]. Please search before you report a new issue to be sure that there is not already a similar issue. You can show that you want a particular feature by starring that issue. If you would like a more elaborate solution than what is described in the original issue, you may add comments.
