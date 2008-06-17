@@ -44,7 +44,7 @@ public class PluginManager {
 
 	public static void setEnabled(Class<? extends EventHandler> plugin, boolean enable) {
 		if(enable) {
-			if(enabledPlugins.contains(plugin))
+			if(!enabledPlugins.contains(plugin))
 				enabledPlugins.add(plugin);
 			// TODO add to running connections
 		} else {
