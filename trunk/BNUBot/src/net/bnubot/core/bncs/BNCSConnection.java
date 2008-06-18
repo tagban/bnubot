@@ -68,10 +68,29 @@ public class BNCSConnection extends Connection {
 		return botnet;
 	}
 
+	private Socket bnlsSocket = null;
 	private InputStream bnlsInputStream = null;
 	private OutputStream bnlsOutputStream = null;
 	private InputStream bncsInputStream = null;
 	private DataOutputStream bncsOutputStream = null;
+
+	private void setBNLSConnected(boolean c) throws IOException {
+		if(bnlsSocket != null) {
+			bnlsSocket.close();
+			bnlsSocket = null;
+			bnlsInputStream = null;
+			bnlsOutputStream = null;
+		}
+
+		if(c) {
+			InetAddress address = MirrorSelector.getClosestMirror(GlobalSettings.bnlsServer, GlobalSettings.bnlsPort);
+			dispatchRecieveInfo("Connecting to " + address + ":" + GlobalSettings.bnlsPort + ".");
+			bnlsSocket = new Socket(address, GlobalSettings.bnlsPort);
+			bnlsSocket.setKeepAlive(true);
+			bnlsInputStream = bnlsSocket.getInputStream();
+			bnlsOutputStream = bnlsSocket.getOutputStream();
+		}
+	}
 
 	private ProductIDs productID = null;
 	private int verByte;
@@ -112,8 +131,6 @@ public class BNCSConnection extends Connection {
 		// Connect to BNLS
 		connect.updateProgress("Connecting to BNLS");
 		setBNLSConnected(true);
-		bnlsInputStream = bnlsSocket.getInputStream();
-		bnlsOutputStream = bnlsSocket.getOutputStream();
 		myClan = null;
 		myClanRank = null;
 
@@ -328,7 +345,9 @@ public class BNCSConnection extends Connection {
 	@Override
 	protected boolean sendLoginPackets(Task connect) throws Exception {
 		while (isConnected() && !socket.isClosed() && !disposed) {
-			if (bncsInputStream.available() > 0) {
+			if (bncsInputStream.available() <= 0) {
+				sleep(200);
+			} else {
 				BNCSPacketReader pr = new BNCSPacketReader(bncsInputStream);
 				BNetInputStream is = pr.getData();
 
@@ -414,7 +433,6 @@ public class BNCSConnection extends Connection {
 								5000, "ms");
 						while (bnlsInputStream.available() < 3) {
 							Thread.sleep(50);
-							Thread.yield();
 
 							long timeElapsed = System.currentTimeMillis()
 									- startTime;
@@ -446,9 +464,7 @@ public class BNCSConnection extends Connection {
 						assert (bnlsIn.available() == 0);
 
 						dispatchRecieveInfo("Recieved version check from BNLS.");
-
-						bnlsSocket.close();
-						bnlsSocket = null;
+						setBNLSConnected(false);
 					} catch (UnknownHostException e) {
 						dispatchRecieveError("BNLS connection failed: " + e.getMessage());
 						disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
@@ -1144,7 +1160,9 @@ public class BNCSConnection extends Connection {
 				}
 			}
 
-			if(bncsInputStream.available() > 0) {
+			if(bncsInputStream.available() <= 0) {
+				sleep(200);
+			} else {
 				BNCSPacketReader pr = new BNCSPacketReader(bncsInputStream);
 				BNetInputStream is = pr.getData();
 
@@ -1783,9 +1801,6 @@ public class BNCSConnection extends Connection {
 					Out.debugAlways(getClass(), "Unexpected packet " + pr.packetId.name() + "\n" + HexDump.hexDump(pr.data));
 					break;
 				}
-			} else {
-				sleep(200);
-				yield();
 			}
 		}
 	}

@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
@@ -28,7 +27,6 @@ import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetInputStream;
 import net.bnubot.util.BNetUser;
-import net.bnubot.util.MirrorSelector;
 import net.bnubot.util.Out;
 import net.bnubot.util.TimeFormatter;
 import net.bnubot.util.UserProfile;
@@ -63,7 +61,6 @@ public abstract class Connection extends Thread {
 	}
 
 	protected Socket socket = null;
-	protected Socket bnlsSocket = null;
 
 	protected ConnectionSettings cs;
 	protected Profile profile;
@@ -419,20 +416,6 @@ public abstract class Connection extends Thread {
 
 	private boolean isConnecting() {
 		return (connectionState == ConnectionState.CONNECTING);
-	}
-
-	public void setBNLSConnected(boolean c) throws IOException {
-		if(bnlsSocket != null) {
-			bnlsSocket.close();
-			bnlsSocket = null;
-		}
-
-		if(c) {
-			InetAddress address = MirrorSelector.getClosestMirror(GlobalSettings.bnlsServer, GlobalSettings.bnlsPort);
-			dispatchRecieveInfo("Connecting to " + address + ":" + GlobalSettings.bnlsPort + ".");
-			bnlsSocket = new Socket(address, GlobalSettings.bnlsPort);
-			bnlsSocket.setKeepAlive(true);
-		}
 	}
 
 	public void connect() {

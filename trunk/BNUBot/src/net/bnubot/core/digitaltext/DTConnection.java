@@ -69,7 +69,9 @@ public class DTConnection extends Connection {
 		p.SendPacket(dtOutputStream);
 
 		while(isConnected() && !socket.isClosed() && !disposed) {
-			if(dtInputStream.available() > 0) {
+			if(dtInputStream.available() <= 0) {
+				sleep(200);
+			} else {
 				DTPacketReader pr = new DTPacketReader(dtInputStream);
 				BNetInputStream is = pr.getData();
 
@@ -163,7 +165,9 @@ public class DTConnection extends Connection {
 				}
 			}
 
-			if(dtInputStream.available() > 0) {
+			if(dtInputStream.available() <= 0) {
+				sleep(200);
+			} else {
 				DTPacketReader pr = new DTPacketReader(dtInputStream);
 				BNetInputStream is = pr.getData();
 
@@ -311,9 +315,6 @@ public class DTConnection extends Connection {
 					Out.debugAlways(getClass(), "Unexpected packet " + pr.packetId.name() + "\n" + HexDump.hexDump(pr.data));
 					break;
 				}
-			} else {
-				sleep(200);
-				yield();
 			}
 		}
 	}
