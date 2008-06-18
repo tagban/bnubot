@@ -33,6 +33,7 @@
 * Fixed a bug with greetings for users with #x in their logon handle
 * Moved the AP logic before the greeting
 * Setting trivia round length to zero disables rounds
+* Added missing sleep()s in BNCS/DigitalText login loop
 
 2.0.6 (r1400) 2008-04-21:
 * Added auto-rejoin afer being kicked (Issue 52)

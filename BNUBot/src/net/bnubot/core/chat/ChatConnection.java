@@ -86,12 +86,12 @@ public class ChatConnection extends Connection {
 	@Override
 	protected void connectedLoop() throws Exception {
 		while(s.isConnected() && !disposed) {
-			if(is.available() > 0) {
-				byte b = is.readByte();
-				Out.info(getClass(), Character.toString((char)b));
-			} else {
+			if(is.available() <= 0) {
 				yield();
 				sleep(200);
+			} else {
+				byte b = is.readByte();
+				Out.info(getClass(), Character.toString((char)b));
 			}
 		}
 	}
