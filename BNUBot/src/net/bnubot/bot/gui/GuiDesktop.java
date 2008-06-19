@@ -231,7 +231,10 @@ public class GuiDesktop extends JFrame {
 				updateDisplayJoinPartsMenuChecked();
 				mnuDisplayJoinParts.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						GlobalSettings.setDisplayJoinParts(!GlobalSettings.getDisplayJoinParts());
+						final boolean b = !GlobalSettings.getDisplayJoinParts();
+						GlobalSettings.setDisplayJoinParts(b);
+						for(GuiEventHandler geh : guis)
+							geh.channelInfo("Join/part notifications " + (b ? "en" : "dis") + "abled.");
 					} });
 				// Alt+V
 				mnuDisplayJoinParts.setAccelerator(
