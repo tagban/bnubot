@@ -73,7 +73,7 @@ public class TextWindow extends JScrollPane {
 	private boolean addSeparator = false;
 
 	public TextWindow() {
-		super(VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_NEVER);
+		super(VERTICAL_SCROLLBAR_AS_NEEDED, HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		jep = new myJEP();
 		((Container)getComponent(0)).add(jep);
 
