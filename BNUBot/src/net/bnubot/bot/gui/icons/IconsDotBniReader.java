@@ -14,6 +14,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.lang.ref.SoftReference;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -22,8 +23,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import net.bnubot.core.BNFTPConnection;
-import net.bnubot.settings.ConnectionSettings;
-import net.bnubot.settings.GlobalSettings;
 import net.bnubot.settings.Settings;
 import net.bnubot.util.BNetInputStream;
 import net.bnubot.util.BNetOutputStream;
@@ -35,15 +34,14 @@ import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.PaletteData;
 
 public class IconsDotBniReader {
-	private static boolean initialized = false;
 	private static boolean initializedWindow = false;
-	private static BNetIcon[] icons = null;
-	private static BNetIcon[] icons_STAR = null;
-	private static BNetIcon[] icons_WAR3 = null;
-	private static BNetIcon[] icons_W3XP = null;
-	private static BNetIcon[] legacy_icons = null;
-	private static BNetIcon[] icons_lag = null;
-	private static BNetIcon[] icons_clan = null;
+	private static SoftReference<BNetIcon[]> icons = null;
+	private static SoftReference<BNetIcon[]> icons_STAR = null;
+	private static SoftReference<BNetIcon[]> icons_WAR3 = null;
+	private static SoftReference<BNetIcon[]> icons_W3XP = null;
+	private static SoftReference<BNetIcon[]> legacy_icons = null;
+	private static SoftReference<BNetIcon[]> icons_lag = null;
+	private static SoftReference<BNetIcon[]> icons_clan = null;
 
 	public static final int LEGACY_STARWIN = 0;
 	public static final int LEGACY_LADDER = 11;
@@ -53,39 +51,12 @@ public class IconsDotBniReader {
 
 	private static JFrame util = null;
 
-	/*public static void main(String[] args) {
-		BNetIcon[] icons = new BNetIcon[8];
-		for(int i = 0; i < 8; i++)
-			icons[i] = new BNetIcon();
-		for(int i = 0; i < 7; i++) {
-			icons[i].icon = new ImageIcon("lag" + i + ".jpeg");
-			icons[i].products = new int[] {HexDump.PrettyToDWord("LAG" + i)};
-		}
-		icons[7].icon = new ImageIcon("lagplug.jpeg");
-		icons[7].products = new int[] {HexDump.PrettyToDWord("PLUG")};
-		writeIconsDotBni(new File("icons_lag.bni"), icons);
-
-		BNetIcon[] icons = new BNetIcon[5];
-		for(int i = 0; i < 5; i++) {
-			icons[i] = new BNetIcon();
-			icons[i].icon = new ImageIcon("icon" + i + ".png");
-			icons[i].products = new int[] {HexDump.PrettyToDWord("ICO" + i)};
-		}
-		writeIconsDotBni(new File("downloads/icons_clan.bni"), icons);
-
-		initialize(new ConnectionSettings(1));
-		showWindow();
-		util.show();
-	}*/
-
 	public static void showWindow() {
-		if(!initialized)
-			return;
 		if(!initializedWindow) {
 			initializedWindow = true;
 			util.setLayout(new FlowLayout(FlowLayout.CENTER));
 
-			BNetIcon[][] iconss = {icons, icons_STAR, icons_WAR3, icons_W3XP, legacy_icons, icons_lag, icons_clan};
+			BNetIcon[][] iconss = {getIcons(), getIconsSTAR(), getIconsWAR3(), getIconsW3XP(), getLegacyIcons(), getIconsLag(), getIconsClan()};
 			for(BNetIcon[] icons : iconss) {
 				if(icons == null)
 					continue;
@@ -110,75 +81,141 @@ public class IconsDotBniReader {
 		util.setVisible(true);
 	}
 
-	public static void initialize(ConnectionSettings cs) {
-		if(initialized)
-			return;
-		initialized = true;
-
-		if(!GlobalSettings.enableGUI)
-			return;
-
-		File f;
-
-		f = new File(Settings.getRootPath() + "downloads/legacy_icons.bni");
-		if(f.exists())
-			legacy_icons = readIconsDotBni(f);
-
-		f = new File(Settings.getRootPath() + "downloads/war3_icons.bni");
-		if(f.exists())
-			icons_WAR3 = readIconsDotBni(f);
-
-		f = new File(Settings.getRootPath() + "downloads/w3xp_icons.bni");
-		if(f.exists())
-			icons_W3XP = readIconsDotBni(f);
-
-		try {
-			f = BNFTPConnection.downloadFile(cs, "icons_STAR.bni");
-			if((f != null) && f.exists())
-				icons_STAR = readIconsDotBni(f);
-		} catch(Exception e) {}
-
-		try {
-			f = BNFTPConnection.downloadFile(cs, "Icons.bni");
-			if((f != null) && f.exists())
-				icons = readIconsDotBni(f);
-		} catch(Exception e) {}
-
-		f = new File(Settings.getRootPath() + "downloads/icons_lag.bni");
-		if(f.exists())
-			icons_lag = readIconsDotBni(f);
-
-		f = new File(Settings.getRootPath() + "downloads/icons_clan.bni");
-		if(f.exists())
-			icons_clan = readIconsDotBni(f);
-	}
-
 	public static BNetIcon[] getIcons() {
-		return icons;
+		if(icons != null) {
+			BNetIcon[] ret = icons.get();
+			if(ret != null)
+				return ret;
+
+			Out.debug(IconsDotBniReader.class, "SoftReference to Icons.bni expired");
+		}
+
+		try {
+			File f = BNFTPConnection.downloadFile("Icons.bni");
+			if((f != null) && f.exists()) {
+				BNetIcon[] ret = readIconsDotBni(f);
+				icons = new SoftReference<BNetIcon[]>(ret);
+				return ret;
+			}
+		} catch(Exception e) {}
+
+		return null;
 	}
 
 	public static BNetIcon[] getIconsSTAR() {
-		return icons_STAR;
+		if(icons_STAR != null) {
+			BNetIcon[] ret = icons_STAR.get();
+			if(ret != null)
+				return ret;
+
+			Out.debug(IconsDotBniReader.class, "SoftReference to icons_STAR.bni expired");
+		}
+
+		try {
+			File f = BNFTPConnection.downloadFile("icons_STAR.bni");
+			if((f != null) && f.exists()) {
+				BNetIcon[] ret = readIconsDotBni(f);
+				icons_STAR = new SoftReference<BNetIcon[]>(ret);
+				return ret;
+			}
+		} catch(Exception e) {}
+
+		return null;
 	}
 
 	public static BNetIcon[] getIconsWAR3() {
-		return icons_WAR3;
+		if(icons_WAR3 != null) {
+			BNetIcon[] ret = icons_WAR3.get();
+			if(ret != null)
+				return ret;
+
+			Out.debug(IconsDotBniReader.class, "SoftReference to war3_icons.bni expired");
+		}
+
+		File f = new File(Settings.getRootPath() + "downloads/war3_icons.bni");
+		if(f.exists()) {
+			BNetIcon[] ret = readIconsDotBni(f);
+			icons_WAR3 = new SoftReference<BNetIcon[]>(ret);
+			return ret;
+		}
+
+		return null;
 	}
 
 	public static BNetIcon[] getIconsW3XP() {
-		return icons_W3XP;
+		if(icons_W3XP != null) {
+			BNetIcon[] ret = icons_W3XP.get();
+			if(ret != null)
+				return ret;
+
+			Out.debug(IconsDotBniReader.class, "SoftReference to w3xp_icons.bni expired");
+		}
+
+		File f = new File(Settings.getRootPath() + "downloads/w3xp_icons.bni");
+		if(f.exists()) {
+			BNetIcon[] ret = readIconsDotBni(f);
+			icons_W3XP = new SoftReference<BNetIcon[]>(ret);
+			return ret;
+		}
+
+		return null;
 	}
 
 	public static BNetIcon[] getLegacyIcons() {
-		return legacy_icons;
+		if(legacy_icons != null) {
+			BNetIcon[] ret = legacy_icons.get();
+			if(ret != null)
+				return ret;
+
+			Out.debug(IconsDotBniReader.class, "SoftReference to legacy_icons.bni expired");
+		}
+
+		File f = new File(Settings.getRootPath() + "downloads/legacy_icons.bni");
+		if(f.exists()) {
+			BNetIcon[] ret = readIconsDotBni(f);
+			legacy_icons = new SoftReference<BNetIcon[]>(ret);
+			return ret;
+		}
+
+		return null;
 	}
 
 	public static BNetIcon[] getIconsLag() {
-		return icons_lag;
+		if(icons_lag != null) {
+			BNetIcon[] ret = icons_lag.get();
+			if(ret != null)
+				return ret;
+
+			Out.debug(IconsDotBniReader.class, "SoftReference to icons_lag.bni expired");
+		}
+
+		File f = new File(Settings.getRootPath() + "downloads/icons_lag.bni");
+		if(f.exists()) {
+			BNetIcon[] ret = readIconsDotBni(f);
+			icons_lag = new SoftReference<BNetIcon[]>(ret);
+			return ret;
+		}
+
+		return null;
 	}
 
 	public static BNetIcon[] getIconsClan() {
-		return icons_clan;
+		if(icons_clan != null) {
+			BNetIcon[] ret = icons_clan.get();
+			if(ret != null)
+				return ret;
+
+			Out.debug(IconsDotBniReader.class, "SoftReference to icons_clan.bni expired");
+		}
+
+		File f = new File(Settings.getRootPath() + "downloads/icons_clan.bni");
+		if(f.exists()) {
+			BNetIcon[] ret = readIconsDotBni(f);
+			icons_clan = new SoftReference<BNetIcon[]>(ret);
+			return ret;
+		}
+
+		return null;
 	}
 
 	private static int getRealPixelPosition(int i, int height, int width) {

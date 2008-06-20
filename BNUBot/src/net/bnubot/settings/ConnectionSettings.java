@@ -7,7 +7,6 @@ package net.bnubot.settings;
 
 import java.io.Serializable;
 
-import net.bnubot.bot.gui.icons.IconsDotBniReader;
 import net.bnubot.core.bncs.ProductIDs;
 
 public class ConnectionSettings implements Serializable {
@@ -56,8 +55,6 @@ public class ConnectionSettings implements Serializable {
 	public ConnectionSettings(int botNum) {
 		this.botNum = botNum;
 		load();
-		if(botNum == 1)
-			IconsDotBniReader.initialize(this);
 	}
 
 	public String isValid() {

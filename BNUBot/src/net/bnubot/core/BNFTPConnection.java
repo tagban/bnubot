@@ -22,17 +22,12 @@ public class BNFTPConnection {
 	public static final String defaultPath = Settings.getRootPath() + "downloads/";
 
 	/**
-	 * Download a file using BNFTP
-	 * @param cs The ConnectionSettings to connect to battle.net with
+	 * Download a file using BNFTP; get the file from the undefined default server
 	 * @param fileName The file's name
 	 * @return The File, or null if there was an error
 	 */
-	public static File downloadFile(ConnectionSettings cs, String fileName) throws Exception {
-		return downloadFile(cs, fileName, null, defaultPath);
-	}
-
-	public static File downloadFile(ConnectionSettings cs, String fileName, Date lastModified) throws Exception {
-		return downloadFile(cs, fileName, lastModified, defaultPath);
+	public static File downloadFile(String fileName) throws Exception {
+		return downloadFile(new ConnectionSettings(1), fileName, null, defaultPath);
 	}
 
 	/**
@@ -67,7 +62,7 @@ public class BNFTPConnection {
 	 * @param path The folder to download the file to
 	 * @return The File, or null if there was an error
 	 */
-	public static File downloadFile(Socket s, ProductIDs product, String fileName, String path) throws Exception {
+	private static File downloadFile(Socket s, ProductIDs product, String fileName, String path) throws Exception {
 		Out.info(BNFTPConnection.class, "Downloading " + fileName + "...");
 
 		BNetInputStream is = new BNetInputStream(s.getInputStream());
