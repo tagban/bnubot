@@ -7,7 +7,6 @@ package net.bnubot.bot.swt;
 
 import net.bnubot.bot.gui.icons.BNetIcon;
 import net.bnubot.bot.gui.icons.IconsDotBniReader;
-import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.util.crypto.HexDump;
 
 import org.eclipse.swt.SWT;
@@ -31,7 +30,6 @@ public class SWTIconViewer {
 		s.setLayout(new RowLayout());
 		s.setBackground(background);
 
-		IconsDotBniReader.initialize(new ConnectionSettings(1));
 		BNetIcon[][] iconss = {
 				IconsDotBniReader.getIcons(),
 				IconsDotBniReader.getIconsSTAR(),
