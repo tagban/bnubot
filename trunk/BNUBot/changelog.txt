@@ -34,6 +34,7 @@
 * Moved the AP logic before the greeting
 * Setting trivia round length to zero disables rounds
 * Added missing sleep()s in BNCS/DigitalText login loop
+* Added support for 26-character (Anthology) SC/D2 keys
 
 2.0.6 (r1400) 2008-04-21:
 * Added auto-rejoin afer being kicked (Issue 52)
