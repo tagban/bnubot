@@ -22,12 +22,15 @@ import org.jbls.util.Buffer;
 
 public class KeyManager {
 	public static final int PRODUCT_ALLNORMAL = -1;
-	public static final int PRODUCT_STAR = 1;
-	public static final int PRODUCT_W2BN = 4;
-	public static final int PRODUCT_D2DV = 6;
-	public static final int PRODUCT_D2XP = 10;
-	public static final int PRODUCT_WAR3 = 14;
-	public static final int PRODUCT_W3XP = 18;
+	public static final int PRODUCT_STAR = 0x01;
+	public static final int PRODUCT_W2BN = 0x04;
+	public static final int PRODUCT_D2DV = 0x06;
+	public static final int PRODUCT_D2XP = 0x0A;
+	public static final int PRODUCT_WAR3 = 0x0E;
+	public static final int PRODUCT_W3XP = 0x12;
+	public static final int PRODUCT_STAR_ANTHOLOGY = 0x17;
+	public static final int PRODUCT_D2DV_ANTHOLOGY = 0x18;
+	public static final int PRODUCT_D2XP_ANTHOLOGY = 0x19;
 
 	private static List<CDKey> cdkeys = new ArrayList<CDKey>();
 	private static boolean initialized = false;
@@ -212,11 +215,35 @@ public class KeyManager {
 				case PRODUCT_W2BN:
 				case PRODUCT_D2DV:
 				case PRODUCT_WAR3:
+				case PRODUCT_STAR_ANTHOLOGY:
+				case PRODUCT_D2DV_ANTHOLOGY:
+				case PRODUCT_D2XP_ANTHOLOGY:
 					prodKeys.add(k);
 					break;
 				}
-			} else if(k.getProduct() == product)
+			} else {
+				if(k.getProduct() != product) {
+					switch(k.getProduct()) {
+					case PRODUCT_STAR_ANTHOLOGY:
+						if(product != PRODUCT_STAR)
+							continue;
+						break;
+					case PRODUCT_D2DV_ANTHOLOGY:
+						if(product != PRODUCT_STAR)
+							continue;
+						break;
+					case PRODUCT_D2XP_ANTHOLOGY:
+						if(product != PRODUCT_D2DV)
+							continue;
+						break;
+					default:
+						continue;
+					}
+				}
+
+				// If we made it this far, the key matched the filter
 				prodKeys.add(k);
+			}
 		}
 
 		return prodKeys.toArray(new CDKey[prodKeys.size()]);
