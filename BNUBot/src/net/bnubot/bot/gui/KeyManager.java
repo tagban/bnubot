@@ -217,7 +217,6 @@ public class KeyManager {
 				case PRODUCT_WAR3:
 				case PRODUCT_STAR_ANTHOLOGY:
 				case PRODUCT_D2DV_ANTHOLOGY:
-				case PRODUCT_D2XP_ANTHOLOGY:
 					prodKeys.add(k);
 					break;
 				}
