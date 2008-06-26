@@ -771,6 +771,20 @@ public abstract class Connection extends Thread {
 
 		text = cleanText(text, enableKeywords);
 
+		if(prefix == null) {
+			// Detect /w user and /f m, and make that the prefix
+			if(text.startsWith("/w ")) {
+				int i = text.indexOf(' ', 4) + 1;
+				if(i != 0) {
+					prefix = text.substring(0, i);
+					text = text.substring(i);
+				}
+			} else if(text.startsWith("/f m ")) {
+				prefix = "/f m ";
+				text = text.substring(5);
+			}
+		}
+
 		if(text.length() == 0)
 			return;
 
