@@ -31,7 +31,7 @@ public class BNCSPacket extends BNetOutputStream {
 
 		if(packetId == BNCSPacketId.SID_CHATCOMMAND) {
 			if(data.length > 0xFB) {
-				Out.error(getClass(), "Chat command is too long; ignoring.");
+				Out.error(getClass(), "Chat command is too long; ignoring. Len=" + data.length);
 				return;
 			}
 			if(data[data.length-1] != 0x00) {

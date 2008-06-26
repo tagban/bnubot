@@ -13,14 +13,15 @@ import java.util.List;
 
 import net.bnubot.core.botnet.BotNetConnection;
 import net.bnubot.settings.GlobalSettings;
+import net.bnubot.util.ByteArray;
 import net.bnubot.util.Out;
 
 public class ChatQueue extends Thread {
 	private class QueueEntry implements Comparable<QueueEntry> {
-		public final String text;
+		public final ByteArray text;
 		public final Integer priority;
 
-		public QueueEntry(String text, int priority) {
+		public QueueEntry(ByteArray text, int priority) {
 			this.text = text;
 			this.priority = new Integer(priority);
 		}
@@ -63,7 +64,7 @@ public class ChatQueue extends Thread {
 		return cons.get(lastCon++);
 	}
 
-	public boolean enqueue(Connection source, String text, int priority) {
+	public boolean enqueue(Connection source, ByteArray text, int priority) {
 		if(GlobalSettings.enableFloodProtect) synchronized(queue) {
 			// Flood protection is enabled
 			if(queue.add(new QueueEntry(text, priority))) {
@@ -73,7 +74,7 @@ public class ChatQueue extends Thread {
 			return false;
 		}
 
-		if(requiresOps(text)) {
+		if(requiresOps(text.toString())) {
 			if(sendTextOp(text))
 				return true;
 			Out.error(getClass(), "Failed send command: " + text);
@@ -110,9 +111,9 @@ public class ChatQueue extends Thread {
 					break;
 				}
 
-				String text = queue.remove(0).text;
+				ByteArray text = queue.remove(0).text;
 
-				if(con.isOp() || !requiresOps(text)) {
+				if(con.isOp() || !requiresOps(text.toString())) {
 					// Write the text out
 					con.sendChatCommand(text);
 					continue;
@@ -141,7 +142,7 @@ public class ChatQueue extends Thread {
 		return false;
 	}
 
-	private boolean sendTextOp(String text) {
+	private boolean sendTextOp(ByteArray text) {
 		for(int i = 0; i < cons.size(); i++) {
 			Connection c = getNextConnection();
 			if(!c.isOp())

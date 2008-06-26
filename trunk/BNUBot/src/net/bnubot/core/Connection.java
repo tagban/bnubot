@@ -27,6 +27,7 @@ import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetInputStream;
 import net.bnubot.util.BNetUser;
+import net.bnubot.util.ByteArray;
 import net.bnubot.util.Out;
 import net.bnubot.util.TimeFormatter;
 import net.bnubot.util.UserProfile;
@@ -513,7 +514,7 @@ public abstract class Connection extends Thread {
 		return (checkDelay() <= 0);
 	}
 
-	protected void sendChatCommand(String text) {
+	protected void sendChatCommand(ByteArray text) {
 		profile.lastAntiIdle = System.currentTimeMillis();
 
 		if(canSendChat())
@@ -768,29 +769,61 @@ public abstract class Connection extends Thread {
 			return;
 		}
 
-//		try {
-//			text = new String(text.getBytes(), "UTF-8");
-//		} catch (UnsupportedEncodingException e) {}
 		text = cleanText(text, enableKeywords);
 
 		if(text.length() == 0)
 			return;
 
-		if(enabledCryptos != 0)
-			text = new String(GenericCrypto.encode(text, enabledCryptos));
+		ByteArray baPrefix = null;
+		if(prefix != null)
+			baPrefix = new ByteArray(prefix);
+		enqueueChat(baPrefix, new ByteArray(text), priority);
+	}
 
+	/**
+	 * @param prefix
+	 * @param text
+	 * @param priority
+	 */
+	private void enqueueChat(ByteArray prefix, ByteArray text, int priority) {
 		//Split up the text in to appropriate sized pieces
-		int pieceSize = MAX_CHAT_LENGTH - (prefix == null ? 0 : prefix.length());
+		int pieceSize = MAX_CHAT_LENGTH;
+		if(prefix != null)
+			pieceSize -= prefix.length();
+		if(enabledCryptos != 0) {
+			if((enabledCryptos & GenericCrypto.CRYPTO_REVERSE) != 0)
+				pieceSize--; // Reverse has a prefix
+			if((enabledCryptos & GenericCrypto.CRYPTO_MC) != 0)
+				pieceSize--; // MC has a prefix
+			if((enabledCryptos & GenericCrypto.CRYPTO_DM) != 0)
+				pieceSize = (pieceSize - 1) / 2; // DM doubles in size and has a prefix
+			if((enabledCryptos & GenericCrypto.CRYPTO_HEX) != 0)
+				pieceSize = (pieceSize - 1) / 2; // Hex doubles in size and has a prefix
+			if((enabledCryptos & GenericCrypto.CRYPTO_BASE64) != 0)
+				pieceSize = (pieceSize - 1) * 3 / 4; // B64 increases 33% and has a prefix
+		}
+
 		ChatQueue cq = profile.getChatQueue();
 		for(int i = 0; i < text.length(); i += pieceSize) {
-			String piece = (prefix == null ? "" : prefix) + (i > 0 ? "..." : "") + text.substring(i);
-			if(i > 0)
+			ByteArray piece = text.substring(i);
+			if(i > 0) {
+				// This is not the first piece; prepend ellipsis
+				piece = new ByteArray("...").concat(piece);
 				i -= 3;
-			if(piece.length() > MAX_CHAT_LENGTH) {
-				piece = piece.substring(0, MAX_CHAT_LENGTH - 3) + "...";
+			}
+			if(piece.length() > pieceSize) {
+				// This is not the last piece; append ellipsis
+				piece = piece.substring(0, pieceSize - 3).concat("...".getBytes());
 				i -= 3;
 			}
 
+			// Cryptos
+			if(enabledCryptos != 0)
+				piece = GenericCrypto.encode(piece, enabledCryptos);
+
+			// Prepend the prefix
+			if(prefix != null)
+				piece = prefix.concat(piece);
 
 			cq.enqueue(this, piece, priority);
 		}
@@ -1001,18 +1034,25 @@ public abstract class Connection extends Thread {
 		}
 	}
 
-	protected void dispatchRecieveChat(BNetUser user, String text) {
+	protected void dispatchRecieveChat(BNetUser user, ByteArray data) {
 		if(!isPrimaryConnection())
 			return;
 
-		text = GenericCrypto.decode(text);
+		// Try to remove encryption
+		try {
+			data = GenericCrypto.decode(data);
+		} catch(Exception e) {
+			Out.exception(e);
+		}
 
+		// Convert to string
+		String text = data.toString();
 		synchronized(eventHandlers) {
 			for(EventHandler eh : eventHandlers)
 				eh.recieveChat(this, user, text);
 		}
 
-		if((text == null) || (text.length() == 0))
+		if(text.length() == 0)
 			return;
 
 		if((text.charAt(0) == getTrigger()) || text.equals("?trigger"))

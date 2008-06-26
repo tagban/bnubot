@@ -7,6 +7,8 @@ package net.bnubot.util.crypto;
 
 import java.security.InvalidParameterException;
 
+import net.bnubot.util.ByteArray;
+
 public class HexDump {
 	/**
 	 * Turn a DWord in to an IP address
@@ -88,11 +90,11 @@ public class HexDump {
 		return hexChr((b & 0xF000) >> 12) + hexChr((b & 0x0F00) >> 8) + hexChr((b & 0x00F0) >> 4) + hexChr(b & 0x000F);
 	}
 
-	public static String encode(byte data[]) {
+	public static ByteArray encode(ByteArray data) {
 		String output = new String();
-		for (byte element : data)
+		for(byte element : data.getBytes())
 			output += toHex(element);
-		return output;
+		return new ByteArray(output.getBytes());
 	}
 
 	private static byte decode(byte c1, byte c2) throws Exception {
@@ -128,6 +130,10 @@ public class HexDump {
 		for(int offset = 0; offset < len; offset++)
 			output[offset] = decode(data[pos++], data[pos++]);
 		return output;
+	}
+
+	public static ByteArray decode(ByteArray data) throws Exception {
+		return new ByteArray(decode(data.getBytes(), 0, data.length()));
 	}
 
 	public static String hexDump(byte data[]) {

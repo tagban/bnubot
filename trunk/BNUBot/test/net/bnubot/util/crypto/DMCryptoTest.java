@@ -6,15 +6,13 @@
 package net.bnubot.util.crypto;
 
 import junit.framework.TestCase;
-import net.bnubot.util.crypto.DMCrypto;
+import net.bnubot.util.ByteArray;
 
 public class DMCryptoTest extends TestCase {
 	public void testComplete() {
-		byte[] in = "testing 1 2 3".getBytes();
-		byte[] out = DMCrypto.decode(DMCrypto.encode(in));
+		ByteArray in = new ByteArray("testing 1 2 3");
+		ByteArray out = DMCrypto.decode(DMCrypto.encode(in));
 
-		assertEquals(in.length, out.length);
-		for(int i = 0; i < in.length; i++)
-			assertEquals(in[i], out[i]);
+		assertEquals(in, out);
 	}
 }
