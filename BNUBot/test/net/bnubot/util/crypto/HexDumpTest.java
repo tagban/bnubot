@@ -7,7 +7,7 @@ package net.bnubot.util.crypto;
 
 import junit.framework.TestCase;
 import net.bnubot.core.bncs.ProductIDs;
-import net.bnubot.util.crypto.HexDump;
+import net.bnubot.util.ByteArray;
 
 public class HexDumpTest extends TestCase {
 
@@ -24,7 +24,8 @@ public class HexDumpTest extends TestCase {
 	}
 
 	public void testHexDump() throws Exception {
-		assertEquals("00017f80ff", HexDump.encode(new byte[] {0x00, 0x01, 0x7F, (byte)0x80, (byte)0xFF}));
-		assertEquals("00017f80ff", HexDump.encode(HexDump.decode("00017f80ff")));
+		String str = "00017f80ff";
+		assertEquals(str, HexDump.encode(new ByteArray(new byte[] {0x00, 0x01, 0x7F, (byte)0x80, (byte)0xFF})));
+		assertEquals(str, HexDump.encode(HexDump.decode(new ByteArray(str))));
 	}
 }

@@ -5,6 +5,8 @@
 
 package net.bnubot.util.crypto;
 
+import net.bnubot.util.ByteArray;
+
 /**
  * A Base64 Encoder/Decoder.
  *
@@ -55,25 +57,14 @@ public class Base64 {
 	}
 
 	/**
-	 * Encodes a string into Base64 format. No blanks or line breaks are
-	 * inserted.
-	 *
-	 * @param s a String to be encoded.
-	 * @return A String with the Base64 encoded data.
-	 */
-	public static String encode(String s) {
-		return new String(encode(s.getBytes()));
-	}
-
-	/**
 	 * Encodes a byte array into Base64 format. No blanks or line breaks are
 	 * inserted.
 	 *
 	 * @param in an array containing the data bytes to be encoded.
 	 * @return A character array with the Base64 encoded data.
 	 */
-	public static byte[] encode(byte[] in) {
-		return encode(in, in.length);
+	public static ByteArray encode(ByteArray in) {
+		return new ByteArray(encode(in.getBytes(), in.length()));
 	}
 
 	/**
@@ -115,8 +106,8 @@ public class Base64 {
 	 * @return A String containing the decoded data.
 	 * @throws IllegalArgumentException if the input is not valid Base64 encoded data.
 	 */
-	public static String decode(String s) {
-		return new String(decode(s.getBytes()));
+	public static ByteArray decode(ByteArray s) {
+		return new ByteArray(decode(s.getBytes()));
 	}
 
 	/**

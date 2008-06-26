@@ -6,11 +6,9 @@
 package net.bnubot.util;
 
 import junit.framework.TestCase;
-import net.bnubot.util.TimeFormatter;
 
 /**
- * @author sanderson
- *
+ * @author scotta
  */
 public class TimeFormatterTest extends TestCase {
 	public void testParseDuration() {

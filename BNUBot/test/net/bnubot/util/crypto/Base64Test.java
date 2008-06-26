@@ -6,7 +6,7 @@
 package net.bnubot.util.crypto;
 
 import junit.framework.TestCase;
-import net.bnubot.util.crypto.Base64;
+import net.bnubot.util.ByteArray;
 
 /**
  * @author scotta
@@ -14,10 +14,10 @@ import net.bnubot.util.crypto.Base64;
 public class Base64Test extends TestCase {
 
 	public void testEncode() {
-		assertEquals("YXNkZg==", Base64.encode("asdf"));
+		assertEquals("YXNkZg==", Base64.encode(new ByteArray("asdf")));
 	}
 
 	public void testDecode() {
-		assertEquals("asdf", Base64.decode("YXNkZg=="));
+		assertEquals("asdf", Base64.decode(new ByteArray("YXNkZg==")));
 	}
 }

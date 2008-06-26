@@ -20,6 +20,7 @@ import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetInputStream;
 import net.bnubot.util.BNetUser;
+import net.bnubot.util.ByteArray;
 import net.bnubot.util.MirrorSelector;
 import net.bnubot.util.Out;
 import net.bnubot.util.crypto.HexDump;
@@ -259,21 +260,21 @@ public class BotNetConnection extends Connection {
 					int command = is.readDWord();
 					int action = is.readDWord();
 					BotNetUser user = users.get(is.readDWord());
-					String text = is.readNTString();
+					ByteArray data = new ByteArray(is.readNTBytes());
 
 					switch(command) {
 					case 0: //broadcast
 						// TODO: change this to recieveBroadcast()
-						dispatchRecieveChat(user, text);
+						dispatchRecieveChat(user, data);
 						break;
 					case 1: // chat
 						if(action == 0)
-							dispatchRecieveChat(user, text);
+							dispatchRecieveChat(user, data);
 						else
-							dispatchRecieveEmote(user, text);
+							dispatchRecieveEmote(user, data.toString());
 						break;
 					case 2: //whisper
-						dispatchWhisperRecieved(user, text);
+						dispatchWhisperRecieved(user, data.toString());
 						break;
 					default:
 						dispatchRecieveError("Unknown PACKET_BOTNETCHAT command 0x" + Integer.toHexString(command));
@@ -371,7 +372,7 @@ public class BotNetConnection extends Connection {
 	 */
 	public void sendChat(boolean emote, String text) throws Exception {
 		sendBotNetChat(1, emote, 0, text);
-		super.dispatchRecieveChat(myUser, text);
+		super.dispatchRecieveChat(myUser, new ByteArray(text));
 	}
 
 	/**

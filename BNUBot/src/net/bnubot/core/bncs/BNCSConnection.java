@@ -40,6 +40,7 @@ import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetInputStream;
 import net.bnubot.util.BNetUser;
+import net.bnubot.util.ByteArray;
 import net.bnubot.util.CookieUtility;
 import net.bnubot.util.MirrorSelector;
 import net.bnubot.util.Out;
@@ -1212,7 +1213,7 @@ public class BNCSConnection extends Connection {
 				// is.readDWord(); // Account number (defunct)
 				// is.readDWord(); // Registration authority (defunct)
 					String username = is.readNTString();
-					String text = null;
+					ByteArray data = null;
 					StatString statstr = null;
 
 					switch(eid) {
@@ -1228,7 +1229,7 @@ public class BNCSConnection extends Connection {
 							statstr = null;
 						break;
 					default:
-						text = is.readNTStringUTF8();
+						data = new ByteArray(is.readNTBytes());
 						break;
 					}
 
@@ -1277,51 +1278,52 @@ public class BNCSConnection extends Connection {
 						dispatchChannelLeave(user);
 						break;
 					case EID_TALK:
-						dispatchRecieveChat(user, text);
+						dispatchRecieveChat(user, data);
 						break;
 					case EID_EMOTE:
-						dispatchRecieveEmote(user, text);
+						dispatchRecieveEmote(user, data.toString());
 						break;
 					case EID_INFO:
-						dispatchRecieveServerInfo(text);
+						dispatchRecieveServerInfo(data.toString());
 						break;
 					case EID_ERROR:
-						dispatchRecieveServerError(text);
+						dispatchRecieveServerError(data.toString());
 						break;
 					case EID_CHANNEL:
 						// Don't clear the queue if we're connecting for the first time or rejoining
-						if((channelName != null) && !channelName.equals(text))
+						String newChannel = data.toString();
+						if((channelName != null) && !channelName.equals(newChannel))
 							clearQueue();
-						channelName = text;
-						dispatchJoinedChannel(text, flags);
+						channelName = newChannel;
+						dispatchJoinedChannel(newChannel, flags);
 						dispatchTitleChanged();
 						if(botnet != null)
 							botnet.sendStatusUpdate();
 						break;
 					case EID_WHISPERSENT:
-						dispatchWhisperSent(user, text);
+						dispatchWhisperSent(user, data.toString());
 						break;
 					case EID_WHISPER:
-						dispatchWhisperRecieved(user, text);
+						dispatchWhisperRecieved(user, data.toString());
 						break;
 					case EID_CHANNELDOESNOTEXIST:
-						dispatchRecieveError("Channel " + text + " does not exist; creating");
-						sendJoinChannel2(text);
+						dispatchRecieveError("Channel does not exist; creating");
+						sendJoinChannel2(data.toString());
 						break;
 					case EID_CHANNELRESTRICTED:
 						if(timeNow - lastEntryForced > 5000) {
 							lastEntryForced = timeNow;
-							dispatchRecieveError("Channel " + text + " is restricted; forcing entry");
-							sendJoinChannel2(text);
+							dispatchRecieveError("Channel is restricted; forcing entry");
+							sendJoinChannel2(data.toString());
 						} else {
-							dispatchRecieveError("Channel " + text + " is restricted");
+							dispatchRecieveError("Channel " + data.toString() + " is restricted");
 						}
 						break;
 					case EID_CHANNELFULL:
-						dispatchRecieveError("Channel " + text + " is full");
+						dispatchRecieveError("Channel " + data.toString() + " is full");
 						break;
 					default:
-						dispatchRecieveError("Unknown SID_CHATEVENT " + eid + ": " + text);
+						dispatchRecieveError("Unknown SID_CHATEVENT " + eid + ": " + data.toString());
 						break;
 					}
 
@@ -1886,14 +1888,12 @@ public class BNCSConnection extends Connection {
 	 * Send SID_CHATCOMMAND
 	 */
 	@Override
-	public void sendChatCommand(String text) {
-		super.sendChatCommand(text);
-
+	public void sendChatCommand(ByteArray data) {
 		switch (productID) {
 		case D2DV:
 		case D2XP:
-			if ((text.length() > 1) && (text.charAt(0) == '/')) {
-				String cmd = text.substring(1);
+			if ((data.length() > 1) && (data.byteAt(0) == '/')) {
+				String cmd = data.toString().substring(1);
 				int i = cmd.indexOf(' ');
 				if (i != -1) {
 					String theRest = cmd.substring(i + 1);
@@ -1904,7 +1904,7 @@ public class BNCSConnection extends Connection {
 							|| cmd.equals("squelch") || cmd.equals("unignore")
 							|| cmd.equals("unsquelch")) {
 						if (theRest.charAt(0) != '*')
-							text = '/' + cmd + " *" + theRest;
+							data = new ByteArray('/' + cmd + " *" + theRest);
 					}
 
 				}
@@ -1912,14 +1912,13 @@ public class BNCSConnection extends Connection {
 			break;
 		}
 
+		// Flood protection
+		super.sendChatCommand(data);
+
 		// Write the packet
 		try {
 			BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_CHATCOMMAND);
-			if(enabledCryptos == 0)
-				p.writeNTString(text.getBytes("UTF-8"));
-			else
-				p.writeNTString(text);
-			//p.writeNTString(text);
+			p.writeNTString(data);
 			p.SendPacket(bncsOutputStream);
 		} catch (IOException e) {
 			Out.exception(e);
@@ -1927,8 +1926,8 @@ public class BNCSConnection extends Connection {
 			return;
 		}
 
-		if(GlobalSettings.displaySlashCommands || text.charAt(0) != '/')
-			dispatchRecieveChat(myUser, text);
+		if(GlobalSettings.displaySlashCommands || data.byteAt(0) != '/')
+			dispatchRecieveChat(myUser, data);
 	}
 
 	/**

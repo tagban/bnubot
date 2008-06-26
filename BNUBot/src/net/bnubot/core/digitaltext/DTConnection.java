@@ -17,6 +17,7 @@ import net.bnubot.core.bncs.ProductIDs;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.util.BNetInputStream;
 import net.bnubot.util.BNetUser;
+import net.bnubot.util.ByteArray;
 import net.bnubot.util.MirrorSelector;
 import net.bnubot.util.Out;
 import net.bnubot.util.StatString;
@@ -262,7 +263,7 @@ public class DTConnection extends Connection {
 					 */
 					int chatType = is.readByte();
 					String username = is.readNTString();
-					String text = is.readNTString();
+					ByteArray text = new ByteArray(is.readNTBytes());
 
 					// Get a BNetUser object for the user
 					BNetUser user = null;
@@ -277,14 +278,14 @@ public class DTConnection extends Connection {
 						dispatchRecieveChat(user, text);
 						break;
 					case 0x02: // Whisper to
-						dispatchWhisperSent(user, text);
+						dispatchWhisperSent(user, text.toString());
 						break;
 					case 0x03: // Whisper from
-						dispatchWhisperRecieved(user, text);
+						dispatchWhisperRecieved(user, text.toString());
 						break;
 					case 0x04: // Emote
 					case 0x05: // Self Emote
-						dispatchRecieveEmote(user, text);
+						dispatchRecieveEmote(user, text.toString());
 						break;
 					default:
 						Out.debugAlways(getClass(), "Unexpected chat type 0x" + Integer.toHexString(chatType) + " from " + username + ": " + text);
@@ -381,7 +382,7 @@ public class DTConnection extends Connection {
 	 * Send SID_CHATCOMMAND
 	 */
 	@Override
-	public void sendChatCommand(String text) {
+	public void sendChatCommand(ByteArray text) {
 		super.sendChatCommand(text);
 
 		//Write the packet
