@@ -31,7 +31,7 @@ public class TriviaItem {
 		return out;
 	}
 
-	private boolean isAlphaNumeric(byte b) {
+	private boolean isAlphaNumeric(char b) {
 		if((b >= 'a') && (b <= 'z'))
 			return true;
 		if((b >= 'A') && (b <= 'Z'))
@@ -43,13 +43,12 @@ public class TriviaItem {
 	}
 
 	private void makeHints() {
-		byte[] a = answers[0].getBytes();
 		hint0 = "";
 		hint1 = "";
 		hint2 = "";
 		int numHidden = 0;
-		for(byte element : a) {
-			if(isAlphaNumeric(element)) {
+		for(char c : answers[0].toCharArray()) {
+			if(isAlphaNumeric(c)) {
 				numHidden++;
 				if(numHidden % 3 < 2) { //(Math.random() * 3 < 2) {
 					hint0 += '?';
@@ -57,16 +56,16 @@ public class TriviaItem {
 					if(numHidden % 3 < 1) //(Math.random() * 2 < 1)
 						hint2 += '?';
 					else
-						hint2 += (char)element;
+						hint2 += c;
 				} else {
 					hint0 += '?';
-					hint1 += (char)element;
-					hint2 += (char)element;
+					hint1 += c;
+					hint2 += c;
 				}
 			} else {
-				hint0 += (char)element;
-				hint1 += (char)element;
-				hint2 += (char)element;
+				hint0 += c;
+				hint1 += c;
+				hint2 += c;
 			}
 		}
 	}
