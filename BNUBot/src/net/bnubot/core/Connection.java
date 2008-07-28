@@ -617,10 +617,10 @@ public abstract class Connection extends Thread {
 		sendChat(null, text, true, true, 0);
 	}
 
-	public static final int MAX_CHAT_LENGTH = 200;
 	/**
 	 * Helper function to send chat to battle.net
-	 * @param prefix A String to prepend each time the text is split (ex: "/w BNU-Camel ")
+	 * @param prefix A String to prepend each time the text is split.
+	 * <p><code>"/w *BNU-Camel@Azeroth "</code></p>
 	 * @param text The whole text to be sent out
 	 * @param allowCommands Enables internal bot commands (/cmd, /profile, etc)
 	 * @param enableKeywords Enable keywords (%uptime%, %trigger%, %mp3%, etc)
@@ -762,7 +762,7 @@ public abstract class Connection extends Thread {
 						return;
 				}
 			}
-		}
+		} // if(allowCommands)
 
 		if(!isConnected()) {
 			dispatchRecieveError("Can not send chat: " + text);
@@ -791,15 +791,18 @@ public abstract class Connection extends Thread {
 		ByteArray baPrefix = null;
 		if(prefix != null)
 			baPrefix = new ByteArray(prefix);
-		enqueueChat(baPrefix, new ByteArray(text), priority);
+		enqueueChat(baPrefix, text, priority);
 	}
 
+	public static final int MAX_CHAT_LENGTH = 200;
 	/**
-	 * @param prefix
-	 * @param text
+	 * @param prefix Prepend this before each line of text.
+	 * <p><code>new ByteArray("/w *BNU-Camel@Azeroth ")</code></p>
+	 * @param text The string to split up and send; unicode is okay.
+	 * <p><code>"Hello!"</code></p>
 	 * @param priority
 	 */
-	private void enqueueChat(ByteArray prefix, ByteArray text, int priority) {
+	private void enqueueChat(ByteArray prefix, String text, int priority) {
 		//Split up the text in to appropriate sized pieces
 		int pieceSize = MAX_CHAT_LENGTH;
 		if(prefix != null)
@@ -817,30 +820,69 @@ public abstract class Connection extends Thread {
 				pieceSize = (pieceSize - 1) * 3 / 4; // B64 increases 33% and has a prefix
 		}
 
-		ChatQueue cq = profile.getChatQueue();
-		for(int i = 0; i < text.length(); i += pieceSize) {
-			ByteArray piece = text.substring(i);
-			if(i > 0) {
-				// This is not the first piece; prepend ellipsis
-				piece = new ByteArray("...").concat(piece);
-				i -= 3;
-			}
-			if(piece.length() > pieceSize) {
-				// This is not the last piece; append ellipsis
-				piece = piece.substring(0, pieceSize - 3).concat("...".getBytes());
-				i -= 3;
-			}
+		enqueueChat(prefix, text, priority, pieceSize, 0);
+	}
 
-			// Cryptos
-			if(enabledCryptos != 0)
-				piece = GenericCrypto.encode(piece, enabledCryptos);
+	/**
+	 * @param prefix Prepend this before each line of text.
+	 * <p><code>new ByteArray("/w *BNU-Camel@Azeroth ")</code></p>
+	 * @param text The string to split up and send; unicode is okay.
+	 * <p><code>"Hello!"</code></p>
+	 * @param priority
+	 * @param pieceSize
+	 * @param cq
+	 * @param current_position
+	 * @return
+	 */
+	private void enqueueChat(ByteArray prefix, String text, int priority, int pieceSize, int current_position) {
+		// Count the number of unicode characters removed from text
+		int chars_pulled = pieceSize;
+		// Count the number of characters remaining from the current position
+		int chars_left = text.length() - current_position;
+		if(chars_pulled > chars_left)
+			chars_pulled = chars_left;
 
-			// Prepend the prefix
-			if(prefix != null)
-				piece = prefix.concat(piece);
+		// Determine whether to prepend ellipsies
+		boolean firstPiece = (current_position == 0);
 
-			cq.enqueue(this, piece, priority);
+		// This is the pieceSize accomadating for the unprepended ellipsis
+		int maxByteCount = (firstPiece ? pieceSize : pieceSize - 3);
+
+		ByteArray piece = new ByteArray(text.substring(current_position, current_position + chars_pulled));
+		while(piece.length() > maxByteCount) {
+			// Estimate that we need to remove half the overflow, since most unicode chars are 2-bytes
+			int deltaEstimate = (piece.length() - pieceSize + 1) / 2;
+			// Don't remove less than 1 character
+			if(deltaEstimate < 1)
+				deltaEstimate = 1;
+			Out.debug(getClass(), "deltaEstimate=" + deltaEstimate);
+			chars_pulled -= deltaEstimate;
+			piece = new ByteArray(text.substring(current_position, chars_pulled));
 		}
+
+		boolean lastPiece = (current_position + chars_pulled >= text.length());
+		if(!lastPiece) {
+			// This is not the last piece; append ellipsis
+			chars_pulled -= 3;
+			piece = new ByteArray(text.substring(current_position, chars_pulled)).concat("...".getBytes());
+		}
+
+		if(!firstPiece) {
+			// This is not the first piece; prepend ellipsis
+			piece = new ByteArray("...".getBytes()).concat(piece);
+		}
+
+		// Cryptos
+		if(enabledCryptos != 0)
+			piece = GenericCrypto.encode(piece, enabledCryptos);
+
+		// Prepend the prefix
+		if(prefix != null)
+			piece = prefix.concat(piece);
+
+		profile.getChatQueue().enqueue(this, piece, priority);
+		if(!lastPiece)
+			enqueueChat(prefix, text, priority, pieceSize, current_position + chars_pulled);
 	}
 
 	public ConnectionSettings getConnectionSettings() {
