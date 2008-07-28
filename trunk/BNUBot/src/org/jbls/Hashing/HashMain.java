@@ -12,17 +12,17 @@ import org.jbls.util.Buffer;
 import org.jbls.util.Constants;
 
 /**
- * 
+ *
  * @author The-FooL
- * 
+ *
  * This is the main Class that provides hashing functions, CheckRevision, Exe
  * Info, etc provided by BNLS.
- * 
+ *
  * Static Methods Allow it to be accessible by any thread
- * 
+ *
  * @throws HashException -
  *             If error caused by org.jbls.Hashing or retrieval (bad key, etc)
- * 
+ *
  */
 public class HashMain {
 	public static final byte PLATFORM_INTEL = 0x01;
@@ -35,7 +35,7 @@ public class HashMain {
 
 	/**
 	 * Picks appropriate hashing method based on length, and hashes the CD-Key.
-	 * 
+	 *
 	 * @param clientToken
 	 *            ClientToken used in hash specified by Client or JBLS
 	 * @param serverToken
@@ -43,7 +43,7 @@ public class HashMain {
 	 * @return HashedKey(in a Buffer) - 9 DWORDS
 	 * @throws HashException
 	 *             If Invalid Key
-	 * 
+	 *
 	 */
 	public static Buffer hashKey(int clientToken, int serverToken, String key)
 			throws HashException {
@@ -128,30 +128,5 @@ public class HashMain {
 		if (prod > Constants.prods.length + 1)
 			return 0;
 		return Constants.IX86verbytes[prod - 1];
-	}
-
-	public static String[] getFiles(int prod, int plat) {
-		String[] ret = { "", "", "" };
-		if (prod < 0)
-			return null;
-		if (prod > Constants.prods.length + 1)
-			return null;
-
-		switch (plat) {
-		case PLATFORM_INTEL:
-			ret[0] = Constants.IX86files[prod - 1][0]
-					+ Constants.IX86files[prod - 1][1];
-			ret[1] = Constants.IX86files[prod - 1][0]
-					+ Constants.IX86files[prod - 1][2];
-			ret[2] = Constants.IX86files[prod - 1][0]
-					+ Constants.IX86files[prod - 1][3];
-			break;
-		/*
-		 * case PLATFORM_POWERPC: break; case PLATFORM_MACOSX: break;
-		 */
-		default:
-			ret = null;
-		}
-		return ret;
 	}
 }
