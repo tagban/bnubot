@@ -857,14 +857,14 @@ public abstract class Connection extends Thread {
 				deltaEstimate = 1;
 			Out.debug(getClass(), "deltaEstimate=" + deltaEstimate);
 			chars_pulled -= deltaEstimate;
-			piece = new ByteArray(text.substring(current_position, chars_pulled));
+			piece = new ByteArray(text.substring(current_position, current_position + chars_pulled));
 		}
 
 		boolean lastPiece = (current_position + chars_pulled >= text.length());
 		if(!lastPiece) {
 			// This is not the last piece; append ellipsis
 			chars_pulled -= 3;
-			piece = new ByteArray(text.substring(current_position, chars_pulled)).concat("...".getBytes());
+			piece = new ByteArray(text.substring(current_position, current_position + chars_pulled)).concat("...".getBytes());
 		}
 
 		if(!firstPiece) {
