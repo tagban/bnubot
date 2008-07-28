@@ -42,25 +42,16 @@ public final class Constants {
 		"Diablo Shareware",
 		"Starcraft Shareware" };
 
-	public static String[][] IX86files = {
-			{ "IX86/STAR/", "Starcraft.exe", "Storm.dll", "Battle.snp" },
-			{ "IX86/STAR/", "Starcraft.exe", "Storm.dll", "Battle.snp" },
-			{ "IX86/W2BN/", "Warcraft II BNE.exe", "Storm.dll", "Battle.snp" },
-			{ "IX86/D2DV/", "game.exe", "Bnclient.dll", "D2Client.dll" },
-			{ "IX86/D2XP/", "game.exe", "Bnclient.dll", "D2Client.dll" },
-			{ "IX86/JSTR/", "StarcraftJ.exe", "Storm.dll", "Battle.snp" },
-			{ "IX86/WAR3/", "war3.exe", "Storm.dll", "Game.dll" },
-			{ "IX86/WAR3/", "war3.exe", "Storm.dll", "Game.dll" },
-			{ "IX86/DRTL/", "Diablo.exe", "Storm.dll", "Battle.snp" },
-			{ "IX86/DSHR/", "Diablo_s.exe", "Storm.dll", "Battle.snp" },
-			{ "IX86/SSHR/", "Starcraft_s.exe", "Storm.dll", "Battle.snp" } };
-
-	public static int[] IX86verbytes = { 0xd1, 0xd1, 0x4f, 0x0c, 0x0c, 0xa9,
-			0x16, 0x16, 0x2a, 0x2a, 0xa5 };
-
-	public static String build = "Build V2.9 Remote admin, extended admin commands w/ JSTR support.(01/18/06)";
-	public static int maxThreads = 500;
-	public static int maxAdminThreads = 5;
-	public static int BNLSPort = 9367;
-	public static int lngServerVer = 0x01;
+	public static int[] IX86verbytes = {
+		0xd1,
+		0xd1,
+		0x4f,
+		0x0c,
+		0x0c,
+		0xa9,
+		0x16,
+		0x16,
+		0x2a,
+		0x2a,
+		0xa5 };
 }
