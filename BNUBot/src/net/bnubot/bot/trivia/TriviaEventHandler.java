@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -53,16 +52,7 @@ public class TriviaEventHandler extends EventHandler {
 			@Override
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
 			throws Exception {
-				TriviaEventHandler teh = null;
-				Collection<EventHandler> eventHandlers = source.getEventHandlers();
-				synchronized(eventHandlers) {
-					for(EventHandler eh : eventHandlers) {
-						if(!(eh instanceof TriviaEventHandler))
-							continue;
-						teh = (TriviaEventHandler)eh;
-						break;
-					}
-				}
+				TriviaEventHandler teh = EventHandler.findThis(source, TriviaEventHandler.class);
 				if(teh == null) {
 					user.sendChat("Trivia is not enabled.", whisperBack);
 					return;

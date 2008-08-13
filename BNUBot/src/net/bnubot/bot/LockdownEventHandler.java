@@ -44,12 +44,7 @@ public class LockdownEventHandler extends EventHandler {
 			@Override
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
 			throws Exception {
-				LockdownEventHandler leh = null;
-				for(EventHandler eh : source.getEventHandlers())
-					if(eh instanceof LockdownEventHandler) {
-						leh = (LockdownEventHandler)eh;
-						break;
-					}
+				LockdownEventHandler leh = EventHandler.findThis(source, LockdownEventHandler.class);
 				if(leh == null) {
 					user.sendChat("Failed to locate lockdown module", whisperBack);
 					return;

@@ -5,6 +5,7 @@
 
 package net.bnubot.core;
 
+import java.util.Collection;
 import java.util.List;
 
 import net.bnubot.core.bncs.BNCSConnection;
@@ -17,6 +18,24 @@ import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.util.BNetUser;
 
 public abstract class EventHandler {
+	/**
+	 * Helper function to commands
+	 * @param <T> The type of EventHandler to look for
+	 * @param source The connection to search EventHandlers of
+	 * @return The EventHandler of type T
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T extends EventHandler> T findThis(Connection source, Class<T> clazz) {
+		Collection<EventHandler> eventHandlers = source.getEventHandlers();
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers) {
+				if(eh.getClass() == clazz)
+					return (T)eh;
+			}
+		}
+		return null;
+	}
+
 	//Initialization
 	public void initialize(Connection source) {}
 	public void disable(Connection source) {}
