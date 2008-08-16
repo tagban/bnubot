@@ -12,6 +12,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
@@ -55,6 +56,7 @@ public abstract class Connection extends Thread {
 			case ALLOW_CONNECT:
 				return GlobalSettings.autoConnect;
 			case LONG_PAUSE_BEFORE_CONNECT:
+				// Wait 1 minute
 				return timeWaiting > (1000l * 60l);
 			}
 			return false;
@@ -165,12 +167,18 @@ public abstract class Connection extends Thread {
 					connectedLoop();
 
 				// Connection closed
-			} catch(SocketException e) {
 			} catch(OperationCancelledException e) {
+				// Dispose the connection
 				disposed = true;
+				disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
+			} catch(UnknownHostException e) {
+				dispatchRecieveError("Unknown host: " + e.getMessage());
+				disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
+			} catch(SocketException e) {
 			} catch(Exception e) {
 				dispatchRecieveError("Unhandled " + e.getClass().getSimpleName() + ": " + e.getMessage());
 				Out.exception(e);
+				disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 			}
 
 			disconnect(ConnectionState.ALLOW_CONNECT);
