@@ -22,7 +22,7 @@ public class MCPPacket extends BNetOutputStream {
 		this.packetId = packetId;
 	}
 
-	public void SendPacket(OutputStream out) {
+	public void sendPacket(OutputStream out) {
 		byte data[] = ((ByteArrayOutputStream)this.out).toByteArray();
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		BNetOutputStream sckout = new BNetOutputStream(baos);

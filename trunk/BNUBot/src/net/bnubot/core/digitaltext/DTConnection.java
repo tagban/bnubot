@@ -67,7 +67,7 @@ public class DTConnection extends Connection {
 		DTPacket p = new DTPacket(DTPacketId.PKT_LOGON);
 		p.writeNTString(cs.username);
 		p.writeNTString(cs.password);
-		p.SendPacket(dtOutputStream);
+		p.sendPacket(dtOutputStream);
 
 		while(isConnected() && !socket.isClosed() && !disposed) {
 			if(dtInputStream.available() <= 0) {
@@ -147,7 +147,7 @@ public class DTConnection extends Connection {
 				if(timeSinceNullPacket > 30) {
 					lastNullPacket = timeNow;
 					DTPacket p = new DTPacket(DTPacketId.PKT_NULL);
-					p.SendPacket(dtOutputStream);
+					p.sendPacket(dtOutputStream);
 				}
 			}
 
@@ -367,7 +367,7 @@ public class DTConnection extends Connection {
 	public void sendJoinChannel(String channel) throws Exception {
 		DTPacket p = new DTPacket(DTPacketId.PKT_ENTERCHANNEL);
 		p.writeNTString(channel);
-		p.SendPacket(dtOutputStream);
+		p.sendPacket(dtOutputStream);
 	}
 
 	/**
@@ -389,7 +389,7 @@ public class DTConnection extends Connection {
 		try {
 			DTPacket p = new DTPacket(DTPacketId.PKT_CHANNELCHAT);
 			p.writeNTString(text);
-			p.SendPacket(dtOutputStream);
+			p.sendPacket(dtOutputStream);
 		} catch(IOException e) {
 			Out.exception(e);
 			disconnect(ConnectionState.ALLOW_CONNECT);

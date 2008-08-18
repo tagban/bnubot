@@ -401,7 +401,7 @@ public class BotNetConnection extends Connection {
 		BotNetPacket p = new BotNetPacket(BotNetPacketId.PACKET_LOGON);
 		p.writeNTString(user);
 		p.writeNTString(pass);
-		p.SendPacket(bnOutputStream);
+		p.sendPacket(bnOutputStream);
 	}
 
 	/**
@@ -428,7 +428,7 @@ public class BotNetConnection extends Connection {
 		default:
 			throw new IllegalStateException("Unknown PACKET_ACCOUNT command 0x" + Integer.toHexString(command));
 		}
-		p.SendPacket(bnOutputStream);
+		p.sendPacket(bnOutputStream);
 	}
 
 	/**
@@ -441,7 +441,7 @@ public class BotNetConnection extends Connection {
 		BotNetPacket p = new BotNetPacket(BotNetPacketId.PACKET_BOTNETVERSION);
 		p.writeDWord(x);
 		p.writeDWord(y);
-		p.SendPacket(bnOutputStream);
+		p.sendPacket(bnOutputStream);
 	}
 
 	/**
@@ -450,7 +450,7 @@ public class BotNetConnection extends Connection {
 	 */
 	private void sendIdle() throws Exception {
 		BotNetPacket p = new BotNetPacket(BotNetPacketId.PACKET_IDLE);
-		p.SendPacket(bnOutputStream);
+		p.sendPacket(bnOutputStream);
 	}
 
 	/**
@@ -508,7 +508,7 @@ public class BotNetConnection extends Connection {
 		p.writeDWord(ip); // bnet ip address
 		p.writeNTString(database); // database
 		p.writeDWord(cycling ? 1 : 0); // cycling?
-		p.SendPacket(bnOutputStream);
+		p.sendPacket(bnOutputStream);
 	}
 
 	/**
@@ -517,7 +517,7 @@ public class BotNetConnection extends Connection {
 	 */
 	public void sendUserInfo() throws Exception {
 		BotNetPacket p = new BotNetPacket(BotNetPacketId.PACKET_USERINFO);
-		p.SendPacket(bnOutputStream);
+		p.sendPacket(bnOutputStream);
 
 		userInit = true;
 		myUser = null;
@@ -539,7 +539,7 @@ public class BotNetConnection extends Connection {
 		p.writeDWord(emote ? 1 : 0);
 		p.writeDWord(target);
 		p.writeNTString(message);
-		p.SendPacket(bnOutputStream);
+		p.sendPacket(bnOutputStream);
 	}
 
 	/*

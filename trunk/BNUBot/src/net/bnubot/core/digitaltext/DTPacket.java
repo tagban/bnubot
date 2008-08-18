@@ -23,7 +23,7 @@ public class DTPacket extends BNetOutputStream {
 		this.packetId = packetId;
 	}
 
-	public void SendPacket(OutputStream out) throws IOException, SocketException {
+	public void sendPacket(OutputStream out) throws IOException, SocketException {
 		byte data[] = ((ByteArrayOutputStream)this.out).toByteArray();
 		//BNCSOutputStream sckout = new BNCSOutputStream(out);
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();

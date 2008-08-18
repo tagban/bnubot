@@ -63,7 +63,7 @@ public class MCPConnection extends RealmConnection {
 			for(int i = 0; i < 12; i++)
 				p.writeDWord(MCPChunk2[i]);
 			p.writeNTString(uniqueName);
-		    p.SendPacket(dos);
+		    p.sendPacket(dos);
 
 			while(!s.isClosed() && connected) {
 				if(dis.available() > 0) {
@@ -86,7 +86,7 @@ public class MCPConnection extends RealmConnection {
 
 							p = new MCPPacket(MCPPacketID.MCP_CHARLIST2);
 							p.writeDWord(8);	//Nubmer of chars to list
-							p.SendPacket(dos);
+							p.sendPacket(dos);
 							break;
 						case 0x0C:
 							recieveRealmError("Realm server did not detect a Battle.net connection");
@@ -154,7 +154,7 @@ public class MCPConnection extends RealmConnection {
 						if(maxCharname != null) {
 							p = new MCPPacket(MCPPacketID.MCP_CHARLOGON);
 							p.writeNTString(maxCharname);
-							p.SendPacket(dos);
+							p.sendPacket(dos);
 						}
 
 						break;

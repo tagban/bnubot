@@ -59,7 +59,7 @@ public class BNCSWarden {
 				Out.debug(getClass(), "Downloading module...");
 				out.write(outgoing.do_crypt((byte) 0));
 			}
-			out.SendPacket(os);
+			out.sendPacket(os);
 			break;
 
 		case 0x01:
@@ -77,7 +77,7 @@ public class BNCSWarden {
 					out.write(outgoing.do_crypt((byte) 0));
 					warden_module.reset();
 				}
-				out.SendPacket(os);
+				out.sendPacket(os);
 			}
 			break;
 
@@ -124,7 +124,7 @@ public class BNCSWarden {
 			response.addBytes(data);
 
 			out.write(outgoing.do_crypt(response.getBuffer()));
-			out.SendPacket(os);
+			out.sendPacket(os);
 			break;
 
 		default:
