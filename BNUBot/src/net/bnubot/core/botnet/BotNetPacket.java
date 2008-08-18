@@ -23,7 +23,7 @@ public class BotNetPacket extends BNetOutputStream {
 		this.packetId = packetId;
 	}
 
-	public void SendPacket(OutputStream out) throws IOException, SocketException {
+	public void sendPacket(OutputStream out) throws IOException, SocketException {
 		byte data[] = ((ByteArrayOutputStream)this.out).toByteArray();
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		BNetOutputStream sckout = new BNetOutputStream(baos);
