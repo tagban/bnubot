@@ -87,10 +87,12 @@ public class ChatQueue extends Thread {
 	}
 
 	public void clear() {
-		int qs = queue.size();
+		int qs = size();
 		if(qs > 0)
 			Out.info(getClass(), "Removing " + qs + " commands from the ChatQueue.");
-		queue.clear();
+		synchronized(queue) {
+			queue.clear();
+		}
 	}
 
 	@Override
@@ -102,7 +104,7 @@ public class ChatQueue extends Thread {
 			} catch (InterruptedException e) {}
 
 			// If there's text in the queue to send
-			while(queue.size() > 0) {
+			while(size() > 0) synchronized(queue) {
 				Connection con = getNextConnection();
 
 				// Check if the con can send text now
