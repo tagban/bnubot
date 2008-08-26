@@ -36,6 +36,9 @@
 		<db-attribute name="alias" type="VARCHAR" isPrimaryKey="true" isMandatory="true" length="32"/>
 		<db-attribute name="name" type="VARCHAR" isMandatory="true" length="32"/>
 	</db-entity>
+	<db-entity name="dbVersion">
+		<db-attribute name="version" type="INTEGER" isMandatory="true" length="11"/>
+	</db-entity>
 	<db-entity name="mail">
 		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true" length="11"/>
 		<db-attribute name="isread" type="TINYINT" isMandatory="true" length="1"/>
