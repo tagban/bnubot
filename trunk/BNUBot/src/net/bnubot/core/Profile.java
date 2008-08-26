@@ -100,7 +100,6 @@ public class Profile {
 	}
 
 	public void insertConnection(Connection con) throws Exception {
-		Out.setThreadOutputConnectionIfNone(con);
 		synchronized(cons) {
 			if(cons.size() > 0) {
 				Connection primary = cons.get(0);
@@ -137,6 +136,9 @@ public class Profile {
 				// GUI
 				if(GlobalSettings.enableGUI)
 					con.addEventHandler(new GuiEventHandler(con));
+
+				// Now that the CLI/GUI are up, let logging go to them
+				Out.setThreadOutputConnectionIfNone(con);
 
 				// Commands
 				if(GlobalSettings.enableCommands)
