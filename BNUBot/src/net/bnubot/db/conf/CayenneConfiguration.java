@@ -5,6 +5,7 @@
 
 package net.bnubot.db.conf;
 
+import java.awt.HeadlessException;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -16,8 +17,10 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 
 import javax.sql.DataSource;
+import javax.swing.JOptionPane;
 
 import net.bnubot.JARLoader;
 import net.bnubot.bot.gui.DatabaseWizard;
@@ -27,14 +30,27 @@ import net.bnubot.settings.Settings;
 import net.bnubot.util.Out;
 
 import org.apache.cayenne.access.ConnectionLogger;
+import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.DbGenerator;
 import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.conf.DataSourceFactory;
 import org.apache.cayenne.conn.PoolManager;
+import org.apache.cayenne.dba.AutoAdapter;
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.merge.DbMerger;
+import org.apache.cayenne.merge.ExecutingMergerContext;
+import org.apache.cayenne.merge.MergerContext;
+import org.apache.cayenne.merge.MergerToken;
+import org.apache.cayenne.validation.ValidationFailure;
+import org.apache.cayenne.validation.ValidationResult;
 
 public class CayenneConfiguration implements DataSourceFactory {
 	private static final long databaseVersion = 2;		// Current schema version
 	private static final long compatibleVersion = 2;	// Minimum version compatible
 
+	private static DataSource dataSource = null;
 	private Connection conn = null;
 
 	public CayenneConfiguration() throws Exception {
@@ -42,6 +58,9 @@ public class CayenneConfiguration implements DataSourceFactory {
 	}
 
 	public DataSource getDataSource(String location) throws Exception {
+		if(dataSource != null)
+			return dataSource;
+
 		DatabaseSettings settings = new DatabaseSettings();
 		settings.load();
 
@@ -56,7 +75,7 @@ public class CayenneConfiguration implements DataSourceFactory {
 
 		// Connect
 		Out.debug(getClass(), "Connecting to " + settings.url);
-		PoolManager poolManager = new PoolManager(
+		dataSource = new PoolManager(
 				null, // Setting this to null will force Cayenne to use the DriverManager
 				settings.url,
 				1,
@@ -64,19 +83,103 @@ public class CayenneConfiguration implements DataSourceFactory {
 				settings.username,
 				settings.password,
 				new ConnectionLogger());
-		conn = poolManager.getConnection();
 
-		// Check if the schema is up to par
-		if(!checkSchema()) {
-			createSchema(settings.schema);
-			if(GlobalSettings.enableGUI)
-				new DatabaseWizard();
+		try {
+			// Check if the schema is up to par
+			boolean schemaValid = checkSchema();
+			if(conn != null) {
+				conn.close();
+				conn = null;
+			}
+
+			// Bring the schema up to date by merging the differences
+			DataDomain domain = Configuration.getSharedConfiguration().getDomain("BNUBotDomain");
+			DataMap dataMap = domain.getMap("BNUBotMap");
+			DbAdapter adapter = new AutoAdapter(dataSource);
+
+			ValidationResult vr = null;
+			if(!schemaValid) {
+				// Invalid schema
+				Out.info(getClass(), "The database requires rebuilding.");
+
+				// Generate schema from the mapping file
+				DbGenerator generator = new DbGenerator(adapter, dataMap);
+				generator.setShouldCreateFKConstraints(true);
+				generator.setShouldCreatePKSupport(false);
+				generator.setShouldCreateTables(true);
+				generator.setShouldDropPKSupport(true);
+				generator.setShouldDropTables(true);
+				generator.runGenerator(dataSource);
+
+				vr = generator.getFailures();
+
+				Out.info(getClass(), "Database rebuild complete.");
+			} else {
+				// Valid schema; check if merge is needed
+				Out.error(getClass(), "The database schema is valid; checking if upgrade is needed.");
+
+				DataNode dataNode = domain.getNode("BNUBotDomainNode");
+				MergerContext mc = new ExecutingMergerContext(dataMap, dataNode);
+				List<MergerToken> mergeTokens = new DbMerger().createMergeTokens(dataNode, dataMap);
+				if(mergeTokens.size() == 0)
+					return dataSource;
+
+				try {
+					String msg = "BNU-Bot must perform the following action(s) to upgrade your database:\n";
+					for(MergerToken mt : mergeTokens)
+						msg += mt.toString() + "\n";
+					msg += "\n" +
+						"It is strongly recommended to backup your database before continuing!\n" +
+						"Okay to continue?";
+					if(JOptionPane.showConfirmDialog(
+							null,
+							msg,
+							"Database schema update required",
+							JOptionPane.YES_NO_OPTION,
+							JOptionPane.QUESTION_MESSAGE)
+						!= JOptionPane.YES_OPTION) {
+						throw new RuntimeException("User rejected schema update");
+					}
+				} catch(HeadlessException e) {
+					// GUI is probably broken
+				}
+
+				for(MergerToken mt : mergeTokens) {
+					Out.info(getClass(), mt.toString());
+					mt.execute(mc);
+				}
+
+				vr = mc.getValidationResult();
+			}
+
+			for(ValidationFailure vf : vr.getFailures()) {
+				Out.error(getClass(),
+						vf.getDescription().toString() + "\n" +
+						vf.getSource().toString());
+			}
+
+			if(!schemaValid) {
+				// Insert default values
+				Out.info(getClass(), "Adding default values to database.");
+
+				insertDefault("schema.sql");
+				if(conn != null) {
+					conn.close();
+					conn = null;
+				}
+
+				Out.info(getClass(), "Default values added.");
+
+				if(GlobalSettings.enableGUI)
+					new DatabaseWizard();
+			}
+		} catch(Exception e) {
+			Out.exception(e);
+			throw e;
 		}
 
-		conn.close();
-
 		// All done!
-		return poolManager;
+		return dataSource;
 	}
 
 	public void initializeWithParentConfiguration(Configuration parentConfiguration) {}
@@ -86,23 +189,14 @@ public class CayenneConfiguration implements DataSourceFactory {
 	 * @throws SQLException
 	 */
 	private Statement createStatement() throws SQLException {
+		if(conn == null)
+			conn = dataSource.getConnection();
 		return conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
-	}
-
-	public void close(Statement stmt) throws SQLException {
-		stmt.close();
-
-		/*int i = openStatements.indexOf(stmt);
-		if(i == -1)
-			throw new IllegalStateException("Statement not found in cache");
-
-		openStatements.remove(i);
-		openStmtExcept.remove(i);*/
 	}
 
 	public void close(ResultSet rs) {
 		try {
-			close(rs.getStatement());
+			rs.getStatement().close();
 		} catch (SQLException e) {
 			Out.exception(e);
 		}
@@ -133,9 +227,7 @@ public class CayenneConfiguration implements DataSourceFactory {
 		return false;
 	}
 
-	private void createSchema(String schemaFile) throws SQLException {
-		Out.info(getClass(), "The database requires rebuilding.");
-
+	private void insertDefault(String schemaFile) throws SQLException {
 		Statement stmt = createStatement();
 
 		BufferedReader fr;
@@ -174,7 +266,7 @@ public class CayenneConfiguration implements DataSourceFactory {
 			stmt.execute(query);
 			query = "INSERT INTO dbVersion (version) VALUES (" + databaseVersion + ")";
 			stmt.execute(query);
-			close(stmt);
+			stmt.close();
 		} catch(IOException e) {
 			Out.fatalException(e);
 		} catch(SQLException e) {
