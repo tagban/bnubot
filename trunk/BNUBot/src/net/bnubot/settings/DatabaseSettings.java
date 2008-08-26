@@ -11,14 +11,12 @@ public class DatabaseSettings {
 	public String url;
 	public String username;
 	public String password;
-	public String schema;
 
 	public void load() {
 		driver = Settings.read(header, "driver", "org.apache.derby.jdbc.EmbeddedDriver");
 		url = Settings.read(header, "url", "jdbc:derby:database;create=true");
 		username = Settings.read(header, "username", (String)null);
 		password = Settings.read(header, "password", (String)null);
-		schema = Settings.read(header, "schema", "schema.derby");
 	}
 
 	public void save() {
@@ -26,6 +24,5 @@ public class DatabaseSettings {
 		Settings.write(header, "url", url);
 		Settings.write(header, "username", username);
 		Settings.write(header, "password", password);
-		Settings.write(header, "schema", schema);
 	}
 }
