@@ -21,6 +21,9 @@ import net.bnubot.bot.gui.icons.IconsDotBniReader;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.util.Out;
 
+/**
+ * @author scotta
+ */
 public class ClanList extends JPanel {
 	private static final long serialVersionUID = 1138323605493806160L;
 

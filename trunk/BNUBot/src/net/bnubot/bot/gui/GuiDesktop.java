@@ -63,6 +63,9 @@ import net.bnubot.util.Out;
 import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.VersionCheck;
 
+/**
+ * @author scotta
+ */
 public class GuiDesktop extends JFrame {
 	private static final long serialVersionUID = -7144648179041514994L;
 	private static final List<GuiEventHandler> guis = new ArrayList<GuiEventHandler>();

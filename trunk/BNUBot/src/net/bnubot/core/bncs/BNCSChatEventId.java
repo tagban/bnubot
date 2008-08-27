@@ -5,6 +5,9 @@
 
 package net.bnubot.core.bncs;
 
+/**
+ * @author scotta
+ */
 public enum BNCSChatEventId {
 	EID_UNKNOWN_0x00,
 	EID_SHOWUSER,

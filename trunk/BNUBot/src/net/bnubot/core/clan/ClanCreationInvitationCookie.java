@@ -11,7 +11,6 @@ import net.bnubot.util.crypto.HexDump;
 
 /**
  * @author scotta
- *
  */
 public class ClanCreationInvitationCookie implements AcceptOrDecline {
 	private final BNCSConnection source;

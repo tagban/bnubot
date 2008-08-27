@@ -19,6 +19,9 @@ import net.bnubot.util.StatString;
 import net.bnubot.util.TimeFormatter;
 import net.bnubot.util.crypto.HexDump;
 
+/**
+ * @author scotta
+ */
 public class MCPConnection extends RealmConnection {
 	protected int[] MCPChunk1;
 	protected String server;

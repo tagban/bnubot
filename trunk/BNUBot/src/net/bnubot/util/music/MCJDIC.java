@@ -10,6 +10,9 @@ import java.util.List;
 import org.jdesktop.jdic.mpcontrol.IMediaPlayer;
 import org.jdesktop.jdic.mpcontrol.MediaPlayerService;
 
+/**
+ * @author scotta
+ */
 class MCJDIC implements MusicController {
 	private IMediaPlayer mp = null;
 

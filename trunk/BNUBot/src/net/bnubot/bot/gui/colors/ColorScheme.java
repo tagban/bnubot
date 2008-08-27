@@ -10,6 +10,9 @@ import java.awt.Color;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.Out;
 
+/**
+ * @author scotta
+ */
 public abstract class ColorScheme {
 	public static final byte COLORSCHEME_STARCRAFT = (byte)0x01;
 	public static final byte COLORSCHEME_DIABLO2 = (byte)0x02;

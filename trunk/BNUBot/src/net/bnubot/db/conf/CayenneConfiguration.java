@@ -46,6 +46,9 @@ import org.apache.cayenne.merge.MergerToken;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 
+/**
+ * @author scotta
+ */
 public class CayenneConfiguration implements DataSourceFactory {
 	private static final long databaseVersion = 2;		// Current schema version
 	private static final long compatibleVersion = 2;	// Minimum version compatible

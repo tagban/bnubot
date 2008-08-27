@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * @author scotta
+ */
 public abstract class RealmConnection extends Thread implements RealmEventHandler {
 	protected List<RealmEventHandler> realmEventHandlers = new ArrayList<RealmEventHandler>();
 	protected boolean connected = false;

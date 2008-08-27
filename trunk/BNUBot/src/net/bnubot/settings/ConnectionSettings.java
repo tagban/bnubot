@@ -9,6 +9,9 @@ import java.io.Serializable;
 
 import net.bnubot.core.bncs.ProductIDs;
 
+/**
+ * @author scotta
+ */
 public class ConnectionSettings implements Serializable {
 	private static final long serialVersionUID = -8169038278487314919L;
 

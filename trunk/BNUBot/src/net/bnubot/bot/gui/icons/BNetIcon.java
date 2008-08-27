@@ -11,6 +11,9 @@ import net.bnubot.util.crypto.HexDump;
 
 import org.eclipse.swt.graphics.Image;
 
+/**
+ * @author scotta
+ */
 public class BNetIcon {
 	int flags;
 	int xSize;

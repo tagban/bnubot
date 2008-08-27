@@ -22,6 +22,9 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+/**
+ * @author scotta
+ */
 public class XMLElementDecorator {
 	private String name = null;
 	private XMLElementDecorator parent = null;

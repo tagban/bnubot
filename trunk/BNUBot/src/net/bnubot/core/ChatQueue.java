@@ -16,6 +16,9 @@ import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.ByteArray;
 import net.bnubot.util.Out;
 
+/**
+ * @author scotta
+ */
 public class ChatQueue extends Thread {
 	private class QueueEntry implements Comparable<QueueEntry> {
 		public final ByteArray text;

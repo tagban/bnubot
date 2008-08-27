@@ -15,6 +15,9 @@ import net.bnubot.util.Out;
 import net.bnubot.util.SortedProperties;
 import net.bnubot.vercheck.CurrentVersion;
 
+/**
+ * @author scotta
+ */
 public class Settings {
 	public static final File keysFile = new File(getRootPath() + "cdkeys.txt");
 	public static final File propsFile = new File(getRootPath() + "settings.ini");

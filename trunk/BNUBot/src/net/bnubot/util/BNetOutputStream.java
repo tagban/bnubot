@@ -11,6 +11,9 @@ import java.io.OutputStream;
 
 import net.bnubot.util.crypto.HexDump;
 
+/**
+ * @author scotta
+ */
 public class BNetOutputStream extends DataOutputStream {
 
 	public BNetOutputStream(OutputStream out) {

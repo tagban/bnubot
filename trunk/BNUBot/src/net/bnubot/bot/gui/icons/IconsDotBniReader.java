@@ -33,6 +33,9 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.PaletteData;
 
+/**
+ * @author scotta
+ */
 public class IconsDotBniReader {
 	private static boolean initializedWindow = false;
 	private static SoftReference<BNetIcon[]> icons = null;

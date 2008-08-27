@@ -7,6 +7,9 @@ package net.bnubot.util;
 
 import java.util.Properties;
 
+/**
+ * @author scotta
+ */
 public enum OperatingSystem {
 	WINDOWS,
 	OSX,

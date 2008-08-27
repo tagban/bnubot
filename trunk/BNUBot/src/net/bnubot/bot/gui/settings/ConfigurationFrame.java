@@ -30,6 +30,9 @@ import net.bnubot.core.bncs.ProductIDs;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.settings.ConnectionSettings.ConnectionType;
 
+/**
+ * @author scotta
+ */
 public class ConfigurationFrame extends JDialog {
 	private static final long serialVersionUID = 1308177934480442149L;
 

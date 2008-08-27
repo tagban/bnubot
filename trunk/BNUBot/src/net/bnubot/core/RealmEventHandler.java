@@ -5,6 +5,9 @@
 
 package net.bnubot.core;
 
+/**
+ * @author scotta
+ */
 public interface RealmEventHandler {
 	//Initialization
 	public void initialize(RealmConnection rc);

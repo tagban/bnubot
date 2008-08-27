@@ -10,6 +10,9 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.security.MessageDigest;
 
+/**
+ * @author scotta
+ */
 public class SHA1Sum {
 	private final byte[] sha1sum;
 

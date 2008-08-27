@@ -17,6 +17,9 @@ import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.util.BNetUser;
 
+/**
+ * @author scotta
+ */
 public abstract class EventHandler {
 	/**
 	 * Helper function to commands

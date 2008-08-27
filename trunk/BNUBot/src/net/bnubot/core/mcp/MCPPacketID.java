@@ -5,6 +5,9 @@
 
 package net.bnubot.core.mcp;
 
+/**
+ * @author scotta
+ */
 public enum MCPPacketID {
 	MCP_UNKNOWN_0x00,
 	MCP_STARTUP,

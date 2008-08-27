@@ -5,6 +5,9 @@
 
 package net.bnubot.core.friend;
 
+/**
+ * @author scotta
+ */
 public interface FriendStatusFlags {
 	public static final byte FRIENDSTATUS_MUTUAL	= (byte)0x01;
 	public static final byte FRIENDSTATUS_DND		= (byte)0x02;

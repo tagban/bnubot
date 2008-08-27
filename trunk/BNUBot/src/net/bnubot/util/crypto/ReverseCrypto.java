@@ -7,6 +7,9 @@ package net.bnubot.util.crypto;
 
 import net.bnubot.util.ByteArray;
 
+/**
+ * @author scotta
+ */
 public class ReverseCrypto {
 	private static boolean isSpecial(byte b) {
 		if((b >= 'a') && (b <= 'z'))

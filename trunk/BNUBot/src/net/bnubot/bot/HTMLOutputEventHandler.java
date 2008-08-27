@@ -26,6 +26,9 @@ import net.bnubot.util.Out;
 import net.bnubot.util.StatString;
 import net.bnubot.util.crypto.HexDump;
 
+/**
+ * @author scotta
+ */
 public class HTMLOutputEventHandler extends EventHandler {
 	// TODO Allow the user to customize TimeZone
 	private static final TimeZone TIME_ZONE = TimeZone.getTimeZone("GMT-05");

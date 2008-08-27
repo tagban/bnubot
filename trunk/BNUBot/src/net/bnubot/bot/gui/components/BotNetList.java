@@ -29,6 +29,9 @@ import net.bnubot.core.Connection;
 import net.bnubot.core.botnet.BotNetUser;
 import net.bnubot.util.Out;
 
+/**
+ * @author scotta
+ */
 public class BotNetList extends JPanel {
 	private static final long serialVersionUID = 825097004919144106L;
 

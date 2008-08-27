@@ -28,6 +28,9 @@ import javax.swing.text.JTextComponent;
 import net.bnubot.bot.gui.components.ColoredTextArea;
 import net.bnubot.vercheck.CurrentVersion;
 
+/**
+ * @author scotta
+ */
 public class WhatsNewWindow extends JDialog {
 	private static final long serialVersionUID = -2905017328939505262L;
 

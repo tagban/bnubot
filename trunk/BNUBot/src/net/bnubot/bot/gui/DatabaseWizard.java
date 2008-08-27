@@ -31,7 +31,6 @@ import net.bnubot.util.Out;
 
 /**
  * @author scotta
- *
  */
 public class DatabaseWizard extends JDialog {
 	private static final long serialVersionUID = -3827493801847545042L;

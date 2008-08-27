@@ -22,6 +22,9 @@ import net.bnubot.core.Connection;
 import net.bnubot.util.Out;
 import net.bnubot.util.UserProfile;
 
+/**
+ * @author scotta
+ */
 public class ProfileEditor extends JDialog {
 	private static final long serialVersionUID = 7116099159624394301L;
 

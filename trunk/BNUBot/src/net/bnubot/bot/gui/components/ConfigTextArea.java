@@ -10,6 +10,9 @@ import java.awt.KeyboardFocusManager;
 import javax.swing.BorderFactory;
 import javax.swing.JTextArea;
 
+/**
+ * @author scotta
+ */
 public class ConfigTextArea extends JTextArea {
 	private static final long serialVersionUID = -2894805163754230265L;
 

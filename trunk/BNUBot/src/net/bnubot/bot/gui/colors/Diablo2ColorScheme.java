@@ -7,6 +7,9 @@ package net.bnubot.bot.gui.colors;
 
 import java.awt.Color;
 
+/**
+ * @author scotta
+ */
 public class Diablo2ColorScheme extends ColorScheme {
 	public static final Color D2White = new Color(0xD0D0D0);
 	public static final Color D2Red = new Color(0xCE3E3E);

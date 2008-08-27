@@ -12,6 +12,9 @@ import net.bnubot.core.EventHandler;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetUser;
 
+/**
+ * @author scotta
+ */
 public class ConsoleEventHandler extends EventHandler {
 	private static final HashMap<Connection, CLIThread> threads = new HashMap<Connection, CLIThread>();
 

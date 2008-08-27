@@ -7,7 +7,6 @@ package net.bnubot.core;
 
 /**
  * @author scotta
- *
  */
 public interface AcceptOrDecline {
 	public void accept() throws Exception;

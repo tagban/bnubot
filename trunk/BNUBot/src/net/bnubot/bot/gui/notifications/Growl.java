@@ -15,8 +15,8 @@ import net.bnubot.util.Out;
 
 /**
  * A class that encapsulates the "work" of talking to growl
- *
  * @author Karl Adam
+ * @author scotta
  */
 public class Growl {
 	public static final String BNET_CONNECT = "Battle.net: Connected";

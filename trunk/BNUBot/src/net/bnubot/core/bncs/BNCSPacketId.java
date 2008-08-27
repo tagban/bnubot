@@ -5,6 +5,9 @@
 
 package net.bnubot.core.bncs;
 
+/**
+ * @author scotta
+ */
 public enum BNCSPacketId {
 	SID_NULL,
 	SID_UNKNOWN_0x01,

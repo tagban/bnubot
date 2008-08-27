@@ -5,7 +5,6 @@
 
 package net.bnubot.db.conf;
 
-
 import java.util.List;
 
 import net.bnubot.db.Account;
@@ -19,6 +18,9 @@ import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.query.SelectQuery;
 
+/**
+ * @author scotta
+ */
 public class DatabaseContext {
 	private static ThreadLocal<ObjectContext> contexts = new ThreadLocal<ObjectContext>();
 	private static long lastFlush = 0;

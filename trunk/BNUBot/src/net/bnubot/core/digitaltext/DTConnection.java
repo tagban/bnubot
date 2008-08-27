@@ -24,6 +24,9 @@ import net.bnubot.util.StatString;
 import net.bnubot.util.crypto.HexDump;
 import net.bnubot.util.task.Task;
 
+/**
+ * @author scotta
+ */
 public class DTConnection extends Connection {
 	private static final String DT_TYPE = "DigitalText";
 	private InputStream dtInputStream = null;

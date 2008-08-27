@@ -5,6 +5,9 @@
 
 package net.bnubot.core.clan;
 
+/**
+ * @author scotta
+ */
 public interface ClanStatusIDs {
 	public static final byte CLANSTATUS_SUCCESS				= (byte)0x00;
 	public static final byte CLANSTATUS_IN_USE				= (byte)0x01;

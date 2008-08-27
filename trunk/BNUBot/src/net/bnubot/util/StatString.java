@@ -12,6 +12,9 @@ import net.bnubot.core.bncs.IconIDs;
 import net.bnubot.core.bncs.ProductIDs;
 import net.bnubot.util.crypto.HexDump;
 
+/**
+ * @author scotta
+ */
 public class StatString {
 	private static final String[] D2Classes = {"Amazon", "Sorceress", "Necromancer", "Paladin", "Barbarian", "Druid", "Assassin" };
 

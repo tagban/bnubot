@@ -72,6 +72,9 @@ import net.bnubot.util.BNetUser;
 import net.bnubot.util.Out;
 import net.bnubot.util.crypto.HexDump;
 
+/**
+ * @author scotta
+ */
 public class GuiEventHandler extends EventHandler {
 	private Connection firstConnection = null;
 	private JPanel frame = null;

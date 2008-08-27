@@ -53,6 +53,9 @@ import net.bnubot.util.TimeFormatter;
 import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.ReleaseType;
 
+/**
+ * @author scotta
+ */
 public class GlobalConfigurationFrame extends JDialog {
 	private static final long serialVersionUID = 1308177934480442149L;
 

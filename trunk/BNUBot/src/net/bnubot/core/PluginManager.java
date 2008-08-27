@@ -15,6 +15,9 @@ import net.bnubot.bot.trivia.TriviaEventHandler;
 import net.bnubot.settings.Settings;
 import net.bnubot.util.Out;
 
+/**
+ * @author scotta
+ */
 public class PluginManager {
 	private static final List<Class<? extends EventHandler>> plugins = new ArrayList<Class<? extends EventHandler>>();
 	private static final List<Class<? extends EventHandler>> enabledPlugins = new ArrayList<Class<? extends EventHandler>>();

@@ -7,6 +7,9 @@ package net.bnubot.bot.gui.colors;
 
 import java.awt.Color;
 
+/**
+ * @author scotta
+ */
 public class StarcraftColorScheme extends ColorScheme {
 	public static final Color SCWhite = Color.WHITE;
 	public static final Color SCRed = Color.RED;

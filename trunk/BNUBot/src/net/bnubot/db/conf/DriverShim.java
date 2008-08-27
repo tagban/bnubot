@@ -17,6 +17,8 @@ import java.util.Properties;
  * with the system ClassLoader
  *
  * http://www.kfu.com/~nsayer/Java/dyn-jdbc.html
+ *
+ * @author Nick Sayer
  */
 public class DriverShim implements Driver {
 	private final Driver driver;

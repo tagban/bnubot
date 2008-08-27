@@ -14,6 +14,9 @@ import net.bnubot.util.BNetOutputStream;
 import net.bnubot.util.Out;
 import net.bnubot.util.crypto.HexDump;
 
+/**
+ * @author scotta
+ */
 public class BNLSPacket extends BNetOutputStream {
 	BNLSPacketId packetId;
 

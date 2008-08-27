@@ -48,7 +48,6 @@ import org.apache.cayenne.query.SelectQuery;
 
 /**
  * @author scotta
- *
  */
 public class DatabaseEditor {
 	private final ObjectContext context;

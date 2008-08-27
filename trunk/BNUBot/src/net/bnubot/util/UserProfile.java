@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+/**
+ * @author scotta
+ */
 public class UserProfile {
 	public static final String PROFILE_ = "profile\\";
 	public static final String PROFILE_SEX = PROFILE_ + "sex";

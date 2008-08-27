@@ -40,6 +40,9 @@ import net.bnubot.util.task.Task;
 import net.bnubot.util.task.TaskManager;
 import net.bnubot.vercheck.CurrentVersion;
 
+/**
+ * @author scotta
+ */
 public abstract class Connection extends Thread {
 	public enum ConnectionState {
 		DO_NOT_ALLOW_CONNECT,

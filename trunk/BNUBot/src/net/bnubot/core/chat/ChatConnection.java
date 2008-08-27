@@ -16,6 +16,9 @@ import net.bnubot.util.BNetOutputStream;
 import net.bnubot.util.Out;
 import net.bnubot.util.task.Task;
 
+/**
+ * @author scotta
+ */
 public class ChatConnection extends Connection {
 	private static final String CHAT_TYPE = "Chat";
 	private Socket s;

@@ -5,6 +5,9 @@
 
 package net.bnubot.core.bncs;
 
+/**
+ * @author scotta
+ */
 public enum ProductIDs {
 	// The order here is important; ordinals correspond to BNLS product ids (excluding CHAT)
 	CHAT(0x43484154, "Chat"),

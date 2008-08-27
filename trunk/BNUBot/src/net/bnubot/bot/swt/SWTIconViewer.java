@@ -19,6 +19,9 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
+/**
+ * @author scotta
+ */
 public class SWTIconViewer {
 	public static void main(String[] args) {
 		Display d = new Display();

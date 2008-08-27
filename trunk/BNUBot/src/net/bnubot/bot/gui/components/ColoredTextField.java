@@ -12,7 +12,6 @@ import net.bnubot.bot.gui.colors.ColorScheme;
 
 /**
  * @author scotta
- *
  */
 public class ColoredTextField extends JTextField {
 	private static final long serialVersionUID = 2905756736511967581L;

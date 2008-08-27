@@ -4,6 +4,9 @@
  */
 package net.bnubot.core.bnls;
 
+/**
+ * @author scotta
+ */
 public enum BNLSPacketId {
 	BNLS_NULL,
 	BNLS_CDKEY,

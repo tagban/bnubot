@@ -7,6 +7,9 @@ package net.bnubot.util.crypto;
 
 import net.bnubot.util.ByteArray;
 
+/**
+ * @author scotta
+ */
 public class MCCrypto {
 	public static ByteArray decode(ByteArray data) {
 		return encode(data);

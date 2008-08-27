@@ -21,7 +21,6 @@ import net.bnubot.util.Out;
 
 /**
  * @author scotta
- *
  */
 public class LockdownEventHandler extends EventHandler {
 	private static final String CHANNEL_CLOSED = "The clan channel is now private and only clan members may enter.";

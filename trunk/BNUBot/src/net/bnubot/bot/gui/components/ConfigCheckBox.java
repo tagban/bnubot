@@ -11,6 +11,9 @@ import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.event.ChangeListener;
 
+/**
+ * @author scotta
+ */
 public class ConfigCheckBox extends Box {
 	private static final long serialVersionUID = 1831878850976738056L;
 	private final JCheckBox theBox;

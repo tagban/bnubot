@@ -7,6 +7,9 @@ package net.bnubot.util.music;
 
 import net.bnubot.util.OperatingSystem;
 
+/**
+ * @author scotta
+ */
 public class MusicControllerFactory {
 	private static MusicController mc = null;
 

@@ -15,10 +15,8 @@ import net.bnubot.util.BNetUser;
 import net.bnubot.util.Out;
 import net.bnubot.util.crypto.HexDump;
 
-
 /**
  * @author scotta
- *
  */
 public class BotNetUser extends BNetUser {
 	private static final Map<Integer, InetAddress> servers = new HashMap<Integer, InetAddress>();

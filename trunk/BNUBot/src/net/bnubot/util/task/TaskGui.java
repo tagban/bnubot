@@ -16,6 +16,9 @@ import javax.swing.JProgressBar;
 
 import net.bnubot.util.OperatingSystem;
 
+/**
+ * @author scotta
+ */
 public class TaskGui extends Task {
 	private static final long serialVersionUID = -5561830539661899515L;
 	private final Box box;
