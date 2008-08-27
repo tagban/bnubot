@@ -62,60 +62,75 @@ public final class CurrentVersion {
 
 			try {
 				FileReader fr = new FileReader(sf);
+				boolean revisionFound = false;
+				boolean authorFound = false;
 				do {
 					int i = fr.read();
 					if(i == -1) { // <EOF>
-						Out.error(CurrentVersion.class, "Couldn't find Id: tag in " + sf.getPath());
+						if(!revisionFound)
+							Out.error(CurrentVersion.class, "Couldn't find $Id$ tag in " + sf.getPath());
+						if(!authorFound)
+							Out.error(CurrentVersion.class, "Couldn't find @author tag in " + sf.getPath());
 						break;
 					}
 
 					// Search for "$Id: "
-					if(i != '$')
-						continue;
-					if(fr.read() != 'I')
-						continue;
-					if(fr.read() != 'd')
-						continue;
-					if(fr.read() != ':')
-						continue;
-					if(fr.read() != ' ')
-						continue;
+					if((i == '$')
+					&& (fr.read() == 'I')
+					&& (fr.read() == 'd')
+					&& (fr.read() == ':')
+					&& (fr.read() == ' ')) {
+						// Skip over the filename
+						String fileName = new String();
+						do {
+							int c = fr.read();
+							if(c == ' ')
+								break;
+							fileName += (char)c;
+						} while(true);
 
-					// Skip over the filename
-					String fileName = new String();
-					do {
-						int c = fr.read();
-						if(c == ' ')
+						if(!sf.getName().equals(fileName)) {
+							Out.error(CurrentVersion.class, "File name in Id: tag doesn't match actual file name: " + sf.getPath());
 							break;
-						fileName += (char)c;
-					} while(true);
+						}
 
-					if(!sf.getName().equals(fileName)) {
-						Out.error(CurrentVersion.class, "File name in Id: tag doesn't match actual file name: " + sf.getPath());
-						break;
+						// Read in the revision as a String
+						String rev = "";
+						do {
+							int c = fr.read();
+							if(c < '0')
+								break;
+							if(c > '9')
+								break;
+
+							rev += (char) c;
+						} while(true);
+
+						if(rev.length() == 0)
+							continue;
+
+						// Parse the long
+						int r2 = Integer.parseInt(rev);
+						if((r == null) || (r2 > r))
+							r = r2;
+
+						revisionFound = true;
 					}
 
-					// Read in the revision as a String
-					String rev = "";
-					do {
-						int c = fr.read();
-						if(c < '0')
-							break;
-						if(c > '9')
-							break;
+					// Search for "@author "
+					if((i == '@')
+					&& (fr.read() == 'a')
+					&& (fr.read() == 'u')
+					&& (fr.read() == 't')
+					&& (fr.read() == 'h')
+					&& (fr.read() == 'o')
+					&& (fr.read() == 'r')
+					&& (fr.read() == ' ')) {
+						authorFound = true;
+					}
 
-						rev += (char) c;
-					} while(true);
-
-					if(rev.length() == 0)
-						continue;
-
-					// Parse the long
-					int r2 = Integer.parseInt(rev);
-					if((r == null) || (r2 > r))
-						r = r2;
-
-					break;
+					if(authorFound && revisionFound)
+						break;
 				} while(true);
 			} catch(Exception e) {
 				Out.exception(e);
