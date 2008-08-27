@@ -119,7 +119,7 @@ public class CayenneConfiguration implements DataSourceFactory {
 				Out.info(getClass(), "Database rebuild complete.");
 			} else {
 				// Valid schema; check if merge is needed
-				Out.error(getClass(), "The database schema is valid; checking if upgrade is needed.");
+				Out.info(getClass(), "The database schema is valid; checking if upgrade is needed.");
 
 				DataNode dataNode = domain.getNode("BNUBotDomainNode");
 				MergerContext mc = new ExecutingMergerContext(dataMap, dataNode);
