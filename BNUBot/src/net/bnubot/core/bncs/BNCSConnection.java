@@ -1972,7 +1972,7 @@ public class BNCSConnection extends Connection {
 	@Override
 	public void sendFriendsList() throws Exception {
 		BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_FRIENDSLIST);
-		p.SendPacket(bncsOutputStream);
+		p.sendPacket(bncsOutputStream);
 	}
 
 	/**
