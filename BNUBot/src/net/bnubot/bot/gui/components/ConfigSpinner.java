@@ -11,6 +11,9 @@ import javax.swing.BoxLayout;
 import javax.swing.InputVerifier;
 import javax.swing.JSpinner;
 
+/**
+ * @author scotta
+ */
 public class ConfigSpinner extends Box {
 	private static final long serialVersionUID = 1831878850976738056L;
 	private final JSpinner theSpinner;

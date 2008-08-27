@@ -10,6 +10,9 @@ import java.awt.KeyboardFocusManager;
 import javax.swing.BorderFactory;
 import javax.swing.JTextField;
 
+/**
+ * @author scotta
+ */
 public class ConfigTextField extends JTextField {
 	private static final long serialVersionUID = -2894805163754230265L;
 

@@ -18,6 +18,7 @@ import org.jbls.util.PadString;
 
 /**
  * This is ported from Hdx's SOCK4Connection proxy
+ * @author scotta
  */
 public class BNCSWarden {
 	private SimpleCrypto incoming;

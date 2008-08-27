@@ -5,6 +5,9 @@
 
 package net.bnubot.core.friend;
 
+/**
+ * @author scotta
+ */
 public interface FriendLocationIDs {
 	public static final byte FRIENDLOCATION_OFFLINE							= (byte)0x00;
 	public static final byte FRIENDLOCATION_NOT_IN_CHAT						= (byte)0x01;

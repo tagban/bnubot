@@ -7,8 +7,9 @@ package net.bnubot.util.crypto;
 
 import net.bnubot.util.ByteArray;
 
-
-
+/**
+ * @author scotta
+ */
 public class GenericCrypto {
 	public static final int CRYPTO_REVERSE = 0x01;
 	public static final int CRYPTO_MC = 0x02;

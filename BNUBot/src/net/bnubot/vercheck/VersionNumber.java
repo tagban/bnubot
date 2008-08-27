@@ -7,6 +7,9 @@ package net.bnubot.vercheck;
 
 import java.util.Date;
 
+/**
+ * @author scotta
+ */
 public class VersionNumber {
 	private ReleaseType RELEASE_TYPE = null;
 	private Integer VER_MAJOR = null;

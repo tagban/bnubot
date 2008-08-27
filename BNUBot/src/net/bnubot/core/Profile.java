@@ -27,6 +27,9 @@ import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.Out;
 import net.bnubot.vercheck.VersionCheck;
 
+/**
+ * @author scotta
+ */
 public class Profile {
 	private static final List<Profile> profiles = new ArrayList<Profile>();
 	private static final Dictionary<String, CommandRunnable> commands = new Hashtable<String, CommandRunnable>();

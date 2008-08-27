@@ -14,6 +14,9 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 
+/**
+ * @author scotta
+ */
 public class ConfigFactory {
 	private static final int lblWidth = 100;
 	private static final int height = 25;

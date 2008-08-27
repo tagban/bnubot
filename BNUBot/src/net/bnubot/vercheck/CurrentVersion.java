@@ -18,6 +18,9 @@ import java.util.Properties;
 import net.bnubot.util.Out;
 import net.bnubot.util.SortedProperties;
 
+/**
+ * @author scotta
+ */
 public final class CurrentVersion {
 	protected static ReleaseType RELEASE_TYPE = null;
 	protected static Integer VER_MAJOR = null;

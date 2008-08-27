@@ -25,6 +25,9 @@ import net.bnubot.util.BrowserLauncher;
 import net.bnubot.util.Out;
 import net.bnubot.util.TimeFormatter;
 
+/**
+ * @author scotta
+ */
 public class TextWindow extends JScrollPane {
 	private static final long serialVersionUID = -8607940925721829314L;
 

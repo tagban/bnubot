@@ -10,6 +10,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 
+/**
+ * @author scotta
+ */
 public class BNetInputStream extends DataInputStream {
 
 	public BNetInputStream(InputStream in) {

@@ -25,7 +25,6 @@ import org.eclipse.swt.widgets.Text;
 
 /**
  * @author scotta
- *
  */
 public class SWTEventHandler extends EventHandler {
 	/**

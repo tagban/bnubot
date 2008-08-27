@@ -21,6 +21,9 @@ import net.bnubot.util.TimeFormatter;
 import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.ReleaseType;
 
+/**
+ * @author scotta
+ */
 public class GlobalSettings {
 	public static enum TrayIconMode {
 		DISABLED,

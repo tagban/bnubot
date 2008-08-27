@@ -28,7 +28,6 @@ import net.bnubot.util.task.Task;
 
 /**
  * @author scotta
- *
  */
 public class BotNetConnection extends Connection {
 	private static final String BOTNET_TYPE = "BotNet";

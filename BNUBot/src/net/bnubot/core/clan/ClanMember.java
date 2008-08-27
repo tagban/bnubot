@@ -5,6 +5,9 @@
 
 package net.bnubot.core.clan;
 
+/**
+ * @author scotta
+ */
 public class ClanMember {
 	String username;
 	byte rank;

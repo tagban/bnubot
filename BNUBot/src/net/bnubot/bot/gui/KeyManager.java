@@ -20,6 +20,9 @@ import net.bnubot.util.Out;
 
 import org.jbls.util.Buffer;
 
+/**
+ * @author scotta
+ */
 public class KeyManager {
 	public static final int PRODUCT_ALLNORMAL = -1;
 	public static final int PRODUCT_STAR = 0x01;

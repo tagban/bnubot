@@ -9,6 +9,9 @@ import net.bnubot.core.Connection;
 import net.bnubot.db.Account;
 import net.bnubot.util.BNetUser;
 
+/**
+ * @author scotta
+ */
 public abstract class CommandRunnable {
 	public abstract void run(
 			Connection source,

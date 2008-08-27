@@ -20,6 +20,9 @@ import net.bnubot.vercheck.CurrentVersion;
 import org.apache.commons.logging.impl.NoOpLog;
 import org.eclipse.swt.widgets.Display;
 
+/**
+ * @author scotta
+ */
 public class Main {
 	static {
 		// Set default exception handler

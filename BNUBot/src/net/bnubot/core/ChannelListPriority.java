@@ -11,6 +11,9 @@ import java.util.List;
 
 import net.bnubot.util.BNetUser;
 
+/**
+ * @author scotta
+ */
 public enum ChannelListPriority {
 	PRIORITY_BLIZZARD_REP (5, 0x01),
 	PRIORITY_BNET_REP (4, 0x08),

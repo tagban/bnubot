@@ -5,6 +5,9 @@
 
 package net.bnubot.core.botnet;
 
+/**
+ * @author scotta
+ */
 public enum BotNetPacketId {
 	PACKET_IDLE,
 	PACKET_LOGON,

@@ -5,6 +5,9 @@
 
 package net.bnubot.core.clan;
 
+/**
+ * @author scotta
+ */
 public interface ClanRankIDs {
 	public static final byte CLANRANK_INITIATE	= (byte)0x00;
 	public static final byte CLANRANK_PEON		= (byte)0x01;

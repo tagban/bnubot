@@ -26,6 +26,9 @@ import net.bnubot.util.crypto.HexDump;
 
 import org.apache.cayenne.ObjectContext;
 
+/**
+ * @author scotta
+ */
 public class TriviaEventHandler extends EventHandler {
 	private boolean triviaEnabled = false;
 	private final List<TriviaItem> trivia = new LinkedList<TriviaItem>();

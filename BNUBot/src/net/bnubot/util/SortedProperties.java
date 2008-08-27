@@ -11,6 +11,9 @@ import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Vector;
 
+/**
+ * @author scotta
+ */
 public class SortedProperties extends Properties {
 	private static final long serialVersionUID = 213081373529965920L;
 

@@ -5,6 +5,9 @@
 
 package net.bnubot.util.music;
 
+/**
+ * @author scotta
+ */
 public interface MusicController {
 	public void play();
 	public void pause();

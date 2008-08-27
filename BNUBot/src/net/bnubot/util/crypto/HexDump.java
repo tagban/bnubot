@@ -9,6 +9,9 @@ import java.security.InvalidParameterException;
 
 import net.bnubot.util.ByteArray;
 
+/**
+ * @author scotta
+ */
 public class HexDump {
 	/**
 	 * Turn a DWord in to an IP address

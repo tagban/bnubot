@@ -5,6 +5,9 @@
 
 package net.bnubot.core.digitaltext;
 
+/**
+ * @author scotta
+ */
 public enum DTPacketId {
 	PKT_UNKNOWN_0x00,
 	PKT_LOGON,

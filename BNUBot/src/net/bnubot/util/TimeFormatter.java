@@ -11,6 +11,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
+/**
+ * @author scotta
+ */
 public class TimeFormatter {
 	public static final long SECOND = 1000;
 	public static final long MINUTE = 60 * SECOND;

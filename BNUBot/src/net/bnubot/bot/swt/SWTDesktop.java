@@ -29,6 +29,9 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TrayItem;
 
+/**
+ * @author scotta
+ */
 public class SWTDesktop extends Thread {
 	private static Display display = null;
 	private static Shell shell = null;

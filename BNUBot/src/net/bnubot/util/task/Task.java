@@ -5,6 +5,9 @@
 
 package net.bnubot.util.task;
 
+/**
+ * @author scotta
+ */
 public class Task {
 	public void updateProgress(String currentStep) {}
 	public void advanceProgress() {}

@@ -5,6 +5,9 @@
 
 package net.bnubot.util.music;
 
+/**
+ * @author scotta
+ */
 public enum MediaPlayer {
 	ITUNES,
 	JDIC

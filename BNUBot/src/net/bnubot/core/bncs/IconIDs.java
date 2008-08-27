@@ -5,6 +5,9 @@
 
 package net.bnubot.core.bncs;
 
+/**
+ * @author scotta
+ */
 public abstract class IconIDs {
 	public static final int ICON_W3H1		= 0x57334831;
 	public static final int ICON_W3H2		= 0x57334832;

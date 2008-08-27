@@ -25,6 +25,9 @@ import net.bnubot.util.URLDownloader;
 
 import org.jbls.util.Constants;
 
+/**
+ * @author scotta
+ */
 public class VersionCheck {
 	private static final String VERSION_CHECK_TIME = "versionCheckTime";
 

@@ -17,6 +17,9 @@ import java.util.List;
 import net.bnubot.util.task.Task;
 import net.bnubot.util.task.TaskManager;
 
+/**
+ * @author scotta
+ */
 public class URLDownloader {
 	public static List<FileDownload> queue = new LinkedList<FileDownload>();
 

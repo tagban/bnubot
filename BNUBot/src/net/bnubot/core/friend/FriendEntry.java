@@ -7,6 +7,9 @@ package net.bnubot.core.friend;
 
 import java.util.ArrayList;
 
+/**
+ * @author scotta
+ */
 public class FriendEntry {
 	String account = null;
 	Long entry = null;

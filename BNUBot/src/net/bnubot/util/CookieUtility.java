@@ -8,6 +8,9 @@ package net.bnubot.util;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * @author scotta
+ */
 public class CookieUtility {
 	private static class Cookie {
 		private final int id;

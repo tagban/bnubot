@@ -22,6 +22,9 @@ import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.ReleaseType;
 import net.bnubot.vercheck.VersionNumber;
 
+/**
+ * @author scotta
+ */
 public class VersionEditor extends JDialog {
 	private static final long serialVersionUID = -2458030928870393642L;
 

@@ -14,6 +14,9 @@ import javax.swing.BoxLayout;
 import net.bnubot.bot.gui.WindowPosition;
 import net.bnubot.settings.GlobalSettings;
 
+/**
+ * @author scotta
+ */
 public class TaskManager extends Dialog {
 	private static final long serialVersionUID = 641763656953338296L;
 	private static Box box = null;

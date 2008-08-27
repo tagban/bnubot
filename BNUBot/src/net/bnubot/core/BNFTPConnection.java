@@ -18,6 +18,9 @@ import net.bnubot.util.BNetOutputStream;
 import net.bnubot.util.Out;
 import net.bnubot.util.TimeFormatter;
 
+/**
+ * @author scotta
+ */
 public class BNFTPConnection {
 	public static final String defaultPath = Settings.getRootPath() + "downloads/";
 

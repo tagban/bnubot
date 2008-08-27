@@ -25,6 +25,9 @@ import net.bnubot.util.BNetUser;
 import net.bnubot.util.Out;
 import net.bnubot.util.crypto.HexDump;
 
+/**
+ * @author scotta
+ */
 public class TelnetEventHandler extends EventHandler implements Runnable {
 	private static boolean initialized = false;
 	private Profile profile = null;

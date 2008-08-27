@@ -20,6 +20,9 @@ import net.bnubot.bot.gui.icons.IconsDotBniReader;
 import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.util.Out;
 
+/**
+ * @author scotta
+ */
 public class FriendList extends JPanel {
 	private static final long serialVersionUID = 609660115699769279L;
 

@@ -8,6 +8,9 @@ package net.bnubot.bot.console;
 import net.bnubot.core.Connection;
 import net.bnubot.util.Out;
 
+/**
+ * @author scotta
+ */
 public class CLIThread extends Thread {
 	private Connection c;
 	private boolean disabled = false;

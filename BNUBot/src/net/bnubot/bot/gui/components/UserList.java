@@ -34,6 +34,9 @@ import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.Out;
 
+/**
+ * @author scotta
+ */
 public class UserList extends JPanel {
 	private static final long serialVersionUID = -6511252902076594213L;
 

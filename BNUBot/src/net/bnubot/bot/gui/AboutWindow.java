@@ -21,6 +21,9 @@ import net.bnubot.util.Out;
 import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.VersionNumber;
 
+/**
+ * @author scotta
+ */
 public class AboutWindow extends JDialog {
 	private static final long serialVersionUID = -5776139820198349083L;
 

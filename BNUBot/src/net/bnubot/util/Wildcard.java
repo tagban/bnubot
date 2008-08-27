@@ -27,6 +27,9 @@ package net.bnubot.util;
  *
  *  Note: not the most efficient algorithm.
  *
+ * @author Robert Sedgewick
+ * @author Kevin Wayne
+ * @author scotta
  *************************************************************************/
 public class Wildcard {
 	/***********************************************************************

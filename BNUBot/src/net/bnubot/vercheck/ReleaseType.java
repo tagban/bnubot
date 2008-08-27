@@ -5,6 +5,9 @@
 
 package net.bnubot.vercheck;
 
+/**
+ * @author scotta
+ */
 public enum ReleaseType {
 	Stable,
 	ReleaseCandidate,

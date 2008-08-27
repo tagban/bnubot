@@ -22,6 +22,9 @@ import net.bnubot.core.bncs.BNCSConnection;
 import net.bnubot.core.mcp.MCPConnection;
 import net.bnubot.util.Out;
 
+/**
+ * @author scotta
+ */
 public class RealmWindow extends EventHandler implements RealmEventHandler {
 	private static final long serialVersionUID = 3965057306231374646L;
 

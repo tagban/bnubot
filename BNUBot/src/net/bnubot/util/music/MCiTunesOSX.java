@@ -13,6 +13,9 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author scotta
+ */
 class MCiTunesOSX implements MusicController {
 	private static File script = new File("apple.scpt");
 

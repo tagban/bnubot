@@ -5,6 +5,9 @@
 
 package net.bnubot.settings;
 
+/**
+ * @author scotta
+ */
 public class DatabaseSettings {
 	private static final String header = "database";
 	public String driver;

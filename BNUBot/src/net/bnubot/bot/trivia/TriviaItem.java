@@ -10,6 +10,9 @@ import java.util.List;
 
 import net.bnubot.util.crypto.HexDump;
 
+/**
+ * @author scotta
+ */
 public class TriviaItem {
 	private String category;
 	private String question;

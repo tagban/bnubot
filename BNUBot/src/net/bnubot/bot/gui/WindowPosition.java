@@ -15,6 +15,7 @@ import net.bnubot.settings.Settings;
 
 /**
  * Globally load/save window position
+ * @author scotta
  */
 public class WindowPosition {
 	private static final ComponentAdapter windowSaver = new ComponentAdapter() {

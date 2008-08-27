@@ -43,6 +43,9 @@ import net.bnubot.vercheck.VersionCheck;
 
 import org.apache.cayenne.ObjectContext;
 
+/**
+ * @author scotta
+ */
 public class CommandEventHandler extends EventHandler {
 	private static final Hashtable<Connection, Boolean> sweepBanInProgress = new Hashtable<Connection, Boolean>();
 	private static final Hashtable<Connection, Integer> sweepBannedUsers = new Hashtable<Connection, Integer>();

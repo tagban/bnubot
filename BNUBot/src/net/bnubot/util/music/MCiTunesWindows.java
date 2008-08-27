@@ -11,6 +11,9 @@ import com.jacob.activeX.ActiveXComponent;
 import com.jacob.com.ComThread;
 import com.jacob.com.Dispatch;
 
+/**
+ * @author scotta
+ */
 class MCiTunesWindows implements MusicController {
 	static {
 		if(!OperatingSystem.userOS.equals(OperatingSystem.WINDOWS))
