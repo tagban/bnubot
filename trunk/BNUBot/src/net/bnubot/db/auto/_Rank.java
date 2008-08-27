@@ -16,6 +16,7 @@ import net.bnubot.db.CustomDataObject;
  * It is probably a good idea to avoid changing this class manually,
  * since it may be overwritten next time code is regenerated.
  * If you need to make any customizations, please use subclass.
+ * @author cayenne-generated-file
  */
 public abstract class _Rank extends CustomDataObject {
 

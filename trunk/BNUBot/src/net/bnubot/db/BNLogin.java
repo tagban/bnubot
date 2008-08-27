@@ -17,6 +17,9 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
 
+/**
+ * @author scotta
+ */
 public class BNLogin extends _BNLogin {
 	private static final long serialVersionUID = 8786293271622053325L;
 

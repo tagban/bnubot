@@ -11,6 +11,9 @@ import net.bnubot.db.conf.DatabaseContext;
 import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.query.SQLTemplate;
 
+/**
+ * @author scotta
+ */
 public class Rank extends _Rank {
 	private static final long serialVersionUID = 6998327103095647711L;
 	private static SQLTemplate maxRank = new SQLTemplate(Rank.class, "SELECT " +
