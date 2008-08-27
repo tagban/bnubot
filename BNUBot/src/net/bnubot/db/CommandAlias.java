@@ -14,6 +14,9 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
 
+/**
+ * @author scotta
+ */
 public class CommandAlias extends _CommandAlias {
 	private static final long serialVersionUID = -3633743075279729925L;
 

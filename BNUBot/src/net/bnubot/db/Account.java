@@ -19,6 +19,9 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SelectQuery;
 
+/**
+ * @author scotta
+ */
 public class Account extends _Account {
 	private static final long serialVersionUID = -8256413482643908852L;
 

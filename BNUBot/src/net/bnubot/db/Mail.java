@@ -10,6 +10,9 @@ import java.util.Date;
 import net.bnubot.db.auto._Mail;
 import net.bnubot.db.conf.DatabaseContext;
 
+/**
+ * @author scotta
+ */
 public class Mail extends _Mail {
 	private static final long serialVersionUID = 7450788505595409098L;
 

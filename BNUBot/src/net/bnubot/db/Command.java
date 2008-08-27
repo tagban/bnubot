@@ -17,6 +17,9 @@ import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 
+/**
+ * @author scotta
+ */
 public class Command extends _Command {
 	private static final long serialVersionUID = 8794076397315891153L;
 	private static final SQLTemplate commandGroups = new SQLTemplate(Command.class,

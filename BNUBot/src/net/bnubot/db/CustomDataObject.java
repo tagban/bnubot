@@ -7,6 +7,9 @@ package net.bnubot.db;
 
 import org.apache.cayenne.CayenneDataObject;
 
+/**
+ * @author scotta
+ */
 public abstract class CustomDataObject extends CayenneDataObject {
 	/**
 	 * Try to save changes to this object
