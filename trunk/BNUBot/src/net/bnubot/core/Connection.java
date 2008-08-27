@@ -391,6 +391,8 @@ public abstract class Connection extends Thread {
 	public void sendQueryRealms2() throws Exception { throw new UnsupportedFeatureException(null); }
 	public void sendLogonRealmEx(String realmTitle) throws Exception { throw new UnsupportedFeatureException(null); }
 
+	public void sendFriendsList() throws Exception { throw new UnsupportedFeatureException(null); }
+
 	public void sendClanFindCandidates(Object cookie, int clanTag) throws Exception { throw new UnsupportedFeatureException(null); }
 	public void sendClanInviteMultiple(Object cookie, String clanName, int clanTag, List<String> invitees) throws Exception { throw new UnsupportedFeatureException(null); }
 	public void sendClanCreationInvitation(int cookie, int clanTag, String inviter, int response) throws Exception { throw new UnsupportedFeatureException(null); }

@@ -926,8 +926,7 @@ public class BNCSConnection extends Connection {
 					}
 
 					// Get friends list
-					BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_FRIENDSLIST);
-					p.sendPacket(bncsOutputStream);
+					sendFriendsList();
 
 					// Join home channel
 					if (nlsRevision != null) {
@@ -1965,6 +1964,15 @@ public class BNCSConnection extends Connection {
 		}
 		throw new UnsupportedFeatureException(
 				"Only D2DV/D2XP support this feature");
+	}
+
+	/**
+	 * Send SID_FRIENDSLIST
+	 */
+	@Override
+	public void sendFriendsList() throws Exception {
+		BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_FRIENDSLIST);
+		p.SendPacket(bncsOutputStream);
 	}
 
 	/**
