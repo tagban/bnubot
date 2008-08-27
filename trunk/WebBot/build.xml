@@ -1,20 +1,15 @@
 <project name="BNUWebBot" default="deploy" basedir=".">
 	<property file="build.properties"/>
 	<property name="lib" value="WEB-INF/lib" />
-	<property name="lib2" value="../BNUBot/lib" />
 	<property name="build" value="c:/build.tmp" />
 
 	<path id="classpath">
 		<pathelement location="${build}"/>
 		<pathelement location="src"/>
-		<pathelement location="../BNUBot/src"/>
 		<pathelement location="${GWT_HOME}/gwt-user.jar"/>
 		<pathelement location="${GWT_HOME}/gwt-dev-windows.jar"/>
 		<pathelement location="${GWT_HOME}/gwt-servlet.jar"/>
 		<fileset dir="${lib}">
-			<include name="**/*.jar"/>
-		</fileset>
-		<fileset dir="${lib2}">
 			<include name="**/*.jar"/>
 		</fileset>
 	</path>
@@ -68,9 +63,6 @@
 			<!-- supplied JAR -->
 			<lib file="${GWT_HOME}/gwt-servlet.jar"/>
 			<lib dir="${lib}">
-					<include name="**/*.jar"/>
-			</lib>
-			<lib dir="${lib2}">
 					<include name="**/*.jar"/>
 			</lib>
 		</war> 
