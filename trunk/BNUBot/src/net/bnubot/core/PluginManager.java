@@ -8,6 +8,7 @@ package net.bnubot.core;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.bnubot.bot.GameTracker;
 import net.bnubot.bot.HTMLOutputEventHandler;
 import net.bnubot.bot.LockdownEventHandler;
 import net.bnubot.bot.TelnetEventHandler;
@@ -27,6 +28,7 @@ public class PluginManager {
 		register(TriviaEventHandler.class);
 		register(TelnetEventHandler.class);
 		register(LockdownEventHandler.class);
+		register(GameTracker.class);
 	}
 
 	public static void register(Class<? extends EventHandler> plugin) {
