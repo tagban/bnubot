@@ -110,6 +110,7 @@ public class GlobalConfigurationFrame extends JDialog {
 	private ConfigCheckBox chkDisplayBattleNetChannels = null;
 	private ConfigCheckBox chkDisplayJoinParts = null;
 	private ConfigCheckBox chkDisplayChannelUsers = null;
+	private ConfigCheckBox chkDisplaySlashCommands = null;
 	private ConfigTextField txtGuiFontFamily = null;
 	private ConfigSpinner spnGuiFontSize = null;
 
@@ -299,6 +300,7 @@ public class GlobalConfigurationFrame extends JDialog {
 				boxAll.add(chkDisplayBattleNetChannels = new ConfigCheckBox("Display Battle.net Channels", GlobalSettings.displayBattleNetChannels));
 				boxAll.add(chkDisplayJoinParts = new ConfigCheckBox("Display Join/Part Messages", GlobalSettings.getDisplayJoinParts()));
 				boxAll.add(chkDisplayChannelUsers = new ConfigCheckBox("Display Channel Users On Join", GlobalSettings.displayChannelUsers));
+				boxAll.add(chkDisplaySlashCommands = new ConfigCheckBox("Display / Commands", GlobalSettings.displaySlashCommands));
 				txtGuiFontFamily = ConfigFactory.makeText("GUI Font Family", GlobalSettings.guiFontFamily, boxAll);
 				spnGuiFontSize = ConfigFactory.makeSpinner("GUI Font Size", new Integer(GlobalSettings.guiFontSize), boxAll);
 			}
@@ -411,6 +413,7 @@ public class GlobalConfigurationFrame extends JDialog {
 			GlobalSettings.displayBattleNetChannels = chkDisplayBattleNetChannels.isSelected();
 			GlobalSettings.setDisplayJoinParts(chkDisplayJoinParts.isSelected());
 			GlobalSettings.displayChannelUsers = chkDisplayChannelUsers.isSelected();
+			GlobalSettings.displaySlashCommands = chkDisplaySlashCommands.isSelected();
 			GlobalSettings.guiFontFamily = txtGuiFontFamily.getText();
 			GlobalSettings.guiFontSize = spnGuiFontSize.getValue().intValue();
 			TextWindow.resetHead();
@@ -502,6 +505,7 @@ public class GlobalConfigurationFrame extends JDialog {
 			chkDisplayBattleNetChannels.setSelected(GlobalSettings.displayBattleNetChannels);
 			chkDisplayJoinParts.setSelected(GlobalSettings.getDisplayJoinParts());
 			chkDisplayChannelUsers.setSelected(GlobalSettings.displayChannelUsers);
+			chkDisplaySlashCommands.setSelected(GlobalSettings.displaySlashCommands);
 			txtGuiFontFamily.setText(GlobalSettings.guiFontFamily);
 			spnGuiFontSize.setValue(new Integer(GlobalSettings.guiFontSize));
 			chkEnableLegacyIcons.setSelected(GlobalSettings.enableLegacyIcons);

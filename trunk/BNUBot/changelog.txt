@@ -38,6 +38,8 @@
 * Added unicode support, and the ability to use it in conjunction with encryption (Issue 80)
 * The chat splitter will now work properly with "/w" and "/f m" (Issue 95)
 * The chat splitter will now work properly with unicode characters (Issue 96)
+* Allow Cayenne to manage the database schema in favor of flat files
+* Added option to display / commands in chat
 
 2.0.6 (r1400) 2008-04-21:
 * Added auto-rejoin afer being kicked (Issue 52)
