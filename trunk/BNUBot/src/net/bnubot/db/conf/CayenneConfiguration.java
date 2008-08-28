@@ -103,7 +103,7 @@ public class CayenneConfiguration implements DataSourceFactory {
 			ValidationResult vr = null;
 			if(!schemaValid) {
 				// Invalid schema
-				Out.info(getClass(), "The database requires rebuilding.");
+				Out.info(getClass(), "The database requires rebuilding");
 
 				// Generate schema from the mapping file
 				DbGenerator generator = new DbGenerator(adapter, dataMap);
@@ -116,16 +116,18 @@ public class CayenneConfiguration implements DataSourceFactory {
 
 				vr = generator.getFailures();
 
-				Out.info(getClass(), "Database rebuild complete.");
+				Out.info(getClass(), "Database rebuild complete");
 			} else {
 				// Valid schema; check if merge is needed
-				Out.info(getClass(), "The database schema is valid; checking if upgrade is needed.");
+				Out.debug(getClass(), "The database schema is valid; checking if upgrade is needed");
 
 				DataNode dataNode = domain.getNode("BNUBotDomainNode");
 				MergerContext mc = new ExecutingMergerContext(dataMap, dataNode);
 				List<MergerToken> mergeTokens = new DbMerger().createMergeTokens(dataNode, dataMap);
-				if(mergeTokens.size() == 0)
+				if(mergeTokens.size() == 0) {
+					Out.debug(getClass(), "No upgrade necessary");
 					return dataSource;
+				}
 
 				try {
 					String msg = "BNU-Bot must perform the following action(s) to upgrade your database:\n";
@@ -163,7 +165,7 @@ public class CayenneConfiguration implements DataSourceFactory {
 
 			if(!schemaValid) {
 				// Insert default values
-				Out.info(getClass(), "Adding default values to database.");
+				Out.info(getClass(), "Adding default values to database");
 
 				insertDefault("schema.sql");
 				if(conn != null) {
@@ -171,7 +173,7 @@ public class CayenneConfiguration implements DataSourceFactory {
 					conn = null;
 				}
 
-				Out.info(getClass(), "Default values added.");
+				Out.info(getClass(), "Default values added");
 
 				if(GlobalSettings.enableGUI)
 					new DatabaseWizard();
