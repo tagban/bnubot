@@ -36,11 +36,24 @@ public class GameTracker extends EventHandler {
 			source.sendFriendsList();
 			source.sendChat("/f a " + user.getFullAccountName());
 		}});
+		Profile.registerCommand("logout", new CommandRunnable() {
+		@Override
+		public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
+		throws Exception {
+			findThis(source, GameTracker.class);
+			source.sendFriendsList();
+			source.sendChat("/f r " + user.getFullAccountName());
+		}});
 		/*Profile.registerCommand("", new CommandRunnable() {
 		public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
 		throws Exception {
 			// ...
 		}});*/
+	}
+
+	@Override
+	public void whisperRecieved(Connection source, BNetUser user, String text) {
+		super.whisperRecieved(source, user, text);
 	}
 
 	@Override
@@ -56,6 +69,7 @@ public class GameTracker extends EventHandler {
 
 	@Override
 	public void friendsAdd(BNCSConnection source, FriendEntry friend) {
-		source.sendChat("/w " + friend.getAccount() + " You are logged in. You must add me to your friends list.");
+		BNetUser target = new BNetUser(source, friend.getAccount(), source.getMyUser());
+		target.sendChat("You are logged in. You must add me to your friends list.", true);
 	}
 }

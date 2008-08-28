@@ -36,7 +36,7 @@ public class PluginManager {
 	}
 
 	public static void register(Class<? extends EventHandler> plugin, boolean enable) {
-		Out.info(PluginManager.class, "Registering " + plugin.getName());
+		Out.debug(PluginManager.class, "Registering " + plugin.getName());
 		plugins.add(plugin);
 
 		if(enable)
