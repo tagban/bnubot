@@ -42,7 +42,7 @@
 	<db-entity name="mail">
 		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true" length="11"/>
 		<db-attribute name="isread" type="TINYINT" isMandatory="true" length="1"/>
-		<db-attribute name="message" type="VARCHAR" length="255"/>
+		<db-attribute name="message" type="VARCHAR" isMandatory="true" length="255"/>
 		<db-attribute name="sent" type="TIMESTAMP" isMandatory="true" length="26"/>
 		<db-attribute name="sentfrom" type="INTEGER" length="11"/>
 		<db-attribute name="sentto" type="INTEGER" isMandatory="true" length="11"/>

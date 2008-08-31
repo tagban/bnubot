@@ -16,7 +16,9 @@ import net.bnubot.bot.CommandEventHandler;
 import net.bnubot.bot.console.ConsoleEventHandler;
 import net.bnubot.bot.gui.GuiEventHandler;
 import net.bnubot.bot.swt.SWTDesktop;
+import net.bnubot.core.commands.AccountDoesNotExistException;
 import net.bnubot.core.commands.CommandRunnable;
+import net.bnubot.core.commands.InsufficientAccessException;
 import net.bnubot.db.Account;
 import net.bnubot.db.Command;
 import net.bnubot.db.Mail;
@@ -24,6 +26,7 @@ import net.bnubot.db.Rank;
 import net.bnubot.db.conf.DatabaseContext;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.settings.GlobalSettings;
+import net.bnubot.util.BNetUser;
 import net.bnubot.util.Out;
 import net.bnubot.vercheck.VersionCheck;
 
@@ -62,6 +65,70 @@ public class Profile {
 		}
 
 		commands.put(name, action);
+	}
+
+	public static boolean parseCommand(Connection source, BNetUser user, String command, boolean whisperBack) {
+		Out.debug(Profile.class, user.toString() + ": " + command + " [" + whisperBack + "]");
+
+		try {
+			// Grab the part of the command string after the space
+			String param = null;
+			{
+				String[] paramHelper = command.split(" ", 2);
+				command = paramHelper[0];
+				if(paramHelper.length > 1)
+					param = paramHelper[1];
+			}
+
+			// Check if the command exists
+			Command rsCommand = Command.get(command);
+			if(rsCommand == null)
+				return false;
+
+			//Reset the command to the case in the database
+			command = rsCommand.getName();
+
+			//Don't ask questions if they are a super-user
+			boolean superUser = user.equals(source.getMyUser());
+			Account commanderAccount = Account.get(user);
+			if(!superUser) {
+				int commanderAccess = 0;
+				if(commanderAccount != null)
+					commanderAccess = commanderAccount.getAccess();
+
+				int requiredAccess = rsCommand.getAccess();
+				if(commanderAccess < requiredAccess) {
+					source.dispatchRecieveError("Insufficient access (" + commanderAccess + "/" + requiredAccess + ")");
+					return false;
+				}
+			}
+
+			CommandRunnable cr = Profile.getCommand(command);
+			if(cr == null) {
+				source.dispatchRecieveError("Command " + command + " has no associated runnable");
+				return false;
+			}
+
+			String[] params = null;
+			if(param != null)
+				params = param.split(" ");
+
+			cr.run(source,
+					user,
+					param,
+					params,
+					whisperBack,
+					commanderAccount,
+					superUser);
+		} catch(AccountDoesNotExistException e) {
+			user.sendChat("The account [" + e.getMessage() + "] does not exist!", whisperBack);
+		} catch(InsufficientAccessException e) {
+			user.sendChat("You have insufficient access " + e.getMessage(), whisperBack);
+		} catch(Exception e) {
+			Out.exception(e);
+			user.sendChat(e.getClass().getSimpleName() + ": " + e.getMessage(), whisperBack);
+		}
+		return true;
 	}
 
 	public static CommandRunnable getCommand(String name) {

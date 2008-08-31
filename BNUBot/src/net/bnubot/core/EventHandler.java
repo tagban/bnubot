@@ -48,11 +48,6 @@ public abstract class EventHandler {
 	public void bnetDisconnected(Connection source) {}
 	public void titleChanged(Connection source) {}
 
-	//Workarounds
-	public boolean parseCommand(Connection source, BNetUser user, String command, boolean whisperBack) {
-		return false;
-	}
-
 	//General output
 	public void recieveDebug(Connection source, String text) {}
 	public void recieveInfo(Connection source, String text) {}

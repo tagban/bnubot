@@ -67,6 +67,7 @@
 * Added a default exception handler
 * Confirm row deletion in DatabaseEditor
 * Version check will complete before connecting to battle.net
+* Removed the parseCommand() workaround
 
 2.0.5 (r1300) 2008-04-09:
 * Added a Cayenne persistence layer to address database problems
