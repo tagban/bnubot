@@ -1022,13 +1022,7 @@ public abstract class Connection extends Thread {
 			return ret;
 		}
 
-		synchronized(eventHandlers) {
-			for(EventHandler eh : eventHandlers) {
-				if(eh.parseCommand(this, user, command, whisperBack))
-					return true;
-			}
-		}
-		return false;
+		return Profile.parseCommand(this, user, command, whisperBack);
 	}
 
 	protected void dispatchTitleChanged() {
