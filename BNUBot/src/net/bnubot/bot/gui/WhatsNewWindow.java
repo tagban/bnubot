@@ -6,6 +6,8 @@
 package net.bnubot.bot.gui;
 
 import java.awt.CardLayout;
+import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -29,6 +31,7 @@ import net.bnubot.bot.gui.components.ColoredTextArea;
 import net.bnubot.vercheck.CurrentVersion;
 
 /**
+ * A JDialog to parse and display the changelog
  * @author scotta
  */
 public class WhatsNewWindow extends JDialog {
@@ -74,9 +77,17 @@ public class WhatsNewWindow extends JDialog {
 		setTitle("What's new in BNU-Bot " + CurrentVersion.version().toString());
 		setModal(true);
 		setResizable(true);
+		setPreferredSize(new Dimension(600, 400));
 
 		pack();
-		WindowPosition.load(this);
+
+		// Center the dialog on the screen
+		Rectangle bounds = getBounds();
+		Dimension size = getToolkit().getScreenSize();
+		setLocation((size.width - bounds.width) / 2,
+				(size.height - bounds.height) / 2);
+
+		// Show the dialog
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				setVisible(true);
