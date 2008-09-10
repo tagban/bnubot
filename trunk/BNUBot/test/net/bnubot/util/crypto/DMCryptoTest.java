@@ -8,6 +8,9 @@ package net.bnubot.util.crypto;
 import junit.framework.TestCase;
 import net.bnubot.util.ByteArray;
 
+/**
+ * @author scotta
+ */
 public class DMCryptoTest extends TestCase {
 	public void testComplete() {
 		ByteArray in = new ByteArray("testing 1 2 3");
