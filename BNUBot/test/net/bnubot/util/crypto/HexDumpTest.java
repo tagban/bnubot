@@ -25,7 +25,7 @@ public class HexDumpTest extends TestCase {
 
 	public void testHexDump() throws Exception {
 		String str = "00017f80ff";
-		assertEquals(str, HexDump.encode(new ByteArray(new byte[] {0x00, 0x01, 0x7F, (byte)0x80, (byte)0xFF})));
-		assertEquals(str, HexDump.encode(HexDump.decode(new ByteArray(str))));
+		assertEquals(HexDump.encode(new ByteArray(new byte[] {0x00, 0x01, 0x7F, (byte)0x80, (byte)0xFF})), str);
+		assertEquals(HexDump.encode(HexDump.decode(new ByteArray(str))), str);
 	}
 }

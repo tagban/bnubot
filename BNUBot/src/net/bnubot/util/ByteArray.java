@@ -87,10 +87,20 @@ public final class ByteArray {
 
 	@Override
 	public boolean equals(Object obj) {
-		if(obj instanceof byte[])
-			return data.equals(obj);
+		if(obj instanceof byte[]) {
+			byte[] x = (byte[])obj;
+			if(x.length != data.length)
+				return false;
+			for(int i = 0; i < x.length; i++) {
+				if(x[i] != data[i])
+					return false;
+			}
+			return true;
+		}
 		if(obj instanceof ByteArray)
-			return data.equals(((ByteArray)obj).data);
+			return equals(((ByteArray)obj).data);
+		if(obj instanceof String)
+			return toString().equals(obj);
 		return false;
 	}
 
