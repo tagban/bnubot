@@ -6,8 +6,10 @@
 package net.bnubot.util;
 
 import junit.framework.TestCase;
-import net.bnubot.util.BNetUser;
 
+/**
+ * @author scotta
+ */
 public class BNetUserTest extends TestCase {
 
 	public void testSimpleConstructor() {

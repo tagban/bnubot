@@ -10,13 +10,10 @@ import java.io.ByteArrayInputStream;
 import junit.framework.TestCase;
 import net.bnubot.core.bncs.IconIDs;
 import net.bnubot.core.bncs.ProductIDs;
-import net.bnubot.util.BNetInputStream;
-import net.bnubot.util.StatString;
 import net.bnubot.util.crypto.HexDump;
 
 /**
  * @author scotta
- *
  */
 public class StatStringTest extends TestCase {
 	public void testSC() {

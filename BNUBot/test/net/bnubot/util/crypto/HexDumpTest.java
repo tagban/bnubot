@@ -9,6 +9,9 @@ import junit.framework.TestCase;
 import net.bnubot.core.bncs.ProductIDs;
 import net.bnubot.util.ByteArray;
 
+/**
+ * @author scotta
+ */
 public class HexDumpTest extends TestCase {
 
 	public void testDWordToPretty() {

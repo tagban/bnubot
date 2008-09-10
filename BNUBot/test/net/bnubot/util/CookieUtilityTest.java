@@ -6,8 +6,10 @@
 package net.bnubot.util;
 
 import junit.framework.TestCase;
-import net.bnubot.util.CookieUtility;
 
+/**
+ * @author scotta
+ */
 public class CookieUtilityTest extends TestCase {
 
 	public void testCookieUtility() {

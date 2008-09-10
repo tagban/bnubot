@@ -8,11 +8,16 @@ package net.bnubot;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+/**
+ * @author scotta
+ */
 public class BNUBotTestSuite {
 
 	public static Test suite() {
 		TestSuite suite = new TestSuite("BNUBot");
 
+		suite.addTestSuite(net.bnubot.util.BNetInputStreamTest.class);
+		suite.addTestSuite(net.bnubot.util.BNetOutputStreamTest.class);
 		suite.addTestSuite(net.bnubot.util.BNetUserTest.class);
 		suite.addTestSuite(net.bnubot.util.crypto.Base64Test.class);
 		suite.addTestSuite(net.bnubot.util.crypto.DMCryptoTest.class);
