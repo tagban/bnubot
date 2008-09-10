@@ -18,6 +18,7 @@ import net.bnubot.db.Rank;
  * If you need to make any customizations, please use subclass.
  * @author cayenne-generated-file
  */
+@SuppressWarnings("serial")
 public abstract class _Command extends CustomDataObject {
 
     public static final String CMDGROUP_PROPERTY = "cmdgroup";

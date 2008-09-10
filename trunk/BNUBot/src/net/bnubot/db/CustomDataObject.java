@@ -10,6 +10,7 @@ import org.apache.cayenne.CayenneDataObject;
 /**
  * @author scotta
  */
+@SuppressWarnings("serial")
 public abstract class CustomDataObject extends CayenneDataObject {
 	/**
 	 * Try to save changes to this object

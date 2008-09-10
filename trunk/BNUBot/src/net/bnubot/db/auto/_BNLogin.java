@@ -17,6 +17,7 @@ import net.bnubot.db.CustomDataObject;
  * If you need to make any customizations, please use subclass.
  * @author cayenne-generated-file
  */
+@SuppressWarnings("serial")
 public abstract class _BNLogin extends CustomDataObject {
 
     public static final String CREATED_PROPERTY = "created";
