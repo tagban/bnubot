@@ -33,7 +33,6 @@ public class Rank extends _Rank {
 	 * Get the maximum access rank in the database
 	 * @return A Rank with the highest access
 	 */
-	@SuppressWarnings("unchecked")
 	public static Rank getMax() {
 		return (Rank)DatabaseContext.getContext().performQuery(maxRank).get(0);
 	}

@@ -18,6 +18,7 @@ import net.bnubot.db.CustomDataObject;
  * If you need to make any customizations, please use subclass.
  * @author cayenne-generated-file
  */
+@SuppressWarnings("serial")
 public abstract class _Rank extends CustomDataObject {
 
     public static final String AP_D2LEVEL_PROPERTY = "apD2Level";

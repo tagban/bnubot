@@ -15,6 +15,7 @@ import net.bnubot.db.CustomDataObject;
  * If you need to make any customizations, please use subclass.
  * @author cayenne-generated-file
  */
+@SuppressWarnings("serial")
 public abstract class _CommandAlias extends CustomDataObject {
 
     public static final String ALIAS_PROPERTY = "alias";
