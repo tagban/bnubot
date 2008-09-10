@@ -14,10 +14,10 @@ import net.bnubot.util.ByteArray;
 public class Base64Test extends TestCase {
 
 	public void testEncode() {
-		assertEquals("YXNkZg==", Base64.encode(new ByteArray("asdf")));
+		assertEquals(Base64.encode(new ByteArray("asdf")), "YXNkZg==");
 	}
 
 	public void testDecode() {
-		assertEquals("asdf", Base64.decode(new ByteArray("YXNkZg==")));
+		assertEquals(Base64.decode(new ByteArray("YXNkZg==")), "asdf");
 	}
 }
