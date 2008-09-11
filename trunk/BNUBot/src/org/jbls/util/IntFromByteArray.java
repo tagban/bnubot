@@ -12,7 +12,7 @@ package org.jbls.util;
 /**
  * This is a class to take care of inserting or getting the value of an int in
  * an array of bytes.
- * 
+ *
  * @author iago
  */
 public class IntFromByteArray {
@@ -30,12 +30,12 @@ public class IntFromByteArray {
 	/*
 	 * public static void main(String args[]) { byte[] test = { 1, 2, 3, 4, 5,
 	 * 6, 7, 8, 9 };
-	 * 
+	 *
 	 * IntFromByteArray ifba = new IntFromByteArray(true);
-	 * 
+	 *
 	 * int[] newArray = ifba.getIntArray(test);
-	 * 
-	 * 
+	 *
+	 *
 	 * for(int i = 0; i < newArray.length; i++)
 	 * System.out.print(PadString.padHex(newArray[i], 8) + " "); }
 	 */
@@ -72,8 +72,8 @@ public class IntFromByteArray {
 	 * This function is used to insert the byte into a specified spot in an int
 	 * array. This is used to simulate pointers used in C++. Note that this
 	 * works in little endian only.
-	 * 
-	 * @param intBuffer
+	 *
+	 * @param array
 	 *            The buffer to insert the int into.
 	 * @param b
 	 *            The byte we're inserting.

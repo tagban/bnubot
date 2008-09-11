@@ -12,7 +12,7 @@ import java.util.Random;
 
 /**
  * @author iago
- * 
+ *
  */
 public class BigIntegerEx {
 	public static final int BIG_ENDIAN = 0;
@@ -90,6 +90,7 @@ public class BigIntegerEx {
 		return bigInteger.compareTo(a.getBigInteger());
 	}
 
+	@Override
 	public String toString() {
 		return bigInteger.toString();
 	}

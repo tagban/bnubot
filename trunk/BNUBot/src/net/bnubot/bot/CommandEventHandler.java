@@ -9,6 +9,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -1510,7 +1511,7 @@ public class CommandEventHandler extends EventHandler {
 			setInfoForwarding(source, user, whisperBack);
 		} else {
 			// Wildcard kick/ban
-			List<BNetUser> users = source.findUsersWildcard(params[0], user);
+			Collection<BNetUser> users = source.findUsersWildcard(params[0], user);
 			if(users.size() == 0) {
 				user.sendChat("That pattern did not match any users.", whisperBack);
 				return;

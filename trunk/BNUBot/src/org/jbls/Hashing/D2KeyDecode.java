@@ -12,7 +12,7 @@ package org.jbls.Hashing;
 /**
  * This is the CDKey Decoder used for decoding alphabetic keys - Warcraft 2,
  * Diablo 2, etc.
- * 
+ *
  * Fixed by Feanor
  */
 public class D2KeyDecode extends SCKeyDecode {
@@ -134,14 +134,17 @@ public class D2KeyDecode extends SCKeyDecode {
 		return (c - 0x37);
 	}
 
+	@Override
 	public int getProduct() {
 		return Integer.parseInt(cdkey.substring(0, 2), 16);
 	}
 
+	@Override
 	public int getVal1() {
 		return (int) Long.parseLong(cdkey.substring(2, 8), 16);
 	}
 
+	@Override
 	public int getVal2() {
 		return (int) Long.parseLong(cdkey.substring(8, 16), 16);
 	}
