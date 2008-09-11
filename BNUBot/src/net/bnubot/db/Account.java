@@ -54,41 +54,14 @@ public class Account extends _Account {
 	}
 
 	/**
-	 * Get the access level of an Account
-	 * @return The access level of the user's Rank
-	 */
-	public int getAccess() {
-		Rank rank = getRank();
-		if(rank == null)
-			return 0;
-		return rank.getAccess();
-	}
-
-	/**
-	 * Get a List&lt;Account> of users with at minimum access
 	 * @param rank The minimum access
-	 * @return A List&lt;Account> of the applicable users
+	 * @return A List&lt;Account> of users with at minimum access
 	 */
 	@SuppressWarnings("unchecked")
 	public static List<Account> getRanked(int rank) {
 		Expression expression = ExpressionFactory.greaterOrEqualExp(Account.RANK_PROPERTY, rank);
 		SelectQuery query = new SelectQuery(Account.class, expression);
 		return DatabaseContext.getContext().performQuery(query);
-	}
-
-	/**
-	 *
-	 * @param recruitAccess
-	 * @return
-	 */
-	public long getRecruitScore(long recruitAccess) {
-		long rs = 0;
-		for(Account recruit : getRecruits()) {
-			int access = recruit.getAccess();
-			if(access > recruitAccess)
-				rs += access - recruitAccess;
-		}
-		return rs;
 	}
 
 	/**
@@ -125,6 +98,32 @@ public class Account extends _Account {
 		SelectQuery query = new SelectQuery(Account.class, expression);
 		query.addOrdering(Account.TRIVIA_CORRECT_PROPERTY, false);
 		return DatabaseContext.getContext().performQuery(query);
+	}
+
+	/**
+	 * Equivalent to getRank().getAccess(), with null checking
+	 * @return The access level of the Account's Rank
+	 */
+	public int getAccess() {
+		Rank rank = getRank();
+		if(rank == null)
+			return 0;
+		return rank.getAccess();
+	}
+
+	/**
+	 * Calculates "Recruit Score" by giving 1 point for every promotion the Account's recruits have above recruitAccess
+	 * @param recruitAccess the value of the lowest member in the clan
+	 * @return the calculated recruit score
+	 */
+	public long getRecruitScore(long recruitAccess) {
+		long rs = 0;
+		for(Account recruit : getRecruits()) {
+			int access = recruit.getAccess();
+			if(access > recruitAccess)
+				rs += access - recruitAccess;
+		}
+		return rs;
 	}
 
 	/**

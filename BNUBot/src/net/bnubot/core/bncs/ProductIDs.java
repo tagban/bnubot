@@ -31,10 +31,16 @@ public enum ProductIDs {
 		this.name = name;
 	}
 
+	/**
+	 * @return the 32-bit product ID
+	 */
 	public int getDword() {
 		return this.dword;
 	}
 
+	/**
+	 * @return the ID used by BNLS
+	 */
 	public int getBnls() {
 		if(this == CHAT)
 			throw new IllegalStateException();
@@ -47,8 +53,8 @@ public enum ProductIDs {
 	}
 
 	/**
-	 * @param stringToDWord
-	 * @return
+	 * @param dword the 32-bit product id
+	 * @return the enum product id
 	 */
 	public static ProductIDs fromDWord(int dword) {
 		for(ProductIDs p : values())

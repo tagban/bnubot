@@ -16,7 +16,7 @@ import java.io.Serializable;
  * <P>
  * This is a pretty standard buffer in terms of everything else. I've used it
  * extensively and have complete confidence in it.
- * 
+ *
  * @author iago
  */
 
@@ -45,7 +45,7 @@ public class Buffer implements Serializable {
 
 	/**
 	 * Initialize the buffer to an array of bytes.
-	 * 
+	 *
 	 * @param b
 	 *            The initial value.
 	 */
@@ -57,7 +57,7 @@ public class Buffer implements Serializable {
 	/**
 	 * Initializes the buffer to another buffer. Note that it makes a copy, it
 	 * doesn't share the data.
-	 * 
+	 *
 	 * @param b
 	 *            The original buffer.
 	 */
@@ -73,7 +73,7 @@ public class Buffer implements Serializable {
 
 	/**
 	 * Returns the entire buffer as an array of bytes.
-	 * 
+	 *
 	 * @return The entire buffer as an array of bytes.
 	 */
 	public byte[] getBuffer() {
@@ -95,7 +95,7 @@ public class Buffer implements Serializable {
 	/**
 	 * Ensures that there is enough length to store the specified number of
 	 * bytes. If there isn't, enough extra room is allocated so we can.
-	 * 
+	 *
 	 * @param bytes
 	 *            The number of bytes we'return adding to it.
 	 */
@@ -124,7 +124,7 @@ public class Buffer implements Serializable {
 	/**
 	 * Shifts all data back by the requested number of bytes, and returns the
 	 * bytes that were shifted off.
-	 * 
+	 *
 	 * @param number
 	 *            The number of bytes to pull off the beginning.
 	 * @return The bytes that were pulled off.
@@ -140,7 +140,7 @@ public class Buffer implements Serializable {
 
 	/**
 	 * Adds a single byte to the end of the buffer .
-	 * 
+	 *
 	 * @param b
 	 *            The byte to add.
 	 */
@@ -158,7 +158,7 @@ public class Buffer implements Serializable {
 
 	/**
 	 * Removes a single byte from the beginning of the buffer.
-	 * 
+	 *
 	 * @return The byte that was removed.
 	 * @throws IndexOutOfBoundsException
 	 *             If there isn't enough room in the buffer to accomidate the
@@ -180,7 +180,7 @@ public class Buffer implements Serializable {
 
 	/**
 	 * Returns the byte at a specific location.
-	 * 
+	 *
 	 * @param index
 	 *            The location to get the byte at.
 	 * @return The byte at location "index".
@@ -191,7 +191,7 @@ public class Buffer implements Serializable {
 
 	/**
 	 * Adds a word to the buffer (2 bytes, little endian).
-	 * 
+	 *
 	 * @param w
 	 *            The word to add.
 	 */
@@ -202,7 +202,7 @@ public class Buffer implements Serializable {
 
 	/**
 	 * Removes and returns a single word (2 bytes).
-	 * 
+	 *
 	 * @return The word that was removed.
 	 * @throws IndexOutOfBoundsException
 	 *             If there isn't enough room in the buffer to accomidate the
@@ -217,7 +217,7 @@ public class Buffer implements Serializable {
 
 	/**
 	 * Adds a dword to the buffer (4 bytes, little endian).
-	 * 
+	 *
 	 * @param d
 	 *            The dword to add.
 	 */
@@ -246,7 +246,7 @@ public class Buffer implements Serializable {
 
 	/**
 	 * Removes and returns a single dword (4 bytes).
-	 * 
+	 *
 	 * @return The DWord that was removed.
 	 * @throws IndexOutOfBoundsException
 	 *             If there isn't enough room in the buffer to accomidate the
@@ -261,7 +261,7 @@ public class Buffer implements Serializable {
 
 	/**
 	 * Adds a QWord to the buffer (8 bytes, little endian)
-	 * 
+	 *
 	 * @param l
 	 *            The value to add.
 	 */
@@ -279,7 +279,7 @@ public class Buffer implements Serializable {
 
 	/**
 	 * Removes and returns a single dword (8 bytes).
-	 * 
+	 *
 	 * @return The long at the beginning of the buffer.
 	 * @throws IndexOutOfBoundsException
 	 *             If there isn't enough room in the buffer to accomidate the
@@ -298,7 +298,7 @@ public class Buffer implements Serializable {
 
 	/**
 	 * Adds a non-null-terminated string to the buffer
-	 * 
+	 *
 	 * @param s
 	 *            The string to add to the buffer.
 	 */
@@ -310,7 +310,7 @@ public class Buffer implements Serializable {
 
 	/**
 	 * Removes 'i' bytes from the buffer, and returns them as a string
-	 * 
+	 *
 	 * @param i
 	 *            The number of bytes to remove.
 	 * @return The bytes removed as a String.
@@ -330,7 +330,7 @@ public class Buffer implements Serializable {
 
 	/**
 	 * Adds a null-terminated string to the buffer, including the null
-	 * 
+	 *
 	 * @param s
 	 *            The string to add, without the null terminator.
 	 */
@@ -341,7 +341,7 @@ public class Buffer implements Serializable {
 
 	/**
 	 * Removes and returns a null-terminated string, without the null
-	 * 
+	 *
 	 * @return The first null-terminatred string in the buffer, without the
 	 *         null.
 	 * @throws IndexOutOfBoundsException
@@ -362,7 +362,7 @@ public class Buffer implements Serializable {
 
 	/**
 	 * Adds an array of bytes to the buffer
-	 * 
+	 *
 	 * @param b
 	 *            The bytes to add to the buffer.
 	 */
@@ -378,7 +378,7 @@ public class Buffer implements Serializable {
 
 	/**
 	 * Removes 'i' bytes from the array and returns them as an array of bytes.
-	 * 
+	 *
 	 * @param i
 	 *            The number of bytes to remove.
 	 * @return The bytes that were removed.
@@ -396,7 +396,7 @@ public class Buffer implements Serializable {
 	/**
 	 * Adds another buffer to the end of the buffer. All it actually does is add
 	 * the bytes of the source to the current buffer.
-	 * 
+	 *
 	 * @param b
 	 *            The buffer to add.
 	 */
@@ -406,7 +406,7 @@ public class Buffer implements Serializable {
 
 	/**
 	 * Quicly add a byte to the buffer.
-	 * 
+	 *
 	 * @param b
 	 *            The byte to add.
 	 */
@@ -420,7 +420,7 @@ public class Buffer implements Serializable {
 
 	/**
 	 * Quickly add a short to the buffer.
-	 * 
+	 *
 	 * @param s
 	 *            The short to add.
 	 */
@@ -430,7 +430,7 @@ public class Buffer implements Serializable {
 
 	/**
 	 * Quickly add an int to the buffer.
-	 * 
+	 *
 	 * @param i
 	 *            The inteter to add.
 	 */
@@ -444,7 +444,7 @@ public class Buffer implements Serializable {
 
 	/**
 	 * Quickly add a long to the buffer.
-	 * 
+	 *
 	 * @param l
 	 *            The long to add.
 	 */
@@ -454,7 +454,7 @@ public class Buffer implements Serializable {
 
 	/**
 	 * Quickly add an array of bytes to the buffer.
-	 * 
+	 *
 	 * @param b
 	 *            The array of bytes.
 	 */
@@ -464,7 +464,7 @@ public class Buffer implements Serializable {
 
 	/**
 	 * Quickly append another buffer to the current buffer.
-	 * 
+	 *
 	 * @param b
 	 *            The source buffer.
 	 */
@@ -474,9 +474,9 @@ public class Buffer implements Serializable {
 
 	/**
 	 * Gets the buffer, formatted in a pretty way.
-	 * 
+	 *
 	 * @return The formatted string. It might look something like this:<BR>
-	 * 
+	 *
 	 * <PRE>
 	 *      00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F    ................
 	 *      69 68 67 66 65 64 63 62 61 61 6A 6B 6C 6D 6E 00    ihgfedcbaajklmn.
@@ -484,6 +484,7 @@ public class Buffer implements Serializable {
 	 *      Length: 34
 	 * </PRE>
 	 */
+	@Override
 	public String toString() {
 		StringBuffer returnString = new StringBuffer((currentLength * 3) + // The
 																			// hex

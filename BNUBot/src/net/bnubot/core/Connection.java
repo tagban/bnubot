@@ -332,9 +332,10 @@ public abstract class Connection extends Thread {
 	}
 
 	/**
-	 * Find users according to TC rules
+	 * @param containing the string to look for in username
+	 * @return a list of users according to TC rules
 	 */
-	public List<String> findUsersForTabComplete(String containing) {
+	public Collection<String> findUsersForTabComplete(String containing) {
 		containing = containing.toLowerCase();
 
 		List<String> ret = new ArrayList<String>(users.size());
@@ -352,9 +353,11 @@ public abstract class Connection extends Thread {
 	}
 
 	/**
-	 * Find users according to wildcard rules
+	 * @param pattern the wildcard-enabled search string
+	 * @param perspective whose perspective to search from
+	 * @return a list of the matched users
 	 */
-	public List<BNetUser> findUsersWildcard(String pattern, BNetUser perspective) {
+	public Collection<BNetUser> findUsersWildcard(String pattern, BNetUser perspective) {
 		pattern = pattern.toLowerCase();
 
 		List<BNetUser> ret = new ArrayList<BNetUser>(users.size());
@@ -845,7 +848,6 @@ public abstract class Connection extends Thread {
 	 * @param pieceSize
 	 * @param cq
 	 * @param current_position
-	 * @return
 	 */
 	private void enqueueChat(ByteArray prefix, String text, int priority, int pieceSize, int current_position) {
 		// Count the number of unicode characters removed from text

@@ -15,7 +15,7 @@ import org.jbls.util.ByteFromIntArray;
 import org.jbls.util.IntFromByteArray;
 
 /**
- * 
+ *
  * @author iago
  */
 public class War3Decode extends SCKeyDecode // extending this so I can store it
@@ -301,6 +301,7 @@ public class War3Decode extends SCKeyDecode // extending this so I can store it
 		}
 	}
 
+	@Override
 	public int[] getKeyHash(int clientToken, int serverToken) {
 		try {
 			MessageDigest digest = MessageDigest.getInstance("SHA-1");
@@ -326,10 +327,12 @@ public class War3Decode extends SCKeyDecode // extending this so I can store it
 		}
 	}
 
+	@Override
 	public int getVal1() {
 		return val1;
 	}
 
+	@Override
 	public int getVal2() {
 		throw new UnsupportedOperationException(
 				"Can't use War3's getVal2() as an int");
@@ -339,6 +342,7 @@ public class War3Decode extends SCKeyDecode // extending this so I can store it
 		return val2;
 	}
 
+	@Override
 	public int getProduct() {
 		return product;
 	}

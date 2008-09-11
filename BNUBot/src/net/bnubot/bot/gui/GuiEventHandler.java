@@ -22,6 +22,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -147,14 +148,14 @@ public class GuiEventHandler extends EventHandler {
 	 * Update the list of the TC popup
 	 */
 	private void tcUpdate() {
-		List<String> options;
+		Collection<String> options;
 		if(tcUserSearch)
 			options = firstConnection.findUsersForTabComplete(tcSearch);
 		else
 			options = Profile.findCommandsForTabComplete(tcSearch);
 		if(options.size() == 1) {
 			// Unconfirmed; simply ran out of other options
-			tcSelect(options.get(0), false);
+			tcSelect(options.toArray(new String[1])[0], false);
 		} else if(options.size() == 0) {
 			tcCancel();
 		} else {

@@ -25,11 +25,30 @@ public class BNetInputStream extends DataInputStream {
         return ret;
 	}
 
-	public int readWord() throws IOException {
-        return	((readByte() << 0) & 0x00FF) |
-				((readByte() << 8) & 0xFF00);
+	/**
+     * Bytes for this operation are read from the contained input stream.
+     *
+     * @return     the next word of this input stream as a signed 16-bit
+     *             <code>short</code>.
+     * @exception  IOException   the stream has been closed and the contained
+     * 		   input stream does not support reading after close, or
+     * 		   another I/O error occurs.
+	 */
+	public short readWord() throws IOException {
+        return (short)
+        		(((readByte() << 0) & 0x00FF) |
+				((readByte() << 8) & 0xFF00));
 	}
 
+	/**
+     * Bytes for this operation are read from the contained input stream.
+     *
+     * @return     the next double-word of this input stream as a signed 32-bit
+     *             <code>int</code>.
+     * @exception  IOException   the stream has been closed and the contained
+     * 		   input stream does not support reading after close, or
+     * 		   another I/O error occurs.
+	 */
 	public int readDWord() throws IOException {
         return	((readByte() << 0) & 0x000000FF) |
 				((readByte() << 8) & 0x0000FF00) |
@@ -37,6 +56,17 @@ public class BNetInputStream extends DataInputStream {
 				((readByte() << 24) & 0xFF000000);
 	}
 
+	/**
+     * Bytes for this operation are read from the parameter <code>data[off..off+3]</code>.
+     *
+     * @param data the byte array to read the double-word from.
+     * @param off the index to start reading from <code>data</code>.
+     * @return     the next double-word of this input stream as a signed 32-bit
+     *             <code>int</code>.
+     * @exception  IOException   the stream has been closed and the contained
+     * 		   input stream does not support reading after close, or
+     * 		   another I/O error occurs.
+	 */
 	public static int readDWord(byte[] data, int off) {
         return	((data[0 + off] << 0) & 0x000000FF) |
 				((data[1 + off] << 8) & 0x0000FF00) |
@@ -44,6 +74,15 @@ public class BNetInputStream extends DataInputStream {
 				((data[3 + off] << 24) & 0xFF000000);
 	}
 
+	/**
+     * Bytes for this operation are read from the contained input stream.
+     *
+     * @return     the next quad-word of this input stream as a signed 64-bit
+     *             <code>long</code>.
+     * @exception  IOException   the stream has been closed and the contained
+     * 		   input stream does not support reading after close, or
+     * 		   another I/O error occurs.
+	 */
 	public long readQWord() throws IOException {
 		long qw = readDWord() & 0xFFFFFFFFl;
 		long qw2 = readDWord() & 0xFFFFFFFFl;

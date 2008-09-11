@@ -506,7 +506,7 @@ public class GuiDesktop extends JFrame {
 	}
 
 	/**
-	 * Get the desired divider location
+	 * @return the location of the divider
 	 */
 	public static int getDividerLocation() {
 		if(selectedGui != null)
