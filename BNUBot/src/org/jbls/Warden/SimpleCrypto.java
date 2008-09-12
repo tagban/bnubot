@@ -8,8 +8,8 @@ package org.jbls.Warden;
 /**
  * Implements a very simple crypto system used by Warden. I'm told it's RC4, but
  * I haven't bothered confirming.
+ * @author iago
  */
-
 public class SimpleCrypto {
 	private byte[] key;
 

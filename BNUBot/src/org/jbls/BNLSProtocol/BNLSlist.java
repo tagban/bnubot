@@ -3,6 +3,9 @@
  */
 package org.jbls.BNLSProtocol;
 
+/**
+ * @author Hdx
+ */
 public class BNLSlist {
 	private static final int CRC32_POLYNOMIAL = 0xEDB88320;
 	private static long CRC32Table[] = new long[256];

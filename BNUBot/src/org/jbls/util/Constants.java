@@ -3,6 +3,10 @@
  */
 package org.jbls.util;
 
+/**
+ * @author Hdx
+ * @author scotta
+ */
 public final class Constants {
 	public static final byte PRODUCT_STARCRAFT = 0x01;
 	public static final byte PRODUCT_BROODWAR = 0x02;

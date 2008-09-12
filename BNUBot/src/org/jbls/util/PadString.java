@@ -7,13 +7,14 @@ package org.jbls.util;
  * Since Java has no utility (that I could find) for converting an integer to a
  * String and padding it with the appropriate number of 0's, I wrote this class
  * that takes care of that for me.
+ * @author iago
  */
 public class PadString {
 	// Pads a number with 0's up to the requested length.
 	static public String padNumber(int number, int length) {
 		return padString("" + number, length, '0');
 	}
-	
+
 	static public String padHex(byte number, int length) {
 		return padHex(number & 0xFF, length);
 	}

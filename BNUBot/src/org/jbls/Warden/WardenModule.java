@@ -20,6 +20,9 @@ import org.jbls.util.Buffer;
 import org.jbls.util.IntFromByteArray;
 import org.jbls.util.PadString;
 
+/**
+ * @author iago
+ */
 public class WardenModule {
 	private int currentLength = 0;
 	private int compressedSize = 0;
@@ -37,7 +40,7 @@ public class WardenModule {
 			nametmp.append(PadString.padHex(md5[x], 2));
 		name = nametmp.toString();
 		saveFile(name + ".decr", decryptor);
-		
+
 		if(!sc.exists()) {
 			Out.error(getClass(), "Starcraft.exe does not exist! Warden will fail.");
 			throw new IllegalStateException();
@@ -468,7 +471,7 @@ public class WardenModule {
 
 	public String getSeed() {
 		StringBuffer s = new StringBuffer();
-		
+
 		for(byte x : decryptionSeed)
 			s.append(PadString.padHex(x, 2));
 

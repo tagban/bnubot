@@ -14,6 +14,7 @@ import org.jbls.util.Buffer;
 /**
  * This decodes a standard numeric CDKey (Starcraft's) for sending to
  * battle.net.
+ * @author iago
  */
 public class SCKeyDecode {
 	/** The decoded cdkey. */
@@ -25,7 +26,7 @@ public class SCKeyDecode {
 
 	/**
 	 * Sets up the decoder with the specified key and goes ahead and decodes it.
-	 * 
+	 *
 	 * @param cdkey
 	 *            The CDKey to hash.
 	 * @throws HashException
@@ -48,7 +49,7 @@ public class SCKeyDecode {
 	/**
 	 * Hashes the CDKey based on the client and server token, and returns the
 	 * 5-byte hash.
-	 * 
+	 *
 	 * @param clientToken
 	 *            The client token to hash it with.
 	 * @param serverToken
@@ -68,7 +69,7 @@ public class SCKeyDecode {
 
 		return BrokenSHA1.calcHashBuffer(hashData.getBuffer());
 	}
-	
+
 	public int[] getOldKeyHash(int clientToken, int serverToken) {
 
 		Buffer hashData = new Buffer();
@@ -84,7 +85,7 @@ public class SCKeyDecode {
 
 	/**
 	 * Verifies that the CDKey is valid.
-	 * 
+	 *
 	 * @return true if the CDKey is valid. false if the CDKey is invalid.
 	 */
 	protected boolean verify() {
@@ -117,7 +118,7 @@ public class SCKeyDecode {
 
 	/**
 	 * Gets the game's product.
-	 * 
+	 *
 	 * @return The game's product.
 	 */
 	public int getProduct() {
@@ -126,7 +127,7 @@ public class SCKeyDecode {
 
 	/**
 	 * Gets the second CDKey value.
-	 * 
+	 *
 	 * @return The second CDKey value.
 	 */
 	public int getVal2() {
@@ -135,7 +136,7 @@ public class SCKeyDecode {
 
 	/**
 	 * Gets the first CDKey value.
-	 * 
+	 *
 	 * @return The first CDKey value.
 	 */
 	public int getVal1() {

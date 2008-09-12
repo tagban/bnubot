@@ -7,6 +7,9 @@ package org.jbls.Warden;
 
 import org.jbls.util.ByteFromIntArray;
 
+/**
+ * @author iago
+ */
 public class WardenRandom {
 	int position = 0;
 	byte[] random_data;
