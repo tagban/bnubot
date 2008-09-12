@@ -132,25 +132,25 @@ public class LockdownEventHandler extends EventHandler {
 		if(lockdownEnabled)
 			return;
 		source.sendChat("/c priv", Integer.MAX_VALUE);
+		lockdownEnabled = true;
+		source.sendChat("Lockdown enabled.");
 	}
 
 	private void endLockdown(final Connection source) {
 		if(!lockdownEnabled)
 			return;
 		source.sendChat("/c pub", Integer.MAX_VALUE);
+		lockdownEnabled = false;
+		source.sendChat("Lockdown disabled.");
 	}
 
 	@Override
 	public void recieveServerInfo(Connection source, String text) {
-		if(lockdownEnabled && CHANNEL_OPEN.equals(text)) {
-			lockdownEnabled = false;
-			source.sendChat("Lockdown disabled.");
+		if(CHANNEL_OPEN.equals(text)) {
 			return;
 		}
 
-		if(!lockdownEnabled && CHANNEL_CLOSED.equals(text)) {
-			lockdownEnabled = true;
-			source.sendChat("Lockdown enabled.");
+		if(CHANNEL_CLOSED.equals(text)) {
 			lockdownThreadSource = source;
 			new Thread(lockdownThread).start();
 			return;
