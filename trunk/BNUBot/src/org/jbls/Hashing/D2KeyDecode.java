@@ -13,7 +13,8 @@ package org.jbls.Hashing;
  * This is the CDKey Decoder used for decoding alphabetic keys - Warcraft 2,
  * Diablo 2, etc.
  *
- * Fixed by Feanor
+ * @author iago
+ * @author Feanor
  */
 public class D2KeyDecode extends SCKeyDecode {
 	int[] alphaMap = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,

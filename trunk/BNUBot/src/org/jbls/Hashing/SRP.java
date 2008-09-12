@@ -8,6 +8,9 @@ import java.security.MessageDigest;
 import org.jbls.util.BigIntegerEx;
 import org.jbls.util.Buffer;
 
+/**
+ * @author iago
+ */
 public class SRP {
 	public static final int BIGINT_SIZE = 32;
 	public static final int SHA_DIGESTSIZE = 20;

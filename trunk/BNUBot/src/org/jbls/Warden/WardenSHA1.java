@@ -7,6 +7,9 @@ package org.jbls.Warden;
 
 import org.jbls.util.ByteFromIntArray;
 
+/**
+ * @author iago
+ */
 public class WardenSHA1 {
 	private int[] bitlen = new int[2];
 	private int[] state = new int[0x15];
