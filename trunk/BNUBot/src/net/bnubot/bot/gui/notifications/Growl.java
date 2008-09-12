@@ -120,6 +120,7 @@ public class Growl {
 	 *
 	 * @param inAppName - The Name of your "Application"
 	 * @param inImagePath - The path to your icon
+	 * @throws Exception
 	 */
 	public Growl(String inAppName, String inImagePath) throws Exception {
 		this(inAppName,
@@ -135,7 +136,7 @@ public class Growl {
 	 *
 	 * @param inAppName - The Name of your "application"
 	 * @param inImage - The NSImage Icon for your Application
-	 *
+	 * @throws Exception
 	 */
 	public Growl(String inAppName, Object inImage) throws Exception {
 		this(inAppName,
@@ -156,6 +157,7 @@ public class Growl {
 	 * @param inDefNotes - The NSArray of Strings of your default Notifications
 	 * @param registerNow - Since we have all the necessary info we can go ahead
 	 *                      and register
+	 * @throws Exception
 	 */
 	public Growl(String inAppName, Object inImageData, Object[] inAllNotes, Object[] inDefNotes, boolean registerNow) throws Exception {
 		if(!enableGrowl)
@@ -178,6 +180,7 @@ public class Growl {
 	 * Register all our notifications with Growl, this should only be called
 	 * once.
 	 * @return <code>true</code>.
+	 * @throws Exception
 	 */
 	public boolean register() throws Exception {
 		if (!registered) {
@@ -261,6 +264,7 @@ public class Growl {
 	 * Set the list of allowed Notifications
 	 *
 	 * @param inAllNotes - The array of allowed Notifications
+	 * @throws Exception
 	 */
 	public void setAllowedNotifications(Object[] inAllNotes) throws Exception {
 		Constructor<?> constructor = NSArray.getConstructor(inAllNotes.getClass());

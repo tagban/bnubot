@@ -108,6 +108,7 @@ public class BNetUser {
 
 	/**
 	 * Gets the shortest possible logon name, as another user sees it
+	 * @param perspective the value returned will be from this user's perspective
 	 * @return User[#N][@Realm]
 	 */
 	public String getShortLogonName(BNetUser perspective) {
@@ -367,19 +368,6 @@ public class BNetUser {
 	}
 
 	/**
-	 * Convert a BNetUser to a BNetUser from a different perspective
-	 */
-	public BNetUser toPerspective(BNetUser myRealm) {
-		if(myRealm.con != con)
-			throw new IllegalStateException("Can not format BNetUser to a perspective on a different Connection");
-		BNetUser out = new BNetUser(con, fullLogonName, myRealm.getFullAccountName());
-		out.flags = flags;
-		out.ping = ping;
-		out.statString = statString;
-		return out;
-	}
-
-	/**
 	 * Send chat to a user in command response style - either whispered, or formatted with the user's name
 	 * @param text The message to send
 	 * @param whisperBack Whether to whisper the message
@@ -399,6 +387,7 @@ public class BNetUser {
 	 * Send chat to a user in command response style - either whispered, or formatted with the user's name
 	 * @param text The message to send
 	 * @param whisperBack Whether to whisper the message
+	 * @param priority The priority to use for the ChatQueue
 	 * @throws IllegalStateException <code>if(con == null)</code>
 	 */
 	public void sendChat(String text, boolean whisperBack, int priority) {

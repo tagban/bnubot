@@ -25,7 +25,7 @@ public class TimeFormatter {
 	public static String tsFormat = "%1$tH:%1$tM:%1$tS.%1$tL";
 
 	/**
-	 * Simply displays a nicely formatted timestamp.
+	 * @return a nicely formatted timestamp
 	 */
 	public static String getTimestamp() {
 		try {

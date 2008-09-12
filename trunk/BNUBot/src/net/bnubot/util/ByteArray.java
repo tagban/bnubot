@@ -31,11 +31,6 @@ public final class ByteArray {
 		this.data = data;
 	}
 
-	/**
-	 * @param data2
-	 * @param beginIndex
-	 * @param endIndex
-	 */
 	public ByteArray(byte[] data, int beginIndex, int endIndex) {
 		this.data = new byte[endIndex - beginIndex];
 		int pos = 0;

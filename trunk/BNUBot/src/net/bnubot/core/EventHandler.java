@@ -23,8 +23,9 @@ import net.bnubot.util.BNetUser;
 public abstract class EventHandler {
 	/**
 	 * Helper function to commands
-	 * @param <T> The type of EventHandler to look for
+	 * @param <T> The type of <code>EventHandler</code> to look for
 	 * @param source The connection to search EventHandlers of
+	 * @param clazz The <code>Class<T></code> to look for
 	 * @return The EventHandler of type T
 	 */
 	@SuppressWarnings("unchecked")

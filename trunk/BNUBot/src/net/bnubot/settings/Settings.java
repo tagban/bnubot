@@ -72,6 +72,12 @@ public class Settings {
 
 	/**
 	 * This method will not handle a NULL value for defaultValue
+	 * @param header the header name
+	 * @param setting the setting name
+	 * @param defaultValue the default value
+	 * @param <T> the <code>Enum</code> type
+	 * @return the value if it exists in settings, or defaultValue if none exists
+	 * @throws NullPointerException if <code>defaultValue == null</code>
 	 */
 	public static <T extends Enum<T>> T read(String header, String setting, T defaultValue) {
 		String readValue = read(header, setting, defaultValue.name());

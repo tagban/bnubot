@@ -40,11 +40,6 @@ public class BotNetUser extends BNetUser {
 	String account = null;
 	String database = null;
 
-	/**
-	 * @param con
-	 * @param user
-	 * @param perspectiveOf
-	 */
 	public BotNetUser(BotNetConnection con, int number, String name) {
 		super(con, name, "BotNet");
 		this.number = number;

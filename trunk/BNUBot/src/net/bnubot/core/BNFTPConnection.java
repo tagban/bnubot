@@ -26,8 +26,9 @@ public class BNFTPConnection {
 
 	/**
 	 * Download a file using BNFTP; get the file from the undefined default server
-	 * @param fileName The file's name
-	 * @return The File, or null if there was an error
+	 * @param fileName the <code>File</code>'s name
+	 * @return the <code>File</code>, or null if there was an error
+	 * @throws Exception
 	 */
 	public static File downloadFile(String fileName) throws Exception {
 		return downloadFile(new ConnectionSettings(1), fileName, null, defaultPath);
@@ -35,10 +36,12 @@ public class BNFTPConnection {
 
 	/**
 	 * Download a file using BNFTP
-	 * @param cs The ConnectionSettings to connect to battle.net with
-	 * @param fileName The file's name
-	 * @param path The folder to download the file to
-	 * @return The File, or null if there was an error
+	 * @param cs the ConnectionSettings to connect to battle.net with
+	 * @param fileName the file's name
+	 * @param lastModified file modification time
+	 * @param path the folder to download the file to
+	 * @return the File, or null if there was an error
+	 * @throws Exception
 	 */
 	public static File downloadFile(ConnectionSettings cs, String fileName, Date lastModified, String path)  throws Exception {
 		File f = new File(path + fileName);

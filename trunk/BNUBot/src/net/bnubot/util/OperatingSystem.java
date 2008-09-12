@@ -30,7 +30,7 @@ public enum OperatingSystem {
 	public static final OperatingSystem userOS = initOS();
 
 	/**
-	 * Get a displayable operating system version
+	 * @return user-displayable operating system version
 	 */
 	public static String osVersion() {
 		Properties p = System.getProperties();

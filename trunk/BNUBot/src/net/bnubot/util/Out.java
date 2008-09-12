@@ -80,7 +80,7 @@ public class Out {
 
 	/**
 	 * Display the stack trace in an appropriate location
-	 * @param e The exception source
+	 * @param e the <code>Throwable</code> source
 	 */
 	public static void exception(Throwable e) {
 		final Connection oc = getOutConnection();
@@ -94,7 +94,11 @@ public class Out {
 
 	/**
 	 * Display a popup with the exception
-	 * @param e
+	 * @param e the <code>Throwable</code> source
+	 * @param parent determines the <code>Frame</code>
+     *		in which the dialog is displayed; if <code>null</code>,
+     *		or if the <code>parentComponent</code> has no
+     *		<code>Frame</code>, a default <code>Frame</code> is used
 	 */
 	public static void popupException(Throwable e, Component parent) {
 		Dialog dialog = null;
@@ -122,7 +126,7 @@ public class Out {
 
 	/**
 	 * Attempt to popup a window with a stack trace, and exit with code 1
-	 * @param e The exception source
+	 * @param e the <code>Throwable</code> source
 	 */
 	public static void fatalException(Throwable e) {
 		try {
@@ -237,7 +241,8 @@ public class Out {
 
 	/**
 	 * Sets whether debugging messages should be shown for a given class
-	 * @param debug true means debugging messages will be shown
+	 * @param clazz the <code>Class</code> to set debugging for
+	 * @param debug <code>true</code> means debugging messages will be shown
 	 */
 	public static void setDebug(String clazz, boolean debug) {
 		if(Out.debug.containsKey(clazz)) {
@@ -284,6 +289,7 @@ public class Out {
 
 	/**
 	 * Gets whether debugging messages should be shown for a given class
+	 * @param clazz the given <code>Class</code>
 	 * @return true when debugging messages will be shown
 	 */
 	public static boolean isDebug(Class<?> clazz) {
@@ -292,6 +298,7 @@ public class Out {
 
 	/**
 	 * Gets whether debugging messages should be shown for a given class
+	 * @param clazz the given <code>Class</code>
 	 * @return true when debugging messages will be shown
 	 */
 	public static boolean isDebug(String clazz) {
