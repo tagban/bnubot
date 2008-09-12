@@ -69,13 +69,12 @@ public class LockdownEventHandler extends EventHandler {
 
 	private boolean lockdownEnabled = false;
 	private Connection lockdownThreadSource = null;
-	private final Thread lockdownThread = new Thread() {
-		@Override
+	private final Runnable lockdownThread = new Runnable() {
 		public void run() {
 			long lockdownDisableTime = System.currentTimeMillis() + LOCKDOWN_DURATION;
 			while(System.currentTimeMillis() < lockdownDisableTime) {
-				try { sleep(3000); } catch (Exception e) {}
-				yield();
+				try { Thread.sleep(3000); } catch (Exception e) {}
+				Thread.yield();
 			}
 			// Timeout period is over; turn off
 			endLockdown(lockdownThreadSource);
@@ -110,6 +109,8 @@ public class LockdownEventHandler extends EventHandler {
 	}
 
 	private void floodDetected(Connection source, BNetUser user) {
+		if(lockdownEnabled)
+			return;
 		startLockdown(source);
 		source.sendChat("/f m Flood detected from " + user.getFullLogonName());
 
@@ -151,7 +152,7 @@ public class LockdownEventHandler extends EventHandler {
 			lockdownEnabled = true;
 			source.sendChat("Lockdown enabled.");
 			lockdownThreadSource = source;
-			lockdownThread.start();
+			new Thread(lockdownThread).start();
 			return;
 		}
 	}
