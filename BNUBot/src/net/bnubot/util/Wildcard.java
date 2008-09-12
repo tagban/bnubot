@@ -10,7 +10,7 @@
 
 package net.bnubot.util;
 
-/*************************************************************************
+/**
  *  Compilation:  javac Wildcard.java In.java
  *  Execution:    java Wildcard pattern < wordlist.txt
  *
@@ -30,20 +30,14 @@ package net.bnubot.util;
  * @author Robert Sedgewick
  * @author Kevin Wayne
  * @author scotta
- *************************************************************************/
+ */
 public class Wildcard {
-	/***********************************************************************
-	 *  Check if pattern string matches text string.
-	 *
-	 *  At the beginning of iteration i of main loop
-	 *
-	 *     old[j]    = true if pattern[0..j] matches text[0..i-1]
-	 *
-	 *  By comparing pattern[j] with text[i], the main loop computes
-	 *
-	 *     states[j] = true if pattern[0..j] matches text[0..i]
-	 *
-	 ***********************************************************************/
+	/**
+	 * Check if pattern string matches text string.
+	 * @param pattern the pattern to search for
+	 * @param text the text to search in
+	 * @return true if pattern matches text
+	 */
 	public static boolean matches(String pattern, String text) {
 		// add sentinel so don't need to worry about *'s at end of pattern
 		text    += '\0';
@@ -51,7 +45,13 @@ public class Wildcard {
 
 		int N = pattern.length();
 
+		/**
+		 * states[j] = true if pattern[0..j] matches text[0..i]
+		 */
 		boolean[] states = new boolean[N+1];
+		/**
+		 * old[j]    = true if pattern[0..j] matches text[0..i-1]
+		 */
 		boolean[] old = new boolean[N+1];
 		old[0] = true;
 

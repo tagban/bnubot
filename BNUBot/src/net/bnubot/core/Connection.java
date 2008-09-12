@@ -640,6 +640,7 @@ public abstract class Connection extends Thread {
 	 * @param text The whole text to be sent out
 	 * @param allowCommands Enables internal bot commands (/cmd, /profile, etc)
 	 * @param enableKeywords Enable keywords (%uptime%, %trigger%, %mp3%, etc)
+	 * @param priority the priority to send to the ChatQueue
 	 */
 	public void sendChat(String prefix, String text, boolean allowCommands, boolean enableKeywords, int priority) {
 		if(text == null)
