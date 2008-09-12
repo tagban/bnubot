@@ -1580,10 +1580,10 @@ public class CommandEventHandler extends EventHandler {
 				}
 		}
 
+		touchUser(source, user, "joining the channel");
+
 		if(!source.getConnectionSettings().enableGreetings)
 			return;
-
-		touchUser(source, user, "joining the channel");
 
 		try {
 			BNLogin rsUser = BNLogin.getCreate(user);
