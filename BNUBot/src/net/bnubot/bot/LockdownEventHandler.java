@@ -25,7 +25,7 @@ import net.bnubot.util.Out;
 public class LockdownEventHandler extends EventHandler {
 	private static final String CHANNEL_CLOSED = "The clan channel is now private and only clan members may enter.";
 	private static final String CHANNEL_OPEN = "The clan channel is now public and anyone can enter.";
-	public static final long LOCKDOWN_DURATION = 60 * 1000; // 1 minue
+	public static final long LOCKDOWN_DURATION = 5 * 60 * 1000; // 5 minutes
 
 	public LockdownEventHandler() {
 		if(DatabaseContext.getContext() == null)
@@ -133,7 +133,6 @@ public class LockdownEventHandler extends EventHandler {
 			return;
 		source.sendChat("/c priv", Integer.MAX_VALUE);
 		lockdownEnabled = true;
-		source.sendChat("Lockdown enabled.");
 	}
 
 	private void endLockdown(final Connection source) {
@@ -141,18 +140,19 @@ public class LockdownEventHandler extends EventHandler {
 			return;
 		source.sendChat("/c pub", Integer.MAX_VALUE);
 		lockdownEnabled = false;
-		source.sendChat("Lockdown disabled.");
 	}
 
 	@Override
 	public void recieveServerInfo(Connection source, String text) {
-		if(CHANNEL_OPEN.equals(text)) {
+		if(!lockdownEnabled && CHANNEL_OPEN.equals(text)) {
+			source.sendChat("Lockdown disabled.");
 			return;
 		}
 
-		if(CHANNEL_CLOSED.equals(text)) {
+		if(lockdownEnabled && CHANNEL_CLOSED.equals(text)) {
 			lockdownThreadSource = source;
 			new Thread(lockdownThread).start();
+			source.sendChat("Lockdown enabled.");
 			return;
 		}
 	}

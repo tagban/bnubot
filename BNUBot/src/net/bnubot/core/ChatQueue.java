@@ -70,6 +70,14 @@ public class ChatQueue extends Thread {
 	public boolean enqueue(Connection source, ByteArray text, int priority) {
 		if(GlobalSettings.enableFloodProtect) synchronized(queue) {
 			// Flood protection is enabled
+			for(QueueEntry qe : queue) {
+				if(text.equals(qe.text)) {
+					// That command is already in the queue; skip it
+					Out.error(getClass(), "Ignoring duplicate chat command: " + text.toString());
+					return false;
+				}
+			}
+
 			if(queue.add(new QueueEntry(text, priority))) {
 				Collections.sort(queue, queueComparator);
 				return true;
