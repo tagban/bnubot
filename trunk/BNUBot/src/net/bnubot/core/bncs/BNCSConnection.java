@@ -2081,7 +2081,11 @@ public class BNCSConnection extends Connection {
 
 	/**
 	 * Send SID_CLANINVITATIONRESPONSE
+	 * @param cookie the cookie from the received SID_CLANINVITATIONRESPONSE
+	 * @param clanTag the clan tag from the received SID_CLANINVITATIONRESPONSE
+	 * @param inviter the inviter from the received SID_CLANINVITATIONRESPONSE
 	 * @param response 0x04 = Decline, 0x06 = Accept
+	 * @throws Exception
 	 */
 	public void sendClanInvitationResponse(int cookie, int clanTag, String inviter, int response) throws Exception {
 		requireW3();

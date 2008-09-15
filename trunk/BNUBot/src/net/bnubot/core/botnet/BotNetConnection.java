@@ -314,9 +314,6 @@ public class BotNetConnection extends Connection {
 		return false;
 	}
 
-	/**
-	 * @param substring
-	 */
 	public void processCommand(String text) {
 		try {
 			String[] commands = text.split(" ", 3);
@@ -358,6 +355,7 @@ public class BotNetConnection extends Connection {
 	/**
 	 * Broadcast text
 	 * @param text Text to send
+	 * @throws Exception
 	 */
 	public void sendBroadcast(String text) throws Exception {
 		sendBotNetChat(0, false, 0, text);
@@ -368,6 +366,7 @@ public class BotNetConnection extends Connection {
 	 * Talk on the database
 	 * @param emote True if this is an emote
 	 * @param text Text to send
+	 * @throws Exception
 	 */
 	public void sendChat(boolean emote, String text) throws Exception {
 		sendBotNetChat(1, emote, 0, text);
@@ -378,6 +377,7 @@ public class BotNetConnection extends Connection {
 	 * Send a whisper
 	 * @param target User to whisper
 	 * @param text Text to send
+	 * @throws Exception
 	 */
 	public void sendWhisper(BotNetUser target, String text) throws Exception {
 		sendBotNetChat(2, false, target.number, text);
