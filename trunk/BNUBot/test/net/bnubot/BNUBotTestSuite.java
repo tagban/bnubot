@@ -15,6 +15,7 @@ public class BNUBotTestSuite {
 
 	public static Test suite() {
 		TestSuite suite = new TestSuite("BNUBot");
+		//$JUnit-BEGIN$
 
 		suite.addTestSuite(net.bnubot.util.BNetInputStreamTest.class);
 		suite.addTestSuite(net.bnubot.util.BNetOutputStreamTest.class);
@@ -29,6 +30,7 @@ public class BNUBotTestSuite {
 		suite.addTestSuite(net.bnubot.util.task.TaskTest.class);
 		suite.addTestSuite(net.bnubot.vercheck.VersionNumberTest.class);
 
+		//$JUnit-END$
 		return suite;
 	}
 }

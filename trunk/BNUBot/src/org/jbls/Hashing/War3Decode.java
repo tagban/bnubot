@@ -181,7 +181,10 @@ public class War3Decode extends SCKeyDecode // extending this so I can store it
 	private final byte[] val2;
 	private final int product;
 
-	/** Creates a new instance of War3Decode */
+	/**
+	 * Creates a new instance of War3Decode
+	 * @param cdkey CDKey to hash
+	 */
 	public War3Decode(String cdkey) {
 		byte[] table = new byte[W3_BUFLEN];
 		int[] values = new int[4];

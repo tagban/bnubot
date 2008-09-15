@@ -66,7 +66,9 @@ public class Buffer implements Serializable {
 		addChars(b.getBufferChar());
 	}
 
-	/** Returns the size of the buffer */
+	/**
+	 * @return the size of the buffer
+	 */
 	public int size() {
 		return currentLength;
 	}

@@ -19,10 +19,6 @@ import org.jbls.util.Constants;
  * Info, etc provided by BNLS.
  *
  * Static Methods Allow it to be accessible by any thread
- *
- * @throws HashException -
- *             If error caused by org.jbls.Hashing or retrieval (bad key, etc)
- *
  */
 public class HashMain {
 	public static final byte PLATFORM_INTEL = 0x01;
@@ -40,6 +36,7 @@ public class HashMain {
 	 *            ClientToken used in hash specified by Client or JBLS
 	 * @param serverToken
 	 *            ServerToken used in hash specified by BNET server
+	 * @param key CDKey to hash
 	 * @return HashedKey(in a Buffer) - 9 DWORDS
 	 * @throws HashException
 	 *             If Invalid Key
@@ -58,9 +55,6 @@ public class HashMain {
 		throw new HashException("Invalid Key Length");
 	}// end of hashKey Method
 
-	/**
-	 * NLS-style key hashing
-	 */
 	private static Buffer hashD2Key(int clientToken, int serverToken, String key)
 			throws HashException {
 		D2KeyDecode d2 = new D2KeyDecode(key);
@@ -77,6 +71,14 @@ public class HashMain {
 
 	/**
 	 * OLS-style key hash
+	 * @param clientToken
+	 *            ClientToken used in hash specified by Client or JBLS
+	 * @param serverToken
+	 *            ServerToken used in hash specified by BNET server
+	 * @param key CDKey to hash
+	 * @return HashedKey(in a Buffer) - 9 DWORDS
+	 * @throws HashException
+	 *             If Invalid Key
 	 */
 	public static Buffer hashW2Key(int clientToken, int serverToken, String key)
 			throws HashException {
