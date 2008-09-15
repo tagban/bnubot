@@ -12,7 +12,7 @@ package org.jbls.util;
 /**
  * This is a class to take care of treating an array of ints like a an array of
  * bytes. Note that this always works in Little Endian
- * 
+ *
  * @author iago
  */
 public class ByteFromIntArray {
@@ -21,22 +21,6 @@ public class ByteFromIntArray {
 	public static final ByteFromIntArray LITTLEENDIAN = new ByteFromIntArray(
 			true);
 	public static final ByteFromIntArray BIGENDIAN = new ByteFromIntArray(false);
-
-	/**
-	 * @param args
-	 *            the command line arguments
-	 */
-	/*
-	 * public static void main(String[] args) { int []test = { 0x01234567,
-	 * 0x89abcdef };
-	 * 
-	 * ByteFromIntArray bfia = new ByteFromIntArray(false);
-	 * 
-	 * byte []newArray = bfia.getByteArray(test);
-	 * 
-	 * for(int i = 0; i < newArray.length; i++) System.out.print(" " +
-	 * PadString.padHex(newArray[i], 2)); }
-	 */
 
 	public ByteFromIntArray(boolean littleEndian) {
 		this.littleEndian = littleEndian;
@@ -73,7 +57,7 @@ public class ByteFromIntArray {
 	 * This function is used to insert the byte into a specified spot in an int
 	 * array. This is used to simulate pointers used in C++. Note that this
 	 * works in little endian only.
-	 * 
+	 *
 	 * @param intBuffer
 	 *            The buffer to insert the int into.
 	 * @param b

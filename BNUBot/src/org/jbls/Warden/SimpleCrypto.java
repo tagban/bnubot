@@ -13,7 +13,10 @@ package org.jbls.Warden;
 public class SimpleCrypto {
 	private byte[] key;
 
-	/** Generates the key based on "base" */
+	/**
+	 * Generates the key based on "base"
+	 * @param base the <code>byte[]</code> to generate the key from
+	 */
 	public SimpleCrypto(byte[] base) {
 		char val = 0;
 		int i;
@@ -54,7 +57,11 @@ public class SimpleCrypto {
 		return do_crypt(new byte[] { data });
 	}
 
-	/** Encrypts or decrypts. */
+	/**
+	 * Encrypts or decrypts.
+	 * @param data the input <code>byte[]</code>
+	 * @return the output <code>byte[]</code>
+	 */
 	public byte[] do_crypt(byte[] data) {
 		int i;
 		byte temp;
@@ -72,7 +79,10 @@ public class SimpleCrypto {
 		return data;
 	}
 
-	/** More for debugging than anything. */
+	/**
+	 * More for debugging than anything.
+	 * @return the <code>byte[]</code> key
+	 */
 	public byte[] getKey() {
 		return key;
 	}

@@ -9,6 +9,8 @@
 
 package org.jbls.util;
 
+import java.security.InvalidParameterException;
+
 /**
  * This is a class to take care of inserting or getting the value of an int in
  * an array of bytes.
@@ -21,24 +23,6 @@ public class IntFromByteArray {
 	public static final IntFromByteArray LITTLEENDIAN = new IntFromByteArray(
 			true);
 	public static final IntFromByteArray BIGENDIAN = new IntFromByteArray(false);
-
-	/**
-	 * @param args
-	 *            the command line arguments
-	 */
-
-	/*
-	 * public static void main(String args[]) { byte[] test = { 1, 2, 3, 4, 5,
-	 * 6, 7, 8, 9 };
-	 *
-	 * IntFromByteArray ifba = new IntFromByteArray(true);
-	 *
-	 * int[] newArray = ifba.getIntArray(test);
-	 *
-	 *
-	 * for(int i = 0; i < newArray.length; i++)
-	 * System.out.print(PadString.padHex(newArray[i], 8) + " "); }
-	 */
 
 	public IntFromByteArray(boolean littleEndian) {
 		this.littleEndian = littleEndian;
@@ -102,8 +86,14 @@ public class IntFromByteArray {
 		return array;
 	}
 
-	/** Note: This will cut off the end bytes to ensure it's a multiple of 4 */
-	public int[] getIntArray(byte[] array) {
+	/**
+	 * @param array the input <code>byte[]</code>
+	 * @return the transformed array as an <code>int[]</code>
+	 * @throws InvalidParameterException if array is not a multiple of 4
+	 */
+	public int[] getIntArray(byte[] array) throws InvalidParameterException {
+		if(array.length % 4 != 0)
+			throw new InvalidParameterException("array.length must be a multiple of 4");
 		int[] newArray = new int[array.length / 4];
 
 		int pos = 0;
