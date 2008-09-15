@@ -293,7 +293,7 @@ public class Out {
 	 * @return true when debugging messages will be shown
 	 */
 	public static boolean isDebug(Class<?> clazz) {
-		return(isDebug(clazz.getName()));
+		return isDebug(clazz.getName());
 	}
 
 	/**

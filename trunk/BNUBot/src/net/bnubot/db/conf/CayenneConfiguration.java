@@ -103,7 +103,7 @@ public class CayenneConfiguration implements DataSourceFactory {
 			ValidationResult vr = null;
 			if(!schemaValid) {
 				// Invalid schema
-				Out.info(getClass(), "The database requires rebuilding");
+				Out.error(getClass(), "The database requires rebuilding");
 
 				// Generate schema from the mapping file
 				DbGenerator generator = new DbGenerator(adapter, dataMap);
@@ -225,7 +225,10 @@ public class CayenneConfiguration implements DataSourceFactory {
 
 				Out.error(getClass(), "Database version is " + version + ", we require " + compatibleVersion);
 			}
-		} catch(SQLException e) {}
+		} catch(SQLException e) {
+			if(Out.isDebug(getClass()));
+				Out.exception(e);
+		}
 
 		if(rs != null)
 			close(rs);
