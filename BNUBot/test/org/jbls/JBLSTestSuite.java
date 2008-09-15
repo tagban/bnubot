@@ -16,6 +16,9 @@ public class JBLSTestSuite {
 		TestSuite suite = new TestSuite("JBLS");
 		//$JUnit-BEGIN$
 
+		suite.addTestSuite(org.jbls.util.ByteFromIntArrayTest.class);
+		suite.addTestSuite(org.jbls.util.IntFromByteArrayTest.class);
+
 		//$JUnit-END$
 		return suite;
 	}

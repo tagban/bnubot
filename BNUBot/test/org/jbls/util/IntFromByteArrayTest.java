@@ -11,7 +11,7 @@ import junit.framework.TestCase;
  */
 public class IntFromByteArrayTest extends TestCase {
 	public void test() {
-		byte[] test = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+		byte[] test = { 1, 2, 3, 4, 5, 6, 7, 8 };
 		IntFromByteArray ifba = new IntFromByteArray(true);
 		int[] newArray = ifba.getIntArray(test);
 
