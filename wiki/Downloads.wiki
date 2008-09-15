@@ -11,6 +11,8 @@ If you don't already have a JRE (Java Runtime Environment) version 1.5 or newer,
 
 If you have already have a compatible JDK (Java Development Kit) installed, you may skip this step.
 
+Mac users: You must have OSX 10.4 (Tiger) or 10.5 (Leopard). If you are using an older version of OSX, you will not be able to use BNU-Bot. There are no plans to add support in the future.
+
 == The BNU-Bot installer ==
 Download the BNU-Bot installer: [http://bnubot.googlecode.com/files/BNUBot-Install-v5.jar]
 
