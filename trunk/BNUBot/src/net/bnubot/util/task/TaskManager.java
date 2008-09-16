@@ -5,25 +5,25 @@
 
 package net.bnubot.util.task;
 
-import java.awt.Dialog;
-import java.awt.Frame;
+import java.awt.Container;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-
-import net.bnubot.bot.gui.WindowPosition;
+import net.bnubot.bot.gui.GuiDesktop;
 import net.bnubot.settings.GlobalSettings;
 
 /**
  * @author scotta
  */
-public class TaskManager extends Dialog {
+public class TaskManager {
 	private static final long serialVersionUID = 641763656953338296L;
-	private static Box box = null;
-	private static TaskManager tm = null;
+	private static Container box = GuiDesktop.getTasksLocation();
 
-	private TaskManager(Frame owner) {
-		super(owner);
+	private static boolean enableGUI;
+	static {
+		try {
+			enableGUI = GlobalSettings.enableGUI;
+		} catch(Throwable t) {
+			enableGUI = true;
+		}
 	}
 
 	public static Task createTask(String title) {
@@ -37,45 +37,15 @@ public class TaskManager extends Dialog {
 	}
 
 	public static Task createTask(String title, int max, String units) {
-		boolean enableGUI;
-		Frame owner = null;
-		try {
-			enableGUI = GlobalSettings.enableGUI;
-			if(enableGUI)
-				owner = (Frame)Class.forName("net.bnubot.bot.gui.GuiDesktop").getMethod("getInstance").invoke(null);
-		} catch(Throwable t) {
-			enableGUI = true;
-			owner = new Frame();
-		}
-
-		if(enableGUI && (tm == null)) {
-			tm = new TaskManager(owner);
-			try { WindowPosition.load(tm); } catch(Throwable t) {}
-			tm.setTitle("Running Tasks");
-			box = new Box(BoxLayout.Y_AXIS);
-			tm.add(box);
-			tm.setResizable(false);
-		}
-
-		if(tm == null)
+		if(!enableGUI)
 			return new Task();
 
 		TaskGui t = new TaskGui(title, max, units);
 		box.add(t.getComponent());
-		tm.pack();
-		tm.setVisible(true);
 		return t;
 	}
 
 	protected static void complete(TaskGui t) {
-		if(tm != null) {
-			box.remove(t.getComponent());
-			if(box.getComponentCount() == 0) {
-				tm.setVisible(false);
-				tm.dispose();
-				tm = null;
-			} else
-				tm.pack();
-		}
+		box.remove(t.getComponent());
 	}
 }
