@@ -20,6 +20,7 @@ public class BNUBotTestSuite {
 		suite.addTestSuite(net.bnubot.util.BNetInputStreamTest.class);
 		suite.addTestSuite(net.bnubot.util.BNetOutputStreamTest.class);
 		suite.addTestSuite(net.bnubot.util.BNetUserTest.class);
+		suite.addTestSuite(net.bnubot.util.ByteArrayTest.class);
 		suite.addTestSuite(net.bnubot.util.crypto.Base64Test.class);
 		suite.addTestSuite(net.bnubot.util.crypto.DMCryptoTest.class);
 		suite.addTestSuite(net.bnubot.util.CookieUtilityTest.class);
