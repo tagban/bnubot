@@ -15,8 +15,8 @@ import net.bnubot.settings.GlobalSettings;
  */
 public class TaskManager {
 	private static final long serialVersionUID = 641763656953338296L;
-	private static Container box = GuiDesktop.getTasksLocation();
 
+	private static Container box = null;
 	private static boolean enableGUI;
 	static {
 		try {
@@ -24,6 +24,9 @@ public class TaskManager {
 		} catch(Throwable t) {
 			enableGUI = true;
 		}
+
+		if(enableGUI)
+			box = GuiDesktop.getTasksLocation();
 	}
 
 	public static Task createTask(String title) {
