@@ -102,6 +102,12 @@ public abstract class Connection extends Thread {
 		t.complete();
 	}
 
+	protected void clearTasks() {
+		for(Task t : currentTasks)
+			t.complete();
+		currentTasks.clear();
+	}
+
 	protected String getServer() {
 		return cs.server;
 	}
@@ -122,9 +128,7 @@ public abstract class Connection extends Thread {
 
 		while(!disposed) {
 			try {
-				for(Task t : currentTasks)
-					t.complete();
-				currentTasks.clear();
+				clearTasks();
 				myUser = null;
 				dispatchTitleChanged();
 
@@ -184,15 +188,15 @@ public abstract class Connection extends Thread {
 				disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 			}
 
+			clearTasks();
+
 			disconnect(ConnectionState.ALLOW_CONNECT);
 			try {
 				sleep(5000);
 			} catch (Exception e) {}
 		}
 
-		for(Task t : currentTasks)
-			t.complete();
-		currentTasks.clear();
+		clearTasks();
 
 		getProfile().dispose();
 	}
