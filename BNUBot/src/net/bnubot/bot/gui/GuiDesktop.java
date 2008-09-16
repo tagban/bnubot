@@ -6,6 +6,7 @@
 package net.bnubot.bot.gui;
 
 import java.awt.AWTException;
+import java.awt.Container;
 import java.awt.Frame;
 import java.awt.Image;
 import java.awt.KeyEventDispatcher;
@@ -28,6 +29,8 @@ import java.awt.event.WindowStateListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
@@ -70,6 +73,7 @@ public class GuiDesktop extends JFrame {
 	private static final long serialVersionUID = -7144648179041514994L;
 	private static final List<GuiEventHandler> guis = new ArrayList<GuiEventHandler>();
 	private static GuiEventHandler selectedGui = null;
+	private static final Box boxTasks = new Box(BoxLayout.Y_AXIS);
 	private static final JTabbedPane tabs = new JTabbedPane();
 	private static final JMenuBar menuBar = new JMenuBar();
 	private static TrayIcon tray = null;
@@ -105,7 +109,11 @@ public class GuiDesktop extends JFrame {
 	private void initializeGui() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		getContentPane().add(tabs);
+		Box b = new Box(BoxLayout.Y_AXIS);
+		b.setBorder(null);
+		b.add(boxTasks);
+		b.add(tabs);
+		getContentPane().add(b);
 		setSize(800, 500);
 
 		// Make sure the window gets laid out when maximized/restored
@@ -512,5 +520,9 @@ public class GuiDesktop extends JFrame {
 		if(selectedGui != null)
 			return selectedGui.getDividerLocation();
 		return Settings.read("GuiDesktop", "dividerLocation", instance.getWidth() - 200);
+	}
+
+	public static Container getTasksLocation() {
+		return boxTasks;
 	}
 }
