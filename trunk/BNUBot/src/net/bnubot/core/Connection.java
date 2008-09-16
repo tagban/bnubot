@@ -207,6 +207,7 @@ public abstract class Connection extends Thread {
 	 */
 	protected void waitUntilConnectionSafe(Task connect) {
 		long waitUntil;
+		long totalTime = 15000;
 		String server = getServer();
 		synchronized(connectionTimes) {
 			Long lastConnectionTime = connectionTimes.get(server);
@@ -215,11 +216,13 @@ public abstract class Connection extends Thread {
 				return;
 			}
 
-			waitUntil = lastConnectionTime + 15000;
+			waitUntil = lastConnectionTime + totalTime;
 			connectionTimes.put(server, waitUntil);
 		}
 
-		final String status = "Stalling to avoid flood: ";
+		connect.setDeterminate((int)totalTime, "ms");
+
+		final String status = "Stalling to avoid flood";
 		while(!disposed) {
 			long timeLeft = waitUntil - System.currentTimeMillis();
 			if(timeLeft <= 0)
@@ -228,11 +231,13 @@ public abstract class Connection extends Thread {
 			if(!connectionState.equals(ConnectionState.CONNECTING))
 				break;
 
-			connect.updateProgress(status + TimeFormatter.formatTime(timeLeft, false));
+			connect.setProgress((int) (totalTime - timeLeft), status);
 
 			try { sleep(100); } catch (InterruptedException e1) {}
 			yield();
 		}
+
+		connect.setIndeterminate();
 	}
 
 	public int getIp() {
