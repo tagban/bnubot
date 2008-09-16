@@ -17,8 +17,8 @@ public class TaskManager {
 	private static final long serialVersionUID = 641763656953338296L;
 
 	private static Container box = null;
-	private static boolean enableGUI;
 	static {
+		boolean enableGUI;
 		try {
 			enableGUI = GlobalSettings.enableGUI;
 		} catch(Throwable t) {
@@ -40,7 +40,7 @@ public class TaskManager {
 	}
 
 	public static Task createTask(String title, int max, String units) {
-		if(!enableGUI)
+		if(box == null)
 			return new Task();
 
 		TaskGui t = new TaskGui(title, max, units);
@@ -50,5 +50,6 @@ public class TaskManager {
 
 	protected static void complete(TaskGui t) {
 		box.remove(t.getComponent());
+		GuiDesktop.getInstance().pack();
 	}
 }
