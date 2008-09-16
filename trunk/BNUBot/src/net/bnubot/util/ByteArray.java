@@ -14,11 +14,11 @@ public final class ByteArray {
 	private final byte[] data;
 
 	public ByteArray(byte b) {
-		this(new byte[] {b});
+		this.data = new byte[] {b};
 	}
 
 	public ByteArray(byte[] data) {
-		this.data = data;
+		this.data = data.clone();
 	}
 
 	public ByteArray(String text) {
@@ -33,9 +33,7 @@ public final class ByteArray {
 
 	public ByteArray(byte[] data, int beginIndex, int endIndex) {
 		this.data = new byte[endIndex - beginIndex];
-		int pos = 0;
-		for(int i = beginIndex; i < endIndex; i++)
-			this.data[pos++] = data[i];
+		System.arraycopy(data, beginIndex, this.data, 0, this.data.length);
 	}
 
 	public final byte[] getBytes() {
@@ -44,11 +42,8 @@ public final class ByteArray {
 
 	public ByteArray concat(byte[] str) {
 		byte[] out = new byte[data.length + str.length];
-		int i = 0;
-		for(byte b : data)
-			out[i++] = b;
-		for(byte b : str)
-			out[i++] = b;
+		System.arraycopy(data, 0, out, 0, data.length);
+		System.arraycopy(str, 0, out, data.length, str.length);
 		return new ByteArray(out);
 	}
 
@@ -57,10 +52,7 @@ public final class ByteArray {
 	}
 
 	public ByteArray removeFirst() {
-		byte[] out = new byte[data.length - 1];
-		for(int i = 1; i < data.length; i++)
-			out[i-1] = data[i];
-		return new ByteArray(out);
+		return substring(1);
 	}
 
 	@Override
