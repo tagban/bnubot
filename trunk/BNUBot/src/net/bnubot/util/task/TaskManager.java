@@ -45,11 +45,13 @@ public class TaskManager {
 
 		TaskGui t = new TaskGui(title, max, units);
 		box.add(t.getComponent());
+		box.setVisible(true);
 		return t;
 	}
 
 	protected static void complete(TaskGui t) {
 		box.remove(t.getComponent());
-		GuiDesktop.getInstance().pack();
+		if(box.getComponentCount() == 0)
+			box.setVisible(false);
 	}
 }
