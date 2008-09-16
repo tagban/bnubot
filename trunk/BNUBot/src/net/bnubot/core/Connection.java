@@ -211,16 +211,19 @@ public abstract class Connection extends Thread {
 	 */
 	protected void waitUntilConnectionSafe(Task connect) {
 		long waitUntil;
-		long totalTime = 15000;
+		long totalTime;
 		String server = getServer();
 		synchronized(connectionTimes) {
+			long now = System.currentTimeMillis();
+
 			Long lastConnectionTime = connectionTimes.get(server);
 			if(lastConnectionTime == null) {
-				connectionTimes.put(server, System.currentTimeMillis());
+				connectionTimes.put(server, now);
 				return;
 			}
 
-			waitUntil = lastConnectionTime + totalTime;
+			waitUntil = lastConnectionTime + 15000;
+			totalTime = waitUntil - now;
 			connectionTimes.put(server, waitUntil);
 		}
 
