@@ -41,6 +41,7 @@
 * Allow Cayenne to manage the database schema in favor of flat files
 * Added option to display / commands in chat
 * Moved tasks to the GuiDesktop
+* Added per-account flag spoofing
 
 2.0.6 (r1400) 2008-04-21:
 * Added auto-rejoin afer being kicked (Issue 52)

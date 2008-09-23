@@ -7,6 +7,7 @@
 		<db-attribute name="birthday" type="DATE" length="11"/>
 		<db-attribute name="created" type="TIMESTAMP" isMandatory="true" length="26"/>
 		<db-attribute name="createdby" type="INTEGER" length="11"/>
+		<db-attribute name="flag_spoof" type="INTEGER" isMandatory="true" length="11"/>
 		<db-attribute name="id" type="INTEGER" isPrimaryKey="true" isGenerated="true" isMandatory="true" length="11"/>
 		<db-attribute name="lastRankChange" type="TIMESTAMP" length="26"/>
 		<db-attribute name="name" type="VARCHAR" isMandatory="true" length="32"/>
@@ -64,6 +65,7 @@
 	<obj-entity name="Account" className="net.bnubot.db.Account" dbEntityName="account" superClassName="net.bnubot.db.CustomDataObject">
 		<obj-attribute name="birthday" type="java.util.Date" db-attribute-path="birthday"/>
 		<obj-attribute name="created" type="java.util.Date" db-attribute-path="created"/>
+		<obj-attribute name="flagSpoof" type="int" db-attribute-path="flag_spoof"/>
 		<obj-attribute name="lastRankChange" type="java.util.Date" db-attribute-path="lastRankChange"/>
 		<obj-attribute name="name" type="java.lang.String" db-attribute-path="name"/>
 		<obj-attribute name="triviaCorrect" type="int" db-attribute-path="trivia_correct"/>

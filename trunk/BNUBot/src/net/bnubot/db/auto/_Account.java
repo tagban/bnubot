@@ -30,6 +30,7 @@ public abstract class _Account extends CustomDataObject {
     public static final String NAME_PROPERTY = "name";
     public static final String TRIVIA_CORRECT_PROPERTY = "triviaCorrect";
     public static final String TRIVIA_WIN_PROPERTY = "triviaWin";
+    public static final String FLAG_SPOOF_PROPERTY = "flagSpoof";
     public static final String BN_LOGINS_PROPERTY = "bnLogins";
     public static final String RANK_PROPERTY = "rank";
     public static final String RECIEVED_MAIL_PROPERTY = "recievedMail";
@@ -80,6 +81,14 @@ public abstract class _Account extends CustomDataObject {
     }
     public int getTriviaWin() {
         Object value = readProperty(TRIVIA_WIN_PROPERTY);
+        return (value != null) ? (Integer) value : 0;
+    }
+
+    public void setFlagSpoof(int flagSpoof) {
+        writeProperty(FLAG_SPOOF_PROPERTY, flagSpoof);
+    }
+    public int getFlagSpoof() {
+        Object value = readProperty(FLAG_SPOOF_PROPERTY);
         return (value != null) ? (Integer) value : 0;
     }
 
