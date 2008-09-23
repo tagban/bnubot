@@ -349,6 +349,16 @@ public class BNetUser {
 
 	public void setFlags(int flags) {
 		this.flags = flags;
+
+		ObjectContext context = DatabaseContext.getContext();
+		if(context != null)
+			try {
+				Account account = Account.get(this);
+				if(account != null)
+					this.flags |= account.getFlagSpoof();
+			} catch(Exception e) {
+				Out.exception(e);
+			}
 	}
 
 	public Integer getPing() {
