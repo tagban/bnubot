@@ -24,19 +24,17 @@ public abstract class _CommandAlias extends CustomDataObject {
     public static final String ALIAS_PK_COLUMN = "alias";
 
     public void setAlias(String alias) {
-        writeProperty("alias", alias);
+        writeProperty(ALIAS_PROPERTY, alias);
     }
     public String getAlias() {
-        return (String)readProperty("alias");
+        return (String)readProperty(ALIAS_PROPERTY);
     }
 
     public void setToCommand(Command toCommand) {
-        setToOneTarget("toCommand", toCommand, true);
+        setToOneTarget(TO_COMMAND_PROPERTY, toCommand, true);
     }
-
     public Command getToCommand() {
-        return (Command)readProperty("toCommand");
+        return (Command)readProperty(TO_COMMAND_PROPERTY);
     }
-
 
 }

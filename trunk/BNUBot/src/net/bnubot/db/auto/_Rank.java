@@ -38,105 +38,103 @@ public abstract class _Rank extends CustomDataObject {
     public static final String ID_PK_COLUMN = "id";
 
     public void setApD2Level(Integer apD2Level) {
-        writeProperty("apD2Level", apD2Level);
+        writeProperty(AP_D2LEVEL_PROPERTY, apD2Level);
     }
     public Integer getApD2Level() {
-        return (Integer)readProperty("apD2Level");
+        return (Integer)readProperty(AP_D2LEVEL_PROPERTY);
     }
 
     public void setApDays(Integer apDays) {
-        writeProperty("apDays", apDays);
+        writeProperty(AP_DAYS_PROPERTY, apDays);
     }
     public Integer getApDays() {
-        return (Integer)readProperty("apDays");
+        return (Integer)readProperty(AP_DAYS_PROPERTY);
     }
 
     public void setApMail(String apMail) {
-        writeProperty("apMail", apMail);
+        writeProperty(AP_MAIL_PROPERTY, apMail);
     }
     public String getApMail() {
-        return (String)readProperty("apMail");
+        return (String)readProperty(AP_MAIL_PROPERTY);
     }
 
     public void setApRecruitScore(Integer apRecruitScore) {
-        writeProperty("apRecruitScore", apRecruitScore);
+        writeProperty(AP_RECRUIT_SCORE_PROPERTY, apRecruitScore);
     }
     public Integer getApRecruitScore() {
-        return (Integer)readProperty("apRecruitScore");
+        return (Integer)readProperty(AP_RECRUIT_SCORE_PROPERTY);
     }
 
     public void setApW3Level(Integer apW3Level) {
-        writeProperty("apW3Level", apW3Level);
+        writeProperty(AP_W3LEVEL_PROPERTY, apW3Level);
     }
     public Integer getApW3Level() {
-        return (Integer)readProperty("apW3Level");
+        return (Integer)readProperty(AP_W3LEVEL_PROPERTY);
     }
 
     public void setApWins(Integer apWins) {
-        writeProperty("apWins", apWins);
+        writeProperty(AP_WINS_PROPERTY, apWins);
     }
     public Integer getApWins() {
-        return (Integer)readProperty("apWins");
+        return (Integer)readProperty(AP_WINS_PROPERTY);
     }
 
     public void setExpireDays(int expireDays) {
-        writeProperty("expireDays", expireDays);
+        writeProperty(EXPIRE_DAYS_PROPERTY, expireDays);
     }
     public int getExpireDays() {
-        Object value = readProperty("expireDays");
+        Object value = readProperty(EXPIRE_DAYS_PROPERTY);
         return (value != null) ? (Integer) value : 0;
     }
 
     public void setGreeting(String greeting) {
-        writeProperty("greeting", greeting);
+        writeProperty(GREETING_PROPERTY, greeting);
     }
     public String getGreeting() {
-        return (String)readProperty("greeting");
+        return (String)readProperty(GREETING_PROPERTY);
     }
 
     public void setPrefix(String prefix) {
-        writeProperty("prefix", prefix);
+        writeProperty(PREFIX_PROPERTY, prefix);
     }
     public String getPrefix() {
-        return (String)readProperty("prefix");
+        return (String)readProperty(PREFIX_PROPERTY);
     }
 
     public void setShortPrefix(String shortPrefix) {
-        writeProperty("shortPrefix", shortPrefix);
+        writeProperty(SHORT_PREFIX_PROPERTY, shortPrefix);
     }
     public String getShortPrefix() {
-        return (String)readProperty("shortPrefix");
+        return (String)readProperty(SHORT_PREFIX_PROPERTY);
     }
 
     public void setVerbstr(String verbstr) {
-        writeProperty("verbstr", verbstr);
+        writeProperty(VERBSTR_PROPERTY, verbstr);
     }
     public String getVerbstr() {
-        return (String)readProperty("verbstr");
+        return (String)readProperty(VERBSTR_PROPERTY);
     }
 
     public void addToAccountArray(Account obj) {
-        addToManyTarget("accountArray", obj, true);
+        addToManyTarget(ACCOUNT_ARRAY_PROPERTY, obj, true);
     }
     public void removeFromAccountArray(Account obj) {
-        removeToManyTarget("accountArray", obj, true);
+        removeToManyTarget(ACCOUNT_ARRAY_PROPERTY, obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<Account> getAccountArray() {
-        return (List<Account>)readProperty("accountArray");
+        return (List<Account>)readProperty(ACCOUNT_ARRAY_PROPERTY);
     }
-
 
     public void addToCommandArray(Command obj) {
-        addToManyTarget("commandArray", obj, true);
+        addToManyTarget(COMMAND_ARRAY_PROPERTY, obj, true);
     }
     public void removeFromCommandArray(Command obj) {
-        removeToManyTarget("commandArray", obj, true);
+        removeToManyTarget(COMMAND_ARRAY_PROPERTY, obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<Command> getCommandArray() {
-        return (List<Command>)readProperty("commandArray");
+        return (List<Command>)readProperty(COMMAND_ARRAY_PROPERTY);
     }
-
 
 }

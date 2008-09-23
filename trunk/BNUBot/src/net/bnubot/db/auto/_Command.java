@@ -30,45 +30,42 @@ public abstract class _Command extends CustomDataObject {
     public static final String ID_PK_COLUMN = "id";
 
     public void setCmdgroup(String cmdgroup) {
-        writeProperty("cmdgroup", cmdgroup);
+        writeProperty(CMDGROUP_PROPERTY, cmdgroup);
     }
     public String getCmdgroup() {
-        return (String)readProperty("cmdgroup");
+        return (String)readProperty(CMDGROUP_PROPERTY);
     }
 
     public void setDescription(String description) {
-        writeProperty("description", description);
+        writeProperty(DESCRIPTION_PROPERTY, description);
     }
     public String getDescription() {
-        return (String)readProperty("description");
+        return (String)readProperty(DESCRIPTION_PROPERTY);
     }
 
     public void setName(String name) {
-        writeProperty("name", name);
+        writeProperty(NAME_PROPERTY, name);
     }
     public String getName() {
-        return (String)readProperty("name");
+        return (String)readProperty(NAME_PROPERTY);
     }
 
     public void addToAliases(CommandAlias obj) {
-        addToManyTarget("aliases", obj, true);
+        addToManyTarget(ALIASES_PROPERTY, obj, true);
     }
     public void removeFromAliases(CommandAlias obj) {
-        removeToManyTarget("aliases", obj, true);
+        removeToManyTarget(ALIASES_PROPERTY, obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<CommandAlias> getAliases() {
-        return (List<CommandAlias>)readProperty("aliases");
+        return (List<CommandAlias>)readProperty(ALIASES_PROPERTY);
     }
-
 
     public void setRank(Rank rank) {
-        setToOneTarget("rank", rank, true);
+        setToOneTarget(RANK_PROPERTY, rank, true);
     }
-
     public Rank getRank() {
-        return (Rank)readProperty("rank");
+        return (Rank)readProperty(RANK_PROPERTY);
     }
-
 
 }

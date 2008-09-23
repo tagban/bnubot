@@ -34,75 +34,73 @@ public abstract class _BNLogin extends CustomDataObject {
     public static final String ID_PK_COLUMN = "id";
 
     public void setCreated(Date created) {
-        writeProperty("created", created);
+        writeProperty(CREATED_PROPERTY, created);
     }
     public Date getCreated() {
-        return (Date)readProperty("created");
+        return (Date)readProperty(CREATED_PROPERTY);
     }
 
     public void setLastAction(String lastAction) {
-        writeProperty("lastAction", lastAction);
+        writeProperty(LAST_ACTION_PROPERTY, lastAction);
     }
     public String getLastAction() {
-        return (String)readProperty("lastAction");
+        return (String)readProperty(LAST_ACTION_PROPERTY);
     }
 
     public void setLastSeen(Date lastSeen) {
-        writeProperty("lastSeen", lastSeen);
+        writeProperty(LAST_SEEN_PROPERTY, lastSeen);
     }
     public Date getLastSeen() {
-        return (Date)readProperty("lastSeen");
+        return (Date)readProperty(LAST_SEEN_PROPERTY);
     }
 
     public void setLevelD2(Integer levelD2) {
-        writeProperty("levelD2", levelD2);
+        writeProperty(LEVEL_D2_PROPERTY, levelD2);
     }
     public Integer getLevelD2() {
-        return (Integer)readProperty("levelD2");
+        return (Integer)readProperty(LEVEL_D2_PROPERTY);
     }
 
     public void setLevelW3(Integer levelW3) {
-        writeProperty("levelW3", levelW3);
+        writeProperty(LEVEL_W3_PROPERTY, levelW3);
     }
     public Integer getLevelW3() {
-        return (Integer)readProperty("levelW3");
+        return (Integer)readProperty(LEVEL_W3_PROPERTY);
     }
 
     public void setLogin(String login) {
-        writeProperty("login", login);
+        writeProperty(LOGIN_PROPERTY, login);
     }
     public String getLogin() {
-        return (String)readProperty("login");
+        return (String)readProperty(LOGIN_PROPERTY);
     }
 
     public void setWinsSEXP(Integer winsSEXP) {
-        writeProperty("winsSEXP", winsSEXP);
+        writeProperty(WINS_SEXP_PROPERTY, winsSEXP);
     }
     public Integer getWinsSEXP() {
-        return (Integer)readProperty("winsSEXP");
+        return (Integer)readProperty(WINS_SEXP_PROPERTY);
     }
 
     public void setWinsSTAR(Integer winsSTAR) {
-        writeProperty("winsSTAR", winsSTAR);
+        writeProperty(WINS_STAR_PROPERTY, winsSTAR);
     }
     public Integer getWinsSTAR() {
-        return (Integer)readProperty("winsSTAR");
+        return (Integer)readProperty(WINS_STAR_PROPERTY);
     }
 
     public void setWinsW2BN(Integer winsW2BN) {
-        writeProperty("winsW2BN", winsW2BN);
+        writeProperty(WINS_W2BN_PROPERTY, winsW2BN);
     }
     public Integer getWinsW2BN() {
-        return (Integer)readProperty("winsW2BN");
+        return (Integer)readProperty(WINS_W2BN_PROPERTY);
     }
 
     public void setAccount(Account account) {
-        setToOneTarget("account", account, true);
+        setToOneTarget(ACCOUNT_PROPERTY, account, true);
     }
-
     public Account getAccount() {
-        return (Account)readProperty("account");
+        return (Account)readProperty(ACCOUNT_PROPERTY);
     }
-
 
 }
