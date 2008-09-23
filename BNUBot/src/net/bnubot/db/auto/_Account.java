@@ -40,113 +40,105 @@ public abstract class _Account extends CustomDataObject {
     public static final String ID_PK_COLUMN = "id";
 
     public void setBirthday(Date birthday) {
-        writeProperty("birthday", birthday);
+        writeProperty(BIRTHDAY_PROPERTY, birthday);
     }
     public Date getBirthday() {
-        return (Date)readProperty("birthday");
+        return (Date)readProperty(BIRTHDAY_PROPERTY);
     }
 
     public void setCreated(Date created) {
-        writeProperty("created", created);
+        writeProperty(CREATED_PROPERTY, created);
     }
     public Date getCreated() {
-        return (Date)readProperty("created");
+        return (Date)readProperty(CREATED_PROPERTY);
     }
 
     public void setLastRankChange(Date lastRankChange) {
-        writeProperty("lastRankChange", lastRankChange);
+        writeProperty(LAST_RANK_CHANGE_PROPERTY, lastRankChange);
     }
     public Date getLastRankChange() {
-        return (Date)readProperty("lastRankChange");
+        return (Date)readProperty(LAST_RANK_CHANGE_PROPERTY);
     }
 
     public void setName(String name) {
-        writeProperty("name", name);
+        writeProperty(NAME_PROPERTY, name);
     }
     public String getName() {
-        return (String)readProperty("name");
+        return (String)readProperty(NAME_PROPERTY);
     }
 
     public void setTriviaCorrect(int triviaCorrect) {
-        writeProperty("triviaCorrect", triviaCorrect);
+        writeProperty(TRIVIA_CORRECT_PROPERTY, triviaCorrect);
     }
     public int getTriviaCorrect() {
-        Object value = readProperty("triviaCorrect");
+        Object value = readProperty(TRIVIA_CORRECT_PROPERTY);
         return (value != null) ? (Integer) value : 0;
     }
 
     public void setTriviaWin(int triviaWin) {
-        writeProperty("triviaWin", triviaWin);
+        writeProperty(TRIVIA_WIN_PROPERTY, triviaWin);
     }
     public int getTriviaWin() {
-        Object value = readProperty("triviaWin");
+        Object value = readProperty(TRIVIA_WIN_PROPERTY);
         return (value != null) ? (Integer) value : 0;
     }
 
     public void addToBnLogins(BNLogin obj) {
-        addToManyTarget("bnLogins", obj, true);
+        addToManyTarget(BN_LOGINS_PROPERTY, obj, true);
     }
     public void removeFromBnLogins(BNLogin obj) {
-        removeToManyTarget("bnLogins", obj, true);
+        removeToManyTarget(BN_LOGINS_PROPERTY, obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<BNLogin> getBnLogins() {
-        return (List<BNLogin>)readProperty("bnLogins");
+        return (List<BNLogin>)readProperty(BN_LOGINS_PROPERTY);
     }
-
 
     public void setRank(Rank rank) {
-        setToOneTarget("rank", rank, true);
+        setToOneTarget(RANK_PROPERTY, rank, true);
     }
-
     public Rank getRank() {
-        return (Rank)readProperty("rank");
+        return (Rank)readProperty(RANK_PROPERTY);
     }
-
 
     public void addToRecievedMail(Mail obj) {
-        addToManyTarget("recievedMail", obj, true);
+        addToManyTarget(RECIEVED_MAIL_PROPERTY, obj, true);
     }
     public void removeFromRecievedMail(Mail obj) {
-        removeToManyTarget("recievedMail", obj, true);
+        removeToManyTarget(RECIEVED_MAIL_PROPERTY, obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<Mail> getRecievedMail() {
-        return (List<Mail>)readProperty("recievedMail");
+        return (List<Mail>)readProperty(RECIEVED_MAIL_PROPERTY);
     }
-
 
     public void setRecruiter(Account recruiter) {
-        setToOneTarget("recruiter", recruiter, true);
+        setToOneTarget(RECRUITER_PROPERTY, recruiter, true);
     }
-
     public Account getRecruiter() {
-        return (Account)readProperty("recruiter");
+        return (Account)readProperty(RECRUITER_PROPERTY);
     }
-
 
     public void addToRecruits(Account obj) {
-        addToManyTarget("recruits", obj, true);
+        addToManyTarget(RECRUITS_PROPERTY, obj, true);
     }
     public void removeFromRecruits(Account obj) {
-        removeToManyTarget("recruits", obj, true);
+        removeToManyTarget(RECRUITS_PROPERTY, obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<Account> getRecruits() {
-        return (List<Account>)readProperty("recruits");
+        return (List<Account>)readProperty(RECRUITS_PROPERTY);
     }
-
 
     public void addToSentMail(Mail obj) {
-        addToManyTarget("sentMail", obj, true);
+        addToManyTarget(SENT_MAIL_PROPERTY, obj, true);
     }
     public void removeFromSentMail(Mail obj) {
-        removeToManyTarget("sentMail", obj, true);
+        removeToManyTarget(SENT_MAIL_PROPERTY, obj, true);
     }
     @SuppressWarnings("unchecked")
     public List<Mail> getSentMail() {
-        return (List<Mail>)readProperty("sentMail");
+        return (List<Mail>)readProperty(SENT_MAIL_PROPERTY);
     }
-
 
 }

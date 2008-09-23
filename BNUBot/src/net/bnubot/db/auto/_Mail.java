@@ -29,43 +29,39 @@ public abstract class _Mail extends CustomDataObject {
     public static final String ID_PK_COLUMN = "id";
 
     public void setIsread(boolean isread) {
-        writeProperty("isread", isread);
+        writeProperty(ISREAD_PROPERTY, isread);
     }
 	public boolean isIsread() {
-        Boolean value = (Boolean)readProperty("isread");
+        Boolean value = (Boolean)readProperty(ISREAD_PROPERTY);
         return (value != null) ? value.booleanValue() : false;
     }
 
     public void setMessage(String message) {
-        writeProperty("message", message);
+        writeProperty(MESSAGE_PROPERTY, message);
     }
     public String getMessage() {
-        return (String)readProperty("message");
+        return (String)readProperty(MESSAGE_PROPERTY);
     }
 
     public void setSent(Date sent) {
-        writeProperty("sent", sent);
+        writeProperty(SENT_PROPERTY, sent);
     }
     public Date getSent() {
-        return (Date)readProperty("sent");
+        return (Date)readProperty(SENT_PROPERTY);
     }
 
     public void setSentFrom(Account sentFrom) {
-        setToOneTarget("sentFrom", sentFrom, true);
+        setToOneTarget(SENT_FROM_PROPERTY, sentFrom, true);
     }
-
     public Account getSentFrom() {
-        return (Account)readProperty("sentFrom");
+        return (Account)readProperty(SENT_FROM_PROPERTY);
     }
-
 
     public void setSentTo(Account sentTo) {
-        setToOneTarget("sentTo", sentTo, true);
+        setToOneTarget(SENT_TO_PROPERTY, sentTo, true);
     }
-
     public Account getSentTo() {
-        return (Account)readProperty("sentTo");
+        return (Account)readProperty(SENT_TO_PROPERTY);
     }
-
 
 }
