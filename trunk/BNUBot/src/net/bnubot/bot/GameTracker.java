@@ -12,6 +12,7 @@ import net.bnubot.core.bncs.BNCSConnection;
 import net.bnubot.core.commands.CommandRunnable;
 import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.db.Account;
+import net.bnubot.db.conf.DatabaseContext;
 import net.bnubot.util.BNetUser;
 
 /**
@@ -19,6 +20,8 @@ import net.bnubot.util.BNetUser;
  */
 public class GameTracker extends EventHandler {
 	public GameTracker() {
+		if(DatabaseContext.getContext() == null)
+			throw new IllegalStateException("Can not enable game tracker without a database!");
 		initializeCommands();
 	}
 
