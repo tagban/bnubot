@@ -22,15 +22,6 @@ import org.apache.cayenne.query.SelectQuery;
  */
 public class Command extends _Command {
 	private static final long serialVersionUID = 8794076397315891153L;
-	private static final SQLTemplate commandGroups = new SQLTemplate(Command.class,
-			"SELECT " +
-			"#result('max(name)' 'String' 'name'), " +
-			"#result('max(description)' 'String' 'description'), " +
-			"#result('max(access)' 'Integer' 'access'), " +
-			"#result('cmdgroup' 'String' 'cmdgroup') " +
-			"FROM command " +
-			"GROUP BY cmdgroup ");
-
 	/**
 	 * Get a Command by name
 	 * @param command The name of the Command
@@ -88,11 +79,24 @@ public class Command extends _Command {
 
 	/**
 	 * Get command groups
+	 * @param access the minimum access to look for
 	 * @return List of distinct command groups
 	 */
 	@SuppressWarnings("unchecked")
-	public static List<Command> getGroups() {
-		return DatabaseContext.getContext().performQuery(commandGroups);
+	public static List<String> getGroups(int access) {
+		List<Command> cmds = DatabaseContext.getContext().performQuery(new SQLTemplate(Command.class,
+				"SELECT " +
+				"#result('max(name)' 'String' 'name'), " +
+				"#result('max(description)' 'String' 'description'), " +
+				"#result('min(access)' 'Integer' 'access'), " +
+				"#result('cmdgroup' 'String' 'cmdgroup') " +
+				"FROM command " +
+				"WHERE access <= " + access + " " +
+				"GROUP BY cmdgroup "));
+		List<String> groups = new ArrayList(cmds.size());
+		for(Command cmd : cmds)
+			groups.add(cmd.getCmdgroup());
+		return groups;
 	}
 
 	@Override
