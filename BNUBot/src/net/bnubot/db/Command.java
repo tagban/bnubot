@@ -24,7 +24,6 @@ public class Command extends _Command {
 	private static final long serialVersionUID = 8794076397315891153L;
 	private static final SQLTemplate commandGroups = new SQLTemplate(Command.class,
 			"SELECT " +
-			"#result('max(id)' 'Integer' 'id'), " +
 			"#result('max(name)' 'String' 'name'), " +
 			"#result('max(description)' 'String' 'description'), " +
 			"#result('max(access)' 'Integer' 'access'), " +
