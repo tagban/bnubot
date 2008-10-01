@@ -1026,7 +1026,7 @@ public abstract class Connection extends Thread {
 	}
 
 	public boolean dispatchParseCommand(BNetUser user, String command, boolean whisperBack) {
-		if(!DatabaseContext.isDatabaseEnabled())
+		if(DatabaseContext.getContext() == null)
 			return false;
 
 		int i = command.indexOf(';');
