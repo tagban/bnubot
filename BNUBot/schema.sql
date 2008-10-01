@@ -34,10 +34,10 @@ INSERT INTO rank (id, shortPrefix, prefix, verbstr, greeting, expireDays, apDays
 (35, 'Gen', 'General', NULL, '/me hails %1$s with ping %2$d', 90, NULL, NULL, NULL, NULL, NULL, NULL),
 (36, NULL, 'Master', 'is my master', '/me hails %1$s with ping %2$d', 90, NULL, NULL, NULL, NULL, NULL, NULL);
 
-INSERT INTO account (id, access, name, createdby, created, trivia_correct, trivia_win) VALUES
-(1, 36,	'Camel', NULL, CURRENT_TIMESTAMP, 0, 0),
-(2, 35,	'John', 1, CURRENT_TIMESTAMP, 0, 0),
-(3, 34,	'Sorceress', 1, CURRENT_TIMESTAMP, 0, 0);
+INSERT INTO account (id, access, name, createdby, created, trivia_correct, trivia_win, flag_spoof) VALUES
+(1, 36,	'Camel', NULL, CURRENT_TIMESTAMP, 0, 0, 0),
+(2, 35,	'John', 1, CURRENT_TIMESTAMP, 0, 0, 0),
+(3, 34,	'Sorceress', 1, CURRENT_TIMESTAMP, 0, 0, 0);
 
 INSERT INTO bnlogin (login, account, created, lastSeen) VALUES
 ('BNU-Camel@USEast', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
