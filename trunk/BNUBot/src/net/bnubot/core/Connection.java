@@ -24,6 +24,7 @@ import net.bnubot.bot.gui.settings.OperationCancelledException;
 import net.bnubot.core.bncs.BNCSConnection;
 import net.bnubot.core.bncs.ProductIDs;
 import net.bnubot.core.botnet.BotNetConnection;
+import net.bnubot.db.conf.DatabaseContext;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetInputStream;
@@ -1025,6 +1026,9 @@ public abstract class Connection extends Thread {
 	}
 
 	public boolean dispatchParseCommand(BNetUser user, String command, boolean whisperBack) {
+		if(!DatabaseContext.isDatabaseEnabled())
+			return false;
+
 		int i = command.indexOf(';');
 		if(i != -1) {
 			String c1 = command.substring(0, i);

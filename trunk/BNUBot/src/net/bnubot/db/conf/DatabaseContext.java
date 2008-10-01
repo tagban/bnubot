@@ -33,6 +33,10 @@ public class DatabaseContext {
 		}
 	}
 
+	public static boolean isDatabaseEnabled() {
+		return (contexts != null);
+	}
+
 	public static ObjectContext getContext() {
 		if(contexts == null)
 			return null;
