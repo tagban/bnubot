@@ -240,12 +240,12 @@ public class CommandEventHandler extends EventHandler {
 					StringBuilder use = new StringBuilder("Use: %trigger%access <category> -- Available categories for rank ");
 					use.append(commanderAccess).append(": all");
 					boolean first = true;
-					for(Command c : Command.getGroups()) {
+					for(String group : Command.getGroups(commanderAccess)) {
 						if(first)
 							first = false;
 						else
 							use.append(", ");
-						use.append(c.getCmdgroup());
+						use.append(group);
 					}
 					user.sendChat(use.toString(), whisperBack);
 				}
