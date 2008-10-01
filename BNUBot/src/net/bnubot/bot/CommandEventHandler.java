@@ -239,14 +239,8 @@ public class CommandEventHandler extends EventHandler {
 				} catch(InvalidUseException e) {
 					StringBuilder use = new StringBuilder("Use: %trigger%access <category> -- Available categories for rank ");
 					use.append(commanderAccess).append(": all");
-					boolean first = true;
-					for(String group : Command.getGroups(commanderAccess)) {
-						if(first)
-							first = false;
-						else
-							use.append(", ");
-						use.append(group);
-					}
+					for(String group : Command.getGroups(commanderAccess))
+						use.append(", ").append(group);
 					user.sendChat(use.toString(), whisperBack);
 				}
 			}});
