@@ -84,6 +84,7 @@ public class Account extends _Account {
 		account.setRecruiter(recruiter);
 		account.setTriviaCorrect(0);
 		account.setTriviaWin(0);
+		account.setFlagSpoof(0);
 		account.updateRow();
 		return account;
 	}
