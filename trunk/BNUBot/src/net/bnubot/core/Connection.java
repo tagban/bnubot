@@ -1025,7 +1025,7 @@ public abstract class Connection extends Thread {
 		}
 	}
 
-	public boolean dispatchParseCommand(BNetUser user, String command, boolean whisperBack) {
+	private boolean dispatchParseCommand(BNetUser user, String command, boolean whisperBack) {
 		if(DatabaseContext.getContext() == null)
 			return false;
 

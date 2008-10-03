@@ -1313,7 +1313,9 @@ public class CommandEventHandler extends EventHandler {
 			@Override
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
 			throws Exception {
-				source.dispatchParseCommand(user, "whois " + user.getShortLogonName(), whisperBack);
+				CommandRunnable whois = Profile.getCommand("whois");
+				String[] newParams = new String[] {user.getShortLogonName()};
+				whois.run(source, user, newParams[0], newParams, whisperBack, commanderAccount, superUser);
 			}});
 		Profile.registerCommand("whois", new CommandRunnable() {
 			@Override

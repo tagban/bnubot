@@ -67,7 +67,7 @@ public class Profile {
 		commands.put(name, action);
 	}
 
-	public static boolean parseCommand(Connection source, BNetUser user, String command, boolean whisperBack) {
+	protected static boolean parseCommand(Connection source, BNetUser user, String command, boolean whisperBack) {
 		Out.debug(Profile.class, user.toString() + ": " + command + " [" + whisperBack + "]");
 
 		try {
