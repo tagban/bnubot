@@ -21,7 +21,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import net.bnubot.bot.gui.components.ConfigFactory;
-import net.bnubot.bot.gui.components.ConfigTextField;
+import net.bnubot.bot.gui.components.GhostDefaultTextField;
 import net.bnubot.db.Account;
 import net.bnubot.db.BNLogin;
 import net.bnubot.db.Rank;
@@ -62,8 +62,8 @@ public class DatabaseWizard extends JDialog {
 					"</html>"));
 		cards.add("0", jp);
 
-		final ConfigTextField accountName;
-		final ConfigTextField[] bnLogins = new ConfigTextField[5];
+		final GhostDefaultTextField accountName;
+		final GhostDefaultTextField[] bnLogins = new GhostDefaultTextField[5];
 
 		jp = new JPanel();
 		{
@@ -78,7 +78,7 @@ public class DatabaseWizard extends JDialog {
 					"name for things like sending you mail, so try to keep it simple.<br/>" +
 					"<br/>" +
 					"</html>"));
-			accountName = ConfigFactory.makeText("Account", "Camel", jp);
+			accountName = ConfigFactory.makeGhost("Account", "Camel", jp);
 		}
 		cards.add("1", jp);
 
@@ -97,11 +97,11 @@ public class DatabaseWizard extends JDialog {
 					"You may leave boxes blank if you have fewer than five handles.<br/>" +
 					"<br/>" +
 					"</html>"));
-			bnLogins[0] = ConfigFactory.makeText("BNet Login 1", "BNU-Camel@USEast", jp);
-			bnLogins[1] = ConfigFactory.makeText("BNet Login 2", "BNU-Camel@Azeroth", jp);
-			bnLogins[2] = ConfigFactory.makeText("BNet Login 3", "BNU-Camel@USWest", jp);
-			bnLogins[3] = ConfigFactory.makeText("BNet Login 4", "BNU-Camel@Lordaeron", jp);
-			bnLogins[4] = ConfigFactory.makeText("BNet Login 5", "", jp);
+			bnLogins[0] = ConfigFactory.makeGhost("BNet Login 1", "BNU-Camel@USEast", jp);
+			bnLogins[1] = ConfigFactory.makeGhost("BNet Login 2", "BNU-Camel@Azeroth", jp);
+			bnLogins[2] = ConfigFactory.makeGhost("BNet Login 3", "BNU-Camel@USWest", jp);
+			bnLogins[3] = ConfigFactory.makeGhost("BNet Login 4", "BNU-Camel@Lordaeron", jp);
+			bnLogins[4] = ConfigFactory.makeGhost("BNet Login 5", "", jp);
 		}
 		cards.add("2", jp);
 
@@ -139,24 +139,43 @@ public class DatabaseWizard extends JDialog {
 			public void actionPerformed(ActionEvent e) {
 				currentStep--;
 				cardLayout.show(cards, Integer.toString(currentStep));
-				if(currentStep == 0)
+				switch(currentStep) {
+				case 0:
 					btnBack.setEnabled(false);
-				if(currentStep == 2) {
+					break;
+				case 2:
 					btnNext.setEnabled(true);
 					btnFinish.setEnabled(false);
+					break;
 				}
 			}});
 
 		btnNext.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				currentStep++;
-				cardLayout.show(cards, Integer.toString(currentStep));
-				if(currentStep == 1)
+				STEPBLOCK: switch(currentStep) {
+				case 0:
 					btnBack.setEnabled(true);
-				if(currentStep == 3) {
-					btnNext.setEnabled(false);
-					btnFinish.setEnabled(true);
+					accountName.reset();
+					break;
+				case 1:
+					if(accountName.isGhosted()) {
+						// TODO display error message
+						return;
+					}
+					for(GhostDefaultTextField l : bnLogins)
+						l.reset();
+					break;
+				case 2:
+					for(GhostDefaultTextField l : bnLogins)
+						if(!l.isGhosted()) {
+							btnNext.setEnabled(false);
+							btnFinish.setEnabled(true);
+							break STEPBLOCK;
+						}
+					// TODO display error message
+					return;
 				}
+				cardLayout.show(cards, Integer.toString(++currentStep));
 			}});
 
 		btnFinish.addActionListener(new ActionListener() {
@@ -164,7 +183,9 @@ public class DatabaseWizard extends JDialog {
 				try {
 					String account = accountName.getText();
 					List<String> logins = new ArrayList<String>(bnLogins.length);
-					for(ConfigTextField l : bnLogins) {
+					for(GhostDefaultTextField l : bnLogins) {
+						if(l.isGhosted())
+							continue;
 						String login = l.getText();
 						if(login.length() <= 0)
 							continue;

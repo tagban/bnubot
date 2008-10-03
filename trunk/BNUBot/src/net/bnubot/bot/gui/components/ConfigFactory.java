@@ -46,6 +46,18 @@ public class ConfigFactory {
 		return txt;
 	}
 
+	public static GhostDefaultTextField makeGhost(String label, String value, Container parent) {
+		GhostDefaultTextField txt = new GhostDefaultTextField(value);
+		txt.setMaximumSize(maxComponentSize);
+		txt.setPreferredSize(preferredTextSize);
+
+		Box boxLine = new Box(BoxLayout.X_AXIS);
+		boxLine.add(makeLabel(label));
+		boxLine.add(txt);
+		parent.add(boxLine);
+		return txt;
+	}
+
 	public static JPasswordField makePass(String label, String value, Box parent) {
 		JPasswordField pass = new JPasswordField(value);
 		pass.setMaximumSize(maxComponentSize);
