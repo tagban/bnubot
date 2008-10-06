@@ -46,9 +46,11 @@ public class JARLoader {
 
 		String[] files = f.list(fnf);
 		URL[] urls = new URL[files.length];
+		boolean debug = Out.isDebug(JARLoader.class);
 		for(int i = 0; i < files.length; i++)
 			try {
-				Out.debug(JARLoader.class, "Loading " + files[i]);
+				if(debug)
+					Out.debugAlways(JARLoader.class, "Loading " + files[i]);
 				urls[i] = new URL("file:" + folder + "/" + files[i]);
 			} catch (MalformedURLException e) {
 				Out.exception(e);

@@ -102,7 +102,8 @@ public class Settings {
 			return;
 
 		anythingChanged = true;
-		Out.debug(Settings.class, "setting " + key + "=" + value);
+		if(Out.isDebug(Settings.class))
+			Out.debugAlways(Settings.class, "setting " + key + "=" + value);
 		props.setProperty(key, value);
 	}
 

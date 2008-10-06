@@ -49,7 +49,8 @@ public class URLDownloader {
 				// If the MD5 sums match
 				SHA1Sum fSHA1 = new SHA1Sum(to);
 				if(fSHA1.equals(sha1)) {
-					Out.debug(URLDownloader.class, "SHA1 match for " + to.getName());
+					if(Out.isDebug(URLDownloader.class))
+						Out.debugAlways(URLDownloader.class, "SHA1 match for " + to.getName());
 					return;
 				}
 
