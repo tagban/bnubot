@@ -37,7 +37,6 @@ import net.bnubot.db.CustomDataObject;
 import net.bnubot.db.conf.DatabaseContext;
 import net.bnubot.util.Out;
 
-import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbRelationship;
@@ -159,13 +158,7 @@ public class DatabaseEditor {
 	private String getDisplayString(CustomDataObject row) {
 		if(row == null)
 			return "NULL";
-		try {
-			return row.toDisplayString();
-		} catch(Exception e) {}
-		try {
-			return Integer.toString(DataObjectUtils.intPKForObject(row));
-		} catch(Exception e) {};
-		return DataObjectUtils.pkForObject(row).toString();
+		return row.toDisplayString();
 	}
 
 	private void loadData() {

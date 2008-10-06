@@ -6,6 +6,7 @@
 package net.bnubot.db;
 
 import org.apache.cayenne.CayenneDataObject;
+import org.apache.cayenne.DataObjectUtils;
 
 /**
  * @author scotta
@@ -25,5 +26,7 @@ public abstract class CustomDataObject extends CayenneDataObject {
 		}
 	}
 
-	public abstract String toDisplayString();
+	public String toDisplayString() {
+		return Integer.toString(DataObjectUtils.intPKForObject(this));
+	}
 }
