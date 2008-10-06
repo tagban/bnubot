@@ -53,9 +53,4 @@ public class Rank extends _Rank {
 	public int getAccess() {
 		return DataObjectUtils.intPKForObject(this);
 	}
-
-	@Override
-	public String toDisplayString() {
-		return Integer.toString(getAccess());
-	}
 }
