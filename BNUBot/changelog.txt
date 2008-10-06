@@ -1,4 +1,4 @@
-2.0.6.1:
+2.1.0 (r1640) 2008-10-06:
 * Added BotNet account login
 * CDKeys are now dumped to cdkeys.processed.txt in a well-formatted way
 * Added /accept and /decline for W3 clan management
