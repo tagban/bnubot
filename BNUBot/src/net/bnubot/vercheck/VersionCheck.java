@@ -112,7 +112,8 @@ public class VersionCheck {
 				url += "svn=" + CurrentVersion.version().revision() + "&";
 			url += "release=" + rt.toString();
 			url += "&os=" + OperatingSystem.userOS.name();
-			Out.debug(VersionCheck.class, "Requesting latest version from " + url);
+			if(Out.isDebug(VersionCheck.class))
+				Out.debugAlways(VersionCheck.class, "Requesting latest version from " + url);
 			elem = XMLElementDecorator.parse(url);
 		} catch(Exception e) {
 			if(bnSubject == null)

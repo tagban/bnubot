@@ -68,7 +68,8 @@ public class Profile {
 	}
 
 	protected static boolean parseCommand(Connection source, BNetUser user, String command, boolean whisperBack) {
-		Out.debug(Profile.class, user.toString() + ": " + command + " [" + whisperBack + "]");
+		if(Out.isDebug(Profile.class))
+			Out.debugAlways(Profile.class, user.toString() + ": " + command + " [" + whisperBack + "]");
 
 		try {
 			// Grab the part of the command string after the space

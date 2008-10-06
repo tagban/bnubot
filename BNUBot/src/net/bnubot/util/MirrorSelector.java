@@ -39,7 +39,8 @@ public class MirrorSelector {
 				s.connect(new InetSocketAddress(mirror, port), MAX_TIME);
 				time = System.currentTimeMillis() - start;
 				s.close();
-				Out.debug(MirrorSelector.class, "Connecting to " + mirror.getHostAddress() + " took " + time + "ms");
+				if(Out.isDebug(MirrorSelector.class))
+					Out.debugAlways(MirrorSelector.class, "Connecting to " + mirror.getHostAddress() + " took " + time + "ms");
 
 				if (time < bestTime) {
 					bestTime = time;

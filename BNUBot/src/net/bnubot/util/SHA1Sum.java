@@ -38,7 +38,8 @@ public class SHA1Sum {
 		} while(true);
 		sha1sum = digest.digest();
 
-		Out.debug(getClass(), f.getName() + ": " + toString());
+		if(Out.isDebug(SHA1Sum.class))
+			Out.debugAlways(getClass(), f.getName() + ": " + toString());
 	}
 
 	private static String hexChr(int b) {

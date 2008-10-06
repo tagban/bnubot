@@ -71,7 +71,7 @@ public final class CurrentVersion {
 					int i = fr.read();
 					if(i == -1) { // <EOF>
 						if(!revisionFound)
-							Out.error(CurrentVersion.class, "Couldn't find $Id tag in " + sf.getPath());
+							Out.error(CurrentVersion.class, "Couldn't find Id: tag in " + sf.getPath());
 						if(!authorFound)
 							Out.error(CurrentVersion.class, "Couldn't find @author tag in " + sf.getPath());
 						break;
