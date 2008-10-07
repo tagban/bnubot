@@ -167,7 +167,7 @@ public class CayenneConfiguration implements DataSourceFactory {
 				// Insert default values
 				Out.info(getClass(), "Adding default values to database");
 
-				insertDefault("schema.sql");
+				insertDefault("schema.sql", "org.sqlite.JDBC".equals(settings.driver));
 				if(conn != null) {
 					conn.close();
 					conn = null;
@@ -196,7 +196,7 @@ public class CayenneConfiguration implements DataSourceFactory {
 	private Statement createStatement() throws SQLException {
 		if(conn == null)
 			conn = dataSource.getConnection();
-		return conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
+		return conn.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
 	}
 
 	public void close(ResultSet rs) {
@@ -235,7 +235,7 @@ public class CayenneConfiguration implements DataSourceFactory {
 		return false;
 	}
 
-	private void insertDefault(String schemaFile) throws SQLException {
+	private void insertDefault(String schemaFile, boolean isSQLite) throws SQLException {
 		Statement stmt = createStatement();
 
 		BufferedReader fr;
@@ -263,7 +263,22 @@ public class CayenneConfiguration implements DataSourceFactory {
 
 				if(query.charAt(query.length()-1) == ';') {
 					query = query.substring(0, query.length()-1);
-					stmt.execute(query);
+
+					if(isSQLite) {
+						// SQLite doesn't support mutli-row insert
+						String[] qp = query.split("\n", 2);
+						String[] rows = qp[1].split(",\n");
+						//Task t = TaskManager.createTask("Building table " + qp[0].split(" ", 4)[2], rows.length, "queries");
+						for(String row : rows) {
+							query = qp[0] + row;
+							stmt.execute(query);
+							//t.advanceProgress();
+						}
+						//t.complete();
+					} else {
+						stmt.execute(query);
+					}
+
 					query = "";
 				}
 			}
