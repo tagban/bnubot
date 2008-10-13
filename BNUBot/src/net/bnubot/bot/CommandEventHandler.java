@@ -176,7 +176,7 @@ public class CommandEventHandler extends EventHandler {
 		initializeCommands();
 	}
 
-	public void touchUser(Connection source, BNetUser user, String action) {
+	public BNLogin touchUser(Connection source, BNetUser user, String action) {
 		try {
 			BNLogin rsUser = BNLogin.getCreate(user);
 			if(rsUser != null) {
@@ -184,10 +184,12 @@ public class CommandEventHandler extends EventHandler {
 				if(action != null)
 					rsUser.setLastAction(action);
 				rsUser.updateRow();
+				return rsUser;
 			}
 		} catch(Exception e) {
 			Out.exception(e);
 		}
+		return null;
 	}
 
 	private static boolean commandsInitialized = false;
@@ -1574,16 +1576,14 @@ public class CommandEventHandler extends EventHandler {
 				}
 		}
 
-		touchUser(source, user, "joining the channel");
+		BNLogin rsUser = touchUser(source, user, "joining the channel");
 
+		if(rsUser == null)
+			return;
 		if(!source.getConnectionSettings().enableGreetings)
 			return;
 
 		try {
-			BNLogin rsUser = BNLogin.getCreate(user);
-			if(rsUser == null)
-				return;
-
 			// Fix the case of the user's login if it has changed
 			rsUser.setLogin(user.getFullAccountName());
 
