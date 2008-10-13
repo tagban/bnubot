@@ -52,7 +52,7 @@ public class TimeFormatter {
 	 */
 	public static String formatTime(long time, boolean ms) {
 		if(time < 0)
-			throw new IllegalArgumentException("formatTime does not format negative numbers");
+			return "(neg) " + formatTime(time * -1, ms);
 
 		if(time == 0)
 			return ms ? "0ms" : "0s";
