@@ -5,7 +5,6 @@
 
 package net.bnubot.bot;
 
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -181,7 +180,7 @@ public class CommandEventHandler extends EventHandler {
 		try {
 			BNLogin rsUser = BNLogin.getCreate(user);
 			if(rsUser != null) {
-				rsUser.setLastSeen(new Timestamp(System.currentTimeMillis()));
+				rsUser.setLastSeen(new Date(System.currentTimeMillis()));
 				if(action != null)
 					rsUser.setLastAction(action);
 				rsUser.updateRow();
@@ -308,9 +307,8 @@ public class CommandEventHandler extends EventHandler {
 							throw new InsufficientAccessException("to add users beyond " + (commanderAccess - 1));
 					}
 
-
 					rsSubjectAccount.setRank(targetRank);
-					rsSubjectAccount.setLastRankChange(new Timestamp(System.currentTimeMillis()));
+					rsSubjectAccount.setLastRankChange(new Date(System.currentTimeMillis()));
 					try {
 						rsSubjectAccount.updateRow();
 						user.sendChat(rsSubjectAccount.getName() + "'s rank has changed from "
