@@ -20,7 +20,7 @@ import javax.swing.JOptionPane;
 
 import net.bnubot.bot.gui.GuiDesktop;
 import net.bnubot.core.Connection;
-import net.bnubot.settings.GlobalSettings;
+import net.bnubot.core.PluginManager;
 import net.bnubot.settings.Settings;
 
 /**
@@ -231,7 +231,7 @@ public class Out {
 			return;
 		globalDebug = debug;
 		try {
-			if(GlobalSettings.enableGUI)
+			if(PluginManager.getEnableGui())
 				GuiDesktop.updateDebugMenuChecked();
 			debug(Out.class, "Debug logging " + (debug ? "en" : "dis") + "abled");
 			Settings.write(null, "debug", debug);

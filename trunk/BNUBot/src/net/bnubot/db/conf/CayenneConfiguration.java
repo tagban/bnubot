@@ -24,8 +24,8 @@ import javax.swing.JOptionPane;
 
 import net.bnubot.JARLoader;
 import net.bnubot.bot.gui.DatabaseWizard;
+import net.bnubot.core.PluginManager;
 import net.bnubot.settings.DatabaseSettings;
-import net.bnubot.settings.GlobalSettings;
 import net.bnubot.settings.Settings;
 import net.bnubot.util.Out;
 
@@ -175,7 +175,7 @@ public class CayenneConfiguration implements DataSourceFactory {
 
 				Out.info(getClass(), "Default values added");
 
-				if(GlobalSettings.enableGUI)
+				if(PluginManager.getEnableGui())
 					new DatabaseWizard();
 			}
 		} catch(Exception e) {

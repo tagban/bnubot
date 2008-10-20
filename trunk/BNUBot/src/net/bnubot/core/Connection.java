@@ -440,6 +440,13 @@ public abstract class Connection extends Thread {
 		}
 	}
 
+	public void removeEventHandler(EventHandler e) {
+		synchronized(eventHandlers) {
+			e.disable(this);
+			eventHandlers.remove(e);
+		}
+	}
+
 	public boolean isConnected() {
 		return (connectionState == ConnectionState.CONNECTED);
 	}

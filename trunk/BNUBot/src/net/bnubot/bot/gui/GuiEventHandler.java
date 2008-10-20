@@ -77,7 +77,7 @@ import net.bnubot.util.crypto.HexDump;
  * @author scotta
  */
 public class GuiEventHandler extends EventHandler {
-	private Connection firstConnection = null;
+	private Profile profile;
 	private JPanel frame = null;
 	private TextWindow mainTextArea = null;
 	private JTextField chatTextArea = null;
@@ -105,8 +105,8 @@ public class GuiEventHandler extends EventHandler {
 
 	private static final Set<? extends AWTKeyStroke> EMPTY_SET = Collections.emptySet();
 
-	public GuiEventHandler(Connection firstConnection) {
-		this.firstConnection = firstConnection;
+	public GuiEventHandler(Profile profile) {
+		this.profile = profile;
 		initializeGui();
 	}
 
@@ -136,7 +136,7 @@ public class GuiEventHandler extends EventHandler {
 
 	@Override
 	public void disable(final Connection source) {
-		if(source == firstConnection)
+		if(source == getFirstConnection())
 			GuiDesktop.remove(this);
 		JMenuItem mi = settingsMenuItems.remove(source);
 		if(mi != null)
@@ -150,7 +150,7 @@ public class GuiEventHandler extends EventHandler {
 	private void tcUpdate() {
 		Collection<String> options;
 		if(tcUserSearch)
-			options = firstConnection.findUsersForTabComplete(tcSearch);
+			options = getFirstConnection().findUsersForTabComplete(tcSearch);
 		else
 			options = Profile.findCommandsForTabComplete(tcSearch);
 		if(options.size() == 1) {
@@ -225,7 +225,7 @@ public class GuiEventHandler extends EventHandler {
 				menuItem = new JMenuItem("Connect");
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						for(Connection con : firstConnection.getProfile().getConnections())
+						for(Connection con : getFirstConnection().getProfile().getConnections())
 							con.connect();
 					} });
 				menu.add(menuItem);
@@ -233,7 +233,7 @@ public class GuiEventHandler extends EventHandler {
 				menuItem = new JMenuItem("Reconnect");
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						for(Connection con : firstConnection.getProfile().getConnections())
+						for(Connection con : getFirstConnection().getProfile().getConnections())
 							con.reconnect();
 					} });
 				menu.add(menuItem);
@@ -241,7 +241,7 @@ public class GuiEventHandler extends EventHandler {
 				menuItem = new JMenuItem("Disconnect");
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						for(Connection con : firstConnection.getProfile().getConnections())
+						for(Connection con : getFirstConnection().getProfile().getConnections())
 							con.disconnect(ConnectionState.DO_NOT_ALLOW_CONNECT);
 					} });
 				menu.add(menuItem);
@@ -252,7 +252,7 @@ public class GuiEventHandler extends EventHandler {
 			menuItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent evt) {
 					try {
-						firstConnection.sendQueryRealms2();
+						getFirstConnection().sendQueryRealms2();
 					} catch (Exception e) {
 						Out.exception(e);
 					}
@@ -267,7 +267,7 @@ public class GuiEventHandler extends EventHandler {
 						try {
 							String ct = JOptionPane.showInputDialog(frame, "Clan tag (maximum of 4 characters):", "Create a clan", JOptionPane.INFORMATION_MESSAGE);
 							clanTag = HexDump.PrettyToDWord(ct);
-							firstConnection.sendClanFindCandidates(null, clanTag);
+							getFirstConnection().sendClanFindCandidates(null, clanTag);
 						} catch(Exception e) {
 							Out.exception(e);
 						}
@@ -278,7 +278,7 @@ public class GuiEventHandler extends EventHandler {
 				menuItem.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent event) {
 						try {
-							firstConnection.sendClanMOTD(new ClanMOTDEditor(firstConnection));
+							getFirstConnection().sendClanMOTD(new ClanMOTDEditor(getFirstConnection()));
 						} catch(Exception e) {
 							Out.exception(e);
 						}
@@ -306,7 +306,7 @@ public class GuiEventHandler extends EventHandler {
 					try {
 						for(String element : chatTextArea.getText().split("\n")) {
 							if(element.trim().length() > 0)
-								firstConnection.sendChatInternal(element);
+								getFirstConnection().sendChatInternal(element);
 						}
 						chatTextArea.setText(null);
 						return;
@@ -390,7 +390,7 @@ public class GuiEventHandler extends EventHandler {
 		// Clan list
 		clanList = new ClanList();
 		// BotNet list
-		if(firstConnection.getConnectionSettings().enableBotNet)
+		if(getFirstConnection().getConnectionSettings().enableBotNet)
 			botNetList = new BotNetList(this);
 
 		JTabbedPane allLists = new JTabbedPane(JTabbedPane.BOTTOM);
@@ -602,7 +602,7 @@ public class GuiEventHandler extends EventHandler {
 					"Channel",
 					channel);
 
-		GuiDesktop.setTitle(this, firstConnection.getProductID());
+		GuiDesktop.setTitle(this, getFirstConnection().getProductID());
 	}
 
 	@Override
@@ -724,7 +724,7 @@ public class GuiEventHandler extends EventHandler {
 			item.getValue().setText("Settings (" + item.getKey().toShortString() + ")");
 
 		// Update the desktop window
-		GuiDesktop.setTitle(this, firstConnection.getProductID());
+		GuiDesktop.setTitle(this, getFirstConnection().getProductID());
 
 		// Update the tray icon
 		TrayIcon tray = GuiDesktop.getTray();
@@ -869,11 +869,11 @@ public class GuiEventHandler extends EventHandler {
 	 */
 	@Override
 	public String toString() {
-		if(firstConnection == null)
+		if(getFirstConnection() == null)
 			return null;
-		Profile p = firstConnection.getProfile();
+		Profile p = getFirstConnection().getProfile();
 		if((p == null) || (p.getConnections().size() == 1))
-			return firstConnection.toString();
+			return getFirstConnection().toString();
 		return p.getName();
 	}
 
@@ -885,8 +885,8 @@ public class GuiEventHandler extends EventHandler {
 		return jsp.getDividerLocation();
 	}
 
-	public Connection getFirstConnection() {
-		return firstConnection;
+	protected Connection getFirstConnection() {
+		return profile.getPrimaryConnection();
 	}
 
 	public void channelInfo(String text) {

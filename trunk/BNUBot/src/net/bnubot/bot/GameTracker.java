@@ -19,7 +19,7 @@ import net.bnubot.util.BNetUser;
  * @author scotta
  */
 public class GameTracker extends EventHandler {
-	public GameTracker() {
+	public GameTracker(Profile profile) {
 		if(DatabaseContext.getContext() == null)
 			throw new IllegalStateException("Can not enable game tracker without a database!");
 		initializeCommands();
