@@ -15,6 +15,7 @@ import java.net.URL;
 import javax.swing.JOptionPane;
 
 import net.bnubot.core.ChatQueue;
+import net.bnubot.core.PluginManager;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.settings.Settings;
 import net.bnubot.util.BNetUser;
@@ -219,7 +220,7 @@ public class VersionCheck {
 			if(thisJar.exists()) {
 				boolean doUpdate = true;
 				try {
-					if((bnSubject == null) && GlobalSettings.enableGUI) {
+					if((bnSubject == null) && PluginManager.getEnableGui()) {
 						String msg = "BNU-Bot version " + vnLatest.toString() + " is available.\nWould you like to update?";
 						doUpdate = JOptionPane.showConfirmDialog(null, msg, "BNU-Bot update available", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION;
 					}
@@ -257,7 +258,7 @@ public class VersionCheck {
 
 					// Show complete notification
 					try {
-						if((bnSubject == null) && GlobalSettings.enableGUI)
+						if((bnSubject == null) && PluginManager.getEnableGui())
 							JOptionPane.showMessageDialog(null, "Update complete. BNU-Bot will now attempt to restart.");
 					} catch(Exception e) {
 						// GUI is probably broken

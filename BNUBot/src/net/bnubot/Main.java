@@ -11,6 +11,7 @@ import java.io.PrintStream;
 import java.lang.Thread.UncaughtExceptionHandler;
 
 import net.bnubot.bot.gui.settings.GlobalConfigurationFrame;
+import net.bnubot.core.PluginManager;
 import net.bnubot.core.Profile;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.settings.Settings;
@@ -58,7 +59,7 @@ public class Main {
 				switch(args[i].charAt(1)) {
 				case 'c':
 					if(args[i].equals("-cli")) {
-						GlobalSettings.enableCLI = true;
+						PluginManager.setEnableCli(true);
 						continue;
 					}
 					if(args[i].equals("-cfg")) {
@@ -74,7 +75,7 @@ public class Main {
 					break;
 				case 'g':
 					if(args[i].equals("-gui")) {
-						GlobalSettings.enableGUI = true;
+						PluginManager.setEnableGui(true);
 						continue;
 					}
 					break;
@@ -90,11 +91,11 @@ public class Main {
 					break;
 				case 'n':
 					if(args[i].equals("-nocli")) {
-						GlobalSettings.enableCLI = false;
+						PluginManager.setEnableCli(false);
 						continue;
 					}
 					if(args[i].equals("-nogui")) {
-						GlobalSettings.enableGUI = false;
+						PluginManager.setEnableGui(false);
 						continue;
 					}
 					break;
@@ -122,7 +123,7 @@ public class Main {
 			}
 		}
 
-		if(GlobalSettings.enableSWT) {
+		if(PluginManager.getEnableSwt()) {
 			Display display = Display.getCurrent();
 			while(display.readAndDispatch());
 		}
@@ -137,7 +138,7 @@ public class Main {
 		Settings.store();
 
 		// SWT requires the main thread to be the event thread
-		if(GlobalSettings.enableSWT) {
+		if(PluginManager.getEnableSwt()) {
 			Display display = Display.getCurrent();
 			while(!display.isDisposed()) {
 				if(!display.readAndDispatch())

@@ -24,6 +24,7 @@ import net.bnubot.bot.gui.ProfileEditor;
 import net.bnubot.core.CommandResponseCookie;
 import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
+import net.bnubot.core.PluginManager;
 import net.bnubot.core.Profile;
 import net.bnubot.core.UnsupportedFeatureException;
 import net.bnubot.core.bnls.BNLSPacket;
@@ -1461,7 +1462,8 @@ public class BNCSConnection extends Connection {
 						up.put(key, value);
 					}
 
-					if(GlobalSettings.enableGUI)
+					// FIXME this should be a dispatch
+					if(PluginManager.getEnableGui())
 						new ProfileEditor(up, this);
 					break;
 				}

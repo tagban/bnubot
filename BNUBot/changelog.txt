@@ -1,3 +1,6 @@
+2.1.1:
+* Enabled hot-swapping plugins (may require re-configuring enabled plugins)
+
 2.1.0 (r1640) 2008-10-06:
 * Added BotNet account login
 * CDKeys are now dumped to cdkeys.processed.txt in a well-formatted way

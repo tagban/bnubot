@@ -34,6 +34,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
+import net.bnubot.bot.gui.GuiEventHandler;
 import net.bnubot.bot.gui.KeyManager;
 import net.bnubot.bot.gui.WindowPosition;
 import net.bnubot.bot.gui.components.ConfigCheckBox;
@@ -79,8 +80,6 @@ public class GlobalConfigurationFrame extends JDialog {
 
 	// Plugins
 	private ConfigSpinner spnTriviaRoundLength = null;
-	private ConfigCheckBox chkEnableCLI = null;
-	private ConfigCheckBox chkEnableCommands = null;
 	private ConfigCheckBox chkWhisperBack = null;
 	private List<Class<? extends EventHandler>> plugins = null;
 	private List<ConfigCheckBox> chkEnabledPlugins = null;
@@ -212,18 +211,19 @@ public class GlobalConfigurationFrame extends JDialog {
 			boxAll = new Box(BoxLayout.Y_AXIS);
 			{
 				boxAll.add(new JLabel("You must reopen profiles for these changes to take effect."));
-				boxAll.add(chkEnableCLI = new ConfigCheckBox("Enable Command Line Interface", GlobalSettings.enableCLI));
-				boxAll.add(chkEnableCommands = new ConfigCheckBox("Enable Commands", GlobalSettings.enableCommands));
 				boxAll.add(chkWhisperBack = new ConfigCheckBox("Whisper Command Responses", GlobalSettings.whisperBack));
 
-				plugins = PluginManager.getPlugins();
-				chkEnabledPlugins = new ArrayList<ConfigCheckBox>(plugins.size());
-				for(int i = 0; i < plugins.size(); i++) {
-					Class<? extends EventHandler> plugin = plugins.get(i);
+				plugins = new ArrayList<Class<? extends EventHandler>>();
+				chkEnabledPlugins = new ArrayList<ConfigCheckBox>();
+				for(Class<? extends EventHandler> plugin : PluginManager.getPlugins()) {
+					// Do not allow the user to disable the GUI in this way
+					if(plugin == GuiEventHandler.class)
+						continue;
 
 					ConfigCheckBox chkEnablePlugin = new ConfigCheckBox(plugin.getSimpleName(), PluginManager.isEnabled(plugin));
 					boxAll.add(chkEnablePlugin);
 					chkEnabledPlugins.add(chkEnablePlugin);
+					plugins.add(plugin);
 				}
 				spnTriviaRoundLength = ConfigFactory.makeSpinner("Trivia Round Length", new Integer(GlobalSettings.triviaRoundLength), boxAll);
 			}
@@ -428,9 +428,8 @@ public class GlobalConfigurationFrame extends JDialog {
 			GlobalSettings.enableLegacyIcons = chkEnableLegacyIcons.isSelected();
 			GlobalSettings.enableTabCompleteUser = chkEnableTabCompleteUser.isSelected();
 			GlobalSettings.enableTabCompleteCommand = chkEnableTabCompleteCommand.isSelected();
-			GlobalSettings.enableCLI = chkEnableCLI.isSelected();
 			GlobalSettings.triviaRoundLength = spnTriviaRoundLength.getValue().intValue();
-			GlobalSettings.enableCommands = chkEnableCommands.isSelected();
+
 			for(int i = 0; i < plugins.size(); i++) {
 				Class<? extends EventHandler> plugin = plugins.get(i);
 				ConfigCheckBox chkEnablePlugin = chkEnabledPlugins.get(i);
@@ -511,7 +510,6 @@ public class GlobalConfigurationFrame extends JDialog {
 			chkEnableLegacyIcons.setSelected(GlobalSettings.enableLegacyIcons);
 			chkEnableTabCompleteUser.setSelected(GlobalSettings.enableTabCompleteUser);
 			chkEnableTabCompleteCommand.setSelected(GlobalSettings.enableTabCompleteCommand);
-			chkEnableCLI.setSelected(GlobalSettings.enableCLI);
 			cmbTrayIconMode.setSelectedItem(GlobalSettings.trayIconMode);
 			chkTrayMinimizeTo.setSelected(GlobalSettings.trayMinimizeTo);
 			chkTrayDisplayConnectDisconnect.setSelected(GlobalSettings.trayDisplayConnectDisconnect);
@@ -521,7 +519,6 @@ public class GlobalConfigurationFrame extends JDialog {
 			chkTrayDisplayWhisper.setSelected(GlobalSettings.trayDisplayWhisper);
 			cmbTabCompleteMode.setSelectedItem(GlobalSettings.tabCompleteMode);
 			spnTriviaRoundLength.setValue(new Integer(GlobalSettings.triviaRoundLength));
-			chkEnableCommands.setSelected(GlobalSettings.enableCommands);
 			for(int i = 0; i < plugins.size(); i++) {
 				Class<? extends EventHandler> plugin = plugins.get(i);
 				ConfigCheckBox chkEnablePlugin = chkEnabledPlugins.get(i);

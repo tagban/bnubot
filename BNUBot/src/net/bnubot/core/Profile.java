@@ -5,6 +5,7 @@
 
 package net.bnubot.core;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Dictionary;
@@ -12,10 +13,6 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 
-import net.bnubot.bot.CommandEventHandler;
-import net.bnubot.bot.console.ConsoleEventHandler;
-import net.bnubot.bot.gui.GuiEventHandler;
-import net.bnubot.bot.swt.SWTDesktop;
 import net.bnubot.core.commands.AccountDoesNotExistException;
 import net.bnubot.core.commands.CommandRunnable;
 import net.bnubot.core.commands.InsufficientAccessException;
@@ -28,6 +25,8 @@ import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.Out;
+import net.bnubot.util.task.Task;
+import net.bnubot.util.task.TaskManager;
 import net.bnubot.vercheck.VersionCheck;
 
 /**
@@ -36,6 +35,10 @@ import net.bnubot.vercheck.VersionCheck;
 public class Profile {
 	private static final List<Profile> profiles = new ArrayList<Profile>();
 	private static final Dictionary<String, CommandRunnable> commands = new Hashtable<String, CommandRunnable>();
+
+	protected static List<Profile> getProfiles() {
+		return profiles;
+	}
 
 	public static void registerCommand(String name, CommandRunnable action) {
 		if(commands.get(name) != null)
@@ -148,10 +151,7 @@ public class Profile {
 	private static boolean add(ConnectionSettings cs) throws Exception {
 		Profile p = findCreateProfile(cs.profile);
 		Connection con = ConnectionFactory.createConnection(cs, p.chatQueue, p);
-		p.insertConnection(con);
-
-		// Add it to the list of connections
-		return p.cons.add(con);
+		return p.insertConnection(con);
 	}
 
 	private final List<Connection> cons = new ArrayList<Connection>();
@@ -170,9 +170,13 @@ public class Profile {
 		chatQueue.start();
 	}
 
-	public void insertConnection(Connection con) throws Exception {
+	private boolean insertConnection(Connection con) throws Exception {
 		synchronized(cons) {
-			if(cons.size() > 0) {
+			// Add it to the list of connections
+			if(!cons.add(con))
+				return false;
+
+			if(cons.size() > 1) {
 				Connection primary = cons.get(0);
 
 				// Add EHs
@@ -185,59 +189,50 @@ public class Profile {
 				// Plugins
 				for(Class<? extends EventHandler> plugin : PluginManager.getEnabledPlugins())
 					try {
-						con.addEventHandler(plugin.newInstance());
+						con.addEventHandler(constructPlugin(plugin));
 					} catch(Exception e) {
 						Out.exception(e);
 					}
-
-				// CLI
-				if(GlobalSettings.enableCLI)
-					con.addEventHandler(new ConsoleEventHandler());
-
-				// SWT GUI
-				if(GlobalSettings.enableSWT)
-					try {
-						con.addEventHandler(SWTDesktop.createSWTEventHandler());
-					} catch(NoClassDefFoundError e) {
-						// Failed to create SWT GUI; revert to Swing
-						GlobalSettings.enableSWT = false;
-						GlobalSettings.enableGUI = true;
-					}
-
-				// GUI
-				if(GlobalSettings.enableGUI)
-					con.addEventHandler(new GuiEventHandler(con));
 
 				// Now that the CLI/GUI are up, let logging go to them
 				Out.setThreadOutputConnectionIfNone(con);
-
-				// Commands
-				if(GlobalSettings.enableCommands)
-					try {
-						con.addEventHandler(new CommandEventHandler());
-					} catch(Exception e) {
-						Out.exception(e);
-					}
-			}
-
-			// If this is the first bot
-			if(con.getConnectionSettings().botNum == 1)
-				try {
-					// Do the version check now; no force
-					VersionCheck.checkVersion(false);
-				} catch(Exception e) {
-					Out.exception(e);
-				}
-
-			// Start the Connection thread
-			con.start();
-
-			// Wait for the Connection thread to initialize
-			while(!con.isInitialized()) {
-				Thread.sleep(10);
-				Thread.yield();
 			}
 		}
+
+		// If this is the first bot
+		if(con.getConnectionSettings().botNum == 1)
+			try {
+				// Do the version check now; no force
+				VersionCheck.checkVersion(false);
+			} catch(Exception e) {
+				Out.exception(e);
+			}
+
+		// Start the Connection thread
+		con.start();
+
+		// Wait for the Connection thread to initialize
+		Task t = TaskManager.createTask("Initializing " + con.toShortString());
+		while(!con.isInitialized()) {
+			Thread.sleep(10);
+			Thread.yield();
+		}
+		t.complete();
+
+		return true;
+	}
+
+	protected EventHandler constructPlugin(Class<? extends EventHandler> plugin) throws Exception {
+		Constructor<? extends EventHandler> constr = null;
+		try {
+			constr = plugin.getConstructor(Profile.class);
+		} catch(NoSuchMethodException e) {}
+		EventHandler eh;
+		if(constr == null)
+			eh = plugin.newInstance();
+		else
+			eh = constr.newInstance(this);
+		return eh;
 	}
 
 	public String getName() {
@@ -333,6 +328,9 @@ public class Profile {
 	 */
 	public Connection getPrimaryConnection() {
 		synchronized(cons) {
+			if(cons.size() == 1)
+				return cons.get(0);
+
 			// Return the first connected connection
 			for(Connection c : cons)
 				if(c.isConnected())

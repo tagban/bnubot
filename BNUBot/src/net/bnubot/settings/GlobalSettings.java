@@ -16,6 +16,7 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import net.bnubot.JARLoader;
 import net.bnubot.bot.gui.GuiDesktop;
 import net.bnubot.bot.swt.SWTDesktop;
+import net.bnubot.core.PluginManager;
 import net.bnubot.util.Out;
 import net.bnubot.util.TimeFormatter;
 import net.bnubot.vercheck.CurrentVersion;
@@ -61,11 +62,8 @@ public class GlobalSettings {
 	public static boolean displayBattleNetChannels;
 	private static boolean displayJoinParts;
 	public static boolean displayChannelUsers;
-	public static boolean enableCLI;
-	public static boolean enableGUI;
 	public static String guiFontFamily;
 	public static int guiFontSize;
-	public static boolean enableSWT;
 	public static TrayIconMode trayIconMode;
 	public static boolean trayMinimizeTo;
 	public static boolean trayDisplayConnectDisconnect;
@@ -77,7 +75,6 @@ public class GlobalSettings {
 	public static boolean enableTabCompleteCommand;
 	public static TabCompleteMode tabCompleteMode;
 	public static boolean enableLegacyIcons;
-	public static boolean enableCommands;
 	public static int triviaRoundLength;
 	public static boolean enableFloodProtect;
 	public static boolean packetLog;
@@ -181,11 +178,8 @@ public class GlobalSettings {
 		Settings.write(null, "displayChannelUsers", displayChannelUsers);
 		Settings.write(null, "email", email);
 		Settings.write(null, "enableMirrorSelector", enableMirrorSelector);
-		Settings.write(null, "enableCLI", enableCLI);
-		Settings.write(null, "enableGUI", enableGUI);
 		Settings.write(null, "guiFontFamily", guiFontFamily);
 		Settings.write(null, "guiFontSize", guiFontSize);
-		Settings.write(null, "enableSWT", enableSWT);
 		Settings.write(null, "trayIconMode", trayIconMode);
 		Settings.write(null, "trayMinimizeTo", trayMinimizeTo);
 		Settings.write(null, "trayDisplayConnectDisconnect", trayDisplayConnectDisconnect);
@@ -197,7 +191,6 @@ public class GlobalSettings {
 		Settings.write(null, "enableTabCompleteCommand", enableTabCompleteCommand);
 		Settings.write(null, "tabCompleteMode", tabCompleteMode);
 		Settings.write(null, "enableLegacyIcons", enableLegacyIcons);
-		Settings.write(null, "enableCommands", enableCommands);
 		Settings.write(null, "enableFloodProtect", enableFloodProtect);
 		Settings.write(null, "lookAndFeel", lookAndFeel);
 		Settings.write(null, "lookAndFeelTheme", lookAndFeelTheme);
@@ -254,11 +247,8 @@ public class GlobalSettings {
 		displayJoinParts = Settings.read(null, "displayJoinParts", true);
 		displayChannelUsers = Settings.read(null, "displayChannelUsers", false);
 		email =	Settings.read(null, "email", (String)null);
-		enableCLI = Settings.read(null, "enableCLI", false);
-		enableGUI = Settings.read(null, "enableGUI", true);
 		guiFontFamily = Settings.read(null, "guiFontFamily", "verdana");
 		guiFontSize = Settings.read(null, "guiFontSize", 10);
-		enableSWT = Settings.read(null, "enableSWT", false);
 		trayIconMode = Settings.read(null, "trayIconMode", TrayIconMode.ENABLED);
 		trayMinimizeTo = Settings.read(null, "trayMinimizeTo", true);
 		trayDisplayConnectDisconnect = Settings.read(null, "trayDisplayConnectDisconnect", false);
@@ -270,7 +260,6 @@ public class GlobalSettings {
 		enableTabCompleteCommand = Settings.read(null, "enableTabCompleteCommand", false);
 		tabCompleteMode = Settings.read(null, "tabCompleteMode", TabCompleteMode.STARTS_WITH_STRING);
 		enableLegacyIcons = Settings.read(null, "enableLegacyIcons", true);
-		enableCommands = Settings.read(null, "enableCommands", true);
 		triviaRoundLength = Settings.read(null, "triviaRoundLength", 100);
 		enableFloodProtect = Settings.read(null, "enableFloodProtect", false);
 		packetLog = Settings.read(null, "packetLog", false);
@@ -278,12 +267,12 @@ public class GlobalSettings {
 		recruitAccess = Settings.read(null, "recruitAccess", 10);
 		recruitTagPrefix =	Settings.read(null, "recruitTagPrefix", "BNU-");
 		recruitTagSuffix =	Settings.read(null, "recruitTagSuffix", (String)null);
-		if(enableGUI) {
+		if(PluginManager.getEnableGui()) {
 			setLookAndFeelTheme(Settings.read(null, "lookAndFeelTheme", "SkyKrupp"));
 			setLookAndFeel(Settings.read(null, "lookAndFeel", "JGoodies Plastic XP"));
 			GuiDesktop.getInstance();
 		}
-		if(GlobalSettings.enableSWT)
+		if(PluginManager.getEnableSwt())
 			SWTDesktop.getInstance();
 		TimeFormatter.tsFormat = Settings.read(null, "tsFormat", TimeFormatter.tsFormat);
 		TimeFormatter.timeZone = Settings.read(null, "timeZone", TimeFormatter.timeZone);
@@ -311,7 +300,7 @@ public class GlobalSettings {
 
 	public static void setDisplayJoinParts(boolean displayJoinParts) {
 		GlobalSettings.displayJoinParts = displayJoinParts;
-		if(enableGUI)
+		if(PluginManager.getEnableGui())
 			GuiDesktop.updateDisplayJoinPartsMenuChecked();
 	}
 }

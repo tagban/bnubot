@@ -8,7 +8,7 @@ package net.bnubot.util.task;
 import java.awt.Container;
 
 import net.bnubot.bot.gui.GuiDesktop;
-import net.bnubot.settings.GlobalSettings;
+import net.bnubot.core.PluginManager;
 
 /**
  * @author scotta
@@ -20,7 +20,7 @@ public class TaskManager {
 	static {
 		boolean enableGUI;
 		try {
-			enableGUI = GlobalSettings.enableGUI;
+			enableGUI = PluginManager.getEnableGui();
 		} catch(Throwable t) {
 			enableGUI = true;
 		}
