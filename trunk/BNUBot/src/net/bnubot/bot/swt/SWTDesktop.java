@@ -13,6 +13,7 @@ import javax.xml.ws.Holder;
 import net.bnubot.bot.gui.WhatsNewWindow;
 import net.bnubot.bot.gui.icons.BNetIcon;
 import net.bnubot.bot.gui.icons.IconsDotBniReader;
+import net.bnubot.core.Profile;
 import net.bnubot.core.bncs.ProductIDs;
 import net.bnubot.settings.Settings;
 import net.bnubot.vercheck.CurrentVersion;
@@ -132,13 +133,13 @@ public class SWTDesktop extends Thread {
 			}});
 	}
 
-	public static SWTEventHandler createSWTEventHandler() {
+	public static SWTEventHandler createSWTEventHandler(final Profile profile) {
 		final Holder<SWTEventHandler> eh = new Holder<SWTEventHandler>(null);
 		display.syncExec(new Runnable() {
 			public void run() {
 				CTabItem tab = new CTabItem(tabs, SWT.CLOSE);
 				Composite composite = new Composite(tabs, SWT.NULL);
-				final SWTEventHandler seh = new SWTEventHandler(composite);
+				final SWTEventHandler seh = new SWTEventHandler(composite, profile);
 				tab.addDisposeListener(new DisposeListener() {
 					public void widgetDisposed(DisposeEvent arg0) {
 						try {

@@ -9,6 +9,7 @@ import java.util.HashMap;
 
 import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
+import net.bnubot.core.Profile;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetUser;
 
@@ -17,6 +18,10 @@ import net.bnubot.util.BNetUser;
  */
 public class ConsoleEventHandler extends EventHandler {
 	private static final HashMap<Connection, CLIThread> threads = new HashMap<Connection, CLIThread>();
+
+	public ConsoleEventHandler(Profile profile) {
+		super(profile);
+	}
 
 	@Override
 	public synchronized void initialize(Connection source) {

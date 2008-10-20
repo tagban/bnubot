@@ -72,7 +72,8 @@ public class SWTEventHandler extends EventHandler {
 	    c2.setLayoutData(c2Data);
 	}
 
-	public SWTEventHandler(Composite frame) {
+	public SWTEventHandler(Composite frame, Profile profile) {
+		super(profile);
 		this.frame = frame;
 		frame.setLayout(new FormLayout());
 

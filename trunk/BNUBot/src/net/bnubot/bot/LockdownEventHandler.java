@@ -27,7 +27,8 @@ public class LockdownEventHandler extends EventHandler {
 	private static final String CHANNEL_OPEN = "The clan channel is now public and anyone can enter.";
 	public static final long LOCKDOWN_DURATION = 5 * 60 * 1000; // 5 minutes
 
-	public LockdownEventHandler() {
+	public LockdownEventHandler(Profile profile) {
+		super(profile);
 		if(DatabaseContext.getContext() == null)
 			throw new IllegalStateException("Can not enable lockdown without a database!");
 		initializeCommands();

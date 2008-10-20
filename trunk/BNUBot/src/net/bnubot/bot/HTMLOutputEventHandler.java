@@ -20,6 +20,7 @@ import javax.swing.SwingUtilities;
 import net.bnubot.bot.gui.colors.ColorScheme;
 import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
+import net.bnubot.core.Profile;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.Out;
@@ -39,6 +40,10 @@ public class HTMLOutputEventHandler extends EventHandler {
 	private boolean generationNeeded = false;
 	private Runnable writeUserListRunnable = null;
 	private final ColorScheme cs = ColorScheme.getColors();
+
+	public HTMLOutputEventHandler(Profile profile) {
+		super(profile);
+	}
 
 	@Override
 	public void bnetDisconnected(Connection source) {

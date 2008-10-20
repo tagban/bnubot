@@ -77,7 +77,6 @@ import net.bnubot.util.crypto.HexDump;
  * @author scotta
  */
 public class GuiEventHandler extends EventHandler {
-	private Profile profile;
 	private JPanel frame = null;
 	private TextWindow mainTextArea = null;
 	private JTextField chatTextArea = null;
@@ -106,7 +105,7 @@ public class GuiEventHandler extends EventHandler {
 	private static final Set<? extends AWTKeyStroke> EMPTY_SET = Collections.emptySet();
 
 	public GuiEventHandler(Profile profile) {
-		this.profile = profile;
+		super(profile);
 		initializeGui();
 	}
 
@@ -805,7 +804,7 @@ public class GuiEventHandler extends EventHandler {
 		if(realms.length == 0)
 			return;
 
-		final RealmWindow realmWindow = new RealmWindow(realms);
+		final RealmWindow realmWindow = new RealmWindow(realms, profile);
 		final boolean showWindow = (realms.length > 1);
 		final String autoRealm = realms[0];
 
