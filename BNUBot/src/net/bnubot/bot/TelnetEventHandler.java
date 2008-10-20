@@ -30,20 +30,15 @@ import net.bnubot.util.crypto.HexDump;
  */
 public class TelnetEventHandler extends EventHandler implements Runnable {
 	private static boolean initialized = false;
-	private Profile profile = null;
 	private List<ChatConnection> connections = new ArrayList<ChatConnection>();
 
-	public TelnetEventHandler() {
+	public TelnetEventHandler(Profile profile) {
+		super(profile);
 		if(initialized)
 			throw new IllegalStateException("You may only use the TelnetEventHandler once!");
 		initialized = true;
 
 		new Thread(this).start();
-	}
-
-	@Override
-	public void initialize(Connection source) {
-		profile = source.getProfile();
 	}
 
 	public void run() {

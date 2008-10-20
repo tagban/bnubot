@@ -16,6 +16,7 @@ import javax.swing.JList;
 
 import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
+import net.bnubot.core.Profile;
 import net.bnubot.core.RealmConnection;
 import net.bnubot.core.RealmEventHandler;
 import net.bnubot.core.bncs.BNCSConnection;
@@ -37,7 +38,8 @@ public class RealmWindow extends EventHandler implements RealmEventHandler {
 	protected JList lstRealms;
 	protected JList lstCharactorTypes;
 
-	public RealmWindow(String[] realms) {
+	public RealmWindow(String[] realms, Profile profile) {
+		super(profile);
 		this.realms = realms;
 		jd = new JDialog();
 		initializeGUI();

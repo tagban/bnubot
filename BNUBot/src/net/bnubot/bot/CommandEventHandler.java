@@ -170,7 +170,8 @@ public class CommandEventHandler extends EventHandler {
 		}
 	}
 
-	public CommandEventHandler() {
+	public CommandEventHandler(Profile profile) {
+		super(profile);
 		if(DatabaseContext.getContext() == null)
 			throw new IllegalStateException("Can not enable commands without a database!");
 		initializeCommands();

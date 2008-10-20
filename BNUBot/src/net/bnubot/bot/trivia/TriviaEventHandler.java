@@ -39,7 +39,8 @@ public class TriviaEventHandler extends EventHandler {
 	private Connection initializedConnection = null;
 	private boolean disposed = false;
 
-	public TriviaEventHandler() {
+	public TriviaEventHandler(Profile profile) {
+		super(profile);
 		if(DatabaseContext.getContext() == null)
 			throw new IllegalStateException("Can not enable trivia without a database!");
 		initializeCommands();

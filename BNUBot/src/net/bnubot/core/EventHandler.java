@@ -40,6 +40,11 @@ public abstract class EventHandler {
 		return null;
 	}
 
+	protected final Profile profile;
+	public EventHandler(Profile profile) {
+		this.profile = profile;
+	}
+
 	//Initialization
 	public void initialize(Connection source) {}
 	public void disable(Connection source) {}

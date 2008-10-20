@@ -5,7 +5,6 @@
 
 package net.bnubot.core;
 
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Dictionary;
@@ -223,16 +222,7 @@ public class Profile {
 	}
 
 	protected EventHandler constructPlugin(Class<? extends EventHandler> plugin) throws Exception {
-		Constructor<? extends EventHandler> constr = null;
-		try {
-			constr = plugin.getConstructor(Profile.class);
-		} catch(NoSuchMethodException e) {}
-		EventHandler eh;
-		if(constr == null)
-			eh = plugin.newInstance();
-		else
-			eh = constr.newInstance(this);
-		return eh;
+		return plugin.getConstructor(Profile.class).newInstance(this);
 	}
 
 	public String getName() {
