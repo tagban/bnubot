@@ -46,7 +46,7 @@ public class PluginManager {
 		register(ConsoleEventHandler.class);
 		//register(SWTEventHandler.class);
 		register(GuiEventHandler.class, true);
-		register(CommandEventHandler.class);
+		register(CommandEventHandler.class, true);
 	}
 
 	public static void register(Class<? extends EventHandler> plugin) {
