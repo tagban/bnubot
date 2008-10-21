@@ -18,14 +18,7 @@ public class TaskManager {
 
 	private static Container box = null;
 	static {
-		boolean enableGUI;
-		try {
-			enableGUI = PluginManager.getEnableGui();
-		} catch(Throwable t) {
-			enableGUI = true;
-		}
-
-		if(enableGUI)
+		if(PluginManager.getEnableGui())
 			box = GuiDesktop.getTasksLocation();
 	}
 
