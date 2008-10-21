@@ -11,6 +11,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +30,8 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -50,15 +54,21 @@ import org.apache.cayenne.query.SelectQuery;
  */
 public class DatabaseEditor {
 	private final ObjectContext context;
+	private final String editorType;
 
 	private final Map<String, CustomDataObject> dataMap = new HashMap<String, CustomDataObject>();
 	private CustomDataObject currentRow = null;
+	private boolean changesMade = false;
 	private final Map<ObjAttribute, getValueDelegate> data = new HashMap<ObjAttribute, getValueDelegate>();
 	private final Map<ObjRelationship, getValueDelegate> dataRel = new HashMap<ObjRelationship, getValueDelegate>();
 	private final JDialog jf = new JDialog();
 	private final JPanel jp = new JPanel(new GridBagLayout());
 	private final DefaultComboBoxModel model = new DefaultComboBoxModel();
 	private final JList jl = new JList(model);
+	private final ChangeListener cl = new ChangeListener() {
+		public void stateChanged(ChangeEvent e) {
+			changesMade = true;
+		}};
 
 	private interface getValueDelegate {
 		public Object getValue();
@@ -71,7 +81,8 @@ public class DatabaseEditor {
 			throw new IllegalStateException("No database is initialized");
 		List<CustomDataObject>dataRows = context.performQuery(new SelectQuery(clazz));
 
-		jf.setTitle(clazz.getSimpleName() + " Editor");
+		editorType = clazz.getSimpleName();
+		jf.setTitle(editorType + " Editor");
 		Box box = new Box(BoxLayout.X_AXIS);
 		box.add(new JScrollPane(jl));
 
@@ -83,21 +94,8 @@ public class DatabaseEditor {
 		JButton btnSave = new JButton("Save");
 		btnSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				try {
-					for(ObjAttribute attr : data.keySet()) {
-						String key = attr.getName();
-						Object value = data.get(attr).getValue();
-						currentRow.writeProperty(key, value);
-					}
-					for(ObjRelationship rel : dataRel.keySet()) {
-						String key = rel.getName();
-						Object value = dataRel.get(rel).getValue();
-						currentRow.writeProperty(key, value);
-					}
-					currentRow.updateRow();
-				} catch(Exception ex) {
-					Out.popupException(ex, jf);
-				}
+				saveData();
+				loadData();
 			}});
 		box3.add(btnSave);
 		JButton btnRevert = new JButton("Revert");
@@ -122,10 +120,16 @@ public class DatabaseEditor {
 					String disp = getDisplayString(currentRow);
 					dataMap.remove(disp);
 
-					currentRow.getObjectContext().deleteObject(currentRow);
+					context.deleteObject(currentRow);
 					currentRow.updateRow();
+					changesMade = false;
 
+					currentRow = null;
 					model.removeElement(disp);
+					jp.removeAll();
+					jp.repaint();
+					data.clear();
+					dataRel.clear();
 				} catch(Exception ex) {
 					Out.popupException(ex, jf);
 				}
@@ -144,6 +148,16 @@ public class DatabaseEditor {
 
 		jl.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent e) {
+				if(changesMade) {
+					int option = JOptionPane.showConfirmDialog(
+							jf,
+							"You have made changes to the " + editorType + " " + currentRow.toDisplayString() + ". Do you want to save them?",
+							"Save changes?",
+							JOptionPane.YES_NO_OPTION,
+							JOptionPane.QUESTION_MESSAGE);
+					if(option == JOptionPane.YES_OPTION)
+						saveData();
+				}
 				context.rollbackChanges();
 				loadData();
 			}});
@@ -168,6 +182,7 @@ public class DatabaseEditor {
 		int y = 0;
 
 		currentRow = dataMap.get(jl.getSelectedValue());
+		changesMade = false;
 		if(currentRow == null)
 			return;
 
@@ -244,9 +259,7 @@ public class DatabaseEditor {
 		final Object value = row.readProperty(propName);
 		final boolean isNullable = !attr.getDbAttribute().isMandatory();
 
-		String v = null;
-		if(value != null)
-			v = value.toString();
+		final String v = value == null ? null : value.toString();
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridy = y;
@@ -257,7 +270,9 @@ public class DatabaseEditor {
 		final ConfigCheckBox bNull;
 		gbc.gridx++;
 		if(isNullable) {
-			bNull = new ConfigCheckBox("NULL", value == null);
+			ConfigCheckBox ccb = new ConfigCheckBox("NULL", value == null);
+			ccb.addChangeListener(cl);
+			bNull = ccb;
 			jp.add(bNull, gbc);
 		} else {
 			bNull = null;
@@ -265,10 +280,23 @@ public class DatabaseEditor {
 		}
 
 		final Component valueComponent;
-		if(fieldType.equals(Boolean.class))
-			valueComponent = new ConfigCheckBox(null, ((Boolean)value).booleanValue());
-		else
-			valueComponent = new ConfigTextField(v);
+		if(fieldType.equals(Boolean.class)) {
+			ConfigCheckBox ccb = new ConfigCheckBox(null, ((Boolean)value).booleanValue());
+			ccb.addChangeListener(cl);
+			valueComponent = ccb;
+		} else {
+			final ConfigTextField ctf = new ConfigTextField(v);
+			ctf.addFocusListener(new FocusListener() {
+				public void focusGained(FocusEvent e) {}
+				public void focusLost(FocusEvent e) {
+					String txt = ctf.getText();
+					if(txt.equals(v))
+						return;
+					changesMade = true;
+				}
+			});
+			valueComponent = ctf;
+		}
 		gbc.gridx++;
 		jp.add(valueComponent, gbc);
 
@@ -295,5 +323,24 @@ public class DatabaseEditor {
 
 				throw new IllegalStateException("asfd");
 			}});
+	}
+
+	private void saveData() {
+		try {
+			for(ObjAttribute attr : data.keySet()) {
+				String key = attr.getName();
+				Object value = data.get(attr).getValue();
+				currentRow.writeProperty(key, value);
+			}
+			for(ObjRelationship rel : dataRel.keySet()) {
+				String key = rel.getName();
+				Object value = dataRel.get(rel).getValue();
+				currentRow.writeProperty(key, value);
+			}
+			currentRow.updateRow();
+			changesMade = false;
+		} catch(Exception ex) {
+			Out.popupException(ex, jf);
+		}
 	}
 }
