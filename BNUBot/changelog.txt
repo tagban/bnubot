@@ -1,5 +1,6 @@
 2.1.1:
 * Enabled hot-swapping plugins (may require re-configuring enabled plugins)
+* The database editor will prompt before discarding unsaved changes
 
 2.1.0 (r1640) 2008-10-06:
 * Added BotNet account login
