@@ -26,6 +26,7 @@ import net.bnubot.util.Out;
  * @author scotta
  */
 public class PluginManager {
+	private static final String HEADER = "plugin";
 	private static final List<Class<? extends EventHandler>> plugins = new ArrayList<Class<? extends EventHandler>>();
 	private static final List<Class<? extends EventHandler>> enabledPlugins = new ArrayList<Class<? extends EventHandler>>();
 	private static boolean sortEnabledPluginsNeeded = true;
@@ -54,7 +55,7 @@ public class PluginManager {
 	}
 
 	private static void register(Class<? extends EventHandler> plugin, boolean defaultEnabledValue) {
-		boolean enable = Settings.read(null, plugin.getName(), defaultEnabledValue);
+		boolean enable = Settings.read(HEADER, plugin.getName(), defaultEnabledValue);
 		Out.debug(PluginManager.class, "Registering " + plugin.getName());
 		plugins.add(plugin);
 
@@ -103,7 +104,7 @@ public class PluginManager {
 			Out.fatalException(e);
 		}
 
-		Settings.write(null, plugin.getName(), enable);
+		Settings.write(HEADER, plugin.getName(), enable);
 	}
 
 	public static List<Class<? extends EventHandler>> getPlugins() {
