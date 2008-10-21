@@ -135,7 +135,8 @@ public class TextWindow extends JScrollPane {
 
 	private void appendDate() {
 		if(addSeparator) {
-			html += "<hr>\n";
+			if(html.length() > 0)
+				html += "<hr>\n";
 			addSeparator = false;
 		}
 
