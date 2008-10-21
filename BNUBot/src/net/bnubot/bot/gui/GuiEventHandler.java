@@ -131,6 +131,14 @@ public class GuiEventHandler extends EventHandler {
 			}
 		}
 		titleChanged(source);
+
+		String channel = source.getChannel();
+		if(channel != null) {
+			// Set up the channel state
+			joinedChannel(source, channel);
+			for(BNetUser user : source.getUsers())
+				channelUser(source, user);
+		}
 	}
 
 	@Override
