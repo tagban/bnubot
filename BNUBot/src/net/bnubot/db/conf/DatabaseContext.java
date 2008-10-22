@@ -76,6 +76,8 @@ public class DatabaseContext {
 					maxAge = rank.getExpireDays();
 			}
 
+			if(maxAge == 0)
+				continue;
 			if(age <= maxAge)
 				continue;
 
