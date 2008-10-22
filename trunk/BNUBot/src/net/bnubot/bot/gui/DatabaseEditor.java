@@ -149,6 +149,7 @@ public class DatabaseEditor {
 		jl.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent e) {
 				if(changesMade) {
+					changesMade = false;
 					int option = JOptionPane.showConfirmDialog(
 							jf,
 							"You have made changes to the " + editorType + " " + currentRow.toDisplayString() + ". Do you want to save them?",
