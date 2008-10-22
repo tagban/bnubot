@@ -36,6 +36,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import net.bnubot.bot.gui.components.ConfigCheckBox;
+import net.bnubot.bot.gui.components.ConfigFlagChecks;
 import net.bnubot.bot.gui.components.ConfigTextField;
 import net.bnubot.db.CustomDataObject;
 import net.bnubot.db.conf.DatabaseContext;
@@ -285,15 +286,23 @@ public class DatabaseEditor {
 			ConfigCheckBox ccb = new ConfigCheckBox(null, ((Boolean)value).booleanValue());
 			ccb.addChangeListener(cl);
 			valueComponent = ccb;
+		} else if(fieldType.equals(int.class) && attr.getName().equals("flagSpoof")) {
+			final ConfigFlagChecks cfc = new ConfigFlagChecks((Integer)value);
+			cfc.addFocusListener(new FocusListener() {
+				public void focusGained(FocusEvent e) {}
+				public void focusLost(FocusEvent e) {
+					Integer flags = cfc.getFlags();
+					changesMade = !flags.equals(v);
+				}
+			});
+			valueComponent = cfc;
 		} else {
 			final ConfigTextField ctf = new ConfigTextField(v);
 			ctf.addFocusListener(new FocusListener() {
 				public void focusGained(FocusEvent e) {}
 				public void focusLost(FocusEvent e) {
 					String txt = ctf.getText();
-					if(txt.equals(v))
-						return;
-					changesMade = true;
+					changesMade = !txt.equals(v);
 				}
 			});
 			valueComponent = ctf;
@@ -309,8 +318,12 @@ public class DatabaseEditor {
 					return null;
 
 				// If it's a boolean, return a Boolean
-				if(fieldType.equals(Boolean.class))
+				if(valueComponent instanceof ConfigCheckBox)
 					return new Boolean(((ConfigCheckBox)valueComponent).isSelected());
+
+				// If it's a flag set, return an Integer
+				if(valueComponent instanceof ConfigFlagChecks)
+					return ((ConfigFlagChecks)valueComponent).getFlags();
 
 				String value = ((ConfigTextField)valueComponent).getText();
 				if(fieldType.equals(String.class))
