@@ -334,4 +334,15 @@ public class Profile {
 		// There aren't any connections at all!
 		return null;
 	}
+
+	/**
+	 * @param user the BNetUser to look for
+	 * @return true if the user is myUser in any of the profile's connections
+	 */
+	public boolean isOneOfMyUsers(BNetUser user) {
+		for(Connection con : cons)
+			if(con.getMyUser().equals(user))
+				return true;
+		return false;
+	}
 }

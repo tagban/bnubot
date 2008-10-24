@@ -196,7 +196,7 @@ public class TelnetEventHandler extends EventHandler implements Runnable {
 
 	@Override
 	public void recieveChat(Connection source, BNetUser user, String text) {
-		if(source.getMyUser().equals(user))
+		if(source.getProfile().isOneOfMyUsers(user))
 			return;
 		dispatch("1005 TALK " + user.getShortLogonName() + " " + HexDump.toHexWord(user.getFlags()) + " " + quoteText(text));
 	}

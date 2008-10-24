@@ -138,7 +138,7 @@ public class BotNetList extends JPanel {
 		}
 		if(ui.label == null) {
 			//TODO: user.getFlags()
-			Color fg = colors.getUserNameListColor(0, user.equals(source.getMyUser()));
+			Color fg = colors.getUserNameListColor(0, source.getProfile().isOneOfMyUsers(user));
 
 			ui.label = new JLabel(user.toString());
 			ui.label.setForeground(fg);
