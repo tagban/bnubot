@@ -6,7 +6,8 @@ package net.bnubot.bot.gui.components;
 
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -25,7 +26,7 @@ import net.bnubot.bot.gui.icons.IconsDotBniReader;
 public class ConfigFlagChecks extends Box {
 	private static final long serialVersionUID = 7429733084778682272L;
 
-	private final Hashtable<JCheckBox, Integer> cbs = new Hashtable<JCheckBox, Integer>();
+	private final Map<JCheckBox, Integer> cbs = new HashMap<JCheckBox, Integer>();
 	private final ConfigNumericHexTextField ctf;
 	private final ChangeListener cl = new ChangeListener() {
 		public void stateChanged(ChangeEvent e) {

@@ -15,9 +15,10 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import net.bnubot.bot.gui.settings.ConfigurationFrame;
 import net.bnubot.bot.gui.settings.OperationCancelledException;
@@ -206,7 +207,7 @@ public abstract class Connection extends Thread {
 	protected abstract boolean sendLoginPackets(Task connect) throws Exception;
 	protected abstract void initializeConnection(Task connect) throws Exception;
 
-	private static Hashtable<String, Long> connectionTimes = new Hashtable<String, Long>();
+	private static Map<String, Long> connectionTimes = new HashMap<String, Long>();
 	/**
 	 * Wait until it is safe to connect to the server
 	 */

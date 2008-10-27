@@ -11,8 +11,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -42,7 +43,7 @@ public class BotNetList extends JPanel {
 		JPopupMenu menu;
 	}
 
-	private final Hashtable<Integer, UserInfo> users = new Hashtable<Integer, UserInfo>();
+	private final Map<Integer, UserInfo> users = new HashMap<Integer, UserInfo>();
 	private final Box box = new Box(BoxLayout.Y_AXIS);
 	private final ColorScheme colors = ColorScheme.getColors();
 	private final GuiEventHandler geh;
@@ -53,9 +54,8 @@ public class BotNetList extends JPanel {
 	 * @return The UserInfo, or null if not found
 	 */
 	private UserInfo getUI(JLabel lbl) {
-		Enumeration<UserInfo> en = users.elements();
-		while(en.hasMoreElements()) {
-			UserInfo ui = en.nextElement();
+		for(Entry<Integer, UserInfo> en : users.entrySet()) {
+			UserInfo ui = en.getValue();
 			if(ui.label == lbl)
 				return ui;
 		}
@@ -67,9 +67,8 @@ public class BotNetList extends JPanel {
 		if(ui != null)
 			return ui;
 
-		Enumeration<UserInfo> en = users.elements();
-		while(en.hasMoreElements()) {
-			ui = en.nextElement();
+		for(Entry<Integer, UserInfo> en : users.entrySet()) {
+			ui = en.getValue();
 			if(ui.user.equals(user))
 				return ui;
 		}
@@ -99,9 +98,8 @@ public class BotNetList extends JPanel {
 		JMenuItem jmi = (JMenuItem) arg0.getSource();
 		JPopupMenu jp = (JPopupMenu) jmi.getParent();
 
-		Enumeration<UserInfo> en = users.elements();
-		while(en.hasMoreElements()) {
-			UserInfo ui = en.nextElement();
+		for(Entry<Integer, UserInfo> en : users.entrySet()) {
+			UserInfo ui = en.getValue();
 			if(ui.menu == jp) {
 				//Found them
 				return ui;
