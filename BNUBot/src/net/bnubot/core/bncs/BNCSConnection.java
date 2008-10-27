@@ -426,12 +426,12 @@ public class BNCSConnection extends Connection {
 						bnlsOut.sendPacket(bnlsOutputStream);
 
 						long startTime = System.currentTimeMillis();
-						Task bnlsTask = createTask("BNLS_VERSIONCHECKEX2", 5000, "ms");
+						Task bnlsTask = createTask("BNLS_VERSIONCHECKEX2", 15000, "ms");
 						while (bnlsInputStream.available() < 3) {
 							Thread.sleep(50);
 
 							long timeElapsed = System.currentTimeMillis() - startTime;
-							if (timeElapsed > 5000) {
+							if (timeElapsed > 15000) {
 								setBNLSConnected(false);
 								throw new Exception("BNLS_VERSIONCHECKEX2 timed out");
 							}
