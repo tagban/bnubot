@@ -7,10 +7,9 @@ package net.bnubot.core;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Dictionary;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import net.bnubot.core.commands.AccountDoesNotExistException;
 import net.bnubot.core.commands.CommandRunnable;
@@ -33,7 +32,7 @@ import net.bnubot.vercheck.VersionCheck;
  */
 public class Profile {
 	private static final List<Profile> profiles = new ArrayList<Profile>();
-	private static final Dictionary<String, CommandRunnable> commands = new Hashtable<String, CommandRunnable>();
+	private static final Map<String, CommandRunnable> commands = new HashMap<String, CommandRunnable>();
 
 	protected static List<Profile> getProfiles() {
 		return profiles;
@@ -300,8 +299,7 @@ public class Profile {
 		containing = containing.toLowerCase();
 
 		List<String> ret = new ArrayList<String>();
-		for(Enumeration<String> en = commands.keys(); en.hasMoreElements();) {
-			String command = en.nextElement();
+		for(String command : commands.keySet()) {
 			if(command.toLowerCase().startsWith(containing))
 				ret.add(command);
 		}

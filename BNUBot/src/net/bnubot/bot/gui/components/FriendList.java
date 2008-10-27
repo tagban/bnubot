@@ -6,8 +6,9 @@
 package net.bnubot.bot.gui.components;
 
 import java.awt.BorderLayout;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -32,7 +33,7 @@ public class FriendList extends JPanel {
 		JLabel label;
 	}
 
-	private Hashtable<String, FriendInfo> friends = null;
+	private Map<String, FriendInfo> friends = null;
 	private Box b = null;
 	private final ColorScheme cs = ColorScheme.getColors();
 
@@ -42,9 +43,8 @@ public class FriendList extends JPanel {
 	 * @return The FriendInfo, or null if not found
 	 */
 	private FriendInfo get(JLabel lbl) {
-		Enumeration<FriendInfo> en = friends.elements();
-		while(en.hasMoreElements()) {
-			FriendInfo fi = en.nextElement();
+		for(Entry<String, FriendInfo> en : friends.entrySet()) {
+			FriendInfo fi = en.getValue();
 			if(fi.label == lbl)
 				return fi;
 		}
@@ -53,16 +53,15 @@ public class FriendList extends JPanel {
 
 	public FriendList() {
 		super(new BorderLayout());
-		this.friends = new Hashtable<String, FriendInfo>();
+		this.friends = new HashMap<String, FriendInfo>();
 		setBackground(cs.getBackgroundColor());
 		b = new Box(BoxLayout.Y_AXIS);
 		add(b, BorderLayout.NORTH);
 	}
 
 	public void clear() {
-		Enumeration<FriendInfo> e = friends.elements();
-		while(e.hasMoreElements()) {
-			FriendInfo fi = e.nextElement();
+		for(Entry<String, FriendInfo> en : friends.entrySet()) {
+			FriendInfo fi = en.getValue();
 			b.remove(fi.label);
 			fi.label = null;
 		}

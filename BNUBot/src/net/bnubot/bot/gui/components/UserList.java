@@ -12,8 +12,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -49,7 +50,7 @@ public class UserList extends JPanel {
 		JPopupMenu menu;
 	}
 
-	private final Hashtable<BNetUser, UserInfo> users = new Hashtable<BNetUser, UserInfo>();
+	private final Map<BNetUser, UserInfo> users = new HashMap<BNetUser, UserInfo>();
 	private final Box box = new Box(BoxLayout.Y_AXIS);
 	private final ColorScheme colors = ColorScheme.getColors();
 	private final GuiEventHandler geh;
@@ -60,9 +61,8 @@ public class UserList extends JPanel {
 	 * @return The UserInfo, or null if not found
 	 */
 	private UserInfo getUI(JLabel lbl) {
-		Enumeration<UserInfo> en = users.elements();
-		while(en.hasMoreElements()) {
-			UserInfo ui = en.nextElement();
+		for(Entry<BNetUser, UserInfo> en : users.entrySet()) {
+			UserInfo ui = en.getValue();
 			if(ui.label == lbl)
 				return ui;
 		}
@@ -74,9 +74,8 @@ public class UserList extends JPanel {
 		if(ui != null)
 			return ui;
 
-		Enumeration<UserInfo> en = users.elements();
-		while(en.hasMoreElements()) {
-			ui = en.nextElement();
+		for(Entry<BNetUser, UserInfo> en : users.entrySet()) {
+			ui = en.getValue();
 			if(ui.user.equals(user))
 				return ui;
 		}
@@ -122,9 +121,8 @@ public class UserList extends JPanel {
 		JMenuItem jmi = (JMenuItem) arg0.getSource();
 		JPopupMenu jp = (JPopupMenu) jmi.getParent();
 
-		Enumeration<UserInfo> en = users.elements();
-		while(en.hasMoreElements()) {
-			UserInfo ui = en.nextElement();
+		for(Entry<BNetUser, UserInfo> en : users.entrySet()) {
+			UserInfo ui = en.getValue();
 			if(ui.menu == jp) {
 				//Found them
 				return ui;
@@ -188,9 +186,8 @@ public class UserList extends JPanel {
 			ui.label.addMouseListener(new MouseListener() {
 				public void mouseClicked(MouseEvent arg0) {
 					JLabel jl = (JLabel) arg0.getSource();
-					Enumeration<UserInfo> en = users.elements();
-					while(en.hasMoreElements()) {
-						UserInfo ui = en.nextElement();
+					for(Entry<BNetUser, UserInfo> en : users.entrySet()) {
+						UserInfo ui = en.getValue();
 						if(ui.label == jl) {
 							switch(arg0.getButton()) {
 							case MouseEvent.BUTTON1:

@@ -12,9 +12,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import net.bnubot.core.CommandResponseCookie;
 import net.bnubot.core.Connection;
@@ -47,8 +48,8 @@ import org.apache.cayenne.ObjectContext;
  * @author scotta
  */
 public class CommandEventHandler extends EventHandler {
-	private static final Hashtable<Connection, Boolean> sweepBanInProgress = new Hashtable<Connection, Boolean>();
-	private static final Hashtable<Connection, Integer> sweepBannedUsers = new Hashtable<Connection, Integer>();
+	private static final Map<Connection, Boolean> sweepBanInProgress = new HashMap<Connection, Boolean>();
+	private static final Map<Connection, Integer> sweepBannedUsers = new HashMap<Connection, Integer>();
 
 	private static final List<TimeBan> timeBannedUsers = new ArrayList<TimeBan>();
 	private static final Thread timeBanThread = new Thread() {
@@ -94,13 +95,13 @@ public class CommandEventHandler extends EventHandler {
 		}
 	}
 
-	private static final Hashtable<Connection, Vote> votes = new Hashtable<Connection, Vote>();
+	private static final Map<Connection, Vote> votes = new HashMap<Connection, Vote>();
 	private static class Vote extends Thread {
 		private long startTime;
 		private Connection connection;
 		private BNetUser subject;
 		private boolean isBan;
-		private Hashtable<String, Boolean> votes = new Hashtable<String, Boolean>();
+		private Map<String, Boolean> votes = new HashMap<String, Boolean>();
 
 		private boolean voteCancelled = false;
 

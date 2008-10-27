@@ -6,8 +6,9 @@
 package net.bnubot.bot.gui.components;
 
 import java.awt.BorderLayout;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -33,7 +34,7 @@ public class ClanList extends JPanel {
 		JLabel label;
 	}
 
-	private Hashtable<String, ClanMemberInfo> members = null;
+	private Map<String, ClanMemberInfo> members = null;
 	private Box b = null;
 	private final ColorScheme cs = ColorScheme.getColors();
 
@@ -42,9 +43,8 @@ public class ClanList extends JPanel {
 		if(cmi != null)
 			return cmi;
 
-		Enumeration<ClanMemberInfo> en = members.elements();
-		while(en.hasMoreElements()) {
-			cmi = en.nextElement();
+		for(Entry<String, ClanMemberInfo> en : members.entrySet()) {
+			cmi = en.getValue();
 			if(cmi.entry.equals(username))
 				return cmi;
 		}
@@ -62,9 +62,8 @@ public class ClanList extends JPanel {
 	 * @return The ClanMemberInfo, or null if not found
 	 */
 	private ClanMemberInfo get(JLabel lbl) {
-		Enumeration<ClanMemberInfo> en = members.elements();
-		while(en.hasMoreElements()) {
-			ClanMemberInfo cmi = en.nextElement();
+		for(Entry<String, ClanMemberInfo> en : members.entrySet()) {
+			ClanMemberInfo cmi = en.getValue();
 			if(cmi.label == lbl)
 				return cmi;
 		}
@@ -85,16 +84,15 @@ public class ClanList extends JPanel {
 
 	public ClanList() {
 		super(new BorderLayout());
-		this.members = new Hashtable<String, ClanMemberInfo>();
+		this.members = new HashMap<String, ClanMemberInfo>();
 		setBackground(cs.getBackgroundColor());
 		b = new Box(BoxLayout.Y_AXIS);
 		add(b, BorderLayout.NORTH);
 	}
 
 	public void clear() {
-		Enumeration<ClanMemberInfo> e = members.elements();
-		while(e.hasMoreElements()) {
-			ClanMemberInfo cmi = e.nextElement();
+		for(Entry<String, ClanMemberInfo> en : members.entrySet()) {
+			ClanMemberInfo cmi = en.getValue();
 			b.remove(cmi.label);
 			cmi.label = null;
 		}
