@@ -1,5 +1,6 @@
 ﻿#summary How to download and install BNU-Bot
 #labels Featured,Phase-Deploy
+<wiki:toc/>
 
 = Read the instructions fully before asking questions! =
 The majority of the questions people ask after installing the bot are already answered here, so save yourself the embarrassment and read the whole thing before asking!
