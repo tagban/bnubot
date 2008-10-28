@@ -1,5 +1,6 @@
 #summary How to set up trivia for BNU-Bot.
 #labels Featured,Phase-Support
+<wiki:toc/>
 
 == Enabling Trivia ==
 Enable the TriviaEventHandler in the Settings window.
