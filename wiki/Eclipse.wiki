@@ -1,4 +1,6 @@
 #labels Phase-Deploy,Featured
+<wiki:toc/>
+
 = Installing and configuring Eclipse for BNU`Bot 2.0 ===
 == Get Java ==
 If you don't already have the JRE (1.5 or later), get it from Sun's website.
