@@ -15,15 +15,23 @@ import java.security.MessageDigest;
  */
 public class SHA1Sum {
 	private final byte[] sha1sum;
+	private String display = null;
 
 	public SHA1Sum(String hexStr) throws Exception {
 		if(!hexStr.matches("[0-9a-fA-F]{40}"))
 			throw new Exception("Invalid format: " + hexStr);
+		display = hexStr.toLowerCase();
 		sha1sum = new byte[20];
 		for(int i = 0; i < 20; i++) {
 			int pos = i << 1;
 			sha1sum[i] = (byte) Integer.parseInt(hexStr.substring(pos, pos+2), 16);
 		}
+	}
+
+	public SHA1Sum(byte[] bytes) throws Exception {
+		MessageDigest digest = MessageDigest.getInstance("SHA1");
+		digest.update(bytes, 0, bytes.length);
+		sha1sum = digest.digest();
 	}
 
 	public SHA1Sum(File f) throws Exception {
@@ -52,10 +60,12 @@ public class SHA1Sum {
 
 	@Override
 	public String toString() {
-		String out = "";
-		for(byte b : sha1sum)
-			out += toHex(b);
-		return out;
+		if(display == null) {
+			display = "";
+			for(byte b : sha1sum)
+				display += toHex(b);
+		}
+		return display;
 	}
 
 	public byte[] getSum() {
