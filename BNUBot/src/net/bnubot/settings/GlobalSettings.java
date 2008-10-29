@@ -5,6 +5,7 @@
 
 package net.bnubot.settings;
 
+import java.awt.HeadlessException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -268,9 +269,15 @@ public class GlobalSettings {
 		recruitTagPrefix =	Settings.read(null, "recruitTagPrefix", "BNU-");
 		recruitTagSuffix =	Settings.read(null, "recruitTagSuffix", (String)null);
 		if(PluginManager.getEnableGui()) {
-			setLookAndFeelTheme(Settings.read(null, "lookAndFeelTheme", "SkyKrupp"));
+			setLookAndFeelTheme(Settings.read(null, "lookAndFeelTheme", "DarkStar"));
 			setLookAndFeel(Settings.read(null, "lookAndFeel", "JGoodies Plastic XP"));
-			GuiDesktop.getInstance();
+			try {
+				GuiDesktop.getInstance();
+			} catch(HeadlessException e) {
+				Out.error(GlobalSettings.class, "Failed to initialize GUI; switching to command-line interface");
+				PluginManager.setEnableGui(false);
+				PluginManager.setEnableCli(true);
+			}
 		}
 		if(PluginManager.getEnableSwt())
 			SWTDesktop.getInstance();
