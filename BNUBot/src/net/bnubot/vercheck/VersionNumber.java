@@ -121,10 +121,6 @@ public class VersionNumber {
 		VER_STRING = null;
 	}
 
-	public Integer revision() {
-		return VER_SVN_REVISION;
-	}
-
 	public Integer getMajor() {
 		return VER_MAJOR;
 	}
@@ -159,5 +155,9 @@ public class VersionNumber {
 	public void setRelease(Integer release) {
 		VER_RELEASE = release;
 		VER_STRING = null;
+	}
+
+	public Integer getSvnRevision() {
+		return VER_SVN_REVISION;
 	}
 }
