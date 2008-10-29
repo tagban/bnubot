@@ -4,6 +4,7 @@
 * Added graphical flagSpoof editor to the database editor
 * Fixed bug causing expireDays=0 to mean expire immediately
 * Increased the BNLS timeout to 15 seconds
+* Added an exception tracker
 
 2.1.0 (r1640) 2008-10-06:
 * Added BotNet account login
