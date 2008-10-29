@@ -109,8 +109,8 @@ public class VersionCheck {
 
 		try {
 			String url = "http://www.clanbnu.net/bnubot/version.php?";
-			if(!forceDownload && (CurrentVersion.version().revision() != null))
-				url += "svn=" + CurrentVersion.version().revision() + "&";
+			if(!forceDownload && (CurrentVersion.version().getSvnRevision() != null))
+				url += "svn=" + CurrentVersion.version().getSvnRevision() + "&";
 			url += "release=" + rt.toString();
 			url += "&os=" + OperatingSystem.userOS.name();
 			if(Out.isDebug(VersionCheck.class))
