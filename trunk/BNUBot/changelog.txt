@@ -1,10 +1,10 @@
 2.1.1:
-* Enabled hot-swapping plugins (may require re-configuring enabled plugins)
+* Enabled hot-swapping plugins (may require re-configuring enabled plugins) (Issue 103)
 * The database editor will prompt before discarding unsaved changes
 * Added graphical flagSpoof editor to the database editor
 * Fixed bug causing expireDays=0 to mean expire immediately
 * Increased the BNLS timeout to 15 seconds
-* Added an exception tracker
+* Added an exception tracker (Issue 91)
 
 2.1.0 (r1640) 2008-10-06:
 * Added BotNet account login
