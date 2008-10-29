@@ -17,6 +17,7 @@ import net.bnubot.settings.GlobalSettings;
 import net.bnubot.settings.Settings;
 import net.bnubot.util.Out;
 import net.bnubot.vercheck.CurrentVersion;
+import net.bnubot.vercheck.ExceptionReporter;
 
 import org.apache.commons.logging.impl.NoOpLog;
 import org.eclipse.swt.widgets.Display;
@@ -40,9 +41,13 @@ public class Main {
 		// Set the default log file
 		if(CurrentVersion.fromJar())
 			try {
-				Out.setOutputStream(new PrintStream(new File("log.txt")));
-			} catch (FileNotFoundException e) {
-				Out.exception(e);
+				File logFile = new File("log.txt");
+
+				if(logFile.exists() && (logFile.length() > 0))
+					ExceptionReporter.reportErrors(logFile);
+				Out.setOutputStream(new PrintStream(logFile));
+			} catch (Exception e) {
+				Out.fatalException(e);
 			}
 
 		// Disable Cayenne logging!

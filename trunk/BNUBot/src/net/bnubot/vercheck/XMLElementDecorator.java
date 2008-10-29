@@ -16,6 +16,7 @@ import net.bnubot.util.TimeFormatter;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.ErrorHandler;
+import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -32,7 +33,11 @@ public class XMLElementDecorator {
 	private String contents = null;
 	private static XMLElementDecorator elem = null;
 
-	public synchronized static XMLElementDecorator parse(String url) throws Exception {
+	public static XMLElementDecorator parse(String url) throws Exception {
+		return parse(new InputSource(url));
+	}
+
+	public synchronized static XMLElementDecorator parse(InputSource source) throws Exception {
 		elem = new XMLElementDecorator("root", null);
 
 		XMLReader xr = XMLReaderFactory.createXMLReader();
@@ -75,7 +80,7 @@ public class XMLElementDecorator {
 			}
 		});
 
-		xr.parse(url);
+		xr.parse(source);
 
 		return elem;
 	}
@@ -141,6 +146,10 @@ public class XMLElementDecorator {
 		if(contents.matches("0x[a-fA-F0-9]+"))
 			return Integer.parseInt(contents.substring(2), 16);
 		throw new NumberFormatException(contents);
+	}
+
+	public boolean getBoolean() {
+		return new Boolean(contents).booleanValue();
 	}
 
 	public Date getDate() {
