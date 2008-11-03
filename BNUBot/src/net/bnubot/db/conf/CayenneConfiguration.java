@@ -225,10 +225,7 @@ public class CayenneConfiguration implements DataSourceFactory {
 
 				Out.error(getClass(), "Database version is " + version + ", we require " + compatibleVersion);
 			}
-		} catch(SQLException e) {
-			if(Out.isDebug(getClass()));
-				Out.exception(e);
-		}
+		} catch(SQLException e) {}
 
 		if(rs != null)
 			close(rs);
