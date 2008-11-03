@@ -12,7 +12,7 @@ import org.apache.cayenne.DataObjectUtils;
  * @author scotta
  */
 @SuppressWarnings("serial")
-public abstract class CustomDataObject extends CayenneDataObject {
+public abstract class CustomDataObject extends CayenneDataObject implements Comparable<CustomDataObject> {
 	/**
 	 * Try to save changes to this object
 	 * @throws Exception If a commit error occurs
@@ -26,7 +26,22 @@ public abstract class CustomDataObject extends CayenneDataObject {
 		}
 	}
 
-	public String toDisplayString() {
-		return Integer.toString(DataObjectUtils.intPKForObject(this));
+	@SuppressWarnings("unchecked")
+	public Comparable toSortField() {
+		return new Integer(DataObjectUtils.intPKForObject(this));
+	}
+
+	public final String toDisplayString() {
+		return toSortField().toString();
+	}
+
+	@Override
+	public String toString() {
+		return toDisplayString();
+	}
+
+	@SuppressWarnings("unchecked")
+	public final int compareTo(CustomDataObject o) {
+		return toSortField().compareTo(o.toSortField());
 	}
 }

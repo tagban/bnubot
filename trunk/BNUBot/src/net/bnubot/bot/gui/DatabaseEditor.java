@@ -13,6 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -20,7 +21,6 @@ import java.util.Map;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -81,6 +81,7 @@ public class DatabaseEditor {
 		if(context == null)
 			throw new IllegalStateException("No database is initialized");
 		List<CustomDataObject>dataRows = context.performQuery(new SelectQuery(clazz));
+		Collections.sort(dataRows);
 
 		editorType = clazz.getSimpleName();
 		jf.setTitle(editorType + " Editor");
@@ -237,9 +238,14 @@ public class DatabaseEditor {
 		}
 
 		final HashMap<String, CustomDataObject> theseOptions = new HashMap<String, CustomDataObject>();
-		for(CustomDataObject v : (List<CustomDataObject>)context.performQuery(new SelectQuery(fieldType)))
-			theseOptions.put(getDisplayString(v), v);
-		ComboBoxModel model = new DefaultComboBoxModel(theseOptions.keySet().toArray());
+		List<CustomDataObject> relTargets = context.performQuery(new SelectQuery(fieldType));
+		Collections.sort(relTargets);
+		DefaultComboBoxModel model = new DefaultComboBoxModel();
+		for(CustomDataObject v : relTargets) {
+			String s = getDisplayString(v);
+			model.addElement(s);
+			theseOptions.put(s, v);
+		}
 		final JComboBox valueComponent = new JComboBox(model);
 		valueComponent.setSelectedItem((value == null) ? null : getDisplayString(value));
 
