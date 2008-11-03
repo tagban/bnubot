@@ -175,7 +175,8 @@ public class Account extends _Account {
 	}
 
 	@Override
-	public String toDisplayString() {
+	@SuppressWarnings("unchecked")
+	public Comparable toSortField() {
 		return getName();
 	}
 }

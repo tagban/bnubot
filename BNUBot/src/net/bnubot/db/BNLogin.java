@@ -60,7 +60,8 @@ public class BNLogin extends _BNLogin {
 	}
 
 	@Override
-	public String toDisplayString() {
+	@SuppressWarnings("unchecked")
+	public Comparable toSortField() {
 		return getLogin();
 	}
 

@@ -100,7 +100,8 @@ public class Command extends _Command {
 	}
 
 	@Override
-	public String toDisplayString() {
+	@SuppressWarnings("unchecked")
+	public Comparable toSortField() {
 		return getName();
 	}
 
