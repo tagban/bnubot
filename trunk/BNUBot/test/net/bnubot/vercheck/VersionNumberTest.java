@@ -20,7 +20,7 @@ public class VersionNumberTest extends TestCase {
 		assertEquals(1, vn.getMinor().intValue());
 		assertEquals(2, vn.getRevision().intValue());
 		assertEquals(3, vn.getRelease().intValue());
-		assertEquals(4, vn.revision().intValue());
+		assertEquals(4, vn.getSvnRevision().intValue());
 		assertEquals(new Date(5), vn.getBuildDate());
 	}
 
