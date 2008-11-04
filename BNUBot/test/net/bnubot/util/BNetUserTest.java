@@ -42,53 +42,25 @@ public class BNetUserTest extends TestCase {
 		assertEquals(u.getFullAccountName(), "testuser@USEast");
 	}
 
-	public void testDifferentRealm2() {
-		BNetUser u = new BNetUser(null, "testuser@Azeroth", "someone@USEast");
-		assertEquals(u.getShortLogonName(), "testuser@Azeroth");
-		assertEquals(u.getFullLogonName(), "testuser@Azeroth");
-		assertEquals(u.getFullAccountName(), "testuser@Azeroth");
-	}
-
 	public void testSameRealmWithNumber() {
-		BNetUser u = new BNetUser(null, "testuser#2@USEast", "someone@USEast");
+		BNetUser u = new BNetUser(null, "testuser#2@USEast", "USEast");
 		assertEquals(u.getShortLogonName(), "testuser#2");
 		assertEquals(u.getFullLogonName(), "testuser#2@USEast");
 		assertEquals(u.getFullAccountName(), "testuser@USEast");
 	}
 
 	public void testNoRealmWithNumber() {
-		BNetUser u = new BNetUser(null, "testuser#2", "someone@USEast");
+		BNetUser u = new BNetUser(null, "testuser#2", "USEast");
 		assertEquals(u.getShortLogonName(), "testuser#2");
 		assertEquals(u.getFullLogonName(), "testuser#2@USEast");
 		assertEquals(u.getFullAccountName(), "testuser@USEast");
 	}
 
 	public void testDifferentRealmWithNumber() {
-		BNetUser u = new BNetUser(null, "testuser@Azeroth#2", "someone@USEast");
+		BNetUser u = new BNetUser(null, "testuser@Azeroth#2", "USEast");
 		assertEquals(u.getShortLogonName(), "testuser#2@Azeroth");
 		assertEquals(u.getFullLogonName(), "testuser#2@Azeroth");
 		assertEquals(u.getFullAccountName(), "testuser@Azeroth");
-	}
-
-	public void testDifferentRealmWithBothNumbers() {
-		BNetUser u = new BNetUser(null, "testuser#2@Azeroth", "someone#2@USEast");
-		assertEquals(u.getShortLogonName(), "testuser#2@Azeroth");
-		assertEquals(u.getFullLogonName(), "testuser#2@Azeroth");
-		assertEquals(u.getFullAccountName(), "testuser@Azeroth");
-	}
-
-	public void testSameRealmWithBothNumbers() {
-		BNetUser u = new BNetUser(null, "testuser#2@USEast", "someone#2@USEast");
-		assertEquals(u.getShortLogonName(), "testuser#2");
-		assertEquals(u.getFullLogonName(), "testuser#2@USEast");
-		assertEquals(u.getFullAccountName(), "testuser@USEast");
-	}
-
-	public void testSameRealmWithNumber2() {
-		BNetUser u = new BNetUser(null, "testuser@USEast", "someone#2@USEast");
-		assertEquals(u.getShortLogonName(), "testuser");
-		assertEquals(u.getFullLogonName(), "testuser@USEast");
-		assertEquals(u.getFullAccountName(), "testuser@USEast");
 	}
 
 	public void testIlly() {

@@ -57,7 +57,7 @@ public class BNetUser {
 
 		int i = myRealm.indexOf('@');
 		if(i != -1)
-			myRealm = myRealm.substring(i + 1);
+			throw new IllegalStateException();
 
 		i = user.indexOf('#');
 		if(i != -1) {
@@ -321,15 +321,15 @@ public class BNetUser {
 		if(o == this)
 			return true;
 
-		if(o instanceof BNetUser) {
-			BNetUser u = (BNetUser)o;
-			if(u.fullLogonName.equalsIgnoreCase(fullLogonName))
-				return true;
-		} else if(o instanceof String) {
+		if(o instanceof String) {
 			String s = (String)o;
+			if(s.equalsIgnoreCase(shortLogonName))
+				return true;
 			if(s.equalsIgnoreCase(fullLogonName))
 				return true;
-			if(s.equalsIgnoreCase(shortLogonName))
+		} else if(o instanceof BNetUser) {
+			BNetUser u = (BNetUser)o;
+			if(u.fullLogonName.equalsIgnoreCase(fullLogonName))
 				return true;
 		} else {
 			throw new IllegalArgumentException("Unknown type " + o.getClass().getName());
