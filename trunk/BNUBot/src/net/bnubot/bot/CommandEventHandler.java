@@ -1231,7 +1231,7 @@ public class CommandEventHandler extends EventHandler {
 					return;
 				}
 
-				BNetUser target = new BNetUser(source, params[0], user.getFullAccountName());
+				BNetUser target = new BNetUser(source, params[0], user);
 				source.sendChat("/unban " + target.getFullLogonName());
 				setInfoForwarding(source, user, whisperBack);
 
