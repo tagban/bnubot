@@ -13,13 +13,17 @@ import net.bnubot.core.bncs.ProductIDs;
  * @author scotta
  */
 public class ConnectionSettings implements Serializable {
+	private static final String USEAST_BATTLE_NET = "useast.battle.net";
+	private static final String USWEST_BATTLE_NET = "uswest.battle.net";
+	private static final String EUROPE_BATTLE_NET = "europe.battle.net";
+	private static final String ASIA_BATTLE_NET = "asia.battle.net";
 	private static final long serialVersionUID = -8169038278487314919L;
 
 	public static final String[] bncsServers = new String[] {
-			"useast.battle.net",
-			"uswest.battle.net",
-			"europe.battle.net",
-			"asia.battle.net",
+			USEAST_BATTLE_NET,
+			USWEST_BATTLE_NET,
+			EUROPE_BATTLE_NET,
+			ASIA_BATTLE_NET,
 			};
 
 	public static final String[] dtServers = new String[] {
@@ -118,25 +122,25 @@ public class ConnectionSettings implements Serializable {
 		switch(product) {
 		case WAR3:
 		case W3XP: {
-			if(server.equals("useast.battle.net"))
+			if(server.equals(USEAST_BATTLE_NET))
 				return "Azeroth";
-			if(server.equals("uswest.battle.net"))
+			if(server.equals(USWEST_BATTLE_NET))
 				return "Lordaeron";
-			if(server.equals("europe.battle.net"))
+			if(server.equals(EUROPE_BATTLE_NET))
 				return "Northrend";
-			if(server.equals("asia.battle.net"))
+			if(server.equals(ASIA_BATTLE_NET))
 				return "Kalimdor";
 			break;
 		}
 
 		default: {
-			if(server.equals("useast.battle.net"))
+			if(server.equals(USEAST_BATTLE_NET))
 				return "USEast";
-			if(server.equals("uswest.battle.net"))
+			if(server.equals(USWEST_BATTLE_NET))
 				return "USWest";
-			if(server.equals("europe.battle.net"))
+			if(server.equals(EUROPE_BATTLE_NET))
 				return "Europe";
-			if(server.equals("asia.battle.net"))
+			if(server.equals(ASIA_BATTLE_NET))
 				return "Asia";
 			break;
 		}
@@ -184,7 +188,7 @@ public class ConnectionSettings implements Serializable {
 
 		header = "Profile_" + profile;
 		connectionType =	Settings.read(header, "connectionType", ConnectionType.BNCS);
-		server =	Settings.read(header, "server", "useast.battle.net");
+		server =	Settings.read(header, "server", USEAST_BATTLE_NET);
 		port =	Settings.read(header, "port", 6112);
 		channel =	Settings.read(header, "channel", "Clan BNU");
 		trigger =	Settings.read(header, "trigger", "!");
