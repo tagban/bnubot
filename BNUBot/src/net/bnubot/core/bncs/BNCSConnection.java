@@ -1913,7 +1913,7 @@ public class BNCSConnection extends Connection {
 			p.writeNTString(data);
 			p.sendPacket(bncsOutputStream);
 		} catch (IOException e) {
-			Out.exception(e);
+			dispatchRecieveError(e.getMessage());
 			disconnect(ConnectionState.ALLOW_CONNECT);
 			return;
 		}
