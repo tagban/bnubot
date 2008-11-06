@@ -18,7 +18,6 @@ import java.util.Map;
 
 import net.bnubot.Main;
 import net.bnubot.util.Out;
-import net.bnubot.util.SHA1Sum;
 
 import org.xml.sax.InputSource;
 
@@ -47,32 +46,42 @@ public class ExceptionReporter {
 			line = br.readLine();
 			if (line.startsWith("["))
 				continue;
-			if (!line.contains("Exception: "))
+			if (!line.contains(": "))
 				continue;
 
 			String exception = line;
+			String exceptionAbstract = exception;
 
 			line = br.readLine();
 			do {
 				if (!line.startsWith("\t") && !line.startsWith("Caused by: "))
 					break;
 				exception += "\n" + line;
+
+				// Trim off the source info for the abstract
+				int i = line.indexOf('(');
+				if(i != -1)
+					line = line.substring(0, i);
+				exceptionAbstract += "\n" + line;
 				line = br.readLine();
 			} while (line != null);
 
-			reportException(exception);
+			reportException(exception, exceptionAbstract);
 		} while (line != null);
 	}
 
-	private static void reportException(String exception) throws Exception {
-		SHA1Sum sha1 = new SHA1Sum(exception.getBytes());
-
+	private static void reportException(String exception, String exceptionAbstract) throws Exception {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("svn", CurrentVersion.version().getSvnRevision().toString());
-		params.put("sha1", sha1.toString());
 		params.put("exception", exception);
+		params.put("exceptionAbstract", exceptionAbstract);
 
-		InputSource source = new InputSource(doPost(params));
+		InputStream doPost = doPost(params);
+//		BufferedReader br = new BufferedReader(new InputStreamReader(doPost));
+//		for(String line = br.readLine(); line != null; line = br.readLine())
+//			System.out.println(line);
+
+		InputSource source = new InputSource(doPost);
 		XMLElementDecorator elem = XMLElementDecorator.parse(source);
 		System.out.println(elem.toString());
 
