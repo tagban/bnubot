@@ -170,6 +170,8 @@ public class Profile {
 	}
 
 	private boolean insertConnection(Connection con) throws Exception {
+		Out.setThreadOutputConnection(con);
+
 		synchronized(cons) {
 			// Add it to the list of connections
 			if(!cons.add(con))
@@ -194,9 +196,6 @@ public class Profile {
 					} catch(Exception e) {
 						Out.exception(e);
 					}
-
-				// Now that the CLI/GUI are up, let logging go to them
-				Out.setThreadOutputConnectionIfNone(con);
 			}
 		}
 

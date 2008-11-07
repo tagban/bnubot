@@ -72,6 +72,9 @@ public class Out {
 	}
 
 	private static Connection getOutConnection() {
+		Thread t = Thread.currentThread();
+		if(t instanceof Connection)
+			return (Connection)t;
 		final Connection oc = outConnection.get();
 		if(oc != null)
 			return oc;
@@ -203,15 +206,6 @@ public class Out {
 	 */
 	public static void setThreadOutputConnection(Connection g) {
 		outConnection.set(g);
-	}
-
-	/**
-	 * Sets the Connection for the information to be displayed to for this thread if none is already set.
-	 * @param g Connection to send messages to
-	 */
-	public static void setThreadOutputConnectionIfNone(Connection g) {
-		if(outConnection.get() == null)
-			outConnection.set(g);
 	}
 
 	/**

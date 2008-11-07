@@ -112,8 +112,6 @@ public class GuiEventHandler extends EventHandler {
 	private static Map<Connection, JMenuItem> settingsMenuItems = new HashMap<Connection, JMenuItem>();
 	@Override
 	public void initialize(final Connection source) {
-		Out.setThreadOutputConnection(source);
-
 		JMenuItem settings = new JMenuItem("Settings");
 		settings.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
