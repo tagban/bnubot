@@ -179,7 +179,7 @@ public class CayenneConfiguration implements DataSourceFactory {
 					new DatabaseWizard();
 			}
 		} catch(Exception e) {
-			Out.exception(e);
+			Out.error(getClass(), "Failed to initialize the database: " + e.getMessage());
 			throw e;
 		}
 
