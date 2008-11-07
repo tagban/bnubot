@@ -5,6 +5,7 @@
 
 package net.bnubot.core;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -188,6 +189,8 @@ public class Profile {
 				for(Class<? extends EventHandler> plugin : PluginManager.getEnabledPlugins())
 					try {
 						con.addEventHandler(constructPlugin(plugin));
+					} catch(InvocationTargetException e) {
+						Out.exception(e.getCause());
 					} catch(Exception e) {
 						Out.exception(e);
 					}
