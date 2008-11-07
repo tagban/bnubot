@@ -71,15 +71,15 @@ public class KeyManager {
 		cdkeys.clear();
 	}
 
-	private static void initialize() {
+	public static void initialize() {
 		if(initialized)
 			return;
 		initialized = true;
 
-		File keys = Settings.keysFile;
 		BufferedReader is = null;
 
 		try {
+			File keys = Settings.keysFile;
 			if(!keys.exists()) {
 				keys.createNewFile();
 
