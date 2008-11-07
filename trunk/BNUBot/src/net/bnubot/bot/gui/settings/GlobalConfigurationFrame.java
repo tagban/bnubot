@@ -466,6 +466,7 @@ public class GlobalConfigurationFrame extends JDialog {
 	private void loadCDKeys() {
 		String keys = null;
 		try {
+			KeyManager.initialize();
 			BufferedReader br = new BufferedReader(new FileReader(Settings.keysFile));
 			while(true) {
 				String l = br.readLine();
