@@ -134,10 +134,8 @@ public abstract class Connection extends Thread {
 				myUser = null;
 				dispatchTitleChanged();
 
-				if(connectionState == ConnectionState.ALLOW_CONNECT) {
-					// Warn the user if auto-connect is disabled
-					if(!GlobalSettings.autoConnect)
-						dispatchRecieveError("[Warning] Auto-connect is disabled.");
+				if(!connectionState.canConnect(0)) {
+					dispatchRecieveInfo("Pausing to meet connection criteria for " + connectionState.toString());
 				}
 
 				// Wait until we're supposed to connect
