@@ -134,6 +134,12 @@ public abstract class Connection extends Thread {
 				myUser = null;
 				dispatchTitleChanged();
 
+				if(connectionState == ConnectionState.ALLOW_CONNECT) {
+					// Warn the user if auto-connect is disabled
+					if(!GlobalSettings.autoConnect)
+						dispatchRecieveError("[Warning] Auto-connect is disabled.");
+				}
+
 				// Wait until we're supposed to connect
 				long waitStartTime = System.currentTimeMillis();
 				while(!connectionState.canConnect(System.currentTimeMillis() - waitStartTime)) {
@@ -194,6 +200,7 @@ public abstract class Connection extends Thread {
 
 			disconnect(ConnectionState.ALLOW_CONNECT);
 			try {
+				// Wait at least five seconds before reconnecting
 				sleep(5000);
 			} catch (Exception e) {}
 		}
@@ -487,8 +494,10 @@ public abstract class Connection extends Thread {
 		switch(connectionState) {
 		case CONNECTED:
 		case CONNECTING:
+			// Allow change to any state when in a connected state
 			break;
 		default:
+			// Already disconnected
 			switch(newState) {
 			case ALLOW_CONNECT:
 			case LONG_PAUSE_BEFORE_CONNECT:

@@ -1332,7 +1332,7 @@ public class BNCSConnection extends Connection {
 
 				case SID_FLOODDETECTED: {
 					dispatchRecieveError("You have been disconnected for flooding.");
-					disconnect(ConnectionState.ALLOW_CONNECT);
+					disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 					break;
 				}
 
@@ -1914,7 +1914,7 @@ public class BNCSConnection extends Connection {
 			p.sendPacket(bncsOutputStream);
 		} catch (IOException e) {
 			dispatchRecieveError(e.getMessage());
-			disconnect(ConnectionState.ALLOW_CONNECT);
+			disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 			return;
 		}
 
