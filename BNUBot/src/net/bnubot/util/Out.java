@@ -89,6 +89,10 @@ public class Out {
 		final Connection oc = getOutConnection();
 		if(oc != null)
 			error(e.getClass(), e.getMessage());
+		logException(e);
+	}
+
+	private static void logException(Throwable e) {
 		if(outStream != null)
 			e.printStackTrace(outStream);
 		else
@@ -121,10 +125,7 @@ public class Out {
 		if(isModal)
 			dialog.setModal(true);
 
-		if(outStream != null)
-			e.printStackTrace(outStream);
-		else
-			e.printStackTrace();
+		logException(e);
 	}
 
 	/**
@@ -132,13 +133,14 @@ public class Out {
 	 * @param e the <code>Throwable</code> source
 	 */
 	public static void fatalException(Throwable e) {
+		logException(e);
 		try {
-			JOptionPane.showMessageDialog(null, getRelevantStack(e), e.getClass().getSimpleName(), JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(
+					null,
+					"A fatal error has occurred:\n\n" + getRelevantStack(e),
+					e.getClass().getSimpleName(),
+					JOptionPane.ERROR_MESSAGE);
 		} catch(Exception e1) {}
-		if(outStream != null)
-			e.printStackTrace(outStream);
-		else
-			e.printStackTrace();
 		System.exit(1);
 	}
 
