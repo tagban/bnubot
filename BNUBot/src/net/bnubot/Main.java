@@ -31,7 +31,7 @@ public class Main {
 		// Set default exception handler
 		Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
 			public void uncaughtException(Thread thread, Throwable t) {
-				Out.exception(t);
+				Out.fatalException(t);
 			}});
 
 		// Delete the bnubot.pid file on application exit
