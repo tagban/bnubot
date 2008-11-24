@@ -160,8 +160,9 @@ public class LockdownEventHandler extends EventHandler {
 
 	@Override
 	public void bnetConnected(Connection source) {
-		source.sendChat("/c pub");
-		source.sendChat("/o unigpub");
+		// FIXME these commands don't get sent because we're not in a channel yet
+		//source.sendChat("/c pub");
+		//source.sendChat("/o unigpub");
 	}
 
 	@Override
