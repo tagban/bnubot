@@ -84,6 +84,7 @@ public class MCPConnection extends RealmConnection {
 						 *  try to log in at another time"
 						 */
 						int result = is.readDWord();
+						// FIXME: figure out what's going on
 						if(result == 0x0C)
 							result = 0;
 						switch(result) {
