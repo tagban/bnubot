@@ -5,6 +5,10 @@
 
 package net.bnubot.core;
 
+import java.util.List;
+
+import net.bnubot.core.mcp.MCPCharacter;
+
 /**
  * @author scotta
  */
@@ -17,4 +21,5 @@ public interface RealmEventHandler {
 	public void realmDisconnected();
 	public void recieveRealmInfo(String text);
 	public void recieveRealmError(String text);
+	public void recieveCharacterList(List<MCPCharacter> chars);
 }
