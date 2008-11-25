@@ -77,12 +77,15 @@ public class MCPConnection extends RealmConnection {
 						/* (DWORD)		 Result
 						 *
 						 * 0x00: Success
-						 * 0x0C: No Battle.net connection detected
+						 * 0x02, 0x0A-0x0D: Realm Unavailable: No Battle.net connection detected.
+						 * 0x7E: CDKey banned from realm play.
 						 * 0x7F: Temporary IP ban "Your connection has been
 						 *  temporarily restricted from this realm. Please
 						 *  try to log in at another time"
 						 */
 						int result = is.readDWord();
+						if(result == 0x0C)
+							result = 0;
 						switch(result) {
 						case 0:
 							recieveRealmInfo("Realm logon success");
@@ -91,8 +94,16 @@ public class MCPConnection extends RealmConnection {
 							p.writeDWord(8);	//Nubmer of chars to list
 							p.sendPacket(dos);
 							break;
+						case 0x02:
+						case 0x0A:
+						case 0x0B:
 						case 0x0C:
+						case 0x0D:
 							recieveRealmError("Realm server did not detect a Battle.net connection");
+							setConnected(false);
+							break;
+						case 0x7E:
+							recieveRealmError("Your CD-Key is banned from realm play");
 							setConnected(false);
 							break;
 						case 0x7F:
