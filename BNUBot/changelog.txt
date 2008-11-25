@@ -5,6 +5,7 @@
 * Fixed bug causing expireDays=0 to mean expire immediately
 * Increased the BNLS timeout to 15 seconds
 * Added an exception tracker (Issue 91)
+* Fixed a bug with MCP server login
 
 2.1.0 (r1640) 2008-10-06:
 * Added BotNet account login

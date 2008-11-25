@@ -1372,7 +1372,6 @@ public class BNCSConnection extends Connection {
 					 * (DWORD) Port
 					 * (DWORD[12]) MCP Chunk 2
 					 * (STRING) BNCS unique name
-					 * (WORD) Unknown
 					 */
 					if(pr.packetLength < 12)
 						throw new Exception("pr.packetLength < 12");
@@ -1412,7 +1411,6 @@ public class BNCSConnection extends Connection {
 						MCPChunk2[10] = is.readDWord();
 						MCPChunk2[11] = is.readDWord();
 						String uniqueName = is.readNTString();
-						/* int unknown = */ is.readWord();
 						dispatchLogonRealmEx(MCPChunk1, ip, port, MCPChunk2, uniqueName);
 					}
 
