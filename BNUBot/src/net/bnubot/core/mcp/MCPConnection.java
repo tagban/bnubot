@@ -10,6 +10,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.bnubot.core.RealmConnection;
 import net.bnubot.util.BNetInputStream;
@@ -130,48 +132,39 @@ public class MCPConnection extends RealmConnection {
 						is.readDWord();
 						int numChars = is.readWord();
 
-						long minTime = 0;
-						String maxCharname = null;
+						List<MCPCharacter> chars = new ArrayList<MCPCharacter>(numChars);
 
 						for(int i = 0; i < numChars; i++) {
-							long time = (1000L * is.readDWord()) - System.currentTimeMillis();
-
-							String charname = is.readNTString();
+							MCPCharacter c = new MCPCharacter();
+							c.time = (1000L * is.readDWord()) - System.currentTimeMillis();
+							c.name = is.readNTString();
 
 							ByteArrayOutputStream baos = new ByteArrayOutputStream();
-							BNetOutputStream bos = new BNetOutputStream(baos);
 							byte[] data = new byte[33];
 							is.read(data);
 							if(is.readByte() != 0)
 								throw new Exception("invalid statstr format\n" + HexDump.hexDump(baos.toByteArray()));
 
-							if(Out.isDebug(getClass())) {
-								bos.write(("PX2D[Realm]," + charname + ",").getBytes());
-								bos.write(data);
-								bos.writeByte(0);
-								StatString statstr = new StatString(new BNetInputStream(new ByteArrayInputStream(baos.toByteArray())));
+							BNetOutputStream bos = new BNetOutputStream(baos);
+							bos.write(("PX2D[Realm]," + c.name + ",").getBytes());
+							bos.write(data);
+							bos.writeByte(0);
+							c.statstr = new StatString(new BNetInputStream(new ByteArrayInputStream(baos.toByteArray())));
 
+							if(Out.isDebug(getClass())) {
 								String str;
-								if(time < 0)
+								if(c.time < 0)
 									str = "Expired";
 								else
-									str = TimeFormatter.formatTime(time);
-								str += ": " + statstr.toString2();
+									str = TimeFormatter.formatTime(c.time);
+								str += ": " + c.statstr.toString2();
 								Out.debugAlways(getClass(), str);
 							}
 
-							if(((minTime > time) || (minTime == 0)) && (time >= 0)) {
-								minTime = time;
-								maxCharname = charname;
-							}
+							chars.add(c);
 						}
 
-						if(maxCharname != null) {
-							p = new MCPPacket(MCPPacketID.MCP_CHARLOGON);
-							p.writeNTString(maxCharname);
-							p.sendPacket(dos);
-						}
-
+						recieveCharacterList(chars);
 						break;
 					}
 
@@ -216,6 +209,18 @@ public class MCPConnection extends RealmConnection {
 
 		} catch (Exception e) {
 			Out.fatalException(e);
+		}
+	}
+
+	@Override
+	public void sendLogonCharacter(String c) {
+		try {
+			MCPPacket p = new MCPPacket(MCPPacketID.MCP_CHARLOGON);
+			p.writeNTString(c);
+			p.sendPacket(dos);
+		} catch(Exception e) {
+			Out.exception(e);
+			setConnected(false);
 		}
 	}
 }

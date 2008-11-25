@@ -810,7 +810,7 @@ public class GuiEventHandler extends EventHandler {
 		if(realms.length == 0)
 			return;
 
-		final RealmWindow realmWindow = new RealmWindow(realms, profile);
+		final RealmWindow realmWindow = new RealmWindow(source, realms, profile);
 		final boolean showWindow = (realms.length > 1);
 		final String autoRealm = realms[0];
 

@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import net.bnubot.core.mcp.MCPCharacter;
+
 /**
  * @author scotta
  */
@@ -57,5 +59,13 @@ public abstract class RealmConnection extends Thread implements RealmEventHandle
 		while(it.hasNext())
 			it.next().recieveRealmInfo(text);
 	}
+
+	public void recieveCharacterList(List<MCPCharacter> chars) {
+		Iterator<RealmEventHandler> it = realmEventHandlers.iterator();
+		while(it.hasNext())
+			it.next().recieveCharacterList(chars);
+	}
+
+	public abstract void sendLogonCharacter(String c);
 
 }
