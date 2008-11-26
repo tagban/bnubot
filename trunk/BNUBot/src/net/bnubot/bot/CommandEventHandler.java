@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.UnknownFormatConversionException;
 
 import net.bnubot.core.CommandResponseCookie;
 import net.bnubot.core.Connection;
@@ -1760,7 +1761,10 @@ public class CommandEventHandler extends EventHandler {
 					try {
 						greeting = String.format(greeting, user.toString(), user.getPing(), user.getFullLogonName());
 						source.sendChat(greeting);
-					} catch(NoSuchMethodError e) {}
+					} catch(NoSuchMethodError e) {
+					} catch(UnknownFormatConversionException e) {
+						Out.error(getClass(), "String.format() failed: " + e.getMessage() + "\ngreeting=" + greeting + "\nping=" + user.getPing() + "\nuser=" + user.getFullLogonName());
+					}
 				}
 			}
 
