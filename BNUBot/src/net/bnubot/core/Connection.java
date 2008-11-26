@@ -680,6 +680,8 @@ public abstract class Connection extends Thread {
 			if(text.charAt(0) == '/') {
 				String postSlash = text.substring(1);
 				String[] command = postSlash.split(" ", 2);
+				if(command[0].length() == 0)
+					break ALLOWCOMMANDS;
 				switch(command[0].charAt(0)) {
 				case '/':
 					if(myUser != null)
