@@ -145,18 +145,15 @@ public class TextWindow extends JScrollPane {
 		html += "] </font>";
 	}
 
-	private static Pattern pattern = null;
+	private static Pattern pattern = Pattern.compile("((.|\n)*?)\\b((([a-zA-Z]{3,6}://)|(www.)){1}([a-zA-Z0-9-.]+)([^-]\\.[a-zA-Z]{2,5}){1}((:[0-9]+)?)((/\\S+){1}|\\s*?)/?)((.|\n)*)");
 	private String safeHtml(String in) {
-		if(pattern == null)
-			pattern = Pattern.compile("((.|\n)*?)\\b((([a-zA-Z]{3,6}://)|(www.)){1}([a-zA-Z0-9-.]+)([^-]\\.[a-zA-Z]{2,5}){1}((/\\S+){1}|\\s*?)/?)((.|\n)*)");
-
 		try {
 			Matcher matcher = pattern.matcher(in);
 
 			if(matcher.matches())
 				return safeHtml(matcher.group(1))
 					+ "<a href=\"" + matcher.group(3) + "\">" + matcher.group(3) + "</a>"
-					+ safeHtml(matcher.group(11));
+					+ safeHtml(matcher.group(13));
 		} catch(StackOverflowError e) {}
 
 		return in
