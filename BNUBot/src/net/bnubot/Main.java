@@ -50,8 +50,8 @@ public class Main {
 				&& (logFile.length() > 0))
 					ExceptionReporter.reportErrors(logFile);
 				Out.setOutputStream(new PrintStream(logFile));
-			} catch (Exception e) {
-				Out.fatalException(e);
+			} catch(Exception e) {
+				Out.popupException(e);
 			}
 
 		// Disable Cayenne logging!
