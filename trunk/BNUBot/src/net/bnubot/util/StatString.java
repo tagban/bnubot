@@ -268,17 +268,8 @@ public class StatString {
 						throw new IOException("after read 33 bytes of data, no null found");
 				}
 
-				//PX2DUSEast,EsO-SILenTNiGhT,'S
-				//PX2DUSEast,getoutof_myway ,?++T
-
 				prettyStart += ", Realm " + statString2[0];
 				prettyStart += ", ";
-
-			    //                                       CC                                  CL FL AC
-			    //84 80 53 02 02 02 02 0F FF 50 02 02 FF 02 FF FF FF FF FF 4C FF FF FF FF FF 14 E8 84 FF FF 01 FF FF - ?S.....P...L..
-				//84 80 FF FF FF FF FF FF FF FF FF FF FF 03 FF FF FF FF FF FF FF FF FF FF FF 01 C5 80 80 80 01 FF FF - ?..ŀ.
-			    //84 80 3B 02 02 02 02 14 FF FF 03 03 60 03 FF FF FF FF FF FF FF FF FF FF 32 13 E4 84 FF FF 01 FF FF - ?;.......`.2..
-			    //00             05             10             15             20             25             30
 
 				if(data.length != 33)
 					throw new IOException("data.length != 33 (" + data.length + ")");
