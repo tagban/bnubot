@@ -30,6 +30,36 @@
 	</target>
 
 	<target name="build" depends="update, clean">
+		<delete file="${project.dir}/bin/net/bnubot/version.properties"/>
+		<property name="vf.src" value="${project.dir}/src/net/bnubot/version.properties" />
+		<svn>
+			<revert file="${vf.src}"/>
+			<status path="${project.dir}/src" lastChangedRevisionProperty="revision" />
+		</svn>
+		
+		<!-- Get the BUILD_DATE time in seconds -->
+		<exec executable="date" outputproperty="TODAY">
+			<arg value="+%s000"/>
+		</exec>
+		
+		<propertyfile file="${vf.src}">
+			<entry key="RELEASE_TYPE" type="string" value="Nightly"/>
+			<entry key="VER_SVN_REVISION" type="string" value="${revision}"/>
+			<entry key="VER_RELEASE" type="int" operation="+" default="0"/>
+			<!-- Convert seconds to ms -->
+			<entry key="BUILD_DATE" type="string" value="${TODAY}"/>
+		</propertyfile>
+		
+		<property file="${vf.src}"/>
+		<property name="RELEASE_FILE" value="BNUBot-${VER_MAJOR}-${VER_MINOR}-${VER_REVISION}-${VER_RELEASE}-${RELEASE_TYPE}-r${VER_SVN_REVISION}.jar"/>
+		
+		<property file="${release.dir}/LATEST"/>
+		<fail message="No new source code available to compile">
+			<condition>
+				<equals arg1="${LATEST}" arg2="${RELEASE_FILE}"/>
+			</condition>
+		</fail>
+
 		<mkdir dir="${project.dir}/bin"/>
 		<javac classpathref="project.classpath"
 			srcdir="${project.dir}/src"
@@ -41,29 +71,6 @@
 			optimize="true"
 		/>
 
-		<delete file="${project.dir}/bin/net/bnubot/version.properties"/>
-		<property name="vf.src" value="${project.dir}/src/net/bnubot/version.properties" />
-		<svn>
-			<revert file="${vf.src}"/>
-			<status path="${project.dir}/src" lastChangedRevisionProperty="revision" />
-		</svn>
-		
-		<!-- Get the BUILD_DATE time in seconds -->
-		<exec executable="date" outputproperty="TODAY">
-			<arg value="+%s"/>
-		</exec>
-		
-		<propertyfile file="${vf.src}">
-			<entry key="RELEASE_TYPE" type="string" value="Nightly"/>
-			<entry key="VER_SVN_REVISION" type="string" value="${revision}"/>
-			<entry key="VER_RELEASE" type="int" operation="+" default="0"/>
-			<!-- Convert seconds to ms -->
-			<entry key="BUILD_DATE" type="string" value="${TODAY}000"/>
-		</propertyfile>
-		
-		<property file="${vf.src}"/>
-		<property name="RELEASE_FILE" value="BNUBot-${VER_MAJOR}-${VER_MINOR}-${VER_REVISION}-${VER_RELEASE}-${RELEASE_TYPE}-r${VER_SVN_REVISION}.jar"/>
-				
 		<jar destfile="${release.dir}/${RELEASE_FILE}" manifest="${project.dir}/Dist/Main/MANIFEST.MF">
 			<fileset dir="${project.dir}">
 				<include name="changelog.txt"/>
@@ -75,9 +82,10 @@
 				<include name="**/*.*"/>
 			</fileset>
 		</jar>
+		
 		<propertyfile file="${release.dir}/LATEST">
 			<entry key="LATEST" type="string" value="${RELEASE_FILE}"/>
-			<entry key="BUILT" type="string" value="${TODAY}000"/>
+			<entry key="BUILT" type="string" value="${TODAY}"/>
 		</propertyfile>
 	</target>
 </project>
