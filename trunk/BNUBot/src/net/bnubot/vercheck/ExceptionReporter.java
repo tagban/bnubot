@@ -42,8 +42,7 @@ public class ExceptionReporter {
 		// FIXME ask the user if it's okay to submit errors
 		BufferedReader br = new BufferedReader(new FileReader(f));
 		String line;
-		do {
-			line = br.readLine();
+		while((line = br.readLine()) != null) {
 			if (line.startsWith("["))
 				continue;
 			if (!line.contains(": "))
@@ -53,7 +52,7 @@ public class ExceptionReporter {
 			String exceptionAbstract = exception;
 
 			line = br.readLine();
-			do {
+			while(line != null) {
 				if (!line.startsWith("\t") && !line.startsWith("Caused by: "))
 					break;
 				exception += "\n" + line;
@@ -64,10 +63,10 @@ public class ExceptionReporter {
 					line = line.substring(0, i);
 				exceptionAbstract += "\n" + line;
 				line = br.readLine();
-			} while (line != null);
+			}
 
 			reportException(exception, exceptionAbstract);
-		} while (line != null);
+		}
 	}
 
 	private static void reportException(String exception, String exceptionAbstract) throws Exception {
