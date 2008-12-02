@@ -129,10 +129,10 @@ public class Out {
 	}
 
 	/**
-	 * Attempt to popup a window with a stack trace, and exit with code 1
+	 * Attempt to popup a window with a stack trace
 	 * @param e the <code>Throwable</code> source
 	 */
-	public static void fatalException(Throwable e) {
+	public static void popupException(Throwable e) {
 		logException(e);
 		try {
 			JOptionPane.showMessageDialog(
@@ -141,6 +141,14 @@ public class Out {
 					e.getClass().getSimpleName(),
 					JOptionPane.ERROR_MESSAGE);
 		} catch(Exception e1) {}
+	}
+
+	/**
+	 * Attempt to popup a window with a stack trace, and exit with code 1
+	 * @param e the <code>Throwable</code> source
+	 */
+	public static void fatalException(Throwable e) {
+		popupException(e);
 		System.exit(1);
 	}
 
