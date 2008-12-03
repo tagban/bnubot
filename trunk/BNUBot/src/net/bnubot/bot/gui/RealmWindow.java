@@ -143,7 +143,7 @@ public class RealmWindow extends EventHandler implements RealmEventHandler {
 		DefaultListModel lm = (DefaultListModel) lstCharacters.getModel();
 		lm.removeAllElements();
 		for(MCPCharacter c : chars)
-			lm.addElement(c.name);
+			lm.addElement(c.getName());
 
 		jd.remove(lstRealms);
 		jd.add(b);

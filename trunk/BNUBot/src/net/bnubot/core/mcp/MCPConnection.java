@@ -18,7 +18,6 @@ import net.bnubot.util.BNetInputStream;
 import net.bnubot.util.BNetOutputStream;
 import net.bnubot.util.Out;
 import net.bnubot.util.StatString;
-import net.bnubot.util.TimeFormatter;
 import net.bnubot.util.crypto.HexDump;
 
 /**
@@ -132,9 +131,8 @@ public class MCPConnection extends RealmConnection {
 						List<MCPCharacter> chars = new ArrayList<MCPCharacter>(numChars);
 
 						for(int i = 0; i < numChars; i++) {
-							MCPCharacter c = new MCPCharacter();
-							c.time = (1000L * is.readDWord()) - System.currentTimeMillis();
-							c.name = is.readNTString();
+							final long time = (1000L * is.readDWord()) - System.currentTimeMillis();
+							final String name = is.readNTString();
 
 							ByteArrayOutputStream baos = new ByteArrayOutputStream();
 							byte[] data = new byte[33];
@@ -143,20 +141,15 @@ public class MCPConnection extends RealmConnection {
 								throw new Exception("invalid statstr format\n" + HexDump.hexDump(baos.toByteArray()));
 
 							BNetOutputStream bos = new BNetOutputStream(baos);
-							bos.write(("PX2D[Realm]," + c.name + ",").getBytes());
+							bos.write(("PX2D[Realm]," + name + ",").getBytes());
 							bos.write(data);
 							bos.writeByte(0);
-							c.statstr = new StatString(new BNetInputStream(new ByteArrayInputStream(baos.toByteArray())));
+							final StatString statstr = new StatString(new BNetInputStream(new ByteArrayInputStream(baos.toByteArray())));
 
-							if(Out.isDebug(getClass())) {
-								String str;
-								if(c.time < 0)
-									str = "Expired";
-								else
-									str = TimeFormatter.formatTime(c.time);
-								str += ": " + c.statstr.toString2();
-								Out.debugAlways(getClass(), str);
-							}
+							MCPCharacter c = new MCPCharacter(time, name, statstr);
+
+							if(Out.isDebug(getClass()))
+								Out.debugAlways(getClass(), c.toString());
 
 							chars.add(c);
 						}
