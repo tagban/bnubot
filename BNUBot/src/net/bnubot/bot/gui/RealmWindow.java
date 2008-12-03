@@ -15,6 +15,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JDialog;
 import javax.swing.JList;
 
+import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.Profile;
 import net.bnubot.core.RealmConnection;
@@ -50,6 +51,7 @@ public class RealmWindow extends EventHandler implements RealmEventHandler {
 
 		jd.pack();
 		jd.setModal(true);
+		jd.setAlwaysOnTop(true);
 	}
 
 	public void initializeGUI() {
@@ -114,13 +116,19 @@ public class RealmWindow extends EventHandler implements RealmEventHandler {
 	}
 
 	public void realmConnected() {}
-	public void realmDisconnected() {}
+	public void realmDisconnected() {
+		for(Connection c : profile.getConnections())
+			c.removeEventHandler(this);
+		Out.info(getClass(), "Disconnected from MCP");
+	}
 
 	@Override
 	public void logonRealmEx(BNCSConnection source, int[] MCPChunk1, int ip, int port, int[] MCPChunk2, String uniqueName) {
-		MCPConnection mcpc = new MCPConnection(MCPChunk1, ip, port, MCPChunk2, uniqueName);
-		mcpc.addRealmEventHandler(this);
-		mcpc.start();
+		if(realmCon == null) {
+			realmCon = new MCPConnection(MCPChunk1, ip, port, MCPChunk2, uniqueName);
+			realmCon.addRealmEventHandler(this);
+			realmCon.start();
+		}
 	}
 
 	public void recieveRealmError(String text) {
@@ -132,7 +140,7 @@ public class RealmWindow extends EventHandler implements RealmEventHandler {
 	}
 
 	public void recieveCharacterList(List<MCPCharacter> chars) {
-		DefaultListModel lm = (DefaultListModel) lstCharacterTypes.getModel();
+		DefaultListModel lm = (DefaultListModel) lstCharacters.getModel();
 		lm.removeAllElements();
 		for(MCPCharacter c : chars)
 			lm.addElement(c.name);
