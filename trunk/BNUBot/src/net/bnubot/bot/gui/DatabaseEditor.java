@@ -40,6 +40,7 @@ import net.bnubot.bot.gui.components.ConfigFlagChecks;
 import net.bnubot.bot.gui.components.ConfigTextField;
 import net.bnubot.db.CustomDataObject;
 import net.bnubot.db.conf.DatabaseContext;
+import net.bnubot.util.UnloggedException;
 import net.bnubot.util.Out;
 
 import org.apache.cayenne.ObjectContext;
@@ -79,7 +80,7 @@ public class DatabaseEditor {
 	public DatabaseEditor(Class<? extends CustomDataObject> clazz) throws Exception {
 		context = DatabaseContext.getContext();
 		if(context == null)
-			throw new IllegalStateException("No database is initialized");
+			throw new UnloggedException("No database is initialized");
 		List<CustomDataObject>dataRows = context.performQuery(new SelectQuery(clazz));
 		Collections.sort(dataRows);
 
@@ -341,7 +342,7 @@ public class DatabaseEditor {
 				if(fieldType.equals(Date.class))
 					return new Date(value);
 
-				throw new IllegalStateException("asfd");
+				throw new IllegalStateException("Unknown fieldType " + fieldType.getSimpleName());
 			}});
 	}
 

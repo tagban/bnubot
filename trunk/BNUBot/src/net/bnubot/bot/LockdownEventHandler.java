@@ -17,6 +17,7 @@ import net.bnubot.db.BNLogin;
 import net.bnubot.db.Rank;
 import net.bnubot.db.conf.DatabaseContext;
 import net.bnubot.util.BNetUser;
+import net.bnubot.util.UnloggedException;
 import net.bnubot.util.Out;
 
 /**
@@ -30,7 +31,7 @@ public class LockdownEventHandler extends EventHandler {
 	public LockdownEventHandler(Profile profile) {
 		super(profile);
 		if(DatabaseContext.getContext() == null)
-			throw new IllegalStateException("Can not enable lockdown without a database!");
+			throw new UnloggedException("Can not enable lockdown without a database!");
 		initializeCommands();
 	}
 

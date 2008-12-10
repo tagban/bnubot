@@ -21,6 +21,7 @@ import net.bnubot.db.Account;
 import net.bnubot.db.conf.DatabaseContext;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetUser;
+import net.bnubot.util.UnloggedException;
 import net.bnubot.util.Out;
 import net.bnubot.util.crypto.HexDump;
 
@@ -42,7 +43,7 @@ public class TriviaEventHandler extends EventHandler {
 	public TriviaEventHandler(Profile profile) {
 		super(profile);
 		if(DatabaseContext.getContext() == null)
-			throw new IllegalStateException("Can not enable trivia without a database!");
+			throw new UnloggedException("Can not enable trivia without a database!");
 		initializeCommands();
 	}
 

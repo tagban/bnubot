@@ -14,6 +14,7 @@ import net.bnubot.core.friend.FriendEntry;
 import net.bnubot.db.Account;
 import net.bnubot.db.conf.DatabaseContext;
 import net.bnubot.util.BNetUser;
+import net.bnubot.util.UnloggedException;
 
 /**
  * @author scotta
@@ -22,7 +23,7 @@ public class GameTracker extends EventHandler {
 	public GameTracker(Profile profile) {
 		super(profile);
 		if(DatabaseContext.getContext() == null)
-			throw new IllegalStateException("Can not enable game tracker without a database!");
+			throw new UnloggedException("Can not enable game tracker without a database!");
 		initializeCommands();
 	}
 

@@ -37,6 +37,7 @@ import net.bnubot.db.conf.DatabaseContext;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.CookieUtility;
+import net.bnubot.util.UnloggedException;
 import net.bnubot.util.OperatingSystem;
 import net.bnubot.util.Out;
 import net.bnubot.util.TimeFormatter;
@@ -175,7 +176,7 @@ public class CommandEventHandler extends EventHandler {
 	public CommandEventHandler(Profile profile) {
 		super(profile);
 		if(DatabaseContext.getContext() == null)
-			throw new IllegalStateException("Can not enable commands without a database!");
+			throw new UnloggedException("Can not enable commands without a database!");
 		initializeCommands();
 	}
 

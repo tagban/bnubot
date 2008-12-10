@@ -278,7 +278,7 @@ public class BNetUser {
 		case 4: return getAccountOrLogin();		// Account
 		case 5: return getAccountAndLogin();	// Account (BNLogin)
 		}
-		throw new IllegalStateException("Unknown BNetUser.toString(int) type " + GlobalSettings.bnUserToString);
+		throw new UnloggedException("Unknown BNetUser.toString(int) type " + GlobalSettings.bnUserToString);
 	}
 
 	public String toStringEx() {
