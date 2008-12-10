@@ -22,6 +22,7 @@ import net.bnubot.core.EventHandler;
 import net.bnubot.core.Profile;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.util.BNetUser;
+import net.bnubot.util.UnloggedException;
 import net.bnubot.util.Out;
 import net.bnubot.util.crypto.HexDump;
 
@@ -35,7 +36,7 @@ public class TelnetEventHandler extends EventHandler implements Runnable {
 	public TelnetEventHandler(Profile profile) {
 		super(profile);
 		if(initialized)
-			throw new IllegalStateException("You may only use the TelnetEventHandler once!");
+			throw new UnloggedException("You may only use the TelnetEventHandler once!");
 		initialized = true;
 
 		new Thread(this).start();

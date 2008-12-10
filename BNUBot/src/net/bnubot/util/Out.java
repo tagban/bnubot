@@ -89,7 +89,9 @@ public class Out {
 		final Connection oc = getOutConnection();
 		if(oc != null)
 			error(e.getClass(), e.getMessage());
-		logException(e);
+		// Do not log UnloggedExceptions
+		if(!(e instanceof UnloggedException))
+			logException(e);
 	}
 
 	private static void logException(Throwable e) {

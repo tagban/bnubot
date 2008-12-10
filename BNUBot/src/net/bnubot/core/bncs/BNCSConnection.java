@@ -43,6 +43,7 @@ import net.bnubot.util.BNetInputStream;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.ByteArray;
 import net.bnubot.util.CookieUtility;
+import net.bnubot.util.UnloggedException;
 import net.bnubot.util.MirrorSelector;
 import net.bnubot.util.Out;
 import net.bnubot.util.StatString;
@@ -1944,11 +1945,11 @@ public class BNCSConnection extends Connection {
 		if(inClan) {
 			// The user must be in a clan
 			if(myClan == null)
-				throw new IllegalStateException("You are not in a clan");
+				throw new UnloggedException("You are not in a clan");
 		} else {
 			// The user must not be in a clan
 			if(myClan != null)
-				throw new IllegalStateException("You are already in a clan");
+				throw new UnloggedException("You are already in a clan");
 		}
 	}
 
@@ -1998,7 +1999,7 @@ public class BNCSConnection extends Connection {
 		requireInClan(false);
 
 		if(invitees.size() != 9)
-			throw new IllegalStateException("You should invite exactly 9 people");
+			throw new UnloggedException("You should invite exactly 9 people");
 
 		BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_CLANINVITEMULTIPLE);
 		p.writeDWord(CookieUtility.createCookie(cookie)); // Cookie
@@ -2043,7 +2044,7 @@ public class BNCSConnection extends Connection {
 	public void sendClanInvitation(Object cookie, String user) throws Exception {
 		requireInClan(true);
 		if (myClanRank < 3)
-			throw new IllegalStateException("Must be " + clanRanks[3] + " or "
+			throw new UnloggedException("Must be " + clanRanks[3] + " or "
 					+ clanRanks[4] + " to invite");
 
 		BNCSPacket p = new BNCSPacket(BNCSPacketId.SID_CLANINVITATION);
