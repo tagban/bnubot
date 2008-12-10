@@ -191,6 +191,8 @@ public class Profile {
 				for(Class<? extends EventHandler> plugin : PluginManager.getEnabledPlugins())
 					try {
 						con.addEventHandler(constructPlugin(plugin));
+					} catch(IllegalStateException e) {
+						Out.error(getClass(), "Failed to construct plugin " + plugin.getSimpleName() + ": " + e.getMessage());
 					} catch(InvocationTargetException e) {
 						Out.exception(e.getCause());
 					} catch(Exception e) {
