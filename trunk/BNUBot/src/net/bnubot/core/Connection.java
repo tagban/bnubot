@@ -1154,7 +1154,7 @@ public abstract class Connection extends Thread {
 		if(text.length() == 0)
 			return;
 
-		if((text.charAt(0) == getTrigger()) || text.equals("?trigger"))
+		if((text.charAt(0) == getTrigger()) || text.equalsIgnoreCase("?trigger"))
 			dispatchParseCommand(user, text.substring(1), GlobalSettings.whisperBack);
 	}
 
