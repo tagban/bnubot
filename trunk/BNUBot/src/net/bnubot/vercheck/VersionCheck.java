@@ -183,8 +183,12 @@ public class VersionCheck {
 		if(verLatest == null)
 			return false;
 
+		String releaseType = verLatest.getChild("type").getString();
+		// FIXME: this is for logging, to collect data
+		if(releaseType == null)
+			throw new NullPointerException("type is null\n" + verLatest.toString());
 		vnLatest = new VersionNumber(
-				Enum.valueOf(ReleaseType.class, verLatest.getChild("type").getString()),
+				Enum.valueOf(ReleaseType.class, releaseType),
 				verLatest.getChild("major").getInt(),
 				verLatest.getChild("minor").getInt(),
 				verLatest.getChild("revision").getInt(),
