@@ -343,7 +343,7 @@ public class Profile {
 	 */
 	public boolean isOneOfMyUsers(BNetUser user) {
 		for(Connection con : cons)
-			if(con.getMyUser().equals(user))
+			if(user.equals(con.getMyUser()))
 				return true;
 		return false;
 	}
