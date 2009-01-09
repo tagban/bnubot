@@ -342,6 +342,8 @@ public class Profile {
 	 * @return true if the user is myUser in any of the profile's connections
 	 */
 	public boolean isOneOfMyUsers(BNetUser user) {
+		if(user == null)
+			return false;
 		for(Connection con : cons)
 			if(user.equals(con.getMyUser()))
 				return true;
