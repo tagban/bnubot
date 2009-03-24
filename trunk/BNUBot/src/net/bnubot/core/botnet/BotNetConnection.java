@@ -97,7 +97,7 @@ public class BotNetConnection extends Connection {
 		while(isConnected() && !socket.isClosed() && !disposed) {
 			if(bnInputStream.available() > 0) {
 				BotNetPacketReader pr = new BotNetPacketReader(bnInputStream);
-				BNetInputStream is = pr.getInputStream();
+				BNetInputStream is = pr.getData();
 
 				switch(pr.packetId) {
 				case PACKET_BOTNETVERSION: {
@@ -161,7 +161,7 @@ public class BotNetConnection extends Connection {
 		while(isConnected() && !socket.isClosed() && !disposed) {
 			if(bnInputStream.available() > 0) {
 				BotNetPacketReader pr = new BotNetPacketReader(bnInputStream);
-				BNetInputStream is = pr.getInputStream();
+				BNetInputStream is = pr.getData();
 
 				switch(pr.packetId) {
 				case PACKET_IDLE: {

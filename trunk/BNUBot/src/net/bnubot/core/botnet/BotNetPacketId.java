@@ -5,10 +5,12 @@
 
 package net.bnubot.core.botnet;
 
+import net.bnubot.core._super._PacketId;
+
 /**
  * @author scotta
  */
-public enum BotNetPacketId {
+public enum BotNetPacketId implements _PacketId<BotNetConnection> {
 	PACKET_IDLE,
 	PACKET_LOGON,
 	PACKET_STATSUPDATE,

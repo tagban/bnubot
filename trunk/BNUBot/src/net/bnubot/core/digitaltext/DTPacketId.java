@@ -5,10 +5,12 @@
 
 package net.bnubot.core.digitaltext;
 
+import net.bnubot.core._super._PacketId;
+
 /**
  * @author scotta
  */
-public enum DTPacketId {
+public enum DTPacketId implements _PacketId<DTConnection> {
 	PKT_UNKNOWN_0x00,
 	PKT_LOGON,
 	PKT_ENTERCHANNEL,
