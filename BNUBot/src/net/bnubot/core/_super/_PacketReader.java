@@ -30,10 +30,8 @@ public abstract class _PacketReader<C extends Connection, P extends _PacketId<C>
 		parse(new BNetInputStream(rawis));
 
 		if(GlobalSettings.packetLog) {
-			Enum<?> pId = Enum.class.cast(packetId);
-
-			String msg = "RECV " + pId.name();
-			if(pId == BNCSPacketId.SID_CHATEVENT)
+			String msg = "RECV " + packetId.name();
+			if(packetId == BNCSPacketId.SID_CHATEVENT)
 				msg += " " + BNCSChatEventId.values()[BNetInputStream.readDWord(data, 0)].name();
 			if(Out.isDebug())
 				msg += "\n" + HexDump.hexDump(data);
