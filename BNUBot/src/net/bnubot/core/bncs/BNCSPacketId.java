@@ -5,10 +5,12 @@
 
 package net.bnubot.core.bncs;
 
+import net.bnubot.core._super._PacketId;
+
 /**
  * @author scotta
  */
-public enum BNCSPacketId {
+public enum BNCSPacketId implements _PacketId<BNCSConnection> {
 	SID_NULL,
 	SID_UNKNOWN_0x01,
 	SID_STOPADV,

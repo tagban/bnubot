@@ -5,28 +5,23 @@
 
 package net.bnubot.core.bncs;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import net.bnubot.settings.GlobalSettings;
+import net.bnubot.core._super._PacketReader;
 import net.bnubot.util.BNetInputStream;
-import net.bnubot.util.BNetOutputStream;
-import net.bnubot.util.Out;
-import net.bnubot.util.crypto.HexDump;
 
 /**
  * @author scotta
  */
-public class BNCSPacketReader {
-	BNCSPacketId packetId;
-	int packetLength;
-	byte data[];
+public class BNCSPacketReader extends _PacketReader<BNCSConnection, BNCSPacketId> {
 
 	public BNCSPacketReader(InputStream rawis) throws IOException {
-		BNetInputStream is = new BNetInputStream(rawis);
+		super(rawis);
+	}
 
+	@Override
+	protected void parse(BNetInputStream is) throws IOException {
 		byte magic;
 		do {
 			magic = is.readByte();
@@ -40,25 +35,5 @@ public class BNCSPacketReader {
 		for(int i = 0; i < packetLength-4; i++) {
 			data[i] = is.readByte();
 		}
-
-		if(GlobalSettings.packetLog) {
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			BNetOutputStream os = new BNetOutputStream(baos);
-			os.writeByte(0xFF);
-			os.writeByte(packetId.ordinal());
-			os.writeWord(packetLength);
-			os.write(data);
-
-			String msg = "RECV " + packetId.name();
-			if(packetId == BNCSPacketId.SID_CHATEVENT)
-				msg += " " + BNCSChatEventId.values()[BNetInputStream.readDWord(data, 0)].name();
-			if(Out.isDebug())
-				msg += "\n" + HexDump.hexDump(baos.toByteArray());
-			Out.debugAlways(getClass(), msg);
-		}
-	}
-
-	public BNetInputStream getData() {
-		return new BNetInputStream(new ByteArrayInputStream(data));
 	}
 }
