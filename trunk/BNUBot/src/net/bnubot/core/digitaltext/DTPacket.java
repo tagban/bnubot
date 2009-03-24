@@ -15,8 +15,8 @@ import net.bnubot.util.BNetOutputStream;
  */
 public class DTPacket extends _Packet<DTConnection, DTPacketId> {
 
-	public DTPacket(DTPacketId packetId) {
-		super(packetId);
+	public DTPacket(DTConnection c, DTPacketId packetId) {
+		super(c, packetId);
 	}
 
 	@Override

@@ -67,7 +67,7 @@ public class DTConnection extends Connection {
 	 */
 	@Override
 	protected boolean sendLoginPackets(Task connect) throws Exception {
-		DTPacket p = new DTPacket(DTPacketId.PKT_LOGON);
+		DTPacket p = new DTPacket(this, DTPacketId.PKT_LOGON);
 		p.writeNTString(cs.username);
 		p.writeNTString(cs.password);
 		p.sendPacket(dtOutputStream);
@@ -149,7 +149,7 @@ public class DTConnection extends Connection {
 				timeSinceNullPacket /= 1000;
 				if(timeSinceNullPacket > 30) {
 					lastNullPacket = timeNow;
-					DTPacket p = new DTPacket(DTPacketId.PKT_NULL);
+					DTPacket p = new DTPacket(this, DTPacketId.PKT_NULL);
 					p.sendPacket(dtOutputStream);
 				}
 			}
@@ -368,7 +368,7 @@ public class DTConnection extends Connection {
 	 */
 	@Override
 	public void sendJoinChannel(String channel) throws Exception {
-		DTPacket p = new DTPacket(DTPacketId.PKT_ENTERCHANNEL);
+		DTPacket p = new DTPacket(this, DTPacketId.PKT_ENTERCHANNEL);
 		p.writeNTString(channel);
 		p.sendPacket(dtOutputStream);
 	}
@@ -390,7 +390,7 @@ public class DTConnection extends Connection {
 
 		//Write the packet
 		try {
-			DTPacket p = new DTPacket(DTPacketId.PKT_CHANNELCHAT);
+			DTPacket p = new DTPacket(this, DTPacketId.PKT_CHANNELCHAT);
 			p.writeNTString(text);
 			p.sendPacket(dtOutputStream);
 		} catch(IOException e) {

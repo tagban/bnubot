@@ -11,8 +11,8 @@ import net.bnubot.core._super._Packet;
 import net.bnubot.util.BNetOutputStream;
 
 public class BotNetPacket extends _Packet<BotNetConnection, BotNetPacketId> {
-	public BotNetPacket(BotNetPacketId packetId) {
-		super(packetId);
+	public BotNetPacket(BotNetConnection c, BotNetPacketId packetId) {
+		super(c, packetId);
 	}
 
 	@Override

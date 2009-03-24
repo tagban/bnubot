@@ -397,7 +397,7 @@ public class BotNetConnection extends Connection {
 	 * @throws Exception
 	 */
 	private void sendLogon(String user, String pass) throws Exception {
-		BotNetPacket p = new BotNetPacket(BotNetPacketId.PACKET_LOGON);
+		BotNetPacket p = new BotNetPacket(this, BotNetPacketId.PACKET_LOGON);
 		p.writeNTString(user);
 		p.writeNTString(pass);
 		p.sendPacket(bnOutputStream);
@@ -412,7 +412,7 @@ public class BotNetConnection extends Connection {
 	 * @throws Exception If an error occurred
 	 */
 	private void sendAccount(int command, String username, String password, String newPassword) throws Exception {
-		BotNetPacket p = new BotNetPacket(BotNetPacketId.PACKET_ACCOUNT);
+		BotNetPacket p = new BotNetPacket(this, BotNetPacketId.PACKET_ACCOUNT);
 		p.writeDWord(command);
 		p.writeNTString(username);
 		p.writeNTString(password);
@@ -437,7 +437,7 @@ public class BotNetConnection extends Connection {
 	 * @throws Exception
 	 */
 	private void sendBotNetVersion(int x, int y) throws Exception {
-		BotNetPacket p = new BotNetPacket(BotNetPacketId.PACKET_BOTNETVERSION);
+		BotNetPacket p = new BotNetPacket(this, BotNetPacketId.PACKET_BOTNETVERSION);
 		p.writeDWord(x);
 		p.writeDWord(y);
 		p.sendPacket(bnOutputStream);
@@ -448,7 +448,7 @@ public class BotNetConnection extends Connection {
 	 * @throws Exception
 	 */
 	private void sendIdle() throws Exception {
-		BotNetPacket p = new BotNetPacket(BotNetPacketId.PACKET_IDLE);
+		BotNetPacket p = new BotNetPacket(this, BotNetPacketId.PACKET_IDLE);
 		p.sendPacket(bnOutputStream);
 	}
 
@@ -501,7 +501,7 @@ public class BotNetConnection extends Connection {
 	 * @throws Exception
 	 */
 	private void sendStatusUpdate(String username, String channel, int ip, String database, boolean cycling) throws Exception {
-		BotNetPacket p = new BotNetPacket(BotNetPacketId.PACKET_STATSUPDATE);
+		BotNetPacket p = new BotNetPacket(this, BotNetPacketId.PACKET_STATSUPDATE);
 		p.writeNTString(username);
 		p.writeNTString(channel);
 		p.writeDWord(ip); // bnet ip address
@@ -515,7 +515,7 @@ public class BotNetConnection extends Connection {
 	 * @throws Exception
 	 */
 	public void sendUserInfo() throws Exception {
-		BotNetPacket p = new BotNetPacket(BotNetPacketId.PACKET_USERINFO);
+		BotNetPacket p = new BotNetPacket(this, BotNetPacketId.PACKET_USERINFO);
 		p.sendPacket(bnOutputStream);
 
 		userInit = true;
@@ -533,7 +533,7 @@ public class BotNetConnection extends Connection {
 		if(message.length() > 496)
 			throw new IllegalStateException("Chat length too long");
 
-		BotNetPacket p = new BotNetPacket(BotNetPacketId.PACKET_BOTNETCHAT);
+		BotNetPacket p = new BotNetPacket(this, BotNetPacketId.PACKET_BOTNETCHAT);
 		p.writeDWord(command);
 		p.writeDWord(emote ? 1 : 0);
 		p.writeDWord(target);

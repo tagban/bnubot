@@ -10,6 +10,7 @@ import java.io.OutputStream;
 import java.net.SocketException;
 
 import net.bnubot.core.Connection;
+import net.bnubot.core.Connection.ConnectionState;
 import net.bnubot.core.bncs.BNCSPacketId;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetOutputStream;
@@ -22,13 +23,12 @@ import net.bnubot.util.crypto.HexDump;
  * @author scotta
  */
 public abstract class _Packet<C extends Connection, P extends _PacketId<C>> extends BNetOutputStream {
-//	private final C c;
+	private final C c;
 	public final P packetId;
 
-//	public _Packet(C c, P packetId) {
-	public _Packet(P packetId) {
+	public _Packet(C c, P packetId) {
 		super(new ByteArrayOutputStream());
-//		this.c = c;
+		this.c = c;
 		this.packetId = packetId;
 	}
 
@@ -63,12 +63,12 @@ public abstract class _Packet<C extends Connection, P extends _PacketId<C>> exte
 			Out.debugAlways(getClass(), msg);
 		}
 
-//		try {
+		try {
 			out.write(data);
 			out.flush();
-//		} catch(SocketException e) {
-//			c.disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
-//		}
+		} catch(SocketException e) {
+			c.disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
+		}
 	}
 
 	protected abstract void buildPacket(int packetId, byte[] data, BNetOutputStream sckout) throws IOException;
