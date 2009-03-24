@@ -21,11 +21,13 @@ import org.jbls.util.PadString;
  * @author scotta
  */
 public class BNCSWarden {
-	private SimpleCrypto incoming;
-	private SimpleCrypto outgoing;
+	private final BNCSConnection c;
+	private final SimpleCrypto incoming;
+	private final SimpleCrypto outgoing;
 	private WardenModule warden_module;
 
-	public BNCSWarden(byte[] seed) {
+	public BNCSWarden(BNCSConnection c, byte[] seed) {
+		this.c = c;
 		Out.debug(getClass(), "Generating Warden Cryptos");
 		WardenRandom rand = new WardenRandom(seed);
 		this.outgoing = new SimpleCrypto(rand.getBytes(0x10));
@@ -34,7 +36,7 @@ public class BNCSWarden {
 
 	public void processWardenPacket(byte[] payload, OutputStream os)
 			throws IOException {
-		BNCSPacket out = new BNCSPacket(BNCSPacketId.SID_WARDEN);
+		BNCSPacket out = new BNCSPacket(c, BNCSPacketId.SID_WARDEN);
 
 		//in.readDWord();
 		Buffer warden = new Buffer(incoming.do_crypt(payload));

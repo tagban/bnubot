@@ -11,8 +11,8 @@ import net.bnubot.core._super._Packet;
 import net.bnubot.util.BNetOutputStream;
 
 public class BNCSPacket extends _Packet<BNCSConnection, BNCSPacketId> {
-	public BNCSPacket(BNCSPacketId packetId) {
-		super(packetId);
+	public BNCSPacket(BNCSConnection c, BNCSPacketId packetId) {
+		super(c, packetId);
 	}
 
 	@Override
