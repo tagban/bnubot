@@ -35,7 +35,6 @@ public abstract class _PacketReader<C extends Connection, P extends _PacketId<C>
 			String msg = "RECV " + pId.name();
 			if(pId == BNCSPacketId.SID_CHATEVENT)
 				msg += " " + BNCSChatEventId.values()[BNetInputStream.readDWord(data, 0)].name();
-			msg += "[" + packetLength + "]";
 			if(Out.isDebug())
 				msg += "\n" + HexDump.hexDump(data);
 			Out.debugAlways(getClass(), msg);
