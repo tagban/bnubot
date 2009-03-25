@@ -50,10 +50,8 @@ public class MirrorSelector {
 				Out.error(MirrorSelector.class, "Address " + mirror + " timed out");
 			} catch (ConnectException ce) {
 				Out.error(MirrorSelector.class, "Connect Exception: " + ce.getMessage() + " for " + mirror);
-				Out.exception(ce);
 			} catch (SocketException se) {
 				Out.error(MirrorSelector.class, "Unable to connect to " + mirror + ", there may be a problem with your network connection.");
-				Out.exception(se);
 			} catch (IOException ioe) {
 				Out.error(MirrorSelector.class, "Error connecting to " + mirror);
 				Out.exception(ioe);
