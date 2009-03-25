@@ -14,7 +14,7 @@ import net.bnubot.util.BNetInputStream;
 /**
  * @author scotta
  */
-public class BotNetPacketReader extends _PacketReader<BotNetConnection, BotNetPacketId> {
+public class BotNetPacketReader extends _PacketReader<BotNetPacketId> {
 
 	public BotNetPacketReader(InputStream rawis) throws IOException {
 		super(rawis);
