@@ -32,7 +32,9 @@ public class PluginManager {
 	private static boolean sortEnabledPluginsNeeded = true;
 	private static final Comparator<Class<? extends EventHandler>> enabledPluginsSorter = new Comparator<Class<? extends EventHandler>>() {
 		public int compare(Class<? extends EventHandler> o1, Class<? extends EventHandler> o2) {
-			return new Integer(plugins.indexOf(o1)).compareTo(plugins.indexOf(o2));
+			Integer i0 = Integer.valueOf(plugins.indexOf(o1));
+			Integer i1 = Integer.valueOf(plugins.indexOf(o2));
+			return i0.compareTo(i1);
 		}};
 
 	static {

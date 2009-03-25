@@ -95,7 +95,7 @@ public class Account extends _Account {
 	 */
 	@SuppressWarnings("unchecked")
 	public static List<Account> getTriviaLeaders() {
-		Expression expression = ExpressionFactory.greaterExp(Account.TRIVIA_CORRECT_PROPERTY, new Integer(0));
+		Expression expression = ExpressionFactory.greaterExp(Account.TRIVIA_CORRECT_PROPERTY, Integer.valueOf(0));
 		SelectQuery query = new SelectQuery(Account.class, expression);
 		query.addOrdering(Account.TRIVIA_CORRECT_PROPERTY, false);
 		return DatabaseContext.getContext().performQuery(query);

@@ -243,7 +243,7 @@ public class Growl {
 		if (inIconData != null)
 			setObjectForKey.invoke(noteDict, inIconData, GROWL_NOTIFICATION_ICON);
 		if (inSticky)
-			setObjectForKey.invoke(noteDict, new Integer(1), GROWL_NOTIFICATION_STICKY);
+			setObjectForKey.invoke(noteDict, Integer.valueOf(1), GROWL_NOTIFICATION_STICKY);
 		if (inIdentifier != null)
 			setObjectForKey.invoke(noteDict, inIdentifier, GROWL_NOTIFICATION_IDENTIFIER);
 		if (inExtraInfo != null)

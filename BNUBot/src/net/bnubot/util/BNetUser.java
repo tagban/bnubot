@@ -366,7 +366,7 @@ public class BNetUser {
 	}
 
 	public void setPing(int ping) {
-		this.ping = new Integer(ping);
+		this.ping = Integer.valueOf(ping);
 	}
 
 	public StatString getStatString() {
