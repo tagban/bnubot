@@ -18,7 +18,6 @@ import net.bnubot.settings.Settings;
 import net.bnubot.util.Out;
 import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.ExceptionReporter;
-import net.bnubot.vercheck.ReleaseType;
 
 import org.apache.commons.logging.impl.NoOpLog;
 import org.eclipse.swt.widgets.Display;
@@ -44,8 +43,8 @@ public class Main {
 			try {
 				File logFile = new File("log.txt");
 
-				if(CurrentVersion.fromJar()
-				&& (CurrentVersion.version().getReleaseType() == ReleaseType.Nightly)
+				// Report errors for nightly builds
+				if(CurrentVersion.version().getReleaseType().isNightly()
 				&& logFile.exists()
 				&& (logFile.length() > 0))
 					ExceptionReporter.reportErrors(logFile);
