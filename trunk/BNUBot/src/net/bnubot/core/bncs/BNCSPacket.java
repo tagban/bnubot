@@ -10,6 +10,9 @@ import java.io.IOException;
 import net.bnubot.core._super._Packet;
 import net.bnubot.util.BNetOutputStream;
 
+/**
+ * @author scotta
+ */
 public class BNCSPacket extends _Packet<BNCSConnection, BNCSPacketId> {
 	public BNCSPacket(BNCSConnection c, BNCSPacketId packetId) {
 		super(c, packetId);

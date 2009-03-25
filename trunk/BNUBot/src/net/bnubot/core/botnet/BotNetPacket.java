@@ -10,6 +10,9 @@ import java.io.IOException;
 import net.bnubot.core._super._Packet;
 import net.bnubot.util.BNetOutputStream;
 
+/**
+ * @author scotta
+ */
 public class BotNetPacket extends _Packet<BotNetConnection, BotNetPacketId> {
 	public BotNetPacket(BotNetConnection c, BotNetPacketId packetId) {
 		super(c, packetId);
