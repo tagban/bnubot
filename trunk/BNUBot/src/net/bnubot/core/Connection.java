@@ -11,7 +11,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.Socket;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -187,7 +186,9 @@ public abstract class Connection extends Thread {
 			} catch(UnknownHostException e) {
 				dispatchRecieveError("Unknown host: " + e.getMessage());
 				disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
-			} catch(SocketException e) {
+			} catch(IOException e) {
+				dispatchRecieveError(e.getMessage());
+				disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 			} catch(Exception e) {
 				dispatchRecieveError("Unhandled " + e.getClass().getSimpleName() + ": " + e.getMessage());
 				Out.exception(e);
