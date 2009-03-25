@@ -14,7 +14,7 @@ import net.bnubot.util.BNetInputStream;
 /**
  * @author scotta
  */
-public class BNCSPacketReader extends _PacketReader<BNCSConnection, BNCSPacketId> {
+public class BNCSPacketReader extends _PacketReader<BNCSPacketId> {
 
 	public BNCSPacketReader(InputStream rawis) throws IOException {
 		super(rawis);

@@ -14,7 +14,7 @@ import net.bnubot.util.BNetInputStream;
 /**
  * @author scotta
  */
-public class DTPacketReader extends _PacketReader<DTConnection, DTPacketId> {
+public class DTPacketReader extends _PacketReader<DTPacketId> {
 
 	public DTPacketReader(InputStream rawis) throws IOException {
 		super(rawis);

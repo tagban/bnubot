@@ -8,7 +8,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import net.bnubot.core.Connection;
 import net.bnubot.core.bncs.BNCSChatEventId;
 import net.bnubot.core.bncs.BNCSPacketId;
 import net.bnubot.settings.GlobalSettings;
@@ -17,11 +16,11 @@ import net.bnubot.util.Out;
 import net.bnubot.util.crypto.HexDump;
 
 /**
- * @param <C> The connection type for this packet
- * @param <P> The packetId type for this packet
+ * @param <C> The <code>net.bnubot.core.Connection</code> type for this packet
+ * @param <P> The <code>net.bnubot.core._super._PacketId</code> type for this packet
  * @author scotta
  */
-public abstract class _PacketReader<C extends Connection, P extends _PacketId<C>> {
+public abstract class _PacketReader<P extends _PacketId<?>> {
 	public P packetId;
 	public int packetLength;
 	public byte data[];
