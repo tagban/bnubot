@@ -62,7 +62,7 @@ public class ConfigFlagChecks extends Box {
 
 			cb.addChangeListener(cl);
 
-			cbs.put(cb, new Integer(f));
+			cbs.put(cb, Integer.valueOf(f));
 		}
 
 		add(ctf = new ConfigNumericHexTextField(flags));

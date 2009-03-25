@@ -336,7 +336,7 @@ public class DatabaseEditor {
 				if(fieldType.equals(String.class))
 					return value;
 				if(fieldType.equals(Integer.class) || fieldType.equals(int.class))
-					return new Integer(value);
+					return Integer.valueOf(value);
 				if(fieldType.equals(Boolean.class) || fieldType.equals(boolean.class))
 					return new Boolean(value);
 				if(fieldType.equals(Date.class))

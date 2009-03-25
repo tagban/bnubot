@@ -225,7 +225,7 @@ public class GlobalConfigurationFrame extends JDialog {
 					chkEnabledPlugins.add(chkEnablePlugin);
 					plugins.add(plugin);
 				}
-				spnTriviaRoundLength = ConfigFactory.makeSpinner("Trivia Round Length", new Integer(GlobalSettings.triviaRoundLength), boxAll);
+				spnTriviaRoundLength = ConfigFactory.makeSpinner("Trivia Round Length", Integer.valueOf(GlobalSettings.triviaRoundLength), boxAll);
 			}
 			tabs.addTab("Plugins", boxAll);
 
@@ -302,7 +302,7 @@ public class GlobalConfigurationFrame extends JDialog {
 				boxAll.add(chkDisplayChannelUsers = new ConfigCheckBox("Display Channel Users On Join", GlobalSettings.displayChannelUsers));
 				boxAll.add(chkDisplaySlashCommands = new ConfigCheckBox("Display / Commands", GlobalSettings.displaySlashCommands));
 				txtGuiFontFamily = ConfigFactory.makeText("GUI Font Family", GlobalSettings.guiFontFamily, boxAll);
-				spnGuiFontSize = ConfigFactory.makeSpinner("GUI Font Size", new Integer(GlobalSettings.guiFontSize), boxAll);
+				spnGuiFontSize = ConfigFactory.makeSpinner("GUI Font Size", Integer.valueOf(GlobalSettings.guiFontSize), boxAll);
 			}
 			tabs.addTab("Display 2", boxAll);
 
@@ -507,7 +507,7 @@ public class GlobalConfigurationFrame extends JDialog {
 			chkDisplayChannelUsers.setSelected(GlobalSettings.displayChannelUsers);
 			chkDisplaySlashCommands.setSelected(GlobalSettings.displaySlashCommands);
 			txtGuiFontFamily.setText(GlobalSettings.guiFontFamily);
-			spnGuiFontSize.setValue(new Integer(GlobalSettings.guiFontSize));
+			spnGuiFontSize.setValue(Integer.valueOf(GlobalSettings.guiFontSize));
 			chkEnableLegacyIcons.setSelected(GlobalSettings.enableLegacyIcons);
 			chkEnableTabCompleteUser.setSelected(GlobalSettings.enableTabCompleteUser);
 			chkEnableTabCompleteCommand.setSelected(GlobalSettings.enableTabCompleteCommand);
@@ -519,7 +519,7 @@ public class GlobalConfigurationFrame extends JDialog {
 			chkTrayDisplayChatEmote.setSelected(GlobalSettings.trayDisplayChatEmote);
 			chkTrayDisplayWhisper.setSelected(GlobalSettings.trayDisplayWhisper);
 			cmbTabCompleteMode.setSelectedItem(GlobalSettings.tabCompleteMode);
-			spnTriviaRoundLength.setValue(new Integer(GlobalSettings.triviaRoundLength));
+			spnTriviaRoundLength.setValue(Integer.valueOf(GlobalSettings.triviaRoundLength));
 			for(int i = 0; i < plugins.size(); i++) {
 				Class<? extends EventHandler> plugin = plugins.get(i);
 				ConfigCheckBox chkEnablePlugin = chkEnabledPlugins.get(i);

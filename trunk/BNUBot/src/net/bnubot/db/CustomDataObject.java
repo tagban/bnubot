@@ -28,7 +28,7 @@ public abstract class CustomDataObject extends CayenneDataObject implements Comp
 
 	@SuppressWarnings("unchecked")
 	public Comparable toSortField() {
-		return new Integer(DataObjectUtils.intPKForObject(this));
+		return Integer.valueOf(DataObjectUtils.intPKForObject(this));
 	}
 
 	public final String toDisplayString() {

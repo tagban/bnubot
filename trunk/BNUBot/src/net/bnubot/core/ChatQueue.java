@@ -26,7 +26,7 @@ public class ChatQueue extends Thread {
 
 		public QueueEntry(ByteArray text, int priority) {
 			this.text = text;
-			this.priority = new Integer(priority);
+			this.priority = Integer.valueOf(priority);
 		}
 
 		public int compareTo(QueueEntry o) {

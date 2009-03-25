@@ -40,7 +40,9 @@ public enum ChannelListPriority {
 		public int compare(BNetUser arg0, BNetUser arg1) {
 			int prio0 = ChannelListPriority.getPrioByFlags(arg0.getFlags());
 			int prio1 = ChannelListPriority.getPrioByFlags(arg0.getFlags());
-			return new Integer(prio0).compareTo(prio1);
+			Integer i0 = Integer.valueOf(prio0);
+			Integer i1 = Integer.valueOf(prio1);
+			return i0.compareTo(i1);
 		}
 	};
 
