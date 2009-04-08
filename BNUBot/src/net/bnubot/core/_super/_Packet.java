@@ -24,7 +24,7 @@ import net.bnubot.util.crypto.HexDump;
  */
 public abstract class _Packet<C extends Connection, P extends _PacketId<C>> extends BNetOutputStream {
 	private final C c;
-	public final P packetId;
+	private final P packetId;
 
 	public _Packet(C c, P packetId) {
 		super(new ByteArrayOutputStream());
@@ -34,8 +34,6 @@ public abstract class _Packet<C extends Connection, P extends _PacketId<C>> exte
 
 	public void sendPacket(OutputStream out) throws IOException, SocketException {
 		byte data[] = ((ByteArrayOutputStream)this.out).toByteArray();
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		BNetOutputStream sckout = new BNetOutputStream(baos);
 
 		if(packetId == BNCSPacketId.SID_CHATCOMMAND) {
 			if(data.length > 0xFB) {
@@ -48,8 +46,11 @@ public abstract class _Packet<C extends Connection, P extends _PacketId<C>> exte
 			}
 		}
 
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		BNetOutputStream sckout = new BNetOutputStream(baos);
+
 		try {
-			buildPacket(packetId.ordinal(), data, sckout);
+			buildPacket(packetId, data, sckout);
 		} catch(IOException e) {
 			Out.fatalException(e);
 		}
@@ -71,5 +72,5 @@ public abstract class _Packet<C extends Connection, P extends _PacketId<C>> exte
 		}
 	}
 
-	protected abstract void buildPacket(int packetId, byte[] data, BNetOutputStream sckout) throws IOException;
+	protected abstract void buildPacket(P packetId, byte[] data, BNetOutputStream sckout) throws IOException;
 }

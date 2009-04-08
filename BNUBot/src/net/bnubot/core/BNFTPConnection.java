@@ -10,6 +10,7 @@ import java.io.FileOutputStream;
 import java.net.Socket;
 import java.util.Date;
 
+import net.bnubot.core.bncs.PlatformIDs;
 import net.bnubot.core.bncs.ProductIDs;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.settings.Settings;
@@ -27,6 +28,7 @@ public class BNFTPConnection {
 	/**
 	 * Download a file using BNFTP; get the file from the undefined default server
 	 * @param fileName the <code>File</code>'s name
+	 * @param lastModified when the file was modified last
 	 * @return the <code>File</code>, or null if there was an error
 	 * @throws Exception
 	 */
@@ -80,7 +82,7 @@ public class BNFTPConnection {
 		//File request
 		os.writeWord(32 + fileName.length() + 1);
 		os.writeWord(0x100);		// Protocol version
-		os.writeDWord("IX86");	// Platform ID
+		os.writeDWord(PlatformIDs.PLATFORM_IX86);	// Platform ID
 		os.writeDWord(product.getDword());	// Product ID
 		os.writeDWord(0);		// Banners ID
 		os.writeDWord(0);		// Banners File Extension

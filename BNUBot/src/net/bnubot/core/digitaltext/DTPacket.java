@@ -20,9 +20,9 @@ public class DTPacket extends _Packet<DTConnection, DTPacketId> {
 	}
 
 	@Override
-	protected void buildPacket(int packetId, byte[] data, BNetOutputStream sckout) throws IOException {
+	protected void buildPacket(DTPacketId packetId, byte[] data, BNetOutputStream sckout) throws IOException {
 		sckout.writeByte(0xF4);
-		sckout.writeByte(packetId);
+		sckout.writeByte(packetId.ordinal());
 		sckout.writeWord(data.length + 4);
 		sckout.write(data);
 	}

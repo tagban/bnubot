@@ -19,9 +19,9 @@ public class BNCSPacket extends _Packet<BNCSConnection, BNCSPacketId> {
 	}
 
 	@Override
-	protected void buildPacket(int packetId, byte[] data, BNetOutputStream sckout) throws IOException  {
+	protected void buildPacket(BNCSPacketId packetId, byte[] data, BNetOutputStream sckout) throws IOException  {
 		sckout.writeByte(0xFF);
-		sckout.writeByte(packetId);
+		sckout.writeByte(packetId.ordinal());
 		sckout.writeWord(data.length + 4);
 		sckout.write(data);
 	}
