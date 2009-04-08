@@ -13,6 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.text.ParseException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -40,8 +41,9 @@ import net.bnubot.bot.gui.components.ConfigFlagChecks;
 import net.bnubot.bot.gui.components.ConfigTextField;
 import net.bnubot.db.CustomDataObject;
 import net.bnubot.db.conf.DatabaseContext;
-import net.bnubot.util.UnloggedException;
 import net.bnubot.util.Out;
+import net.bnubot.util.TimeFormatter;
+import net.bnubot.util.UnloggedException;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.map.DbAttribute;
@@ -268,7 +270,10 @@ public class DatabaseEditor {
 		final Object value = row.readProperty(propName);
 		final boolean isNullable = !attr.getDbAttribute().isMandatory();
 
-		final String v = value == null ? null : value.toString();
+		final String v =
+			(value == null) ? null :
+			(value instanceof Date) ? TimeFormatter.formatDateTime((Date)value) :
+			value.toString();
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridy = y;
@@ -318,7 +323,6 @@ public class DatabaseEditor {
 		jp.add(valueComponent, gbc);
 
 		data.put(attr, new getValueDelegate() {
-			@SuppressWarnings("deprecation")
 			public Object getValue() {
 				// If it's nullable, and it's null, return null
 				if(isNullable && bNull.isSelected())
@@ -340,7 +344,11 @@ public class DatabaseEditor {
 				if(fieldType.equals(Boolean.class) || fieldType.equals(boolean.class))
 					return new Boolean(value);
 				if(fieldType.equals(Date.class))
-					return new Date(value);
+					try {
+						return new Date(TimeFormatter.parseDateTime(value));
+					} catch (ParseException e) {
+						throw new RuntimeException(e);
+					}
 
 				throw new IllegalStateException("Unknown fieldType " + fieldType.getSimpleName());
 			}});
