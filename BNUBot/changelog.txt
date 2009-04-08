@@ -7,6 +7,7 @@
 * Added an exception tracker (Issue 91)
 * Fixed a bug with MCP server login
 * The capture for "?trigger" is no longer case-sensitive
+* Fixed a bug relating to dates in the DatabaseEditor
 
 2.1.0 (r1640) 2008-10-06:
 * Added BotNet account login
