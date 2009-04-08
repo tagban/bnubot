@@ -19,9 +19,9 @@ public class BotNetPacket extends _Packet<BotNetConnection, BotNetPacketId> {
 	}
 
 	@Override
-	protected void buildPacket(int packetId, byte[] data, BNetOutputStream sckout) throws IOException  {
+	protected void buildPacket(BotNetPacketId packetId, byte[] data, BNetOutputStream sckout) throws IOException  {
 		sckout.writeByte(0x01);
-		sckout.writeByte(packetId);
+		sckout.writeByte(packetId.ordinal());
 		sckout.writeWord(data.length + 4);
 		sckout.write(data);
 	}
