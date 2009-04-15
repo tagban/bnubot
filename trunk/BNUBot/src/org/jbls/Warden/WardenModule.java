@@ -29,20 +29,21 @@ public class WardenModule {
 	private byte[] md5Hash = null;
 	private byte[] decryptionSeed = null;
 	private String name = null;
-	private static File sc = new File("Starcraft.exe");
+	private final File exe;
 
-	public WardenModule(int size, byte[] md5, byte[] decryptor) {
+	public WardenModule(int size, byte[] md5, byte[] decryptor, String game_exe) {
 		this.compressedSize = size;
 		this.md5Hash = md5;
 		this.decryptionSeed = decryptor;
+		this.exe = new File(game_exe);
 		StringBuffer nametmp = new StringBuffer();
 		for (int x = 0; x < 0x10; x++)
 			nametmp.append(PadString.padHex(md5[x], 2));
 		name = nametmp.toString();
 		saveFile(name + ".decr", decryptor);
 
-		if(!sc.exists()) {
-			Out.error(getClass(), "Starcraft.exe does not exist! Warden will fail.");
+		if(!exe.exists()) {
+			Out.error(getClass(), game_exe + " does not exist! Warden will fail.");
 			throw new IllegalStateException();
 		}
 	}
@@ -79,7 +80,7 @@ public class WardenModule {
 	}
 
 	private byte[] getFileData(int i, int length) throws IOException {
-		InputStream in = new FileInputStream(sc);
+		InputStream in = new FileInputStream(exe);
 		in.skip(i);
 		byte[] ret = new byte[length];
 		in.read(ret);

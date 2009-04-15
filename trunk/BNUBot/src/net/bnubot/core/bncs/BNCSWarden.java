@@ -21,10 +21,13 @@ import org.jbls.util.PadString;
  * @author scotta
  */
 public class BNCSWarden {
+	private static final String SC_WARDEN = "Starcraft.exe";
+
 	private final BNCSConnection c;
 	private final SimpleCrypto incoming;
 	private final SimpleCrypto outgoing;
 	private WardenModule warden_module;
+	private String game_exe;
 
 	public BNCSWarden(BNCSConnection c, byte[] seed) {
 		this.c = c;
@@ -32,6 +35,15 @@ public class BNCSWarden {
 		WardenRandom rand = new WardenRandom(seed);
 		this.outgoing = new SimpleCrypto(rand.getBytes(0x10));
 		this.incoming = new SimpleCrypto(rand.getBytes(0x10));
+
+		switch(c.getProductID()) {
+		case STAR:
+		case SEXP:
+			game_exe = SC_WARDEN;
+			break;
+		default:
+			throw new IllegalStateException("Not sure how to process warden for " + c.getProductID().toString());
+		}
 	}
 
 	public void processWardenPacket(byte[] payload, OutputStream os)
@@ -48,7 +60,7 @@ public class BNCSWarden {
 			byte[] decryption = warden.removeBytes(0x10);
 			int length = warden.removeDWord();
 
-			warden_module = new WardenModule(length, md5, decryption);
+			warden_module = new WardenModule(length, md5, decryption, game_exe);
 
 			Out.debug(getClass(), "Received warden module info: ");
 			Out.debug(getClass(), "  Name:           " + warden_module.getName() + ".mod");
