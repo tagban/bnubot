@@ -133,9 +133,8 @@ public abstract class Connection extends Thread {
 				myUser = null;
 				dispatchTitleChanged();
 
-				if(!connectionState.canConnect(0)) {
-					dispatchRecieveInfo("Pausing to meet connection criteria for " + connectionState.toString());
-				}
+				if(!connectionState.canConnect(0))
+					Out.debug(getClass(), "Pausing to meet connection criteria for " + connectionState.toString());
 
 				// Wait until we're supposed to connect
 				long waitStartTime = System.currentTimeMillis();
