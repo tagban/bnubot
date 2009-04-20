@@ -107,10 +107,10 @@ public class SOCKS4ProxySocket extends Socket {
 	}
 
 	private int htonl(int hl) {
-		return ((hl & 0xFF000000) >> 24)
-		     | ((hl & 0x00FF0000) >> 8)
-		     | ((hl & 0x0000FF00) << 8)
-		     | ((hl & 0x000000FF) << 24);
+		return (((hl & 0xFF000000) >> 24) & 0x000000FF)
+		     | (((hl & 0x00FF0000) >> 8) & 0x0000FF00)
+		     | (((hl & 0x0000FF00) << 8) & 0x00FF0000)
+		     | (((hl & 0x000000FF) << 24) & 0xFF000000);
 	}
 
 	@Override
