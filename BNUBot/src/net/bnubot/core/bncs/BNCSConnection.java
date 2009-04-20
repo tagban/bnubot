@@ -207,12 +207,7 @@ public class BNCSConnection extends Connection {
 
 		// Set up BNCS
 		connect.updateProgress("Connecting to Battle.net");
-		int port = getPort();
-		InetAddress address = MirrorSelector
-				.getClosestMirror(getServer(), port);
-		dispatchRecieveInfo("Connecting to " + address + ":" + port + ".");
-		socket = new Socket(address, port);
-		socket.setKeepAlive(true);
+		socket = makeSocket(getServer(), getPort());
 		bncsInputStream = socket.getInputStream();
 		bncsOutputStream = new DataOutputStream(socket.getOutputStream());
 

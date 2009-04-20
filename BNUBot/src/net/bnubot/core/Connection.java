@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetInputStream;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.ByteArray;
+import net.bnubot.util.MirrorSelector;
 import net.bnubot.util.Out;
 import net.bnubot.util.TimeFormatter;
 import net.bnubot.util.UserProfile;
@@ -107,6 +109,32 @@ public abstract class Connection extends Thread {
 		for(Task t : currentTasks)
 			t.complete();
 		currentTasks.clear();
+	}
+
+	/**
+	 * Create a socket, and if necessary, connect via SOCKS4
+	 * @throws IOException
+	 * @throws UnknownHostException
+	 */
+	protected Socket makeSocket(String address, int port) throws UnknownHostException, IOException {
+		InetAddress addr = MirrorSelector.getClosestMirror(address, port);
+
+		Socket s;
+		if(GlobalSettings.socks4Enabled) {
+			InetAddress s4_addr = MirrorSelector.getClosestMirror(GlobalSettings.socks4Host, GlobalSettings.socks4Port);
+			int s4_port = GlobalSettings.socks4Port;
+
+			dispatchRecieveInfo("Connecting to " + addr + ":" + port + " via SOCKS4 proxy " + s4_addr + ":" + s4_port + ".");
+
+			s = new SOCKS4ProxySocket(
+				s4_addr, s4_port,
+				addr, port);
+		} else {
+			dispatchRecieveInfo("Connecting to " + addr + ":" + port + ".");
+			s = new Socket(addr, port);
+		}
+		s.setKeepAlive(true);
+		return s;
 	}
 
 	protected String getServer() {

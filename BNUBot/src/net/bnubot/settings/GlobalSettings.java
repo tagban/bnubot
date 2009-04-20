@@ -93,6 +93,10 @@ public class GlobalSettings {
 	public static String botNetUsername;
 	public static String botNetPassword;
 
+	public static boolean socks4Enabled;
+	public static String socks4Host;
+	public static int socks4Port;
+
 	private static String lookAndFeel;
 	private static String lookAndFeelTheme;
 	private static String[] lookAndFeelThemes = null;
@@ -207,6 +211,9 @@ public class GlobalSettings {
 		Settings.write(null, "tsFormat", TimeFormatter.tsFormat);
 		Settings.write(null, "timeZone", TimeFormatter.timeZone);
 		Settings.write(null, "whisperBack", whisperBack);
+		Settings.write(null, "socks4Enabled", socks4Enabled);
+		Settings.write(null, "socks4Host", socks4Host);
+		Settings.write(null, "socks4Port", socks4Port);
 
 		Settings.store();
 	}
@@ -265,6 +272,9 @@ public class GlobalSettings {
 		enableFloodProtect = Settings.read(null, "enableFloodProtect", false);
 		packetLog = Settings.read(null, "packetLog", false);
 		whisperBack = Settings.read(null, "whisperBack", true);
+		socks4Enabled = Settings.read(null, "socks4Enabled", false);
+		socks4Host = Settings.read(null, "socks4Host", "localhost");
+		socks4Port = Settings.read(null, "socks4Port", 6111);
 		recruitAccess = Settings.read(null, "recruitAccess", 10);
 		recruitTagPrefix =	Settings.read(null, "recruitTagPrefix", "BNU-");
 		recruitTagSuffix =	Settings.read(null, "recruitTagSuffix", (String)null);
