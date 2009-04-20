@@ -8,6 +8,7 @@
 * Fixed a bug with MCP server login
 * The capture for "?trigger" is no longer case-sensitive
 * Fixed a bug relating to dates in the DatabaseEditor
+* Added SOCKS4 support
 
 2.1.0 (r1640) 2008-10-06:
 * Added BotNet account login
