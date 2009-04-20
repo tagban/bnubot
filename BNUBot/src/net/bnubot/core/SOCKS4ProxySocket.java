@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketException;
 
 import net.bnubot.util.BNetInputStream;
 
@@ -66,8 +67,7 @@ public class SOCKS4ProxySocket extends Socket {
 
 	private void init2() throws IOException {
 		InputStream is = getInputStream();
-		while(isConnected() && (is.available() < 2))
-			Thread.yield();
+		waitForData(is, 2);
 
 		is.read(); // null
 		int result = is.read();
@@ -77,8 +77,7 @@ public class SOCKS4ProxySocket extends Socket {
 			throw new IOException("Request not granted: " + result);
 		}
 
-		while(isConnected() && (is.available() < 6))
-			Thread.yield();
+		waitForData(is, 6);
 		is.skip(2);
 		if(this.address == null) {
 			byte[] addr = new byte[4];
@@ -87,6 +86,23 @@ public class SOCKS4ProxySocket extends Socket {
 			this.address = InetAddress.getByAddress(addr);
 		} else {
 			is.skip(4);
+		}
+	}
+
+	private void waitForData(InputStream is, int bytes) throws IOException {
+		long start = System.currentTimeMillis();
+		while(true) {
+			if(!isConnected())
+				throw new SocketException("Socket closed");
+
+			if(is.available() >= bytes)
+				return;
+
+			// Wait 5 seconds for the proxy to come up with the data
+			if(System.currentTimeMillis() - start > 5000)
+				throw new SocketException("SOCKS4 proxy unresponsive");
+
+			Thread.yield();
 		}
 	}
 
