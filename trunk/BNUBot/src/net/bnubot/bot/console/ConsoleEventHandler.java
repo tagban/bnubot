@@ -65,6 +65,11 @@ public class ConsoleEventHandler extends EventHandler {
 	}
 
 	@Override
+	public void recieveBroadcast(Connection source, String username, int flags, String text) {
+		System.out.println("<" + username + "> " + text);
+	}
+
+	@Override
 	public void recieveEmote(Connection source, BNetUser user, String text) {
 		System.out.println("<" + user.toString() + " " + text + ">");
 	}

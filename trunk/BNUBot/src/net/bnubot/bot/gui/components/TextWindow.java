@@ -280,6 +280,16 @@ public class TextWindow extends JScrollPane {
 				cs.getChatColor(user.getFlags()));
 	}
 
+	public void broadcast(String username, int flags, String text) {
+		append3(
+			"(Broadcast) ",
+			cs.getTypeColor(),
+			"<" + username + "> ",
+			cs.getUserNameColor(flags),
+			text,
+			cs.getChatColor(flags));
+	}
+
 	public void whisperSent(String type, BNetUser user, String text) {
 		if(type == null)
 			append2(

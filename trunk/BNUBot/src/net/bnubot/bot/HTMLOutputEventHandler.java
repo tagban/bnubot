@@ -245,6 +245,20 @@ public class HTMLOutputEventHandler extends EventHandler {
 		logChat(source, out);
 	}
 
+	private void append3(Connection source, String text, Color col, String text2, Color col2, String text3, Color col3) {
+		String out = "\n";
+		out += getDate();
+		out += getColor(col);
+		out += text;
+		if(!col.equals(col2))
+			out += getColor(col2);
+		out += text2;
+		if(!col2.equals(col3))
+			out += getColor(col3);
+		out += text3;
+		logChat(source, out);
+	}
+
 	@Override
 	public void recieveChat(Connection source, BNetUser user, String text) {
 		append2(source,
@@ -252,6 +266,17 @@ public class HTMLOutputEventHandler extends EventHandler {
 			cs.getUserNameColor(user.getFlags()),
 			text,
 			cs.getChatColor(user.getFlags()));
+	}
+
+	@Override
+	public void recieveBroadcast(Connection source, String username, int flags, String text) {
+		append3(source,
+				"(Broadcast) ",
+				cs.getTypeColor(),
+				"<" + username + "> ",
+				cs.getUserNameColor(flags),
+				text,
+				cs.getChatColor(flags));
 	}
 
 	@Override
