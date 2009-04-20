@@ -1267,6 +1267,9 @@ public class BNCSConnection extends Connection {
 					case EID_TALK:
 						dispatchRecieveChat(user, data);
 						break;
+					case EID_BROADCAST:
+						dispatchRecieveBroadcast(username, flags, data.toString());
+						break;
 					case EID_EMOTE:
 						dispatchRecieveEmote(user, data.toString());
 						break;

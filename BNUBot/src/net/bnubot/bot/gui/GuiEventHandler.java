@@ -621,6 +621,11 @@ public class GuiEventHandler extends EventHandler {
 	}
 
 	@Override
+	public void recieveBroadcast(Connection source, String username, int flags, String text) {
+		mainTextArea.broadcast(username, flags, text);
+	}
+
+	@Override
 	public void recieveEmote(Connection source, BNetUser user, String text) {
 		mainTextArea.userEmote(source.getDisplayType(), user, text);
 		if(GlobalSettings.trayDisplayChatEmote)

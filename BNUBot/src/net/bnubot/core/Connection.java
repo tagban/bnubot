@@ -1186,6 +1186,16 @@ public abstract class Connection extends Thread {
 			dispatchParseCommand(user, text.substring(1), GlobalSettings.whisperBack);
 	}
 
+	protected void dispatchRecieveBroadcast(String username, int flags, String text) {
+		if(!isPrimaryConnection())
+			return;
+
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.recieveBroadcast(this, username, flags, text);
+		}
+	}
+
 	protected void dispatchRecieveEmote(BNetUser user, String text) {
 		if(!isPrimaryConnection())
 			return;

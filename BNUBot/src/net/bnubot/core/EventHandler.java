@@ -65,6 +65,7 @@ public abstract class EventHandler {
 	public void channelJoin(Connection source, BNetUser user) {}
 	public void channelLeave(Connection source, BNetUser user) {}
 	public void recieveChat(Connection source, BNetUser user, String text) {}
+	public void recieveBroadcast(Connection source, String username, int flags, String text) {}
 	public void recieveEmote(Connection source, BNetUser user, String text) {}
 	public void recieveServerInfo(Connection source, String text) {}
 	public void recieveServerError(Connection source, String text) {}
