@@ -32,8 +32,8 @@ public class Out {
 	private static PrintStream outStream = System.out;
 	private static final ThreadLocal<Connection> outConnection = new ThreadLocal<Connection>();
 	private static Connection outConnectionDefault = null;
-	private static boolean globalDebug = Settings.read(null, "debug", false);
-	private static boolean debugToGui = Settings.read(null, "debugToGui", true);
+	private static boolean globalDebug = Settings.getSection(null).read("debug", false);
+	private static boolean debugToGui = Settings.getSection(null).read("debugToGui", true);
 	private static final Properties debug = new SortedProperties();
 	private static final File debugFile = new File("debug.properties");
 	static {
@@ -240,7 +240,7 @@ public class Out {
 			if(PluginManager.getEnableGui())
 				GuiDesktop.updateDebugMenuChecked();
 			debug(Out.class, "Debug logging " + (debug ? "en" : "dis") + "abled");
-			Settings.write(null, "debug", debug);
+			Settings.getSection(null).write("debug", debug);
 			Settings.store();
 		} catch(Throwable t) {}
 	}
@@ -281,7 +281,7 @@ public class Out {
 		if(debugToGui == debug)
 			return;
 		debugToGui = debug;
-		Settings.write(null, "debugToGui", debugToGui);
+		Settings.getSection(null).write("debugToGui", debugToGui);
 		Settings.store();
 	}
 
