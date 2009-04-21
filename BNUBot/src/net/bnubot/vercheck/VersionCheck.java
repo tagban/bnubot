@@ -47,7 +47,7 @@ public class VersionCheck {
 
 	public static boolean checkVersion(boolean force, BNetUser bnSubject, boolean whisperBack) throws Exception {
 		if(!force) {
-			final long lastVersionCheck = Settings.read(null, VERSION_CHECK_TIME, 0l);
+			final long lastVersionCheck = Settings.getSection(null).read(VERSION_CHECK_TIME, 0l);
 			long now = System.currentTimeMillis();
 			// Wait 6 hours
 			if(now - lastVersionCheck < 6 * 60 * 60 * 1000)
@@ -104,7 +104,7 @@ public class VersionCheck {
 	 * @throws Exception if an error occurred
 	 */
 	private static boolean doCheckVersion(boolean forceDownload, ReleaseType rt, String jarFileName, String downloadFolder, BNetUser bnSubject, boolean whisperBack) throws Exception {
-		Settings.write(null, VERSION_CHECK_TIME, System.currentTimeMillis());
+		Settings.getSection(null).write(VERSION_CHECK_TIME, System.currentTimeMillis());
 		Settings.store();
 
 		try {

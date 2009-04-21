@@ -51,9 +51,9 @@ public class SWTDesktop extends Thread {
 		if(CurrentVersion.fromJar()) {
 			// If we're launching a new version, pop up the what's new window
 			long currentVersionBuilt = CurrentVersion.version().getBuildDate().getTime();
-			long lastWhatsNewWindow = Settings.read(null, "whatsNewTime", 0);
+			long lastWhatsNewWindow = Settings.getSection(null).read("whatsNewTime", 0);
 			if(lastWhatsNewWindow != currentVersionBuilt) {
-				Settings.write(null, "whatsNewTime", currentVersionBuilt);
+				Settings.getSection(null).write("whatsNewTime", currentVersionBuilt);
 				Settings.store();
 				new WhatsNewWindow();
 			}

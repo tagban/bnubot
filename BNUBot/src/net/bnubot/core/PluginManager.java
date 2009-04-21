@@ -57,7 +57,7 @@ public class PluginManager {
 	}
 
 	private static void register(Class<? extends EventHandler> plugin, boolean defaultEnabledValue) {
-		boolean enable = Settings.read(HEADER, plugin.getName(), defaultEnabledValue);
+		boolean enable = Settings.getSection(HEADER).read(plugin.getName(), defaultEnabledValue);
 		Out.debug(PluginManager.class, "Registering " + plugin.getName());
 		plugins.add(plugin);
 
@@ -106,7 +106,7 @@ public class PluginManager {
 			Out.fatalException(e);
 		}
 
-		Settings.write(HEADER, plugin.getName(), enable);
+		Settings.getSection(HEADER).write(plugin.getName(), enable);
 	}
 
 	public static List<Class<? extends EventHandler>> getPlugins() {
