@@ -151,50 +151,54 @@ public class ConnectionSettings implements Serializable {
 
 	public void save() {
 		String header = Integer.toString(botNum);
-		Settings.write(header, "profile", profile);
-		Settings.write(header, "username", username);
-		Settings.write(header, "password", password);
-		Settings.write(header, "enablePlug", enablePlug);
-		Settings.write(header, "enableBotNet", enableBotNet);
-		Settings.write(header, "cdkey", cdkey);
-		Settings.write(header, "cdkey2", cdkey2);
-		Settings.write(header, "product", product);
+		SettingsSection ss = Settings.getSection(header);
+
+		ss.write("profile", profile);
+		ss.write("username", username);
+		ss.write("password", password);
+		ss.write("enablePlug", enablePlug);
+		ss.write("enableBotNet", enableBotNet);
+		ss.write("cdkey", cdkey);
+		ss.write("cdkey2", cdkey2);
+		ss.write("product", product);
 
 		header = "Profile_" + profile;
-		Settings.write(header, "connectionType", connectionType);
-		Settings.write(header, "server", server);
-		Settings.write(header, "port", port);
-		Settings.write(header, "channel", channel);
-		Settings.write(header, "antiidle", antiIdle);
-		Settings.write(header, "enableAntiidle", enableAntiIdle);
-		Settings.write(header, "enableGreetings", enableGreetings);
-		Settings.write(header, "trigger", trigger);
-		Settings.write(header, "antiIdleTimer", antiIdleTimer);
+		ss.write("connectionType", connectionType);
+		ss.write("server", server);
+		ss.write("port", port);
+		ss.write("channel", channel);
+		ss.write("antiidle", antiIdle);
+		ss.write("enableAntiidle", enableAntiIdle);
+		ss.write("enableGreetings", enableGreetings);
+		ss.write("trigger", trigger);
+		ss.write("antiIdleTimer", antiIdleTimer);
 
 		Settings.store();
 	}
 
 	public void load() {
 		String header = Integer.toString(botNum);
+		SettingsSection ss = Settings.getSection(header);
 
-		profile = 	Settings.read(header, "profile", "Profile" + botNum);
-		username =	Settings.read(header, "username", (String)null);
-		password =	Settings.read(header, "password", (String)null);
-		enablePlug =	Settings.read(header, "enablePlug", false);
-		enableBotNet =	Settings.read(header, "enableBotNet", false);
-		cdkey =		Settings.read(header, "cdkey", (String)null);
-		cdkey2 =	Settings.read(header, "cdkey2", (String)null);
-		product =	Settings.read(header, "product", ProductIDs.STAR);
+		profile = 	ss.read("profile", "Profile" + botNum);
+		username =	ss.read("username", (String)null);
+		password =	ss.read("password", (String)null);
+		enablePlug =	ss.read("enablePlug", false);
+		enableBotNet =	ss.read("enableBotNet", false);
+		cdkey =		ss.read("cdkey", (String)null);
+		cdkey2 =	ss.read("cdkey2", (String)null);
+		product =	ss.read("product", ProductIDs.STAR);
 
 		header = "Profile_" + profile;
-		connectionType =	Settings.read(header, "connectionType", ConnectionType.BNCS);
-		server =	Settings.read(header, "server", USEAST_BATTLE_NET);
-		port =	Settings.read(header, "port", 6112);
-		channel =	Settings.read(header, "channel", "Clan BNU");
-		trigger =	Settings.read(header, "trigger", "!");
-		antiIdle =	Settings.read(header, "antiidle", "/me is a BNU-Bot %version%");
-		enableAntiIdle =	Settings.read(header, "enableAntiidle", false);
-		enableGreetings =	Settings.read(header, "enableGreetings", false);
-		antiIdleTimer =	Settings.read(header, "antiIdleTimer", 5);
+		ss = Settings.getSection(header);
+		connectionType =	ss.read("connectionType", ConnectionType.BNCS);
+		server =	ss.read("server", USEAST_BATTLE_NET);
+		port =	ss.read("port", 6112);
+		channel =	ss.read("channel", "Clan BNU");
+		trigger =	ss.read("trigger", "!");
+		antiIdle =	ss.read("antiidle", "/me is a BNU-Bot %version%");
+		enableAntiIdle =	ss.read("enableAntiidle", false);
+		enableGreetings =	ss.read("enableGreetings", false);
+		antiIdleTimer =	ss.read("antiIdleTimer", 5);
 	}
 }
