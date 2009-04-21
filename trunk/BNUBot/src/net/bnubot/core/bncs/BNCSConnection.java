@@ -403,7 +403,7 @@ public class BNCSConnection extends Connection {
 							warden = new BNCSWarden(this, warden_seed);
 						} catch (Exception e) {
 							warden = null;
-							Out.exception(e);
+							Out.debug(getClass(), e.getMessage());
 						}
 					}
 
