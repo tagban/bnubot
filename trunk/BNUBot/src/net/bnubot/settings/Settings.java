@@ -32,10 +32,8 @@ public class Settings {
 		}
 	}
 
-	private static String getKey(String header, String setting) {
-		if(header == null)
-			return "general_" + setting;
-		return header + "_" + setting;
+	public static SettingsSection getSection(String header) {
+		return new SettingsSection(header);
 	}
 
 	public static String getRootPath() {
@@ -45,8 +43,12 @@ public class Settings {
 		return "";
 	}
 
+	@Deprecated
 	public static String read(String header, String setting, String defaultValue) {
-		String key = getKey(header, setting);
+		return getSection(header).read(setting, defaultValue);
+	}
+
+	protected static String read(String key, String defaultValue) {
 		if(props.containsKey(key))
 			return props.getProperty(key);
 
@@ -54,18 +56,22 @@ public class Settings {
 		return defaultValue;
 	}
 
+	@Deprecated
 	public static boolean read(String header, String setting, boolean defaultValue) {
 		return Boolean.parseBoolean(read(header, setting, Boolean.toString(defaultValue)));
 	}
 
+	@Deprecated
 	public static int read(String header, String setting, int defaultValue) {
 		return Integer.parseInt(read(header, setting, Integer.toString(defaultValue)));
 	}
 
+	@Deprecated
 	public static long read(String header, String setting, long defaultValue) {
 		return Long.parseLong(read(header, setting, Long.toString(defaultValue)));
 	}
 
+	@Deprecated
 	public static TimeZone read(String header, String setting, TimeZone defaultValue) {
 		return TimeZone.getTimeZone(read(header, setting, defaultValue.getID()));
 	}
@@ -79,6 +85,7 @@ public class Settings {
 	 * @return the value if it exists in settings, or defaultValue if none exists
 	 * @throws NullPointerException if <code>defaultValue == null</code>
 	 */
+	@Deprecated
 	public static <T extends Enum<T>> T read(String header, String setting, T defaultValue) {
 		String readValue = read(header, setting, defaultValue.name());
 		try {
@@ -89,11 +96,12 @@ public class Settings {
 		}
 	}
 
+	@Deprecated
 	public static void write(String header, String setting, String value) {
-		write(getKey(header, setting), value);
+		getSection(header).write(setting, value);
 	}
 
-	private static void write(String key, String value) {
+	protected static void write(String key, String value) {
 		if(value == null)
 			value = new String();
 
@@ -111,18 +119,22 @@ public class Settings {
 		write(header, setting, Boolean.toString(value));
 	}
 
+	@Deprecated
 	public static void write(String header, String setting, int value) {
 		write(header, setting, Integer.toString(value));
 	}
 
+	@Deprecated
 	public static void write(String header, String setting, long value) {
 		write(header, setting, Long.toString(value));
 	}
 
+	@Deprecated
 	public static void write(String header, String setting, TimeZone value) {
 		write(header, setting, value.getID());
 	}
 
+	@Deprecated
 	public static <T extends Enum<T>> void write(String header, String setting, T value) {
 		write(header, setting, value.name());
 	}

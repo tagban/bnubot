@@ -16,16 +16,18 @@ public class DatabaseSettings {
 	public String password;
 
 	public void load() {
-		driver = Settings.read(header, "driver", "org.apache.derby.jdbc.EmbeddedDriver");
-		url = Settings.read(header, "url", "jdbc:derby:database;create=true");
-		username = Settings.read(header, "username", (String)null);
-		password = Settings.read(header, "password", (String)null);
+		SettingsSection ss = Settings.getSection(header);
+		driver = ss.read("driver", "org.apache.derby.jdbc.EmbeddedDriver");
+		url = ss.read("url", "jdbc:derby:database;create=true");
+		username = ss.read("username", (String)null);
+		password = ss.read("password", (String)null);
 	}
 
 	public void save() {
-		Settings.write(header, "driver", driver);
-		Settings.write(header, "url", url);
-		Settings.write(header, "username", username);
-		Settings.write(header, "password", password);
+		SettingsSection ss = Settings.getSection(header);
+		ss.write("driver", driver);
+		ss.write("url", url);
+		ss.write("username", username);
+		ss.write("password", password);
 	}
 }
