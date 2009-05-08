@@ -37,10 +37,10 @@ import net.bnubot.db.conf.DatabaseContext;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.CookieUtility;
-import net.bnubot.util.UnloggedException;
 import net.bnubot.util.OperatingSystem;
 import net.bnubot.util.Out;
 import net.bnubot.util.TimeFormatter;
+import net.bnubot.util.UnloggedException;
 import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.VersionCheck;
 
@@ -1777,7 +1777,7 @@ public class CommandEventHandler extends EventHandler {
 			if(birthday != null) {
 				SimpleDateFormat sdf = new SimpleDateFormat("M-d");
 
-				Calendar cal = Calendar.getInstance();
+				Calendar cal = Calendar.getInstance(TimeFormatter.timeZone);
 				Date today = cal.getTime();
 				String s1 = sdf.format(today);
 				String s2 = sdf.format(birthday);
