@@ -150,6 +150,26 @@ public class HTMLOutputEventHandler extends EventHandler {
 		return HexDump.DWordToPretty(product);
 	}
 
+	private String getLagIcon(int flags, int ping) {
+		if((flags & 0x10) != 0)
+			return "PLUG";
+		if(ping < 0)
+			return "LAG6";
+		if(ping < 10)
+			return "LAG0";
+		if(ping < 200)
+			return "LAG1";
+		if(ping < 300)
+			return "LAG2";
+		if(ping < 400)
+			return "LAG3";
+		if(ping < 500)
+			return "LAG4";
+		if(ping < 600)
+			return "LAG5";
+		return "LAG6";
+	}
+
 	private void writeUserList(final Connection source) {
 		if(writeUserListRunnable == null)
 			writeUserListRunnable = new Runnable() {
@@ -174,11 +194,12 @@ public class HTMLOutputEventHandler extends EventHandler {
 						for(BNetUser ui : users) {
 							StatString ss = ui.getStatString();
 							String product = getIcon(ss.getProduct().getDword(), ss.getIcon(), ui.getFlags());
+							String lag = getLagIcon(ui.getFlags(), ui.getPing());
 
 							fos.write("<tr>".getBytes());
 							fos.write(("<td><img src=\"images/" + product + ".jpg\"></td>").getBytes());
 							fos.write(("<td>" + ui.toString(GlobalSettings.bnUserToStringUserList) + "</td>").getBytes());
-							fos.write(("<td>" + ui.getPing() + "ms</td>").getBytes());
+							fos.write(("<td><img src=\"images/" + lag + ".jpg\"></td>").getBytes());
 							fos.write("</tr>".getBytes());
 						}
 						fos.write("</table>".getBytes());
