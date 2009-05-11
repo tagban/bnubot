@@ -11,6 +11,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.HashSet;
 
 import net.bnubot.util.BNetInputStream;
 
@@ -47,6 +49,7 @@ public class MPQFile {
 	}
 
 	private static int crc(String str, int hash_type) {
+		final int hash_offset = hash_type<<8;
 		build_crypt_table();
 
 		int seed1 = 0x7FED7FED, seed2 = 0xEEEEEEEE;
@@ -56,7 +59,7 @@ public class MPQFile {
 			if(b>0x60 && b<0x7B)
 				b-=0x20;
 
-			seed1 = crypt_table[(hash_type<<8)+b]^(seed1+seed2);
+			seed1 = crypt_table[hash_offset+b]^(seed1+seed2);
 			seed2 += seed1+(seed2<<5)+b+3;
 		}
 		return seed1;
@@ -77,10 +80,12 @@ public class MPQFile {
 		}
 	}
 
-	private int getHashTablePosition(String str, int[] hash_table, int table_size) {
-	    int nHash = crc(str, 0);
-		int nHashA = crc(str, 1);
-		int nHashB = crc(str, 2);
+	private int getHashTablePosition(String str, int[] hash_table) {
+		final int table_size = hash_table.length;
+
+	    final int nHash = crc(str, 0);
+	    final int nHashA = crc(str, 1);
+	    final int nHashB = crc(str, 2);
 		int nHashStart = nHash % table_size;
 		if(nHashStart < 0)
 			nHashStart += table_size;
@@ -99,6 +104,10 @@ public class MPQFile {
 	    }
 	}
 
+	final int[] hash_table;
+	final int[] block_table;
+	final String[] file_names;
+
 	public MPQFile(File file) throws IOException {
 		if(file == null)
 			throw new NullPointerException();
@@ -115,33 +124,40 @@ public class MPQFile {
 		is.skip(4); // Unknown
 		/*int file_length =*/ is.readDWord();
 		is.skip(4); // Unknown
-		int offset_htbl = is.readDWord();
-		int offset_btbl = is.readDWord();
-		int count_htbl = is.readDWord();
-		int count_btbl = is.readDWord();
+		final int offset_htbl = is.readDWord();
+		final int offset_btbl = is.readDWord();
+		final int count_htbl = is.readDWord() << 2;
+		final int num_files = is.readDWord();
+		final int count_btbl = num_files << 2;
 
 		// Jump to the hash table
 		is.reset();
 		is.skip(offset_htbl);
 
-		int[] hash_table = new int[count_htbl];
+		// Read the hash table
+		hash_table = new int[count_htbl];
 		for(int i = 0; i < count_htbl; i++)
 			hash_table[i] = is.readDWord();
 
+		// Decrypt the hash table
 		decrypt(hash_table,crc(HASH_TABLE,3),count_htbl);
 
 		// Jump to the block table
 		is.reset();
 		is.skip(offset_btbl);
 
-		int[] block_table = new int[count_btbl];
+		// Read the block table
+		block_table = new int[count_btbl];
 		for(int i = 0; i < count_btbl; i++)
 			block_table[i] = is.readDWord();
 
+		// Decrypt the block table
 		decrypt(block_table,crc(BLOCK_TABLE,3),count_btbl);
 
-		// Try to figure out the file names
-		String[] file_names = new String[count_btbl];
+		// Try to figure out the file names from a list file
+		Collection<String> suggested_file_names = new HashSet<String>();
+		suggested_file_names.add("(listfile)");
+
 		BufferedReader f = new BufferedReader(new FileReader(new File("listfile.txt")));
 		while(true) {
 			final String fn;
@@ -153,20 +169,42 @@ public class MPQFile {
 				break;
 			}
 
-			int i = getHashTablePosition(fn, hash_table, count_htbl);
+			if(!suggested_file_names.contains(fn))
+				suggested_file_names.add(fn);
+		}
+
+		file_names = new String[num_files];
+		for(String fn : suggested_file_names) {
+			int i = getHashTablePosition(fn, hash_table);
 			if(i != -1)
 				file_names[hash_table[i+3]] = fn;
 		}
 
 		int j = 1;
-		for(int i = 0; i < count_btbl; i++) {
+		for(int i = 0; i < num_files; i++) {
 			if(file_names[i] == null) {
 				file_names[i] = "unknow\\unk" + j + ".xxx";
 				j++;
 			}
 		}
 
-		for(String fn : file_names)
-			System.out.println(fn);
+		int i = 0;
+		for(String fn : file_names) {
+			System.out.print(fn);
+
+			//int offset = block_table[i<<2];
+			int size_packed = block_table[(i<<2)+1];
+			int size_unpacked = block_table[(i<<2)+2];
+			int flags = block_table[(i<<2)+3];
+			i++;
+
+			//System.out.print(" flags=0x" + Integer.toHexString(flags));
+			if((flags & 0x30000) != 0)
+				System.out.print(" coded");
+			if((flags & 0x300) != 0)
+				System.out.print(" packed=" + (int)(100f*size_packed/size_unpacked) + "%");
+
+			System.out.println();
+		}
 	}
 }
