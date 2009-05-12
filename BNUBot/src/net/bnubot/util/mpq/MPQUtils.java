@@ -4,6 +4,8 @@
  */
 package net.bnubot.util.mpq;
 
+import net.bnubot.util.BNetInputStream;
+
 /**
  * http://www.zezula.net/en/mpq/techinfo.html
  * @author scotta
@@ -45,11 +47,11 @@ public class MPQUtils {
 		return seed1;
 	}
 
-	public static void decrypt(int[] data, int key, int length) {
+	public static void decrypt(int[] data, int key) {
 		build_crypt_table();
 
 		int seed = 0xEEEEEEEE;
-		for(int i = 0; i < (length); i++) {
+		for(int i = 0; i < data.length; i++) {
 			seed += crypt_table[0x400 + (key & 0xFF)];
 			int ch = data[i];
 			ch ^= (key + seed);
@@ -57,6 +59,25 @@ public class MPQUtils {
 
 			key = ((~key << 0x15) + 0x11111111) | (key >>> 0x0B);
 			seed = ch + seed + (seed << 5) + 3;
+		}
+	}
+
+	public static void decrypt(byte[] data, int key) {
+		if(data.length % 4 != 0)
+			throw new IllegalStateException();
+		// Convert to ints
+		int[] data2 = new int[data.length >> 2];
+		for(int i = 0; i < data2.length; i++)
+			data2[i] = BNetInputStream.readDWord(data, i<<2);
+		// Decrypt
+		decrypt(data2, key);
+		// Convert back
+		int pos = 0;
+		for(int d : data2) {
+			data[pos++] = (byte)((d) & 0xFF);
+			data[pos++] = (byte)((d >>> 8) & 0xFF);
+			data[pos++] = (byte)((d >>> 16) & 0xFF);
+			data[pos++] = (byte)((d >>> 24) & 0xFF);
 		}
 	}
 }

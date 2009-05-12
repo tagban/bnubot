@@ -7,7 +7,7 @@ package net.bnubot.util.mpq;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.EOFException;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import net.bnubot.util.BNetInputStream;
+import net.bnubot.util.BNetOutputStream;
 
 /**
  * http://www.zezula.net/en/mpq/techinfo.html
@@ -24,10 +25,15 @@ import net.bnubot.util.BNetInputStream;
 public class MPQFile implements MPQConstants {
 
 	public static void main(String[] args) throws IOException {
-		new MPQFile(new File("IX86Archimonde.mpq"));
-		MPQFile mpq = new MPQFile(new File("bncache.dat"));
+		MPQFile mpq;
+		mpq = new MPQFile(new File("IX86Archimonde.mpq"));
+
+		mpq = new MPQFile(new File("bncache.dat"));
 		mpq = new MPQFile(mpq.readFile("ver-IX86-2.mpq"));
 		mpq.readFile("ver-IX86-2.dll");
+
+		mpq = new MPQFile(new File("icons-WAR3.bni"));
+		mpq.readFile("ui\\widgets\\battlenet\\chaticons\\iconindex_exp.txt");
 	}
 
 	private int getHashTablePosition(String str) {
@@ -106,7 +112,7 @@ public class MPQFile implements MPQConstants {
 		final int num_files = is.readDWord();
 		final int count_btbl = num_files << 2;
 
-		if(true) {
+		if(offset_mpq > 0) {
 			// Jump to the beginning of the archive
 			is.reset();
 			is.skip(offset_mpq);
@@ -130,7 +136,7 @@ public class MPQFile implements MPQConstants {
 			hash_table[i] = is.readDWord();
 
 		// Decrypt the hash table
-		MPQUtils.decrypt(hash_table,MPQUtils.crc(HASH_TABLE,3),count_htbl);
+		MPQUtils.decrypt(hash_table,MPQUtils.crc(HASH_TABLE,3));
 
 		// Jump to the block table
 		is.reset();
@@ -142,26 +148,33 @@ public class MPQFile implements MPQConstants {
 			block_table[i] = is.readDWord();
 
 		// Decrypt the block table
-		MPQUtils.decrypt(block_table,MPQUtils.crc(BLOCK_TABLE,3),count_btbl);
+		MPQUtils.decrypt(block_table,MPQUtils.crc(BLOCK_TABLE,3));
 
 		// Try to figure out the file names from a list file
 		file_names = new String[num_files];
 
 		try {
-			BufferedReader f = new BufferedReader(new InputStreamReader(readFile(LISTFILE)));
-			while(true) {
-				try {
-					final String fn = f.readLine();
-					if(fn == null)
-						break;
-					suggestFileName(fn);
-				} catch(EOFException e) {
-					break;
-				}
-			}
+			suggestFileNames(readFile(LISTFILE));
 		} catch(FileNotFoundException e) {
 			// No listfile
 			System.out.println("Archive has no listfile");
+		} catch(Exception e) {
+			// Unknown error
+			System.out.println("Error: " + e.getClass().getSimpleName() + ": " + e.getMessage());
+		}
+	}
+
+	private void suggestFileNames(InputStream is) {
+		BufferedReader f = new BufferedReader(new InputStreamReader(is));
+		while(true) {
+			try {
+				final String fn = f.readLine();
+				if(fn == null)
+					break;
+				suggestFileName(fn);
+			} catch(IOException e) {
+				break;
+			}
 		}
 	}
 
@@ -184,13 +197,18 @@ public class MPQFile implements MPQConstants {
 		return readFile(hash_table[i+3]);
 	}
 
-	public InputStream readFile(int fileNum) throws IOException {
-		int offset = block_table[fileNum<<2];
-		int size_packed = block_table[(fileNum<<2)+1];
-		int size_unpacked = block_table[(fileNum<<2)+2];
-		int flags = block_table[(fileNum<<2)+3];
+	public InputStream readFile(final int fileNum) throws IOException {
+		final int offset = block_table[fileNum<<2];
+		final int size_packed = block_table[(fileNum<<2)+1];
+		final int size_unpacked = block_table[(fileNum<<2)+2];
+		final int flags = block_table[(fileNum<<2)+3];
 
-		if((flags & MPQ_FILE_EXISTS) != 0)
+		final boolean f_exists = ((flags & MPQ_FILE_EXISTS) != 0);
+		final boolean f_encrypted = ((flags & MPQ_FILE_ENCRYPTED) != 0);
+		final boolean f_imploded = ((flags & MPQ_FILE_IMPLODE) != 0);
+		final boolean f_compressed = ((flags & MPQ_FILE_COMPRESS) != 0);
+
+		if(!f_exists)
 			System.out.println("WARNING: " + file_names[fileNum] + " was deleted!");
 
 		System.out.println(file_names[fileNum] + ": " +
@@ -198,12 +216,12 @@ public class MPQFile implements MPQConstants {
 				(int)(100f*size_packed/size_unpacked) + "%");
 
 		int crc_file = 0;
-		if((flags & MPQ_FILE_ENCRYPTED) != 0) {
-			// If file is coded, calculate its crc
+		if(f_encrypted) {
+			// If file is encrypted, calculate its crc
 			String fn = file_names[fileNum];
 			if(fn != null) {
 				// Calculate crc_file for identified file:
-				int i = fn.indexOf('\\');
+				int i = fn.lastIndexOf('\\');
 				if(i != -1)
 					fn = fn.substring(i+1);
 
@@ -224,12 +242,71 @@ public class MPQFile implements MPQConstants {
 		is.reset();
 		is.skip(offset);
 
-		if((flags & (MPQ_FILE_IMPLODE | MPQ_FILE_COMPRESS)) != 0) {
-			throw new IllegalStateException("Can't read packed files");
+		if(f_imploded | f_compressed) {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			BNetOutputStream os = new BNetOutputStream(baos);
+
+			final int block_size = 0x1000;
+
+			int num_blocks = ((size_unpacked-1)/block_size)+2;
+			int header[] = new int[num_blocks];
+			for(int i = 0; i < num_blocks; i++)
+				header[i] = is.readDWord();
+			if(f_encrypted)
+				MPQUtils.decrypt(header, crc_file-1);
+
+			for(int i = 0; i < num_blocks-1; i++) {
+				int length_read=header[i+1]-header[i];
+				byte[] data = new byte[length_read];
+				is.readFully(data);
+				if(f_encrypted)
+					MPQUtils.decrypt(data, crc_file++);
+
+				final int out_size;
+				if(i==num_blocks-2) {
+					out_size = (size_unpacked & 0xFFF);
+				} else {
+					out_size = block_size;
+				}
+
+				if(length_read==out_size) {
+					// The block is unpacked
+				} else {
+					// Block is packed
+					if(f_compressed) {
+						// Multiple compressions are possible
+						data = unpack(data, out_size);
+					} else {
+						// Just DCLib
+						data = explode(data, out_size);
+					}
+				}
+				os.write(data);
+			}
+
+			return new ByteArrayInputStream(baos.toByteArray());
 		}
 
 		final byte buf[] = new byte[size_packed];
 		is.readFully(buf);
 		return new ByteArrayInputStream(buf);
+	}
+
+	private byte[] unpack(byte[] data, int out_size) {
+		int method = data[0];
+		if((method & 0x08) != 0)
+			data = explode(data, out_size);
+		if((method & 0x01) != 0)
+			throw new IllegalStateException("ExtWavUnp1");
+		if((method & 0x40) != 0)
+			throw new IllegalStateException("ExtWavUnp2");
+		if((method & 0x80) != 0)
+			throw new IllegalStateException("ExtWavUnp3");
+
+		return data;
+	}
+
+	private byte[] explode(byte[] data, int out_size) {
+		throw new IllegalStateException("DCLib explode");
 	}
 }
