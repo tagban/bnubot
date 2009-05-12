@@ -6,13 +6,14 @@ package net.bnubot.util.mpq;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashSet;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import net.bnubot.util.BNetInputStream;
 
@@ -20,72 +21,21 @@ import net.bnubot.util.BNetInputStream;
  * http://www.zezula.net/en/mpq/techinfo.html
  * @author scotta
  */
-public class MPQFile {
-	private static final String HASH_TABLE = "(hash table)";
-	private static final String BLOCK_TABLE = "(block table)";
+public class MPQFile implements MPQConstants {
 
 	public static void main(String[] args) throws IOException {
 		new MPQFile(new File("IX86Archimonde.mpq"));
-		new MPQFile(new File("bncache.dat"));
+		MPQFile mpq = new MPQFile(new File("bncache.dat"));
+		mpq = new MPQFile(mpq.readFile("ver-IX86-2.mpq"));
+		mpq.readFile("ver-IX86-2.dll");
 	}
 
-	private static int[] crypt_table = null;
-	private static void build_crypt_table() {
-		if(crypt_table != null)
-			return;
-
-		crypt_table = new int[0x500];
-
-		int r = 0x100001;
-		for(int i=0;i<0x100;i++) {
-			for(int j=0;j<5;j++) {
-				r = (r*125+3) % 0x002AAAAB;
-				int s1 = (r & 0xFFFF) << 0x10;
-				r = (r*125+3) % 0x002AAAAB;
-				s1 = s1 | (r&0xFFFF);
-				crypt_table[i+0x100*j]=s1;
-			}
-		}
-	}
-
-	private static int crc(String str, int hash_type) {
-		final int hash_offset = hash_type<<8;
-		build_crypt_table();
-
-		int seed1 = 0x7FED7FED, seed2 = 0xEEEEEEEE;
-
-		for(byte b : str.getBytes()) {
-			// toUpper()
-			if(b>0x60 && b<0x7B)
-				b-=0x20;
-
-			seed1 = crypt_table[hash_offset+b]^(seed1+seed2);
-			seed2 += seed1+(seed2<<5)+b+3;
-		}
-		return seed1;
-	}
-
-	private static void decrypt(int[] data, int key, int length) {
-		build_crypt_table();
-
-		int seed = 0xEEEEEEEE;
-		for(int i = 0; i < (length); i++) {
-			seed += crypt_table[0x400 + (key & 0xFF)];
-			int ch = data[i];
-			ch ^= (key + seed);
-			data[i] = ch;
-
-			key = ((~key << 0x15) + 0x11111111) | (key >>> 0x0B);
-			seed = ch + seed + (seed << 5) + 3;
-		}
-	}
-
-	private int getHashTablePosition(String str, int[] hash_table) {
+	private int getHashTablePosition(String str) {
 		final int table_size = hash_table.length;
 
-	    final int nHash = crc(str, 0);
-	    final int nHashA = crc(str, 1);
-	    final int nHashB = crc(str, 2);
+	    final int nHash = MPQUtils.crc(str, 0);
+	    final int nHashA = MPQUtils.crc(str, 1);
+	    final int nHashB = MPQUtils.crc(str, 2);
 		int nHashStart = nHash % table_size;
 		if(nHashStart < 0)
 			nHashStart += table_size;
@@ -104,31 +54,71 @@ public class MPQFile {
 	    }
 	}
 
-	final int[] hash_table;
-	final int[] block_table;
-	final String[] file_names;
+	private BNetInputStream is;
+	private final int[] hash_table;
+	private final int[] block_table;
+	private final String[] file_names;
 
 	public MPQFile(File file) throws IOException {
-		if(file == null)
+		this(new FileInputStream(file));
+	}
+
+	public MPQFile(InputStream is0) throws IOException {
+		if(is0 == null)
 			throw new NullPointerException();
 
-		// Read the file
-		BNetInputStream is = new BNetInputStream(new BufferedInputStream(new FileInputStream(file)));
-		is.mark(0x100000);
+		// Make sure mark support is available
+		if(!is0.markSupported())
+			is0 = new BufferedInputStream(is0);
+		is = new BNetInputStream(is0);
+		is.mark(is.available());
 
-		// 32-byte header
-		int file_format = is.readDWord();
-		if((file_format != 0x1A334E42) // "BN3\x1A" for bncache.dat
-		&& (file_format != 0x1A51504D)) // "MPQ\x1A" for MPQs
-			throw new IOException("Invalid file");
+		int offset_mpq = 0;
+
+		// Search for the MPQ header
+		find_header: while(true) {
+			if(is.available() < 4)
+				throw new IOException("Invalid MPQ archive");
+
+			int file_format = is.readDWord();
+			switch(file_format) {
+			//case ID_MPQ_SHUNT:
+			//	throw new IllegalStateException("Not sure how to process MPQ SHUNT header");
+			case ID_BN3:
+			case ID_MPQ:
+				// Found the archive header
+				break find_header;
+			default:
+				// Keep searching
+				offset_mpq += 4;
+				break;
+			}
+		}
+
+		// 32-byte header (already read 4 bytes)
 		is.skip(4); // Unknown
-		/*int file_length =*/ is.readDWord();
-		is.skip(4); // Unknown
+		int archive_size = is.readDWord();
+		is.skip(2); //short format_version = is.readWord();
+		is.skip(2); //short block_size = is.readWord();
 		final int offset_htbl = is.readDWord();
 		final int offset_btbl = is.readDWord();
 		final int count_htbl = is.readDWord() << 2;
 		final int num_files = is.readDWord();
 		final int count_btbl = num_files << 2;
+
+		if(true) {
+			// Jump to the beginning of the archive
+			is.reset();
+			is.skip(offset_mpq);
+
+			// Read the entire archive
+			byte[] data = new byte[archive_size];
+			is.readFully(data);
+
+			// Rebuild the InputStream with just the archive data
+			is = new BNetInputStream(new ByteArrayInputStream(data));
+			is.mark(archive_size);
+		}
 
 		// Jump to the hash table
 		is.reset();
@@ -140,7 +130,7 @@ public class MPQFile {
 			hash_table[i] = is.readDWord();
 
 		// Decrypt the hash table
-		decrypt(hash_table,crc(HASH_TABLE,3),count_htbl);
+		MPQUtils.decrypt(hash_table,MPQUtils.crc(HASH_TABLE,3),count_htbl);
 
 		// Jump to the block table
 		is.reset();
@@ -152,59 +142,94 @@ public class MPQFile {
 			block_table[i] = is.readDWord();
 
 		// Decrypt the block table
-		decrypt(block_table,crc(BLOCK_TABLE,3),count_btbl);
+		MPQUtils.decrypt(block_table,MPQUtils.crc(BLOCK_TABLE,3),count_btbl);
 
 		// Try to figure out the file names from a list file
-		Collection<String> suggested_file_names = new HashSet<String>();
-		suggested_file_names.add("(listfile)");
-
-		BufferedReader f = new BufferedReader(new FileReader(new File("listfile.txt")));
-		while(true) {
-			final String fn;
-			try {
-				fn = f.readLine();
-				if(fn == null)
-					break;
-			} catch(EOFException e) {
-				break;
-			}
-
-			if(!suggested_file_names.contains(fn))
-				suggested_file_names.add(fn);
-		}
-
 		file_names = new String[num_files];
-		for(String fn : suggested_file_names) {
-			int i = getHashTablePosition(fn, hash_table);
-			if(i != -1)
-				file_names[hash_table[i+3]] = fn;
-		}
 
-		int j = 1;
-		for(int i = 0; i < num_files; i++) {
-			if(file_names[i] == null) {
-				file_names[i] = "unknow\\unk" + j + ".xxx";
-				j++;
+		try {
+			BufferedReader f = new BufferedReader(new InputStreamReader(readFile(LISTFILE)));
+			while(true) {
+				try {
+					final String fn = f.readLine();
+					if(fn == null)
+						break;
+					suggestFileName(fn);
+				} catch(EOFException e) {
+					break;
+				}
+			}
+		} catch(FileNotFoundException e) {
+			// No listfile
+			System.out.println("Archive has no listfile");
+		}
+	}
+
+	public int getNumFiles() {
+		return file_names.length;
+	}
+
+	private void suggestFileName(String fileName) {
+		int i = getHashTablePosition(fileName);
+		if(i != -1)
+			file_names[hash_table[i+3]] = fileName;
+	}
+
+	public InputStream readFile(String fileName) throws IOException {
+		int i = getHashTablePosition(fileName);
+		if(i == -1)
+			throw new FileNotFoundException(fileName);
+
+		file_names[hash_table[i+3]] = fileName;
+		return readFile(hash_table[i+3]);
+	}
+
+	public InputStream readFile(int fileNum) throws IOException {
+		int offset = block_table[fileNum<<2];
+		int size_packed = block_table[(fileNum<<2)+1];
+		int size_unpacked = block_table[(fileNum<<2)+2];
+		int flags = block_table[(fileNum<<2)+3];
+
+		if((flags & MPQ_FILE_EXISTS) != 0)
+			System.out.println("WARNING: " + file_names[fileNum] + " was deleted!");
+
+		System.out.println(file_names[fileNum] + ": " +
+				size_packed + "/" + size_unpacked + " = " +
+				(int)(100f*size_packed/size_unpacked) + "%");
+
+		int crc_file = 0;
+		if((flags & MPQ_FILE_ENCRYPTED) != 0) {
+			// If file is coded, calculate its crc
+			String fn = file_names[fileNum];
+			if(fn != null) {
+				// Calculate crc_file for identified file:
+				int i = fn.indexOf('\\');
+				if(i != -1)
+					fn = fn.substring(i+1);
+
+				// calculate crc_file (for Diablo I MPQs)
+				crc_file = MPQUtils.crc(fn, 3);
+				if((flags & MPQ_FILE_FIXSEED) != 0) {
+					// calculate crc_file (for Starcraft MPQs)
+					crc_file=(crc_file+offset)^size_unpacked;
+				}
+
+			} else {
+				// calculate crc_file for not identified file:
+				//crc_file=getUnknowCrc(entry);
+				throw new IllegalStateException("Can't calculate CRC for unidentified files");
 			}
 		}
 
-		int i = 0;
-		for(String fn : file_names) {
-			System.out.print(fn);
+		is.reset();
+		is.skip(offset);
 
-			//int offset = block_table[i<<2];
-			int size_packed = block_table[(i<<2)+1];
-			int size_unpacked = block_table[(i<<2)+2];
-			int flags = block_table[(i<<2)+3];
-			i++;
-
-			//System.out.print(" flags=0x" + Integer.toHexString(flags));
-			if((flags & 0x30000) != 0)
-				System.out.print(" coded");
-			if((flags & 0x300) != 0)
-				System.out.print(" packed=" + (int)(100f*size_packed/size_unpacked) + "%");
-
-			System.out.println();
+		if((flags & (MPQ_FILE_IMPLODE | MPQ_FILE_COMPRESS)) != 0) {
+			throw new IllegalStateException("Can't read packed files");
 		}
+
+		final byte buf[] = new byte[size_packed];
+		is.readFully(buf);
+		return new ByteArrayInputStream(buf);
 	}
 }
