@@ -8,13 +8,31 @@ package net.bnubot.util.mpq;
  * @author scotta
  */
 public interface MPQConstants {
+	/**
+	 * File header for MPQs
+	 */
 	public static final int ID_MPQ = 0x1A51504D;
+	/**
+	 * File header shunt for MPQs
+	 */
 	public static final int ID_MPQ_SHUNT = 0x1B51504D;
+	/**
+	 * File header for bncache.dat
+	 */
 	public static final int ID_BN3 = 0x1A334E42;
 
+	/**
+	 * Key used to decrypt the hash table
+	 */
 	public static final String HASH_TABLE = "(hash table)";
+	/**
+	 * Key used to decrypt the block table
+	 */
 	public static final String BLOCK_TABLE = "(block table)";
 
+	/**
+	 * Some MPQs contain a listfile containing archived filenames
+	 */
 	public static final String LISTFILE = "(listfile)";
 
 	/**

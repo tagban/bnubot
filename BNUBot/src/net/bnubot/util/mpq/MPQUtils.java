@@ -4,7 +4,8 @@
  */
 package net.bnubot.util.mpq;
 
-import net.bnubot.util.BNetInputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 /**
  * http://www.zezula.net/en/mpq/techinfo.html
@@ -63,21 +64,20 @@ public class MPQUtils {
 	}
 
 	public static void decrypt(byte[] data, int key) {
-		if(data.length % 4 != 0)
-			throw new IllegalStateException();
-		// Convert to ints
-		int[] data2 = new int[data.length >> 2];
-		for(int i = 0; i < data2.length; i++)
-			data2[i] = BNetInputStream.readDWord(data, i<<2);
-		// Decrypt
-		decrypt(data2, key);
-		// Convert back
-		int pos = 0;
-		for(int d : data2) {
-			data[pos++] = (byte)((d) & 0xFF);
-			data[pos++] = (byte)((d >>> 8) & 0xFF);
-			data[pos++] = (byte)((d >>> 16) & 0xFF);
-			data[pos++] = (byte)((d >>> 24) & 0xFF);
-		}
+		build_crypt_table();
+
+        ByteBuffer buf = ByteBuffer.wrap(data, 0, data.length);
+        buf.order(ByteOrder.LITTLE_ENDIAN);
+
+        int seed = 0xeeeeeeee;
+        for(int i = 0; i < data.length>>>2; i++) {
+			seed += crypt_table[0x400 + (key & 0xFF)];
+            int ch = buf.getInt(i<<2);
+			ch ^= (key + seed);
+            buf.putInt(i<<2, ch);
+
+			key = ((~key << 0x15) + 0x11111111) | (key >>> 0x0B);
+			seed = ch + seed + (seed << 5) + 3;
+        }
 	}
 }
