@@ -66,18 +66,18 @@ public class MPQUtils {
 	public static void decrypt(byte[] data, int key) {
 		build_crypt_table();
 
-        ByteBuffer buf = ByteBuffer.wrap(data, 0, data.length);
-        buf.order(ByteOrder.LITTLE_ENDIAN);
+		ByteBuffer buf = ByteBuffer.wrap(data, 0, data.length);
+		buf.order(ByteOrder.LITTLE_ENDIAN);
 
-        int seed = 0xeeeeeeee;
-        for(int i = 0; i < data.length>>>2; i++) {
+		int seed = 0xeeeeeeee;
+		for(int i = 0; i < data.length>>>2; i++) {
 			seed += crypt_table[0x400 + (key & 0xFF)];
-            int ch = buf.getInt(i<<2);
+			int ch = buf.getInt(i<<2);
 			ch ^= (key + seed);
-            buf.putInt(i<<2, ch);
+			buf.putInt(i<<2, ch);
 
 			key = ((~key << 0x15) + 0x11111111) | (key >>> 0x0B);
 			seed = ch + seed + (seed << 5) + 3;
-        }
+		}
 	}
 }
