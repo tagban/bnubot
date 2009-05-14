@@ -11,6 +11,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -25,39 +26,28 @@ import net.bnubot.util.BNetOutputStream;
 public class MPQFile implements MPQConstants {
 
 	public static void main(String[] args) throws IOException {
-		MPQFile mpq;
-		mpq = new MPQFile(new File("IX86Archimonde.mpq"));
-
-		mpq = new MPQFile(new File("bncache.dat"));
-		mpq = new MPQFile(mpq.readFile("ver-IX86-2.mpq"));
-		mpq.readFile("ver-IX86-2.dll");
-
-		mpq = new MPQFile(new File("icons-WAR3.bni"));
-		mpq.readFile("ui\\widgets\\battlenet\\chaticons\\iconindex_exp.txt");
+		MPQFile bncache = new MPQFile(new File("bncache.dat"));
+		test(bncache, "IX86Archimonde.mpq", "IX86Archimonde.dll");
+		System.out.println();
+		test(bncache, "ver-IX86-2.mpq", "ver-IX86-2.dll");
+		System.out.println();
+		test(bncache, "icons-WAR3.mpq", "ui\\widgets\\battlenet\\chaticons\\iconindex_exp.txt");
 	}
 
-	private int getHashTablePosition(String str) {
-		final int table_size = hash_table.length;
+	private static void test(MPQFile mpq, String... file) {
+		String current_file = file[0];
+		try {
+			for(int i = 0; i < file.length-1; i++) {
+				current_file = file[i];
+				mpq = new MPQFile(mpq.readFile(current_file));
+			}
+			mpq.writeFile(file[file.length-1]);
+		} catch(Exception e) {
+			System.out.println("Failed to get " + current_file);
+			e.printStackTrace(System.out);
+		}
 
-	    final int nHash = MPQUtils.crc(str, 0);
-	    final int nHashA = MPQUtils.crc(str, 1);
-	    final int nHashB = MPQUtils.crc(str, 2);
-		int nHashStart = nHash % table_size;
-		if(nHashStart < 0)
-			nHashStart += table_size;
-		int nHashPos = nHashStart;
-
-	    while(true) {
-	        if((hash_table[nHashPos] == nHashA)
-	        && (hash_table[(nHashPos + 1) % table_size] == nHashB))
-	            return nHashPos;
-
-	        // Increment the hash position
-	        nHashPos = (nHashPos + 1) % table_size;
-	        // We went all the way around the table and got back to where we started
-	        if (nHashPos == nHashStart)
-	            return -1;
-	    }
+		System.out.println();
 	}
 
 	private BNetInputStream is;
@@ -79,27 +69,8 @@ public class MPQFile implements MPQConstants {
 		is = new BNetInputStream(is0);
 		is.mark(is.available());
 
-		int offset_mpq = 0;
-
 		// Search for the MPQ header
-		find_header: while(true) {
-			if(is.available() < 4)
-				throw new IOException("Invalid MPQ archive");
-
-			int file_format = is.readDWord();
-			switch(file_format) {
-			//case ID_MPQ_SHUNT:
-			//	throw new IllegalStateException("Not sure how to process MPQ SHUNT header");
-			case ID_BN3:
-			case ID_MPQ:
-				// Found the archive header
-				break find_header;
-			default:
-				// Keep searching
-				offset_mpq += 4;
-				break;
-			}
-		}
+		final int offset_mpq = findHeader();
 
 		// 32-byte header (already read 4 bytes)
 		is.skip(4); // Unknown
@@ -164,6 +135,27 @@ public class MPQFile implements MPQConstants {
 		}
 	}
 
+	private int findHeader() throws IOException {
+		int offset_mpq = 0;
+		while(true) {
+			if(is.available() < 4)
+				throw new IOException("Invalid MPQ archive");
+
+			int file_format = is.readDWord();
+			switch(file_format) {
+			case ID_MPQ_SHUNT:
+				throw new IllegalStateException("Not sure how to process MPQ SHUNT header");
+			case ID_BN3:
+			case ID_MPQ:
+				return offset_mpq;
+			default:
+				// Keep searching
+				offset_mpq += 4;
+				break;
+			}
+		}
+	}
+
 	private void suggestFileNames(InputStream is) {
 		BufferedReader f = new BufferedReader(new InputStreamReader(is));
 		while(true) {
@@ -178,23 +170,61 @@ public class MPQFile implements MPQConstants {
 		}
 	}
 
-	public int getNumFiles() {
-		return file_names.length;
+	private int getFileNumber(String str) {
+		final int table_size = hash_table.length;
+
+	    final int nHash = MPQUtils.crc(str, 0);
+	    final int nHashA = MPQUtils.crc(str, 1);
+	    final int nHashB = MPQUtils.crc(str, 2);
+		int nHashStart = nHash % table_size;
+		if(nHashStart < 0)
+			nHashStart += table_size;
+		int nHashPos = nHashStart;
+
+	    while(true) {
+	        if((hash_table[nHashPos] == nHashA)
+	        && (hash_table[nHashPos + 1] == nHashB))
+	            return hash_table[nHashPos+3];
+
+	        // Increment the hash position
+	        nHashPos++;
+	        nHashPos %= table_size;
+	        // We went all the way around the table and got back to where we started
+	        if (nHashPos == nHashStart)
+	            return -1;
+	    }
 	}
 
 	private void suggestFileName(String fileName) {
-		int i = getHashTablePosition(fileName);
+		int i = getFileNumber(fileName);
 		if(i != -1)
-			file_names[hash_table[i+3]] = fileName;
+			file_names[i] = fileName;
+	}
+
+	public File writeFile(String fileName) throws IOException {
+		// Read the file
+		InputStream is = readFile(fileName);
+		byte[] data = new byte[is.available()];
+		is.read(data);
+
+		// Write the file
+		System.out.println("Writing " + fileName + ", " + data.length + " bytes");
+		File f = new File(fileName);
+		FileOutputStream fos = new FileOutputStream(f);
+		fos.write(data);
+		fos.close();
+
+		// All done
+		return f;
 	}
 
 	public InputStream readFile(String fileName) throws IOException {
-		int i = getHashTablePosition(fileName);
+		int i = getFileNumber(fileName);
 		if(i == -1)
 			throw new FileNotFoundException(fileName);
 
-		file_names[hash_table[i+3]] = fileName;
-		return readFile(hash_table[i+3]);
+		file_names[i] = fileName;
+		return readFile(i);
 	}
 
 	public InputStream readFile(final int fileNum) throws IOException {
@@ -205,11 +235,12 @@ public class MPQFile implements MPQConstants {
 
 		final boolean f_exists = ((flags & MPQ_FILE_EXISTS) != 0);
 		final boolean f_encrypted = ((flags & MPQ_FILE_ENCRYPTED) != 0);
+		final boolean f_fixseed = ((flags & MPQ_FILE_FIXSEED) != 0);
 		final boolean f_imploded = ((flags & MPQ_FILE_IMPLODE) != 0);
 		final boolean f_compressed = ((flags & MPQ_FILE_COMPRESS) != 0);
 
 		if(!f_exists)
-			System.out.println("WARNING: " + file_names[fileNum] + " was deleted!");
+			throw new FileNotFoundException("Deleted");
 
 		System.out.println(file_names[fileNum] + ": " +
 				size_packed + "/" + size_unpacked + " = " +
@@ -227,7 +258,7 @@ public class MPQFile implements MPQConstants {
 
 				// calculate crc_file (for Diablo I MPQs)
 				crc_file = MPQUtils.crc(fn, 3);
-				if((flags & MPQ_FILE_FIXSEED) != 0) {
+				if(f_fixseed) {
 					// calculate crc_file (for Starcraft MPQs)
 					crc_file=(crc_file+offset)^size_unpacked;
 				}
@@ -242,10 +273,10 @@ public class MPQFile implements MPQConstants {
 		is.reset();
 		is.skip(offset);
 
-		if(f_imploded | f_compressed) {
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			BNetOutputStream os = new BNetOutputStream(baos);
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		BNetOutputStream os = new BNetOutputStream(baos);
 
+		if(f_imploded | f_compressed) {
 			final int block_size = 0x1000;
 
 			int num_blocks = ((size_unpacked-1)/block_size)+2;
@@ -278,24 +309,34 @@ public class MPQFile implements MPQConstants {
 						data = unpack(data, out_size);
 					} else {
 						// Just DCLib
-						data = explode(data, out_size);
+						data = Explode.explode(data, 0, data.length, out_size);
 					}
 				}
 				os.write(data);
 			}
+		} else {
+			is.skip(0x2C);
+			// File is not compressed
+			int block_size = f_encrypted ? 0x1000 : 0x60000;
+			for(int pos=0; pos<size_packed; pos += block_size) {
+				int length_read = block_size;
+				if(length_read + pos > size_packed)
+					length_read = size_packed % block_size;
 
-			return new ByteArrayInputStream(baos.toByteArray());
+				byte[] data = new byte[length_read];
+				is.readFully(data);
+				if(f_encrypted)
+					MPQUtils.decrypt(data, crc_file++);
+				os.write(data);
+			}
 		}
-
-		final byte buf[] = new byte[size_packed];
-		is.readFully(buf);
-		return new ByteArrayInputStream(buf);
+		return new ByteArrayInputStream(baos.toByteArray());
 	}
 
-	private byte[] unpack(byte[] data, int out_size) {
+	private byte[] unpack(byte[] data, int out_size) throws IOException {
 		int method = data[0];
 		if((method & 0x08) != 0)
-			data = explode(data, out_size);
+			data = Explode.explode(data, 1, data.length - 1, out_size);
 		if((method & 0x01) != 0)
 			throw new IllegalStateException("ExtWavUnp1");
 		if((method & 0x40) != 0)
@@ -304,9 +345,5 @@ public class MPQFile implements MPQConstants {
 			throw new IllegalStateException("ExtWavUnp3");
 
 		return data;
-	}
-
-	private byte[] explode(byte[] data, int out_size) {
-		throw new IllegalStateException("DCLib explode");
 	}
 }
