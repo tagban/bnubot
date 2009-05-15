@@ -4,6 +4,7 @@
  */
 package net.bnubot.util.mpq;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -23,10 +24,10 @@ public class MPQUtils {
 		for(int i=0;i<0x100;i++) {
 			for(int j=0;j<5;j++) {
 				r = (r*125+3) % 0x002AAAAB;
-				int s1 = (r & 0xFFFF) << 0x10;
+				int s1 = (r&0xFFFF) << 0x10;
 				r = (r*125+3) % 0x002AAAAB;
-				s1 = s1 | (r&0xFFFF);
-				crypt_table[i+0x100*j]=s1;
+				s1 |= (r&0xFFFF);
+				crypt_table[i|(j<<8)]=s1;
 			}
 		}
 	}
@@ -79,5 +80,19 @@ public class MPQUtils {
 			key = ((~key << 0x15) + 0x11111111) | (key >>> 0x0B);
 			seed = ch + seed + (seed << 5) + 3;
 		}
+	}
+
+	public static byte[] unpack(byte[] data, int out_size) throws IOException {
+		int method = data[0];
+		if((method & 0x08) != 0)
+			data = Explode.explode(data, 1, data.length - 1, out_size);
+		if((method & 0x01) != 0)
+			throw new IllegalStateException("ExtWavUnp1");
+		if((method & 0x40) != 0)
+			throw new IllegalStateException("ExtWavUnp2");
+		if((method & 0x80) != 0)
+			throw new IllegalStateException("ExtWavUnp3");
+
+		return data;
 	}
 }
