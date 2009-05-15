@@ -7,6 +7,8 @@ package net.bnubot.util.mpq;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.zip.DataFormatException;
+import java.util.zip.Inflater;
 
 /**
  * http://www.zezula.net/en/mpq/techinfo.html
@@ -84,6 +86,24 @@ public class MPQUtils {
 
 	public static byte[] unpack(byte[] data, int out_size) throws IOException {
 		int method = data[0];
+
+		if(method == 2) {
+			Inflater i = new Inflater();
+			i.setInput(data, 1, data.length-1);
+
+			byte[] out = new byte[out_size];
+			try {
+				int j = i.inflate(out);
+				if(j != out_size)
+					throw new IOException("Invalid out size " + j + " expecting " + out_size);
+				if(!i.finished())
+					throw new IOException("Unfinished");
+			} catch (DataFormatException e) {
+				throw new IOException(e);
+			}
+			return out;
+		}
+
 		if((method & 0x08) != 0)
 			data = Explode.explode(data, 1, data.length - 1, out_size);
 		if((method & 0x01) != 0)

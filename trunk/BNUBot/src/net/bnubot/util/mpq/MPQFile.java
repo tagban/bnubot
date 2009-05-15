@@ -30,6 +30,21 @@ public class MPQFile implements MPQConstants {
 		test(bncache, "IX86Archimonde.mpq", "IX86Archimonde.dll");
 		test(bncache, "ver-IX86-2.mpq", "ver-IX86-2.dll");
 		test(bncache, "icons-WAR3.bni", "ui\\widgets\\battlenet\\chaticons\\iconindex_exp.txt");
+
+		MPQFile mpq = new MPQFile(new File("War3ROC_122a_123a_English.exe"));
+		mpq = mpq.readMPQ("Patch_War3.mpq");
+		try {
+			mpq.readListFile();
+		} catch(Exception e) {
+			e.printStackTrace(System.out);
+		}
+		for(String fn : mpq.file_names)
+			if(fn != null)
+				try {
+					mpq.readFile(fn);
+				} catch(Throwable e) {
+					e.printStackTrace(System.out);
+				}
 	}
 
 	private static InputStream test(MPQFile mpq, String... file) {
@@ -248,11 +263,17 @@ public class MPQFile implements MPQConstants {
 		final int size_unpacked = block_table[(fileNum<<2)+2];
 		final int flags = block_table[(fileNum<<2)+3];
 
-		final boolean f_exists = ((flags & MPQ_FILE_EXISTS) != 0);
-		final boolean f_encrypted = ((flags & MPQ_FILE_ENCRYPTED) != 0);
-		final boolean f_fixseed = ((flags & MPQ_FILE_FIXSEED) != 0);
 		final boolean f_imploded = ((flags & MPQ_FILE_IMPLODE) != 0);
 		final boolean f_compressed = ((flags & MPQ_FILE_COMPRESS) != 0);
+		final boolean f_encrypted = ((flags & MPQ_FILE_ENCRYPTED) != 0);
+		final boolean f_fixseed = ((flags & MPQ_FILE_FIXSEED) != 0);
+		final boolean f_single_unit = ((flags & MPQ_FILE_SINGLE_UNIT) != 0);
+		final boolean f_dummy_file = ((flags & MPQ_FILE_DUMMY_FILE) != 0);
+		final boolean f_has_extra = ((flags & MPQ_FILE_HAS_EXTRA) != 0);
+		final boolean f_exists = ((flags & MPQ_FILE_EXISTS) != 0);
+
+		if(f_dummy_file)
+			throw new IOException(this.fileName + "#" + getFileName(fileNum) + " is a dummy file");
 
 		if(!f_exists)
 			throw new FileNotFoundException(this.fileName + "#" + getFileName(fileNum) + " was deleted");
@@ -291,12 +312,31 @@ public class MPQFile implements MPQConstants {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream(size_unpacked);
 		BNetOutputStream os = new BNetOutputStream(baos);
 
-		if(f_imploded | f_compressed) {
+		if(f_single_unit) {
+			byte[] data = new byte[size_packed];
+			is.readFully(data);
+			if(f_encrypted)
+				MPQUtils.decrypt(data, crc_file-1);
+
+			if(data.length==size_unpacked) {
+				// The block is unpacked
+			} else {
+				// Block is packed
+				if(f_compressed) {
+					// Multiple compressions are possible
+					data = MPQUtils.unpack(data, size_unpacked);
+				} else {
+					// Just DCLib
+					data = Explode.explode(data, 0, data.length, size_unpacked);
+				}
+			}
+			os.write(data);
+		} else if(f_imploded | f_compressed) {
 			final int block_size = 0x1000;
 
 			int num_blocks = ((size_unpacked-1)/block_size)+2;
-			int header[] = new int[num_blocks];
-			for(int i = 0; i < num_blocks; i++)
+			int header[] = new int[num_blocks + (f_has_extra ? 1 : 0)];
+			for(int i = 0; i < header.length; i++)
 				header[i] = is.readDWord();
 			if(f_encrypted)
 				MPQUtils.decrypt(header, crc_file-1);
