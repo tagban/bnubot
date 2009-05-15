@@ -354,7 +354,12 @@ public class MPQFile implements MPQConstants {
 
 				final int out_size;
 				if(i==num_blocks-2) {
-					out_size = (size_unpacked & 0xFFF);
+					if((size_unpacked & 0xFFF) == 0) {
+						// The last block could be either [0] or [block_size]
+						out_size = size_unpacked-(block_size*i);
+					} else {
+						out_size = (size_unpacked & 0xFFF);
+					}
 				} else {
 					out_size = block_size;
 				}
