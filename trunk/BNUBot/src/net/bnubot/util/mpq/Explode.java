@@ -366,7 +366,6 @@ public class Explode
     	ByteBuffer in = ByteBuffer.wrap(input, off, len);
     	ByteBuffer out = ByteBuffer.allocate(out_len);
     	explode(in, out);
-    	System.out.println("Exploded " + len + " bytes to " + out_len);
     	return out.array();
     }
 }

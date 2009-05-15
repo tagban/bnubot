@@ -28,46 +28,47 @@ public class MPQFile implements MPQConstants {
 	public static void main(String[] args) throws IOException {
 		MPQFile bncache = new MPQFile(new File("bncache.dat"));
 		test(bncache, "IX86Archimonde.mpq", "IX86Archimonde.dll");
-		System.out.println();
 		test(bncache, "ver-IX86-2.mpq", "ver-IX86-2.dll");
-		System.out.println();
-		test(bncache, "icons-WAR3.mpq", "ui\\widgets\\battlenet\\chaticons\\iconindex_exp.txt");
+		test(bncache, "icons-WAR3.bni", "ui\\widgets\\battlenet\\chaticons\\iconindex_exp.txt");
 	}
 
-	private static void test(MPQFile mpq, String... file) {
-		String current_file = file[0];
+	private static InputStream test(MPQFile mpq, String... file) {
+		String current_file = null;
 		try {
 			for(int i = 0; i < file.length-1; i++) {
 				current_file = file[i];
-				mpq = new MPQFile(mpq.readFile(current_file));
+				mpq = mpq.readMPQ(current_file);
 			}
-			mpq.writeFile(file[file.length-1]);
+			current_file = file[file.length-1];
+			return mpq.readFile(current_file);
 		} catch(Exception e) {
 			System.out.println("Failed to get " + current_file);
 			e.printStackTrace(System.out);
+			return null;
 		}
-
-		System.out.println();
 	}
 
+	private final String fileName;
 	private BNetInputStream is;
 	private final int[] hash_table;
 	private final int[] block_table;
 	private final String[] file_names;
 
 	public MPQFile(File file) throws IOException {
-		this(new FileInputStream(file));
+		this(new FileInputStream(file), file.getName());
 	}
 
-	public MPQFile(InputStream is0) throws IOException {
+	private MPQFile(InputStream is0, String fileName) throws IOException {
 		if(is0 == null)
 			throw new NullPointerException();
+
+		this.fileName = fileName;
 
 		// Make sure mark support is available
 		if(!is0.markSupported())
 			is0 = new BufferedInputStream(is0);
 		is = new BNetInputStream(is0);
-		is.mark(is.available());
+		is.mark(Integer.MAX_VALUE);
 
 		// Search for the MPQ header
 		final int offset_mpq = findHeader();
@@ -83,19 +84,17 @@ public class MPQFile implements MPQConstants {
 		final int num_files = is.readDWord();
 		final int count_btbl = num_files << 2;
 
-		if(offset_mpq > 0) {
-			// Jump to the beginning of the archive
-			is.reset();
-			is.skip(offset_mpq);
+		// Jump to the beginning of the archive
+		is.reset();
+		is.skip(offset_mpq);
 
-			// Read the entire archive
-			byte[] data = new byte[archive_size];
-			is.readFully(data);
+		// Read the entire archive
+		byte[] data = new byte[archive_size];
+		is.readFully(data);
 
-			// Rebuild the InputStream with just the archive data
-			is = new BNetInputStream(new ByteArrayInputStream(data));
-			is.mark(archive_size);
-		}
+		// Rebuild the InputStream with just the archive data
+		is = new BNetInputStream(new ByteArrayInputStream(data));
+		is.mark(archive_size);
 
 		// Jump to the hash table
 		is.reset();
@@ -123,16 +122,6 @@ public class MPQFile implements MPQConstants {
 
 		// Try to figure out the file names from a list file
 		file_names = new String[num_files];
-
-		try {
-			suggestFileNames(readFile(LISTFILE));
-		} catch(FileNotFoundException e) {
-			// No listfile
-			System.out.println("Archive has no listfile");
-		} catch(Exception e) {
-			// Unknown error
-			System.out.println("Error: " + e.getClass().getSimpleName() + ": " + e.getMessage());
-		}
 	}
 
 	private int findHeader() throws IOException {
@@ -154,6 +143,28 @@ public class MPQFile implements MPQConstants {
 				break;
 			}
 		}
+	}
+
+	public String getFileName(int fileNum) {
+		if(file_names[fileNum] != null)
+			return file_names[fileNum];
+
+		if(!listFileRead)
+			try {
+				readListFile();
+				if(file_names[fileNum] != null)
+					return file_names[fileNum];
+			} catch(IOException e) {}
+
+		String fileName = "0000" + fileNum;
+		fileName = fileName.substring(fileName.length() - 5);
+		return "unknown\\unk" + fileName + ".xxx";
+	}
+
+	private boolean listFileRead = false;
+	private void readListFile() throws IOException {
+		suggestFileNames(readFile(LISTFILE));
+		listFileRead = true;
 	}
 
 	private void suggestFileNames(InputStream is) {
@@ -209,7 +220,7 @@ public class MPQFile implements MPQConstants {
 
 		// Write the file
 		System.out.println("Writing " + fileName + ", " + data.length + " bytes");
-		File f = new File(fileName);
+		File f = new File(fileName.substring(fileName.lastIndexOf('\\')+1));
 		FileOutputStream fos = new FileOutputStream(f);
 		fos.write(data);
 		fos.close();
@@ -227,6 +238,10 @@ public class MPQFile implements MPQConstants {
 		return readFile(i);
 	}
 
+	public MPQFile readMPQ(String fileName) throws IOException {
+		return new MPQFile(readFile(fileName), this.fileName + "#" + fileName);
+	}
+
 	public InputStream readFile(final int fileNum) throws IOException {
 		final int offset = block_table[fileNum<<2];
 		final int size_packed = block_table[(fileNum<<2)+1];
@@ -240,7 +255,7 @@ public class MPQFile implements MPQConstants {
 		final boolean f_compressed = ((flags & MPQ_FILE_COMPRESS) != 0);
 
 		if(!f_exists)
-			throw new FileNotFoundException("Deleted");
+			throw new FileNotFoundException(this.fileName + "#" + getFileName(fileNum) + " was deleted");
 
 		System.out.println(file_names[fileNum] + ": " +
 				size_packed + "/" + size_unpacked + " = " +
@@ -273,7 +288,7 @@ public class MPQFile implements MPQConstants {
 		is.reset();
 		is.skip(offset);
 
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ByteArrayOutputStream baos = new ByteArrayOutputStream(size_unpacked);
 		BNetOutputStream os = new BNetOutputStream(baos);
 
 		if(f_imploded | f_compressed) {
@@ -306,7 +321,7 @@ public class MPQFile implements MPQConstants {
 					// Block is packed
 					if(f_compressed) {
 						// Multiple compressions are possible
-						data = unpack(data, out_size);
+						data = MPQUtils.unpack(data, out_size);
 					} else {
 						// Just DCLib
 						data = Explode.explode(data, 0, data.length, out_size);
@@ -315,7 +330,6 @@ public class MPQFile implements MPQConstants {
 				os.write(data);
 			}
 		} else {
-			is.skip(0x2C);
 			// File is not compressed
 			int block_size = f_encrypted ? 0x1000 : 0x60000;
 			for(int pos=0; pos<size_packed; pos += block_size) {
@@ -333,17 +347,8 @@ public class MPQFile implements MPQConstants {
 		return new ByteArrayInputStream(baos.toByteArray());
 	}
 
-	private byte[] unpack(byte[] data, int out_size) throws IOException {
-		int method = data[0];
-		if((method & 0x08) != 0)
-			data = Explode.explode(data, 1, data.length - 1, out_size);
-		if((method & 0x01) != 0)
-			throw new IllegalStateException("ExtWavUnp1");
-		if((method & 0x40) != 0)
-			throw new IllegalStateException("ExtWavUnp2");
-		if((method & 0x80) != 0)
-			throw new IllegalStateException("ExtWavUnp3");
-
-		return data;
+	@Override
+	public String toString() {
+		return fileName;
 	}
 }
