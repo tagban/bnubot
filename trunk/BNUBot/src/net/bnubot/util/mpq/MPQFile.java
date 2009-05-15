@@ -24,42 +24,35 @@ import net.bnubot.util.BNetOutputStream;
  * @author scotta
  */
 public class MPQFile implements MPQConstants {
+	/**
+	 * Indicates a sub-file
+	 */
+	private static final String FILE_SEPERATOR = "\\";
 
 	public static void main(String[] args) throws IOException {
-		MPQFile bncache = new MPQFile(new File("bncache.dat"));
-		test(bncache, "IX86Archimonde.mpq", "IX86Archimonde.dll");
-		test(bncache, "ver-IX86-2.mpq", "ver-IX86-2.dll");
-		test(bncache, "icons-WAR3.bni", "ui\\widgets\\battlenet\\chaticons\\iconindex_exp.txt");
-
-		MPQFile mpq = new MPQFile(new File("War3ROC_122a_123a_English.exe"));
-		mpq = mpq.readMPQ("Patch_War3.mpq");
-		try {
-			mpq.readListFile();
-		} catch(Exception e) {
-			e.printStackTrace(System.out);
-		}
-		for(String fn : mpq.file_names)
-			if(fn != null)
-				try {
-					mpq.readFile(fn);
-				} catch(Throwable e) {
-					e.printStackTrace(System.out);
-				}
+		test(new MPQFile(new File("bncache.dat")));
+		test(new MPQFile(new File("War3ROC_122a_123a_English.exe")));
 	}
 
-	private static InputStream test(MPQFile mpq, String... file) {
-		String current_file = null;
+	private static void test(MPQFile mpq) {
 		try {
-			for(int i = 0; i < file.length-1; i++) {
-				current_file = file[i];
-				mpq = mpq.readMPQ(current_file);
+			mpq.suggestFileNames(new FileInputStream(new File("LIST.TXT")));
+		} catch(Exception e) {}
+		try {
+			mpq.readListFile();
+		} catch(Exception e) {}
+		for(int i = 0; i < mpq.file_names.length; i++) {
+			int flags = mpq.block_table[(i<<2)+3];
+			if((flags & MPQ_FILE_EXISTS) == 0)
+				continue; // File was deleted
+
+			try {
+				MPQFile mpq2 = mpq.readMPQ(i);
+				test(mpq2);
+			} catch(Exception e) {
+				if(mpq.file_names[i] == null)
+					System.err.println(mpq.getFileName(i));
 			}
-			current_file = file[file.length-1];
-			return mpq.readFile(current_file);
-		} catch(Exception e) {
-			System.out.println("Failed to get " + current_file);
-			e.printStackTrace(System.out);
-			return null;
 		}
 	}
 
@@ -162,18 +155,18 @@ public class MPQFile implements MPQConstants {
 
 	public String getFileName(int fileNum) {
 		if(file_names[fileNum] != null)
-			return file_names[fileNum];
+			return this.fileName + FILE_SEPERATOR + "[" + fileNum + "]" + file_names[fileNum];
 
 		if(!listFileRead)
 			try {
 				readListFile();
 				if(file_names[fileNum] != null)
-					return file_names[fileNum];
+					return this.fileName + FILE_SEPERATOR + "[" + fileNum + "]" + file_names[fileNum];
 			} catch(IOException e) {}
 
 		String fileName = "0000" + fileNum;
 		fileName = fileName.substring(fileName.length() - 5);
-		return "unknown\\unk" + fileName + ".xxx";
+		return this.fileName + FILE_SEPERATOR + "[" + fileNum + "]unknown\\unk" + fileName + ".xxx";
 	}
 
 	private boolean listFileRead = false;
@@ -254,7 +247,16 @@ public class MPQFile implements MPQConstants {
 	}
 
 	public MPQFile readMPQ(String fileName) throws IOException {
-		return new MPQFile(readFile(fileName), this.fileName + "#" + fileName);
+		int i = getFileNumber(fileName);
+		if(i == -1)
+			throw new FileNotFoundException(fileName);
+
+		file_names[i] = fileName;
+		return readMPQ(i);
+	}
+
+	public MPQFile readMPQ(int fileNum) throws IOException {
+		return new MPQFile(readFile(fileNum), getFileName(fileNum));
 	}
 
 	public InputStream readFile(final int fileNum) throws IOException {
@@ -272,13 +274,15 @@ public class MPQFile implements MPQConstants {
 		final boolean f_has_extra = ((flags & MPQ_FILE_HAS_EXTRA) != 0);
 		final boolean f_exists = ((flags & MPQ_FILE_EXISTS) != 0);
 
+		String pretty_file_name = getFileName(fileNum);
+
 		if(f_dummy_file)
-			throw new IOException(this.fileName + "#" + getFileName(fileNum) + " is a dummy file");
+			throw new IOException(pretty_file_name + " is a dummy file");
 
 		if(!f_exists)
-			throw new FileNotFoundException(this.fileName + "#" + getFileName(fileNum) + " was deleted");
+			throw new FileNotFoundException(pretty_file_name + " was deleted");
 
-		System.out.println(file_names[fileNum] + ": " +
+		System.out.println(pretty_file_name + ": " +
 				size_packed + "/" + size_unpacked + " = " +
 				(int)(100f*size_packed/size_unpacked) + "%");
 
