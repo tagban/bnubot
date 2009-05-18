@@ -99,7 +99,7 @@ public class MPQUtils {
 				if(!i.finished())
 					throw new IOException("Unfinished");
 			} catch (DataFormatException e) {
-				throw new IOException(e);
+				throw new IOException(e.getMessage());
 			}
 			return out;
 		}
