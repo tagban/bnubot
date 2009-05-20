@@ -11,6 +11,7 @@
 * Added SOCKS4 support
 * Handle SID_CHATEVENT EID_BROADCAST
 * Added lag icons to HTMLOutputEventHandler
+* Improved the MirrorSelector
 
 2.1.0 (r1640) 2008-10-06:
 * Added BotNet account login
