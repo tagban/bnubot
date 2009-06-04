@@ -30,8 +30,9 @@ public class MPQFile implements MPQConstants {
 	private static final String FILE_SEPERATOR = "\\";
 
 	public static void main(String[] args) throws IOException {
-		test(new MPQFile(new File("bncache.dat")));
-		test(new MPQFile(new File("War3ROC_122a_123a_English.exe")));
+//		test(new MPQFile(new File("bncache.dat")));
+//		test(new MPQFile(new File("War3ROC_122a_123a_English.exe")));
+		test(new MPQFile(new File("C:\\Users\\Scott\\Desktop\\SystemCheck_enUS.exe")));
 	}
 
 	private static void test(MPQFile mpq) {
@@ -81,8 +82,13 @@ public class MPQFile implements MPQConstants {
 		// Search for the MPQ header
 		final int offset_mpq = findHeader();
 
-		// 32-byte header (already read 4 bytes)
-		is.skip(4); // Unknown
+		// Jump to the beginning of the archive
+		is.reset();
+		is.skip(offset_mpq);
+
+		// 32-byte header
+		is.skip(4); //int file_format = is.readDWord();
+		is.skip(4); //int header_size = is.readDWord();
 		int archive_size = is.readDWord();
 		is.skip(2); //short format_version = is.readWord();
 		is.skip(2); //short block_size = is.readWord();
@@ -135,6 +141,16 @@ public class MPQFile implements MPQConstants {
 	private int findHeader() throws IOException {
 		int offset_mpq = 0;
 		while(true) {
+			if(offset_mpq > 0x200) {
+				int rem = 0x200 - (offset_mpq & 0x1FF);
+				if(is.available() < rem)
+					throw new IOException("Invalid MPQ archive");
+				if(rem != 0) {
+					is.skipBytes(rem);
+					offset_mpq += rem;
+				}
+			}
+
 			if(is.available() < 4)
 				throw new IOException("Invalid MPQ archive");
 
@@ -144,7 +160,17 @@ public class MPQFile implements MPQConstants {
 				throw new IllegalStateException("Not sure how to process MPQ SHUNT header");
 			case ID_BN3:
 			case ID_MPQ:
-				return offset_mpq;
+				int header_size = is.readDWord();
+				is.skipBytes(4); //int archive_size = is.readDWord();
+				short format_version = is.readWord();
+				is.skipBytes(2); //short block_size = is.readWord();
+
+				if(((format_version == 0) && (header_size == 0x20))
+				|| ((format_version == 1) && (header_size == 0x2C)))
+					return offset_mpq;
+
+				offset_mpq += 16;
+				break;
 			default:
 				// Keep searching
 				offset_mpq += 4;
