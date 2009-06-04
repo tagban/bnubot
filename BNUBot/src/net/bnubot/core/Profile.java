@@ -75,7 +75,10 @@ public class Profile {
 	 */
 	protected static boolean internalParseCommand(Connection source, String command, boolean whisperBack) throws InternalError {
 		try {
-			workCommand(source, source.getMyUser(), command, whisperBack, true);
+			BNetUser myUser = source.getMyUser();
+			if(myUser == null)
+				myUser = new BNetUser(source, source.cs.username, source.cs.getMyRealm());
+			workCommand(source, myUser, command, whisperBack, true);
 		} catch(CommandDoesNotExistException e) {
 			return false;
 		} catch(AccountDoesNotExistException e) {
