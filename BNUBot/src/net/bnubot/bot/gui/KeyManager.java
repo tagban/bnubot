@@ -12,7 +12,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
 import net.bnubot.settings.Settings;
@@ -161,7 +160,15 @@ public class KeyManager {
 					PRODUCT_D2XP,
 					PRODUCT_WAR3,
 					PRODUCT_W3XP };
+			boolean foundAnything = false;
 			for(int prod : prods) {
+				CDKey[] keys = getKeys(prod);
+
+				// Don't write the product if it has no keys
+				if(keys.length == 0)
+					continue;
+
+				foundAnything = true;
 				os.write("\n");
 				switch(prod) {
 				case PRODUCT_STAR: os.write("# STAR\r\n"); break;
@@ -173,10 +180,14 @@ public class KeyManager {
 				default: os.write("# ??? " + prod + "\r\n"); break;
 				}
 
-				for(CDKey k : getKeys(prod))
+				for(CDKey k : keys)
 					os.write(formatKey(k.key) + " " + k.comment + "\r\n");
 			}
 			os.close();
+
+			// Delete the file if there were no keys
+			if(!foundAnything)
+				keys2.delete();
 		} catch(Exception e) {
 			Out.exception(e);
 		}
@@ -207,45 +218,62 @@ public class KeyManager {
 		return key;
 	}
 
+	/**
+	 * @return true if key should be displayed for filter
+	 */
+	private static boolean keyFilter(int filter, CDKey k) {
+		switch(filter) {
+		case PRODUCT_ALLNORMAL:
+			switch(k.getProduct()) {
+			case PRODUCT_STAR:
+			case PRODUCT_W2BN:
+			case PRODUCT_D2DV:
+			case PRODUCT_WAR3:
+			case PRODUCT_STAR_ANTHOLOGY:
+			case PRODUCT_D2DV_ANTHOLOGY:
+				// These are normal keys
+				return (filter == PRODUCT_ALLNORMAL);
+			case PRODUCT_D2XP:
+			case PRODUCT_W3XP:
+			case PRODUCT_D2XP_ANTHOLOGY:
+				// These are expansion keys
+				return false;
+			default:
+				// These are abnormal keys
+				return false;
+			}
+			// Unreachable
+		}
+		if(k.getProduct() != filter) {
+			// Product key doesn't match; map anthology keys
+			switch(k.getProduct()) {
+			case PRODUCT_STAR_ANTHOLOGY:
+				return (filter == PRODUCT_STAR);
+			case PRODUCT_D2DV_ANTHOLOGY:
+				return (filter == PRODUCT_D2DV);
+			case PRODUCT_D2XP_ANTHOLOGY:
+				return (filter == PRODUCT_D2XP);
+			}
+			// Wasn't an anthology key
+			return false;
+		}
+
+		// If we made it this far, the key matched the filter
+		return true;
+	}
+
+	/**
+	 * Get a sub-set of keys
+	 * @param product
+	 * @return
+	 */
 	public static CDKey[] getKeys(int product) {
 		initialize();
 
-		List<CDKey> prodKeys = new LinkedList<CDKey>();
+		List<CDKey> prodKeys = new ArrayList<CDKey>();
 		for(CDKey k : cdkeys) {
-			if(product == PRODUCT_ALLNORMAL) {
-				switch(k.getProduct()) {
-				case PRODUCT_STAR:
-				case PRODUCT_W2BN:
-				case PRODUCT_D2DV:
-				case PRODUCT_WAR3:
-				case PRODUCT_STAR_ANTHOLOGY:
-				case PRODUCT_D2DV_ANTHOLOGY:
-					prodKeys.add(k);
-					break;
-				}
-			} else {
-				if(k.getProduct() != product) {
-					switch(k.getProduct()) {
-					case PRODUCT_STAR_ANTHOLOGY:
-						if(product != PRODUCT_STAR)
-							continue;
-						break;
-					case PRODUCT_D2DV_ANTHOLOGY:
-						if(product != PRODUCT_STAR)
-							continue;
-						break;
-					case PRODUCT_D2XP_ANTHOLOGY:
-						if(product != PRODUCT_D2DV)
-							continue;
-						break;
-					default:
-						continue;
-					}
-				}
-
-				// If we made it this far, the key matched the filter
+			if(keyFilter(product, k))
 				prodKeys.add(k);
-			}
 		}
 
 		return prodKeys.toArray(new CDKey[prodKeys.size()]);
