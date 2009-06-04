@@ -712,8 +712,7 @@ public abstract class Connection extends Thread {
 					break ALLOWCOMMANDS;
 				switch(command[0].charAt(0)) {
 				case '/':
-					if(myUser != null)
-						dispatchParseCommand(myUser, postSlash.substring(1), false);
+					Profile.internalParseCommand(this, postSlash.substring(1), false);
 					return;
 				case 'a':
 					if(command[0].equals("accept"))
@@ -740,10 +739,7 @@ public abstract class Connection extends Thread {
 				case 'c':
 					if(command[0].equals("cmd")) {
 						if(command.length == 2) {
-							BNetUser user = myUser;
-							if(user == null)
-								user = new BNetUser(this, cs.username, cs.getMyRealm());
-							dispatchParseCommand(user, command[1], true);
+							Profile.internalParseCommand(this, command[1], true);
 							return;
 						}
 					}
@@ -830,10 +826,7 @@ public abstract class Connection extends Thread {
 				}
 
 				if(postSlash.length() > 0) {
-					BNetUser user = myUser;
-					if(user == null)
-						user = new BNetUser(this, cs.username, cs.getMyRealm());
-					if(dispatchParseCommand(user, postSlash, true))
+					if(Profile.internalParseCommand(this, postSlash, true))
 						return;
 				}
 			}
@@ -1070,9 +1063,9 @@ public abstract class Connection extends Thread {
 		}
 	}
 
-	private boolean dispatchParseCommand(BNetUser user, String command, boolean whisperBack) {
+	private void dispatchParseCommand(BNetUser user, String command, boolean whisperBack) {
 		if(DatabaseContext.getContext() == null)
-			return false;
+			return;
 
 		int i = command.indexOf(';');
 		if(i != -1) {
@@ -1081,12 +1074,12 @@ public abstract class Connection extends Thread {
 			while((c2.length() > 0) && (c2.charAt(0) == ' '))
 				c2 = c2.substring(1);
 
-			boolean ret = dispatchParseCommand(user, c1, whisperBack);
-			ret |= dispatchParseCommand(user, c2, whisperBack);
-			return ret;
+			Profile.parseCommand(this, user, c1, whisperBack);
+			dispatchParseCommand(user, c2, whisperBack);
+			return;
 		}
 
-		return Profile.parseCommand(this, user, command, whisperBack);
+		Profile.parseCommand(this, user, command, whisperBack);
 	}
 
 	protected void dispatchTitleChanged() {

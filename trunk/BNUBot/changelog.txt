@@ -12,6 +12,7 @@
 * Handle SID_CHATEVENT EID_BROADCAST
 * Added lag icons to HTMLOutputEventHandler
 * Improved the MirrorSelector
+* Improved handling of offline-commands
 
 2.1.0 (r1640) 2008-10-06:
 * Added BotNet account login
