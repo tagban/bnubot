@@ -263,9 +263,8 @@ public class KeyManager {
 	}
 
 	/**
-	 * Get a sub-set of keys
 	 * @param product
-	 * @return
+	 * @return a sub-set of keys
 	 */
 	public static CDKey[] getKeys(int product) {
 		initialize();
