@@ -13,8 +13,6 @@ import java.io.InputStream;
 import java.security.MessageDigest;
 import java.util.zip.Inflater;
 
-import net.bnubot.util.Out;
-
 import org.jbls.util.BigIntegerEx;
 import org.jbls.util.Buffer;
 import org.jbls.util.IntFromByteArray;
@@ -42,10 +40,8 @@ public class WardenModule {
 		name = nametmp.toString();
 		saveFile(name + ".decr", decryptor);
 
-		if(!exe.exists()) {
-			Out.error(getClass(), game_exe + " does not exist! Warden will fail.");
+		if(!exe.exists())
 			throw new IllegalStateException();
-		}
 	}
 
 	public Buffer handleRequest(Buffer in) throws IOException {
