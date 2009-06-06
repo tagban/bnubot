@@ -31,8 +31,7 @@ public class SOCKS4ProxySocket extends Socket {
 		init2();
 	}
 
-	/*
-	public Socks4ProxySocket(
+	public SOCKS4ProxySocket(
 			InetAddress s4_address, int s4_port,
 			String address, int port) throws IOException {
 		super(s4_address, s4_port);
@@ -48,7 +47,6 @@ public class SOCKS4ProxySocket extends Socket {
 		dos.flush();
 		init2();
 	}
-	*/
 
 	private void init1(InetAddress address, int port) throws IOException {
 		DataOutputStream dos = new DataOutputStream(getOutputStream());
