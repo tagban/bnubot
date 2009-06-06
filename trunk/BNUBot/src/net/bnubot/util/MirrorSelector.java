@@ -7,6 +7,7 @@ package net.bnubot.util;
 
 import java.io.IOException;
 import java.net.ConnectException;
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -82,6 +83,24 @@ public class MirrorSelector {
 	public static InetAddress getClosestMirror(String hostname, int port)
 			throws UnknownHostException {
 		InetAddress hosts[] = InetAddress.getAllByName(hostname);
+
+		if(true) {
+			// Remove IPv6 addresses from the list
+			int i = 0;
+			for(InetAddress ia : hosts) {
+				if(ia instanceof Inet4Address)
+					i++;
+			}
+			if(i < hosts.length) {
+				InetAddress[] newHosts = new InetAddress[i];
+				i = 0;
+				for(InetAddress ia : hosts) {
+					if(ia instanceof Inet4Address)
+						newHosts[i++] = ia;
+				}
+				hosts = newHosts;
+			}
+		}
 
 		if (hosts.length == 1)
 			return hosts[0];
