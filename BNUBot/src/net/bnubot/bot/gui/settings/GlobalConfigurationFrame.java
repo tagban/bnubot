@@ -47,6 +47,7 @@ import net.bnubot.core.EventHandler;
 import net.bnubot.core.PluginManager;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.settings.Settings;
+import net.bnubot.settings.GlobalSettings.SOCKSType;
 import net.bnubot.settings.GlobalSettings.TabCompleteMode;
 import net.bnubot.settings.GlobalSettings.TrayIconMode;
 import net.bnubot.util.Out;
@@ -77,6 +78,12 @@ public class GlobalConfigurationFrame extends JDialog {
 	private ConfigCheckBox chkEnableMirrorSelector = null;
 	private ConfigCheckBox chkEnableFloodProtect = null;
 	private ConfigCheckBox chkPacketLog = null;
+
+	// Proxy
+	private ConfigCheckBox chkProxyEnabled = null;
+	private JComboBox cmbProxyType = null;
+	private ConfigTextField txtProxyHost = null;
+	private ConfigSpinner spnProxyPort = null;
 
 	// Plugins
 	private ConfigSpinner spnTriviaRoundLength = null;
@@ -207,6 +214,16 @@ public class GlobalConfigurationFrame extends JDialog {
 				boxAll.add(chkPacketLog = new ConfigCheckBox("Packet Log", GlobalSettings.packetLog));
 			}
 			tabs.addTab("Settings", boxAll);
+
+			boxAll = new Box(BoxLayout.Y_AXIS);
+			{
+				chkProxyEnabled = new ConfigCheckBox("Enabled", GlobalSettings.socksEnabled);
+				boxAll.add(chkProxyEnabled);
+				cmbProxyType = ConfigFactory.makeCombo("Type", GlobalSettings.SOCKSType.values(), false, boxAll);
+				txtProxyHost = ConfigFactory.makeText("Host", GlobalSettings.socksHost, boxAll);
+				spnProxyPort = ConfigFactory.makeSpinner("Port", GlobalSettings.socksPort, boxAll);
+			}
+			tabs.addTab("Proxy", boxAll);
 
 			boxAll = new Box(BoxLayout.Y_AXIS);
 			{
@@ -417,6 +434,10 @@ public class GlobalConfigurationFrame extends JDialog {
 			GlobalSettings.guiFontFamily = txtGuiFontFamily.getText();
 			GlobalSettings.guiFontSize = spnGuiFontSize.getValue().intValue();
 			TextWindow.resetHead();
+			GlobalSettings.socksEnabled = chkProxyEnabled.isSelected();
+			GlobalSettings.socksType = (SOCKSType)cmbProxyType.getSelectedItem();
+			GlobalSettings.socksHost = txtProxyHost.getText();
+			GlobalSettings.socksPort = spnProxyPort.getValue().intValue();
 			GlobalSettings.trayIconMode = (TrayIconMode)cmbTrayIconMode.getSelectedItem();
 			GlobalSettings.trayMinimizeTo = chkTrayMinimizeTo.isSelected();
 			GlobalSettings.trayDisplayConnectDisconnect = chkTrayDisplayConnectDisconnect.isSelected();
@@ -511,6 +532,10 @@ public class GlobalConfigurationFrame extends JDialog {
 			chkEnableLegacyIcons.setSelected(GlobalSettings.enableLegacyIcons);
 			chkEnableTabCompleteUser.setSelected(GlobalSettings.enableTabCompleteUser);
 			chkEnableTabCompleteCommand.setSelected(GlobalSettings.enableTabCompleteCommand);
+			chkProxyEnabled.setSelected(GlobalSettings.socksEnabled);
+			cmbProxyType.setSelectedItem(GlobalSettings.socksType);
+			txtProxyHost.setText(GlobalSettings.socksHost);
+			spnProxyPort.setValue(GlobalSettings.socksPort);
 			cmbTrayIconMode.setSelectedItem(GlobalSettings.trayIconMode);
 			chkTrayMinimizeTo.setSelected(GlobalSettings.trayMinimizeTo);
 			chkTrayDisplayConnectDisconnect.setSelected(GlobalSettings.trayDisplayConnectDisconnect);

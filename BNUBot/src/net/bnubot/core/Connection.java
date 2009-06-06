@@ -117,19 +117,30 @@ public abstract class Connection extends Thread {
 	 * @throws UnknownHostException
 	 */
 	protected Socket makeSocket(String address, int port) throws UnknownHostException, IOException {
-		InetAddress addr = MirrorSelector.getClosestMirror(address, port);
-
 		Socket s;
-		if(GlobalSettings.socks4Enabled) {
-			InetAddress s4_addr = MirrorSelector.getClosestMirror(GlobalSettings.socks4Host, GlobalSettings.socks4Port);
-			int s4_port = GlobalSettings.socks4Port;
+		if(GlobalSettings.socksEnabled) {
+			InetAddress s4_addr = MirrorSelector.getClosestMirror(GlobalSettings.socksHost, GlobalSettings.socksPort);
+			int s4_port = GlobalSettings.socksPort;
 
-			dispatchRecieveInfo("Connecting to " + addr + ":" + port + " via SOCKS4 proxy " + s4_addr + ":" + s4_port + ".");
-
-			s = new SOCKS4ProxySocket(
-				s4_addr, s4_port,
-				addr, port);
+			switch(GlobalSettings.socksType) {
+			case SOCKS4:
+				InetAddress addr = MirrorSelector.getClosestMirror(address, port);
+				dispatchRecieveInfo("Connecting to " + addr + ":" + port + " via SOCKS4 proxy " + s4_addr + ":" + s4_port + ".");
+				s = new SOCKS4ProxySocket(
+					s4_addr, s4_port,
+					addr, port);
+				break;
+			case SOCKS4a:
+				dispatchRecieveInfo("Connecting to " + address + ":" + port + " via SOCKS4a proxy " + s4_addr + ":" + s4_port + ".");
+				s = new SOCKS4ProxySocket(
+					s4_addr, s4_port,
+					address, port);
+				break;
+			default:
+				throw new IOException("Unknown SOCKS type: " + GlobalSettings.socksType);
+			}
 		} else {
+			InetAddress addr = MirrorSelector.getClosestMirror(address, port);
 			dispatchRecieveInfo("Connecting to " + addr + ":" + port + ".");
 			s = new Socket(addr, port);
 		}

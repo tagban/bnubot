@@ -50,6 +50,11 @@ public class GlobalSettings {
 		}
 	}
 
+	public static enum SOCKSType {
+		SOCKS4,
+		SOCKS4a
+	}
+
 	public static int numBots;
 	public static byte colorScheme;
 	public static String email;
@@ -93,9 +98,10 @@ public class GlobalSettings {
 	public static String botNetUsername;
 	public static String botNetPassword;
 
-	public static boolean socks4Enabled;
-	public static String socks4Host;
-	public static int socks4Port;
+	public static boolean socksEnabled;
+	public static SOCKSType socksType;
+	public static String socksHost;
+	public static int socksPort;
 
 	private static String lookAndFeel;
 	private static String lookAndFeelTheme;
@@ -212,9 +218,10 @@ public class GlobalSettings {
 		ss.write("tsFormat", TimeFormatter.tsFormat);
 		ss.write("timeZone", TimeFormatter.timeZone);
 		ss.write("whisperBack", whisperBack);
-		ss.write("socks4Enabled", socks4Enabled);
-		ss.write("socks4Host", socks4Host);
-		ss.write("socks4Port", socks4Port);
+		ss.write("socksEnabled", socksEnabled);
+		ss.write("socksType", socksType);
+		ss.write("socksHost", socksHost);
+		ss.write("socksPort", socksPort);
 
 		Settings.store();
 	}
@@ -274,9 +281,10 @@ public class GlobalSettings {
 		enableFloodProtect = ss.read("enableFloodProtect", false);
 		packetLog = ss.read("packetLog", false);
 		whisperBack = ss.read("whisperBack", true);
-		socks4Enabled = ss.read("socks4Enabled", false);
-		socks4Host = ss.read("socks4Host", "localhost");
-		socks4Port = ss.read("socks4Port", 6111);
+		socksEnabled = ss.read("socksEnabled", false);
+		socksType = ss.read("socksType", SOCKSType.SOCKS4);
+		socksHost = ss.read("socksHost", "localhost");
+		socksPort = ss.read("socksPort", 6111);
 		recruitAccess = ss.read("recruitAccess", 10);
 		recruitTagPrefix =	ss.read("recruitTagPrefix", "BNU-");
 		recruitTagSuffix =	ss.read("recruitTagSuffix", (String)null);

@@ -8,7 +8,7 @@
 * Fixed a bug with MCP server login
 * The capture for "?trigger" is no longer case-sensitive
 * Fixed a bug relating to dates in the DatabaseEditor
-* Added SOCKS4 support
+* Added SOCKS4/4a support
 * Handle SID_CHATEVENT EID_BROADCAST
 * Added lag icons to HTMLOutputEventHandler
 * Improved the MirrorSelector
