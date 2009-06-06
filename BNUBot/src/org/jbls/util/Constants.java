@@ -47,8 +47,8 @@ public final class Constants {
 		"Starcraft Shareware" };
 
 	public static int[] IX86verbytes = {
-		0xd1,
-		0xd1,
+		0xd3,
+		0xd3,
 		0x4f,
 		0x0c,
 		0x0c,
