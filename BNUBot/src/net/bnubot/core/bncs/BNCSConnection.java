@@ -428,8 +428,13 @@ public class BNCSConnection extends Connection {
 
 							long timeElapsed = System.currentTimeMillis() - startTime;
 							if (timeElapsed > 15000) {
+								Out.error(getClass(), "BNLS_VERSIONCHECKEX2 timed out");
+								disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
+							}
+
+							if(!isConnected()) {
 								setBNLSConnected(false);
-								throw new Exception("BNLS_VERSIONCHECKEX2 timed out");
+								return false;
 							}
 							bnlsTask.setProgress((int) timeElapsed);
 						}
