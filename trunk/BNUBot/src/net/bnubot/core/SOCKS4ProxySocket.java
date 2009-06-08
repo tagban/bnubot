@@ -11,8 +11,6 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 
-import net.bnubot.util.BNetInputStream;
-
 /**
  * @author scotta
  */
@@ -57,7 +55,7 @@ public class SOCKS4ProxySocket extends Socket {
 		// Port
 		dos.writeShort(port);
 		// IP
-		dos.writeInt(htonl(BNetInputStream.readDWord(address.getAddress(), 0)));
+		dos.write(address.getAddress());
 		// User ID
 		dos.write(0);
 		dos.flush();
@@ -102,13 +100,6 @@ public class SOCKS4ProxySocket extends Socket {
 
 			Thread.yield();
 		}
-	}
-
-	private int htonl(int hl) {
-		return (((hl & 0xFF000000) >> 24) & 0x000000FF)
-		     | (((hl & 0x00FF0000) >> 8) & 0x0000FF00)
-		     | (((hl & 0x0000FF00) << 8) & 0x00FF0000)
-		     | (((hl & 0x000000FF) << 24) & 0xFF000000);
 	}
 
 	@Override
