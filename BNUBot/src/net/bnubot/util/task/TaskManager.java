@@ -17,9 +17,10 @@ public class TaskManager {
 	private static final long serialVersionUID = 641763656953338296L;
 
 	private static Container box = null;
-	static {
-		if(PluginManager.getEnableGui())
+	private static Container getBox() {
+		if((box == null) && PluginManager.getEnableGui())
 			box = GuiDesktop.getTasksLocation();
+		return box;
 	}
 
 	public static Task createTask(String title) {
@@ -33,7 +34,7 @@ public class TaskManager {
 	}
 
 	public static Task createTask(String title, int max, String units) {
-		if(box == null)
+		if(getBox() == null)
 			return new Task();
 
 		TaskGui t = new TaskGui(title, max, units);
