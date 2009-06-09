@@ -17,6 +17,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -36,13 +37,15 @@ import org.apache.cayenne.access.DbGenerator;
 import org.apache.cayenne.conf.Configuration;
 import org.apache.cayenne.conf.DataSourceFactory;
 import org.apache.cayenne.conn.PoolManager;
-import org.apache.cayenne.dba.AutoAdapter;
-import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.merge.AddColumnToDb;
+import org.apache.cayenne.merge.AddRelationshipToDb;
+import org.apache.cayenne.merge.CreateTableToDb;
 import org.apache.cayenne.merge.DbMerger;
 import org.apache.cayenne.merge.ExecutingMergerContext;
 import org.apache.cayenne.merge.MergerContext;
 import org.apache.cayenne.merge.MergerToken;
+import org.apache.cayenne.merge.SetAllowNullToDb;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 
@@ -97,8 +100,8 @@ public class CayenneConfiguration implements DataSourceFactory {
 
 			// Bring the schema up to date by merging the differences
 			DataDomain domain = Configuration.getSharedConfiguration().getDomain("BNUBotDomain");
+			DataNode dataNode = domain.getNode("BNUBotDataNode");
 			DataMap dataMap = domain.getMap("BNUBotMap");
-			DbAdapter adapter = new AutoAdapter(dataSource);
 
 			ValidationResult vr = null;
 			if(!schemaValid) {
@@ -106,7 +109,7 @@ public class CayenneConfiguration implements DataSourceFactory {
 				Out.error(getClass(), "The database requires rebuilding");
 
 				// Generate schema from the mapping file
-				DbGenerator generator = new DbGenerator(adapter, dataMap);
+				DbGenerator generator = new DbGenerator(dataNode.getAdapter(), dataMap);
 				generator.setShouldCreateFKConstraints(true);
 				generator.setShouldCreatePKSupport(false);
 				generator.setShouldCreateTables(true);
@@ -121,17 +124,32 @@ public class CayenneConfiguration implements DataSourceFactory {
 				// Valid schema; check if merge is needed
 				Out.debug(getClass(), "The database schema is valid; checking if upgrade is needed");
 
-				DataNode dataNode = domain.getNode("BNUBotDomainNode");
 				MergerContext mc = new ExecutingMergerContext(dataMap, dataNode);
-				List<MergerToken> mergeTokens = new DbMerger().createMergeTokens(dataNode, dataMap);
-				if(mergeTokens.size() == 0) {
+				List<MergerToken> allMergeTokens = new DbMerger().createMergeTokens(dataNode, dataMap);
+
+				List<MergerToken> nonAutoMergeTokens = new ArrayList<MergerToken>();
+				for(MergerToken mt : allMergeTokens) {
+					if((mt instanceof AddRelationshipToDb)
+					|| (mt instanceof CreateTableToDb)
+					|| (mt instanceof AddColumnToDb)
+					|| (mt instanceof SetAllowNullToDb)) {
+						// These non-destructive types are allowed to merge in automatically
+						Out.info(getClass(), mt.toString());
+						mt.execute(mc);
+					} else {
+						// All other types require user approval
+						nonAutoMergeTokens.add(mt);
+					}
+				}
+
+				if(nonAutoMergeTokens.size() == 0) {
 					Out.debug(getClass(), "No upgrade necessary");
 					return dataSource;
 				}
 
 				try {
 					String msg = "BNU-Bot must perform the following action(s) to upgrade your database:\n";
-					for(MergerToken mt : mergeTokens)
+					for(MergerToken mt : nonAutoMergeTokens)
 						msg += mt.toString() + "\n";
 					msg += "\n" +
 						"It is strongly recommended to backup your database before continuing!\n" +
@@ -147,9 +165,11 @@ public class CayenneConfiguration implements DataSourceFactory {
 					}
 				} catch(HeadlessException e) {
 					// GUI is probably broken
+					throw new Exception("A schema merge is required, but was unable to display " +
+							"a window to query user if schema upgrade is acceptable.");
 				}
 
-				for(MergerToken mt : mergeTokens) {
+				for(MergerToken mt : nonAutoMergeTokens) {
 					Out.info(getClass(), mt.toString());
 					mt.execute(mc);
 				}

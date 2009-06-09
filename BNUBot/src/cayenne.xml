@@ -3,9 +3,10 @@
 <domain name="BNUBotDomain">
 	<map name="BNUBotMap" location="BNUBotMap.map.xml"/>
 
-	<node name="BNUBotDomainNode"
+	<node name="BNUBotDataNode"
 		 datasource="BNUBotDomainNode.driver.xml"
-		 factory="net.bnubot.db.conf.CayenneConfiguration">
+		 factory="net.bnubot.db.conf.CayenneConfiguration"
+		 schema-update-strategy="org.apache.cayenne.access.dbsync.ThrowOnPartialSchemaStrategy">
 			<map-ref name="BNUBotMap"/>
 	 </node>
 </domain>
