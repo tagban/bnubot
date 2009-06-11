@@ -27,7 +27,6 @@ import net.bnubot.util.BNetUser;
 import net.bnubot.util.Out;
 import net.bnubot.util.task.Task;
 import net.bnubot.util.task.TaskManager;
-import net.bnubot.vercheck.VersionCheck;
 
 /**
  * @author scotta
@@ -228,15 +227,6 @@ public class Profile {
 					}
 			}
 		}
-
-		// If this is the first bot
-		if(con.getConnectionSettings().botNum == 1)
-			try {
-				// Do the version check now; no force
-				VersionCheck.checkVersion(false);
-			} catch(Exception e) {
-				Out.exception(e);
-			}
 
 		// Start the Connection thread
 		con.start();

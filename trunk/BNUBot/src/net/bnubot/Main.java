@@ -18,6 +18,8 @@ import net.bnubot.settings.Settings;
 import net.bnubot.util.Out;
 import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.ExceptionReporter;
+import net.bnubot.vercheck.ReleaseType;
+import net.bnubot.vercheck.VersionCheck;
 
 import org.apache.commons.logging.impl.NoOpLog;
 import org.eclipse.swt.widgets.Display;
@@ -136,11 +138,27 @@ public class Main {
 			while(display.readAndDispatch());
 		}
 
+		// Version check thread
+		new Thread() {
+			@Override
+			public void run() {
+				try {
+					// Do the version check; no force
+					VersionCheck.checkVersion(false);
+				} catch(Exception e) {
+					Out.exception(e);
+				}
+			}
+		}.start();
+
 		for(int i = 1; i <= GlobalSettings.numBots; i++)
 			Profile.newConnection(i);
 
-		if(CurrentVersion.fromJar() && CurrentVersion.version().getReleaseType().isDevelopment())
-			Out.error(CurrentVersion.class, "WARNING: This is a development build, not for distribution!");
+		if(CurrentVersion.fromJar()) {
+			ReleaseType rt = CurrentVersion.version().getReleaseType();
+			if(!rt.isStable())
+				Out.error(CurrentVersion.class, "WARNING: This is a " + rt.name() + " build. It may contain bugs, or be unstable. Use at your own risk!");
+		}
 
 		// Write out any modified settings
 		Settings.store();
