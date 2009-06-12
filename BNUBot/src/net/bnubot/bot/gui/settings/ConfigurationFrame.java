@@ -21,7 +21,6 @@ import javax.swing.JPasswordField;
 import javax.swing.SwingUtilities;
 
 import net.bnubot.bot.gui.WindowPosition;
-import net.bnubot.bot.gui.KeyManager.CDKey;
 import net.bnubot.bot.gui.components.ConfigCheckBox;
 import net.bnubot.bot.gui.components.ConfigFactory;
 import net.bnubot.bot.gui.components.ConfigTextField;
@@ -218,14 +217,6 @@ public class ConfigurationFrame extends JDialog {
 		pack();
 	}
 
-	private String formatCDKey(String in) {
-		String out = new String(in);
-		out = out.replaceAll("-", "");
-		out = out.replaceAll(" ", "");
-		out = out.replaceAll("\t", "");
-		return out.toUpperCase();
-	}
-
 	private void save() {
 		cs.profile = txtProfile.getText();
 		cs.username = txtUsername.getText();
@@ -233,13 +224,8 @@ public class ConfigurationFrame extends JDialog {
 		cs.enablePlug = chkPlug.isSelected();
 		cs.enableBotNet = chkBotNet.isSelected();
 		cs.product = prodKeys.getProduct();
-		CDKey k = prodKeys.getCDKey();
-		CDKey k2 = prodKeys.getCDKey2();
-
-		if(k != null)
-			cs.cdkey = formatCDKey(k.getKey());
-		if(k2 != null)
-			cs.cdkey2 = formatCDKey(k2.getKey());
+		cs.setCDKey(prodKeys.getCDKey());
+		cs.setCDKey2(prodKeys.getCDKey2());
 		cs.connectionType = (ConnectionType)cmbConnectionType.getSelectedItem();
 		cs.server = (String)cmbServer.getSelectedItem();
 		cs.channel = txtChannel.getText();

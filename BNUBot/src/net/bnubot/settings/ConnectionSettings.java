@@ -7,6 +7,7 @@ package net.bnubot.settings;
 
 import java.io.Serializable;
 
+import net.bnubot.bot.gui.KeyManager.CDKey;
 import net.bnubot.core.bncs.ProductIDs;
 
 /**
@@ -200,5 +201,23 @@ public class ConnectionSettings implements Serializable {
 		enableAntiIdle =	ss.read("enableAntiidle", false);
 		enableGreetings =	ss.read("enableGreetings", false);
 		antiIdleTimer =	ss.read("antiIdleTimer", 5);
+	}
+
+	private String formatCDKey(CDKey key) {
+		if(key == null)
+			return null;
+		String out = new String(key.getKey());
+		out = out.replaceAll("-", "");
+		out = out.replaceAll(" ", "");
+		out = out.replaceAll("\t", "");
+		return out.toUpperCase();
+	}
+
+	public void setCDKey(CDKey key) {
+		cdkey = formatCDKey(key);
+	}
+
+	public void setCDKey2(CDKey key) {
+		cdkey2 = formatCDKey(key);
 	}
 }
