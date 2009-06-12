@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import net.bnubot.core.bncs.ProductIDs;
 import net.bnubot.settings.Settings;
 import net.bnubot.util.Out;
 
@@ -262,6 +263,17 @@ public class KeyManager {
 		return true;
 	}
 
+	private static boolean hasKeys(int product) {
+		initialize();
+
+		for(CDKey k : cdkeys) {
+			if(keyFilter(product, k))
+				return true;
+		}
+
+		return false;
+	}
+
 	/**
 	 * @param product
 	 * @return a sub-set of keys
@@ -276,5 +288,37 @@ public class KeyManager {
 		}
 
 		return prodKeys.toArray(new CDKey[prodKeys.size()]);
+	}
+
+	/**
+	 * @return the products there are CDKeys for
+	 */
+	public static ProductIDs[] getProducts() {
+		initialize();
+
+		List<ProductIDs> prods = new ArrayList<ProductIDs>();
+		if(hasKeys(PRODUCT_STAR)) {
+			prods.add(ProductIDs.STAR);
+			prods.add(ProductIDs.SEXP);
+			prods.add(ProductIDs.JSTR);
+		}
+		if(hasKeys(PRODUCT_W2BN)) {
+			prods.add(ProductIDs.W2BN);
+		}
+		if(hasKeys(PRODUCT_D2DV)) {
+			prods.add(ProductIDs.D2DV);
+			if(hasKeys(PRODUCT_D2XP))
+				prods.add(ProductIDs.D2XP);
+		}
+		if(hasKeys(PRODUCT_WAR3)) {
+			prods.add(ProductIDs.WAR3);
+			if(hasKeys(PRODUCT_W3XP))
+				prods.add(ProductIDs.W3XP);
+		}
+		prods.add(ProductIDs.DRTL);
+		prods.add(ProductIDs.DSHR);
+		prods.add(ProductIDs.SSHR);
+
+		return prods.toArray(new ProductIDs[prods.size()]);
 	}
 }
