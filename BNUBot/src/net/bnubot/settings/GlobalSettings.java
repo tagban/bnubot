@@ -55,6 +55,7 @@ public class GlobalSettings {
 		SOCKS4a
 	}
 
+	public static boolean firstRun;
 	public static int numBots;
 	public static byte colorScheme;
 	public static String email;
@@ -173,6 +174,7 @@ public class GlobalSettings {
 
 	public static void save() {
 		SettingsSection ss = Settings.getSection(null);
+		ss.write("firstRun", firstRun);
 		ss.write("numBots", numBots);
 		ss.write("autoConnect", autoConnect);
 		ss.write("autoRejoin", autoRejoin);
@@ -247,6 +249,7 @@ public class GlobalSettings {
 			}
 
 		SettingsSection ss = Settings.getSection(null);
+		firstRun = ss.read("firstRun", true);
 		numBots = ss.read("numBots", 1);
 		colorScheme = (byte)ss.read("colorScheme", 2);
 		bnlsServer =ss.read("bnlsserver", "jbls.clanbnu.net");
