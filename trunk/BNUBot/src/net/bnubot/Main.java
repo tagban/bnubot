@@ -11,6 +11,7 @@ import java.io.PrintStream;
 import java.lang.Thread.UncaughtExceptionHandler;
 
 import net.bnubot.bot.gui.settings.GlobalConfigurationFrame;
+import net.bnubot.bot.gui.wizard.ConnectionWizard;
 import net.bnubot.core.PluginManager;
 import net.bnubot.core.Profile;
 import net.bnubot.settings.GlobalSettings;
@@ -133,6 +134,14 @@ public class Main {
 			}
 		}
 
+		if(PluginManager.getEnableGui() && GlobalSettings.firstRun) {
+			// Run the first-run wizard
+			ConnectionWizard.displayAndBlock(1);
+
+			GlobalSettings.firstRun = false;
+			Settings.store();
+		}
+
 		if(PluginManager.getEnableSwt()) {
 			Display display = Display.getCurrent();
 			while(display.readAndDispatch());
@@ -151,6 +160,7 @@ public class Main {
 			}
 		}.start();
 
+		// Create connections for the default bots
 		for(int i = 1; i <= GlobalSettings.numBots; i++)
 			Profile.newConnection(i);
 
