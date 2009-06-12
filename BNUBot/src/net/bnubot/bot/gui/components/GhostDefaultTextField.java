@@ -45,6 +45,12 @@ public class GhostDefaultTextField extends ConfigTextField implements MouseListe
 			reset();
 	}
 
+	@Override
+	public void setText(String t) {
+		setEnabled(true);
+		super.setText(t);
+	}
+
 	public void mouseClicked(MouseEvent e) {
 		if(isEnabled())
 			return;
