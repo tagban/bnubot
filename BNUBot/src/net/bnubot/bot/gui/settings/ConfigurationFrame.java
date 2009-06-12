@@ -20,13 +20,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.SwingUtilities;
 
-import net.bnubot.bot.gui.KeyManager;
 import net.bnubot.bot.gui.WindowPosition;
 import net.bnubot.bot.gui.KeyManager.CDKey;
 import net.bnubot.bot.gui.components.ConfigCheckBox;
 import net.bnubot.bot.gui.components.ConfigFactory;
 import net.bnubot.bot.gui.components.ConfigTextField;
-import net.bnubot.core.bncs.ProductIDs;
+import net.bnubot.bot.gui.components.ProductAndCDKeys;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.settings.ConnectionSettings.ConnectionType;
 
@@ -43,11 +42,9 @@ public class ConfigurationFrame extends JDialog {
 	private ConfigTextField txtProfile = null;
 	private ConfigTextField txtUsername = null;
 	private JPasswordField txtPassword = null;
-	private JComboBox cmbProduct = null;
+	private ProductAndCDKeys prodKeys = null;
 	private ConfigCheckBox chkPlug = null;
 	private ConfigCheckBox chkBotNet = null;
-	private JComboBox cmbCDKey = null;
-	private JComboBox cmbCDKey2 = null;
 
 	// Profile
 	private JComboBox cmbConnectionType = null;
@@ -92,39 +89,15 @@ public class ConfigurationFrame extends JDialog {
 			txtUsername = ConfigFactory.makeText("Username", cs.username, boxSettings);
 			txtPassword = ConfigFactory.makePass("Password", cs.password, boxSettings);
 
-			cmbProduct = ConfigFactory.makeCombo("Product", ProductIDs.values(), false, boxSettings);
-			cmbProduct.removeItem(ProductIDs.CHAT);
-			cmbProduct.addItemListener(new ItemListener() {
+			prodKeys = new ProductAndCDKeys(cs, boxSettings);
+			prodKeys.addProductListener(new ItemListener() {
 				public void itemStateChanged(ItemEvent e) {
 					setVisibleFields();
 				}});
 			boxSettings.add(chkPlug = new ConfigCheckBox("Enable Plug (No UDP support)", cs.enablePlug));
 			boxSettings.add(chkBotNet = new ConfigCheckBox("Enable BotNet", cs.enableBotNet));
 
-			//Initialize CD Keys combo box before setting product
-			CDKey[] CDKeys = KeyManager.getKeys(KeyManager.PRODUCT_ALLNORMAL);
-			if(CDKeys.length == 0)
-				hasCdKeys = false;
-			cmbCDKey = ConfigFactory.makeCombo("CD key", CDKeys, false, boxSettings);
-			cmbCDKey2 = ConfigFactory.makeCombo("CD key 2", CDKeys, false, boxSettings);
 			cmbConnectionType = ConfigFactory.makeCombo("Connection Type", ConnectionType.values(), false, boxSettings);
-
-			try {
-				cmbProduct.setSelectedItem(cs.product);
-				cmbCDKey.setSelectedItem(cs.cdkey);
-				cmbCDKey2.setSelectedItem(cs.cdkey2);
-			} catch(Exception e) {}
-
-			CDKeys = null;
-			switch((ProductIDs)cmbProduct.getSelectedItem()) {
-			case D2XP:
-				CDKeys = KeyManager.getKeys(KeyManager.PRODUCT_D2XP);
-				break;
-			case W3XP:
-				CDKeys = KeyManager.getKeys(KeyManager.PRODUCT_W3XP);
-				break;
-			}
-
 			cmbConnectionType.setSelectedItem(cs.connectionType);
 			cmbConnectionType.addItemListener(new ItemListener() {
 				public void itemStateChanged(ItemEvent e) {
@@ -259,9 +232,9 @@ public class ConfigurationFrame extends JDialog {
 		cs.password = new String(txtPassword.getPassword());
 		cs.enablePlug = chkPlug.isSelected();
 		cs.enableBotNet = chkBotNet.isSelected();
-		cs.product = (ProductIDs)cmbProduct.getSelectedItem();
-		CDKey k = (CDKey)cmbCDKey.getSelectedItem();
-		CDKey k2 = (CDKey)cmbCDKey2.getSelectedItem();
+		cs.product = prodKeys.getProduct();
+		CDKey k = prodKeys.getCDKey();
+		CDKey k2 = prodKeys.getCDKey2();
 
 		if(k != null)
 			cs.cdkey = formatCDKey(k.getKey());
@@ -289,9 +262,9 @@ public class ConfigurationFrame extends JDialog {
 		txtPassword.setText(cs.password);
 		chkPlug.setSelected(cs.enablePlug);
 		chkBotNet.setSelected(cs.enableBotNet);
-		cmbProduct.setSelectedItem(cs.product);
-		cmbCDKey.setSelectedItem(cs.cdkey);
-		cmbCDKey2.setSelectedItem(cs.cdkey2);
+		prodKeys.setProduct(cs.product);
+		prodKeys.setCDKey(cs.cdkey);
+		prodKeys.setCDKey2(cs.cdkey2);
 
 		// Profile
 		cmbConnectionType.setSelectedItem(cs.connectionType);
@@ -330,9 +303,7 @@ public class ConfigurationFrame extends JDialog {
 		if((ConnectionType)cmbConnectionType.getSelectedItem() == ConnectionType.DigitalText) {
 			chkPlug.setVisible(false);
 			chkBotNet.setVisible(false);
-			cmbProduct.setVisible(false);
-			cmbCDKey.setVisible(false);
-			cmbCDKey2.setVisible(false);
+			prodKeys.setVisible(false);
 			for(String server : ConnectionSettings.dtServers)
 				model.addElement(server);
 			cmbServer.setSelectedItem(cs.server);
@@ -343,30 +314,8 @@ public class ConfigurationFrame extends JDialog {
 			model.addElement(server);
 		cmbServer.setSelectedItem(cs.server);
 
-		cmbProduct.setVisible(true);
-		ProductIDs cProd = (ProductIDs)cmbProduct.getSelectedItem();
-
-		int prod = KeyManager.PRODUCT_ALLNORMAL;
-		switch(cProd) {
-		case STAR:
-		case SEXP:
-		case JSTR:
-			prod = KeyManager.PRODUCT_STAR;
-			break;
-		case D2DV:
-		case D2XP:
-			prod = KeyManager.PRODUCT_D2DV;
-			break;
-		case WAR3:
-		case W3XP:
-			prod = KeyManager.PRODUCT_WAR3;
-			break;
-		case W2BN:
-			prod = KeyManager.PRODUCT_W2BN;
-			break;
-		}
-
-		switch(cProd) {
+		prodKeys.setVisible(true);
+		switch(prodKeys.getProduct()) {
 		case DSHR:
 		case DRTL:
 		case SSHR:
@@ -381,58 +330,6 @@ public class ConfigurationFrame extends JDialog {
 			break;
 		}
 		chkBotNet.setVisible(true);
-
-		CDKey[] CDKeys2 = null;
-		switch(cProd) {
-		case DRTL:
-		case DSHR:
-		case SSHR:
-			cmbCDKey.setVisible(false);
-			cmbCDKey2.setVisible(false);
-			break;
-		case JSTR:
-		case STAR:
-		case SEXP:
-		case D2DV:
-		case WAR3:
-		case W2BN:
-			cmbCDKey.setVisible(true);
-			cmbCDKey2.setVisible(false);
-			break;
-		case D2XP:
-		case W3XP:
-			cmbCDKey.setVisible(true);
-			cmbCDKey2.setVisible(true);
-
-			if(cmbProduct.getSelectedItem() == ProductIDs.D2XP)
-				CDKeys2 = KeyManager.getKeys(KeyManager.PRODUCT_D2XP);
-			if(cmbProduct.getSelectedItem() == ProductIDs.W3XP)
-				CDKeys2 = KeyManager.getKeys(KeyManager.PRODUCT_W3XP);
-			break;
-		}
-
-		model = (DefaultComboBoxModel)cmbCDKey.getModel();
-		model.removeAllElements();
-		if(prod != KeyManager.PRODUCT_ALLNORMAL) {
-			for(CDKey key : KeyManager.getKeys(prod)) {
-				model.addElement(key);
-
-				if(key.getKey().equalsIgnoreCase(cs.cdkey))
-					cmbCDKey.setSelectedItem(key);
-			}
-		}
-
-
-		DefaultComboBoxModel model2 = (DefaultComboBoxModel)cmbCDKey2.getModel();
-		model2.removeAllElements();
-		if(CDKeys2 != null) {
-			for(CDKey key : CDKeys2) {
-				model2.addElement(key);
-
-				if(key.getKey().equalsIgnoreCase(cs.cdkey2))
-					cmbCDKey.setSelectedItem(key);
-			}
-		}
 
 		pack();
 	}

@@ -58,7 +58,7 @@ public class ConfigFactory {
 		return txt;
 	}
 
-	public static JPasswordField makePass(String label, String value, Box parent) {
+	public static JPasswordField makePass(String label, String value, Container parent) {
 		JPasswordField pass = new JPasswordField(value);
 		pass.setMaximumSize(maxComponentSize);
 
@@ -69,7 +69,7 @@ public class ConfigFactory {
 		return pass;
 	}
 
-	public static JComboBox makeCombo(String label, Object[] values, boolean editable, Box parent) {
+	public static JComboBox makeCombo(String label, Object[] values, boolean editable, Container parent) {
 		JComboBox cmb = new JComboBox(values);
 		cmb.setEditable(editable);
 		cmb.setMaximumSize(maxComponentSize);
@@ -81,7 +81,7 @@ public class ConfigFactory {
 		return cmb;
 	}
 
-	public static ConfigSpinner makeSpinner(String label, Integer value, Box parent) {
+	public static ConfigSpinner makeSpinner(String label, Integer value, Container parent) {
 		ConfigSpinner spinner = new ConfigSpinner(value);
 		spinner.setMaximumSize(maxComponentSize);
 
