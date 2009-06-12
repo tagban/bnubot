@@ -17,8 +17,8 @@ import net.bnubot.db.BNLogin;
 import net.bnubot.db.Rank;
 import net.bnubot.db.conf.DatabaseContext;
 import net.bnubot.util.BNetUser;
-import net.bnubot.util.UnloggedException;
 import net.bnubot.util.Out;
+import net.bnubot.util.UnloggedException;
 
 /**
  * @author scotta
@@ -160,10 +160,12 @@ public class LockdownEventHandler extends EventHandler {
 	}
 
 	@Override
-	public void bnetConnected(Connection source) {
-		// FIXME these commands don't get sent because we're not in a channel yet
-		//source.sendChat("/c pub");
-		//source.sendChat("/o unigpub");
+	public void joinedChannel(Connection source, String channel) {
+		if((channel != null)
+		&& channel.startsWith("Clan ")) {
+			source.sendChat("/c pub");
+			source.sendChat("/o unigpub");
+		}
 	}
 
 	@Override
