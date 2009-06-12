@@ -5,8 +5,10 @@
 
 package net.bnubot.bot.gui;
 
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -31,6 +33,15 @@ public class WindowPosition {
 	public static void load(Window w) {
 		String header = w.getClass().getSimpleName();
 		Rectangle bounds = w.getBounds();
+
+		try {
+			Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+			bounds.x = (screenSize.width - bounds.width) / 2;
+			bounds.y = (screenSize.height - bounds.height) / 2;
+		} catch(Exception e) {
+			// Do nothing
+		}
+
 		if((w instanceof Frame) && ((Frame)w).isResizable()) {
 			bounds.height = Settings.getSection(header).read("height", bounds.height);
 			bounds.width = Settings.getSection(header).read("width", bounds.width);
