@@ -16,6 +16,7 @@
 * Improved BNLS_VERSIONCHECKEX2 timeout behavior
 * Reduced schema upgrade verbosity for harmless MergerTokens
 * New windows are centered on the screen
+* Added a connection configuration wizard
 
 2.1.0 (r1640) 2008-10-06:
 * Added BotNet account login
