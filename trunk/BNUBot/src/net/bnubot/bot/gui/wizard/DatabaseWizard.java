@@ -3,7 +3,7 @@
  * $Id$
  */
 
-package net.bnubot.bot.gui;
+package net.bnubot.bot.gui.wizard;
 
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
@@ -20,6 +20,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import net.bnubot.bot.gui.WindowPosition;
 import net.bnubot.bot.gui.components.ConfigFactory;
 import net.bnubot.bot.gui.components.GhostDefaultTextField;
 import net.bnubot.db.Account;
@@ -37,6 +38,11 @@ public class DatabaseWizard extends JDialog {
 
 	public static void main(String[] args) {
 		GlobalSettings.load();
+		displayAndBlock();
+		System.exit(0);
+	}
+
+	public static void displayAndBlock() {
 		DatabaseWizard dw = new DatabaseWizard();
 		dw.setVisible(true);
 		while(dw.isVisible()) {
@@ -45,7 +51,6 @@ public class DatabaseWizard extends JDialog {
 			} catch (InterruptedException e) {}
 			Thread.yield();
 		}
-		System.exit(0);
 	}
 
 	private int currentStep = 0;
@@ -58,7 +63,9 @@ public class DatabaseWizard extends JDialog {
 					"<h1>Introduction</h1>" +
 					"<hr/><br/>" +
 					"This is the database configuration wizard. This wizard will assist you in setting up your<br/>" +
-					"database by helping you to configure your first account. To begin, click Next." +
+					"database by helping you to configure your first account. To begin, click Next.<br/>" +
+					"<br/>" +
+					"If you do not wish to use the database, you may close this window now." +
 					"</html>"));
 		cards.add("0", jp);
 
@@ -205,7 +212,7 @@ public class DatabaseWizard extends JDialog {
 						a = Account.create(account, Rank.getMax(), null);
 					a.updateRow();
 					for(String l : logins) {
-						BNLogin bnl = BNLogin.getCreate(new BNetUser(null, l, l));
+						BNLogin bnl = BNLogin.getCreate(new BNetUser(l));
 						bnl.setAccount(a);
 						bnl.updateRow();
 					}

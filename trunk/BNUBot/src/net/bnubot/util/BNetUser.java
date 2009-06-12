@@ -36,6 +36,14 @@ public class BNetUser {
 
 	/**
 	 * Constructor for a BNetUser
+	 * @param user User[#N]@Realm
+	 */
+	public BNetUser(String user) {
+		this(null, user, (String)null);
+	}
+
+	/**
+	 * Constructor for a BNetUser
 	 * @param con	The connection the user is on
 	 * @param user	User[#N][@Realm]
 	 * @param perspectiveOf	BNetUser to infer realm from
@@ -55,11 +63,7 @@ public class BNetUser {
 		String uAccount;
 		int uNumber = 0;
 
-		int i = myRealm.indexOf('@');
-		if(i != -1)
-			throw new IllegalStateException();
-
-		i = user.indexOf('#');
+		int i = user.indexOf('#');
 		if(i != -1) {
 			String num = user.substring(i + 1);
 			int j = num.indexOf('@');
@@ -78,8 +82,12 @@ public class BNetUser {
 		uAccount = up[0];
 		if(up.length == 2)
 			this.realm = up[1];
-		else
+		else {
+			if((myRealm == null)
+			|| (myRealm.indexOf('@') != -1))
+				throw new IllegalStateException();
 			this.realm = myRealm;
+		}
 
 		// ...
 		shortLogonName = uAccount;

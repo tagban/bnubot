@@ -24,7 +24,7 @@ import javax.sql.DataSource;
 import javax.swing.JOptionPane;
 
 import net.bnubot.JARLoader;
-import net.bnubot.bot.gui.DatabaseWizard;
+import net.bnubot.bot.gui.wizard.DatabaseWizard;
 import net.bnubot.core.PluginManager;
 import net.bnubot.settings.DatabaseSettings;
 import net.bnubot.settings.Settings;
@@ -178,6 +178,9 @@ public class CayenneConfiguration implements DataSourceFactory {
 			}
 
 			for(ValidationFailure vf : vr.getFailures()) {
+				// Don't bother the user with these
+				if(vf.getSource().toString().startsWith("DROP TABLE "))
+					continue;
 				Out.error(getClass(),
 						vf.getDescription().toString() + "\n" +
 						vf.getSource().toString());
