@@ -1821,6 +1821,8 @@ public class BNCSConnection extends Connection {
 
 	@Override
 	public boolean isOp() {
+		if(myUser == null)
+			return false;
 		return (myUser.getFlags() & 0x02) == 0x02;
 	}
 
