@@ -136,7 +136,7 @@ public class Main {
 
 		if(PluginManager.getEnableGui() && GlobalSettings.firstRun) {
 			// Run the first-run wizard
-			ConnectionWizard.displayAndBlock(1);
+			new ConnectionWizard(1).displayAndBlock();
 
 			GlobalSettings.firstRun = false;
 			GlobalSettings.save();
