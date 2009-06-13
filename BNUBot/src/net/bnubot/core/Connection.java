@@ -187,8 +187,13 @@ public abstract class Connection extends Thread {
 				Task connect = createTask("Connecting to " + getServer() + ":" + getPort(), "Verify connection settings validity");
 
 				// Check if CS is valid
-				while(cs.isValid() != null)
-					new ConfigurationFrame(cs);
+				while(cs.isValid() != null) {
+					if(PluginManager.getEnableGui()) {
+						new ConfigurationFrame(cs);
+					} else {
+						throw new RuntimeException("Invalid configuration in bot #" + cs.botNum + " " + cs.isValid());
+					}
+				}
 
 				// Wait a short time before allowing a reconnect
 				waitUntilConnectionSafe(connect);
