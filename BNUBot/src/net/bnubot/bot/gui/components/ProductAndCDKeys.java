@@ -4,7 +4,6 @@
  */
 package net.bnubot.bot.gui.components;
 
-import java.awt.Container;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
@@ -27,7 +26,7 @@ public class ProductAndCDKeys extends JComponent {
 	private JComboBox cmbCDKey;
 	private JComboBox cmbCDKey2;
 
-	public ProductAndCDKeys(ConnectionSettings cs, Container parent) {
+	public ProductAndCDKeys(ConnectionSettings cs, ConfigPanel parent) {
 		this.cs = cs;
 		cmbProduct = ConfigFactory.makeCombo("Product", new ProductIDs[0], false, parent);
 		cmbCDKey = ConfigFactory.makeCombo("CD key", new CDKey[0], false, parent);

@@ -139,6 +139,7 @@ public class Main {
 			ConnectionWizard.displayAndBlock(1);
 
 			GlobalSettings.firstRun = false;
+			GlobalSettings.save();
 			Settings.store();
 		}
 

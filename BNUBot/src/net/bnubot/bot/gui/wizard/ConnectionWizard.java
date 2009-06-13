@@ -20,6 +20,7 @@ import javax.swing.SwingUtilities;
 
 import net.bnubot.bot.gui.WindowPosition;
 import net.bnubot.bot.gui.components.ConfigFactory;
+import net.bnubot.bot.gui.components.ConfigPanel;
 import net.bnubot.bot.gui.components.GhostDefaultTextField;
 import net.bnubot.bot.gui.components.ProductAndCDKeys;
 import net.bnubot.bot.gui.settings.GlobalConfigurationFrame;
@@ -58,7 +59,7 @@ public class ConnectionWizard extends JDialog {
 		final CardLayout cardLayout = new CardLayout();
 		final JPanel cards = new JPanel(cardLayout);
 
-		JPanel jp = new JPanel();
+		ConfigPanel jp = new ConfigPanel();
 		jp.add(new JLabel("<html>" +
 					"<h1>Introduction</h1>" +
 					"<hr/><br/>" +
@@ -67,9 +68,8 @@ public class ConnectionWizard extends JDialog {
 					"</html>"));
 		cards.add("0", jp);
 
-		jp = new JPanel();
+		jp = new ConfigPanel();
 		{
-			jp.setLayout(new BoxLayout(jp, BoxLayout.Y_AXIS));
 			jp.add(new JLabel("<html>" +
 					"<h1>Step 1</h1>" +
 					"<hr/><br/>" +
@@ -98,9 +98,8 @@ public class ConnectionWizard extends JDialog {
 		final JPasswordField txtPassword;
 		final ProductAndCDKeys prodKeys;
 
-		jp = new JPanel();
+		jp = new ConfigPanel();
 		{
-			jp.setLayout(new BoxLayout(jp, BoxLayout.Y_AXIS));
 			jp.add(new JLabel("<html>" +
 					"<h1>Step 2</h1>" +
 					"<hr/><br/>" +
@@ -121,7 +120,7 @@ public class ConnectionWizard extends JDialog {
 		}
 		cards.add("2", jp);
 
-		jp = new JPanel();
+		jp = new ConfigPanel();
 		{
 			jp.add(new JLabel("<html>" +
 					"<h1>Conclusion</h1>" +

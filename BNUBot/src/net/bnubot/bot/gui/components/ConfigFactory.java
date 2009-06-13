@@ -5,22 +5,16 @@
 
 package net.bnubot.bot.gui.components;
 
-import java.awt.Container;
 import java.awt.Dimension;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
-import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 
 /**
  * @author scotta
  */
 public class ConfigFactory {
-	private static final int lblWidth = 100;
 	private static final int height = 25;
-	private static final Dimension preferredLabelSize = new Dimension(lblWidth, 0);
 	private static final Dimension preferredTextSize = new Dimension(350, 20);
 	private static final Dimension maxComponentSize = new Dimension(Integer.MAX_VALUE, height);
 
@@ -28,67 +22,46 @@ public class ConfigFactory {
 		return maxComponentSize;
 	}
 
-	public static JLabel makeLabel(String label) {
-		JLabel jl = new JLabel(label);
-		jl.setPreferredSize(preferredLabelSize);
-		return jl;
-	}
-
-	public static ConfigTextField makeText(String label, String value, Container parent) {
+	public static ConfigTextField makeText(String label, String value, ConfigPanel parent) {
 		ConfigTextField txt = new ConfigTextField(value);
 		txt.setMaximumSize(maxComponentSize);
 		txt.setPreferredSize(preferredTextSize);
 
-		Box boxLine = new Box(BoxLayout.X_AXIS);
-		boxLine.add(makeLabel(label));
-		boxLine.add(txt);
-		parent.add(boxLine);
+		parent.add(label, txt);
 		return txt;
 	}
 
-	public static GhostDefaultTextField makeGhost(String label, String value, Container parent) {
+	public static GhostDefaultTextField makeGhost(String label, String value, ConfigPanel parent) {
 		GhostDefaultTextField txt = new GhostDefaultTextField(value);
 		txt.setMaximumSize(maxComponentSize);
 		txt.setPreferredSize(preferredTextSize);
 
-		Box boxLine = new Box(BoxLayout.X_AXIS);
-		boxLine.add(makeLabel(label));
-		boxLine.add(txt);
-		parent.add(boxLine);
+		parent.add(label, txt);
 		return txt;
 	}
 
-	public static JPasswordField makePass(String label, String value, Container parent) {
+	public static JPasswordField makePass(String label, String value, ConfigPanel parent) {
 		JPasswordField pass = new JPasswordField(value);
 		pass.setMaximumSize(maxComponentSize);
 
-		Box boxLine = new Box(BoxLayout.X_AXIS);
-		boxLine.add(makeLabel(label));
-		boxLine.add(pass);
-		parent.add(boxLine);
+		parent.add(label, pass);
 		return pass;
 	}
 
-	public static JComboBox makeCombo(String label, Object[] values, boolean editable, Container parent) {
+	public static JComboBox makeCombo(String label, Object[] values, boolean editable, ConfigPanel parent) {
 		JComboBox cmb = new JComboBox(values);
 		cmb.setEditable(editable);
 		cmb.setMaximumSize(maxComponentSize);
 
-		Box boxLine = new Box(BoxLayout.X_AXIS);
-		boxLine.add(makeLabel(label));
-		boxLine.add(cmb);
-		parent.add(boxLine);
+		parent.add(label, cmb);
 		return cmb;
 	}
 
-	public static ConfigSpinner makeSpinner(String label, Integer value, Container parent) {
+	public static ConfigSpinner makeSpinner(String label, Integer value, ConfigPanel parent) {
 		ConfigSpinner spinner = new ConfigSpinner(value);
 		spinner.setMaximumSize(maxComponentSize);
 
-		Box boxLine = new Box(BoxLayout.X_AXIS);
-		boxLine.add(makeLabel(label));
-		boxLine.add(spinner);
-		parent.add(boxLine);
+		parent.add(label, spinner);
 		return spinner;
 	}
 }
