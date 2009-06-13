@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -19,14 +20,18 @@ import javax.swing.JPasswordField;
 import javax.swing.SwingUtilities;
 
 import net.bnubot.bot.gui.WindowPosition;
+import net.bnubot.bot.gui.components.ConfigCheckBox;
 import net.bnubot.bot.gui.components.ConfigFactory;
 import net.bnubot.bot.gui.components.ConfigPanel;
+import net.bnubot.bot.gui.components.ConfigSpinner;
+import net.bnubot.bot.gui.components.ConfigTextField;
 import net.bnubot.bot.gui.components.GhostDefaultTextField;
 import net.bnubot.bot.gui.components.ProductAndCDKeys;
 import net.bnubot.bot.gui.settings.GlobalConfigurationFrame;
 import net.bnubot.bot.gui.settings.OperationCancelledException;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.settings.GlobalSettings;
+import net.bnubot.settings.GlobalSettings.SOCKSType;
 import net.bnubot.util.Out;
 
 /**
@@ -76,9 +81,8 @@ public class ConnectionWizard extends JDialog {
 					"The first step is to enter some CD keys. It's recommended to add all<br/>" +
 					"your keys here, but you only need to enter as many as you want to use.<br/>" +
 					"To enter keys, click the button below. If you've already performed this<br/>" +
-					"step, you may skip it." +
-					"<br/>" +
-					"</html>"));
+					"step, you may skip it.<br/>" +
+					"<br/></html>"));
 
 			JButton keys = new JButton("Enter CD Keys");
 			jp.add(keys);
@@ -106,8 +110,7 @@ public class ConnectionWizard extends JDialog {
 					"Enter the login details about your Battle.net account.<br/>" +
 					"If the Battle.net account does not already exist, it will be created<br/>" +
 					"for you automatically when you log in to Battle.net.<br/>" +
-					"<br/>" +
-					"</html>"));
+					"<br/></html>"));
 
 			txtUsername = ConfigFactory.makeGhost("Account", "BNU-Camel", jp);
 			txtPassword = ConfigFactory.makePass("Password", null, jp);
@@ -120,6 +123,28 @@ public class ConnectionWizard extends JDialog {
 		}
 		cards.add("2", jp);
 
+		final ConfigCheckBox chkProxyEnabled;
+		final JComboBox cmbProxyType;
+		final ConfigTextField txtProxyHost;
+		final ConfigSpinner spnProxyPort;
+
+		jp = new ConfigPanel();
+		{
+			jp.add(new JLabel("<html>" +
+					"<h1>Step 3</h1>" +
+					"<hr/><br/>" +
+					"Do you require a proxy to connect to battle.net? If so, enter the details<br/>" +
+					"below. If not, you may skip this step.<br/>" +
+					"<br/></html>"));
+
+			chkProxyEnabled = new ConfigCheckBox("Enabled", GlobalSettings.socksEnabled);
+			jp.add(chkProxyEnabled);
+			cmbProxyType = ConfigFactory.makeCombo("Type", GlobalSettings.SOCKSType.values(), false, jp);
+			txtProxyHost = ConfigFactory.makeText("Host", GlobalSettings.socksHost, jp);
+			spnProxyPort = ConfigFactory.makeSpinner("Port", GlobalSettings.socksPort, jp);
+		}
+		cards.add("3", jp);
+
 		jp = new ConfigPanel();
 		{
 			jp.add(new JLabel("<html>" +
@@ -127,9 +152,9 @@ public class ConnectionWizard extends JDialog {
 					"<hr/><br/>" +
 					"You are now ready to connect to Battle.net! Click Finish to close<br/>" +
 					"this window. The bot will automatically connect.<br/>" +
-					"</html>"));
+					"<br/></html>"));
 		}
-		cards.add("3", jp);
+		cards.add("4", jp);
 
 		final JButton btnBack = new JButton("< Back");
 		btnBack.setEnabled(false);
@@ -145,7 +170,7 @@ public class ConnectionWizard extends JDialog {
 				case 0:
 					btnBack.setEnabled(false);
 					break;
-				case 2:
+				case 3:
 					btnNext.setEnabled(true);
 					btnFinish.setEnabled(false);
 					break;
@@ -181,6 +206,14 @@ public class ConnectionWizard extends JDialog {
 
 					// Config was valid
 					cs.save();
+					break;
+				case 3:
+					GlobalSettings.socksEnabled = chkProxyEnabled.isSelected();
+					GlobalSettings.socksType = (SOCKSType)cmbProxyType.getSelectedItem();
+					GlobalSettings.socksHost = txtProxyHost.getText();
+					GlobalSettings.socksPort = spnProxyPort.getValue().intValue();
+					GlobalSettings.save();
+
 					btnNext.setEnabled(false);
 					btnFinish.setEnabled(true);
 					break;
