@@ -16,6 +16,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.SwingUtilities;
@@ -23,6 +24,7 @@ import javax.swing.SwingUtilities;
 import net.bnubot.bot.gui.WindowPosition;
 import net.bnubot.bot.gui.components.ConfigCheckBox;
 import net.bnubot.bot.gui.components.ConfigFactory;
+import net.bnubot.bot.gui.components.ConfigPanel;
 import net.bnubot.bot.gui.components.ConfigTextField;
 import net.bnubot.bot.gui.components.ProductAndCDKeys;
 import net.bnubot.settings.ConnectionSettings;
@@ -82,7 +84,7 @@ public class ConfigurationFrame extends JDialog {
 
 		final Box boxAll = new Box(BoxLayout.Y_AXIS);
 		boolean hasCdKeys = true;
-		Box boxSettings = new Box(BoxLayout.Y_AXIS);
+		ConfigPanel boxSettings = new ConfigPanel();
 		{
 			txtProfile = ConfigFactory.makeText("Profile", cs.profile, boxSettings);
 			txtUsername = ConfigFactory.makeText("Username", cs.username, boxSettings);
@@ -111,9 +113,9 @@ public class ConfigurationFrame extends JDialog {
 			txtChannel = ConfigFactory.makeText("Channel", cs.channel, boxSettings);
 			txtTrigger = ConfigFactory.makeText("Trigger", cs.trigger, boxSettings);
 
-			Box boxLine = new Box(BoxLayout.X_AXIS);
+			ConfigPanel boxLine = new ConfigPanel();
 			{
-				boxLine.add(ConfigFactory.makeLabel("Anti-Idle"));
+				boxLine.add(new JLabel("Anti-Idle"));
 				boxLine.add(chkAntiIdle = new ConfigCheckBox("Enable", cs.enableAntiIdle));
 				boxLine.add(txtAntiIdle = new ConfigTextField(cs.antiIdle));
 				txtAntiIdle.setMaximumSize(ConfigFactory.getMaxComponentSize());

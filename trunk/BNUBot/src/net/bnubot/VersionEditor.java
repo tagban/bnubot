@@ -10,13 +10,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Date;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 
 import net.bnubot.bot.gui.components.ConfigFactory;
+import net.bnubot.bot.gui.components.ConfigPanel;
 import net.bnubot.bot.gui.components.ConfigSpinner;
 import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.ReleaseType;
@@ -58,7 +57,7 @@ public class VersionEditor extends JDialog {
 	}
 
 	private void initializeGui() {
-		Box boxAll = new Box(BoxLayout.Y_AXIS);
+		ConfigPanel boxAll = new ConfigPanel();
 		add(boxAll);
 
 		cmbReleaseType = ConfigFactory.makeCombo("Release Type", ReleaseType.values(), false, boxAll);

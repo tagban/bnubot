@@ -22,6 +22,7 @@ import javax.swing.SwingUtilities;
 
 import net.bnubot.bot.gui.WindowPosition;
 import net.bnubot.bot.gui.components.ConfigFactory;
+import net.bnubot.bot.gui.components.ConfigPanel;
 import net.bnubot.bot.gui.components.GhostDefaultTextField;
 import net.bnubot.db.Account;
 import net.bnubot.db.BNLogin;
@@ -58,7 +59,7 @@ public class DatabaseWizard extends JDialog {
 		final CardLayout cardLayout = new CardLayout();
 		final JPanel cards = new JPanel(cardLayout);
 
-		JPanel jp = new JPanel();
+		ConfigPanel jp = new ConfigPanel();
 		jp.add(new JLabel("<html>" +
 					"<h1>Introduction</h1>" +
 					"<hr/><br/>" +
@@ -72,9 +73,8 @@ public class DatabaseWizard extends JDialog {
 		final GhostDefaultTextField accountName;
 		final GhostDefaultTextField[] bnLogins = new GhostDefaultTextField[5];
 
-		jp = new JPanel();
+		jp = new ConfigPanel();
 		{
-			jp.setLayout(new BoxLayout(jp, BoxLayout.Y_AXIS));
 			jp.add(new JLabel("<html>" +
 					"<h1>Step 1</h1>" +
 					"<hr/><br/>" +
@@ -89,9 +89,8 @@ public class DatabaseWizard extends JDialog {
 		}
 		cards.add("1", jp);
 
-		jp = new JPanel();
+		jp = new ConfigPanel();
 		{
-			jp.setLayout(new BoxLayout(jp, BoxLayout.Y_AXIS));
 			jp.add(new JLabel("<html>" +
 					"<h1>Step 2</h1>" +
 					"<hr/><br/>" +
@@ -112,7 +111,7 @@ public class DatabaseWizard extends JDialog {
 		}
 		cards.add("2", jp);
 
-		jp = new JPanel();
+		jp = new ConfigPanel();
 		{
 			jp.add(new JLabel("<html>" +
 					"<h1>Conclusion</h1>" +

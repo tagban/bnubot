@@ -39,6 +39,7 @@ import net.bnubot.bot.gui.KeyManager;
 import net.bnubot.bot.gui.WindowPosition;
 import net.bnubot.bot.gui.components.ConfigCheckBox;
 import net.bnubot.bot.gui.components.ConfigFactory;
+import net.bnubot.bot.gui.components.ConfigPanel;
 import net.bnubot.bot.gui.components.ConfigSpinner;
 import net.bnubot.bot.gui.components.ConfigTextArea;
 import net.bnubot.bot.gui.components.ConfigTextField;
@@ -164,7 +165,7 @@ public class GlobalConfigurationFrame extends JDialog {
 		add(boxTabsAndButtons);
 
 		// CD Keys
-		Box boxAll = new Box(BoxLayout.Y_AXIS);
+		ConfigPanel boxAll = new ConfigPanel();
 		{
 			txtCDKeys = new ConfigTextArea(null);
 			JScrollPane jsp = new JScrollPane(txtCDKeys);
@@ -181,7 +182,7 @@ public class GlobalConfigurationFrame extends JDialog {
 
 			tabs.addTab("CD Keys", boxAll);
 
-			boxAll = new Box(BoxLayout.Y_AXIS);
+			boxAll = new ConfigPanel();
 			{
 				txtBNLSServer = ConfigFactory.makeText("BNLS Server", GlobalSettings.bnlsServer, boxAll);
 				txtEmail = ConfigFactory.makeText("Email", GlobalSettings.email, boxAll);
@@ -215,7 +216,7 @@ public class GlobalConfigurationFrame extends JDialog {
 			}
 			tabs.addTab("Settings", boxAll);
 
-			boxAll = new Box(BoxLayout.Y_AXIS);
+			boxAll = new ConfigPanel();
 			{
 				chkProxyEnabled = new ConfigCheckBox("Enabled", GlobalSettings.socksEnabled);
 				boxAll.add(chkProxyEnabled);
@@ -225,7 +226,7 @@ public class GlobalConfigurationFrame extends JDialog {
 			}
 			tabs.addTab("Proxy", boxAll);
 
-			boxAll = new Box(BoxLayout.Y_AXIS);
+			boxAll = new ConfigPanel();
 			{
 				boxAll.add(new JLabel("You must reopen profiles for these changes to take effect."));
 				boxAll.add(chkWhisperBack = new ConfigCheckBox("Whisper Command Responses", GlobalSettings.whisperBack));
@@ -246,7 +247,7 @@ public class GlobalConfigurationFrame extends JDialog {
 			}
 			tabs.addTab("Plugins", boxAll);
 
-			boxAll = new Box(BoxLayout.Y_AXIS);
+			boxAll = new ConfigPanel();
 			{
 				Object[] values = new String[] {
 					"BNLogin@Gateway",
@@ -280,7 +281,7 @@ public class GlobalConfigurationFrame extends JDialog {
 			}
 			tabs.addTab("Display 1", boxAll);
 
-			boxAll = new Box(BoxLayout.Y_AXIS);
+			boxAll = new ConfigPanel();
 			{
 				boxAll.add(chkEnableLegacyIcons = new ConfigCheckBox("Enable Legacy Icons", GlobalSettings.enableLegacyIcons));
 
@@ -323,7 +324,7 @@ public class GlobalConfigurationFrame extends JDialog {
 			}
 			tabs.addTab("Display 2", boxAll);
 
-			boxAll = new Box(BoxLayout.Y_AXIS);
+			boxAll = new ConfigPanel();
 			{
 				boxAll.add(chkEnableDebug = new ConfigCheckBox("Enable debug logging", Out.isDebug()));
 				boxAll.add(chkDebugToGui = new ConfigCheckBox("Log debug messages on the GUI", Out.isDebugToGui()));
