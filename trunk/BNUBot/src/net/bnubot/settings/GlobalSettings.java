@@ -279,7 +279,7 @@ public class GlobalSettings {
 		enableTabCompleteUser = ss.read("enableTabCompleteUser", true);
 		enableTabCompleteCommand = ss.read("enableTabCompleteCommand", false);
 		tabCompleteMode = ss.read("tabCompleteMode", TabCompleteMode.STARTS_WITH_STRING);
-		enableLegacyIcons = ss.read("enableLegacyIcons", true);
+		enableLegacyIcons = ss.read("enableLegacyIcons", false);
 		triviaRoundLength = ss.read("triviaRoundLength", 100);
 		enableFloodProtect = ss.read("enableFloodProtect", false);
 		packetLog = ss.read("packetLog", false);
