@@ -91,6 +91,9 @@ public class Profile {
 		return true;
 	}
 
+	/**
+	 * Command initiated with a trigger
+	 */
 	protected static boolean parseCommand(Connection source, BNetUser user, String command, boolean whisperBack) {
 		if(Out.isDebug(Profile.class))
 			Out.debugAlways(Profile.class, user.toString() + ": " + command + " [" + whisperBack + "]");
@@ -105,7 +108,11 @@ public class Profile {
 		} catch(AccountDoesNotExistException e) {
 			user.sendChat("The account [" + e.getMessage() + "] does not exist!", whisperBack);
 		} catch(InsufficientAccessException e) {
-			user.sendChat("You have insufficient access " + e.getMessage(), whisperBack);
+			String description = "(" + e.getActual() + "/" + e.getRequired() + ")";
+			if(e.getActual() > 0)
+				user.sendChat("You have insufficient access " + description , whisperBack);
+			else
+				Out.error(Profile.class, user.getFullAccountName() + " does not have access " + description);
 		} catch(Exception e) {
 			Out.exception(e);
 			user.sendChat(e.getClass().getSimpleName() + ": " + e.getMessage(), whisperBack);
@@ -139,7 +146,7 @@ public class Profile {
 
 			int requiredAccess = rsCommand.getAccess();
 			if(commanderAccess < requiredAccess)
-				throw new InsufficientAccessException("(" + commanderAccess + "/" + requiredAccess + ")");
+				throw new InsufficientAccessException(requiredAccess, commanderAccess);
 		}
 
 		CommandRunnable cr = Profile.getCommand(command);
