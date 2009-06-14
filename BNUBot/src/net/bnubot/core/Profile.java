@@ -108,11 +108,10 @@ public class Profile {
 		} catch(AccountDoesNotExistException e) {
 			user.sendChat("The account [" + e.getMessage() + "] does not exist!", whisperBack);
 		} catch(InsufficientAccessException e) {
-			String description = "(" + e.getActual() + "/" + e.getRequired() + ")";
-			if(e.getActual() > 0)
-				user.sendChat("You have insufficient access " + description , whisperBack);
+			if(e.canContactUser())
+				user.sendChat("You have insufficient access " + e.getMessage() , whisperBack);
 			else
-				Out.error(Profile.class, user.getFullAccountName() + " does not have access " + description);
+				Out.error(Profile.class, user.getFullAccountName() + " does not have access " + e.getMessage());
 		} catch(Exception e) {
 			Out.exception(e);
 			user.sendChat(e.getClass().getSimpleName() + ": " + e.getMessage(), whisperBack);
@@ -146,7 +145,7 @@ public class Profile {
 
 			int requiredAccess = rsCommand.getAccess();
 			if(commanderAccess < requiredAccess)
-				throw new InsufficientAccessException(requiredAccess, commanderAccess);
+				throw new InsufficientAccessException("(" + commanderAccess + "/" + requiredAccess + ")", commanderAccess > 0);
 		}
 
 		CommandRunnable cr = Profile.getCommand(command);
