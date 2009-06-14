@@ -11,19 +11,18 @@ package net.bnubot.core.commands;
 public class InsufficientAccessException extends Exception {
 	private static final long serialVersionUID = -1954683087381833989L;
 
-	private final int required;
-	private final int actual;
+	private final boolean contactUser;
 
-	public InsufficientAccessException(int required, int actual) {
-		this.required = required;
-		this.actual = actual;
+	public static long getSerialVersionUID() {
+		return serialVersionUID;
 	}
 
-	public int getRequired() {
-		return required;
+	public boolean canContactUser() {
+		return contactUser;
 	}
 
-	public int getActual() {
-		return actual;
+	public InsufficientAccessException(String message, boolean contactUser) {
+		super(message);
+		this.contactUser = contactUser;
 	}
 }

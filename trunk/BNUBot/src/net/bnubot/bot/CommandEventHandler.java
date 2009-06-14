@@ -304,13 +304,13 @@ public class CommandEventHandler extends EventHandler {
 
 					if(!superUser) {
 						if(rsSubjectAccount.equals(commanderAccount))
-							throw new InsufficientAccessException("to modify your self");
+							throw new InsufficientAccessException("to modify your self", true);
 
 						int commanderAccess = 0;
 						if(commanderAccount != null)
 							commanderAccess = commanderAccount.getAccess();
 						if(targetAccess >= commanderAccess)
-							throw new InsufficientAccessException("to add users beyond " + (commanderAccess - 1));
+							throw new InsufficientAccessException("to add users beyond " + (commanderAccess - 1), true);
 					}
 
 					rsSubjectAccount.setRank(targetRank);
