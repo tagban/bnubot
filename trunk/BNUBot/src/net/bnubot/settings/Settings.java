@@ -19,7 +19,7 @@ import net.bnubot.vercheck.CurrentVersion;
  */
 public class Settings {
 	public static final File keysFile = new File(getRootPath() + "cdkeys.txt");
-	public static final File propsFile = new File(getRootPath() + "settings.ini");
+	private static final File propsFile = new File(getRootPath() + "settings.ini");
 	private static final Properties props = new SortedProperties();
 	private static boolean anythingChanged = false;
 
