@@ -17,11 +17,9 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.SwingUtilities;
-import javax.swing.border.BevelBorder;
 
 import net.bnubot.bot.gui.WindowPosition;
 import net.bnubot.bot.gui.components.ConfigPanel;
@@ -113,15 +111,11 @@ public class ConfigurationFrame extends JDialog {
 			txtChannel = boxSettings.makeText("Channel", cs.channel);
 			txtTrigger = boxSettings.makeText("Trigger", cs.trigger);
 
-			ConfigPanel boxLine = new ConfigPanel();
 			{
-				boxLine.setBorder(new BevelBorder(BevelBorder.LOWERED));
-				boxLine.add(new JLabel("Anti-Idle"));
-
-				chkAntiIdle = boxLine.makeCheck("Enable", cs.enableAntiIdle);
-				txtAntiIdle = boxLine.makeText("Anti-Idle", cs.antiIdle);
+				ConfigPanel boxLine = boxSettings.makePanel("Anti-Idle");
+				chkAntiIdle = boxLine.makeCheck("Enabled", cs.enableAntiIdle);
+				txtAntiIdle = boxLine.makeText("Message", cs.antiIdle);
 			}
-			boxSettings.add(boxLine);
 
 			txtAntiIdleTimer = boxSettings.makeText("Anti-Idle Timer", Integer.toString(cs.antiIdleTimer));
 			chkGreetings = boxSettings.makeCheck("Enable Greetings", cs.enableGreetings);
