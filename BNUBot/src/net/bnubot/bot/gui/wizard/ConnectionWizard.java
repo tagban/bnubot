@@ -8,12 +8,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 
-import net.bnubot.bot.gui.components.ConfigCheckBox;
 import net.bnubot.bot.gui.components.ConfigPanel;
 import net.bnubot.bot.gui.components.ConfigSpinner;
 import net.bnubot.bot.gui.components.ConfigTextField;
@@ -142,7 +142,7 @@ public class ConnectionWizard extends AbstractWizard {
 			}});
 
 		addWizardPage(new AbstractWizardPage() {
-			ConfigCheckBox chkProxyEnabled;
+			JCheckBox chkProxyEnabled;
 			JComboBox cmbProxyType;
 			ConfigTextField txtProxyHost;
 			ConfigSpinner spnProxyPort;
@@ -156,8 +156,7 @@ public class ConnectionWizard extends AbstractWizard {
 						"below. If not, you may skip this step.<br/>" +
 						"<br/></html>"));
 
-				chkProxyEnabled = new ConfigCheckBox("Enabled", GlobalSettings.socksEnabled);
-				cp.add(chkProxyEnabled);
+				chkProxyEnabled = cp.makeCheck("Enabled", GlobalSettings.socksEnabled);
 				cmbProxyType = cp.makeCombo("Type", GlobalSettings.SOCKSType.values(), false);
 				txtProxyHost = cp.makeText("Host", GlobalSettings.socksHost);
 				spnProxyPort = cp.makeSpinner("Port", GlobalSettings.socksPort);

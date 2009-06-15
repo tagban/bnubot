@@ -11,6 +11,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 
 import javax.swing.Box;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -60,6 +61,7 @@ public class ConfigPanel extends JPanel {
 
 	private GridBagConstraints constraintFull() {
 		GridBagConstraints gbc = new GridBagConstraints();
+		//gbc.anchor = GridBagConstraints.WEST;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.gridx = 0;
 		gbc.gridy = this.gridy++;
@@ -140,5 +142,12 @@ public class ConfigPanel extends JPanel {
 
 		add(label, spinner);
 		return spinner;
+	}
+
+	public JCheckBox makeCheck(String label, boolean selected) {
+		JCheckBox check = new JCheckBox(label, selected);
+
+		add(check);
+		return check;
 	}
 }

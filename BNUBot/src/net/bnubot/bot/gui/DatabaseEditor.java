@@ -24,6 +24,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -36,7 +37,6 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import net.bnubot.bot.gui.components.ConfigCheckBox;
 import net.bnubot.bot.gui.components.ConfigFlagChecks;
 import net.bnubot.bot.gui.components.ConfigTextField;
 import net.bnubot.db.CustomDataObject;
@@ -230,10 +230,10 @@ public class DatabaseEditor {
 		gbc.fill = GridBagConstraints.BOTH;
 		jp.add(new JLabel(propName), gbc);
 
-		final ConfigCheckBox bNull;
+		final JCheckBox bNull;
 		gbc.gridx++;
 		if(isNullable) {
-			bNull = new ConfigCheckBox("NULL", value == null);
+			bNull = new JCheckBox("NULL", value == null);
 			jp.add(bNull, gbc);
 		} else {
 			bNull = null;
@@ -281,10 +281,10 @@ public class DatabaseEditor {
 		gbc.fill = GridBagConstraints.BOTH;
 		jp.add(new JLabel(propName), gbc);
 
-		final ConfigCheckBox bNull;
+		final JCheckBox bNull;
 		gbc.gridx++;
 		if(isNullable) {
-			ConfigCheckBox ccb = new ConfigCheckBox("NULL", value == null);
+			JCheckBox ccb = new JCheckBox("NULL", value == null);
 			ccb.addChangeListener(cl);
 			bNull = ccb;
 			jp.add(bNull, gbc);
@@ -295,7 +295,7 @@ public class DatabaseEditor {
 
 		final Component valueComponent;
 		if(fieldType.equals(Boolean.class)) {
-			ConfigCheckBox ccb = new ConfigCheckBox(null, ((Boolean)value).booleanValue());
+			JCheckBox ccb = new JCheckBox((String)null, ((Boolean)value).booleanValue());
 			ccb.addChangeListener(cl);
 			valueComponent = ccb;
 		} else if(fieldType.equals(int.class) && attr.getName().equals("flagSpoof")) {
@@ -329,8 +329,8 @@ public class DatabaseEditor {
 					return null;
 
 				// If it's a boolean, return a Boolean
-				if(valueComponent instanceof ConfigCheckBox)
-					return new Boolean(((ConfigCheckBox)valueComponent).isSelected());
+				if(valueComponent instanceof JCheckBox)
+					return new Boolean(((JCheckBox)valueComponent).isSelected());
 
 				// If it's a flag set, return an Integer
 				if(valueComponent instanceof ConfigFlagChecks)
