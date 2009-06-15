@@ -1666,7 +1666,7 @@ public class CommandEventHandler extends EventHandler {
 					double timeElapsed = 0;
 					if(rsAccount == null) {
 						timeElapsed = rsUser.getCreated().getTime();
-					} else if(rsAccount.getLastRankChange() == null) {
+					} else if(rsAccount.getLastRankChange() != null) {
 						timeElapsed = rsAccount.getLastRankChange().getTime();
 					}
 
