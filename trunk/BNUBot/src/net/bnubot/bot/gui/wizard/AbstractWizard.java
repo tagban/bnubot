@@ -37,7 +37,6 @@ public class AbstractWizard {
 		btnFinish.setEnabled(false);
 
 		btnBack.addActionListener(new ActionListener() {
-			@Override
 			public void actionPerformed(ActionEvent e) {
 				if(currentStep == pages.size()-1) {
 					btnNext.setEnabled(true);
@@ -52,7 +51,6 @@ public class AbstractWizard {
 			}});
 
 		btnNext.addActionListener(new ActionListener() {
-			@Override
 			public void actionPerformed(ActionEvent e) {
 				AbstractWizardPage page = pages.get(currentStep);
 				if(page.isPageComplete()) {
@@ -70,7 +68,6 @@ public class AbstractWizard {
 			}});
 
 		btnFinish.addActionListener(new ActionListener() {
-			@Override
 			public void actionPerformed(ActionEvent e) {
 				AbstractWizardPage page = pages.get(currentStep);
 				try {
