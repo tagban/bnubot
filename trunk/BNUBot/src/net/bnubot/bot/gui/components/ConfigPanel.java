@@ -108,6 +108,12 @@ public class ConfigPanel extends JPanel {
 		return txt;
 	}
 
+	public ConfigPanel makePanel(String label) {
+		ConfigPanel cp = new ConfigPanel();
+		add(label, cp);
+		return cp;
+	}
+
 	public GhostDefaultTextField makeGhost(String label, String value) {
 		GhostDefaultTextField txt = new GhostDefaultTextField(value);
 		txt.setMaximumSize(maxComponentSize);
