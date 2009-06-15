@@ -30,8 +30,8 @@ public class GhostDefaultTextField extends ConfigTextField implements MouseListe
 	}
 
 	public void reset() {
-		setEnabled(false);
 		setText(defaultText);
+		setEnabled(false);
 	}
 
 	public boolean isGhosted() {
@@ -54,7 +54,6 @@ public class GhostDefaultTextField extends ConfigTextField implements MouseListe
 	public void mouseClicked(MouseEvent e) {
 		if(isEnabled())
 			return;
-		setEnabled(true);
 		setText(null);
 		requestFocus();
 	}
