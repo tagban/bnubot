@@ -1,3 +1,7 @@
+/**
+ * This file is distributed under the GPL
+ * $Id$
+ */
 package net.bnubot.bot.gui.wizard;
 
 import java.awt.CardLayout;
@@ -17,6 +21,9 @@ import net.bnubot.bot.gui.WindowPosition;
 import net.bnubot.bot.gui.components.ConfigPanel;
 import net.bnubot.util.Out;
 
+/**
+ * @author scotta
+ */
 public class AbstractWizard {
 
 	private List<AbstractWizardPage> pages = new ArrayList<AbstractWizardPage>();
