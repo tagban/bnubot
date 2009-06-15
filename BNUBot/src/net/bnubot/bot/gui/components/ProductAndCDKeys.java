@@ -28,9 +28,9 @@ public class ProductAndCDKeys extends JComponent {
 
 	public ProductAndCDKeys(ConnectionSettings cs, ConfigPanel parent) {
 		this.cs = cs;
-		cmbProduct = ConfigFactory.makeCombo("Product", new ProductIDs[0], false, parent);
-		cmbCDKey = ConfigFactory.makeCombo("CD key", new CDKey[0], false, parent);
-		cmbCDKey2 = ConfigFactory.makeCombo("CD key 2", new CDKey[0], false, parent);
+		cmbProduct = parent.makeCombo("Product", (new ProductIDs[0]), false);
+		cmbCDKey = parent.makeCombo("CD key", (new CDKey[0]), false);
+		cmbCDKey2 = parent.makeCombo("CD key 2", (new CDKey[0]), false);
 
 		// Add a product-change listener
 		cmbProduct.addItemListener(new ItemListener() {

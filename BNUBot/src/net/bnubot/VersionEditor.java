@@ -14,7 +14,6 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 
-import net.bnubot.bot.gui.components.ConfigFactory;
 import net.bnubot.bot.gui.components.ConfigPanel;
 import net.bnubot.bot.gui.components.ConfigSpinner;
 import net.bnubot.vercheck.CurrentVersion;
@@ -60,12 +59,12 @@ public class VersionEditor extends JDialog {
 		ConfigPanel boxAll = new ConfigPanel();
 		add(boxAll);
 
-		cmbReleaseType = ConfigFactory.makeCombo("Release Type", ReleaseType.values(), false, boxAll);
+		cmbReleaseType = boxAll.makeCombo("Release Type", ReleaseType.values(), false);
 		cmbReleaseType.setSelectedItem(vnCurrent.getReleaseType());
-		spnMajor = ConfigFactory.makeSpinner("Major", vnCurrent.getMajor(), boxAll);
-		spnMinor = ConfigFactory.makeSpinner("Minor", vnCurrent.getMinor(), boxAll);
-		spnRevision = ConfigFactory.makeSpinner("Revision", vnCurrent.getRevision(), boxAll);
-		spnRelease = ConfigFactory.makeSpinner("Release", vnCurrent.getRelease(), boxAll);
+		spnMajor = boxAll.makeSpinner("Major", vnCurrent.getMajor());
+		spnMinor = boxAll.makeSpinner("Minor", vnCurrent.getMinor());
+		spnRevision = boxAll.makeSpinner("Revision", vnCurrent.getRevision());
+		spnRelease = boxAll.makeSpinner("Release", vnCurrent.getRelease());
 
 		btnSave = new JButton("Save");
 		btnSave.addActionListener(new ActionListener() {

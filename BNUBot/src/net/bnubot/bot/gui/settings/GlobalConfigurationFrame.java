@@ -38,7 +38,6 @@ import net.bnubot.bot.gui.GuiEventHandler;
 import net.bnubot.bot.gui.KeyManager;
 import net.bnubot.bot.gui.WindowPosition;
 import net.bnubot.bot.gui.components.ConfigCheckBox;
-import net.bnubot.bot.gui.components.ConfigFactory;
 import net.bnubot.bot.gui.components.ConfigPanel;
 import net.bnubot.bot.gui.components.ConfigSpinner;
 import net.bnubot.bot.gui.components.ConfigTextArea;
@@ -184,8 +183,8 @@ public class GlobalConfigurationFrame extends JDialog {
 
 			boxAll = new ConfigPanel();
 			{
-				txtBNLSServer = ConfigFactory.makeText("BNLS Server", GlobalSettings.bnlsServer, boxAll);
-				txtEmail = ConfigFactory.makeText("Email", GlobalSettings.email, boxAll);
+				txtBNLSServer = boxAll.makeText("BNLS Server", GlobalSettings.bnlsServer);
+				txtEmail = boxAll.makeText("Email", GlobalSettings.email);
 
 				Object[] values;
 				if(CurrentVersion.fromJar())
@@ -198,14 +197,14 @@ public class GlobalConfigurationFrame extends JDialog {
 				else
 					values = new ReleaseType[] {
 						ReleaseType.Development };
-				cmbReleaseType = ConfigFactory.makeCombo("Version Check", values, false, boxAll);
+				cmbReleaseType = boxAll.makeCombo("Version Check", values, false);
 				cmbReleaseType.setSelectedItem(GlobalSettings.releaseType);
 
 				List<String> tzs = new ArrayList<String>();
 				for(String x : TimeZone.getAvailableIDs())
 					tzs.add(x);
 				Collections.sort(tzs);
-				cmbTimeZone = ConfigFactory.makeCombo("TimeZone", tzs.toArray(), false, boxAll);
+				cmbTimeZone = boxAll.makeCombo("TimeZone", tzs.toArray(), false);
 				cmbTimeZone.setSelectedItem(TimeFormatter.timeZone.getID());
 
 				boxAll.add(chkAutoConnect = new ConfigCheckBox("Auto Connect", GlobalSettings.autoConnect));
@@ -220,9 +219,9 @@ public class GlobalConfigurationFrame extends JDialog {
 			{
 				chkProxyEnabled = new ConfigCheckBox("Enabled", GlobalSettings.socksEnabled);
 				boxAll.add(chkProxyEnabled);
-				cmbProxyType = ConfigFactory.makeCombo("Type", GlobalSettings.SOCKSType.values(), false, boxAll);
-				txtProxyHost = ConfigFactory.makeText("Host", GlobalSettings.socksHost, boxAll);
-				spnProxyPort = ConfigFactory.makeSpinner("Port", GlobalSettings.socksPort, boxAll);
+				cmbProxyType = boxAll.makeCombo("Type", GlobalSettings.SOCKSType.values(), false);
+				txtProxyHost = boxAll.makeText("Host", GlobalSettings.socksHost);
+				spnProxyPort = boxAll.makeSpinner("Port", GlobalSettings.socksPort);
 			}
 			tabs.addTab("Proxy", boxAll);
 
@@ -243,7 +242,7 @@ public class GlobalConfigurationFrame extends JDialog {
 					chkEnabledPlugins.add(chkEnablePlugin);
 					plugins.add(plugin);
 				}
-				spnTriviaRoundLength = ConfigFactory.makeSpinner("Trivia Round Length", Integer.valueOf(GlobalSettings.triviaRoundLength), boxAll);
+				spnTriviaRoundLength = boxAll.makeSpinner("Trivia Round Length", Integer.valueOf(GlobalSettings.triviaRoundLength));
 			}
 			tabs.addTab("Plugins", boxAll);
 
@@ -256,14 +255,14 @@ public class GlobalConfigurationFrame extends JDialog {
 					"Prefix Account (BNLogin)",
 					"Account",
 					"Account (BNLogin)" };
-				cmbBNUserToString = ConfigFactory.makeCombo("BNetUser.toString()", values, false, boxAll);
+				cmbBNUserToString = boxAll.makeCombo("BNetUser.toString()", values, false);
 				cmbBNUserToString.setSelectedIndex(GlobalSettings.bnUserToString);
-				cmbBNUserToStringUserList = ConfigFactory.makeCombo("User List", values, false, boxAll);
+				cmbBNUserToStringUserList = boxAll.makeCombo("User List", values, false);
 				cmbBNUserToStringUserList.setSelectedIndex(GlobalSettings.bnUserToStringUserList);
-				cmbBNUserToStringCommandResponse = ConfigFactory.makeCombo("Command Response", values, false, boxAll);
+				cmbBNUserToStringCommandResponse = boxAll.makeCombo("Command Response", values, false);
 				cmbBNUserToStringCommandResponse.setSelectedIndex(GlobalSettings.bnUserToStringCommandResponse);
 
-				cmbTrayIconMode = ConfigFactory.makeCombo("Tray Icon", TrayIconMode.values(), false, boxAll);
+				cmbTrayIconMode = boxAll.makeCombo("Tray Icon", TrayIconMode.values(), false);
 				cmbTrayIconMode.setSelectedItem(GlobalSettings.trayIconMode);
 
 				boxAll.add(chkTrayMinimizeTo = new ConfigCheckBox("Minimize To System Tray (Java 6+)", GlobalSettings.trayMinimizeTo));
@@ -273,7 +272,7 @@ public class GlobalConfigurationFrame extends JDialog {
 				boxAll.add(chkTrayDisplayChatEmote = new ConfigCheckBox("Tray: Chat/Emote", GlobalSettings.trayDisplayChatEmote));
 				boxAll.add(chkTrayDisplayWhisper = new ConfigCheckBox("Tray: Whisper", GlobalSettings.trayDisplayWhisper));
 
-				cmbTabCompleteMode = ConfigFactory.makeCombo("Tab Complete Mode", TabCompleteMode.values(), false, boxAll);
+				cmbTabCompleteMode = boxAll.makeCombo("Tab Complete Mode", TabCompleteMode.values(), false);
 				cmbTabCompleteMode.setSelectedItem(GlobalSettings.tabCompleteMode);
 
 				boxAll.add(chkEnableTabCompleteUser = new ConfigCheckBox("User Tab Completion", GlobalSettings.enableTabCompleteUser));
@@ -286,17 +285,17 @@ public class GlobalConfigurationFrame extends JDialog {
 				boxAll.add(chkEnableLegacyIcons = new ConfigCheckBox("Enable Legacy Icons", GlobalSettings.enableLegacyIcons));
 
 				Object[] values = new String[] { TimeFormatter.tsFormat, "%1$tH:%1$tM:%1$tS.%1$tL", "%1$tH:%1$tM:%1$tS", "%1$tH:%1$tM" };
-				cmbTSFormat = ConfigFactory.makeCombo("TimeStamp", values, true, boxAll);
+				cmbTSFormat = boxAll.makeCombo("TimeStamp", values, true);
 				cmbTSFormat.setSelectedItem(TimeFormatter.tsFormat);
 
 				values = new String[] { "Starcraft", "Diablo 2" };
-				cmbColorScheme = ConfigFactory.makeCombo("Color Scheme", values, false, boxAll);
+				cmbColorScheme = boxAll.makeCombo("Color Scheme", values, false);
 				cmbColorScheme.setSelectedIndex(GlobalSettings.colorScheme - 1);
 
 				ArrayList<String> lafs = new ArrayList<String>();
 				for(LookAndFeelInfo lafi : UIManager.getInstalledLookAndFeels())
 					lafs.add(lafi.getName());
-				cmbLookAndFeel = ConfigFactory.makeCombo("Look and Feel", lafs.toArray(), false, boxAll);
+				cmbLookAndFeel = boxAll.makeCombo("Look and Feel", lafs.toArray(), false);
 				cmbLookAndFeel.setSelectedItem(GlobalSettings.getLookAndFeel());
 				cmbLookAndFeel.addItemListener(new ItemListener() {
 					public void itemStateChanged(ItemEvent e) {
@@ -306,7 +305,7 @@ public class GlobalConfigurationFrame extends JDialog {
 					}
 				});
 
-				cmbPlasticTheme = ConfigFactory.makeCombo("Plastic Theme", GlobalSettings.getLookAndFeelThemes(), false, boxAll);
+				cmbPlasticTheme = boxAll.makeCombo("Plastic Theme", GlobalSettings.getLookAndFeelThemes(), false);
 				cmbPlasticTheme.setSelectedItem(GlobalSettings.getLookAndFeelTheme());
 				cmbPlasticTheme.addItemListener(new ItemListener() {
 					public void itemStateChanged(ItemEvent e) {
@@ -319,8 +318,8 @@ public class GlobalConfigurationFrame extends JDialog {
 				boxAll.add(chkDisplayJoinParts = new ConfigCheckBox("Display Join/Part Messages", GlobalSettings.getDisplayJoinParts()));
 				boxAll.add(chkDisplayChannelUsers = new ConfigCheckBox("Display Channel Users On Join", GlobalSettings.displayChannelUsers));
 				boxAll.add(chkDisplaySlashCommands = new ConfigCheckBox("Display / Commands", GlobalSettings.displaySlashCommands));
-				txtGuiFontFamily = ConfigFactory.makeText("GUI Font Family", GlobalSettings.guiFontFamily, boxAll);
-				spnGuiFontSize = ConfigFactory.makeSpinner("GUI Font Size", Integer.valueOf(GlobalSettings.guiFontSize), boxAll);
+				txtGuiFontFamily = boxAll.makeText("GUI Font Family", GlobalSettings.guiFontFamily);
+				spnGuiFontSize = boxAll.makeSpinner("GUI Font Size", Integer.valueOf(GlobalSettings.guiFontSize));
 			}
 			tabs.addTab("Display 2", boxAll);
 

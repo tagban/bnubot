@@ -23,7 +23,6 @@ import javax.swing.SwingUtilities;
 
 import net.bnubot.bot.gui.WindowPosition;
 import net.bnubot.bot.gui.components.ConfigCheckBox;
-import net.bnubot.bot.gui.components.ConfigFactory;
 import net.bnubot.bot.gui.components.ConfigPanel;
 import net.bnubot.bot.gui.components.ConfigTextField;
 import net.bnubot.bot.gui.components.ProductAndCDKeys;
@@ -86,9 +85,9 @@ public class ConfigurationFrame extends JDialog {
 		boolean hasCdKeys = true;
 		ConfigPanel boxSettings = new ConfigPanel();
 		{
-			txtProfile = ConfigFactory.makeText("Profile", cs.profile, boxSettings);
-			txtUsername = ConfigFactory.makeText("Username", cs.username, boxSettings);
-			txtPassword = ConfigFactory.makePass("Password", cs.password, boxSettings);
+			txtProfile = boxSettings.makeText("Profile", cs.profile);
+			txtUsername = boxSettings.makeText("Username", cs.username);
+			txtPassword = boxSettings.makePass("Password", cs.password);
 
 			prodKeys = new ProductAndCDKeys(cs, boxSettings);
 			prodKeys.addProductListener(new ItemListener() {
@@ -98,31 +97,31 @@ public class ConfigurationFrame extends JDialog {
 			boxSettings.add(chkPlug = new ConfigCheckBox("Enable Plug (No UDP support)", cs.enablePlug));
 			boxSettings.add(chkBotNet = new ConfigCheckBox("Enable BotNet", cs.enableBotNet));
 
-			cmbConnectionType = ConfigFactory.makeCombo("Connection Type", ConnectionType.values(), false, boxSettings);
+			cmbConnectionType = boxSettings.makeCombo("Connection Type", ConnectionType.values(), false);
 			cmbConnectionType.setSelectedItem(cs.connectionType);
 			cmbConnectionType.addItemListener(new ItemListener() {
 				public void itemStateChanged(ItemEvent e) {
 					setVisibleFields();
 				}});
 
-			cmbServer = ConfigFactory.makeCombo("Server", new String[] {}, false, boxSettings);
+			cmbServer = boxSettings.makeCombo("Server", (new String[] {}), false);
 			cmbServer.setSelectedItem(cs.server);
 
 			setVisibleFields();
 
-			txtChannel = ConfigFactory.makeText("Channel", cs.channel, boxSettings);
-			txtTrigger = ConfigFactory.makeText("Trigger", cs.trigger, boxSettings);
+			txtChannel = boxSettings.makeText("Channel", cs.channel);
+			txtTrigger = boxSettings.makeText("Trigger", cs.trigger);
 
 			ConfigPanel boxLine = new ConfigPanel();
 			{
 				boxLine.add(new JLabel("Anti-Idle"));
 				boxLine.add(chkAntiIdle = new ConfigCheckBox("Enable", cs.enableAntiIdle));
 				boxLine.add(txtAntiIdle = new ConfigTextField(cs.antiIdle));
-				txtAntiIdle.setMaximumSize(ConfigFactory.getMaxComponentSize());
+				txtAntiIdle.setMaximumSize(ConfigPanel.getMaxComponentSize());
 			}
 			boxSettings.add(boxLine);
 
-			txtAntiIdleTimer = ConfigFactory.makeText("Anti-Idle Timer", Integer.toString(cs.antiIdleTimer), boxSettings);
+			txtAntiIdleTimer = boxSettings.makeText("Anti-Idle Timer", Integer.toString(cs.antiIdleTimer));
 			boxSettings.add(chkGreetings = new ConfigCheckBox("Enable Greetings", cs.enableGreetings));
 
 			boxSettings.add(Box.createVerticalGlue());

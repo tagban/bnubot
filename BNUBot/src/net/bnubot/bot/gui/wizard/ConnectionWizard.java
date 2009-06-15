@@ -14,7 +14,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 
 import net.bnubot.bot.gui.components.ConfigCheckBox;
-import net.bnubot.bot.gui.components.ConfigFactory;
 import net.bnubot.bot.gui.components.ConfigPanel;
 import net.bnubot.bot.gui.components.ConfigSpinner;
 import net.bnubot.bot.gui.components.ConfigTextField;
@@ -104,8 +103,8 @@ public class ConnectionWizard extends AbstractWizard {
 						"for you automatically when you log in to Battle.net.<br/>" +
 						"<br/></html>"));
 
-				txtUsername = ConfigFactory.makeGhost("Account", "BNU-Camel", cp);
-				txtPassword = ConfigFactory.makePass("Password", null, cp);
+				txtUsername = cp.makeGhost("Account", "BNU-Camel");
+				txtPassword = cp.makePass("Password", null);
 				prodKeys = new ProductAndCDKeys(cs, cp);
 
 				if(cs.username != null)
@@ -159,9 +158,9 @@ public class ConnectionWizard extends AbstractWizard {
 
 				chkProxyEnabled = new ConfigCheckBox("Enabled", GlobalSettings.socksEnabled);
 				cp.add(chkProxyEnabled);
-				cmbProxyType = ConfigFactory.makeCombo("Type", GlobalSettings.SOCKSType.values(), false, cp);
-				txtProxyHost = ConfigFactory.makeText("Host", GlobalSettings.socksHost, cp);
-				spnProxyPort = ConfigFactory.makeSpinner("Port", GlobalSettings.socksPort, cp);
+				cmbProxyType = cp.makeCombo("Type", GlobalSettings.SOCKSType.values(), false);
+				txtProxyHost = cp.makeText("Host", GlobalSettings.socksHost);
+				spnProxyPort = cp.makeSpinner("Port", GlobalSettings.socksPort);
 			}
 
 			@Override
