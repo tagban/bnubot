@@ -17,6 +17,7 @@
 * Reduced schema upgrade verbosity for harmless MergerTokens
 * New windows are centered on the screen
 * Added a connection configuration wizard
+* SID_WARDEN error message has a link to Warden FAQ
 
 2.1.0 (r1640) 2008-10-06:
 * Added BotNet account login
