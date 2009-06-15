@@ -24,6 +24,7 @@ import java.util.TimeZone;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -37,7 +38,6 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import net.bnubot.bot.gui.GuiEventHandler;
 import net.bnubot.bot.gui.KeyManager;
 import net.bnubot.bot.gui.WindowPosition;
-import net.bnubot.bot.gui.components.ConfigCheckBox;
 import net.bnubot.bot.gui.components.ConfigPanel;
 import net.bnubot.bot.gui.components.ConfigSpinner;
 import net.bnubot.bot.gui.components.ConfigTextArea;
@@ -73,57 +73,57 @@ public class GlobalConfigurationFrame extends JDialog {
 	private ConfigTextField txtBNLSServer = null;
 	private JComboBox cmbReleaseType = null;
 	private JComboBox cmbTimeZone = null;
-	private ConfigCheckBox chkAutoConnect = null;
-	private ConfigCheckBox chkAutoRejoin = null;
-	private ConfigCheckBox chkEnableMirrorSelector = null;
-	private ConfigCheckBox chkEnableFloodProtect = null;
-	private ConfigCheckBox chkPacketLog = null;
+	private JCheckBox chkAutoConnect = null;
+	private JCheckBox chkAutoRejoin = null;
+	private JCheckBox chkEnableMirrorSelector = null;
+	private JCheckBox chkEnableFloodProtect = null;
+	private JCheckBox chkPacketLog = null;
 
 	// Proxy
-	private ConfigCheckBox chkProxyEnabled = null;
+	private JCheckBox chkProxyEnabled = null;
 	private JComboBox cmbProxyType = null;
 	private ConfigTextField txtProxyHost = null;
 	private ConfigSpinner spnProxyPort = null;
 
 	// Plugins
 	private ConfigSpinner spnTriviaRoundLength = null;
-	private ConfigCheckBox chkWhisperBack = null;
+	private JCheckBox chkWhisperBack = null;
 	private List<Class<? extends EventHandler>> plugins = null;
-	private List<ConfigCheckBox> chkEnabledPlugins = null;
+	private List<JCheckBox> chkEnabledPlugins = null;
 
 	// Display 1
 	private JComboBox cmbBNUserToString = null;
 	private JComboBox cmbBNUserToStringUserList = null;
 	private JComboBox cmbBNUserToStringCommandResponse = null;
 	private JComboBox cmbTrayIconMode = null;
-	private ConfigCheckBox chkTrayMinimizeTo = null;
-	private ConfigCheckBox chkTrayDisplayConnectDisconnect = null;
-	private ConfigCheckBox chkTrayDisplayChannel = null;
-	private ConfigCheckBox chkTrayDisplayJoinPart = null;
-	private ConfigCheckBox chkTrayDisplayChatEmote = null;
-	private ConfigCheckBox chkTrayDisplayWhisper = null;
+	private JCheckBox chkTrayMinimizeTo = null;
+	private JCheckBox chkTrayDisplayConnectDisconnect = null;
+	private JCheckBox chkTrayDisplayChannel = null;
+	private JCheckBox chkTrayDisplayJoinPart = null;
+	private JCheckBox chkTrayDisplayChatEmote = null;
+	private JCheckBox chkTrayDisplayWhisper = null;
 	private JComboBox cmbTabCompleteMode = null;
-	private ConfigCheckBox chkEnableTabCompleteUser = null;
-	private ConfigCheckBox chkEnableTabCompleteCommand = null;
+	private JCheckBox chkEnableTabCompleteUser = null;
+	private JCheckBox chkEnableTabCompleteCommand = null;
 
 	// Display 2
-	private ConfigCheckBox chkEnableLegacyIcons = null;
+	private JCheckBox chkEnableLegacyIcons = null;
 	private JComboBox cmbTSFormat = null;
 	private JComboBox cmbColorScheme = null;
 	private JComboBox cmbLookAndFeel = null;
 	private JComboBox cmbPlasticTheme = null;
-	private ConfigCheckBox chkDisplayBattleNetMOTD = null;
-	private ConfigCheckBox chkDisplayBattleNetChannels = null;
-	private ConfigCheckBox chkDisplayJoinParts = null;
-	private ConfigCheckBox chkDisplayChannelUsers = null;
-	private ConfigCheckBox chkDisplaySlashCommands = null;
+	private JCheckBox chkDisplayBattleNetMOTD = null;
+	private JCheckBox chkDisplayBattleNetChannels = null;
+	private JCheckBox chkDisplayJoinParts = null;
+	private JCheckBox chkDisplayChannelUsers = null;
+	private JCheckBox chkDisplaySlashCommands = null;
 	private ConfigTextField txtGuiFontFamily = null;
 	private ConfigSpinner spnGuiFontSize = null;
 
 	// Debug
-	private ConfigCheckBox chkEnableDebug = null;
-	private ConfigCheckBox chkDebugToGui = null;
-	private List<ConfigCheckBox> chkDebug = null;
+	private JCheckBox chkEnableDebug = null;
+	private JCheckBox chkDebugToGui = null;
+	private List<JCheckBox> chkDebug = null;
 
 	// Buttons
 	private JButton btnUndo = null;
@@ -207,18 +207,17 @@ public class GlobalConfigurationFrame extends JDialog {
 				cmbTimeZone = boxAll.makeCombo("TimeZone", tzs.toArray(), false);
 				cmbTimeZone.setSelectedItem(TimeFormatter.timeZone.getID());
 
-				boxAll.add(chkAutoConnect = new ConfigCheckBox("Auto Connect", GlobalSettings.autoConnect));
-				boxAll.add(chkAutoRejoin = new ConfigCheckBox("Auto Rejoin After Kicked", GlobalSettings.autoRejoin));
-				boxAll.add(chkEnableMirrorSelector = new ConfigCheckBox("Enable Mirror Selector", GlobalSettings.enableMirrorSelector));
-				boxAll.add(chkEnableFloodProtect = new ConfigCheckBox("Enable Flood Protect", GlobalSettings.enableFloodProtect));
-				boxAll.add(chkPacketLog = new ConfigCheckBox("Packet Log", GlobalSettings.packetLog));
+				chkAutoConnect = boxAll.makeCheck("Auto Connect", GlobalSettings.autoConnect);
+				chkAutoRejoin = boxAll.makeCheck("Auto Rejoin After Kicked", GlobalSettings.autoRejoin);
+				chkEnableMirrorSelector = boxAll.makeCheck("Enable Mirror Selector", GlobalSettings.enableMirrorSelector);
+				chkEnableFloodProtect = boxAll.makeCheck("Enable Flood Protect", GlobalSettings.enableFloodProtect);
+				chkPacketLog = boxAll.makeCheck("Packet Log", GlobalSettings.packetLog);
 			}
 			tabs.addTab("Settings", boxAll);
 
 			boxAll = new ConfigPanel();
 			{
-				chkProxyEnabled = new ConfigCheckBox("Enabled", GlobalSettings.socksEnabled);
-				boxAll.add(chkProxyEnabled);
+				chkProxyEnabled = boxAll.makeCheck("Enabled", GlobalSettings.socksEnabled);
 				cmbProxyType = boxAll.makeCombo("Type", GlobalSettings.SOCKSType.values(), false);
 				txtProxyHost = boxAll.makeText("Host", GlobalSettings.socksHost);
 				spnProxyPort = boxAll.makeSpinner("Port", GlobalSettings.socksPort);
@@ -228,17 +227,16 @@ public class GlobalConfigurationFrame extends JDialog {
 			boxAll = new ConfigPanel();
 			{
 				boxAll.add(new JLabel("You must reopen profiles for these changes to take effect."));
-				boxAll.add(chkWhisperBack = new ConfigCheckBox("Whisper Command Responses", GlobalSettings.whisperBack));
+				chkWhisperBack = boxAll.makeCheck("Whisper Command Responses", GlobalSettings.whisperBack);
 
 				plugins = new ArrayList<Class<? extends EventHandler>>();
-				chkEnabledPlugins = new ArrayList<ConfigCheckBox>();
+				chkEnabledPlugins = new ArrayList<JCheckBox>();
 				for(Class<? extends EventHandler> plugin : PluginManager.getPlugins()) {
 					// Do not allow the user to disable the GUI in this way
 					if(plugin == GuiEventHandler.class)
 						continue;
 
-					ConfigCheckBox chkEnablePlugin = new ConfigCheckBox(plugin.getSimpleName(), PluginManager.isEnabled(plugin));
-					boxAll.add(chkEnablePlugin);
+					JCheckBox chkEnablePlugin = boxAll.makeCheck(plugin.getSimpleName(), PluginManager.isEnabled(plugin));
 					chkEnabledPlugins.add(chkEnablePlugin);
 					plugins.add(plugin);
 				}
@@ -265,24 +263,24 @@ public class GlobalConfigurationFrame extends JDialog {
 				cmbTrayIconMode = boxAll.makeCombo("Tray Icon", TrayIconMode.values(), false);
 				cmbTrayIconMode.setSelectedItem(GlobalSettings.trayIconMode);
 
-				boxAll.add(chkTrayMinimizeTo = new ConfigCheckBox("Minimize To System Tray (Java 6+)", GlobalSettings.trayMinimizeTo));
-				boxAll.add(chkTrayDisplayConnectDisconnect = new ConfigCheckBox("Tray: Connect/Disconnect", GlobalSettings.trayDisplayConnectDisconnect));
-				boxAll.add(chkTrayDisplayChannel = new ConfigCheckBox("Tray: Channel", GlobalSettings.trayDisplayChannel));
-				boxAll.add(chkTrayDisplayJoinPart = new ConfigCheckBox("Tray: Join/Part", GlobalSettings.trayDisplayJoinPart));
-				boxAll.add(chkTrayDisplayChatEmote = new ConfigCheckBox("Tray: Chat/Emote", GlobalSettings.trayDisplayChatEmote));
-				boxAll.add(chkTrayDisplayWhisper = new ConfigCheckBox("Tray: Whisper", GlobalSettings.trayDisplayWhisper));
+				chkTrayMinimizeTo = boxAll.makeCheck("Minimize To System Tray (Java 6+)", GlobalSettings.trayMinimizeTo);
+				chkTrayDisplayConnectDisconnect = boxAll.makeCheck("Tray: Connect/Disconnect", GlobalSettings.trayDisplayConnectDisconnect);
+				chkTrayDisplayChannel = boxAll.makeCheck("Tray: Channel", GlobalSettings.trayDisplayChannel);
+				chkTrayDisplayJoinPart = boxAll.makeCheck("Tray: Join/Part", GlobalSettings.trayDisplayJoinPart);
+				chkTrayDisplayChatEmote = boxAll.makeCheck("Tray: Chat/Emote", GlobalSettings.trayDisplayChatEmote);
+				chkTrayDisplayWhisper = boxAll.makeCheck("Tray: Whisper", GlobalSettings.trayDisplayWhisper);
 
 				cmbTabCompleteMode = boxAll.makeCombo("Tab Complete Mode", TabCompleteMode.values(), false);
 				cmbTabCompleteMode.setSelectedItem(GlobalSettings.tabCompleteMode);
 
-				boxAll.add(chkEnableTabCompleteUser = new ConfigCheckBox("User Tab Completion", GlobalSettings.enableTabCompleteUser));
-				boxAll.add(chkEnableTabCompleteCommand = new ConfigCheckBox("Command Tab Completion", GlobalSettings.enableTabCompleteCommand));
+				chkEnableTabCompleteUser = boxAll.makeCheck("User Tab Completion", GlobalSettings.enableTabCompleteUser);
+				chkEnableTabCompleteCommand = boxAll.makeCheck("Command Tab Completion", GlobalSettings.enableTabCompleteCommand);
 			}
 			tabs.addTab("Display 1", boxAll);
 
 			boxAll = new ConfigPanel();
 			{
-				boxAll.add(chkEnableLegacyIcons = new ConfigCheckBox("Enable Legacy Icons", GlobalSettings.enableLegacyIcons));
+				chkEnableLegacyIcons = boxAll.makeCheck("Enable Legacy Icons", GlobalSettings.enableLegacyIcons);
 
 				Object[] values = new String[] { TimeFormatter.tsFormat, "%1$tH:%1$tM:%1$tS.%1$tL", "%1$tH:%1$tM:%1$tS", "%1$tH:%1$tM" };
 				cmbTSFormat = boxAll.makeCombo("TimeStamp", values, true);
@@ -313,11 +311,11 @@ public class GlobalConfigurationFrame extends JDialog {
 					}
 				});
 
-				boxAll.add(chkDisplayBattleNetMOTD = new ConfigCheckBox("Display Battle.net MOTD", GlobalSettings.displayBattleNetMOTD));
-				boxAll.add(chkDisplayBattleNetChannels = new ConfigCheckBox("Display Battle.net Channels", GlobalSettings.displayBattleNetChannels));
-				boxAll.add(chkDisplayJoinParts = new ConfigCheckBox("Display Join/Part Messages", GlobalSettings.getDisplayJoinParts()));
-				boxAll.add(chkDisplayChannelUsers = new ConfigCheckBox("Display Channel Users On Join", GlobalSettings.displayChannelUsers));
-				boxAll.add(chkDisplaySlashCommands = new ConfigCheckBox("Display / Commands", GlobalSettings.displaySlashCommands));
+				chkDisplayBattleNetMOTD = boxAll.makeCheck("Display Battle.net MOTD", GlobalSettings.displayBattleNetMOTD);
+				chkDisplayBattleNetChannels = boxAll.makeCheck("Display Battle.net Channels", GlobalSettings.displayBattleNetChannels);
+				chkDisplayJoinParts = boxAll.makeCheck("Display Join/Part Messages", GlobalSettings.getDisplayJoinParts());
+				chkDisplayChannelUsers = boxAll.makeCheck("Display Channel Users On Join", GlobalSettings.displayChannelUsers);
+				chkDisplaySlashCommands = boxAll.makeCheck("Display / Commands", GlobalSettings.displaySlashCommands);
 				txtGuiFontFamily = boxAll.makeText("GUI Font Family", GlobalSettings.guiFontFamily);
 				spnGuiFontSize = boxAll.makeSpinner("GUI Font Size", Integer.valueOf(GlobalSettings.guiFontSize));
 			}
@@ -325,17 +323,16 @@ public class GlobalConfigurationFrame extends JDialog {
 
 			boxAll = new ConfigPanel();
 			{
-				boxAll.add(chkEnableDebug = new ConfigCheckBox("Enable debug logging", Out.isDebug()));
-				boxAll.add(chkDebugToGui = new ConfigCheckBox("Log debug messages on the GUI", Out.isDebugToGui()));
+				chkEnableDebug = boxAll.makeCheck("Enable debug logging", Out.isDebug());
+				chkDebugToGui = boxAll.makeCheck("Log debug messages on the GUI", Out.isDebugToGui());
 
 				Properties props = Out.getProperties();
-				chkDebug = new ArrayList<ConfigCheckBox>(props.size());
+				chkDebug = new ArrayList<JCheckBox>(props.size());
 				for (Enumeration<Object> en = props.keys(); en.hasMoreElements();) {
 					String clazz = en.nextElement().toString();
 					boolean chkEnabled = Boolean.parseBoolean(props.getProperty(clazz));
-					ConfigCheckBox chk = new ConfigCheckBox(clazz, chkEnabled);
+					JCheckBox chk = boxAll.makeCheck(clazz, chkEnabled);
 					chkDebug.add(chk);
-					boxAll.add(chk);
 				}
 			}
 			tabs.addTab("Debug", boxAll);
@@ -453,7 +450,7 @@ public class GlobalConfigurationFrame extends JDialog {
 
 			for(int i = 0; i < plugins.size(); i++) {
 				Class<? extends EventHandler> plugin = plugins.get(i);
-				ConfigCheckBox chkEnablePlugin = chkEnabledPlugins.get(i);
+				JCheckBox chkEnablePlugin = chkEnabledPlugins.get(i);
 				PluginManager.setEnabled(plugin, chkEnablePlugin.isSelected());
 			}
 			GlobalSettings.enableFloodProtect = chkEnableFloodProtect.isSelected();
@@ -463,7 +460,7 @@ public class GlobalConfigurationFrame extends JDialog {
 			// Save debug
 			Out.setDebug(chkEnableDebug.isSelected());
 			Out.setDebugToGui(chkDebugToGui.isSelected());
-			for(ConfigCheckBox chk : chkDebug)
+			for(JCheckBox chk : chkDebug)
 				Out.setDebug(chk.getText(), chk.isSelected());
 
 			// Save
@@ -547,7 +544,7 @@ public class GlobalConfigurationFrame extends JDialog {
 			spnTriviaRoundLength.setValue(Integer.valueOf(GlobalSettings.triviaRoundLength));
 			for(int i = 0; i < plugins.size(); i++) {
 				Class<? extends EventHandler> plugin = plugins.get(i);
-				ConfigCheckBox chkEnablePlugin = chkEnabledPlugins.get(i);
+				JCheckBox chkEnablePlugin = chkEnabledPlugins.get(i);
 				chkEnablePlugin.setSelected(PluginManager.isEnabled(plugin));
 			}
 			chkEnableFloodProtect.setSelected(GlobalSettings.enableFloodProtect);
@@ -557,7 +554,7 @@ public class GlobalConfigurationFrame extends JDialog {
 			// Load debug
 			chkDebugToGui.setSelected(Out.isDebugToGui());
 			chkEnableDebug.setSelected(Out.isDebug());
-			for(ConfigCheckBox chk : chkDebug)
+			for(JCheckBox chk : chkDebug)
 				chk.setSelected(Out.isDebug(chk.getText()));
 		}
 	}

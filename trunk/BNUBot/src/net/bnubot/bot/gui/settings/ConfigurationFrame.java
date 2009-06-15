@@ -14,15 +14,16 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.SwingUtilities;
+import javax.swing.border.BevelBorder;
 
 import net.bnubot.bot.gui.WindowPosition;
-import net.bnubot.bot.gui.components.ConfigCheckBox;
 import net.bnubot.bot.gui.components.ConfigPanel;
 import net.bnubot.bot.gui.components.ConfigTextField;
 import net.bnubot.bot.gui.components.ProductAndCDKeys;
@@ -43,18 +44,18 @@ public class ConfigurationFrame extends JDialog {
 	private ConfigTextField txtUsername = null;
 	private JPasswordField txtPassword = null;
 	private ProductAndCDKeys prodKeys = null;
-	private ConfigCheckBox chkPlug = null;
-	private ConfigCheckBox chkBotNet = null;
+	private JCheckBox chkPlug = null;
+	private JCheckBox chkBotNet = null;
 
 	// Profile
 	private JComboBox cmbConnectionType = null;
 	private JComboBox cmbServer = null;
 	private ConfigTextField txtChannel = null;
 	private ConfigTextField txtTrigger = null;
-	private ConfigCheckBox chkAntiIdle = null;
+	private JCheckBox chkAntiIdle = null;
 	private ConfigTextField txtAntiIdle = null;
 	private ConfigTextField txtAntiIdleTimer = null;
-	private ConfigCheckBox chkGreetings = null;
+	private JCheckBox chkGreetings = null;
 
 	// Buttons
 	private JButton btnKeys = null;
@@ -94,8 +95,8 @@ public class ConfigurationFrame extends JDialog {
 				public void itemStateChanged(ItemEvent e) {
 					setVisibleFields();
 				}});
-			boxSettings.add(chkPlug = new ConfigCheckBox("Enable Plug (No UDP support)", cs.enablePlug));
-			boxSettings.add(chkBotNet = new ConfigCheckBox("Enable BotNet", cs.enableBotNet));
+			chkPlug = boxSettings.makeCheck("Enable Plug (No UDP support)", cs.enablePlug);
+			chkBotNet = boxSettings.makeCheck("Enable BotNet", cs.enableBotNet);
 
 			cmbConnectionType = boxSettings.makeCombo("Connection Type", ConnectionType.values(), false);
 			cmbConnectionType.setSelectedItem(cs.connectionType);
@@ -114,15 +115,16 @@ public class ConfigurationFrame extends JDialog {
 
 			ConfigPanel boxLine = new ConfigPanel();
 			{
+				boxLine.setBorder(new BevelBorder(BevelBorder.LOWERED));
 				boxLine.add(new JLabel("Anti-Idle"));
-				boxLine.add(chkAntiIdle = new ConfigCheckBox("Enable", cs.enableAntiIdle));
-				boxLine.add(txtAntiIdle = new ConfigTextField(cs.antiIdle));
-				txtAntiIdle.setMaximumSize(ConfigPanel.getMaxComponentSize());
+
+				chkAntiIdle = boxLine.makeCheck("Enable", cs.enableAntiIdle);
+				txtAntiIdle = boxLine.makeText("Anti-Idle", cs.antiIdle);
 			}
 			boxSettings.add(boxLine);
 
 			txtAntiIdleTimer = boxSettings.makeText("Anti-Idle Timer", Integer.toString(cs.antiIdleTimer));
-			boxSettings.add(chkGreetings = new ConfigCheckBox("Enable Greetings", cs.enableGreetings));
+			chkGreetings = boxSettings.makeCheck("Enable Greetings", cs.enableGreetings);
 
 			boxSettings.add(Box.createVerticalGlue());
 		}
