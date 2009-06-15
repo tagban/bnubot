@@ -14,6 +14,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
@@ -55,10 +56,16 @@ public abstract class AbstractWizard {
 		btnNext.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				AbstractWizardPage page = pages.get(currentStep);
-				if(page.isPageComplete() == null) {
+				String error = page.isPageComplete();
+				if(error == null) {
 					cardLayout.show(cards, Integer.toString(++currentStep));
 					setEnableButtons();
 					pages.get(currentStep).display();
+				} else {
+					JOptionPane.showMessageDialog(jd,
+							error,
+							"Page is incomplete",
+							JOptionPane.ERROR_MESSAGE);
 				}
 			}});
 
@@ -66,9 +73,15 @@ public abstract class AbstractWizard {
 			public void actionPerformed(ActionEvent e) {
 				AbstractWizardPage page = pages.get(currentStep);
 				try {
-					if(page.isPageComplete() == null) {
+					String error = page.isPageComplete();
+					if(error == null) {
 						finish();
 						jd.dispose();
+					} else {
+						JOptionPane.showMessageDialog(jd,
+								error,
+								"Page is incomplete",
+								JOptionPane.ERROR_MESSAGE);
 					}
 				} catch(Exception ex) {
 					Out.popupException(ex);
