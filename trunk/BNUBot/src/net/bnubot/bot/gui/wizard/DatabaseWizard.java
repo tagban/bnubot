@@ -11,7 +11,6 @@ import java.util.List;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
-import net.bnubot.bot.gui.components.ConfigFactory;
 import net.bnubot.bot.gui.components.ConfigPanel;
 import net.bnubot.bot.gui.components.GhostDefaultTextField;
 import net.bnubot.db.Account;
@@ -71,7 +70,7 @@ public class DatabaseWizard extends AbstractWizard {
 						"name for things like sending you mail, so try to keep it simple.<br/>" +
 						"<br/>" +
 						"</html>"));
-				accountName[0] = ConfigFactory.makeGhost("Account", "Camel", cp);
+				accountName[0] = cp.makeGhost("Account", "Camel");
 			}
 
 			@Override
@@ -102,11 +101,11 @@ public class DatabaseWizard extends AbstractWizard {
 						"You may leave boxes blank if you have fewer than five handles.<br/>" +
 						"<br/>" +
 						"</html>"));
-				bnLogins[0] = ConfigFactory.makeGhost("BNet Login 1", "BNU-Camel@USEast", cp);
-				bnLogins[1] = ConfigFactory.makeGhost("BNet Login 2", "BNU-Camel@Azeroth", cp);
-				bnLogins[2] = ConfigFactory.makeGhost("BNet Login 3", "BNU-Camel@USWest", cp);
-				bnLogins[3] = ConfigFactory.makeGhost("BNet Login 4", "BNU-Camel@Lordaeron", cp);
-				bnLogins[4] = ConfigFactory.makeGhost("BNet Login 5", "", cp);
+				bnLogins[0] = cp.makeGhost("BNet Login 1", "BNU-Camel@USEast");
+				bnLogins[1] = cp.makeGhost("BNet Login 2", "BNU-Camel@Azeroth");
+				bnLogins[2] = cp.makeGhost("BNet Login 3", "BNU-Camel@USWest");
+				bnLogins[3] = cp.makeGhost("BNet Login 4", "BNU-Camel@Lordaeron");
+				bnLogins[4] = cp.makeGhost("BNet Login 5", "");
 			}
 
 			@Override

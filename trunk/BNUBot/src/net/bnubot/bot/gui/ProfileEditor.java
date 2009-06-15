@@ -16,7 +16,6 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.SwingUtilities;
 
-import net.bnubot.bot.gui.components.ConfigFactory;
 import net.bnubot.bot.gui.components.ConfigPanel;
 import net.bnubot.bot.gui.components.ConfigTextField;
 import net.bnubot.core.Connection;
@@ -57,11 +56,11 @@ public class ProfileEditor extends JDialog {
 		setLayout(new FlowLayout(FlowLayout.LEFT));
 		ConfigPanel boxAll = new ConfigPanel();
 		{
-			txtUsername = ConfigFactory.makeText("Username", p.getUser(), boxAll);
+			txtUsername = boxAll.makeText("Username", p.getUser());
 			txtUsername.setEnabled(false);
 
 			for(String key : p.keySet()) {
-				ConfigTextField cta = ConfigFactory.makeText(key, p.get(key), boxAll);
+				ConfigTextField cta = boxAll.makeText(key, p.get(key));
 				boolean enableThisKey = enableWrite && key.startsWith(UserProfile.PROFILE_);
 				cta.setEnabled(enableThisKey);
 				if(enableThisKey)
