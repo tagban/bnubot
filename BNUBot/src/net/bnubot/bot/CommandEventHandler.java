@@ -1698,7 +1698,7 @@ public class CommandEventHandler extends EventHandler {
 						// Check RS
 						long rs = 0;
 						if(rsAccount != null)
-							rsAccount.getRecruitScore(GlobalSettings.recruitAccess);
+							rs = rsAccount.getRecruitScore(GlobalSettings.recruitAccess);
 						Integer apRS = rsRank.getApRecruitScore();
 						if((apRS == null) || (apRS == 0) || (rs >= apRS)) {
 							int rank = 0;
@@ -1707,7 +1707,13 @@ public class CommandEventHandler extends EventHandler {
 							else {
 								String name = user.getFullAccountName();
 								name = name.substring(0, name.indexOf('@'));
-								rsAccount = createAccount(name, null, rsUser);
+								try {
+									rsAccount = createAccount(name, null, rsUser);
+								} catch(Exception e) {
+									Out.exception(e);
+									user.sendChat("I couldn't make an account for you: " + e.getMessage(), true);
+									break apBlock;
+								}
 							}
 
 							// Store the old AP mail message
