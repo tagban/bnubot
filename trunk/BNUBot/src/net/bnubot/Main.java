@@ -10,6 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.lang.Thread.UncaughtExceptionHandler;
 
+import net.bnubot.bot.gui.WhatsNewWindow;
 import net.bnubot.bot.gui.settings.GlobalConfigurationFrame;
 import net.bnubot.bot.gui.wizard.FirstConnectionWizard;
 import net.bnubot.core.PluginManager;
@@ -134,13 +135,20 @@ public class Main {
 			}
 		}
 
-		if(PluginManager.getEnableGui() && GlobalSettings.firstRun) {
-			// Run the first-run wizard
-			new FirstConnectionWizard(1).displayAndBlock();
+		if(PluginManager.getEnableGui()) {
+			if(GlobalSettings.firstRun) {
+				// Run the first-run wizard
+				new FirstConnectionWizard(1).displayAndBlock();
 
-			GlobalSettings.firstRun = false;
-			GlobalSettings.save();
-			Settings.store();
+				GlobalSettings.firstRun = false;
+				GlobalSettings.save();
+				Settings.store();
+			}
+
+			if(CurrentVersion.fromJar()) {
+				// If we're launching a new version, pop up the what's new window
+				WhatsNewWindow.displayIfNew();
+			}
 		}
 
 		if(PluginManager.getEnableSwt()) {

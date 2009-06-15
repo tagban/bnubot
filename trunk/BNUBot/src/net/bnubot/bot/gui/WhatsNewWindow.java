@@ -24,10 +24,11 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.SwingUtilities;
 import javax.swing.text.JTextComponent;
 
 import net.bnubot.bot.gui.components.ColoredTextArea;
+import net.bnubot.settings.Settings;
+import net.bnubot.util.SHA1Sum;
 import net.bnubot.vercheck.CurrentVersion;
 
 /**
@@ -36,6 +37,30 @@ import net.bnubot.vercheck.CurrentVersion;
  */
 public class WhatsNewWindow extends JDialog {
 	private static final long serialVersionUID = -2905017328939505262L;
+
+	public static void displayIfNew() {
+		String whatsNew = WhatsNewWindow.getText();
+		String currentVersionHash = null;
+		try {
+			currentVersionHash = new SHA1Sum(whatsNew.getBytes()).toString();
+		} catch (Exception e) {
+			// SHA1 not available? Unlikely, but whatever...
+			currentVersionHash = "[" + whatsNew.length() + "bytes]";
+		}
+		String lastWhatsNewHash = Settings.getSection(null).read("whatsNewHash", (String)null);
+		if((lastWhatsNewHash == null)
+		|| !lastWhatsNewHash.equalsIgnoreCase(currentVersionHash)) {
+			Settings.getSection(null).write("whatsNewHash", currentVersionHash);
+			Settings.store();
+			WhatsNewWindow jd = new WhatsNewWindow();
+			while(jd.isVisible()) {
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {}
+				Thread.yield();
+			}
+		}
+	}
 
 	public WhatsNewWindow() {
 		final CardLayout cardLayout = new CardLayout();
@@ -88,17 +113,14 @@ public class WhatsNewWindow extends JDialog {
 				(size.height - bounds.height) / 2);
 
 		// Show the dialog
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				setVisible(true);
-			}});
+		setVisible(true);
 	}
 
-	private String getText() {
+	public static String getText() {
 		try {
 			InputStream changelog;
 			if(CurrentVersion.fromJar())
-				changelog = getClass().getResource("/changelog.txt").openStream();
+				changelog = WhatsNewWindow.class.getResource("/changelog.txt").openStream();
 			else
 				changelog = new FileInputStream(new File("changelog.txt"));
 			byte[] data = new byte[0x100];

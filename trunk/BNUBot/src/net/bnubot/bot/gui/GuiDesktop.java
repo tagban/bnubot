@@ -88,17 +88,6 @@ public class GuiDesktop extends JFrame {
 	private GuiDesktop() {
 		super();
 
-		if(CurrentVersion.fromJar()) {
-			// If we're launching a new version, pop up the what's new window
-			long currentVersionBuilt = CurrentVersion.version().getBuildDate().getTime();
-			long lastWhatsNewWindow = Settings.getSection(null).read("whatsNewTime", 0l);
-			if(lastWhatsNewWindow != currentVersionBuilt) {
-				Settings.getSection(null).write("whatsNewTime", currentVersionBuilt);
-				Settings.store();
-				new WhatsNewWindow();
-			}
-		}
-
 		setTitle();
 		initializeGui();
 		initializeSystemTray();
