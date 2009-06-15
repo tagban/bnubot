@@ -24,10 +24,12 @@ public class Settings {
 	private static boolean anythingChanged = false;
 
 	static {
-		if(propsFile.exists()) try {
-			props.load(new FileInputStream(propsFile));
-		} catch(Exception e) {
-			Out.exception(e);
+		synchronized(propsFile) {
+			if(propsFile.exists()) try {
+				props.load(new FileInputStream(propsFile));
+			} catch(Exception e) {
+				Out.exception(e);
+			}
 		}
 	}
 
@@ -73,7 +75,9 @@ public class Settings {
 		try {
 			// Generate the comment first, because the settings.ini file could be lost if CurrentVersion.version() fails
 			String comment = CurrentVersion.version().toString();
-			props.store(new FileOutputStream(propsFile), comment);
+			synchronized(propsFile) {
+				props.store(new FileOutputStream(propsFile), comment);
+			}
 			anythingChanged = false;
 		} catch (Exception e) {
 			Out.fatalException(e);
