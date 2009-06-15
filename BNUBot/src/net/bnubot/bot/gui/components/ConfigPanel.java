@@ -9,6 +9,8 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.JCheckBox;
@@ -16,11 +18,13 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 /**
  * @author scotta
  */
-public class ConfigPanel extends JPanel {
+public class ConfigPanel extends JPanel implements ConfigValueChangeListener, DocumentListener {
 	private static final long serialVersionUID = -6204927361481125183L;
 	private static final int height = 25;
 	private static final int spacing = 3;
@@ -33,6 +37,8 @@ public class ConfigPanel extends JPanel {
 
 	private final Component vglue = Box.createVerticalGlue();
 	private int gridy = 0;
+
+	private List<ConfigValueChangeListener> listeners = new ArrayList<ConfigValueChangeListener>();
 
 	public ConfigPanel() {
 		super(new GridBagLayout());
@@ -82,6 +88,30 @@ public class ConfigPanel extends JPanel {
 		return gbc;
 	}
 
+	public void configValueChanged() {
+		for(ConfigValueChangeListener l : listeners)
+			l.configValueChanged();
+	}
+
+	public void changedUpdate(DocumentEvent e) {
+		// DocumentListener
+		configValueChanged();
+	}
+
+	public void insertUpdate(DocumentEvent e) {
+		// DocumentListener
+		configValueChanged();
+	}
+
+	public void removeUpdate(DocumentEvent e) {
+		// DocumentListener
+		configValueChanged();
+	}
+
+	public void addConfigValueChangeListener(ConfigValueChangeListener cl) {
+		listeners.add(cl);
+	}
+
 	@Override
 	public Component add(Component comp) {
 		remove(vglue);
@@ -99,25 +129,29 @@ public class ConfigPanel extends JPanel {
 		return comp;
 	}
 
+	public ConfigPanel makePanel(String label) {
+		ConfigPanel cp = new ConfigPanel();
+		cp.addConfigValueChangeListener(this);
+
+		add(label, cp);
+		return cp;
+	}
+
 	public ConfigTextField makeText(String label, String value) {
 		ConfigTextField txt = new ConfigTextField(value);
 		txt.setMaximumSize(maxComponentSize);
 		txt.setPreferredSize(preferredTextSize);
+		txt.getDocument().addDocumentListener(this);
 
 		add(label, txt);
 		return txt;
-	}
-
-	public ConfigPanel makePanel(String label) {
-		ConfigPanel cp = new ConfigPanel();
-		add(label, cp);
-		return cp;
 	}
 
 	public GhostDefaultTextField makeGhost(String label, String value) {
 		GhostDefaultTextField txt = new GhostDefaultTextField(value);
 		txt.setMaximumSize(maxComponentSize);
 		txt.setPreferredSize(preferredTextSize);
+		txt.getDocument().addDocumentListener(this);
 
 		add(label, txt);
 		return txt;
@@ -127,6 +161,7 @@ public class ConfigPanel extends JPanel {
 		JPasswordField pass = new JPasswordField(value);
 		pass.setMaximumSize(maxComponentSize);
 		pass.setPreferredSize(preferredTextSize);
+		pass.getDocument().addDocumentListener(this);
 
 		add(label, pass);
 		return pass;

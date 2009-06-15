@@ -30,12 +30,13 @@ public class GhostDefaultTextField extends ConfigTextField implements MouseListe
 	}
 
 	public void reset() {
-		setText(defaultText);
 		setEnabled(false);
+		super.setText(defaultText);
 	}
 
 	public boolean isGhosted() {
-		focusLost(null);
+		if((getText() == null) || (getText().length() == 0))
+			return true;
 		return !isEnabled();
 	}
 

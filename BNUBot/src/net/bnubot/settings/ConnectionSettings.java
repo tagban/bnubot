@@ -85,6 +85,9 @@ public class ConnectionSettings implements Serializable {
 		case DigitalText:
 			break;
 		case BNCS:
+			if(product == null)
+				return "Product not set";
+
 			switch(product) {
 			case DRTL:
 			case DSHR:

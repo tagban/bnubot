@@ -20,16 +20,18 @@ import javax.swing.SwingUtilities;
 
 import net.bnubot.bot.gui.WindowPosition;
 import net.bnubot.bot.gui.components.ConfigPanel;
+import net.bnubot.bot.gui.components.ConfigValueChangeListener;
 import net.bnubot.util.Out;
 
 /**
  * @author scotta
  */
-public abstract class AbstractWizard {
+public abstract class AbstractWizard implements ConfigValueChangeListener {
 
 	private List<AbstractWizardPage> pages = new ArrayList<AbstractWizardPage>();
 
-	private JDialog jd = new JDialog();
+	private final JDialog jd;
+	private final String title;
 	private final JPanel cards;
 	private final JButton btnBack;
 	private final JButton btnNext;
@@ -37,6 +39,10 @@ public abstract class AbstractWizard {
 	private int currentStep = 0;
 
 	public AbstractWizard(String title) {
+		jd = new JDialog();
+		jd.setTitle(title);
+		this.title = title;
+
 		final CardLayout cardLayout = new CardLayout();
 		cards = new JPanel(cardLayout);
 
@@ -113,6 +119,8 @@ public abstract class AbstractWizard {
 
 	public void addWizardPage(AbstractWizardPage page) {
 		ConfigPanel cp = new ConfigPanel();
+		cp.addConfigValueChangeListener(this);
+
 		page.createComponent(cp);
 		cards.add(Integer.toString(pages.size()), cp);
 		jd.pack();
@@ -123,12 +131,24 @@ public abstract class AbstractWizard {
 
 	public abstract void finish() throws Exception;
 
+	public void configValueChanged() {
+		setEnableButtons();
+	}
+
 	private void setEnableButtons() {
 		boolean first = (currentStep == 0);
 		boolean last = (currentStep == pages.size() - 1);
 
+		String pageComplete = null;
+		if(pages.size() > 0) {
+			AbstractWizardPage page = pages.get(currentStep);
+			pageComplete = page.isPageComplete();
+		}
+
 		btnBack.setEnabled(!first);
-		btnNext.setEnabled(!last);
+		btnNext.setEnabled(!last && (pageComplete == null));
+
+		setPageIncompleteError(pageComplete);
 
 		if(last) {
 			btnFinish.setEnabled(true);
@@ -149,8 +169,16 @@ public abstract class AbstractWizard {
 		}
 	}
 
+	private void setPageIncompleteError(String pageComplete) {
+		String title = this.title;
+		if(pageComplete != null)
+			title += " [" + pageComplete + "]";
+		jd.setTitle(title);
+	}
+
 	public void displayAndBlock() {
 		jd.setVisible(true);
+		jd.setAlwaysOnTop(true);
 		while(jd.isVisible()) {
 			try {
 				Thread.sleep(100);

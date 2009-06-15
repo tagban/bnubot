@@ -55,6 +55,9 @@ public class AccountDetailsWizardPage extends AbstractWizardPage {
 
 	@Override
 	public String isPageComplete() {
+		if(txtUsername.isGhosted())
+			return "Username not set";
+
 		cs.username = txtUsername.getText();
 		cs.password = new String(txtPassword.getPassword());
 		cs.product = prodKeys.getProduct();
