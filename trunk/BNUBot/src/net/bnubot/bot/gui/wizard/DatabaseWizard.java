@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 
 import net.bnubot.bot.gui.components.ConfigPanel;
 import net.bnubot.bot.gui.components.GhostDefaultTextField;
@@ -18,7 +17,6 @@ import net.bnubot.db.BNLogin;
 import net.bnubot.db.Rank;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetUser;
-import net.bnubot.util.Out;
 
 /**
  * @author scotta
@@ -31,6 +29,9 @@ public class DatabaseWizard extends AbstractWizard {
 		new DatabaseWizard().displayAndBlock();
 		System.exit(0);
 	}
+
+	private final GhostDefaultTextField[] accountName = new GhostDefaultTextField[1];
+	private final GhostDefaultTextField[] bnLogins = new GhostDefaultTextField[5];
 
 	public DatabaseWizard() {
 		super("Database Wizard");
@@ -49,12 +50,9 @@ public class DatabaseWizard extends AbstractWizard {
 			}
 
 			@Override
-			public boolean isPageComplete() {
-				return true;
+			public String isPageComplete() {
+				return null;
 			}});
-
-		final GhostDefaultTextField[] accountName = new GhostDefaultTextField[1];
-		final GhostDefaultTextField[] bnLogins = new GhostDefaultTextField[5];
 
 		addWizardPage(new AbstractWizardPage() {
 
@@ -79,10 +77,10 @@ public class DatabaseWizard extends AbstractWizard {
 			}
 
 			@Override
-			public boolean isPageComplete() {
+			public String isPageComplete() {
 				if(accountName[0].isGhosted())
-					return false;
-				return true;
+					return "Account name not set";
+				return null;
 			}});
 
 
@@ -115,11 +113,11 @@ public class DatabaseWizard extends AbstractWizard {
 			}
 
 			@Override
-			public boolean isPageComplete() {
+			public String isPageComplete() {
 				for(GhostDefaultTextField l : bnLogins)
 					if(!l.isGhosted())
-						return true;
-				return false;
+						return null;
+				return "No BNLogins specified";
 			}});
 
 
@@ -148,41 +146,35 @@ public class DatabaseWizard extends AbstractWizard {
 			}
 
 			@Override
-			public boolean isPageComplete() {
-				try {
-					List<String> logins = new ArrayList<String>(bnLogins.length);
-					for(GhostDefaultTextField l : bnLogins) {
-						if(l.isGhosted())
-							continue;
-						String login = l.getText();
-						if(login.length() <= 0)
-							continue;
-						if(login.indexOf('@') == -1) {
-							JOptionPane.showMessageDialog(l,
-									"Invalid BNetLogin: " + login,
-									"Invalid BNetLogin",
-									JOptionPane.ERROR_MESSAGE);
-							return false;
-						}
-
-						logins.add(login);
-					}
-
-					String account = accountName[0].getText();
-					Account a = Account.get(account);
-					if(a == null)
-						a = Account.create(account, Rank.getMax(), null);
-					a.updateRow();
-					for(String l : logins) {
-						BNLogin bnl = BNLogin.getCreate(new BNetUser(l));
-						bnl.setAccount(a);
-						bnl.updateRow();
-					}
-					return true;
-				} catch(Exception e) {
-					Out.popupException(e, accountName[0]);
-					return false;
-				}
+			public String isPageComplete() {
+				return null;
 			}});
+	}
+
+	@Override
+	public void finish() throws Exception {
+		List<String> logins = new ArrayList<String>(bnLogins.length);
+		for(GhostDefaultTextField l : bnLogins) {
+			if(l.isGhosted())
+				continue;
+			String login = l.getText();
+			if(login.length() <= 0)
+				continue;
+			if(login.indexOf('@') == -1)
+				throw new Exception("Invalid BNetLogin: " + login);
+
+			logins.add(login);
+		}
+
+		String account = accountName[0].getText();
+		Account a = Account.get(account);
+		if(a == null)
+			a = Account.create(account, Rank.getMax(), null);
+		a.updateRow();
+		for(String l : logins) {
+			BNLogin bnl = BNLogin.getCreate(new BNetUser(l));
+			bnl.setAccount(a);
+			bnl.updateRow();
+		}
 	}
 }

@@ -22,6 +22,7 @@ import java.util.Map;
 
 import net.bnubot.bot.gui.settings.ConfigurationFrame;
 import net.bnubot.bot.gui.settings.OperationCancelledException;
+import net.bnubot.bot.gui.wizard.NewProfileWizard;
 import net.bnubot.core.bncs.BNCSConnection;
 import net.bnubot.core.bncs.ProductIDs;
 import net.bnubot.core.botnet.BotNetConnection;
@@ -185,6 +186,12 @@ public abstract class Connection extends Thread {
 				connectionState = ConnectionState.CONNECTING;
 				dispatchTitleChanged();
 				Task connect = createTask("Connecting to " + getServer() + ":" + getPort(), "Verify connection settings validity");
+
+				if(!cs.isInitialized()) {
+					if(PluginManager.getEnableGui()) {
+						new NewProfileWizard(cs).displayAndBlock();
+					}
+				}
 
 				// Check if CS is valid
 				while(cs.isValid() != null) {
