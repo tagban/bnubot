@@ -203,6 +203,13 @@ public class ConnectionSettings implements Serializable {
 		antiIdleTimer =	ss.read("antiIdleTimer", 5);
 	}
 
+	/**
+	 * @return true if required values have been set
+	 */
+	public boolean isInitialized() {
+		return (username != null);
+	}
+
 	private String formatCDKey(CDKey key) {
 		if(key == null)
 			return null;

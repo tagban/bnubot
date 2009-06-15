@@ -11,7 +11,7 @@ import java.io.PrintStream;
 import java.lang.Thread.UncaughtExceptionHandler;
 
 import net.bnubot.bot.gui.settings.GlobalConfigurationFrame;
-import net.bnubot.bot.gui.wizard.ConnectionWizard;
+import net.bnubot.bot.gui.wizard.FirstConnectionWizard;
 import net.bnubot.core.PluginManager;
 import net.bnubot.core.Profile;
 import net.bnubot.settings.GlobalSettings;
@@ -136,7 +136,7 @@ public class Main {
 
 		if(PluginManager.getEnableGui() && GlobalSettings.firstRun) {
 			// Run the first-run wizard
-			new ConnectionWizard(1).displayAndBlock();
+			new FirstConnectionWizard(1).displayAndBlock();
 
 			GlobalSettings.firstRun = false;
 			GlobalSettings.save();

@@ -24,53 +24,41 @@ import net.bnubot.util.Out;
 /**
  * @author scotta
  */
-public class AbstractWizard {
+public abstract class AbstractWizard {
 
 	private List<AbstractWizardPage> pages = new ArrayList<AbstractWizardPage>();
 
 	private JDialog jd = new JDialog();
-	final JPanel cards;
-
+	private final JPanel cards;
+	private final JButton btnBack;
+	private final JButton btnNext;
+	private final JButton btnFinish;
 	private int currentStep = 0;
 
 	public AbstractWizard(String title) {
 		final CardLayout cardLayout = new CardLayout();
 		cards = new JPanel(cardLayout);
 
-		final JButton btnBack = new JButton("< Back");
-		btnBack.setEnabled(false);
-		final JButton btnNext = new JButton("Next >");
-		final JButton btnFinish = new JButton("Finish");
-		btnFinish.setEnabled(false);
+		btnBack = new JButton("< Back");
+		btnNext = new JButton("Next >");
+		btnFinish = new JButton("Finish");
+
+		setEnableButtons();
 
 		btnBack.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(currentStep == pages.size()-1) {
-					btnNext.setEnabled(true);
-					btnFinish.setEnabled(false);
-				}
-
 				cardLayout.show(cards, Integer.toString(--currentStep));
+				setEnableButtons();
 				pages.get(currentStep).display();
-
-				if(currentStep == 0)
-					btnBack.setEnabled(false);
 			}});
 
 		btnNext.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				AbstractWizardPage page = pages.get(currentStep);
-				if(page.isPageComplete()) {
-					if(currentStep == 0)
-						btnBack.setEnabled(true);
-
+				if(page.isPageComplete() == null) {
 					cardLayout.show(cards, Integer.toString(++currentStep));
+					setEnableButtons();
 					pages.get(currentStep).display();
-
-					if(currentStep == pages.size()-1) {
-						btnNext.setEnabled(false);
-						btnFinish.setEnabled(true);
-					}
 				}
 			}});
 
@@ -78,8 +66,10 @@ public class AbstractWizard {
 			public void actionPerformed(ActionEvent e) {
 				AbstractWizardPage page = pages.get(currentStep);
 				try {
-					if(page.isPageComplete())
+					if(page.isPageComplete() == null) {
+						finish();
 						jd.dispose();
+					}
 				} catch(Exception ex) {
 					Out.popupException(ex);
 				}
@@ -115,6 +105,35 @@ public class AbstractWizard {
 		jd.pack();
 
 		pages.add(page);
+		setEnableButtons();
+	}
+
+	public abstract void finish() throws Exception;
+
+	private void setEnableButtons() {
+		boolean first = (currentStep == 0);
+		boolean last = (currentStep == pages.size() - 1);
+
+		btnBack.setEnabled(!first);
+		btnNext.setEnabled(!last);
+
+		if(last) {
+			btnFinish.setEnabled(true);
+		} else {
+			// If we're not on the last page, determine if all pages are complete
+			boolean done = true;
+			for(AbstractWizardPage awp : pages) {
+				try {
+					if(awp.isPageComplete() != null)
+						throw new Exception();
+				} catch(Exception e) {
+					done = false;
+					break;
+				}
+			}
+			// Enable the finish button if all pages are complete
+			btnFinish.setEnabled(done);
+		}
 	}
 
 	public void displayAndBlock() {
