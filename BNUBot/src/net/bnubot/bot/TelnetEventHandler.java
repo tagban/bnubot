@@ -86,26 +86,35 @@ public class TelnetEventHandler extends EventHandler implements Runnable {
 				while((is.available() == 0) && socket.isConnected())
 					sleep(500);
 
-				do {
-					int b = is.read();
-					while(b == 255) {
-						sleep(500);
-						b = is.read();
-					}
-					if((b != 'c') && (b != 3))
-						break;
+				int loginAttempts = 0;
+				while(!connected && (++loginAttempts < 3)) {
+					if(loginAttempts == 1) {
+						// This is the first login attempt; require them to shake hands
+						int b = is.read();
+						while(b == 255) {
+							sleep(500);
+							b = is.read();
+						}
+						if((b != 'c') && (b != 3))
+							break;
 
-					Out.debug(TelnetEventHandler.class, "Connection established from " + socket.getRemoteSocketAddress().toString());
+						Out.debug(TelnetEventHandler.class, "Connection established from " + socket.getRemoteSocketAddress().toString());
+					}
 
 					sendInternal("Username: ");
 					String username = br.readLine();
+					if(username.length() == 0)
+						username = br.readLine(); // Fool me once, shame on you
+					if(username.length() == 0)
+						continue; // Fool me twice, shame on me
+
 					while(username.charAt(0) < 0x20)
 						username = username.substring(1);
 
 					ConnectionSettings cs = pri.getConnectionSettings();
 					if(!username.equalsIgnoreCase(cs.username)) {
 						sendInternal("1019 Error \"Invalid username\"");
-						break;
+						continue;
 					}
 
 					sendInternal("Password: ");
@@ -113,11 +122,11 @@ public class TelnetEventHandler extends EventHandler implements Runnable {
 
 					if(!password.equalsIgnoreCase(cs.password)) {
 						sendInternal("1019 Error \"Invalid password\"");
-						break;
+						continue;
 					}
 
 					connected = true;
-				} while(false);
+				}
 
 				if(connected) {
 					Out.debug(TelnetEventHandler.class, "Login accepted from " + socket.getRemoteSocketAddress().toString());
