@@ -950,12 +950,7 @@ public class BNCSConnection extends Connection {
 				}
 
 				case SID_WARDEN: {
-					if(warden != null)
-						try {
-							warden.processWardenPacket(is.readFully(), bncsOutputStream);
-							break;
-						} catch(Exception e) {}
-					Out.error(getClass(), "Recieved SID_WARDEN but warden module was not initialized");
+					recieveWarden(is);
 					break;
 				}
 
@@ -969,6 +964,19 @@ public class BNCSConnection extends Connection {
 		}
 
 		return false;
+	}
+
+	private void recieveWarden(BNetInputStream is) {
+		if(warden != null)
+			try {
+				warden.processWardenPacket(is.readFully(), bncsOutputStream);
+				return;
+			} catch(Exception e) {}
+		Out.error(getClass(),
+				"Recieved SID_WARDEN; " +
+				"you will be disconnected from battle.net in 2 minutes. Visit " +
+				"http://forums.clanbnu.net/index.php/topic,681.0.html " +
+				"for more information.");
 	}
 
 	/**
@@ -1780,12 +1788,7 @@ public class BNCSConnection extends Connection {
 				// TODO: SID_CLANMEMBERINFORMATION
 
 				case SID_WARDEN: {
-					if(warden != null)
-						try {
-							warden.processWardenPacket(is.readFully(), bncsOutputStream);
-							break;
-						} catch(Exception e) {}
-					Out.error(getClass(), "Recieved SID_WARDEN but warden module was not initialized");
+					recieveWarden(is);
 					break;
 				}
 
