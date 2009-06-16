@@ -146,12 +146,24 @@ public class ChatQueue extends Thread {
 	private boolean requiresOps(String text) {
 		if(!text.startsWith("/"))
 			return false;
-		if(text.startsWith("/kick ")
-		|| text.startsWith("/ban ")
-		|| text.startsWith("/unban ")
-		|| text.startsWith("/c ")
-		|| text.startsWith("/clan "))
-			return true;
+
+		try {
+			switch(text.charAt(1)) {
+			case 'b':
+				return text.startsWith("/ban");
+			case 'c':
+				return text.startsWith("/c ")
+					|| text.startsWith("/clan ");
+			case 'd':
+				return text.startsWith("/designate ");
+			case 'k':
+				return text.startsWith("/kick ");
+			case 'u':
+				return text.startsWith("/unban ");
+			}
+		} catch(Exception e) {
+			// charAt() probably failed; no ops required
+		}
 		return false;
 	}
 
