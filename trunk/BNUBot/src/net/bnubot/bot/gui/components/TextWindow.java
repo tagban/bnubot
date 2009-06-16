@@ -41,8 +41,8 @@ public class TextWindow extends JScrollPane {
 					if(e.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED))
 						try {
 							BrowserLauncher.openURL(e.getDescription());
-						} catch (Exception e1) {
-							Out.exception(e1);
+						} catch(Exception e1) {
+							Out.error(TextWindow.class, "Couldn't open URL: " + e1.getMessage());
 						}
 				}
 			});
