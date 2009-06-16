@@ -115,7 +115,7 @@ public class ChatQueue extends Thread {
 			} catch (InterruptedException e) {}
 
 			// If there's text in the queue to send
-			while(size() > 0) synchronized(queue) {
+			while(size() > 0) {
 				Connection con = getNextConnection();
 
 				// Check if the con can send text now
@@ -124,7 +124,10 @@ public class ChatQueue extends Thread {
 					break;
 				}
 
-				ByteArray text = queue.remove(0).text;
+				ByteArray text;
+				synchronized(queue) {
+					text = queue.remove(0).text;
+				}
 
 				if(con.isOp() || !requiresOps(text.toString())) {
 					// Write the text out
