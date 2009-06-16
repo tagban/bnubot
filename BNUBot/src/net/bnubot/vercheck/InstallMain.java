@@ -21,10 +21,38 @@ import net.bnubot.util.task.TaskManager;
 public class InstallMain {
 	public static void main(String[] args) throws Exception {
 		boolean gui = true;
+		boolean disableLaunch = false;
 		for(String arg : args) {
 			if(arg.equals("-cli")) {
 				gui = false;
+				continue;
 			}
+
+			if(arg.equals("-v")
+			|| arg.equals("-debug")) {
+				Out.setDebug(true);
+				continue;
+			}
+
+			if(arg.equals("-nolaunch")) {
+				disableLaunch = true;
+				continue;
+			}
+
+			if(arg.equals("-h")
+			|| arg.equals("-help")
+			|| arg.equals("--help")) {
+				// They asked for help
+			} else {
+				System.out.println("Invalid switch");
+			}
+
+			// Show command use
+			System.out.println("Use: java -jar BNUBot-Install.jar [-cli] [-v] [-nolaunch]");
+			System.out.println("\t-cli       Disable graphical interface");
+			System.out.println("\t-v         Enable verbose logging");
+			System.out.println("\t-nolaunch  Disable automatic launching of the bot");
+			return;
 		}
 
 		String downloadFolder = ".";
@@ -35,10 +63,9 @@ public class InstallMain {
 				System.exit(0);
 			downloadFolder = jfc.getSelectedFile().getAbsolutePath();
 		} catch(Exception e) {
+			Out.info(InstallMain.class, "GUI failed to initialize, disabling.");
 			gui = false;
 		}
-
-		Out.setDebug(true);
 
 		String command = "java -jar \"" + downloadFolder + "/BNUBot.jar\"";
 		String jarFileName = "BNUBot.jar";
@@ -94,6 +121,11 @@ public class InstallMain {
 			int ret = rt.exec(cmd_chmod).waitFor();
 			if(ret != 0)
 				throw new IllegalStateException("Failed to execute command [ " + cmd_chmod + " ] error code: " + ret);
+		}
+
+		if(disableLaunch) {
+			Out.info(InstallMain.class, "Install succeeded");
+			System.exit(0);
 		}
 
 		// Ask if we should launch the bot
