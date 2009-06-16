@@ -122,7 +122,6 @@ public class GlobalConfigurationFrame extends JDialog {
 
 	// Debug
 	private JCheckBox chkEnableDebug = null;
-	private JCheckBox chkDebugToGui = null;
 	private List<JCheckBox> chkDebug = null;
 
 	// Buttons
@@ -324,7 +323,6 @@ public class GlobalConfigurationFrame extends JDialog {
 			boxAll = new ConfigPanel();
 			{
 				chkEnableDebug = boxAll.makeCheck("Enable debug logging", Out.isDebug());
-				chkDebugToGui = boxAll.makeCheck("Log debug messages on the GUI", Out.isDebugToGui());
 
 				Properties props = Out.getProperties();
 				chkDebug = new ArrayList<JCheckBox>(props.size());
@@ -459,7 +457,6 @@ public class GlobalConfigurationFrame extends JDialog {
 
 			// Save debug
 			Out.setDebug(chkEnableDebug.isSelected());
-			Out.setDebugToGui(chkDebugToGui.isSelected());
 			for(JCheckBox chk : chkDebug)
 				Out.setDebug(chk.getText(), chk.isSelected());
 
@@ -552,7 +549,6 @@ public class GlobalConfigurationFrame extends JDialog {
 			chkWhisperBack.setSelected(GlobalSettings.whisperBack);
 
 			// Load debug
-			chkDebugToGui.setSelected(Out.isDebugToGui());
 			chkEnableDebug.setSelected(Out.isDebug());
 			for(JCheckBox chk : chkDebug)
 				chk.setSelected(Out.isDebug(chk.getText()));
