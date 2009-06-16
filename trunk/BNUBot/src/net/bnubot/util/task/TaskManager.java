@@ -6,9 +6,7 @@
 package net.bnubot.util.task;
 
 import java.awt.Container;
-
-import net.bnubot.bot.gui.GuiDesktop;
-import net.bnubot.core.PluginManager;
+import java.awt.Window;
 
 /**
  * @author scotta
@@ -17,10 +15,14 @@ public class TaskManager {
 	private static final long serialVersionUID = 641763656953338296L;
 
 	private static Container box = null;
-	private static Container getBox() {
-		if((box == null) && PluginManager.getEnableGui())
-			box = GuiDesktop.getTasksLocation();
-		return box;
+	private static Window window = null;
+
+	public static void setTaskLocation(Container box) {
+		TaskManager.box = box;
+	}
+
+	public static void setWindow(Window window) {
+		TaskManager.window = window;
 	}
 
 	public static Task createTask(String title) {
@@ -34,18 +36,25 @@ public class TaskManager {
 	}
 
 	public static Task createTask(String title, int max, String units) {
-		if(getBox() == null)
+		if(box == null)
 			return new Task();
 
 		TaskGui t = new TaskGui(title, max, units);
 		box.add(t.getComponent());
 		box.setVisible(true);
+		if(window != null) {
+			window.setVisible(true);
+			window.pack();
+		}
 		return t;
 	}
 
 	protected static void complete(TaskGui t) {
 		box.remove(t.getComponent());
-		if(box.getComponentCount() == 0)
+		if(box.getComponentCount() == 0) {
 			box.setVisible(false);
+			if(window != null)
+				window.setVisible(false);
+		}
 	}
 }

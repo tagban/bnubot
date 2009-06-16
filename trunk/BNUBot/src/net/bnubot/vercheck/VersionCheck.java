@@ -104,8 +104,10 @@ public class VersionCheck {
 	 * @throws Exception if an error occurred
 	 */
 	private static boolean doCheckVersion(boolean forceDownload, ReleaseType rt, String jarFileName, String downloadFolder, BNetUser bnSubject, boolean whisperBack) throws Exception {
-		Settings.getSection(null).write(VERSION_CHECK_TIME, System.currentTimeMillis());
-		Settings.store();
+		if(!forceDownload) {
+			Settings.getSection(null).write(VERSION_CHECK_TIME, System.currentTimeMillis());
+			Settings.store();
+		}
 
 		try {
 			String url = "http://www.clanbnu.net/bnubot/version.php?";
