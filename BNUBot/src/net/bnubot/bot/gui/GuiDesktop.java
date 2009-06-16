@@ -63,6 +63,7 @@ import net.bnubot.settings.Settings;
 import net.bnubot.settings.GlobalSettings.TrayIconMode;
 import net.bnubot.util.OperatingSystem;
 import net.bnubot.util.Out;
+import net.bnubot.util.task.TaskManager;
 import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.VersionCheck;
 
@@ -87,6 +88,8 @@ public class GuiDesktop extends JFrame {
 
 	private GuiDesktop() {
 		super();
+
+		TaskManager.setTaskLocation(boxTasks);
 
 		setTitle();
 		initializeGui();
