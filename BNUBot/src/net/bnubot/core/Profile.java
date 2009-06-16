@@ -111,7 +111,7 @@ public class Profile {
 			if(e.canContactUser())
 				user.sendChat("You have insufficient access " + e.getMessage() , whisperBack);
 			else
-				Out.error(Profile.class, user.getFullAccountName() + " does not have access " + e.getMessage());
+				source.dispatchRecieveError(user.getFullAccountName() + " does not have access " + e.getMessage());
 		} catch(Exception e) {
 			Out.exception(e);
 			user.sendChat(e.getClass().getSimpleName() + ": " + e.getMessage(), whisperBack);
