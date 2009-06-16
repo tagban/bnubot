@@ -52,6 +52,9 @@ public abstract class EventHandler {
 	//Connection
 	public void bnetConnected(Connection source) {}
 	public void bnetDisconnected(Connection source) {}
+	public void enterChat(Connection source, BNetUser user) {
+		recieveInfo(source, "Logged in as " + user.getFullLogonName() + ".");
+	}
 	public void titleChanged(Connection source) {}
 
 	//General output
