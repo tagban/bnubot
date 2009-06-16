@@ -12,23 +12,25 @@ If you don't already have a JRE (Java Runtime Environment) version 1.5 or newer,
 
 If you have already have a compatible JDK (Java Development Kit) installed, you may skip this step.
 
-Mac users: You must have OSX 10.4 (Tiger) or 10.5 (Leopard). If you are using an older version of OSX, you will not be able to use BNU-Bot. There are no plans to add support in the future.
+Mac users: You must have OSX 10.4 (Tiger) or newer. If you are using an older version of OSX, you can't run Java 5 programs. There are no plans to add support in the future.
 
 == The BNU-Bot installer ==
-Download the BNU-Bot installer: [http://bnubot.googlecode.com/files/BNUBot-Install-v5.jar]
+Download the BNU-Bot installer: [http://bnubot.googlecode.com/files/BNUBot-Install-v6.jar]
 
 
 = What to do with it =
 == Launch the installer ==
-Double-click on the JAR. Alternatively, you can type `java -jar BNUBot-Install-v5.jar` from a terminal window.
+Double-click on the JAR. Alternatively, you can type `java -jar BNUBot-Install-v5.jar` from a terminal window. Add --help for command-line options.
 
 == Select a location to install BNU-Bot ==
 The installer will download all of the required files, and place them in the folder you select. This may be confusing to OSX users, as the installer will create an Application one directory deeper than one might expect.
 
 
 = Launch the bot! =
+The Installer will prompt you to launch BNU-Bot automatically when it is finished installing. For future reference, you can launch the bot by doing the following:
+
 == Windows ==
-Double-click on BNUBot.exe in the folder where you installed BNU-Bot. For verbose debugging output, use BNUBot-console.exe.
+Double-click on BNUBot.exe in the folder where you installed BNU-Bot.
 
 == OSX ==
 Double-click on the BNUBot Application.
@@ -39,12 +41,10 @@ Double-click on run.sh, or run `./run.sh` from the console in the directory wher
 
 = Get support =
 == Use the forums! ==
-Do not try to contact Camel directly; he'll just tell you to go to the forums. Your question will get more visibility there, and you'll get a response quicker anyways. Keep reading for the link to the forums.
+Do not try to contact Camel directly; he'll just tell you to go to the forums. Your question will get more visibility there, and you'll get a quicker response. [http://forums.clanbnu.net/index.php?board=23.0].
 
-== Can I use Starcraft/Broodwar? ==
-Yes; Hdx was kind enough to release a solution to get around Warden, based heavily on research done by iago. Before you do this, please be aware that this solution is *not entirely safe*. The algorithm used is not complete, and if Blizzard changes the Warden algorithm with the intent to break this workaround, your cdkeys and/or accounts may become banned.
-
-To use this workaround, simply place a copy of Starcraft.exe in your BNU-Bot folder. OSX users will need to option+click on the BNUBot application and select *Show Package Contents* to place the file - but note that you will need a copy of the Windows version of Starcraft.exe. Please do not advertise this feature without the disclaimer.
+== Can I use Starcraft or Warcraft3? ==
+The short answer is yet, but you must follow some extra steps. You can find more information on the forums: [http://forums.clanbnu.net/index.php/topic,681.0.html].
 
 == Help with commands ==
 There is a wiki page documenting the available commands in BNU-Bot: [Commands]
@@ -53,7 +53,7 @@ There is a wiki page documenting the available commands in BNU-Bot: [Commands]
 There is a wiki page documenting how to use trivia in BNU-Bot: [Trivia]
 
 == Ask questions ==
-There is a support form for BNU-Bot on clanbnu.net's forums: [http://forums.clanbnu.net/index.php?board=23.0]. Please be sure to check the recent topics to see if your question has already been answered, since most issues pop up there shortly after being discovered.
+There is a support forum for BNU-Bot on clanbnu.net's forums: [http://forums.clanbnu.net/index.php?board=23.0]. Please be sure to check the recent topics to see if your question has already been answered, since most issues pop up there shortly after being discovered.
 
 == Report a bug ==
 If you experience a bug, please consult the support forum before reporting an issue. It's very likely that someone else has had the same problem, and there is already a known solution.
