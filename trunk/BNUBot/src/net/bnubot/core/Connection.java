@@ -34,6 +34,7 @@ import net.bnubot.util.BNetUser;
 import net.bnubot.util.ByteArray;
 import net.bnubot.util.MirrorSelector;
 import net.bnubot.util.Out;
+import net.bnubot.util.OutputHandler;
 import net.bnubot.util.TimeFormatter;
 import net.bnubot.util.UserProfile;
 import net.bnubot.util.Wildcard;
@@ -47,7 +48,7 @@ import net.bnubot.vercheck.CurrentVersion;
 /**
  * @author scotta
  */
-public abstract class Connection extends Thread {
+public abstract class Connection extends Thread implements OutputHandler {
 	public enum ConnectionState {
 		DO_NOT_ALLOW_CONNECT,
 		LONG_PAUSE_BEFORE_CONNECT,

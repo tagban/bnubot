@@ -19,7 +19,6 @@ import java.util.Properties;
 import javax.swing.JOptionPane;
 
 import net.bnubot.bot.gui.GuiDesktop;
-import net.bnubot.core.Connection;
 import net.bnubot.core.PluginManager;
 import net.bnubot.settings.Settings;
 
@@ -30,10 +29,9 @@ import net.bnubot.settings.Settings;
  */
 public class Out {
 	private static PrintStream outStream = System.out;
-	private static final ThreadLocal<Connection> outConnection = new ThreadLocal<Connection>();
-	private static Connection outConnectionDefault = null;
+	private static final ThreadLocal<OutputHandler> outHandler = new ThreadLocal<OutputHandler>();
+	private static OutputHandler outHandlerDefault = null;
 	private static boolean globalDebug = Settings.getSection(null).read("debug", false);
-	private static boolean debugToGui = Settings.getSection(null).read("debugToGui", true);
 	private static final Properties debug = new SortedProperties();
 	private static final File debugFile = new File("debug.properties");
 	static {
@@ -71,14 +69,14 @@ public class Out {
 		return out;
 	}
 
-	private static Connection getOutConnection() {
+	private static OutputHandler getOutputHandler() {
 		Thread t = Thread.currentThread();
-		if(t instanceof Connection)
-			return (Connection)t;
-		final Connection oc = outConnection.get();
-		if(oc != null)
-			return oc;
-		return outConnectionDefault;
+		if(t instanceof OutputHandler)
+			return (OutputHandler)t;
+		final OutputHandler oh = outHandler.get();
+		if(oh != null)
+			return oh;
+		return outHandlerDefault;
 	}
 
 	/**
@@ -86,8 +84,8 @@ public class Out {
 	 * @param e the <code>Throwable</code> source
 	 */
 	public static void exception(Throwable e) {
-		final Connection oc = getOutConnection();
-		if(oc != null)
+		final OutputHandler oh = getOutputHandler();
+		if(oh != null)
 			error(e.getClass(), e.getMessage());
 		// Do not log UnloggedExceptions
 		if(!(e instanceof UnloggedException))
@@ -160,9 +158,9 @@ public class Out {
 	 * @param text text to show
 	 */
 	public static void error(Class<?> source, String text) {
-		final Connection oc = getOutConnection();
-		if(oc != null)
-			oc.dispatchRecieveError("(" + source.getSimpleName() + ") " + text);
+		final OutputHandler oh = getOutputHandler();
+		if(oh != null)
+			oh.dispatchRecieveError("(" + source.getSimpleName() + ") " + text);
 		else if(outStream != null)
 			outStream.println("[" + TimeFormatter.getTimestamp() + "] (" + source.getSimpleName() + ") ERROR " + text);
 	}
@@ -183,9 +181,9 @@ public class Out {
 	 * @param text text to show
 	 */
 	public static void debugAlways(Class<?> source, String text) {
-		final Connection oc = getOutConnection();
-		if(debugToGui && (oc != null))
-			oc.dispatchRecieveDebug("(" + source.getSimpleName() + ") " + text);
+		final OutputHandler oh = getOutputHandler();
+		if(oh != null)
+			oh.dispatchRecieveDebug("(" + source.getSimpleName() + ") " + text);
 		else if(outStream != null)
 			outStream.println("[" + TimeFormatter.getTimestamp() + "] (" + source.getSimpleName() + ") DEBUG " + text);
 	}
@@ -196,9 +194,9 @@ public class Out {
 	 * @param text text to show
 	 */
 	public static void info(Class<?> source, String text) {
-		final Connection oc = getOutConnection();
-		if(oc != null)
-			oc.dispatchRecieveInfo("(" + source.getSimpleName() + ") " + text);
+		final OutputHandler oh = getOutputHandler();
+		if(oh != null)
+			oh.dispatchRecieveInfo("(" + source.getSimpleName() + ") " + text);
 		else if(outStream != null)
 			outStream.println("[" + TimeFormatter.getTimestamp() + "] (" + source.getSimpleName() + ") INFO " + text);
 	}
@@ -213,19 +211,19 @@ public class Out {
 	}
 
 	/**
-	 * Sets the Connection for the information to be displayed to for this thread.
-	 * @param g Connection to send messages to
+	 * Sets the OutputHandler for the information to be displayed to for this thread.
+	 * @param oh OutputHandler to send messages to
 	 */
-	public static void setThreadOutputConnection(Connection g) {
-		outConnection.set(g);
+	public static void setThreadOutputConnection(OutputHandler oh) {
+		outHandler.set(oh);
 	}
 
 	/**
-	 * Sets the Connection for the information to be displayed to when none is specified for the thread
-	 * @param g Connection to send messages to
+	 * Sets the OutputHandler for the information to be displayed to when none is specified for the thread
+	 * @param oh OutputHandler to send messages to
 	 */
-	public static void setDefaultOutputConnection(Connection g) {
-		outConnectionDefault = g;
+	public static void setDefaultOutputConnection(OutputHandler oh) {
+		outHandlerDefault = oh;
 	}
 
 	/**
@@ -271,26 +269,6 @@ public class Out {
 	 */
 	public static boolean isDebug() {
 		return globalDebug;
-	}
-
-	/**
-	 * Sets whether debugging messages should be shown on the GUI
-	 * @param debug true means debugging messages will be shown on the GUI
-	 */
-	public static void setDebugToGui(boolean debug) {
-		if(debugToGui == debug)
-			return;
-		debugToGui = debug;
-		Settings.getSection(null).write("debugToGui", debugToGui);
-		Settings.store();
-	}
-
-	/**
-	 * Gets whether debugging messages should be shown on the GUI
-	 * @return true when debugging messages will be shown on the GUI
-	 */
-	public static boolean isDebugToGui() {
-		return debugToGui;
 	}
 
 	/**
