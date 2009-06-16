@@ -86,7 +86,7 @@ public class ChatQueue extends Thread {
 		}
 
 		if(requiresOps(text.toString())) {
-			if(sendTextOp(text))
+			if(sendTextOp(text, 1)) // Only make one attempt to send the command
 				return true;
 			Out.error(getClass(), "Failed send command: " + text);
 			return false;
@@ -132,7 +132,7 @@ public class ChatQueue extends Thread {
 					continue;
 				}
 
-				if(!sendTextOp(text))
+				if(!sendTextOp(text, 2)) // Make two attempts in case we're logging in
 					Out.error(getClass(), "Failed to send chat, no available operators: " + text);
 			}
 		}
@@ -167,19 +167,44 @@ public class ChatQueue extends Thread {
 		return false;
 	}
 
-	private boolean sendTextOp(ByteArray text) {
-		for(int i = 0; i < cons.size(); i++) {
+	/**
+	 * @param text Ops command to send
+	 * @param numAttempts Number of attempts to make, wait one second between attempts
+	 * @return true if the command was sent
+	 */
+	private boolean sendTextOp(ByteArray text, int numAttempts) {
+		CONS: for(int i = 0; i < cons.size(); i++) {
 			Connection c = getNextConnection();
 			if(!c.isOp())
 				continue;
-			while(!c.canSendChat())
+			long startedWaiting = System.currentTimeMillis();
+			while(!c.canSendChat()) {
 				try {
 					yield();
 					sleep(100);
 				} catch (InterruptedException e) {}
+				// If the Connection's channel or myUser gets set null,
+				// canSendChat() will never return true. It shouldn't
+				// ever happen, but let's warn the user just in case.
+				if(System.currentTimeMillis() - startedWaiting > 1000 * 10) {
+					// We've waited 10 seconds, and still can't send chat
+					Out.error(ChatQueue.class, "Waited 10 seconds for canSendChat() on " + c.toString() + "; giving up");
+					continue CONS;
+				}
+			}
 			c.sendChatCommand(text);
 			return true;
 		}
+
+		if(numAttempts > 1) {
+			// Make another attempt; wait 1 second first
+			try {
+				yield();
+				sleep(1000);
+			} catch (InterruptedException e) {}
+			return sendTextOp(text, numAttempts - 1);
+		}
+
 		return false;
 	}
 
