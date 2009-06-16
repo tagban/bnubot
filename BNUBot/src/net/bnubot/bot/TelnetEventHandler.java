@@ -22,8 +22,8 @@ import net.bnubot.core.EventHandler;
 import net.bnubot.core.Profile;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.util.BNetUser;
-import net.bnubot.util.UnloggedException;
 import net.bnubot.util.Out;
+import net.bnubot.util.UnloggedException;
 import net.bnubot.util.crypto.HexDump;
 
 /**
@@ -32,6 +32,27 @@ import net.bnubot.util.crypto.HexDump;
 public class TelnetEventHandler extends EventHandler implements Runnable {
 	private static boolean initialized = false;
 	private List<ChatConnection> connections = new ArrayList<ChatConnection>();
+
+	private enum ChatEvent {
+		USER(1001),
+		JOIN(1002),
+		LEAVE(1003),
+		WHISPERRECIEVED(1004),
+		TALK(1005),
+		BROADCAST(1006),
+		CHANNEL(1007),
+		WHISPERSENT(1010),
+		INFO(1018),
+		ERROR(1019),
+		EMOTE(1023),
+		KEEPALIVE(2000),
+		NAME(2010);
+
+		public final int id;
+		ChatEvent(int id) {
+			this.id = id;
+		}
+	}
 
 	public TelnetEventHandler(Profile profile) {
 		super(profile);
@@ -130,10 +151,10 @@ public class TelnetEventHandler extends EventHandler implements Runnable {
 
 				if(connected) {
 					Out.debug(TelnetEventHandler.class, "Login accepted from " + socket.getRemoteSocketAddress().toString());
-					send("2010 NAME " + pri.getMyUser().getShortLogonName());
-					send("1007 CHANNEL \"" + pri.getChannel() + "\"");
+					dispatch(ChatEvent.NAME, pri.getMyUser().getShortLogonName());
+					dispatch(ChatEvent.CHANNEL, quoteText(pri.getChannel()));
 					for(BNetUser user : pri.getUsers())
-						send("1001 USER " + user.getShortLogonName() + " " + HexDump.toHexWord(user.getFlags()) + " [" + user.getStatString().getProduct().name() + "] " + user.getPing().toString());
+						dispatchUserDetail(ChatEvent.USER, user);
 				} else
 					send("Login failed");
 
@@ -184,46 +205,69 @@ public class TelnetEventHandler extends EventHandler implements Runnable {
 		}
 	}
 
+	private void dispatch(ChatEvent event, String details) {
+		dispatch(event.id + " " + event.name() + " " + details);
+	}
+
+	private void dispatch(ChatEvent event, String username, int flags, String text) {
+		dispatch(event, username + " " + HexDump.toHexWord(flags) + " " + text);
+	}
+
+	private void dispatch(ChatEvent event, BNetUser user, String text) {
+		dispatch(event, user.getShortLogonName(), user.getFlags(), text);
+	}
+
+	private void dispatchUserDetail(ChatEvent event, BNetUser user) {
+		dispatch(event, user, "[" + user.getStatString().getProduct().name() + "] " + user.getPing().toString());
+	}
+
 	@Override
 	public void channelUser(Connection source, BNetUser user) {
-		dispatch("1001 USER " + user.getShortLogonName() + " " + HexDump.toHexWord(user.getFlags()) + " [" + user.getStatString().getProduct().name() + "] " + user.getPing().toString());
+		dispatchUserDetail(ChatEvent.USER, user);
 	}
 
 	@Override
 	public void channelJoin(Connection source, BNetUser user) {
-		dispatch("1002 JOIN " + user.getShortLogonName() + " " + HexDump.toHexWord(user.getFlags()) + " [" + user.getStatString().getProduct().name() + "] " + user.getPing().toString());
+		dispatchUserDetail(ChatEvent.JOIN, user);
 	}
 
 	@Override
 	public void channelLeave(Connection source, BNetUser user) {
-		dispatch("1003 LEAVE " + user.getShortLogonName());
+		dispatch(ChatEvent.LEAVE, user.getShortLogonName());
 	}
 
 	@Override
 	public void whisperRecieved(Connection source, BNetUser user, String text) {
-		dispatch("1004 WHISPERRECIEVED " + user.getShortLogonName() + " " + HexDump.toHexWord(user.getFlags()) + " " + quoteText(text));
+		dispatch(ChatEvent.WHISPERRECIEVED, user, quoteText(text));
 	}
 
 	@Override
 	public void recieveChat(Connection source, BNetUser user, String text) {
 		if(source.getProfile().isOneOfMyUsers(user))
 			return;
-		dispatch("1005 TALK " + user.getShortLogonName() + " " + HexDump.toHexWord(user.getFlags()) + " " + quoteText(text));
+		dispatch(ChatEvent.TALK, user, quoteText(text));
+	}
+
+	@Override
+	public void recieveBroadcast(Connection source, String username, int flags, String text) {
+		dispatch(ChatEvent.BROADCAST, username, flags, quoteText(text));
 	}
 
 	@Override
 	public void joinedChannel(Connection source, String channel) {
-		dispatch("1007 CHANNEL " + quoteText(channel));
+		dispatch(ChatEvent.CHANNEL, quoteText(channel));
 	}
+
+	//1009 USERFLAGS [username] [flags]
 
 	@Override
 	public void whisperSent(Connection source, BNetUser user, String text) {
-		dispatch("1010 WHISPERSENT " + user.getShortLogonName() + " " + HexDump.toHexWord(user.getFlags()) + " " + quoteText(text));
+		dispatch(ChatEvent.WHISPERSENT, user, quoteText(text));
 	}
 
 	@Override
 	public void recieveInfo(Connection source, String text) {
-		dispatch("1018 INFO \"" + text + "\"");
+		dispatch(ChatEvent.INFO, quoteText(text));
 	}
 
 	@Override
@@ -233,7 +277,7 @@ public class TelnetEventHandler extends EventHandler implements Runnable {
 
 	@Override
 	public void recieveError(Connection source, String text) {
-		dispatch("1019 Error \"" + text + "\"");
+		dispatch(ChatEvent.ERROR, quoteText(text));
 	}
 
 	@Override
@@ -243,6 +287,14 @@ public class TelnetEventHandler extends EventHandler implements Runnable {
 
 	@Override
 	public void recieveEmote(Connection source, BNetUser user, String text) {
-		dispatch("1023 EMOTE " + user.getShortLogonName() + " " + HexDump.toHexWord(user.getFlags()) + " " + quoteText(text));
+		dispatch(ChatEvent.EMOTE, user, quoteText(text));
 	}
+
+	// 2000 is a keepalive
+
+	@Override
+	public void enterChat(Connection source, BNetUser user) {
+		dispatch(ChatEvent.NAME, user.getShortLogonName());
+	}
+
 }

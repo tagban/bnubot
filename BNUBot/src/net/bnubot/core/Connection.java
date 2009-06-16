@@ -1086,6 +1086,13 @@ public abstract class Connection extends Thread {
 		}
 	}
 
+	protected void dispatchEnterChat(BNetUser user) {
+		synchronized(eventHandlers) {
+			for(EventHandler eh : eventHandlers)
+				eh.enterChat(this, user);
+		}
+	}
+
 	private void dispatchParseCommand(BNetUser user, String command, boolean whisperBack) {
 		if(DatabaseContext.getContext() == null)
 			return;

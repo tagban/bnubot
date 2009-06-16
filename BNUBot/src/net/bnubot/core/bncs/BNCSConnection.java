@@ -911,19 +911,15 @@ public class BNCSConnection extends Connection {
 
 					myUser = new BNetUser(this, uniqueUserName, cs.myRealm);
 					myUser.setStatString(myStatString);
-					dispatchRecieveInfo("Logged in as " + myUser.getFullLogonName()
-							+ ".");
+					dispatchEnterChat(myUser);
 					dispatchTitleChanged();
 
 					// We are officially logged in!
 
 					// Get MOTD
 					if (GlobalSettings.displayBattleNetMOTD) {
-						BNCSPacket p = new BNCSPacket(
-								this, BNCSPacketId.SID_NEWS_INFO);
-						p
-								.writeDWord((int) (new java.util.Date()
-										.getTime() / 1000)); // timestamp
+						BNCSPacket p = new BNCSPacket(this, BNCSPacketId.SID_NEWS_INFO);
+						p.writeDWord((int) (new java.util.Date().getTime() / 1000)); // timestamp
 						p.sendPacket(bncsOutputStream);
 					}
 
