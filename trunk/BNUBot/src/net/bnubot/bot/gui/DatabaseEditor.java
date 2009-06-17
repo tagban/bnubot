@@ -299,7 +299,10 @@ public class DatabaseEditor {
 			ccb.addChangeListener(cl);
 			valueComponent = ccb;
 		} else if(fieldType.equals(int.class) && attr.getName().equals("flagSpoof")) {
-			final ConfigFlagChecks cfc = new ConfigFlagChecks((Integer)value);
+			int flags = 0;
+			if(value != null)
+				flags = ((Integer)value).intValue();
+			final ConfigFlagChecks cfc = new ConfigFlagChecks(flags);
 			cfc.addFocusListener(new FocusListener() {
 				public void focusGained(FocusEvent e) {}
 				public void focusLost(FocusEvent e) {
