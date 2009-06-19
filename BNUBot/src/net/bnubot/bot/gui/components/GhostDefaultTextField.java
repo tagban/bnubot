@@ -4,6 +4,7 @@
  */
 package net.bnubot.bot.gui.components;
 
+import java.awt.Color;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
@@ -16,7 +17,12 @@ import java.awt.event.MouseListener;
 public class GhostDefaultTextField extends ConfigTextField implements MouseListener, FocusListener {
 	private static final long serialVersionUID = 5908386893553368742L;
 
-	private String defaultText;
+	private static final Color ghostColor = Color.GRAY;
+
+	private final Color defaultColor;
+	private final String defaultText;
+
+	private boolean ghosted = false;
 
 	/**
 	 * @param defaultText
@@ -24,23 +30,39 @@ public class GhostDefaultTextField extends ConfigTextField implements MouseListe
 	public GhostDefaultTextField(String defaultText) {
 		super(defaultText);
 		this.defaultText = defaultText;
+		this.defaultColor = getForeground();
 		addMouseListener(this);
 		addFocusListener(this);
-		setEnabled(false);
+
+		setGhosted(true);
 	}
 
 	public void reset() {
-		setEnabled(false);
-		super.setText(defaultText);
+		setGhosted(true);
 	}
 
 	public boolean isGhosted() {
 		if((getText() == null) || (getText().length() == 0))
 			return true;
-		return !isEnabled();
+		return ghosted;
 	}
 
-	public void focusGained(FocusEvent e) {}
+	private void setGhosted(boolean ghosted) {
+		if(ghosted != this.ghosted) {
+			this.ghosted = ghosted;
+			if(ghosted) {
+				setForeground(ghostColor);
+				super.setText(defaultText);
+			} else {
+				setForeground(defaultColor);
+				super.setText(null);
+			}
+		}
+	}
+
+	public void focusGained(FocusEvent e) {
+		setGhosted(false);
+	}
 	public void focusLost(FocusEvent e) {
 		if((getText() == null) || (getText().length() == 0))
 			reset();
@@ -48,12 +70,12 @@ public class GhostDefaultTextField extends ConfigTextField implements MouseListe
 
 	@Override
 	public void setText(String t) {
-		setEnabled(true);
+		setGhosted(false);
 		super.setText(t);
 	}
 
 	public void mouseClicked(MouseEvent e) {
-		if(isEnabled())
+		if(!ghosted)
 			return;
 		setText(null);
 		requestFocus();

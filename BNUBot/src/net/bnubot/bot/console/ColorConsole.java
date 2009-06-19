@@ -1,9 +1,16 @@
+/**
+ * This file is distributed under the GPL
+ * $Id$
+ */
 package net.bnubot.bot.console;
 
 import java.io.PrintStream;
 
 import net.bnubot.util.TimeFormatter;
 
+/**
+ * @author scotta
+ */
 public class ColorConsole {
 	public enum ColorConstant {
 		FG_BLACK(30),
