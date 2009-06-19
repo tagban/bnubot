@@ -103,25 +103,27 @@ public class DatabaseContext {
 		}
 
 		for(Account account : (List<Account>)context.performQuery(new SelectQuery(Account.class))) {
+			// Only consider users with no BnLogins
 			if(account.getBnLogins().size() != 0)
 				continue;
-			if(account.getRecruits().size() != 0) {
-				// Give them 0 access
-				account.setRank(Rank.get(0));
+
+			// Only consider users with positive access; banlisted users shouldn't expire
+			// This also prevents the recruiter from being flooded with mail
+			if(account.getRank().getAccess() <= 0)
 				continue;
-			}
 
 			Account recruiter = account.getRecruiter();
 			if(recruiter != null)
 				try {
+					// Notify the recruiter that the user is inactive
 					Mail.send(null, recruiter, "Your recruit [ " + account.getName() + " ] has been removed due to inactivity");
 				} catch (Exception e) {
 					Out.exception(e);
 					break;
 				}
 
-			Out.error(DatabaseContext.class, "Removing " + account.getName() + " which has no active BNLogins");
-			context.deleteObject(account);
+			// Don't actually remove them from the DB, just set them to no access
+			account.setRank(Rank.get(0));
 			Thread.yield();
 		}
 
