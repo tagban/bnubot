@@ -24,8 +24,6 @@ import net.bnubot.util.UnloggedException;
  * @author scotta
  */
 public class LockdownEventHandler extends EventHandler {
-	private static final String CHANNEL_CLOSED = "The clan channel is now private and only clan members may enter.";
-	private static final String CHANNEL_OPEN = "The clan channel is now public and anyone can enter.";
 	public static final long LOCKDOWN_DURATION = 5 * 60 * 1000; // 5 minutes
 
 	public LockdownEventHandler(Profile profile) {
@@ -50,10 +48,18 @@ public class LockdownEventHandler extends EventHandler {
 					user.sendChat("Failed to locate lockdown module", whisperBack);
 					return;
 				}
-				if(leh.lockdownEnabled)
+				if(leh.lockdownEnabled) {
+					// Lockdown is on; turn it off
 					leh.endLockdown(source);
-				else
-					leh.startLockdown(source);
+				} else {
+					if(leh.lockdownPossible) {
+						// Lockdown is off; turn it on
+						leh.startLockdown(source);
+					} else {
+						// Lockdown is not possible
+						user.sendChat("Lockdown is not possible; I must be an operator of a Clan channel", whisperBack);
+					}
+				}
 			} });
 	}
 
@@ -69,6 +75,7 @@ public class LockdownEventHandler extends EventHandler {
 	private static final long MULTIUSER_SIZE_LIMIT = 20;
 	private static final long MULTIUSER_TIME_LIMIT = 5000;
 
+	private boolean lockdownPossible = false;
 	private boolean lockdownEnabled = false;
 	private Connection lockdownThreadSource = null;
 	private final Runnable lockdownThread = new Runnable() {
@@ -84,6 +91,9 @@ public class LockdownEventHandler extends EventHandler {
 	};
 
 	private void floodEvent(Connection source, BNetUser user) {
+		if(!lockdownPossible)
+			return;
+
 		long now = System.currentTimeMillis();
 
 		// Detect multi-user floods
@@ -131,38 +141,41 @@ public class LockdownEventHandler extends EventHandler {
 	}
 
 	private void startLockdown(Connection source) {
-		if(lockdownEnabled)
+		if(lockdownEnabled || !lockdownPossible)
 			return;
 		source.sendChat("/c priv", Integer.MAX_VALUE);
+		source.sendChat("Lockdown enabled.");
 		lockdownEnabled = true;
+		lockdownThreadSource = source;
+		new Thread(lockdownThread).start();
 	}
 
 	private void endLockdown(final Connection source) {
 		if(!lockdownEnabled)
 			return;
 		source.sendChat("/c pub", Integer.MAX_VALUE);
+		source.sendChat("Lockdown disabled.");
 		lockdownEnabled = false;
 	}
 
 	@Override
-	public void recieveServerInfo(Connection source, String text) {
-		if(!lockdownEnabled && CHANNEL_OPEN.equals(text)) {
-			source.sendChat("Lockdown disabled.");
-			return;
-		}
-
-		if(lockdownEnabled && CHANNEL_CLOSED.equals(text)) {
-			lockdownThreadSource = source;
-			new Thread(lockdownThread).start();
-			source.sendChat("Lockdown enabled.");
-			return;
+	public void joinedChannel(Connection source, String channel) {
+		lockdownPossible = false;
+		if(lockdownEnabled) {
+			source.dispatchRecieveError("Warning, you've left a channel in lockdown!");
+			lockdownEnabled = false;
 		}
 	}
 
 	@Override
-	public void joinedChannel(Connection source, String channel) {
-		if((channel != null)
-		&& channel.startsWith("Clan ")) {
+	public void channelUser(Connection source, BNetUser user) {
+		// Check if lockdown has become possible
+		if(!lockdownPossible
+		&& source.getProfile().isOneOfMyUsers(user)
+		&& ((user.getFlags() & 2) != 0)
+		&& (source.getChannel() != null)
+		&& source.getChannel().startsWith("Clan ")) {
+			lockdownPossible = true;
 			source.sendChat("/c pub");
 			source.sendChat("/o unigpub");
 		}
