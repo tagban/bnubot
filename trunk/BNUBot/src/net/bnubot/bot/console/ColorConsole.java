@@ -2,6 +2,8 @@ package net.bnubot.bot.console;
 
 import java.io.PrintStream;
 
+import net.bnubot.util.TimeFormatter;
+
 public class ColorConsole {
 	public enum ColorConstant {
 		FG_BLACK(30),
@@ -35,9 +37,10 @@ public class ColorConsole {
 	}
 
 	public ColorConsole begin() {
-		color();
-		out.print("[00:00:00] ");
-		return this;
+		return color()
+		.string("[")
+		.string(TimeFormatter.getTimestamp())
+		.string("] ");
 	}
 
 	public void end() {

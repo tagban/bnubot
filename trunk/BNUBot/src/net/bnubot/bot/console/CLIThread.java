@@ -26,8 +26,9 @@ public class CLIThread extends Thread {
 			while(!disabled) {
 				if(System.in.available() > 0) {
 					int b = System.in.read();
-					if(b == '\n') {
-						c.sendChatInternal(text);
+					if((b == '\r') || (b == '\n')) {
+						if(text.length() > 0)
+							c.sendChatInternal(text);
 						text = "";
 					} else {
 						text += (char)b;
