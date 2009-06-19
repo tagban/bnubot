@@ -2,7 +2,6 @@
  * This file is distributed under the GPL
  * $Id$
  */
-
 package net.bnubot.bot.console;
 
 import net.bnubot.core.Connection;
