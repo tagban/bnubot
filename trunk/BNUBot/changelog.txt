@@ -19,6 +19,7 @@
 * Added a connection configuration wizard
 * SID_WARDEN error message has a link to Warden FAQ
 * Fixed a race condition that could deadlock when greetings are sent
+* Console plugin now supports color
 
 2.1.0 (r1640) 2008-10-06:
 * Added BotNet account login
