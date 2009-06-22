@@ -109,10 +109,6 @@ public class Diablo2ColorScheme extends ColorScheme {
 
 	@Override
 	public Color getWhisperColor(int flags) {
-		if((flags & 0x01) != 0)	return D2Cyan; //PRIORITY_BLIZZARD_REP;
-		if((flags & 0x08) != 0)	return D2Cyan; //PRIORITY_BNET_REP;
-		if((flags & 0x04) != 0)	return D2LtYellow; //PRIORITY_SPEAKER;
-		if((flags & 0x40) != 0)	return D2LtYellow; //PRIORITY_BIZZARD_GUEST;
 		return D2Gray; //PRIORITY_NORMAL;
 	}
 }

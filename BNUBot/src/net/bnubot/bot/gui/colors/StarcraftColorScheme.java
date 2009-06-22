@@ -105,10 +105,6 @@ public class StarcraftColorScheme extends ColorScheme {
 
 	@Override
 	public Color getWhisperColor(int flags) {
-		if((flags & 0x01) != 0)	return SCCyan; //PRIORITY_BLIZZARD_REP;
-		if((flags & 0x08) != 0)	return SCCyan; //PRIORITY_BNET_REP;
-		if((flags & 0x04) != 0)	return SCYellow; //PRIORITY_SPEAKER;
-		if((flags & 0x40) != 0)	return SCYellow; //PRIORITY_BIZZARD_GUEST;
 		return SCGray; //PRIORITY_NORMAL;
 	}
 
