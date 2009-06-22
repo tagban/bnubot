@@ -16,6 +16,7 @@ import net.bnubot.util.Out;
 public abstract class ColorScheme {
 	public static final byte COLORSCHEME_STARCRAFT = (byte)0x01;
 	public static final byte COLORSCHEME_DIABLO2 = (byte)0x02;
+	public static final byte COLORSCHEME_INVIG = (byte)0x03;
 
 	public static ColorScheme colors = null;
 	public static ColorScheme getColors() {
@@ -30,6 +31,8 @@ public abstract class ColorScheme {
 			return new StarcraftColorScheme();
 		case COLORSCHEME_DIABLO2:
 			return new Diablo2ColorScheme();
+		case COLORSCHEME_INVIG:
+			return new InvigorationColorScheme();
 		}
 		Out.error(ColorScheme.class, "Unknown ColorScheme id " + Byte.toString(colorScheme));
 		return null;

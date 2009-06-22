@@ -20,7 +20,8 @@
 * SID_WARDEN error message has a link to Warden FAQ
 * Fixed a race condition that could deadlock when greetings are sent
 * Console plugin now supports color
-* Inactive accounts are set to zero access instead of being deleted 
+* Inactive accounts are set to zero access instead of being deleted
+* Added color scheme from Invigoration
 
 2.1.0 (r1640) 2008-10-06:
 * Added BotNet account login

@@ -285,7 +285,7 @@ public class GlobalConfigurationFrame extends JDialog {
 				cmbTSFormat = boxAll.makeCombo("TimeStamp", values, true);
 				cmbTSFormat.setSelectedItem(TimeFormatter.tsFormat);
 
-				values = new String[] { "Starcraft", "Diablo 2" };
+				values = new String[] { "Starcraft", "Diablo 2", "Invigoration" };
 				cmbColorScheme = boxAll.makeCombo("Color Scheme", values, false);
 				cmbColorScheme.setSelectedIndex(GlobalSettings.colorScheme - 1);
 
