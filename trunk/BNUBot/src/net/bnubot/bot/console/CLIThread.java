@@ -5,7 +5,7 @@
 package net.bnubot.bot.console;
 
 import net.bnubot.core.Connection;
-import net.bnubot.util.Out;
+import net.bnubot.logging.Out;
 
 /**
  * @author scotta

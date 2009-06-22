@@ -6,7 +6,7 @@ package net.bnubot.settings;
 
 import java.util.TimeZone;
 
-import net.bnubot.util.Out;
+import net.bnubot.logging.Out;
 
 /**
  * @author scotta

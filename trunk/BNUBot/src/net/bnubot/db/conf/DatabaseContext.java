@@ -11,7 +11,7 @@ import net.bnubot.db.Account;
 import net.bnubot.db.BNLogin;
 import net.bnubot.db.Mail;
 import net.bnubot.db.Rank;
-import net.bnubot.util.Out;
+import net.bnubot.logging.Out;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataContext;

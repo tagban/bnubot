@@ -12,9 +12,9 @@ import java.net.SocketException;
 import net.bnubot.core.Connection;
 import net.bnubot.core.Connection.ConnectionState;
 import net.bnubot.core.bncs.BNCSPacketId;
+import net.bnubot.logging.Out;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetOutputStream;
-import net.bnubot.util.Out;
 import net.bnubot.util.crypto.HexDump;
 
 /**

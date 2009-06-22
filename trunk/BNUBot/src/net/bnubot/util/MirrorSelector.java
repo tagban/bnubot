@@ -15,6 +15,7 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
+import net.bnubot.logging.Out;
 import net.bnubot.settings.GlobalSettings;
 
 /**

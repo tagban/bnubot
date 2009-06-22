@@ -22,9 +22,9 @@ import javax.swing.JOptionPane;
 
 import net.bnubot.bot.gui.wizard.DatabaseWizard;
 import net.bnubot.core.PluginManager;
+import net.bnubot.logging.Out;
 import net.bnubot.settings.DatabaseSettings;
 import net.bnubot.settings.Settings;
-import net.bnubot.util.Out;
 
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;

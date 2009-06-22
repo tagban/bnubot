@@ -9,6 +9,7 @@ import net.bnubot.core.Connection;
 import net.bnubot.db.Account;
 import net.bnubot.db.Rank;
 import net.bnubot.db.conf.DatabaseContext;
+import net.bnubot.logging.Out;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.ReleaseType;

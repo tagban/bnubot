@@ -12,8 +12,8 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 
 import net.bnubot.JARLoader;
+import net.bnubot.logging.Out;
 import net.bnubot.settings.DatabaseSettings;
-import net.bnubot.util.Out;
 
 import org.apache.cayenne.access.ConnectionLogger;
 import org.apache.cayenne.conf.Configuration;

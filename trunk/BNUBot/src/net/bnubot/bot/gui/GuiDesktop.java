@@ -58,11 +58,11 @@ import net.bnubot.db.CommandAlias;
 import net.bnubot.db.CustomDataObject;
 import net.bnubot.db.Mail;
 import net.bnubot.db.Rank;
+import net.bnubot.logging.Out;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.settings.Settings;
 import net.bnubot.settings.GlobalSettings.TrayIconMode;
 import net.bnubot.util.OperatingSystem;
-import net.bnubot.util.Out;
 import net.bnubot.util.task.TaskManager;
 import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.VersionCheck;
@@ -142,7 +142,7 @@ public class GuiDesktop extends JFrame {
 					}
 
 					// Set the default output window
-					Out.setDefaultOutputConnection(gui.getFirstConnection());
+					Out.setDefaultOutputHandler(gui.getFirstConnection());
 
 					// Store the selected GUI
 					selectedGui = gui;

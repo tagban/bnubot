@@ -16,8 +16,8 @@ import javax.swing.BoxLayout;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 
+import net.bnubot.logging.Out;
 import net.bnubot.util.BrowserLauncher;
-import net.bnubot.util.Out;
 import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.VersionNumber;
 

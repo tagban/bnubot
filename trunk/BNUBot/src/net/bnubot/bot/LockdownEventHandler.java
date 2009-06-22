@@ -16,8 +16,8 @@ import net.bnubot.db.Account;
 import net.bnubot.db.BNLogin;
 import net.bnubot.db.Rank;
 import net.bnubot.db.conf.DatabaseContext;
+import net.bnubot.logging.Out;
 import net.bnubot.util.BNetUser;
-import net.bnubot.util.Out;
 import net.bnubot.util.UnloggedException;
 
 /**

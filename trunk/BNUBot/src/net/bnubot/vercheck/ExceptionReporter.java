@@ -17,7 +17,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.bnubot.Main;
-import net.bnubot.util.Out;
+import net.bnubot.logging.Out;
+import net.bnubot.logging.PrintStreamOutputLogger;
 
 import org.xml.sax.InputSource;
 
@@ -29,7 +30,7 @@ public class ExceptionReporter {
 	public static void main(String[] args) throws Exception {
 		File logFile = new File("log.txt");
 
-		Out.setOutputStream(new PrintStream(logFile));
+		Out.setOutputLogger(new PrintStreamOutputLogger(new PrintStream(logFile)));
 		Out.info(Main.class, "asdf");
 		Out.error(Main.class, "test");
 		Out.exception(new Exception(new Exception("test")));

@@ -7,8 +7,8 @@ package net.bnubot.bot.gui.colors;
 
 import java.awt.Color;
 
+import net.bnubot.logging.Out;
 import net.bnubot.settings.GlobalSettings;
-import net.bnubot.util.Out;
 
 /**
  * @author scotta

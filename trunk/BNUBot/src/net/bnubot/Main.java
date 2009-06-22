@@ -15,9 +15,10 @@ import net.bnubot.bot.gui.settings.GlobalConfigurationFrame;
 import net.bnubot.bot.gui.wizard.FirstConnectionWizard;
 import net.bnubot.core.PluginManager;
 import net.bnubot.core.Profile;
+import net.bnubot.logging.Out;
+import net.bnubot.logging.PrintStreamOutputLogger;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.settings.Settings;
-import net.bnubot.util.Out;
 import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.ExceptionReporter;
 import net.bnubot.vercheck.ReleaseType;
@@ -52,7 +53,7 @@ public class Main {
 				&& logFile.exists()
 				&& (logFile.length() > 0))
 					ExceptionReporter.reportErrors(logFile);
-				Out.setOutputStream(new PrintStream(logFile));
+				Out.setOutputLogger(new PrintStreamOutputLogger(new PrintStream(logFile)));
 			} catch(Exception e) {
 				Out.popupException(e);
 			}
@@ -94,7 +95,7 @@ public class Main {
 				case 'l':
 					if(args[i].equals("-logfile")) {
 						try {
-							Out.setOutputStream(new PrintStream(new File(args[++i])));
+							Out.setOutputLogger(new PrintStreamOutputLogger(new PrintStream(new File(args[++i]))));
 						} catch (FileNotFoundException e) {
 							Out.exception(e);
 						}

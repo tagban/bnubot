@@ -21,7 +21,7 @@ import javax.swing.SwingUtilities;
 import net.bnubot.bot.gui.WindowPosition;
 import net.bnubot.bot.gui.components.ConfigPanel;
 import net.bnubot.bot.gui.components.ConfigValueChangeListener;
-import net.bnubot.util.Out;
+import net.bnubot.logging.Out;
 
 /**
  * @author scotta

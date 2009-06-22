@@ -2,7 +2,7 @@
  * This file is distributed under the GPL
  * $Id$
  */
-package net.bnubot.util;
+package net.bnubot.logging;
 
 /**
  * @author scotta

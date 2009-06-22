@@ -67,10 +67,10 @@ import net.bnubot.core.botnet.BotNetConnection;
 import net.bnubot.core.botnet.BotNetUser;
 import net.bnubot.core.clan.ClanMember;
 import net.bnubot.core.friend.FriendEntry;
+import net.bnubot.logging.Out;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.settings.Settings;
 import net.bnubot.util.BNetUser;
-import net.bnubot.util.Out;
 import net.bnubot.util.crypto.HexDump;
 
 /**

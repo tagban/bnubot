@@ -28,7 +28,7 @@ import net.bnubot.bot.gui.icons.BNetIcon;
 import net.bnubot.bot.gui.icons.IconsDotBniReader;
 import net.bnubot.core.Connection;
 import net.bnubot.core.botnet.BotNetUser;
-import net.bnubot.util.Out;
+import net.bnubot.logging.Out;
 
 /**
  * @author scotta

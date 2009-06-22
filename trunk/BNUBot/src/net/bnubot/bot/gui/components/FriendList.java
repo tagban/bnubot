@@ -19,7 +19,7 @@ import net.bnubot.bot.gui.colors.ColorScheme;
 import net.bnubot.bot.gui.icons.BNetIcon;
 import net.bnubot.bot.gui.icons.IconsDotBniReader;
 import net.bnubot.core.friend.FriendEntry;
-import net.bnubot.util.Out;
+import net.bnubot.logging.Out;
 
 /**
  * @author scotta

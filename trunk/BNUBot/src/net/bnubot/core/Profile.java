@@ -21,10 +21,10 @@ import net.bnubot.db.Command;
 import net.bnubot.db.Mail;
 import net.bnubot.db.Rank;
 import net.bnubot.db.conf.DatabaseContext;
+import net.bnubot.logging.Out;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetUser;
-import net.bnubot.util.Out;
 import net.bnubot.util.task.Task;
 import net.bnubot.util.task.TaskManager;
 
@@ -203,7 +203,7 @@ public class Profile {
 	}
 
 	private boolean insertConnection(Connection con) throws Exception {
-		Out.setThreadOutputConnection(con);
+		Out.setThreadOutputHandler(con);
 
 		synchronized(cons) {
 			// Add it to the list of connections

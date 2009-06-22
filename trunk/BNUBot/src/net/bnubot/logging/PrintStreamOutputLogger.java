@@ -2,9 +2,11 @@
  * This file is distributed under the GPL
  * $Id$
  */
-package net.bnubot.util;
+package net.bnubot.logging;
 
 import java.io.PrintStream;
+
+import net.bnubot.util.TimeFormatter;
 
 /**
  * @author scotta

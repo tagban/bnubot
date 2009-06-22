@@ -11,8 +11,8 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
+import net.bnubot.logging.Out;
 import net.bnubot.util.OperatingSystem;
-import net.bnubot.util.Out;
 import net.bnubot.util.task.TaskManager;
 
 /**

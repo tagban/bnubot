@@ -15,7 +15,7 @@ import java.net.URL;
 import java.util.Date;
 import java.util.Properties;
 
-import net.bnubot.util.Out;
+import net.bnubot.logging.Out;
 import net.bnubot.util.SortedProperties;
 
 /**

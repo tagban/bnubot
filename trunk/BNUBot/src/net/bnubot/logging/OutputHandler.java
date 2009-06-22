@@ -2,7 +2,7 @@
  * This file is distributed under the GPL
  * $Id$
  */
-package net.bnubot.util;
+package net.bnubot.logging;
 
 /**
  * An OutputHandler is a device that displays information the

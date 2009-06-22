@@ -15,7 +15,7 @@ import javax.swing.JFrame;
 import javax.swing.JTextArea;
 
 import net.bnubot.core.Connection;
-import net.bnubot.util.Out;
+import net.bnubot.logging.Out;
 
 /**
  * @author scotta

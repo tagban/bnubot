@@ -23,10 +23,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import net.bnubot.core.BNFTPConnection;
+import net.bnubot.logging.Out;
 import net.bnubot.settings.Settings;
 import net.bnubot.util.BNetInputStream;
 import net.bnubot.util.BNetOutputStream;
-import net.bnubot.util.Out;
 import net.bnubot.util.crypto.HexDump;
 
 import org.eclipse.swt.graphics.Image;

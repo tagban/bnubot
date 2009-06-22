@@ -12,9 +12,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import net.bnubot.core.botnet.BotNetConnection;
+import net.bnubot.logging.Out;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.ByteArray;
-import net.bnubot.util.Out;
 
 /**
  * @author scotta

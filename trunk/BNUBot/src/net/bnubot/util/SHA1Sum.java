@@ -10,6 +10,8 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.security.MessageDigest;
 
+import net.bnubot.logging.Out;
+
 /**
  * @author scotta
  */
