@@ -28,7 +28,7 @@ import net.bnubot.settings.Settings;
  * @author scotta
  */
 public class Out {
-	private static PrintStream outStream = System.out;
+	private static OutputLogger outLogger = new PrintStreamOutputLogger(System.out);
 	private static final ThreadLocal<OutputHandler> outHandler = new ThreadLocal<OutputHandler>();
 	private static OutputHandler outHandlerDefault = null;
 	private static boolean globalDebug = Settings.getSection(null).read("debug", false);
@@ -89,14 +89,7 @@ public class Out {
 			error(e.getClass(), e.getMessage());
 		// Do not log UnloggedExceptions
 		if(!(e instanceof UnloggedException))
-			logException(e);
-	}
-
-	private static void logException(Throwable e) {
-		if(outStream != null)
-			e.printStackTrace(outStream);
-		else
-			e.printStackTrace();
+			outLogger.exception(e);
 	}
 
 	/**
@@ -125,7 +118,7 @@ public class Out {
 		if(isModal)
 			dialog.setModal(true);
 
-		logException(e);
+		outLogger.exception(e);
 	}
 
 	/**
@@ -133,7 +126,7 @@ public class Out {
 	 * @param e the <code>Throwable</code> source
 	 */
 	public static void popupException(Throwable e) {
-		logException(e);
+		outLogger.exception(e);
 		try {
 			JOptionPane.showMessageDialog(
 					null,
@@ -161,8 +154,8 @@ public class Out {
 		final OutputHandler oh = getOutputHandler();
 		if(oh != null)
 			oh.dispatchRecieveError("(" + source.getSimpleName() + ") " + text);
-		else if(outStream != null)
-			outStream.println("[" + TimeFormatter.getTimestamp() + "] (" + source.getSimpleName() + ") ERROR " + text);
+		else
+			outLogger.error(source, text);
 	}
 
 	/**
@@ -184,8 +177,8 @@ public class Out {
 		final OutputHandler oh = getOutputHandler();
 		if(oh != null)
 			oh.dispatchRecieveDebug("(" + source.getSimpleName() + ") " + text);
-		else if(outStream != null)
-			outStream.println("[" + TimeFormatter.getTimestamp() + "] (" + source.getSimpleName() + ") DEBUG " + text);
+		else
+			outLogger.debug(source, text);
 	}
 
 	/**
@@ -197,8 +190,8 @@ public class Out {
 		final OutputHandler oh = getOutputHandler();
 		if(oh != null)
 			oh.dispatchRecieveInfo("(" + source.getSimpleName() + ") " + text);
-		else if(outStream != null)
-			outStream.println("[" + TimeFormatter.getTimestamp() + "] (" + source.getSimpleName() + ") INFO " + text);
+		else
+			outLogger.info(source, text);
 	}
 
 	/**
@@ -206,8 +199,17 @@ public class Out {
 	 * to asdf, admin output stream, file logging, etc..
 	 * @param s PrintStream to send information to.
 	 */
+	@Deprecated
 	public static void setOutputStream(PrintStream s) {
-		outStream = s;
+		setOutputLogger(new PrintStreamOutputLogger(s));
+	}
+
+	/**
+	 * Sets the output logger for the information to be displayed to
+	 * @param ol OutputLogger to send log data to
+	 */
+	public static void setOutputLogger(OutputLogger ol) {
+		outLogger = ol;
 	}
 
 	/**
