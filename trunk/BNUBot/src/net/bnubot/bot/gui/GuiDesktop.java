@@ -141,9 +141,6 @@ public class GuiDesktop extends JFrame {
 						gui.setDividerLocation(selectedGui.getDividerLocation());
 					}
 
-					// Set the default output window
-					Out.setDefaultOutputHandler(gui.getFirstConnection());
-
 					// Store the selected GUI
 					selectedGui = gui;
 
