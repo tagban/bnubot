@@ -86,7 +86,6 @@ public class Profile {
 			source.dispatchRecieveError("You have insufficient access " + e.getMessage());
 		} catch(Exception e) {
 			Out.exception(e);
-			source.dispatchRecieveError(e.getClass().getSimpleName() + ": " + e.getMessage());
 		}
 		return true;
 	}
