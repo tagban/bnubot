@@ -128,6 +128,7 @@ public class GuiDesktop extends JFrame {
 			public void stateChanged(ChangeEvent e) {
 				JTabbedPane jtp = (JTabbedPane)e.getSource();
 				JPanel jp = (JPanel)jtp.getSelectedComponent();
+
 				for(final GuiEventHandler gui : guis) {
 					if(jp != gui.getFrame())
 						continue;
@@ -140,6 +141,9 @@ public class GuiDesktop extends JFrame {
 						// Set the divider to the same place the last one was
 						gui.setDividerLocation(selectedGui.getDividerLocation());
 					}
+
+					// Set the default output window
+					Out.setDefaultOutputHandler(gui.getFirstConnection());
 
 					// Store the selected GUI
 					selectedGui = gui;

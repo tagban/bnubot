@@ -31,6 +31,7 @@ import net.bnubot.util.UnloggedException;
 public class Out {
 	private static OutputLogger outLogger = new PrintStreamOutputLogger(System.out);
 	private static final ThreadLocal<OutputHandler> outHandler = new ThreadLocal<OutputHandler>();
+	private static OutputHandler outHandlerDefault = null;
 	private static boolean globalDebug = Settings.getSection(null).read("debug", false);
 	private static final Properties debug = new SortedProperties();
 	private static final File debugFile = new File("debug.properties");
@@ -73,7 +74,10 @@ public class Out {
 		Thread t = Thread.currentThread();
 		if(t instanceof OutputHandler)
 			return (OutputHandler)t;
-		return outHandler.get();
+		final OutputHandler oh = outHandler.get();
+		if(oh != null)
+			return oh;
+		return outHandlerDefault;
 	}
 
 	/**
@@ -205,6 +209,14 @@ public class Out {
 	 */
 	public static void setThreadOutputHandler(OutputHandler oh) {
 		outHandler.set(oh);
+	}
+
+	/**
+	 * Sets the OutputHandler for the information to be displayed to when none is specified for the thread
+	 * @param oh OutputHandler to send messages to
+	 */
+	public static void setDefaultOutputHandler(OutputHandler oh) {
+		outHandlerDefault = oh;
 	}
 
 	/**
