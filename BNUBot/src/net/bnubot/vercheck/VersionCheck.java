@@ -16,11 +16,11 @@ import javax.swing.JOptionPane;
 
 import net.bnubot.core.ChatQueue;
 import net.bnubot.core.PluginManager;
+import net.bnubot.logging.Out;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.settings.Settings;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.OperatingSystem;
-import net.bnubot.util.Out;
 import net.bnubot.util.SHA1Sum;
 import net.bnubot.util.URLDownloader;
 

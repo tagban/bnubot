@@ -20,9 +20,9 @@ import java.util.List;
 import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.Profile;
+import net.bnubot.logging.Out;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.util.BNetUser;
-import net.bnubot.util.Out;
 import net.bnubot.util.UnloggedException;
 import net.bnubot.util.crypto.HexDump;
 

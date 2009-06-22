@@ -21,8 +21,8 @@ import javax.swing.UIManager;
 
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.PluginManager;
+import net.bnubot.logging.Out;
 import net.bnubot.settings.Settings;
-import net.bnubot.util.Out;
 
 /**
  * A class for loading classes from JARs in the lib folder

@@ -31,9 +31,9 @@ import net.bnubot.bot.gui.icons.IconsDotBniReader;
 import net.bnubot.core.ChannelListPriority;
 import net.bnubot.core.Connection;
 import net.bnubot.core.bncs.ProductIDs;
+import net.bnubot.logging.Out;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetUser;
-import net.bnubot.util.Out;
 
 /**
  * @author scotta

@@ -16,13 +16,13 @@ import net.bnubot.core.EventHandler;
 import net.bnubot.core.Profile;
 import net.bnubot.core.bncs.BNCSConnection;
 import net.bnubot.core.bncs.ProductIDs;
+import net.bnubot.logging.Out;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetInputStream;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.ByteArray;
 import net.bnubot.util.MirrorSelector;
-import net.bnubot.util.Out;
 import net.bnubot.util.crypto.HexDump;
 import net.bnubot.util.task.Task;
 

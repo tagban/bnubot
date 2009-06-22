@@ -41,7 +41,7 @@ import net.bnubot.bot.gui.components.ConfigFlagChecks;
 import net.bnubot.bot.gui.components.ConfigTextField;
 import net.bnubot.db.CustomDataObject;
 import net.bnubot.db.conf.DatabaseContext;
-import net.bnubot.util.Out;
+import net.bnubot.logging.Out;
 import net.bnubot.util.TimeFormatter;
 import net.bnubot.util.UnloggedException;
 

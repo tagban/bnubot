@@ -10,8 +10,8 @@ import java.util.List;
 
 import net.bnubot.db.auto._Account;
 import net.bnubot.db.conf.DatabaseContext;
+import net.bnubot.logging.Out;
 import net.bnubot.util.BNetUser;
-import net.bnubot.util.Out;
 
 import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.ObjectContext;

@@ -3,7 +3,7 @@
  * $Id$
  */
 
-package net.bnubot.util;
+package net.bnubot.logging;
 
 import java.awt.Component;
 import java.awt.Dialog;
@@ -11,7 +11,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Properties;
@@ -21,6 +20,8 @@ import javax.swing.JOptionPane;
 import net.bnubot.bot.gui.GuiDesktop;
 import net.bnubot.core.PluginManager;
 import net.bnubot.settings.Settings;
+import net.bnubot.util.SortedProperties;
+import net.bnubot.util.UnloggedException;
 
 /**
  * An output class, modified from JBLS
@@ -195,16 +196,6 @@ public class Out {
 	}
 
 	/**
-	 * Sets the output stream for the information to be displayed to. Can be set
-	 * to asdf, admin output stream, file logging, etc..
-	 * @param s PrintStream to send information to.
-	 */
-	@Deprecated
-	public static void setOutputStream(PrintStream s) {
-		setOutputLogger(new PrintStreamOutputLogger(s));
-	}
-
-	/**
 	 * Sets the output logger for the information to be displayed to
 	 * @param ol OutputLogger to send log data to
 	 */
@@ -216,7 +207,7 @@ public class Out {
 	 * Sets the OutputHandler for the information to be displayed to for this thread.
 	 * @param oh OutputHandler to send messages to
 	 */
-	public static void setThreadOutputConnection(OutputHandler oh) {
+	public static void setThreadOutputHandler(OutputHandler oh) {
 		outHandler.set(oh);
 	}
 
@@ -224,7 +215,7 @@ public class Out {
 	 * Sets the OutputHandler for the information to be displayed to when none is specified for the thread
 	 * @param oh OutputHandler to send messages to
 	 */
-	public static void setDefaultOutputConnection(OutputHandler oh) {
+	public static void setDefaultOutputHandler(OutputHandler oh) {
 		outHandlerDefault = oh;
 	}
 

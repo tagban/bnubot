@@ -21,9 +21,9 @@ import net.bnubot.bot.gui.colors.ColorScheme;
 import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.Profile;
+import net.bnubot.logging.Out;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetUser;
-import net.bnubot.util.Out;
 import net.bnubot.util.StatString;
 import net.bnubot.util.crypto.HexDump;
 

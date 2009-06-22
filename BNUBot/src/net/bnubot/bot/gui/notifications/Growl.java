@@ -11,7 +11,7 @@ package net.bnubot.bot.gui.notifications;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
-import net.bnubot.util.Out;
+import net.bnubot.logging.Out;
 
 /**
  * A class that encapsulates the "work" of talking to growl

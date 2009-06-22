@@ -14,9 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.bnubot.core.RealmConnection;
+import net.bnubot.logging.Out;
 import net.bnubot.util.BNetInputStream;
 import net.bnubot.util.BNetOutputStream;
-import net.bnubot.util.Out;
 import net.bnubot.util.StatString;
 import net.bnubot.util.crypto.HexDump;
 

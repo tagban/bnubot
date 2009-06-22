@@ -23,7 +23,7 @@ import net.bnubot.core.RealmEventHandler;
 import net.bnubot.core.bncs.BNCSConnection;
 import net.bnubot.core.mcp.MCPCharacter;
 import net.bnubot.core.mcp.MCPConnection;
-import net.bnubot.util.Out;
+import net.bnubot.logging.Out;
 
 /**
  * @author scotta

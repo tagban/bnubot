@@ -10,7 +10,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.Properties;
 
-import net.bnubot.util.Out;
+import net.bnubot.logging.Out;
 import net.bnubot.util.SortedProperties;
 import net.bnubot.vercheck.CurrentVersion;
 

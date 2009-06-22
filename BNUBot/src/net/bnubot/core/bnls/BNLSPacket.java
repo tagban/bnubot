@@ -9,9 +9,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.SocketException;
 
+import net.bnubot.logging.Out;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetOutputStream;
-import net.bnubot.util.Out;
 import net.bnubot.util.crypto.HexDump;
 
 /**

@@ -10,10 +10,10 @@ import java.net.Socket;
 import net.bnubot.core.Connection;
 import net.bnubot.core.Profile;
 import net.bnubot.core.bncs.ProductIDs;
+import net.bnubot.logging.Out;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.util.BNetInputStream;
 import net.bnubot.util.BNetOutputStream;
-import net.bnubot.util.Out;
 import net.bnubot.util.task.Task;
 
 /**

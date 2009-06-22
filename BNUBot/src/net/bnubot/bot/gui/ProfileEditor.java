@@ -19,7 +19,7 @@ import javax.swing.SwingUtilities;
 import net.bnubot.bot.gui.components.ConfigPanel;
 import net.bnubot.bot.gui.components.ConfigTextField;
 import net.bnubot.core.Connection;
-import net.bnubot.util.Out;
+import net.bnubot.logging.Out;
 import net.bnubot.util.UserProfile;
 
 /**

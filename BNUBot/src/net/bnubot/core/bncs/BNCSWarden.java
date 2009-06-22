@@ -8,7 +8,7 @@ package net.bnubot.core.bncs;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import net.bnubot.util.Out;
+import net.bnubot.logging.Out;
 
 import org.jbls.Warden.SimpleCrypto;
 import org.jbls.Warden.WardenModule;

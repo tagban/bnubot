@@ -12,11 +12,11 @@ import java.util.Date;
 
 import net.bnubot.core.bncs.PlatformIDs;
 import net.bnubot.core.bncs.ProductIDs;
+import net.bnubot.logging.Out;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.settings.Settings;
 import net.bnubot.util.BNetInputStream;
 import net.bnubot.util.BNetOutputStream;
-import net.bnubot.util.Out;
 import net.bnubot.util.TimeFormatter;
 
 /**

@@ -18,7 +18,7 @@ import net.bnubot.JARLoader;
 import net.bnubot.bot.gui.GuiDesktop;
 import net.bnubot.bot.swt.SWTDesktop;
 import net.bnubot.core.PluginManager;
-import net.bnubot.util.Out;
+import net.bnubot.logging.Out;
 import net.bnubot.util.TimeFormatter;
 import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.ReleaseType;

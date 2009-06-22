@@ -10,6 +10,7 @@ import java.io.IOException;
 
 import net.bnubot.core.bncs.IconIDs;
 import net.bnubot.core.bncs.ProductIDs;
+import net.bnubot.logging.Out;
 import net.bnubot.util.crypto.HexDump;
 
 /**

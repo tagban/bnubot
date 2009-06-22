@@ -7,7 +7,7 @@ package net.bnubot.db;
 
 import net.bnubot.db.auto._CommandAlias;
 import net.bnubot.db.conf.DatabaseContext;
-import net.bnubot.util.Out;
+import net.bnubot.logging.Out;
 
 import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.exp.Expression;

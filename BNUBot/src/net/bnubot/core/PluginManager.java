@@ -19,8 +19,8 @@ import net.bnubot.bot.console.ConsoleEventHandler;
 import net.bnubot.bot.gui.GuiEventHandler;
 import net.bnubot.bot.swt.SWTEventHandler;
 import net.bnubot.bot.trivia.TriviaEventHandler;
+import net.bnubot.logging.Out;
 import net.bnubot.settings.Settings;
-import net.bnubot.util.Out;
 
 /**
  * @author scotta

@@ -19,10 +19,10 @@ import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
 import net.bnubot.bot.gui.colors.ColorScheme;
+import net.bnubot.logging.Out;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.BrowserLauncher;
-import net.bnubot.util.Out;
 import net.bnubot.util.TimeFormatter;
 
 /**
