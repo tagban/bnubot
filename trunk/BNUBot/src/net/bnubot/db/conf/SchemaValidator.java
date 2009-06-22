@@ -22,10 +22,12 @@ import javax.swing.JOptionPane;
 
 import net.bnubot.bot.gui.wizard.DatabaseWizard;
 import net.bnubot.core.PluginManager;
+import net.bnubot.db.Account;
 import net.bnubot.logging.Out;
 import net.bnubot.settings.DatabaseSettings;
 import net.bnubot.settings.Settings;
 
+import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DbGenerator;
@@ -39,6 +41,7 @@ import org.apache.cayenne.merge.ExecutingMergerContext;
 import org.apache.cayenne.merge.MergerContext;
 import org.apache.cayenne.merge.MergerToken;
 import org.apache.cayenne.merge.SetAllowNullToDb;
+import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 
@@ -112,6 +115,7 @@ public class SchemaValidator {
 
 				if(nonAutoMergeTokens.size() == 0) {
 					Out.debug(SchemaValidator.class, "No upgrade necessary");
+					checkRunWizard(schemaValid);
 					return true;
 				}
 
@@ -165,16 +169,36 @@ public class SchemaValidator {
 				}
 
 				Out.info(SchemaValidator.class, "Default values added");
-
-				if(PluginManager.getEnableGui())
-					new DatabaseWizard();
 			}
 
+			checkRunWizard(schemaValid);
 			return true;
 		} catch(Exception e) {
-			Out.error(SchemaValidator.class, "Failed to initialize the database: " + e.getMessage());
+			Out.exception(e);
 			return false;
 		}
+	}
+
+	/**
+	 * Check if the DB wizard can and should run
+	 */
+	private static void checkRunWizard(boolean schemaValid) {
+		// Don't display the wizard if the GUI is disabled
+		if(!PluginManager.getEnableGui())
+			return;
+
+		// If the schema was not rebuilt...
+		if(schemaValid) {
+			// Search for any account in the DB
+			SelectQuery query = new SelectQuery(Account.class);
+			Account a = (Account)DataObjectUtils.objectForQuery(DatabaseContext.getContext(), query);
+			// Only open the wizard if there are no accounts
+			if(a != null)
+				return;
+		}
+
+		// There are no accounts in the database; run the wizard
+		new DatabaseWizard();
 	}
 
 	/**
