@@ -244,6 +244,7 @@ public class Profile {
 		}
 		t.complete();
 
+		Out.setThreadOutputHandler(null);
 		return true;
 	}
 
