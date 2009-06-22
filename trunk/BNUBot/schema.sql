@@ -34,23 +34,6 @@ INSERT INTO rank (id, shortPrefix, prefix, verbstr, greeting, expireDays, apDays
 (35, 'Gen', 'General', NULL, '/me hails %1$s with ping %2$d', 90, NULL, NULL, NULL, NULL, NULL, NULL),
 (36, NULL, 'Master', 'is my master', '/me hails %1$s with ping %2$d', 90, NULL, NULL, NULL, NULL, NULL, NULL);
 
-INSERT INTO account (id, access, name, createdby, created, trivia_correct, trivia_win, flag_spoof) VALUES
-(1, 36,	'Camel', NULL, CURRENT_TIMESTAMP, 0, 0, 0),
-(2, 35,	'John', 1, CURRENT_TIMESTAMP, 0, 0, 0),
-(3, 34,	'Sorceress', 1, CURRENT_TIMESTAMP, 0, 0, 0);
-
-INSERT INTO bnlogin (login, account, created, lastSeen) VALUES
-('BNU-Camel@USEast', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('BNU-Camel2@USEast', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('BNU-Camel@Azeroth', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('BNU-MaStEr@USEast', 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('BNU-MaStEr@Azeroth', 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('Tagban@USEast', 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('Tagban@Azeroth', 2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('BNU-Sorceress@Azeroth', 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('BNU-Loyalty@Azeroth', 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-('SoRcOwNeD@USEast', 3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
-
 INSERT INTO command (access, name, description, cmdgroup) VALUES
 (1,		'access', 'Get the commands avalible to the user', 'commands'),
 (34,	'add', 'Set access', 'accounts'),
@@ -101,6 +84,7 @@ INSERT INTO command (access, name, description, cmdgroup) VALUES
 INSERT INTO command_alias (alias, name) VALUES
 ('commands', 'access'),
 ('help', 'access'),
+('aa', 'addalias'),
 ('ap', 'autopromotion'),
 ('apinfo', 'autopromotion'),
 ('shutup', 'clearqueue'),
@@ -110,6 +94,7 @@ INSERT INTO command_alias (alias, name) VALUES
 ('version', 'info'),
 ('rc', 'reconnect'),
 ('ra', 'renameaccount'),
+('rj', 'rejoin'),
 ('sa', 'setaccount'),
 ('sr', 'setrecruiter'),
 ('sweep', 'sweepban');
