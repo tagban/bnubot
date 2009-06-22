@@ -32,11 +32,13 @@ import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DbGenerator;
 import org.apache.cayenne.conf.Configuration;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.merge.AddColumnToDb;
 import org.apache.cayenne.merge.AddRelationshipToDb;
 import org.apache.cayenne.merge.CreateTableToDb;
 import org.apache.cayenne.merge.DbMerger;
+import org.apache.cayenne.merge.DropTableToDb;
 import org.apache.cayenne.merge.ExecutingMergerContext;
 import org.apache.cayenne.merge.MergerContext;
 import org.apache.cayenne.merge.MergerToken;
@@ -64,6 +66,7 @@ public class SchemaValidator {
 		DataMap dataMap = domain.getMap("BNUBotMap");
 
 		DataSource dataSource = dataNode.getDataSource();
+		DbAdapter adapter = dataNode.getAdapter();
 
 		try {
 			// Check if the schema is up to par
@@ -80,9 +83,9 @@ public class SchemaValidator {
 				Out.error(SchemaValidator.class, "The database requires rebuilding");
 
 				// Generate schema from the mapping file
-				DbGenerator generator = new DbGenerator(dataNode.getAdapter(), dataMap);
-				generator.setShouldCreateFKConstraints(true);
-				generator.setShouldCreatePKSupport(false);
+				DbGenerator generator = new DbGenerator(adapter, dataMap);
+				generator.setShouldCreateFKConstraints(adapter.supportsFkConstraints());
+				generator.setShouldCreatePKSupport(!adapter.supportsGeneratedKeys());
 				generator.setShouldCreateTables(true);
 				generator.setShouldDropPKSupport(true);
 				generator.setShouldDropTables(true);
@@ -100,6 +103,13 @@ public class SchemaValidator {
 
 				List<MergerToken> nonAutoMergeTokens = new ArrayList<MergerToken>();
 				for(MergerToken mt : allMergeTokens) {
+					if(mt instanceof DropTableToDb) {
+						// Why would you want to drop AUTO_PK_SUPPORT?
+						DropTableToDb drop = (DropTableToDb)mt;
+						if(drop.getEntity().getName().equals("AUTO_PK_SUPPORT"))
+							continue;
+					}
+
 					if((mt instanceof AddRelationshipToDb)
 					|| (mt instanceof CreateTableToDb)
 					|| (mt instanceof AddColumnToDb)
