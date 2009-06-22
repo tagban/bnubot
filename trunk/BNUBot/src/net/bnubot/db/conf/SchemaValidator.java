@@ -27,7 +27,6 @@ import net.bnubot.logging.Out;
 import net.bnubot.settings.DatabaseSettings;
 import net.bnubot.settings.Settings;
 
-import org.apache.cayenne.DataObjectUtils;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DbGenerator;
@@ -201,9 +200,9 @@ public class SchemaValidator {
 		if(schemaValid) {
 			// Search for any account in the DB
 			SelectQuery query = new SelectQuery(Account.class);
-			Account a = (Account)DataObjectUtils.objectForQuery(DatabaseContext.getContext(), query);
+			List<?> accounts = DatabaseContext.getContext().performQuery(query);
 			// Only open the wizard if there are no accounts
-			if(a != null)
+			if(accounts.size() > 0)
 				return;
 		}
 
