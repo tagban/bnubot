@@ -22,14 +22,16 @@ import org.apache.cayenne.query.SelectQuery;
  * @author scotta
  */
 public class DatabaseContext {
-	private static ThreadLocal<ObjectContext> contexts = new ThreadLocal<ObjectContext>();
+	private static ThreadLocal<ObjectContext> contexts = null;
 	private static long lastFlush = 0;
 
 	static {
 		try {
 			Configuration.initializeSharedConfiguration();
+			if(SchemaValidator.validate())
+				contexts = new ThreadLocal<ObjectContext>();
 		} catch(Exception e) {
-			contexts = null;
+			Out.exception(e);
 		}
 	}
 
