@@ -158,13 +158,15 @@ public class SchemaValidator {
 				vr = mc.getValidationResult();
 			}
 
-			for(ValidationFailure vf : vr.getFailures()) {
-				// Don't bother the user with these
-				if(vf.getSource().toString().startsWith("DROP TABLE "))
-					continue;
-				Out.error(SchemaValidator.class,
-						vf.getDescription().toString() + "\n" +
-						vf.getSource().toString());
+			if(vr != null) {
+				for(ValidationFailure vf : vr.getFailures()) {
+					// Don't bother the user with these
+					if(vf.getSource().toString().startsWith("DROP TABLE "))
+						continue;
+					Out.error(SchemaValidator.class,
+							vf.getDescription().toString() + "\n" +
+							vf.getSource().toString());
+				}
 			}
 
 			if(!schemaValid) {
