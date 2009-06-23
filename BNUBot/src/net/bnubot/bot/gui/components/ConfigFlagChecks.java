@@ -17,6 +17,7 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import net.bnubot.bot.gui.colors.ColorScheme;
 import net.bnubot.bot.gui.icons.BNetIcon;
 import net.bnubot.bot.gui.icons.IconsDotBniReader;
 
@@ -44,6 +45,7 @@ public class ConfigFlagChecks extends Box {
 
 	public ConfigFlagChecks(int flags) {
 		super(BoxLayout.Y_AXIS);
+		ColorScheme colors = ColorScheme.getColors();
 
 		for(BNetIcon bni : IconsDotBniReader.getIcons()) {
 			int f = bni.getFlags();
@@ -53,10 +55,12 @@ public class ConfigFlagChecks extends Box {
 			JCheckBox cb = new JCheckBox("", false);
 			Box b = new Box(BoxLayout.X_AXIS);
 			b.add(cb);
-			b.add(new JLabel(
+			JLabel jl = new JLabel(
 					" 0x" + Integer.toHexString(f),
 					bni.getIcon(),
-					SwingConstants.LEFT));
+					SwingConstants.LEFT);
+			jl.setForeground(colors.getUserNameColor(f));
+			b.add(jl);
 			b.add(Box.createHorizontalGlue());
 			add(b);
 

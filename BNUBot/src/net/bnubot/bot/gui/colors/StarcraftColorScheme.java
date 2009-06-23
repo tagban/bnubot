@@ -18,6 +18,7 @@ public class StarcraftColorScheme extends ColorScheme {
 	public static final Color SCLtGray = Color.LIGHT_GRAY;
 	public static final Color SCGray = Color.GRAY;
 	public static final Color SCBlack = Color.BLACK;
+	public static final Color SCMagenta = Color.MAGENTA;
 	public static final Color SCCyan = Color.CYAN;
 	public static final Color SCYellow = Color.YELLOW;
 
@@ -55,10 +56,10 @@ public class StarcraftColorScheme extends ColorScheme {
 	public Color getUserNameColor(int flags) {
 		if((flags & 0x20) != 0)	return SCRed;
 		if((flags & 0x01) != 0)	return SCCyan; //PRIORITY_BLIZZARD_REP;
-		if((flags & 0x08) != 0)	return SCCyan; //PRIORITY_BNET_REP;
+		if((flags & 0x08) != 0)	return SCGreen; //PRIORITY_BNET_REP;
 		if((flags & 0x02) != 0)	return SCWhite; //PRIORITY_OPERATOR;
 		if((flags & 0x04) != 0)	return SCYellow; //PRIORITY_SPEAKER;
-		if((flags & 0x40) != 0)	return SCYellow; //PRIORITY_BIZZARD_GUEST;
+		if((flags & 0x40) != 0)	return SCMagenta; //PRIORITY_BIZZARD_GUEST;
 		return SCYellow; //PRIORITY_NORMAL;
 	}
 
@@ -73,10 +74,10 @@ public class StarcraftColorScheme extends ColorScheme {
 			return SCYellow;
 		if((flags & 0x20) != 0)	return SCRed;
 		if((flags & 0x01) != 0)	return SCCyan; //PRIORITY_BLIZZARD_REP;
-		if((flags & 0x08) != 0)	return SCCyan; //PRIORITY_BNET_REP;
+		if((flags & 0x08) != 0)	return SCGreen; //PRIORITY_BNET_REP;
 		if((flags & 0x02) != 0)	return SCWhite; //PRIORITY_OPERATOR;
 		if((flags & 0x04) != 0)	return SCYellow; //PRIORITY_SPEAKER;
-		if((flags & 0x40) != 0)	return SCYellow; //PRIORITY_BIZZARD_GUEST;
+		if((flags & 0x40) != 0)	return SCMagenta; //PRIORITY_BIZZARD_GUEST;
 		return SCLtGray; //PRIORITY_NORMAL;
 	}
 
@@ -84,10 +85,10 @@ public class StarcraftColorScheme extends ColorScheme {
 	public Color getChatColor(int flags) {
 		if((flags & 0x20) != 0)	return SCGray;
 		if((flags & 0x01) != 0)	return SCCyan; //PRIORITY_BLIZZARD_REP;
-		if((flags & 0x08) != 0)	return SCCyan; //PRIORITY_BNET_REP;
+		if((flags & 0x08) != 0)	return SCGreen; //PRIORITY_BNET_REP;
 		if((flags & 0x02) != 0)	return SCWhite; //PRIORITY_OPERATOR;
 		if((flags & 0x04) != 0)	return SCYellow; //PRIORITY_SPEAKER;
-		if((flags & 0x40) != 0)	return SCYellow; //PRIORITY_BIZZARD_GUEST;
+		if((flags & 0x40) != 0)	return SCMagenta; //PRIORITY_BIZZARD_GUEST;
 		//if((flags & 0x800000) != 0)	return SCMedBlue;
 		return SCWhite; //PRIORITY_NORMAL;
 	}
@@ -95,10 +96,10 @@ public class StarcraftColorScheme extends ColorScheme {
 	@Override
 	public Color getEmoteColor(int flags) {
 		if((flags & 0x01) != 0)	return SCCyan; //PRIORITY_BLIZZARD_REP;
-		if((flags & 0x08) != 0)	return SCCyan; //PRIORITY_BNET_REP;
+		if((flags & 0x08) != 0)	return SCGreen; //PRIORITY_BNET_REP;
 		if((flags & 0x02) != 0)	return SCWhite; //PRIORITY_OPERATOR;
 		if((flags & 0x04) != 0)	return SCYellow; //PRIORITY_SPEAKER;
-		if((flags & 0x40) != 0)	return SCYellow; //PRIORITY_BIZZARD_GUEST;
+		if((flags & 0x40) != 0)	return SCMagenta; //PRIORITY_BIZZARD_GUEST;
 		//if((flags & 0x800000) != 0)	return SCMedBlue;
 		return SCYellow; //PRIORITY_NORMAL;
 	}
