@@ -11,8 +11,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.text.ParseException;
 import java.util.Collections;
 import java.util.Date;
@@ -32,8 +30,6 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -62,17 +58,12 @@ public class DatabaseEditor {
 
 	private final Map<String, CustomDataObject> dataMap = new HashMap<String, CustomDataObject>();
 	private CustomDataObject currentRow = null;
-	private boolean changesMade = false;
 	private final Map<ObjAttribute, getValueDelegate> data = new HashMap<ObjAttribute, getValueDelegate>();
 	private final Map<ObjRelationship, getValueDelegate> dataRel = new HashMap<ObjRelationship, getValueDelegate>();
 	private final JDialog jf = new JDialog();
 	private final JPanel jp = new JPanel(new GridBagLayout());
 	private final DefaultComboBoxModel model = new DefaultComboBoxModel();
 	private final JList jl = new JList(model);
-	private final ChangeListener cl = new ChangeListener() {
-		public void stateChanged(ChangeEvent e) {
-			changesMade = true;
-		}};
 
 	private interface getValueDelegate {
 		public Object getValue();
@@ -127,7 +118,6 @@ public class DatabaseEditor {
 
 					context.deleteObject(currentRow);
 					currentRow.updateRow();
-					changesMade = false;
 
 					currentRow = null;
 					model.removeElement(disp);
@@ -153,8 +143,7 @@ public class DatabaseEditor {
 
 		jl.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent e) {
-				if(changesMade) {
-					changesMade = false;
+				if(changesMade()) {
 					int option = JOptionPane.showConfirmDialog(
 							jf,
 							"You have made changes to the " + editorType + " " + currentRow.toDisplayString() + ". Do you want to save them?",
@@ -172,7 +161,6 @@ public class DatabaseEditor {
 		jf.pack();
 		jf.setVisible(true);
 		jf.setModal(true);
-		jf.setAlwaysOnTop(true);
 	}
 
 	private String getDisplayString(CustomDataObject row) {
@@ -188,7 +176,6 @@ public class DatabaseEditor {
 		int y = 0;
 
 		currentRow = dataMap.get(jl.getSelectedValue());
-		changesMade = false;
 		if(currentRow == null)
 			return;
 
@@ -284,9 +271,7 @@ public class DatabaseEditor {
 		final JCheckBox bNull;
 		gbc.gridx++;
 		if(isNullable) {
-			JCheckBox ccb = new JCheckBox("NULL", value == null);
-			ccb.addChangeListener(cl);
-			bNull = ccb;
+			bNull = new JCheckBox("NULL", value == null);
 			jp.add(bNull, gbc);
 		} else {
 			bNull = null;
@@ -295,32 +280,14 @@ public class DatabaseEditor {
 
 		final Component valueComponent;
 		if(fieldType.equals(Boolean.class)) {
-			JCheckBox ccb = new JCheckBox((String)null, ((Boolean)value).booleanValue());
-			ccb.addChangeListener(cl);
-			valueComponent = ccb;
+			valueComponent = new JCheckBox((String)null, ((Boolean)value).booleanValue());
 		} else if(fieldType.equals(int.class) && attr.getName().equals("flagSpoof")) {
 			int flags = 0;
 			if(value != null)
 				flags = ((Integer)value).intValue();
-			final ConfigFlagChecks cfc = new ConfigFlagChecks(flags);
-			cfc.addFocusListener(new FocusListener() {
-				public void focusGained(FocusEvent e) {}
-				public void focusLost(FocusEvent e) {
-					Integer flags = cfc.getFlags();
-					changesMade = !flags.equals(v);
-				}
-			});
-			valueComponent = cfc;
+			valueComponent = new ConfigFlagChecks(flags);
 		} else {
-			final ConfigTextField ctf = new ConfigTextField(v);
-			ctf.addFocusListener(new FocusListener() {
-				public void focusGained(FocusEvent e) {}
-				public void focusLost(FocusEvent e) {
-					String txt = ctf.getText();
-					changesMade = !txt.equals(v);
-				}
-			});
-			valueComponent = ctf;
+			valueComponent = new ConfigTextField(v);
 		}
 		gbc.gridx++;
 		jp.add(valueComponent, gbc);
@@ -370,9 +337,54 @@ public class DatabaseEditor {
 				currentRow.writeProperty(key, value);
 			}
 			currentRow.updateRow();
-			changesMade = false;
 		} catch(Exception ex) {
 			Out.popupException(ex, jf);
 		}
+	}
+
+	private boolean changesMade() {
+		if(currentRow == null)
+			return false;
+
+		ObjEntity objEntity = currentRow.getObjEntity();
+		for (ObjAttribute attr : objEntity.getAttributes()) {
+			DbAttribute dbAttribute = attr.getDbAttribute();
+			if(dbAttribute.isGenerated() || dbAttribute.isForeignKey())
+				continue;
+
+			final Object value_frm = data.get(attr).getValue();
+			final Object value_db = currentRow.readProperty(attr.getName());
+
+			if(!equal(value_frm, value_db))
+				return true;
+		}
+		for (ObjRelationship rel : objEntity.getRelationships()) {
+			if(rel.isToMany())
+				continue;
+
+			final Object value_frm = dataRel.get(rel).getValue();
+			final Object value_db = currentRow.readProperty(rel.getName());
+
+			if(!equal(value_frm, value_db))
+				return true;
+		}
+
+		return false;
+	}
+
+	private boolean equal(Object value_frm, Object value_db) {
+		if(value_frm == value_db)
+			return true;
+		if(value_frm == null)
+			return false;
+		if((value_frm instanceof Date)
+		&& (value_db instanceof Date)) {
+			Date d1 = (Date)value_frm;
+			Date d2 = (Date)value_db;
+			// Don't compare miliseconds
+			return (d1.getTime()/1000) == (d2.getTime()/1000);
+		}
+
+		return value_frm.equals(value_db);
 	}
 }
