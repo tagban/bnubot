@@ -9,169 +9,83 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UnknownFormatConversionException;
 
-import net.bnubot.core.CommandResponseCookie;
+import net.bnubot.bot.commands.CommandAccess;
+import net.bnubot.bot.commands.CommandAdd;
+import net.bnubot.bot.commands.CommandAddAlias;
+import net.bnubot.bot.commands.CommandAllSeen;
+import net.bnubot.bot.commands.CommandAuth;
+import net.bnubot.bot.commands.CommandAutoPromotion;
+import net.bnubot.bot.commands.CommandBan;
+import net.bnubot.bot.commands.CommandClearQueue;
+import net.bnubot.bot.commands.CommandCreateAccount;
+import net.bnubot.bot.commands.CommandDisconnect;
+import net.bnubot.bot.commands.CommandHome;
+import net.bnubot.bot.commands.CommandInfo;
+import net.bnubot.bot.commands.CommandInvite;
+import net.bnubot.bot.commands.CommandKick;
+import net.bnubot.bot.commands.CommandMail;
+import net.bnubot.bot.commands.CommandMailAll;
+import net.bnubot.bot.commands.CommandPing;
+import net.bnubot.bot.commands.CommandPingMe;
+import net.bnubot.bot.commands.CommandQuit;
+import net.bnubot.bot.commands.CommandReconnect;
+import net.bnubot.bot.commands.CommandRecruit;
+import net.bnubot.bot.commands.CommandRecruits;
+import net.bnubot.bot.commands.CommandRejoin;
+import net.bnubot.bot.commands.CommandRenameAccount;
+import net.bnubot.bot.commands.CommandSay;
+import net.bnubot.bot.commands.CommandSearch;
+import net.bnubot.bot.commands.CommandSearchRank;
+import net.bnubot.bot.commands.CommandSeen;
+import net.bnubot.bot.commands.CommandSetAccount;
+import net.bnubot.bot.commands.CommandSetAuth;
+import net.bnubot.bot.commands.CommandSetBirthday;
+import net.bnubot.bot.commands.CommandSetRank;
+import net.bnubot.bot.commands.CommandSetRecruiter;
+import net.bnubot.bot.commands.CommandSweepBan;
+import net.bnubot.bot.commands.CommandTimeBan;
+import net.bnubot.bot.commands.CommandTrigger;
+import net.bnubot.bot.commands.CommandUnban;
+import net.bnubot.bot.commands.CommandUpdate;
+import net.bnubot.bot.commands.CommandVote;
+import net.bnubot.bot.commands.CommandVoteBan;
+import net.bnubot.bot.commands.CommandVoteCancel;
+import net.bnubot.bot.commands.CommandVoteKick;
+import net.bnubot.bot.commands.CommandWhisperBack;
+import net.bnubot.bot.commands.CommandWhoami;
+import net.bnubot.bot.commands.CommandWhois;
+import net.bnubot.bot.commands.TimeBan;
+import net.bnubot.bot.commands.Vote;
 import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.Profile;
-import net.bnubot.core.Connection.ConnectionState;
 import net.bnubot.core.commands.AccountDoesNotExistException;
-import net.bnubot.core.commands.CommandRunnable;
-import net.bnubot.core.commands.InsufficientAccessException;
-import net.bnubot.core.commands.InvalidUseException;
 import net.bnubot.db.Account;
 import net.bnubot.db.BNLogin;
-import net.bnubot.db.Command;
-import net.bnubot.db.CommandAlias;
 import net.bnubot.db.Mail;
 import net.bnubot.db.Rank;
 import net.bnubot.db.conf.DatabaseContext;
 import net.bnubot.logging.Out;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetUser;
-import net.bnubot.util.CookieUtility;
-import net.bnubot.util.OperatingSystem;
 import net.bnubot.util.TimeFormatter;
 import net.bnubot.util.UnloggedException;
-import net.bnubot.vercheck.CurrentVersion;
-import net.bnubot.vercheck.VersionCheck;
 
-import org.apache.cayenne.ObjectContext;
 
 /**
  * @author scotta
  */
 public class CommandEventHandler extends EventHandler {
-	private static final Map<Connection, Boolean> sweepBanInProgress = new HashMap<Connection, Boolean>();
-	private static final Map<Connection, Integer> sweepBannedUsers = new HashMap<Connection, Integer>();
-
-	private static final List<TimeBan> timeBannedUsers = new ArrayList<TimeBan>();
-	private static final Thread timeBanThread = new Thread() {
-		@Override
-		public void run() {
-			while(true) {
-				synchronized(timeBannedUsers) {
-					for(TimeBan tb : timeBannedUsers)
-						if(tb.getTimeLeft() <= 0) {
-							tb.getSource().sendChat("/unban " + tb.getSubject().getFullLogonName());
-							timeBannedUsers.remove(tb);
-						}
-				}
-				try {
-					sleep(5000);
-				} catch (InterruptedException e) {}
-				yield();
-			}
-		}
-	};
-	private static class TimeBan {
-		Connection source;
-		BNetUser subject;
-		long endTime;
-		public TimeBan(Connection source, BNetUser subject, long endTime) {
-			this.source = source;
-			this.subject = subject;
-			this.endTime = endTime;
-			if(!timeBanThread.isAlive())
-				timeBanThread.start();
-		}
-
-		public Connection getSource() {
-			return source;
-		}
-
-		public BNetUser getSubject() {
-			return subject;
-		}
-
-		public long getTimeLeft() {
-			return endTime - System.currentTimeMillis();
-		}
-	}
-
-	private static final Map<Connection, Vote> votes = new HashMap<Connection, Vote>();
-	private static class Vote extends Thread {
-		private long startTime;
-		private Connection connection;
-		private BNetUser subject;
-		private boolean isBan;
-		private Map<String, Boolean> votes = new HashMap<String, Boolean>();
-
-		private boolean voteCancelled = false;
-
-		public Vote(Connection connection, BNetUser subject, boolean isBan) {
-			startTime = System.currentTimeMillis();
-			this.connection = connection;
-			this.subject = subject;
-			this.isBan = isBan;
-			start();
-		}
-
-		public BNetUser getSubject() {
-			return subject;
-		}
-
-		public void cancel() {
-			voteCancelled = true;
-			send("Vote cancelled.");
-		}
-
-		public void castVote(Account user, boolean vote) {
-			votes.put(user.getName(), new Boolean(vote));
-		}
-
-		private void send(String text) {
-			connection.sendChat(text);
-		}
-
-		@Override
-		public void run() {
-			send("A vote to " + (isBan ? "ban " : "kick ") + subject.toString() + " has started. Type \"%trigger%vote yes\" or \"%trigger%vote no\" to vote. Vote lasts 30 seconds.");
-
-			// Wait 30 seconds for voters to vote
-			while(!voteCancelled) {
-				if(System.currentTimeMillis() - startTime > 30000)
-					break;
-
-				yield();
-				try {
-					sleep(1000);
-				} catch (InterruptedException e) {}
-			}
-
-			if(!voteCancelled) {
-				// Tally up the votes
-				int yay = 0, nay = 0;
-				for(String voter : votes.keySet()) {
-					if(votes.get(voter).booleanValue())
-						yay++;
-					else
-						nay++;
-				}
-
-				if(yay + nay >= 5) {
-					float ratio = ((float)yay) / (yay + nay);
-					// Check for 2/3 ratio
-					if(ratio * 3 >= 2)
-						send((isBan ? "/ban " : "/kick ") + subject.getFullLogonName() + " " + yay + " to " + nay);
-					else
-						send("Vote failed, " + yay + " to " + nay + ", needed 2/3 ratio.");
-				} else {
-					send("Not enough votes: " + yay + " to " + nay + ", needed 5 votes.");
-				}
-			}
-
-			CommandEventHandler.votes.remove(connection);
-		}
-	}
+	public static final Map<Connection, Boolean> sweepBanInProgress = new HashMap<Connection, Boolean>();
+	public static final Map<Connection, Integer> sweepBannedUsers = new HashMap<Connection, Integer>();
+	public static final List<TimeBan> timeBannedUsers = new ArrayList<TimeBan>();
+	public static final Map<Connection, Vote> votes = new HashMap<Connection, Vote>();
 
 	public CommandEventHandler(Profile profile) {
 		super(profile);
@@ -180,7 +94,7 @@ public class CommandEventHandler extends EventHandler {
 		initializeCommands();
 	}
 
-	public BNLogin touchUser(Connection source, BNetUser user, String action) {
+	protected BNLogin touchUser(Connection source, BNetUser user, String action) {
 		try {
 			BNLogin rsUser = BNLogin.getCreate(user);
 			if(rsUser != null) {
@@ -202,1262 +116,54 @@ public class CommandEventHandler extends EventHandler {
 			return;
 		commandsInitialized = true;
 
-		Profile.registerCommand("access", new CommandRunnable() {
-			@Override
-			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
-			throws Exception {
-				int commanderAccess = 0;
-				if(commanderAccount != null)
-					commanderAccess = commanderAccount.getAccess();
-
-				try {
-					if(params == null)
-						throw new InvalidUseException();
-					if(params.length != 1)
-						throw new InvalidUseException();
-
-					List<Command> commands;
-					if(params[0].equals("all"))
-						commands = Command.getCommands(commanderAccess);
-					else
-						commands = Command.getCommands(params[0], commanderAccess);
-
-					if((commands == null) || (commands.size() == 0)) {
-						user.sendChat("The category [" + params[0] + "] does not exist!", whisperBack);
-						return;
-					}
-
-					StringBuilder result = new StringBuilder("Available commands for rank ");
-					result.append(commanderAccess).append(" in cagegory ");
-					result.append(params[0]).append(": ");
-					boolean first = true;
-					for(Command c : commands) {
-						if(first)
-							first = false;
-						else
-							result.append(", ");
-						result.append(c.getName()).append(" (");
-						result.append(c.getAccess()).append(")");
-					}
-
-					user.sendChat(result.toString(), whisperBack);
-				} catch(InvalidUseException e) {
-					StringBuilder use = new StringBuilder("Use: %trigger%access <category> -- Available categories for rank ");
-					use.append(commanderAccess).append(": all");
-					for(String group : Command.getGroups(commanderAccess))
-						use.append(", ").append(group);
-					user.sendChat(use.toString(), whisperBack);
-				}
-			}});
-		Profile.registerCommand("add", new CommandRunnable() {
-			@Override
-			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
-			throws Exception {
-				try {
-					if(params == null)
-						throw new InvalidUseException();
-					if(params.length != 2)
-						throw new InvalidUseException();
-
-					Account rsSubjectAccount = Account.get(params[0]);
-					if(rsSubjectAccount == null) {
-						// They don't have an account by that name, check if it's a user
-						BNetUser bnSubject = source.getCreateBNetUser(params[0], user);
-
-						rsSubjectAccount = Account.get(bnSubject);
-						if(rsSubjectAccount == null) {
-							// The account does not exist
-							BNLogin rsSubject = BNLogin.get(bnSubject);
-							if(rsSubject == null) {
-								user.sendChat("I have never seen [" + bnSubject.getFullAccountName() + "]", whisperBack);
-								return;
-							}
-
-							try {
-								rsSubjectAccount = createAccount(params[0], commanderAccount, rsSubject);
-							} catch(AccountDoesNotExistException e) {
-								user.sendChat(e.getMessage(), whisperBack);
-								return;
-							}
-
-							// Re-load the account
-							if(rsSubjectAccount == null) {
-								user.sendChat("Failed to create account for an unknown reason", whisperBack);
-								return;
-							}
-						}
-					}
-
-					int targetAccess = Integer.parseInt(params[1]);
-					Rank originalRank = rsSubjectAccount.getRank();
-					int originalAccess = originalRank.getAccess();
-					if(targetAccess == originalAccess) {
-						user.sendChat("That would have no effect", whisperBack);
-						return;
-					}
-
-					Rank targetRank = Rank.get(targetAccess);
-					if(targetRank == null) {
-						user.sendChat("Invalid rank: " + targetAccess, whisperBack);
-						return;
-					}
-
-					if(!superUser) {
-						if(rsSubjectAccount.equals(commanderAccount))
-							throw new InsufficientAccessException("to modify your self", true);
-
-						int commanderAccess = 0;
-						if(commanderAccount != null)
-							commanderAccess = commanderAccount.getAccess();
-						if(targetAccess >= commanderAccess)
-							throw new InsufficientAccessException("to add users beyond " + (commanderAccess - 1), true);
-					}
-
-					rsSubjectAccount.setRank(targetRank);
-					rsSubjectAccount.setLastRankChange(new Date(System.currentTimeMillis()));
-					try {
-						rsSubjectAccount.updateRow();
-						user.sendChat(rsSubjectAccount.getName() + "'s rank has changed from "
-								+ originalRank.getPrefix() + " (" + originalAccess + ") to "
-								+ targetRank.getPrefix() + " (" + targetAccess + ")", whisperBack);
-					} catch(Exception e) {
-						Out.exception(e);
-						user.sendChat("Failed: " + e.getMessage(), whisperBack);
-					}
-				} catch(InvalidUseException e) {
-					user.sendChat("Use: %trigger%add <account> <access>", whisperBack);
-				}
-			}});
-		Profile.registerCommand("addalias", new CommandRunnable() {
-			@Override
-			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
-			throws Exception {
-				try {
-					if(params == null)
-						throw new InvalidUseException();
-					if(params.length < 2)
-						throw new InvalidUseException();
-
-					Command rsSubjectCommand = Command.get(params[0]);
-					if(rsSubjectCommand == null) {
-						user.sendChat("The command [" + params[0] + "] does not exist!", whisperBack);
-						return;
-					}
-
-					for(int i = 1; i < params.length; i++) {
-						if(Command.get(params[i]) != null) {
-							user.sendChat("The command [" + params[0] + "] already exists!", whisperBack);
-							return;
-						}
-						if(CommandAlias.get(params[i]) != null) {
-							user.sendChat("The command alias [" + params[0] + "] already exists!", whisperBack);
-							return;
-						}
-					}
-
-					String out = "Successfully created aliases for " + params[0] + ": ";
-					for(int i = 1; i < params.length; i++) {
-						if(i != 1)
-							out += ", ";
-						out += params[i];
-
-						if(CommandAlias.create(rsSubjectCommand, params[i]) == null) {
-							user.sendChat("Error creating alias " + params[i], whisperBack);
-							return;
-						}
-					}
-					user.sendChat(out, whisperBack);
-				} catch(InvalidUseException e) {
-					user.sendChat("Use: %trigger%addalias <command> <alias1> [alias2] [alias3...]", whisperBack);
-				}
-			}});
-		Profile.registerCommand("allseen", new CommandRunnable() {
-			@Override
-			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
-			throws Exception {
-				String response = "Last 10 users seen: ";
-				boolean first = true;
-				for(BNLogin login : BNLogin.getLastSeen(10)) {
-					if(!first)
-						response += ", ";
-					first = false;
-
-					response += login.getLogin();
-					response += " [";
-					long time = System.currentTimeMillis() - login.getLastSeen().getTime();
-					response += TimeFormatter.formatTime(time, false);
-					response += "]";
-				}
-				user.sendChat(response, whisperBack);
-			}});
-		Profile.registerCommand("auth", new CommandRunnable() {
-			@Override
-			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
-			throws Exception {
-				try {
-					if(params == null)
-						throw new InvalidUseException();
-					if(params.length != 1)
-						throw new InvalidUseException();
-
-					Command rsSubjectCommand = Command.get(params[0]);
-					if(rsSubjectCommand == null) {
-						user.sendChat("The command [" + params[0] + "] does not exist!", whisperBack);
-						return;
-					}
-
-					params[0] = rsSubjectCommand.getName();
-					int access = rsSubjectCommand.getAccess();
-
-					user.sendChat("Authorization required for " + params[0] + " is " + access, whisperBack);
-				} catch(InvalidUseException e) {
-					user.sendChat("Use: %trigger%auth <command>", whisperBack);
-				}
-			}});
-		Profile.registerCommand("autopromotion", new CommandRunnable() {
-			@Override
-			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
-			throws Exception {
-				try {
-					if((params != null) && (params.length != 1))
-						throw new InvalidUseException();
-
-					Account subject;
-					if(params == null)
-						subject = Account.get(user);
-					else
-						subject = Account.get(params[0]);
-
-					if(subject == null)
-						throw new AccountDoesNotExistException(params[0]);
-
-					long wins[] = subject.getWinsLevels(GlobalSettings.recruitTagPrefix, GlobalSettings.recruitTagSuffix);
-					long recruitScore = subject.getRecruitScore(GlobalSettings.recruitAccess);
-					Date ts = subject.getLastRankChange();
-					String timeElapsed;
-					if(ts != null) {
-						double te = System.currentTimeMillis() - ts.getTime();
-						te /= 1000 * 60 * 60 * 24;
-						//Round to 2 decimal places
-						timeElapsed = ("00" + ((long)Math.floor(te * 100) % 100));
-						timeElapsed = timeElapsed.substring(timeElapsed.length()-2);
-						timeElapsed = (long)Math.floor(te) + "." + timeElapsed;
-					} else {
-						timeElapsed = "?";
-					}
-
-					Rank rsRank = subject.getRank();
-					if(rsRank == null) {
-						String result = "Rank does not exist! ";
-						result += subject.getName() + "'s current status is: ";
-						result += timeElapsed + " days, ";
-						result += wins[0] + " wins, ";
-						result += wins[1] + " D2 level, ";
-						result += wins[2] + " W3 level";
-
-						user.sendChat(result, whisperBack);
-						return;
-					}
-
-					Integer apDays = rsRank.getApDays();
-					Integer apWins = rsRank.getApWins();
-					Integer apD2Level = rsRank.getApD2Level();
-					Integer apW3Level = rsRank.getApW3Level();
-					Integer apRecruitScore = rsRank.getApRecruitScore();
-
-					// Check if any fields are null
-					boolean condition = false;
-					condition |= (apDays == null);
-					condition |= (apWins == null);
-					condition |= (apD2Level == null);
-					condition |= (apW3Level == null);
-					if(condition == false)
-						// No nulls; check if all zeroes
-						condition = (apDays == 0) && (apWins == 0) && (apD2Level == 0) && (apW3Level == 0);
-					if(condition) {
-						String result = "AutoPromotions are not enabled for rank " + subject.getAccess() + ". ";
-						result += subject.getName() + "'s current status is: ";
-						result += "Days: " + timeElapsed;
-						result += ", Wins: " + wins[0];
-						result += ", D2 Level: " + wins[1];
-						result += ", W3 level: " + wins[2];
-						if(recruitScore > 0)
-							result += ", Recruit Score: " + recruitScore;
-
-						user.sendChat(result, whisperBack);
-					} else {
-						String result = "AutoPromotion Info for [" + subject.getName() + "]: ";
-						result += "Days: " + timeElapsed + "/" + apDays;
-						result += ", Wins: " + wins[0] + "/" + apWins;
-						result += ", D2 Level: " + wins[1] + "/" + apD2Level;
-						result += ", W3 level: " + wins[2] + "/" + apW3Level;
-						if(((apRecruitScore != null) && (apRecruitScore > 0)) || (recruitScore > 0)) {
-							result += ", Recruit Score: " + recruitScore;
-							if(apRecruitScore != null)
-								result += "/" + apRecruitScore;
-						}
-
-						user.sendChat(result, whisperBack);
-					}
-				} catch(InvalidUseException e) {
-					user.sendChat("Use: %trigger%automaticpromotion [account]", whisperBack);
-				}
-			}});
-		Profile.registerCommand("ban", new CommandRunnable() {
-			@Override
-			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
-			throws Exception {
-				doKickBan(source, user, param, true, whisperBack);
-			}});
-		Profile.registerCommand("clearqueue", new CommandRunnable() {
-			@Override
-			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
-			throws Exception {
-				source.clearQueue();
-			}});
-		Profile.registerCommand("createaccount", new CommandRunnable() {
-			@Override
-			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
-			throws Exception {
-				if((params == null) || (params.length != 1)) {
-					user.sendChat("Use: %trigger%createaccount <account>", whisperBack);
-					return;
-				}
-
-				Account rsAccount = Account.get(params[0]);
-				if(rsAccount != null) {
-					user.sendChat("The account [" + rsAccount.getName() + "] already exists", whisperBack);
-					return;
-				}
-
-				rsAccount = Account.create(params[0], Rank.get(0), commanderAccount);
-				if(rsAccount == null)
-					user.sendChat("Failed to create account [" + params[0] + "] for an unknown reason", whisperBack);
-				else
-					user.sendChat("The account [" + params[0] + "] has been created", whisperBack);
-			}});
-		Profile.registerCommand("disconnect", new CommandRunnable() {
-			@Override
-			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
-			throws Exception {
-				for(Connection con : source.getProfile().getConnections())
-					con.disconnect(ConnectionState.DO_NOT_ALLOW_CONNECT);
-			}});
-		Profile.registerCommand("home", new CommandRunnable() {
-			@Override
-			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
-			throws Exception {
-				source.sendJoinChannel(source.getConnectionSettings().channel);
-			}});
-		Profile.registerCommand("info", new CommandRunnable() {
-			@Override
-			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
-			throws Exception {
-				user.sendChat("BNU-Bot " + CurrentVersion.version() + " running on " + OperatingSystem.osVersion() + " with " + OperatingSystem.javaVersion(), whisperBack);
-			}});
-		Profile.registerCommand("invite", new CommandRunnable() {
-			@Override
-			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
-			throws Exception {
-				if((params == null) || (params.length != 1))
-					user.sendChat("Use: %trigger%invite <user>", whisperBack);
-				else
-					source.sendClanInvitation(new CommandResponseCookie(user, whisperBack), params[0]);
-			}});
-		Profile.registerCommand("kick", new CommandRunnable() {
-			@Override
-			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
-			throws Exception {
-				doKickBan(source, user, param, false, whisperBack);
-			}});
-		Profile.registerCommand("mail", new CommandRunnable() {
-			@Override
-			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
-			throws Exception {
-				if(commanderAccount == null) {
-					user.sendChat("You must have an account to use mail.", whisperBack);
-					return;
-				}
-
-				try {
-					if((params == null) || (params.length < 1))
-						throw new InvalidUseException();
-					if(params[0].equals("send")) {
-						//send <account> <message>
-						params = param.split(" ", 3);
-						if(params.length < 3)
-							throw new InvalidUseException();
-
-						Account rsTargetAccount = Account.get(params[1]);
-						if(rsTargetAccount == null)
-							throw new AccountDoesNotExistException(params[1]);
-
-						params[1] = rsTargetAccount.getName();
-						Mail.send(commanderAccount, rsTargetAccount, params[2]);
-						user.sendChat("Mail queued for delivery to " + rsTargetAccount.getName(), whisperBack);
-					} else if(params[0].equals("read")
-							||params[0].equals("get")) {
-						//read [number]
-						if((params.length < 1) || (params.length > 2))
-							throw new InvalidUseException();
-
-						int id = 0;
-						if(params.length == 2) {
-							try {
-								id = Integer.parseInt(params[1]);
-							} catch(Exception e) {
-								throw new InvalidUseException();
-							}
-						}
-
-						List<Mail> rsMail = commanderAccount.getRecievedMail();
-						// Sort the mail by sent date
-						Collections.sort(rsMail, new Comparator<Mail>() {
-							public int compare(Mail arg0, Mail arg1) {
-								return arg0.getSent().compareTo(arg1.getSent());
-							}});
-						if(id == 0) {
-							for(Mail m : rsMail) {
-								id++;
-								if(m.isIsread())
-									continue;
-
-								sendMail(user, whisperBack, id, rsMail.size(), m);
-								return;
-							}
-
-							String message = "You have no unread mail!";
-							if(rsMail.size() > 0)
-								message += " To read your " + rsMail.size() + " messages, type [ %trigger%mail read <number> ]";
-							user.sendChat(message, whisperBack);
-						} else {
-							if((rsMail.size() >= id) && (id >= 1))
-								sendMail(user, whisperBack, id, rsMail.size(), rsMail.get(id-1));
-							else
-								user.sendChat("You only have " + rsMail.size() + " messages!", whisperBack);
-						}
-						return;
-					} else if(params[0].equals("empty")
-							||params[0].equals("delete")
-							||params[0].equals("clear")) {
-						//empty
-						if(params.length != 1)
-							throw new InvalidUseException();
-
-						if(Mail.getUnreadCount(commanderAccount) > 0) {
-							user.sendChat("You have unread mail!", whisperBack);
-							return;
-						}
-
-						try {
-							ObjectContext context = commanderAccount.getObjectContext();
-							for(Mail m : commanderAccount.getRecievedMail())
-								context.deleteObject(m);
-							commanderAccount.updateRow();
-							user.sendChat("Mailbox cleaned!", whisperBack);
-						} catch(Exception e) {
-							Out.exception(e);
-							user.sendChat("Failed to delete mail: " + e.getMessage(), whisperBack);
-						}
-					} else
-						throw new InvalidUseException();
-				} catch(InvalidUseException e) {
-					user.sendChat("Use: %trigger%mail (read [number] | empty | send <account> <message>)", whisperBack);
-				}
-			}});
-		Profile.registerCommand("mailall", new CommandRunnable() {
-			@Override
-			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
-			throws Exception {
-				try {
-					//<rank> <message>
-					if(param == null)
-						throw new InvalidUseException();
-					params = param.split(" ", 2);
-					if((params.length < 2) || (params[1].length() == 0))
-						throw new InvalidUseException();
-
-					int rank = 0;
-					try {
-						rank = Integer.parseInt(params[0]);
-					} catch(Exception e) {
-						throw new InvalidUseException();
-					}
-
-					String message = "[Sent to ranks " + rank + "+] " + params[1];
-
-					List<Account> rsAccounts = Account.getRanked(rank);
-					for(Account a : rsAccounts)
-						Mail.send(commanderAccount, a, message);
-					user.sendChat("Mail queued for delivery to " + rsAccounts.size() + " accounts", whisperBack);
-				} catch(InvalidUseException e) {
-					user.sendChat("Use: %trigger%mailall <minimum rank> <message>", whisperBack);
-				}
-			}});
-		Profile.registerCommand("ping", new CommandRunnable() {
-			@Override
-			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
-			throws Exception {
-				if((params == null) || (params.length != 1)) {
-					user.sendChat("Use: %trigger%ping <user>[@<realm>]", whisperBack);
-					return;
-				}
-
-				BNetUser bnSubject = source.getCreateBNetUser(params[0], user);
-				Integer ping = bnSubject.getPing();
-				if(ping == null)
-					user.sendChat("I do not know the ping for " + bnSubject.getFullLogonName(), whisperBack);
-				else
-					user.sendChat("Ping for " + bnSubject.getFullLogonName() + ": " + ping, whisperBack);
-			}});
-		Profile.registerCommand("pingme", new CommandRunnable() {
-			@Override
-			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
-			throws Exception {
-				user.sendChat("Your ping is: " + user.getPing(), whisperBack);
-			}});
-		Profile.registerCommand("quit", new CommandRunnable() {
-			@Override
-			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
-			throws Exception {
-				System.exit(0);
-			}});
-		Profile.registerCommand("reconnect", new CommandRunnable() {
-			@Override
-			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
-			throws Exception {
-				for(Connection con : source.getProfile().getConnections())
-					con.reconnect();
-			}});
-		Profile.registerCommand("recruit", new CommandRunnable() {
-			@Override
-			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
-			throws Exception {
-				if((params == null) || (params.length != 2)) {
-					user.sendChat("Use: %trigger%recruit <user>[@<realm>] <account>", whisperBack);
-					return;
-				}
-
-				if(commanderAccount == null) {
-					user.sendChat("You must have an account to use recruit.", whisperBack);
-					return;
-				}
-
-				BNetUser bnSubject = source.getCreateBNetUser(params[0], user);
-				BNLogin rsSubject = BNLogin.get(bnSubject);
-				if(rsSubject == null) {
-					user.sendChat("I have never seen [" + bnSubject.getFullLogonName() + "] in the channel", whisperBack);
-					return;
-				}
-
-				if(rsSubject.getAccount() != null) {
-					user.sendChat("That user already has an account!", whisperBack);
-					return;
-				}
-
-				String requiredTagPrefix = GlobalSettings.recruitTagPrefix;
-				String requiredTagSuffix = GlobalSettings.recruitTagSuffix;
-
-				if(requiredTagPrefix != null) {
-					if(bnSubject.getFullAccountName().substring(0, requiredTagPrefix.length()).compareToIgnoreCase(requiredTagPrefix) != 0) {
-						user.sendChat("That user must have the " + requiredTagPrefix + " tag!", whisperBack);
-						return;
-					}
-				}
-
-				if(requiredTagSuffix != null) {
-					String s = bnSubject.getFullAccountName();
-					int i = s.indexOf("@");
-					if(i != -1)
-						s = s.substring(0, i);
-					s = s.substring(s.length() - requiredTagSuffix.length());
-					if(s.compareToIgnoreCase(requiredTagSuffix) != 0) {
-						user.sendChat("That user must have the " + requiredTagSuffix + " tag!", whisperBack);
-						return;
-					}
-				}
-
-				try {
-					createAccount(params[1], commanderAccount, rsSubject);
-				} catch(AccountDoesNotExistException e) {
-					user.sendChat(e.getMessage(), whisperBack);
-					return;
-				}
-
-				bnSubject.resetPrettyName();
-				source.sendChat("Welcome to the clan, " + bnSubject.toString() + "!");
-			}});
-		Profile.registerCommand("recruits", new CommandRunnable() {
-			@Override
-			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
-			throws Exception {
-				try {
-					if((params != null) && (params.length != 1))
-						throw new InvalidUseException();
-
-
-					Account subjectAccount = null;
-					String output = null;
-					if(params == null) {
-						subjectAccount = commanderAccount;
-						output = "You have recruited: ";
-					} else {
-						subjectAccount = Account.get(params[0]);
-						if(subjectAccount == null)
-							throw new AccountDoesNotExistException(params[0]);
-						output = subjectAccount.getName();
-						output += " has recruited: ";
-					}
-
-					if(subjectAccount.getRecruits().size() == 0)
-						output += "no one";
-					for(Account recruit : subjectAccount.getRecruits()) {
-						// Remove accounts below the threshold
-						if(recruit.getAccess() >= GlobalSettings.recruitAccess)
-							output += recruit.getName() + "(" + recruit.getAccess() + ") ";
-					}
-
-
-					output = output.trim();
-					user.sendChat(output, whisperBack);
-				} catch(InvalidUseException e) {
-					user.sendChat("Use: %trigger%recruits [account]", whisperBack);
-				}
-				return;
-			}});
-		Profile.registerCommand("rejoin", new CommandRunnable() {
-			@Override
-			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
-			throws Exception {
-				String channel = source.getChannel();
-				source.sendLeaveChat();
-				source.sendJoinChannel(channel);
-			}});
-		Profile.registerCommand("renameaccount", new CommandRunnable() {
-			@Override
-			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
-			throws Exception {
-				if((params == null) || (params.length != 2)) {
-					user.sendChat("Use: %trigger%renameaccount <old account> <new account>", whisperBack);
-					return;
-				}
-
-				Account rsSubjectAccount = Account.get(params[0]);
-				Account targetAccount = Account.get(params[1]);
-
-				if((targetAccount != null) && !targetAccount.equals(rsSubjectAccount)) {
-					user.sendChat("The Account [" + targetAccount.getName() + "] already exists!", whisperBack);
-					return;
-				}
-
-				if(rsSubjectAccount == null)
-					throw new AccountDoesNotExistException(params[0]);
-
-				params[0] = rsSubjectAccount.getName();
-
-				try {
-					rsSubjectAccount.setName(params[1]);
-					rsSubjectAccount.updateRow();
-				} catch(Exception e) {
-					Out.exception(e);
-					user.sendChat("Rename failed for an unknown reason.", whisperBack);
-					return;
-				}
-
-				user.sendChat("The account [" + params[0] + "] was successfully renamed to [" + params[1] + "]", whisperBack);
-			}});
-		Profile.registerCommand("say", new CommandRunnable() {
-			@Override
-			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
-			throws Exception {
-				int priority = 0;
-				if(commanderAccount != null)
-					priority = commanderAccount.getAccess();
-				source.sendChat(param, priority);
-				setInfoForwarding(source, user, whisperBack);
-			}});
-		Profile.registerCommand("search", new CommandRunnable() {
-			@Override
-			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
-			throws Exception {
-				if((params == null) || (params.length != 1)) {
-					user.sendChat("Use: %trigger%search <pattern>", whisperBack);
-					return;
-				}
-
-				String out = "Users found: ";
-				int num = 0;
-				for(BNLogin login : BNLogin.search(params[0])) {
-					if(num >= 10) {
-						out += ", <more>";
-						break;
-					}
-
-					if(num++ > 0)
-						out += ", ";
-					out += login.getLogin();
-				}
-				if(num == 0)
-					out = "No users found!";
-				user.sendChat(out, whisperBack);
-			}});
-		Profile.registerCommand("searchrank", new CommandRunnable() {
-			@Override
-			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
-			throws Exception {
-				try {
-					if((params == null) || (params.length < 1) || (params.length > 2))
-						throw new InvalidUseException();
-
-					int access;
-					try {
-						access = Integer.parseInt(params[0]);
-					} catch(NumberFormatException e) {
-						throw new InvalidUseException();
-					}
-
-					int accessUpper = access;
-					if(params.length > 1)
-						try {
-							accessUpper = Integer.parseInt(params[1]);
-						} catch(NumberFormatException e) {
-							throw new InvalidUseException();
-						}
-
-					String out = "Accounts found: ";
-					boolean first = true;
-					for(int i = access; i <= accessUpper; i++) {
-						Rank rank = Rank.get(i);
-						if(rank == null)
-							continue;
-						for(Account account : rank.getAccountArray()) {
-							if(!first)
-								out += ", ";
-							first = false;
-							out += account.getName();
-							out += " {" + i + "}";
-						}
-					}
-					if(first)
-						out = "No users found!";
-
-					user.sendChat(out, whisperBack);
-				} catch(InvalidUseException e) {
-					user.sendChat("Use: %trigger%searchrank <rank_lowest> [rank_highest]", whisperBack);
-				}
-			}});
-		Profile.registerCommand("seen", new CommandRunnable() {
-			@Override
-			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
-			throws Exception {
-				if((params == null) || (params.length != 1)) {
-					user.sendChat("Use: %trigger%seen <account>", whisperBack);
-					return;
-				}
-
-				Date mostRecent = null;
-				String mostRecentAction = null;
-
-				Account rsSubjectAccount = Account.get(params[0]);
-				if(rsSubjectAccount == null) {
-					//They don't have an account by that name, check if it's a user
-					BNetUser bnSubject = source.getCreateBNetUser(params[0], user);
-					BNLogin rsSubject = BNLogin.get(bnSubject);
-					if(rsSubject == null) {
-						user.sendChat("I have never seen [" + bnSubject.getFullAccountName() + "]", whisperBack);
-						return;
-					}
-
-					mostRecent = rsSubject.getLastSeen();
-					mostRecentAction = rsSubject.getLastAction();
-					params[0] = rsSubject.getLogin();
-				} else {
-					params[0] = rsSubjectAccount.getName();
-					for(BNLogin rsSubjectUsers : rsSubjectAccount.getBnLogins()) {
-						Date nt = rsSubjectUsers.getLastSeen();
-						if(mostRecent == null) {
-							mostRecent = nt;
-							mostRecentAction = rsSubjectUsers.getLastAction();
-						} else {
-							if((nt != null) && (nt.compareTo(mostRecent) > 0)) {
-								mostRecent = nt;
-								mostRecentAction = rsSubjectUsers.getLastAction();
-							}
-						}
-					}
-				}
-
-				if(mostRecent == null) {
-					user.sendChat("I have never seen [" + params[0] + "]", whisperBack);
-					return;
-				}
-
-				String diff = TimeFormatter.formatTime(System.currentTimeMillis() - mostRecent.getTime());
-				diff = "User [" + params[0] + "] was last seen " + diff + " ago";
-				if(mostRecentAction != null)
-					diff += " " + mostRecentAction;
-				user.sendChat(diff, whisperBack);
-			}});
-		Profile.registerCommand("setaccount", new CommandRunnable() {
-			@Override
-			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
-			throws Exception {
-				if((params == null) || (params.length < 1) || (params.length > 2)) {
-					user.sendChat("Use: %trigger%setaccount <user>[@<realm>] [<account>]", whisperBack);
-					return;
-				}
-
-				BNetUser bnSubject = source.getCreateBNetUser(params[0], user);
-				BNLogin rsSubject = BNLogin.get(bnSubject);
-				if(rsSubject == null) {
-					user.sendChat("I have never seen [" + bnSubject.getFullAccountName() + "] in the channel", whisperBack);
-					return;
-				}
-				String subject = rsSubject.getLogin();
-
-				Account newAccount = null;
-				if(params.length == 2) {
-					newAccount = Account.get(params[1]);
-					if(newAccount == null)
-						throw new AccountDoesNotExistException(params[1]);
-				}
-
-				rsSubject.setAccount(newAccount);
-				rsSubject.updateRow();
-
-				// Set params[1] to what the account looks like in the database
-				if(newAccount == null)
-					params = new String[] { params[0], "NULL" };
-				else
-					params[1] = newAccount.getName();
-
-				bnSubject.resetPrettyName();
-				user.sendChat("User [" + subject + "] was added to account [" + params[1] + "] successfully.", whisperBack);
-			}});
-		Profile.registerCommand("setauth", new CommandRunnable() {
-			@Override
-			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
-			throws Exception {
-				try {
-					if((params == null) || (params.length != 2))
-						throw new InvalidUseException();
-
-					Command rsCommand = Command.get(params[0]);
-					if(rsCommand == null) {
-						user.sendChat("That command does not exist!", whisperBack);
-						return;
-					}
-
-					try {
-						int access = Integer.parseInt(params[1]);
-						Rank rank = Rank.get(access);
-						if(rank == null) {
-							user.sendChat("That access level does not exist!", whisperBack);
-							return;
-						}
-						rsCommand.setRank(rank);
-						rsCommand.updateRow();
-
-						user.sendChat("Successfully changed the authorization required for command [" + rsCommand.getName() + "] to " + access, whisperBack);
-					} catch(NumberFormatException e) {
-						throw new InvalidUseException();
-					}
-				} catch(InvalidUseException e) {
-					user.sendChat("Use: %trigger%setauth <command> <access>", whisperBack);
-				}
-			}});
-		Profile.registerCommand("setbirthday", new CommandRunnable() {
-			@Override
-			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
-			throws Exception {
-				if(commanderAccount == null) {
-					user.sendChat("You must have an account to use setbirthday.", whisperBack);
-					return;
-				}
-
-				try {
-					if(params == null)
-						throw new InvalidUseException();
-
-					Date bd = null;
-					try {
-						SimpleDateFormat sdf = new SimpleDateFormat("M/d/y");
-						bd = sdf.parse(param);
-					} catch(Exception e) {
-						Out.exception(e);
-					}
-					if(bd == null)
-						throw new InvalidUseException();
-
-					commanderAccount.setBirthday(new java.sql.Date(bd.getTime()));
-					commanderAccount.updateRow();
-
-					user.sendChat("Your birthday has been set to [ " + new SimpleDateFormat("M/d/y").format(bd) + " ]", whisperBack);
-				} catch(InvalidUseException e) {
-					user.sendChat("Use: %trigger%setbirthday <date:MM/DD/YY>", whisperBack);
-				}
-			}});
-		Profile.registerCommand("setrank", new CommandRunnable() {
-			@Override
-			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
-			throws Exception {
-				try {
-					if(params == null)
-						throw new InvalidUseException();
-					if(params.length != 2)
-						throw new InvalidUseException();
-
-					int newRank = 0;
-					if(params[1].compareToIgnoreCase("peon") == 0)
-						newRank = 1;
-					else if(params[1].compareToIgnoreCase("grunt") == 0)
-						newRank = 2;
-					else if(params[1].compareToIgnoreCase("shaman") == 0)
-						newRank = 3;
-					else
-						try {
-							newRank = Integer.valueOf(params[1]);
-						} catch(Exception e) {}
-
-					if((newRank < 1) || (newRank > 3))
-						throw new InvalidUseException();
-
-					// TODO: validate that params[0] is in the clan
-					source.sendClanRankChange(
-							CookieUtility.createCookie(new CommandResponseCookie(user, whisperBack)),
-							params[0],
-							newRank);
-				} catch(InvalidUseException e) {
-					user.sendChat("Use: %trigger%setrank <user> <rank(peon|grunt|shaman|1-3)>", whisperBack);
-				}
-			}});
-		Profile.registerCommand("setrecruiter", new CommandRunnable() {
-			@Override
-			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
-			throws Exception {
-				if((params == null) || (params.length != 2)) {
-					user.sendChat("Use: %trigger%setrecruiter <account> <account>", whisperBack);
-					return;
-				}
-
-				Account rsSubject = Account.get(params[0]);
-				if(rsSubject == null)
-					throw new AccountDoesNotExistException(params[0]);
-				params[0] = rsSubject.getName();
-
-				Account rsTarget = Account.get(params[1]);
-				if(rsTarget == null)
-					throw new AccountDoesNotExistException(params[1]);
-				params[1] = rsTarget.getName();
-
-				String recursive = params[0];
-
-				Account cb = rsTarget;
-				do {
-					recursive += " -> " + cb.getName();
-					if(cb == rsSubject) {
-						user.sendChat("Recursion detected: " + recursive, whisperBack);
-						break;
-					}
-
-					cb = cb.getRecruiter();
-
-					if(cb == null) {
-						rsSubject.setRecruiter(rsTarget);
-						rsSubject.updateRow();
-						user.sendChat("Successfully updated recruiter for [ " + params[0] + " ] to [ " + params[1] + " ]" , whisperBack);
-						break;
-					}
-				} while(true);
-			}});
-		Profile.registerCommand("sweepban", new CommandRunnable() {
-			@Override
-			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
-			throws Exception {
-				if((params == null) || (params.length < 1)) {
-					user.sendChat("Use: %trigger%sweepban <channel>", whisperBack);
-					return;
-				}
-				sweepBanInProgress.put(source, true);
-				sweepBannedUsers.put(source, 0);
-				source.sendChat("/who " + param);
-			}});
-		Profile.registerCommand("timeban", new CommandRunnable() {
-			@Override
-			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
-			throws Exception {
-				try {
-					if((params == null) || (params.length < 2))
-						throw new InvalidUseException();
-					params = param.split(" ", 2);
-
-					BNetUser bnSubject = source.findUser(params[0], user);
-					if(bnSubject == null) {
-						user.sendChat("User not found", whisperBack);
-						return;
-					}
-
-					long duration;
-					try {
-						duration = TimeFormatter.parseDuration(params[1]);
-					} catch(NumberFormatException e) {
-						throw new InvalidUseException();
-					}
-					if(duration < 30 * TimeFormatter.SECOND) {
-						user.sendChat("You may not timeban for less than 30 seconds", whisperBack);
-						return;
-					}
-
-					doTimeBan(source, user, bnSubject, duration);
-				} catch(InvalidUseException e) {
-					user.sendChat("Use: %trigger%timeban <user>[@realm] [#days] [#hours] ... -- example: %trigger%timeban c0ke@USEast 100days", whisperBack);
-				}
-			}});
-		Profile.registerCommand("trigger", new CommandRunnable() {
-			@Override
-			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
-			throws Exception {
-				char trigger = source.getTrigger();
-				String output = "0000" + Integer.toString(trigger);
-				output = output.substring(output.length() - 4);
-				output = "Current trigger: " + trigger + " (alt+" + output + ")";
-				user.sendChat(output, whisperBack);
-			}});
-		Profile.registerCommand("unban", new CommandRunnable() {
-			@Override
-			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
-			throws Exception {
-				// TODO: Wildcard unbanning (requires keeping track of banned users)
-				if((params == null) || (params.length != 1)) {
-					user.sendChat("Use: %trigger%unban <user>[@<realm>]", whisperBack);
-					return;
-				}
-
-				BNetUser target = new BNetUser(source, params[0], user);
-				source.sendChat("/unban " + target.getFullLogonName());
-				setInfoForwarding(source, user, whisperBack);
-
-				synchronized(timeBannedUsers) {
-					TimeBan targetTimeBan = null;
-					for(TimeBan tb : timeBannedUsers) {
-						if(tb.getSubject().equals(target)) {
-							targetTimeBan = tb;
-							break;
-						}
-					}
-					if(targetTimeBan != null) {
-						timeBannedUsers.remove(targetTimeBan);
-						user.sendChat("Ending timeban on " + target.getFullLogonName(), whisperBack);
-					}
-				}
-			}});
-		Profile.registerCommand("update", new CommandRunnable() {
-			@Override
-			public void run(Connection source, final BNetUser user, String param, String[] params, final boolean whisperBack, Account commanderAccount, boolean superUser)
-			throws Exception {
-				VersionCheck.checkVersion(true, user, whisperBack);
-			}});
-		Profile.registerCommand("vote", new CommandRunnable() {
-			@Override
-			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
-			throws Exception {
-				Vote vote = votes.get(source);
-				if(vote == null)
-					user.sendChat("There is no vote in progress", whisperBack);
-				else if(commanderAccount == null)
-					user.sendChat("You must have an account to use vote.", whisperBack);
-				else if(param.equals("yes"))
-					vote.castVote(commanderAccount, true);
-				else if(param.equals("no"))
-					vote.castVote(commanderAccount, false);
-				else
-					user.sendChat("Use: %trigger%vote (yes | no)", whisperBack);
-			}});
-		Profile.registerCommand("voteban", new CommandRunnable() {
-			@Override
-			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
-			throws Exception {
-				if((param == null) || (params.length != 1)) {
-					user.sendChat("Use: %trigger%voteban <user>[@<realm>]", whisperBack);
-					return;
-				}
-
-				startVote(source, user, param, whisperBack, Boolean.TRUE);
-			}});
-		Profile.registerCommand("votecancel", new CommandRunnable() {
-			@Override
-			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
-			throws Exception {
-				Vote vote = votes.get(source);
-				if(vote == null)
-					user.sendChat("There is no vote in progress", whisperBack);
-				else
-					vote.cancel();
-			}});
-		Profile.registerCommand("votekick", new CommandRunnable() {
-			@Override
-			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
-			throws Exception {
-				if((param == null) || (params.length != 1)) {
-					user.sendChat("Use: %trigger%votekick <user>[@<realm>]", whisperBack);
-					return;
-				}
-
-				startVote(source, user, param, whisperBack, Boolean.FALSE);
-			}});
-		Profile.registerCommand("whisperback", new CommandRunnable() {
-			@Override
-			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
-			throws Exception {
-				boolean wb = !GlobalSettings.whisperBack;
-				GlobalSettings.whisperBack = wb;
-				user.sendChat("WhisperBack is now " + (wb ? "on" : "off"), wb);
-			}});
-		Profile.registerCommand("whoami", new CommandRunnable() {
-			@Override
-			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
-			throws Exception {
-				CommandRunnable whois = Profile.getCommand("whois");
-				String[] newParams = new String[] {user.getShortLogonName()};
-				whois.run(source, user, newParams[0], newParams, whisperBack, commanderAccount, superUser);
-			}});
-		Profile.registerCommand("whois", new CommandRunnable() {
-			@Override
-			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
-			throws Exception {
-				try {
-					if((params == null) || (params.length != 1))
-						throw new InvalidUseException();
-
-					Account rsSubjectAccount = Account.get(params[0]);
-					if(rsSubjectAccount == null) {
-						BNetUser bnSubject = source.getCreateBNetUser(params[0], user);
-
-						BNLogin rsSubject = BNLogin.get(bnSubject);
-						if(rsSubject == null) {
-							user.sendChat("I have never seen [" + bnSubject.getFullLogonName() + "] in the channel", whisperBack);
-							return;
-						}
-
-						rsSubjectAccount = rsSubject.getAccount();
-						if(rsSubjectAccount == null) {
-							user.sendChat("User [" + params[0] + "] has no account", whisperBack);
-							return;
-						}
-					}
-
-					List<String> clauses = new LinkedList<String>();
-
-					// Access
-					Rank rsSubjectRank = rsSubjectAccount.getRank();
-					if(rsSubjectRank != null) {
-						String prefix = rsSubjectRank.getShortPrefix();
-						if(prefix == null)
-							prefix = rsSubjectRank.getPrefix();
-
-						if(prefix == null)
-							prefix = "";
-						else
-							prefix += " ";
-
-						String result = prefix + rsSubjectAccount.getName();
-						if(rsSubjectRank.getVerbstr() != null)
-							result += " " + rsSubjectRank.getVerbstr();
-						else
-							result += " is a " + rsSubjectRank.getPrefix();
-						result += " (" + rsSubjectAccount.getAccess() + ")";
-
-						clauses.add(result);
-					} else {
-						clauses.add(rsSubjectAccount.getName() + " has access " + rsSubjectAccount.getAccess());
-					}
-
-					// Birthday
-					Date subjectBirthday = rsSubjectAccount.getBirthday();
-					if(subjectBirthday != null) {
-						double age = System.currentTimeMillis() - subjectBirthday.getTime();
-						age /= 1000 * 60 * 60 * 24 * 365.24;
-						age = Math.floor(age * 100) / 100;
-						clauses.add("is " + Double.toString(age) + " years old");
-					}
-
-					// Last seen
-					Date lastSeen = null;
-					for(BNLogin rsSubject : rsSubjectAccount.getBnLogins()) {
-						if(lastSeen == null)
-							lastSeen = rsSubject.getLastSeen();
-						else {
-							Date nt = rsSubject.getLastSeen();
-							if((nt != null) && (nt.compareTo(lastSeen) > 0))
-								lastSeen = nt;
-						}
-					}
-
-					if(lastSeen != null) {
-						clauses.add("was last seen [ " + TimeFormatter.formatTime(System.currentTimeMillis() - lastSeen.getTime()) + " ] ago");
-					}
-
-					// Recruiter
-					Account rsCreatorAccount = rsSubjectAccount.getRecruiter();
-					if(rsCreatorAccount != null) {
-						clauses.add("was recruited by " + rsCreatorAccount.getName());
-					}
-
-					String aliases = null;
-					for(BNLogin alias : rsSubjectAccount.getBnLogins()) {
-						if(aliases == null)
-							aliases = "has aliases ";
-						else
-							aliases += ", ";
-						aliases += alias.getLogin();
-					}
-					if(aliases != null)
-						clauses.add(aliases);
-
-					String result = clauses.remove(0);
-					while(clauses.size() > 1)
-						result += ", " + clauses.remove(0);
-					while(clauses.size() > 0)
-						result += ", and " + clauses.remove(0);
-
-					user.sendChat(result, whisperBack);
-				} catch(InvalidUseException e) {
-					user.sendChat("Use: %trigger%whois ( <account> | <user>[@realm] )", whisperBack);
-				}
-			}});
-		/*Profile.registerCommand("", new CommandRunnable() {
-			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
-			throws Exception {
-				// ...
-			}});*/
+		Profile.registerCommand("access", new CommandAccess());
+		Profile.registerCommand("add", new CommandAdd());
+		Profile.registerCommand("addalias", new CommandAddAlias());
+		Profile.registerCommand("allseen", new CommandAllSeen());
+		Profile.registerCommand("auth", new CommandAuth());
+		Profile.registerCommand("autopromotion", new CommandAutoPromotion());
+		Profile.registerCommand("ban", new CommandBan());
+		Profile.registerCommand("clearqueue", new CommandClearQueue());
+		Profile.registerCommand("createaccount", new CommandCreateAccount());
+		Profile.registerCommand("disconnect", new CommandDisconnect());
+		Profile.registerCommand("home", new CommandHome());
+		Profile.registerCommand("info", new CommandInfo());
+		Profile.registerCommand("invite", new CommandInvite());
+		Profile.registerCommand("kick", new CommandKick());
+		Profile.registerCommand("mail", new CommandMail());
+		Profile.registerCommand("mailall", new CommandMailAll());
+		Profile.registerCommand("ping", new CommandPing());
+		Profile.registerCommand("pingme", new CommandPingMe());
+		Profile.registerCommand("quit", new CommandQuit());
+		Profile.registerCommand("reconnect", new CommandReconnect());
+		Profile.registerCommand("recruit", new CommandRecruit());
+		Profile.registerCommand("recruits", new CommandRecruits());
+		Profile.registerCommand("rejoin", new CommandRejoin());
+		Profile.registerCommand("renameaccount", new CommandRenameAccount());
+		Profile.registerCommand("say", new CommandSay());
+		Profile.registerCommand("search", new CommandSearch());
+		Profile.registerCommand("searchrank", new CommandSearchRank());
+		Profile.registerCommand("seen", new CommandSeen());
+		Profile.registerCommand("setaccount", new CommandSetAccount());
+		Profile.registerCommand("setauth", new CommandSetAuth());
+		Profile.registerCommand("setbirthday", new CommandSetBirthday());
+		Profile.registerCommand("setrank", new CommandSetRank());
+		Profile.registerCommand("setrecruiter", new CommandSetRecruiter());
+		Profile.registerCommand("sweepban", new CommandSweepBan());
+		Profile.registerCommand("timeban", new CommandTimeBan());
+		Profile.registerCommand("trigger", new CommandTrigger());
+		Profile.registerCommand("unban", new CommandUnban());
+		Profile.registerCommand("update", new CommandUpdate());
+		Profile.registerCommand("vote", new CommandVote());
+		Profile.registerCommand("voteban", new CommandVoteBan());
+		Profile.registerCommand("votecancel", new CommandVoteCancel());
+		Profile.registerCommand("votekick", new CommandVoteKick());
+		Profile.registerCommand("whisperback", new CommandWhisperBack());
+		Profile.registerCommand("whoami", new CommandWhoami());
+		Profile.registerCommand("whois", new CommandWhois());
 	}
 
-	private static void sendMail(BNetUser user, boolean whisperBack, int id, int size, Mail m) {
-		StringBuilder message = new StringBuilder("#");
-		message.append(id);
-		message.append(" of ");
-		message.append(size);
-		if(m.getSentFrom() != null) {
-			message.append(" from ");
-			message.append(m.getSentFrom().getName());
-		}
-		message.append(" [");
-		message.append(TimeFormatter.formatTime(System.currentTimeMillis() - m.getSent().getTime()));
-		message.append(" ago]: ");
-		message.append(m.getMessage());
-
-		user.sendChat(message.toString(), true);
-
-		m.setIsread(true);
-		try {
-			m.updateRow();
-		} catch(Exception e) {
-			Out.exception(e);
-			user.sendChat("Failed to set mail read", whisperBack);
-		}
-	}
-
-	private static Account createAccount(String accountName, Account recruiter, BNLogin rsSubject)
+	public static Account createAccount(String accountName, Account recruiter, BNLogin rsSubject)
 	throws AccountDoesNotExistException {
 		Account rsSubjectAccount = Account.get(accountName);
 		if(rsSubjectAccount != null)
@@ -1481,7 +187,7 @@ public class CommandEventHandler extends EventHandler {
 		}
 	}
 
-	private static void doKickBan(Connection source, BNetUser user, String param, boolean isBan, boolean whisperBack) {
+	public static void doKickBan(Connection source, BNetUser user, String param, boolean isBan, boolean whisperBack) {
 		if((param == null) || (param.length() == 0)) {
 			if(isBan)
 				user.sendChat("Use: %trigger%ban ( <user>[@<realm>] | pattern ) [reason]", whisperBack);
@@ -1538,14 +244,6 @@ public class CommandEventHandler extends EventHandler {
 		}
 	}
 
-	private static void doTimeBan(Connection source, BNetUser user, BNetUser bnSubject, long duration) {
-		source.sendChat("/ban " + bnSubject.getFullLogonName() + " TimeBan from " + user.toString() + " " + TimeFormatter.formatTime(duration, false));
-
-		synchronized(timeBannedUsers) {
-			timeBannedUsers.add(new TimeBan(source, bnSubject, System.currentTimeMillis() + duration));
-		}
-	}
-
 	/**
 	 * Start a vote
 	 * @param source The connection to vote on
@@ -1554,7 +252,7 @@ public class CommandEventHandler extends EventHandler {
 	 * @param whisperBack
 	 * @param isBan Whether to ban if vote succeeds
 	 */
-	private static void startVote(Connection source, BNetUser user, String target, boolean whisperBack, boolean isBan) {
+	public static void startVote(Connection source, BNetUser user, String target, boolean whisperBack, boolean isBan) {
 		if(votes.get(source) != null) {
 			user.sendChat("There is already a vote in progress!", whisperBack);
 			return;
@@ -1845,7 +543,7 @@ public class CommandEventHandler extends EventHandler {
 	 * @param user
 	 * @param whisperBack
 	 */
-	private static void setInfoForwarding(Connection source, BNetUser user, boolean whisperBack) {
+	public static void setInfoForwarding(Connection source, BNetUser user, boolean whisperBack) {
 		if(!user.equals(source.getMyUser())) {
 			lastCommandUser = user;
 			lastCommandTime = System.currentTimeMillis();
