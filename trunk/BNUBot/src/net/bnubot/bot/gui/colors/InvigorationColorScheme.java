@@ -61,10 +61,10 @@ public class InvigorationColorScheme extends ColorScheme {
 	public Color getUserNameColor(int flags) {
 		if((flags & 0x20) != 0)	return InvigRed; //Ignored User
 		if((flags & 0x01) != 0)	return InvigCyan; //PRIORITY_BLIZZARD_REP;
-		if((flags & 0x08) != 0)	return InvigCyan; //PRIORITY_BNET_REP;
+		if((flags & 0x08) != 0)	return InvigGreen; //PRIORITY_BNET_REP;
 		if((flags & 0x02) != 0)	return InvigWhite; //PRIORITY_OPERATOR;
 		if((flags & 0x04) != 0)	return InvigLtYellow; //PRIORITY_SPEAKER;
-		if((flags & 0x40) != 0)	return InvigLtYellow; //PRIORITY_BIZZARD_GUEST;
+		if((flags & 0x40) != 0)	return InvigPurple; //PRIORITY_BIZZARD_GUEST;
 		return InvigBeige2; //PRIORITY_NORMAL;
 	}
 
@@ -79,10 +79,10 @@ public class InvigorationColorScheme extends ColorScheme {
 			return InvigLtBlue;
 		if((flags & 0x20) != 0)	return InvigRed;
 		if((flags & 0x01) != 0)	return InvigCyan; //PRIORITY_BLIZZARD_REP;
-		if((flags & 0x08) != 0)	return InvigCyan; //PRIORITY_BNET_REP;
+		if((flags & 0x08) != 0)	return InvigGreen; //PRIORITY_BNET_REP;
 		if((flags & 0x02) != 0)	return InvigWhite; //PRIORITY_OPERATOR;
 		if((flags & 0x04) != 0)	return InvigLtYellow; //PRIORITY_SPEAKER;
-		if((flags & 0x40) != 0)	return InvigLtYellow; //PRIORITY_BIZZARD_GUEST;
+		if((flags & 0x40) != 0)	return InvigPurple; //PRIORITY_BIZZARD_GUEST;
 		return InvigBeige2; //PRIORITY_NORMAL;
 	}
 
@@ -90,10 +90,10 @@ public class InvigorationColorScheme extends ColorScheme {
 	public Color getChatColor(int flags) {
 		if((flags & 0x20) != 0)	return InvigGray2;
 		if((flags & 0x01) != 0)	return InvigCyan; //PRIORITY_BLIZZARD_REP;
-		if((flags & 0x08) != 0)	return InvigCyan; //PRIORITY_BNET_REP;
+		if((flags & 0x08) != 0)	return InvigGreen; //PRIORITY_BNET_REP;
 		if((flags & 0x02) != 0)	return InvigWhite; //PRIORITY_OPERATOR;
 		if((flags & 0x04) != 0)	return InvigLtYellow; //PRIORITY_SPEAKER;
-		if((flags & 0x40) != 0)	return InvigLtYellow; //PRIORITY_BIZZARD_GUEST;
+		if((flags & 0x40) != 0)	return InvigPurple; //PRIORITY_BIZZARD_GUEST;
 		//if((flags & 0x800000) != 0)	return InvigMedBlue;
 		return InvigWhite; //PRIORITY_NORMAL;
 	}
@@ -101,10 +101,10 @@ public class InvigorationColorScheme extends ColorScheme {
 	@Override
 	public Color getEmoteColor(int flags) {
 		if((flags & 0x01) != 0)	return InvigCyan; //PRIORITY_BLIZZARD_REP;
-		if((flags & 0x08) != 0)	return InvigCyan; //PRIORITY_BNET_REP;
+		if((flags & 0x08) != 0)	return InvigGreen; //PRIORITY_BNET_REP;
 		if((flags & 0x02) != 0)	return InvigWhite; //PRIORITY_OPERATOR;
 		if((flags & 0x04) != 0)	return InvigLtYellow; //PRIORITY_SPEAKER;
-		if((flags & 0x40) != 0)	return InvigLtYellow; //PRIORITY_BIZZARD_GUEST;
+		if((flags & 0x40) != 0)	return InvigPurple; //PRIORITY_BIZZARD_GUEST;
 		//if((flags & 0x800000) != 0)	return InvigMedBlue;
 		return InvigBeige2; //PRIORITY_NORMAL;
 	}

@@ -59,10 +59,10 @@ public class Diablo2ColorScheme extends ColorScheme {
 	public Color getUserNameColor(int flags) {
 		if((flags & 0x20) != 0)	return D2Red;
 		if((flags & 0x01) != 0)	return D2Cyan; //PRIORITY_BLIZZARD_REP;
-		if((flags & 0x08) != 0)	return D2Cyan; //PRIORITY_BNET_REP;
+		if((flags & 0x08) != 0)	return D2Green; //PRIORITY_BNET_REP;
 		if((flags & 0x02) != 0)	return D2White; //PRIORITY_OPERATOR;
 		if((flags & 0x04) != 0)	return D2LtYellow; //PRIORITY_SPEAKER;
-		if((flags & 0x40) != 0)	return D2LtYellow; //PRIORITY_BIZZARD_GUEST;
+		if((flags & 0x40) != 0)	return D2Purple; //PRIORITY_BIZZARD_GUEST;
 		return D2Beige2; //PRIORITY_NORMAL;
 	}
 
@@ -77,10 +77,10 @@ public class Diablo2ColorScheme extends ColorScheme {
 			return D2LtYellow;
 		if((flags & 0x20) != 0)	return D2Red;
 		if((flags & 0x01) != 0)	return D2Cyan; //PRIORITY_BLIZZARD_REP;
-		if((flags & 0x08) != 0)	return D2Cyan; //PRIORITY_BNET_REP;
+		if((flags & 0x08) != 0)	return D2Green; //PRIORITY_BNET_REP;
 		if((flags & 0x02) != 0)	return D2White; //PRIORITY_OPERATOR;
 		if((flags & 0x04) != 0)	return D2LtYellow; //PRIORITY_SPEAKER;
-		if((flags & 0x40) != 0)	return D2LtYellow; //PRIORITY_BIZZARD_GUEST;
+		if((flags & 0x40) != 0)	return D2Purple; //PRIORITY_BIZZARD_GUEST;
 		return D2White; //PRIORITY_NORMAL;
 	}
 
@@ -88,10 +88,10 @@ public class Diablo2ColorScheme extends ColorScheme {
 	public Color getChatColor(int flags) {
 		if((flags & 0x20) != 0)	return D2Gray;
 		if((flags & 0x01) != 0)	return D2Cyan; //PRIORITY_BLIZZARD_REP;
-		if((flags & 0x08) != 0)	return D2Cyan; //PRIORITY_BNET_REP;
+		if((flags & 0x08) != 0)	return D2Green; //PRIORITY_BNET_REP;
 		if((flags & 0x02) != 0)	return D2White; //PRIORITY_OPERATOR;
 		if((flags & 0x04) != 0)	return D2LtYellow; //PRIORITY_SPEAKER;
-		if((flags & 0x40) != 0)	return D2LtYellow; //PRIORITY_BIZZARD_GUEST;
+		if((flags & 0x40) != 0)	return D2Purple; //PRIORITY_BIZZARD_GUEST;
 		//if((flags & 0x800000) != 0)	return D2MedBlue;
 		return D2White; //PRIORITY_NORMAL;
 	}
@@ -99,10 +99,10 @@ public class Diablo2ColorScheme extends ColorScheme {
 	@Override
 	public Color getEmoteColor(int flags) {
 		if((flags & 0x01) != 0)	return D2Cyan; //PRIORITY_BLIZZARD_REP;
-		if((flags & 0x08) != 0)	return D2Cyan; //PRIORITY_BNET_REP;
+		if((flags & 0x08) != 0)	return D2Green; //PRIORITY_BNET_REP;
 		if((flags & 0x02) != 0)	return D2White; //PRIORITY_OPERATOR;
 		if((flags & 0x04) != 0)	return D2LtYellow; //PRIORITY_SPEAKER;
-		if((flags & 0x40) != 0)	return D2LtYellow; //PRIORITY_BIZZARD_GUEST;
+		if((flags & 0x40) != 0)	return D2Purple; //PRIORITY_BIZZARD_GUEST;
 		//if((flags & 0x800000) != 0)	return D2MedBlue;
 		return D2Gray; //PRIORITY_NORMAL;
 	}
