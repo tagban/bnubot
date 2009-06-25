@@ -5,6 +5,9 @@
 package net.bnubot.logging;
 
 /**
+ * An {@link OutputLogger} is a device that displays information that
+ * might be useful for debugging purposes. This interface is used by
+ * the logging package when it wants to write to a log file.
  * @author scotta
  */
 public interface OutputLogger {

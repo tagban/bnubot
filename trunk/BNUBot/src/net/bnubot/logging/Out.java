@@ -29,7 +29,7 @@ import net.bnubot.util.UnloggedException;
  * @author scotta
  */
 public class Out {
-	private static OutputLogger outLogger = new PrintStreamOutputLogger(System.out);
+	private static final OutputLoggerCollection outLogger = new OutputLoggerCollection(System.out);
 	private static final ThreadLocal<OutputHandler> outHandler = new ThreadLocal<OutputHandler>();
 	private static OutputHandler outHandlerDefault = null;
 	private static boolean globalDebug = Settings.getSection(null).read("debug", false);
@@ -199,8 +199,8 @@ public class Out {
 	 * Sets the output logger for the information to be displayed to
 	 * @param ol OutputLogger to send log data to
 	 */
-	public static void setOutputLogger(OutputLogger ol) {
-		outLogger = ol;
+	public static void addOutputLogger(OutputLogger ol) {
+		outLogger.addLogger(ol);
 	}
 
 	/**

@@ -9,6 +9,7 @@ import java.io.PrintStream;
 import net.bnubot.util.TimeFormatter;
 
 /**
+ * An {@link OutputLogger} that wraps a {@link PrintStream}
  * @author scotta
  */
 public class PrintStreamOutputLogger implements OutputLogger {
