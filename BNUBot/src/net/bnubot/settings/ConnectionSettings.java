@@ -156,7 +156,6 @@ public class ConnectionSettings implements Serializable {
 	public void save() {
 		String header = Integer.toString(botNum);
 		SettingsSection ss = Settings.getSection(header);
-
 		ss.write("profile", profile);
 		ss.write("username", username);
 		ss.write("password", password);
@@ -167,6 +166,7 @@ public class ConnectionSettings implements Serializable {
 		ss.write("product", product);
 
 		header = "Profile_" + profile;
+		ss = Settings.getSection(header);
 		ss.write("connectionType", connectionType);
 		ss.write("server", server);
 		ss.write("port", port);
@@ -183,7 +183,6 @@ public class ConnectionSettings implements Serializable {
 	public void load() {
 		String header = Integer.toString(botNum);
 		SettingsSection ss = Settings.getSection(header);
-
 		profile = 	ss.read("profile", "Profile" + botNum);
 		username =	ss.read("username", (String)null);
 		password =	ss.read("password", (String)null);
