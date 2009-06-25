@@ -51,7 +51,6 @@ public class RealmWindow extends EventHandler implements RealmEventHandler {
 
 		jd.pack();
 		jd.setModal(true);
-		jd.setAlwaysOnTop(true);
 	}
 
 	public void initializeGUI() {

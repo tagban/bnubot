@@ -20,9 +20,7 @@ public class NewProfileWizard extends AbstractWizard {
 
 	public NewProfileWizard(ConnectionSettings cs) {
 		super("Create profile");
-
 		addWizardPage(new AccountDetailsWizardPage("Battle.net Account", cs));
-		addWizardPage(new ProxyDetailsWizardPage("Proxy Configuration"));
 	}
 
 	@Override

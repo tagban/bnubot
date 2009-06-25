@@ -178,7 +178,6 @@ public abstract class AbstractWizard implements ConfigValueChangeListener {
 
 	public void displayAndBlock() {
 		jd.setVisible(true);
-		jd.setAlwaysOnTop(true);
 		while(jd.isVisible()) {
 			try {
 				Thread.sleep(100);
