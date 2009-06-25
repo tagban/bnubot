@@ -43,21 +43,6 @@ public class Main {
 		if(f.exists())
 			f.deleteOnExit();
 
-		// Set the default log file
-		if(CurrentVersion.fromJar())
-			try {
-				File logFile = new File("log.txt");
-
-				// Report errors for nightly builds
-				if(CurrentVersion.version().getReleaseType().isNightly()
-				&& logFile.exists()
-				&& (logFile.length() > 0))
-					ExceptionReporter.reportErrors(logFile);
-				Out.setOutputLogger(new PrintStreamOutputLogger(new PrintStream(logFile)));
-			} catch(Exception e) {
-				Out.popupException(e);
-			}
-
 		// Disable Cayenne logging!
 		System.setProperty("org.apache.commons.logging.Log", NoOpLog.class.getName());
 	}
@@ -67,6 +52,7 @@ public class Main {
 		GlobalSettings.load();
 
 		boolean forceConfig = false;
+		boolean logLocationSet = false;
 		for(int i = 0; i < args.length; i++) {
 			if(args[i].charAt(0) == '-') {
 				switch(args[i].charAt(1)) {
@@ -93,9 +79,11 @@ public class Main {
 					}
 					break;
 				case 'l':
-					if(args[i].equals("-logfile")) {
+					if(args[i].equals("-logfile")
+					|| args[i].equals("-log")) {
 						try {
-							Out.setOutputLogger(new PrintStreamOutputLogger(new PrintStream(new File(args[++i]))));
+							Out.addOutputLogger(new PrintStreamOutputLogger(new PrintStream(new File(args[++i]))));
+							logLocationSet = true;
 						} catch (FileNotFoundException e) {
 							Out.exception(e);
 						}
@@ -112,6 +100,13 @@ public class Main {
 						continue;
 					}
 					break;
+				case 's':
+					if(args[i].equals("-stdout")) {
+						Out.addOutputLogger(new PrintStreamOutputLogger(System.out));
+						logLocationSet = true;
+						continue;
+					}
+					break;
 				case 'v':
 					if(args[i].equals("-v") || args[i].equals("-version")) {
 						System.out.println(CurrentVersion.version().toString());
@@ -123,6 +118,28 @@ public class Main {
 
 			Out.error(Main.class, "Invalid argument: " + args[i]);
 			System.exit(1);
+		}
+
+		// Set the default log file
+		if(CurrentVersion.fromJar()) {
+			try {
+				File logFile = new File("log.txt");
+
+				// Report errors for nightly builds
+				if(CurrentVersion.version().getReleaseType().isNightly()
+				&& logFile.exists()
+				&& (logFile.length() > 0))
+					ExceptionReporter.reportErrors(logFile);
+
+				if(!logLocationSet)
+					Out.addOutputLogger(new PrintStreamOutputLogger(new PrintStream(logFile)));
+			} catch(Exception e) {
+				Out.popupException(e);
+			}
+		} else {
+			// Running in the debugger
+			if(!logLocationSet)
+				Out.addOutputLogger(new PrintStreamOutputLogger(System.out));
 		}
 
 		if(forceConfig) {
