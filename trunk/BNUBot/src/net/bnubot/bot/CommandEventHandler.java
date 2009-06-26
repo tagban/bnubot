@@ -66,6 +66,9 @@ import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.Profile;
 import net.bnubot.core.commands.AccountDoesNotExistException;
+import net.bnubot.core.commands.CommandFailedWithDetailsException;
+import net.bnubot.core.commands.InsufficientAccessException;
+import net.bnubot.core.commands.InvalidUseException;
 import net.bnubot.db.Account;
 import net.bnubot.db.BNLogin;
 import net.bnubot.db.Mail;
@@ -163,7 +166,15 @@ public class CommandEventHandler extends EventHandler {
 		Profile.registerCommand("whois", new CommandWhois());
 	}
 
-	public static Account createAccount(String accountName, Account recruiter, BNLogin rsSubject)
+	/**
+	 * Create an account
+	 * @param accountName name of the account
+	 * @param recruiter the {@link Account} of the recruiter, or null
+	 * @param subject the account's first BNLogin
+	 * @return the created account
+	 * @throws AccountDoesNotExistException if the account
+	 */
+	public static Account createAccount(String accountName, Account recruiter, BNLogin subject)
 	throws AccountDoesNotExistException {
 		Account rsSubjectAccount = Account.get(accountName);
 		if(rsSubjectAccount != null)
@@ -176,7 +187,7 @@ public class CommandEventHandler extends EventHandler {
 		if(rsSubjectAccount == null)
 			throw new AccountDoesNotExistException("Failed to create account [" + accountName + "] for an unknown reason");
 
-		rsSubject.setAccount(rsSubjectAccount);
+		subject.setAccount(rsSubjectAccount);
 		rsSubjectAccount.setRank(Rank.get(GlobalSettings.recruitAccess));
 
 		try {
@@ -187,14 +198,76 @@ public class CommandEventHandler extends EventHandler {
 		}
 	}
 
-	public static void doKickBan(Connection source, BNetUser user, String param, boolean isBan, boolean whisperBack) {
-		if((param == null) || (param.length() == 0)) {
-			if(isBan)
-				user.sendChat("Use: %trigger%ban ( <user>[@<realm>] | pattern ) [reason]", whisperBack);
-			else
-				user.sendChat("Use: %trigger%kick ( <user>[@<realm>] | pattern ) [reason]", whisperBack);
-			return;
+	/**
+	 * Searches for a user by accountName, or a bnlogin by that name. If it doesn't exist, create it
+	 * @param source the {@link Connection} the command was recieved from
+	 * @param commander the {@link BNetUser} the command was issued by
+	 * @param commanderAccount the {@link Account} the command was issued by
+	 * @param accountName
+	 * @param whisperBack
+	 * @return the user's account
+	 * @throws AccountDoesNotExistException if createAccount() fails
+	 * @throws CommandFailedWithDetailsException if the bnlogin has never been seen
+	 */
+	public static Account findOrCreateAccount(Connection source, BNetUser commander, Account commanderAccount, String accountName, boolean whisperBack)
+	throws CommandFailedWithDetailsException, AccountDoesNotExistException {
+		Account subjectAccount = Account.get(accountName);
+		if(subjectAccount != null)
+			return subjectAccount;
+
+		// They don't have an account by that name, check if it's a user
+		BNetUser bnSubject = source.getCreateBNetUser(accountName, commander);
+
+		subjectAccount = Account.get(bnSubject);
+		if(subjectAccount != null)
+			return subjectAccount;
+
+		// The account does not exist
+		BNLogin subject = BNLogin.get(bnSubject);
+		if(subject == null)
+			throw new CommandFailedWithDetailsException("I have never seen [" + bnSubject.getFullAccountName() + "]");
+
+		return createAccount(accountName, commanderAccount, subject);
+	}
+
+	public static void setAccountAccess(BNetUser commander, Account commanderAccount, Account subjectAccount, int targetAccess, boolean superUser, boolean whisperBack)
+	throws InsufficientAccessException, CommandFailedWithDetailsException {
+		Rank originalRank = subjectAccount.getRank();
+		int originalAccess = originalRank.getAccess();
+		if(targetAccess == originalAccess)
+			throw new CommandFailedWithDetailsException("That would have no effect");
+
+		Rank targetRank = Rank.get(targetAccess);
+		if(targetRank == null)
+			throw new CommandFailedWithDetailsException("Invalid rank: " + targetAccess);
+
+		if(!superUser) {
+			if(subjectAccount.equals(commanderAccount))
+				throw new InsufficientAccessException("to modify your self", true);
+
+			int commanderAccess = 0;
+			if(commanderAccount != null)
+				commanderAccess = commanderAccount.getAccess();
+			if(targetAccess >= commanderAccess)
+				throw new InsufficientAccessException("to add users beyond " + (commanderAccess - 1), true);
 		}
+
+		subjectAccount.setRank(targetRank);
+		subjectAccount.setLastRankChange(new Date(System.currentTimeMillis()));
+		try {
+			subjectAccount.updateRow();
+			commander.sendChat(subjectAccount.getName() + "'s rank has changed from "
+					+ originalRank.getPrefix() + " (" + originalAccess + ") to "
+					+ targetRank.getPrefix() + " (" + targetAccess + ")", whisperBack);
+		} catch(Exception e) {
+			throw new CommandFailedWithDetailsException("Failed: " + e.getMessage());
+		}
+	}
+
+	public static void doKickBan(Connection source, BNetUser user, String param, boolean isBan, boolean whisperBack)
+	throws InvalidUseException, CommandFailedWithDetailsException {
+		if((param == null) || (param.length() == 0))
+			throw new InvalidUseException();
 
 		// Extract the reason
 		String[] params = param.split(" ", 2);
@@ -218,10 +291,9 @@ public class CommandEventHandler extends EventHandler {
 		} else {
 			// Wildcard kick/ban
 			Collection<BNetUser> users = source.findUsersWildcard(params[0], user);
-			if(users.size() == 0) {
-				user.sendChat("That pattern did not match any users.", whisperBack);
-				return;
-			}
+
+			if(users.size() == 0)
+				throw new CommandFailedWithDetailsException("That pattern did not match any users.");
 
 			int numSkipped = 0;
 			for(BNetUser u : users) {

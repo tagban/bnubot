@@ -7,6 +7,7 @@ package net.bnubot.bot.commands;
 import net.bnubot.bot.CommandEventHandler;
 import net.bnubot.core.Connection;
 import net.bnubot.core.commands.CommandRunnable;
+import net.bnubot.core.commands.InvalidUseException;
 import net.bnubot.db.Account;
 import net.bnubot.util.BNetUser;
 
@@ -16,6 +17,10 @@ import net.bnubot.util.BNetUser;
 public final class CommandKick implements CommandRunnable {
 	public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
 	throws Exception {
-		CommandEventHandler.doKickBan(source, user, param, false, whisperBack);
+		try {
+			CommandEventHandler.doKickBan(source, user, param, false, whisperBack);
+		} catch(InvalidUseException e) {
+			user.sendChat("Use: %trigger%kick ( <user>[@<realm>] | pattern ) [reason]", whisperBack);
+		}
 	}
 }
