@@ -14,6 +14,7 @@ import java.util.Map;
 
 import net.bnubot.core.commands.AccountDoesNotExistException;
 import net.bnubot.core.commands.CommandDoesNotExistException;
+import net.bnubot.core.commands.CommandFailedWithDetailsException;
 import net.bnubot.core.commands.CommandRunnable;
 import net.bnubot.core.commands.InsufficientAccessException;
 import net.bnubot.db.Account;
@@ -82,6 +83,8 @@ public class Profile {
 			return false;
 		} catch(AccountDoesNotExistException e) {
 			source.dispatchRecieveError("The account [" + e.getMessage() + "] does not exist!");
+		} catch(CommandFailedWithDetailsException e) {
+			source.dispatchRecieveError(e.getMessage());
 		} catch(InsufficientAccessException e) {
 			source.dispatchRecieveError("You have insufficient access " + e.getMessage());
 		} catch(Exception e) {
@@ -106,6 +109,8 @@ public class Profile {
 			return false;
 		} catch(AccountDoesNotExistException e) {
 			user.sendChat("The account [" + e.getMessage() + "] does not exist!", whisperBack);
+		} catch(CommandFailedWithDetailsException e) {
+			user.sendChat(e.getMessage(), whisperBack);
 		} catch(InsufficientAccessException e) {
 			if(e.canContactUser())
 				user.sendChat("You have insufficient access " + e.getMessage() , whisperBack);
