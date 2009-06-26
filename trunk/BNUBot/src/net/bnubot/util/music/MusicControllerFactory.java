@@ -26,8 +26,7 @@ public class MusicControllerFactory {
 				return new MCiTunesOSX();
 			case WINDOWS:
 				// TODO: let windows users select between iTunes and Winamp
-				if(false)
-					return new MCiTunesWindows();
+				//return new MCiTunesWindows();
 				return new MCJDIC();
 			default:
 				return new MCJDIC();
