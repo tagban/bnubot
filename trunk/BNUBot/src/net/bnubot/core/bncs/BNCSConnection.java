@@ -105,7 +105,7 @@ public class BNCSConnection extends Connection {
 	private byte proof_M2[] = null;
 	protected Integer myClan = null;
 	protected Byte myClanRank = null;
-	protected long lastEntryForced;
+	protected long lastNormalJoin;
 
 	public BNCSConnection(ConnectionSettings cs, Profile p) {
 		super(cs, p);
@@ -1118,7 +1118,7 @@ public class BNCSConnection extends Connection {
 	@Override
 	protected void connectedLoop() throws Exception {
 		lastNullPacket = System.currentTimeMillis();
-		lastEntryForced = lastNullPacket;
+		lastNormalJoin = 0;
 		profile.lastAntiIdle = lastNullPacket;
 
 		if(botnet != null)
@@ -1306,8 +1306,8 @@ public class BNCSConnection extends Connection {
 						sendJoinChannel2(data.toString());
 						break;
 					case EID_CHANNELRESTRICTED:
-						if(timeNow - lastEntryForced > 5000) {
-							lastEntryForced = timeNow;
+						long timeSinceNormalJoin = timeNow - lastNormalJoin;
+						if((lastNormalJoin != 0) && (timeSinceNormalJoin < 5000)) {
 							dispatchRecieveError("Channel is restricted; forcing entry");
 							sendJoinChannel2(data.toString());
 						} else {
@@ -1858,6 +1858,7 @@ public class BNCSConnection extends Connection {
 	 */
 	@Override
 	public void sendJoinChannel(String channel) throws Exception {
+		lastNormalJoin = System.currentTimeMillis();
 		BNCSPacket p = new BNCSPacket(this, BNCSPacketId.SID_JOINCHANNEL);
 		p.writeDWord(0); // nocreate join
 		p.writeNTString(channel);
@@ -1869,6 +1870,7 @@ public class BNCSConnection extends Connection {
 	 */
 	@Override
 	public void sendJoinChannel2(String channel) throws Exception {
+		lastNormalJoin = 0;
 		BNCSPacket p = new BNCSPacket(this, BNCSPacketId.SID_JOINCHANNEL);
 		p.writeDWord(2); // force join
 		p.writeNTString(channel);
