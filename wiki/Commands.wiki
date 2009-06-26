@@ -39,6 +39,8 @@ Prefix the command name with your trigger. If you're doing the command locally (
 || renameaccount || `<oldaccount> <newaccount>` || 34 || Renames an account ||
 || createaccount || `<account>` || 34 || ||
 || add || `<account> <access>` || 34 || ||
+|| promote|| `<account>` || 34 || ||
+|| demote || `<account>` || 34 || ||
 || setrecruiter || `<account (recruited)> <account (recruiter)>` || 35 || ||
 
 ==administration==
