@@ -40,7 +40,6 @@ public class LockdownEventHandler extends EventHandler {
 		commandsInitialized = true;
 
 		Profile.registerCommand("lockdown", new CommandRunnable() {
-			@Override
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
 			throws Exception {
 				LockdownEventHandler leh = EventHandler.findThis(source, LockdownEventHandler.class);

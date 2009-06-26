@@ -20,8 +20,7 @@ import net.bnubot.util.TimeFormatter;
 /**
  * @author scotta
  */
-public final class CommandWhois extends CommandRunnable {
-	@Override
+public final class CommandWhois implements CommandRunnable {
 	public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
 	throws Exception {
 		try {

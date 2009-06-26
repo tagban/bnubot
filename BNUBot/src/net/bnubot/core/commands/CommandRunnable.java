@@ -12,7 +12,7 @@ import net.bnubot.util.BNetUser;
 /**
  * @author scotta
  */
-public abstract class CommandRunnable {
+public interface CommandRunnable {
 	public abstract void run(
 			Connection source,
 			BNetUser user,

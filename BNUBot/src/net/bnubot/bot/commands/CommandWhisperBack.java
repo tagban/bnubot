@@ -13,8 +13,7 @@ import net.bnubot.util.BNetUser;
 /**
  * @author scotta
  */
-public final class CommandWhisperBack extends CommandRunnable {
-	@Override
+public final class CommandWhisperBack implements CommandRunnable {
 	public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
 	throws Exception {
 		boolean wb = !GlobalSettings.whisperBack;

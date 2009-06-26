@@ -34,7 +34,6 @@ public class GameTracker extends EventHandler {
 		commandsInitialized = true;
 
 		Profile.registerCommand("login", new CommandRunnable() {
-		@Override
 		public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
 		throws Exception {
 			findThis(source, GameTracker.class);
@@ -42,7 +41,6 @@ public class GameTracker extends EventHandler {
 			source.sendChat("/f a " + user.getFullAccountName());
 		}});
 		Profile.registerCommand("logout", new CommandRunnable() {
-		@Override
 		public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
 		throws Exception {
 			findThis(source, GameTracker.class);

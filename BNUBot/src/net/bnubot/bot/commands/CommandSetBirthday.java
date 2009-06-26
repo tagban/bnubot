@@ -17,8 +17,7 @@ import net.bnubot.util.BNetUser;
 /**
  * @author scotta
  */
-public final class CommandSetBirthday extends CommandRunnable {
-	@Override
+public final class CommandSetBirthday implements CommandRunnable {
 	public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
 	throws Exception {
 		if(commanderAccount == null) {

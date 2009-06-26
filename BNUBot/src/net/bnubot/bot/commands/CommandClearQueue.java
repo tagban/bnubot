@@ -12,8 +12,7 @@ import net.bnubot.util.BNetUser;
 /**
  * @author scotta
  */
-public final class CommandClearQueue extends CommandRunnable {
-	@Override
+public final class CommandClearQueue implements CommandRunnable {
 	public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
 	throws Exception {
 		source.clearQueue();

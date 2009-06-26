@@ -13,8 +13,7 @@ import net.bnubot.util.BNetUser;
 /**
  * @author scotta
  */
-public final class CommandUnban extends CommandRunnable {
-	@Override
+public final class CommandUnban implements CommandRunnable {
 	public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
 	throws Exception {
 		// TODO: Wildcard unbanning (requires keeping track of banned users)

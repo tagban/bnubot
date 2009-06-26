@@ -13,8 +13,7 @@ import net.bnubot.util.BNetUser;
 /**
  * @author scotta
  */
-public final class CommandVote extends CommandRunnable {
-	@Override
+public final class CommandVote implements CommandRunnable {
 	public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
 	throws Exception {
 		Vote vote = CommandEventHandler.votes.get(source);

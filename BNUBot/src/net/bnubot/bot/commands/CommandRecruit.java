@@ -16,8 +16,7 @@ import net.bnubot.util.BNetUser;
 /**
  * @author scotta
  */
-public final class CommandRecruit extends CommandRunnable {
-	@Override
+public final class CommandRecruit implements CommandRunnable {
 	public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
 	throws Exception {
 		if((params == null) || (params.length != 2)) {
