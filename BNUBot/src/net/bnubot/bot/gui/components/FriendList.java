@@ -28,7 +28,6 @@ public class FriendList extends JPanel {
 	private static final long serialVersionUID = 609660115699769279L;
 
 	private class FriendInfo {
-		int entryNumber;
 		FriendEntry entry;
 		JLabel label;
 	}
@@ -106,7 +105,6 @@ public class FriendList extends JPanel {
 
 	public void add(FriendEntry friend) {
 		FriendInfo fi = new FriendInfo();
-		fi.entryNumber = b.getComponentCount();
 		fi.entry = friend;
 
 		fi.label = new JLabel(friend.toString());

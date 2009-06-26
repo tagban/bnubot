@@ -29,7 +29,6 @@ public class ClanList extends JPanel {
 	private static final long serialVersionUID = 1138323605493806160L;
 
 	private class ClanMemberInfo {
-		int entryNumber;
 		ClanMember entry;
 		JLabel label;
 	}
@@ -113,26 +112,15 @@ public class ClanList extends JPanel {
 
 	public void showMembers(ClanMember[] members) {
 		clear();
-		//BNetIcon icons[] = IconsDotBniReader.getIcons();
 
-		for(int i = 0; i < members.length; i++) {
-			ClanMember member = members[i];
+		for(ClanMember member : members) {
 			ClanMemberInfo cmi = new ClanMemberInfo();
-			cmi.entryNumber = i;
 			cmi.entry = member;
 
 			cmi.label = new JLabel(member.toString());
 			cmi.label.setForeground(cs.getUserNameListColor(0, false));
 			setIcon(cmi);
 			b.add(cmi.label, getInsertPosition(member.getRank()));
-
-			/*if(member.getProduct() != 0) {
-				for(int j = 0; j < icons.length; j++) {
-					if(icons[j].useFor(0, member.getProduct())) {
-						cmi.label.setIcon(icons[j].getIcon());
-					}
-				}
-			}*/
 
 			this.members.put(member.getUsername(), cmi);
 		}
@@ -155,8 +143,10 @@ public class ClanList extends JPanel {
 
 	public void statusChange(ClanMember member) {
 		ClanMemberInfo cmi = get(member);
-		if(cmi == null)
+		if(cmi == null) {
+			Out.error(getClass(), "Attempted to change status of a clan member that was not in the ClanList: " + member.getUsername());
 			return;
+		}
 		cmi.label.setText(member.toString());
 		cmi.entry = member;
 		setIcon(cmi);
@@ -165,8 +155,10 @@ public class ClanList extends JPanel {
 
 	public void rankChange(byte oldRank, byte newRank, String user) {
 		ClanMemberInfo cmi = get(user);
-		if(cmi == null)
+		if(cmi == null) {
+			Out.error(getClass(), "Attempted to change rank of a clan member that was not in the ClanList: " + user);
 			return;
+		}
 		cmi.entry.setRank(newRank);
 		cmi.label.setText(cmi.entry.toString());
 		setIcon(cmi);
