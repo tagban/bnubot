@@ -12,8 +12,7 @@ import net.bnubot.util.BNetUser;
 /**
  * @author scotta
  */
-public final class CommandHome extends CommandRunnable {
-	@Override
+public final class CommandHome implements CommandRunnable {
 	public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
 	throws Exception {
 		source.sendJoinChannel(source.getConnectionSettings().channel);

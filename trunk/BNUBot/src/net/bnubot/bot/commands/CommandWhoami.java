@@ -13,8 +13,7 @@ import net.bnubot.util.BNetUser;
 /**
  * @author scotta
  */
-public final class CommandWhoami extends CommandRunnable {
-	@Override
+public final class CommandWhoami implements CommandRunnable {
 	public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
 	throws Exception {
 		CommandRunnable whois = Profile.getCommand("whois");

@@ -15,8 +15,7 @@ import net.bnubot.util.CookieUtility;
 /**
  * @author scotta
  */
-public final class CommandSetRank extends CommandRunnable {
-	@Override
+public final class CommandSetRank implements CommandRunnable {
 	public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
 	throws Exception {
 		try {

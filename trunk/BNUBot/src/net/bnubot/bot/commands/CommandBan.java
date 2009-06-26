@@ -13,8 +13,7 @@ import net.bnubot.util.BNetUser;
 /**
  * @author scotta
  */
-public final class CommandBan extends CommandRunnable {
-	@Override
+public final class CommandBan implements CommandRunnable {
 	public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
 	throws Exception {
 		CommandEventHandler.doKickBan(source, user, param, true, whisperBack);

@@ -23,8 +23,7 @@ import org.apache.cayenne.ObjectContext;
 /**
  * @author scotta
  */
-public final class CommandMail extends CommandRunnable {
-	@Override
+public final class CommandMail implements CommandRunnable {
 	public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
 	throws Exception {
 		if(commanderAccount == null) {
