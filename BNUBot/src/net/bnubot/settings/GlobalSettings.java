@@ -306,18 +306,18 @@ public class GlobalSettings {
 			SWTDesktop.getInstance();
 		TimeFormatter.tsFormat = ss.read("tsFormat", TimeFormatter.tsFormat);
 		TimeFormatter.timeZone = ss.read("timeZone", TimeFormatter.timeZone);
-		bnUserToString = ss.read("bnUserToString", 3);
-		bnUserToStringUserList = ss.read("bnUserToStringUserList", 1);
-		bnUserToStringCommandResponse = ss.read("bnUserToStringCommandResponse", 4);
+		bnUserToString = ss.read("bnUserToString", 1); // BNLogin
+		bnUserToStringUserList = ss.read("bnUserToStringUserList", 5); // Account (BNLogin)
+		bnUserToStringCommandResponse = ss.read("bnUserToStringCommandResponse", 4); // Account
 
 		// Get the release type to check for when doing version checks
 		ReleaseType currentRelease = CurrentVersion.version().getReleaseType();
 		releaseType = ss.read("releaseType", currentRelease);
 
 		if(CurrentVersion.fromJar()) {
-			// If from a JAR, force at least Alpha
+			// If from a JAR, force Nightly
 			if(releaseType.isDevelopment())
-				releaseType = ReleaseType.Alpha;
+				releaseType = ReleaseType.Nightly;
 		} else {
 			// Non-jar is always development
 			releaseType = ReleaseType.Development;
