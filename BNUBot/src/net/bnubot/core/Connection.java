@@ -199,13 +199,14 @@ public abstract class Connection extends Thread implements OutputHandler {
 					if(PluginManager.getEnableGui()) {
 						new ConfigurationFrame(cs);
 					} else {
+						// TODO: handle this somehow
 						throw new RuntimeException("Invalid configuration in bot #" + cs.botNum + " " + cs.isValid());
 					}
 				}
 
 				// Wait a short time before allowing a reconnect
 				waitUntilConnectionSafe(connect);
-				if(!connectionState.equals(ConnectionState.CONNECTING))
+				if(!isConnecting())
 					continue;
 
 				// Double-check if disposal occured

@@ -137,7 +137,7 @@ public class DatabaseWizard extends AbstractWizard {
 						"<br/>" +
 						"You can also use the shortened versions (aliases) of these commands:<br/>" +
 						"/ca Camel<br/>" +
-						"/sa BNU-CameL@Azeroth Camel<br/>" +
+						"/sa BNU-Camel@Azeroth Camel<br/>" +
 						"<br/>" +
 						"Be sure to check out the database editors, on the Database menu, as well.<br/>" +
 						"You can customize greetings, autopromtions, and how long bnet logins remain<br/>" +

@@ -1185,7 +1185,7 @@ public class BNCSConnection extends Connection {
 						int timeStamp = is.readDWord();
 						String news = is.readNTStringUTF8().trim();
 						if(timeStamp == 0)	// MOTD
-							dispatchRecieveInfo(news);
+							dispatchRecieveServerInfo(news);
 					}
 
 					break;
