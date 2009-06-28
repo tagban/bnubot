@@ -254,6 +254,8 @@ public class CommandEventHandler extends EventHandler {
 				commanderAccess = commanderAccount.getAccess();
 			if(targetAccess >= commanderAccess)
 				throw new InsufficientAccessException("to add users beyond " + (commanderAccess - 1), true);
+			if(originalAccess >= commanderAccess)
+				throw new InsufficientAccessException("to add users ranked above " + (commanderAccess - 1), true);
 		}
 
 		subjectAccount.setRank(targetRank);
