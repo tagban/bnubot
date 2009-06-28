@@ -192,6 +192,11 @@ public class DatabaseEditor {
 			addField(jp, y++, rel, currentRow);
 		}
 
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridy = y++;
+		gbc.weighty = 1;
+		jp.add(Box.createVerticalGlue(), gbc);
+
 		jf.pack();
 	}
 
@@ -240,6 +245,7 @@ public class DatabaseEditor {
 		valueComponent.setSelectedItem((value == null) ? null : getDisplayString(value));
 
 		gbc.gridx++;
+		gbc.weightx = 1;
 		jp.add(valueComponent, gbc);
 
 		dataRel.put(rel, new getValueDelegate() {
