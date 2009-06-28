@@ -22,6 +22,8 @@
 * Console plugin now supports color
 * Inactive accounts are set to zero access instead of being deleted
 * Added color scheme from Invigoration
+* Added 'promote' and 'demote' commands
+* Press the up and down keys to cycle through chat history
 
 2.1.0 (r1640) 2008-10-06:
 * Added BotNet account login

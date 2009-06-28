@@ -53,6 +53,7 @@ import net.bnubot.bot.gui.components.BotNetList;
 import net.bnubot.bot.gui.components.ClanList;
 import net.bnubot.bot.gui.components.ColoredTextField;
 import net.bnubot.bot.gui.components.FriendList;
+import net.bnubot.bot.gui.components.HistoryTextField;
 import net.bnubot.bot.gui.components.TextWindow;
 import net.bnubot.bot.gui.components.UserList;
 import net.bnubot.bot.gui.notifications.Growl;
@@ -297,7 +298,7 @@ public class GuiEventHandler extends EventHandler {
 		// Main text area
 		mainTextArea = new TextWindow();
 		// Send chat textbox
-		chatTextArea = new ColoredTextField();
+		chatTextArea = new HistoryTextField();
 		chatTextArea.setMaximumSize(new Dimension(Integer.MAX_VALUE, textHeight));
 		// Enable tab character
 		chatTextArea.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, EMPTY_SET);
