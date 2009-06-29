@@ -16,8 +16,8 @@ public class BNetUserTest extends TestCase {
 		BNetUser u = null;
 		try {
 			u = new BNetUser(null, "test", (String)null);
-			fail("This should throw an NullPointerException");
-		} catch(NullPointerException e) {}
+			fail("This should throw an IllegalStateException");
+		} catch(IllegalStateException e) {}
 		assertEquals(null, u);
 	}
 
