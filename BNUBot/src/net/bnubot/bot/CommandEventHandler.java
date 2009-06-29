@@ -252,8 +252,10 @@ public class CommandEventHandler extends EventHandler {
 			int commanderAccess = 0;
 			if(commanderAccount != null)
 				commanderAccess = commanderAccount.getAccess();
-			if(targetAccess >= commanderAccess)
-				throw new InsufficientAccessException("to add users beyond " + (commanderAccess - 1), true);
+			// TODO: get addMax from the database
+			int addMax = commanderAccess - 1;
+			if(targetAccess > addMax)
+				throw new InsufficientAccessException("to add users beyond " + addMax, true);
 			if(originalAccess >= commanderAccess)
 				throw new InsufficientAccessException("to add users ranked above " + (commanderAccess - 1), true);
 		}
@@ -266,7 +268,7 @@ public class CommandEventHandler extends EventHandler {
 					+ originalRank.getPrefix() + " (" + originalAccess + ") to "
 					+ targetRank.getPrefix() + " (" + targetAccess + ")", whisperBack);
 		} catch(Exception e) {
-			throw new CommandFailedWithDetailsException("Failed: " + e.getMessage());
+			throw new CommandFailedWithDetailsException(e);
 		}
 	}
 
