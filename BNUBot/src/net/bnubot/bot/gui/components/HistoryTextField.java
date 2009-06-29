@@ -22,7 +22,7 @@ public class HistoryTextField extends ColoredTextField {
 		super();
 		addKeyListener(new KeyAdapter() {
 			@Override
-			public void keyReleased(KeyEvent e) {
+			public void keyPressed(KeyEvent e) {
 				switch(e.getKeyCode()) {
 				case KeyEvent.VK_UP:
 					up();
