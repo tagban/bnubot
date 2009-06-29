@@ -229,7 +229,7 @@ public class CommandEventHandler extends EventHandler {
 		// The account does not exist
 		BNLogin subject = BNLogin.get(bnSubject);
 		if(subject == null)
-			throw new CommandFailedWithDetailsException("I have never seen [" + bnSubject.getFullAccountName() + "]");
+			throw new CommandFailedWithDetailsException("I have never seen " + bnSubject.getFullAccountName());
 
 		return createAccount(accountName, commanderAccount, subject);
 	}

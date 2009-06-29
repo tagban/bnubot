@@ -24,7 +24,7 @@ public final class CommandAllSeen implements CommandRunnable {
 				response += ", ";
 			first = false;
 
-			response += login.getLogin();
+			response += new BNetUser(login.getLogin()).getShortLogonName(user);
 			response += " [";
 			long time = System.currentTimeMillis() - login.getLastSeen().getTime();
 			response += TimeFormatter.formatTime(time, false);

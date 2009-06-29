@@ -31,7 +31,7 @@ public final class CommandSearch implements CommandRunnable {
 
 			if(num++ > 0)
 				out += ", ";
-			out += login.getLogin();
+			out += new BNetUser(login.getLogin()).getShortLogonName(user);
 		}
 		if(num == 0)
 			out = "No users found!";

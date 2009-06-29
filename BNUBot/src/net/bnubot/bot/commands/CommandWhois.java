@@ -118,18 +118,18 @@ public final class CommandWhois implements CommandRunnable {
 					aliases = "has aliases ";
 				else
 					aliases += ", ";
-				aliases += alias.getLogin();
+				aliases += new BNetUser(alias.getLogin()).getShortLogonName(user);
 			}
 			if(aliases != null)
 				clauses.add(aliases);
 
-			String result = clauses.remove(0);
+			StringBuilder result = new StringBuilder(clauses.remove(0));
 			while(clauses.size() > 1)
-				result += ", " + clauses.remove(0);
+				result.append(", ").append(clauses.remove(0));
 			while(clauses.size() > 0)
-				result += ", and " + clauses.remove(0);
+				result.append(", and ").append(clauses.remove(0));
 
-			user.sendChat(result, whisperBack);
+			user.sendChat(result.toString(), whisperBack);
 		} catch(InvalidUseException e) {
 			user.sendChat("Use: %trigger%whois ( <account> | <user>[@realm] )", whisperBack);
 		}
