@@ -7,6 +7,7 @@ package net.bnubot.bot.commands;
 import java.util.List;
 
 import net.bnubot.core.Connection;
+import net.bnubot.core.commands.CommandFailedWithDetailsException;
 import net.bnubot.core.commands.CommandRunnable;
 import net.bnubot.core.commands.InvalidUseException;
 import net.bnubot.db.Account;
@@ -35,10 +36,8 @@ public final class CommandAccess implements CommandRunnable {
 			else
 				commands = Command.getCommands(params[0], commanderAccess);
 
-			if((commands == null) || (commands.size() == 0)) {
-				user.sendChat("The category [" + params[0] + "] does not exist!", whisperBack);
-				return;
-			}
+			if((commands == null) || (commands.size() == 0))
+				throw new CommandFailedWithDetailsException("The category [" + params[0] + "] does not exist!");
 
 			StringBuilder result = new StringBuilder("Available commands for rank ");
 			result.append(commanderAccess).append(" in cagegory ");

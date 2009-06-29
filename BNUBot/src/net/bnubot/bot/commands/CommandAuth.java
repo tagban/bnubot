@@ -5,6 +5,7 @@
 package net.bnubot.bot.commands;
 
 import net.bnubot.core.Connection;
+import net.bnubot.core.commands.CommandFailedWithDetailsException;
 import net.bnubot.core.commands.CommandRunnable;
 import net.bnubot.core.commands.InvalidUseException;
 import net.bnubot.db.Account;
@@ -24,10 +25,8 @@ public final class CommandAuth implements CommandRunnable {
 				throw new InvalidUseException();
 
 			Command rsSubjectCommand = Command.get(params[0]);
-			if(rsSubjectCommand == null) {
-				user.sendChat("The command [" + params[0] + "] does not exist!", whisperBack);
-				return;
-			}
+			if(rsSubjectCommand == null)
+				throw new CommandFailedWithDetailsException("The command [" + params[0] + "] does not exist!");
 
 			params[0] = rsSubjectCommand.getName();
 			int access = rsSubjectCommand.getAccess();

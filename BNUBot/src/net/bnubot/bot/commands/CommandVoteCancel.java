@@ -6,6 +6,7 @@ package net.bnubot.bot.commands;
 
 import net.bnubot.bot.CommandEventHandler;
 import net.bnubot.core.Connection;
+import net.bnubot.core.commands.CommandFailedWithDetailsException;
 import net.bnubot.core.commands.CommandRunnable;
 import net.bnubot.db.Account;
 import net.bnubot.util.BNetUser;
@@ -18,8 +19,7 @@ public final class CommandVoteCancel implements CommandRunnable {
 	throws Exception {
 		Vote vote = CommandEventHandler.votes.get(source);
 		if(vote == null)
-			user.sendChat("There is no vote in progress", whisperBack);
-		else
-			vote.cancel();
+			throw new CommandFailedWithDetailsException("There is no vote in progress");
+		vote.cancel();
 	}
 }

@@ -10,6 +10,7 @@ import java.util.List;
 
 import net.bnubot.core.Connection;
 import net.bnubot.core.commands.AccountDoesNotExistException;
+import net.bnubot.core.commands.CommandFailedWithDetailsException;
 import net.bnubot.core.commands.CommandRunnable;
 import net.bnubot.core.commands.InvalidUseException;
 import net.bnubot.db.Account;
@@ -96,10 +97,8 @@ public final class CommandMail implements CommandRunnable {
 				if(params.length != 1)
 					throw new InvalidUseException();
 
-				if(Mail.getUnreadCount(commanderAccount) > 0) {
-					user.sendChat("You have unread mail!", whisperBack);
-					return;
-				}
+				if(Mail.getUnreadCount(commanderAccount) > 0)
+					throw new CommandFailedWithDetailsException("You have unread mail!");
 
 				try {
 					ObjectContext context = commanderAccount.getObjectContext();
@@ -108,8 +107,7 @@ public final class CommandMail implements CommandRunnable {
 					commanderAccount.updateRow();
 					user.sendChat("Mailbox cleaned!", whisperBack);
 				} catch(Exception e) {
-					Out.exception(e);
-					user.sendChat("Failed to delete mail: " + e.getMessage(), whisperBack);
+					throw new CommandFailedWithDetailsException("Failed to delete mail", e);
 				}
 			} else
 				throw new InvalidUseException();

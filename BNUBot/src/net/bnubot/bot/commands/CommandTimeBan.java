@@ -6,8 +6,10 @@ package net.bnubot.bot.commands;
 
 import net.bnubot.bot.CommandEventHandler;
 import net.bnubot.core.Connection;
+import net.bnubot.core.commands.CommandFailedWithDetailsException;
 import net.bnubot.core.commands.CommandRunnable;
 import net.bnubot.core.commands.InvalidUseException;
+import net.bnubot.core.commands.NeverSeenUserException;
 import net.bnubot.db.Account;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.TimeFormatter;
@@ -26,10 +28,8 @@ public final class CommandTimeBan implements CommandRunnable {
 			params = param.split(" ", 2);
 
 			BNetUser bnSubject = source.findUser(params[0], user);
-			if(bnSubject == null) {
-				user.sendChat("User not found", whisperBack);
-				return;
-			}
+			if(bnSubject == null)
+				throw new NeverSeenUserException(params[0]);
 
 			long duration;
 			try {
@@ -37,10 +37,8 @@ public final class CommandTimeBan implements CommandRunnable {
 			} catch(NumberFormatException e) {
 				throw new InvalidUseException();
 			}
-			if(duration < 30 * TimeFormatter.SECOND) {
-				user.sendChat("You may not timeban for less than 30 seconds", whisperBack);
-				return;
-			}
+			if(duration < 30 * TimeFormatter.SECOND)
+				throw new CommandFailedWithDetailsException("You may not timeban for less than 30 seconds");
 
 			doTimeBan(source, user, bnSubject, duration);
 		} catch(InvalidUseException e) {

@@ -7,8 +7,8 @@ package net.bnubot.bot.commands;
 import java.util.Date;
 
 import net.bnubot.core.Connection;
-import net.bnubot.core.commands.CommandFailedWithDetailsException;
 import net.bnubot.core.commands.CommandRunnable;
+import net.bnubot.core.commands.NeverSeenUserException;
 import net.bnubot.db.Account;
 import net.bnubot.db.BNLogin;
 import net.bnubot.util.BNetUser;
@@ -32,7 +32,7 @@ public final class CommandSeen implements CommandRunnable {
 			BNetUser bnSubject = source.getCreateBNetUser(params[0], user);
 			rsSubject = BNLogin.get(bnSubject);
 			if(rsSubject == null)
-				throw new CommandFailedWithDetailsException("I have never seen " + bnSubject.getFullAccountName());
+				throw new NeverSeenUserException(bnSubject);
 		} else {
 			for(BNLogin login : rsSubjectAccount.getBnLogins()) {
 				Date nt = login.getLastSeen();
@@ -41,7 +41,7 @@ public final class CommandSeen implements CommandRunnable {
 					rsSubject = login;
 			}
 			if(rsSubject == null)
-				throw new CommandFailedWithDetailsException("I have never seen " + rsSubjectAccount.getName());
+				throw new NeverSeenUserException(rsSubjectAccount);
 		}
 
 		Date mostRecent = rsSubject.getLastSeen();
@@ -49,7 +49,7 @@ public final class CommandSeen implements CommandRunnable {
 		params[0] = new BNetUser(rsSubject.getLogin()).getShortLogonName(user);
 
 		if(mostRecent == null)
-			throw new CommandFailedWithDetailsException("I have never seen [" + params[0] + "]");
+			throw new NeverSeenUserException(params[0]);
 
 		String diff = TimeFormatter.formatTime(System.currentTimeMillis() - mostRecent.getTime());
 		diff = "User [" + params[0] + "] was last seen " + diff + " ago";
