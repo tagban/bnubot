@@ -28,7 +28,6 @@ public final class CommandSetAccount implements CommandRunnable {
 			user.sendChat("I have never seen [" + bnSubject.getFullAccountName() + "] in the channel", whisperBack);
 			return;
 		}
-		String subject = rsSubject.getLogin();
 
 		Account newAccount = null;
 		if(params.length == 2) {
@@ -47,6 +46,7 @@ public final class CommandSetAccount implements CommandRunnable {
 			params[1] = newAccount.getName();
 
 		bnSubject.resetPrettyName();
+		String subject = new BNetUser(rsSubject.getLogin()).getShortLogonName(user);
 		user.sendChat("User [" + subject + "] was added to account [" + params[1] + "] successfully.", whisperBack);
 	}
 }
