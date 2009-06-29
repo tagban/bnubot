@@ -24,6 +24,7 @@
 * Added color scheme from Invigoration
 * Added 'promote' and 'demote' commands
 * Press the up and down keys to cycle through chat history
+* The bot will warn users about alias deletion when 80% of expireDays has passed
 
 2.1.0 (r1640) 2008-10-06:
 * Added BotNet account login

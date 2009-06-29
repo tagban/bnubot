@@ -603,6 +603,32 @@ public class CommandEventHandler extends EventHandler {
 			int umc = Mail.getUnreadCount(rsAccount);
 			if(umc > 0)
 				user.sendChat("You have " + umc + " unread messages; type [ %trigger%mail read ] to retrieve them", true);
+
+			// Warn about accounts near expiration
+			long expireMs = ((long)rsAccount.getRank().getExpireDays()) * 24 * 60 * 60 * 1000;
+			if(expireMs != 0) {
+				// Warn the users when 80% of their expire timer is used up
+				long warningThreshold = (expireMs * 4) / 5;
+				for(BNLogin alias : rsAccount.getBnLogins()) {
+					long timeSinceSeen = System.currentTimeMillis() - alias.getLastSeen().getTime();
+					if(timeSinceSeen < warningThreshold)
+						continue;
+
+					// Warn the user about their alias expiring
+					double timeToExpire = expireMs - timeSinceSeen;
+					timeToExpire /= 1000 * 60 * 60 * 24;
+					//Round to 2 decimal places
+					String msg = ("00" + ((long)Math.floor(timeToExpire * 100) % 100));
+					msg = msg.substring(msg.length()-2);
+					msg = (long)Math.floor(timeToExpire) + "." + msg;
+
+					// Send them the message
+					user.sendChat("Your alias " + alias.getLogin() + " will be removed for inactivity in " + msg + " days if it's not seen in the channel", true);
+
+					// Only show them one message; they'll get the next when they refresh that accounts
+					break;
+				}
+			}
 		} catch (Exception e) {
 			Out.exception(e);
 		}
