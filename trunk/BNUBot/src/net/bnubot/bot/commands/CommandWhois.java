@@ -50,8 +50,9 @@ public final class CommandWhois implements CommandRunnable {
 			Rank rsSubjectRank = rsSubjectAccount.getRank();
 			if(rsSubjectRank != null) {
 				String prefix = rsSubjectRank.getShortPrefix();
+				String prefix2 = rsSubjectRank.getPrefix();
 				if(prefix == null)
-					prefix = rsSubjectRank.getPrefix();
+					prefix = prefix2;
 
 				if(prefix == null)
 					prefix = "";
@@ -61,8 +62,18 @@ public final class CommandWhois implements CommandRunnable {
 				String result = prefix + rsSubjectAccount.getName();
 				if(rsSubjectRank.getVerbstr() != null)
 					result += " " + rsSubjectRank.getVerbstr();
-				else
-					result += " is a " + rsSubjectRank.getPrefix();
+				else {
+					switch(prefix.charAt(0)) {
+					case 'a': case 'e': case 'i': case 'o': case 'u':
+					case 'A': case 'E': case 'I': case 'O': case 'U':
+						result += " is an ";
+						break;
+					default:
+						result += " is a ";
+						break;
+					}
+					result += prefix2;
+				}
 				result += " (" + rsSubjectAccount.getAccess() + ")";
 
 				clauses.add(result);
