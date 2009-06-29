@@ -272,6 +272,19 @@ public class CommandEventHandler extends EventHandler {
 		}
 	}
 
+	private static boolean canKickBan(BNetUser user, BNetUser subject) {
+		// If the subject has no account, the user outranks them
+		Account as = Account.get(subject);
+		if(as == null)
+			return true;
+		// If the user has no account, the subject outranks them
+		Account au = Account.get(user);
+		if(au == null)
+			return false;
+		// Compare access
+		return (au.getAccess() > as.getAccess());
+	}
+
 	public static void doKickBan(Connection source, BNetUser user, String param, boolean isBan, boolean whisperBack)
 	throws InvalidUseException, CommandFailedWithDetailsException {
 		if((param == null) || (param.length() == 0))
@@ -284,9 +297,12 @@ public class CommandEventHandler extends EventHandler {
 			reason = params[1];
 
 		if(isBan && (params[0].indexOf('*') == -1)) {
+			BNetUser bnSubject = source.findUser(params[0], user);
+			if(!canKickBan(user, bnSubject))
+				throw new CommandFailedWithDetailsException("You may not kick or ban users who outrank you.");
+
 			// Regular ban
 			String out = (isBan) ? "/ban " : "/kick ";
-			BNetUser bnSubject = source.findUser(params[0], user);
 			if(bnSubject != null)
 				out += bnSubject.getFullLogonName();
 			else
@@ -303,10 +319,15 @@ public class CommandEventHandler extends EventHandler {
 			if(users.size() == 0)
 				throw new CommandFailedWithDetailsException("That pattern did not match any users.");
 
-			int numSkipped = 0;
+			int numSkippedOp = 0;
+			int numSkippedOutranked = 0;
 			for(BNetUser u : users) {
 				if((u.getFlags() & 0x02) != 0) {
-					numSkipped++;
+					numSkippedOp++;
+					continue;
+				}
+				if(!canKickBan(user, u)) {
+					numSkippedOutranked++;
 					continue;
 				}
 
@@ -319,8 +340,11 @@ public class CommandEventHandler extends EventHandler {
 				setInfoForwarding(source, user, whisperBack);
 			}
 
-			if(numSkipped > 0)
-				user.sendChat("Skipped " + numSkipped + " users with operator status.", whisperBack);
+			if(numSkippedOp > 0)
+				user.sendChat("Skipped " + numSkippedOp + " users with operator status.", whisperBack);
+
+			if(numSkippedOutranked > 0)
+				user.sendChat("Skipped " + numSkippedOutranked + " users who outrank you.", whisperBack);
 		}
 	}
 
