@@ -8,6 +8,7 @@ import java.util.Date;
 
 import net.bnubot.core.Connection;
 import net.bnubot.core.commands.AccountDoesNotExistException;
+import net.bnubot.core.commands.CommandFailedWithDetailsException;
 import net.bnubot.core.commands.CommandRunnable;
 import net.bnubot.core.commands.InvalidUseException;
 import net.bnubot.db.Account;
@@ -58,8 +59,7 @@ public final class CommandAutoPromotion implements CommandRunnable {
 				result += wins[1] + " D2 level, ";
 				result += wins[2] + " W3 level";
 
-				user.sendChat(result, whisperBack);
-				return;
+				throw new CommandFailedWithDetailsException(result);
 			}
 
 			Integer apDays = rsRank.getApDays();

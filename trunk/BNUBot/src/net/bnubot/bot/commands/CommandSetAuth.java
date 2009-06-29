@@ -5,6 +5,7 @@
 package net.bnubot.bot.commands;
 
 import net.bnubot.core.Connection;
+import net.bnubot.core.commands.CommandFailedWithDetailsException;
 import net.bnubot.core.commands.CommandRunnable;
 import net.bnubot.core.commands.InvalidUseException;
 import net.bnubot.db.Account;
@@ -23,18 +24,14 @@ public final class CommandSetAuth implements CommandRunnable {
 				throw new InvalidUseException();
 
 			Command rsCommand = Command.get(params[0]);
-			if(rsCommand == null) {
-				user.sendChat("That command does not exist!", whisperBack);
-				return;
-			}
+			if(rsCommand == null)
+				throw new CommandFailedWithDetailsException("That command does not exist!");
 
 			try {
 				int access = Integer.parseInt(params[1]);
 				Rank rank = Rank.get(access);
-				if(rank == null) {
-					user.sendChat("That access level does not exist!", whisperBack);
-					return;
-				}
+				if(rank == null)
+					throw new CommandFailedWithDetailsException("That access level does not exist!");
 				rsCommand.setRank(rank);
 				rsCommand.updateRow();
 

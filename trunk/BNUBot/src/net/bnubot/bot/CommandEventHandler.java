@@ -71,6 +71,7 @@ import net.bnubot.core.commands.AccountDoesNotExistException;
 import net.bnubot.core.commands.CommandFailedWithDetailsException;
 import net.bnubot.core.commands.InsufficientAccessException;
 import net.bnubot.core.commands.InvalidUseException;
+import net.bnubot.core.commands.NeverSeenUserException;
 import net.bnubot.db.Account;
 import net.bnubot.db.BNLogin;
 import net.bnubot.db.Mail;
@@ -229,7 +230,7 @@ public class CommandEventHandler extends EventHandler {
 		// The account does not exist
 		BNLogin subject = BNLogin.get(bnSubject);
 		if(subject == null)
-			throw new CommandFailedWithDetailsException("I have never seen " + bnSubject.getFullAccountName());
+			throw new NeverSeenUserException(bnSubject);
 
 		return createAccount(accountName, commanderAccount, subject);
 	}

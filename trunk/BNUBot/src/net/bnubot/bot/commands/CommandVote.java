@@ -6,6 +6,7 @@ package net.bnubot.bot.commands;
 
 import net.bnubot.bot.CommandEventHandler;
 import net.bnubot.core.Connection;
+import net.bnubot.core.commands.CommandFailedWithDetailsException;
 import net.bnubot.core.commands.CommandRunnable;
 import net.bnubot.db.Account;
 import net.bnubot.util.BNetUser;
@@ -18,9 +19,9 @@ public final class CommandVote implements CommandRunnable {
 	throws Exception {
 		Vote vote = CommandEventHandler.votes.get(source);
 		if(vote == null)
-			user.sendChat("There is no vote in progress", whisperBack);
+			throw new CommandFailedWithDetailsException("There is no vote in progress");
 		else if(commanderAccount == null)
-			user.sendChat("You must have an account to use vote.", whisperBack);
+			throw new CommandFailedWithDetailsException("You must have an account to use vote.");
 		else if(param.equals("yes"))
 			vote.castVote(commanderAccount, true);
 		else if(param.equals("no"))

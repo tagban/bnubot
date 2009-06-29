@@ -7,6 +7,7 @@ package net.bnubot.bot.commands;
 import net.bnubot.core.Connection;
 import net.bnubot.core.commands.AccountDoesNotExistException;
 import net.bnubot.core.commands.CommandRunnable;
+import net.bnubot.core.commands.NeverSeenUserException;
 import net.bnubot.db.Account;
 import net.bnubot.db.BNLogin;
 import net.bnubot.util.BNetUser;
@@ -24,10 +25,8 @@ public final class CommandSetAccount implements CommandRunnable {
 
 		BNetUser bnSubject = source.getCreateBNetUser(params[0], user);
 		BNLogin rsSubject = BNLogin.get(bnSubject);
-		if(rsSubject == null) {
-			user.sendChat("I have never seen [" + bnSubject.getFullAccountName() + "] in the channel", whisperBack);
-			return;
-		}
+		if(rsSubject == null)
+			throw new NeverSeenUserException(bnSubject);
 
 		Account newAccount = null;
 		if(params.length == 2) {

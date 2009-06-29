@@ -18,4 +18,8 @@ public class CommandFailedWithDetailsException extends Exception {
 		super("Failed: (" + e.getClass().getSimpleName() + ") " + e.getMessage());
 	}
 
+	public CommandFailedWithDetailsException(String string, Exception e) {
+		super(string + ": (" + e.getClass().getSimpleName() + ") " + e.getMessage());
+	}
+
 }

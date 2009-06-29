@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import net.bnubot.core.Connection;
+import net.bnubot.core.commands.CommandFailedWithDetailsException;
 import net.bnubot.core.commands.CommandRunnable;
 import net.bnubot.core.commands.InvalidUseException;
 import net.bnubot.db.Account;
@@ -20,10 +21,8 @@ import net.bnubot.util.BNetUser;
 public final class CommandSetBirthday implements CommandRunnable {
 	public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
 	throws Exception {
-		if(commanderAccount == null) {
-			user.sendChat("You must have an account to use setbirthday.", whisperBack);
-			return;
-		}
+		if(commanderAccount == null)
+			throw new CommandFailedWithDetailsException("You must have an account to use setbirthday.");
 
 		try {
 			if(params == null)

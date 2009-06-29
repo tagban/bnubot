@@ -9,8 +9,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 import net.bnubot.core.Connection;
+import net.bnubot.core.commands.CommandFailedWithDetailsException;
 import net.bnubot.core.commands.CommandRunnable;
 import net.bnubot.core.commands.InvalidUseException;
+import net.bnubot.core.commands.NeverSeenUserException;
 import net.bnubot.db.Account;
 import net.bnubot.db.BNLogin;
 import net.bnubot.db.Rank;
@@ -32,16 +34,12 @@ public final class CommandWhois implements CommandRunnable {
 				BNetUser bnSubject = source.getCreateBNetUser(params[0], user);
 
 				BNLogin rsSubject = BNLogin.get(bnSubject);
-				if(rsSubject == null) {
-					user.sendChat("I have never seen [" + bnSubject.getFullLogonName() + "] in the channel", whisperBack);
-					return;
-				}
+				if(rsSubject == null)
+					throw new NeverSeenUserException(bnSubject);
 
 				rsSubjectAccount = rsSubject.getAccount();
-				if(rsSubjectAccount == null) {
-					user.sendChat("User [" + params[0] + "] has no account", whisperBack);
-					return;
-				}
+				if(rsSubjectAccount == null)
+					throw new CommandFailedWithDetailsException("User [" + params[0] + "] has no account");
 			}
 
 			List<String> clauses = new LinkedList<String>();

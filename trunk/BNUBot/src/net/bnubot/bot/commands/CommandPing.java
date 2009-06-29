@@ -5,6 +5,7 @@
 package net.bnubot.bot.commands;
 
 import net.bnubot.core.Connection;
+import net.bnubot.core.commands.CommandFailedWithDetailsException;
 import net.bnubot.core.commands.CommandRunnable;
 import net.bnubot.db.Account;
 import net.bnubot.util.BNetUser;
@@ -23,8 +24,7 @@ public final class CommandPing implements CommandRunnable {
 		BNetUser bnSubject = source.getCreateBNetUser(params[0], user);
 		Integer ping = bnSubject.getPing();
 		if(ping == null)
-			user.sendChat("I do not know the ping for " + bnSubject.getFullLogonName(), whisperBack);
-		else
-			user.sendChat("Ping for " + bnSubject.getFullLogonName() + ": " + ping, whisperBack);
+			throw new CommandFailedWithDetailsException("I do not know the ping for " + bnSubject.getFullLogonName());
+		user.sendChat("Ping for " + bnSubject.getFullLogonName() + ": " + ping, whisperBack);
 	}
 }

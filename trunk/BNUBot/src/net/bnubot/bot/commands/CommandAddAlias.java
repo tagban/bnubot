@@ -5,6 +5,7 @@
 package net.bnubot.bot.commands;
 
 import net.bnubot.core.Connection;
+import net.bnubot.core.commands.CommandFailedWithDetailsException;
 import net.bnubot.core.commands.CommandRunnable;
 import net.bnubot.core.commands.InvalidUseException;
 import net.bnubot.db.Account;
@@ -25,20 +26,14 @@ public final class CommandAddAlias implements CommandRunnable {
 				throw new InvalidUseException();
 
 			Command rsSubjectCommand = Command.get(params[0]);
-			if(rsSubjectCommand == null) {
-				user.sendChat("The command [" + params[0] + "] does not exist!", whisperBack);
-				return;
-			}
+			if(rsSubjectCommand == null)
+				throw new CommandFailedWithDetailsException("The command [" + params[0] + "] does not exist!");
 
 			for(int i = 1; i < params.length; i++) {
-				if(Command.get(params[i]) != null) {
-					user.sendChat("The command [" + params[0] + "] already exists!", whisperBack);
-					return;
-				}
-				if(CommandAlias.get(params[i]) != null) {
-					user.sendChat("The command alias [" + params[0] + "] already exists!", whisperBack);
-					return;
-				}
+				if(Command.get(params[i]) != null)
+					throw new CommandFailedWithDetailsException("The command [" + params[0] + "] already exists!");
+				if(CommandAlias.get(params[i]) != null)
+					throw new CommandFailedWithDetailsException("The command alias [" + params[0] + "] already exists!");
 			}
 
 			String out = "Successfully created aliases for " + params[0] + ": ";
@@ -47,10 +42,8 @@ public final class CommandAddAlias implements CommandRunnable {
 					out += ", ";
 				out += params[i];
 
-				if(CommandAlias.create(rsSubjectCommand, params[i]) == null) {
-					user.sendChat("Error creating alias " + params[i], whisperBack);
-					return;
-				}
+				if(CommandAlias.create(rsSubjectCommand, params[i]) == null)
+					throw new CommandFailedWithDetailsException("Error creating alias " + params[i]);
 			}
 			user.sendChat(out, whisperBack);
 		} catch(InvalidUseException e) {
