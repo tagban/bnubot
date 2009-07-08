@@ -17,8 +17,8 @@ public class DatabaseSettings {
 
 	public void load() {
 		SettingsSection ss = Settings.getSection(header);
-		driver = ss.read("driver", "org.apache.derby.jdbc.EmbeddedDriver");
-		url = ss.read("url", "jdbc:derby:database;create=true");
+		driver = ss.read("driver", "org.h2.Driver");
+		url = ss.read("url", "jdbc:h2:database/h2db");
 		username = ss.read("username", (String)null);
 		password = ss.read("password", (String)null);
 	}
