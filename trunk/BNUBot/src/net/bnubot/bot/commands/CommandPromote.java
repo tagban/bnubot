@@ -23,7 +23,7 @@ public final class CommandPromote implements CommandRunnable {
 			if(params.length != 1)
 				throw new InvalidUseException();
 
-			Account subjectAccount = CommandEventHandler.findOrCreateAccount(source, user, commanderAccount, params[0], whisperBack);
+			Account subjectAccount = CommandEventHandler.findOrCreateAccount(source, user, commanderAccount, params[0], 0);
 
 			int targetAccess = subjectAccount.getAccess() + 1;
 			CommandEventHandler.setAccountAccess(user, commanderAccount, subjectAccount, targetAccess, superUser, whisperBack);

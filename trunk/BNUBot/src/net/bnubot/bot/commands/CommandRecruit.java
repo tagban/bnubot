@@ -54,7 +54,7 @@ public final class CommandRecruit implements CommandRunnable {
 				throw new CommandFailedWithDetailsException("That user must have the " + requiredTagSuffix + " tag!");
 		}
 
-		CommandEventHandler.createAccount(params[1], commanderAccount, rsSubject);
+		CommandEventHandler.createAccount(params[1], GlobalSettings.recruitAccess, commanderAccount, rsSubject);
 
 		bnSubject.resetPrettyName();
 		source.sendChat("Welcome to the clan, " + bnSubject.toString() + "!");

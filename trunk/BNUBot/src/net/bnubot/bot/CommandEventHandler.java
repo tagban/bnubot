@@ -174,12 +174,13 @@ public class CommandEventHandler extends EventHandler {
 	/**
 	 * Create an account
 	 * @param accountName name of the account
+	 * @param targetAccess the access to create the user at
 	 * @param recruiter the {@link Account} of the recruiter, or null
 	 * @param subject the account's first BNLogin
 	 * @return the created account
 	 * @throws AccountDoesNotExistException if the account
 	 */
-	public static Account createAccount(String accountName, Account recruiter, BNLogin subject)
+	public static Account createAccount(String accountName, int targetAccess, Account recruiter, BNLogin subject)
 	throws AccountDoesNotExistException {
 		Account rsSubjectAccount = Account.get(accountName);
 		if(rsSubjectAccount != null)
@@ -193,7 +194,7 @@ public class CommandEventHandler extends EventHandler {
 			throw new AccountDoesNotExistException("Failed to create account [" + accountName + "] for an unknown reason");
 
 		subject.setAccount(rsSubjectAccount);
-		rsSubjectAccount.setRank(Rank.get(GlobalSettings.recruitAccess));
+		rsSubjectAccount.setRank(Rank.get(targetAccess));
 
 		try {
 			rsSubjectAccount.updateRow();
@@ -204,17 +205,17 @@ public class CommandEventHandler extends EventHandler {
 	}
 
 	/**
-	 * Searches for a user by accountName, or a bnlogin by that name. If it doesn't exist, create it
-	 * @param source the {@link Connection} the command was recieved from
+	 * Searches for a user by accountName, or a {@link BNLogin} by that name. If it doesn't exist, create it
+	 * @param source the {@link Connection} the command was received from
 	 * @param commander the {@link BNetUser} the command was issued by
 	 * @param commanderAccount the {@link Account} the command was issued by
-	 * @param accountName
-	 * @param whisperBack
-	 * @return the user's account
+	 * @param accountName the name of the account to search for
+	 * @param createAccess the access to create the user at if the account doesn't exist
+	 * @return the user's {@link Account}
 	 * @throws AccountDoesNotExistException if createAccount() fails
-	 * @throws CommandFailedWithDetailsException if the bnlogin has never been seen
+	 * @throws CommandFailedWithDetailsException if the {@link BNLogin} has never been seen
 	 */
-	public static Account findOrCreateAccount(Connection source, BNetUser commander, Account commanderAccount, String accountName, boolean whisperBack)
+	public static Account findOrCreateAccount(Connection source, BNetUser commander, Account commanderAccount, String accountName, int createAccess)
 	throws CommandFailedWithDetailsException, AccountDoesNotExistException {
 		Account subjectAccount = Account.get(accountName);
 		if(subjectAccount != null)
@@ -232,7 +233,7 @@ public class CommandEventHandler extends EventHandler {
 		if(subject == null)
 			throw new NeverSeenUserException(bnSubject);
 
-		return createAccount(accountName, commanderAccount, subject);
+		return createAccount(accountName, createAccess, commanderAccount, subject);
 	}
 
 	public static void setAccountAccess(BNetUser commander, Account commanderAccount, Account subjectAccount, int targetAccess, boolean superUser, boolean whisperBack)
@@ -478,26 +479,26 @@ public class CommandEventHandler extends EventHandler {
 					if(timeElapsed < apDays)
 						break apBlock;
 
-					Integer apWins = rsRank.getApWins();
-					Integer apD2Level = rsRank.getApD2Level();
-					Integer apW3Level = rsRank.getApW3Level();
-					if((apWins == null)
-					|| (apD2Level == null)
-					|| (apW3Level == null))
+					if((rsRank.getApWins() == null)
+					|| (rsRank.getApD2Level() == null)
+					|| (rsRank.getApW3Level() == null))
 						break apBlock;
+					int apWins = rsRank.getApWins().intValue();
+					int apD2Level = rsRank.getApD2Level().intValue();
+					int apW3Level = rsRank.getApW3Level().intValue();
 					long wins[];
 					if(rsAccount == null)
 						wins = new long[] {0, 0, 0};
 					else
 						wins = rsAccount.getWinsLevels(GlobalSettings.recruitTagPrefix, GlobalSettings.recruitTagSuffix);
 
-					boolean condition = false;
-					condition |= ((apWins > 0) && (wins[0] >= apWins));
-					condition |= ((apD2Level > 0) && (wins[1] >= apD2Level));
-					condition |= ((apW3Level > 0) && (wins[2] >= apW3Level));
-					condition |= ((apWins == 0) && (apD2Level == 0) && (apW3Level == 0));
+					boolean hasEnoughWins = false;
+					hasEnoughWins |= ((apWins > 0) && (wins[0] >= apWins));
+					hasEnoughWins |= ((apD2Level > 0) && (wins[1] >= apD2Level));
+					hasEnoughWins |= ((apW3Level > 0) && (wins[2] >= apW3Level));
+					hasEnoughWins |= ((apWins == 0) && (apD2Level == 0) && (apW3Level == 0));
 
-					if(condition) {
+					if(hasEnoughWins) {
 						// Check RS
 						long rs = 0;
 						if(rsAccount != null)
@@ -511,7 +512,7 @@ public class CommandEventHandler extends EventHandler {
 								String name = user.getFullAccountName();
 								name = name.substring(0, name.indexOf('@'));
 								try {
-									rsAccount = createAccount(name, null, rsUser);
+									rsAccount = createAccount(name, 0, null, rsUser);
 								} catch(Exception e) {
 									Out.exception(e);
 									user.sendChat("I couldn't make an account for you: " + e.getMessage(), true);
