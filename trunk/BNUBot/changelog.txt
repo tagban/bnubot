@@ -1,4 +1,4 @@
-2.1.1:
+2.1.1 (r1848) 2009-07-08:
 * Enabled hot-swapping plugins (may require re-configuring enabled plugins) (Issue 103)
 * The database editor will prompt before discarding unsaved changes
 * Added graphical flagSpoof editor to the database editor
