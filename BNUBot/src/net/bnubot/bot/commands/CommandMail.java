@@ -55,11 +55,14 @@ public final class CommandMail implements CommandRunnable {
 					throw new InvalidUseException();
 
 				int id = 0;
+				boolean all = false;
 				if(params.length == 2) {
 					try {
 						id = Integer.parseInt(params[1]);
 					} catch(Exception e) {
-						throw new InvalidUseException();
+						if(!"all".equals(params[1]))
+							throw new InvalidUseException();
+						all = true;
 					}
 				}
 
@@ -69,7 +72,10 @@ public final class CommandMail implements CommandRunnable {
 					public int compare(Mail arg0, Mail arg1) {
 						return arg0.getSent().compareTo(arg1.getSent());
 					}});
-				if(id == 0) {
+				if(all) {
+					for(Mail m : rsMail)
+						sendMail(user, whisperBack, ++id, rsMail.size(), m);
+				} else if(id == 0) {
 					for(Mail m : rsMail) {
 						id++;
 						if(m.isIsread())
