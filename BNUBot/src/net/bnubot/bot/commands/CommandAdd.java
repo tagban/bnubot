@@ -23,9 +23,14 @@ public final class CommandAdd implements CommandRunnable {
 			if(params.length != 2)
 				throw new InvalidUseException();
 
-			Account subjectAccount = CommandEventHandler.findOrCreateAccount(source, user, commanderAccount, params[0], whisperBack);
+			int targetAccess;
+			try {
+				targetAccess = Integer.parseInt(params[1]);
+			} catch(NumberFormatException e) {
+				throw new InvalidUseException();
+			}
 
-			int targetAccess = Integer.parseInt(params[1]);
+			Account subjectAccount = CommandEventHandler.findOrCreateAccount(source, user, commanderAccount, params[0], targetAccess);
 			CommandEventHandler.setAccountAccess(user, commanderAccount, subjectAccount, targetAccess, superUser, whisperBack);
 		} catch(InvalidUseException e) {
 			user.sendChat("Use: %trigger%add <account> <access>", whisperBack);
