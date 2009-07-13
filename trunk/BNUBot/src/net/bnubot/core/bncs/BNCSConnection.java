@@ -1928,6 +1928,10 @@ public class BNCSConnection extends Connection {
 			if(command.equals("ban"))
 				return true;
 			break;
+		case 'd':
+			if(command.equals("designate"))
+				return true;
+			break;
 		case 'i':
 			if(command.equals("ignore"))
 				return true;
@@ -1938,6 +1942,8 @@ public class BNCSConnection extends Connection {
 			break;
 		case 'm':
 			if(command.equals("m"))
+				return true;
+			if(command.equals("msg"))
 				return true;
 			break;
 		case 's':
@@ -1953,7 +1959,13 @@ public class BNCSConnection extends Connection {
 		case 'w':
 			if(command.equals("w"))
 				return true;
+			if(command.equals("whisper"))
+				return true;
 			if(command.equals("whois"))
+				return true;
+			if(command.equals("where"))
+				return true;
+			if(command.equals("whereis"))
 				return true;
 			break;
 		}
