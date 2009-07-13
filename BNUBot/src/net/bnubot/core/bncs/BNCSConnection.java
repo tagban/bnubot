@@ -1892,10 +1892,7 @@ public class BNCSConnection extends Connection {
 					String theRest = cmd.substring(i + 1);
 					cmd = cmd.substring(0, i);
 
-					if (cmd.equals("w") || cmd.equals("m")
-							|| cmd.equals("whois") || cmd.equals("ignore")
-							|| cmd.equals("squelch") || cmd.equals("unignore")
-							|| cmd.equals("unsquelch")) {
+					if (isTargetedCommand(cmd)) {
 						if (theRest.charAt(0) != '*')
 							data = new ByteArray('/' + cmd + " *" + theRest);
 					}
@@ -1921,6 +1918,46 @@ public class BNCSConnection extends Connection {
 
 		if(GlobalSettings.displaySlashCommands || data.byteAt(0) != '/')
 			dispatchRecieveChat(myUser, data);
+	}
+
+	private boolean isTargetedCommand(String command) {
+		if(command.length() < 1)
+			return false;
+		switch(command.charAt(0)) {
+		case 'b':
+			if(command.equals("ban"))
+				return true;
+			break;
+		case 'i':
+			if(command.equals("ignore"))
+				return true;
+			break;
+		case 'k':
+			if(command.equals("kick"))
+				return true;
+			break;
+		case 'm':
+			if(command.equals("m"))
+				return true;
+			break;
+		case 's':
+			if(command.equals("squelch"))
+				return true;
+			break;
+		case 'u':
+			if(command.equals("unignore"))
+				return true;
+			if(command.equals("unsquelch"))
+				return true;
+			break;
+		case 'w':
+			if(command.equals("w"))
+				return true;
+			if(command.equals("whois"))
+				return true;
+			break;
+		}
+		return false;
 	}
 
 	/**
