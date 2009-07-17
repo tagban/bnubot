@@ -14,6 +14,7 @@ import net.bnubot.bot.CommandEventHandler;
 import net.bnubot.bot.GameTracker;
 import net.bnubot.bot.HTMLOutputEventHandler;
 import net.bnubot.bot.LockdownEventHandler;
+import net.bnubot.bot.MusicEventHandler;
 import net.bnubot.bot.TelnetEventHandler;
 import net.bnubot.bot.console.ConsoleEventHandler;
 import net.bnubot.bot.gui.GuiEventHandler;
@@ -50,6 +51,7 @@ public class PluginManager {
 		//register(SWTEventHandler.class);
 		register(GuiEventHandler.class, true);
 		register(CommandEventHandler.class, true);
+		register(MusicEventHandler.class, true);
 	}
 
 	public static void register(Class<? extends EventHandler> plugin) {
