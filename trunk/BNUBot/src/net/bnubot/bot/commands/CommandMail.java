@@ -111,7 +111,7 @@ public final class CommandMail implements CommandRunnable {
 						ObjectContext context = commanderAccount.getObjectContext();
 						context.deleteObject(m);
 						commanderAccount.updateRow();
-						user.sendChat(response, whisperBack);
+						user.sendChat(response, true);
 
 						context.performQuery(new RefreshQuery(commanderAccount));
 					} catch(Exception e) {
