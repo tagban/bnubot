@@ -45,7 +45,6 @@ public final class CommandSetAccount implements CommandRunnable {
 			params[1] = newAccount.getName();
 
 		bnSubject.resetPrettyName();
-		String subject = new BNetUser(rsSubject.getLogin()).getShortLogonName(user);
-		user.sendChat("User [" + subject + "] was added to account [" + params[1] + "] successfully.", whisperBack);
+		user.sendChat("User [" + rsSubject.getLogin() + "] was added to account [" + params[1] + "] successfully.", whisperBack);
 	}
 }

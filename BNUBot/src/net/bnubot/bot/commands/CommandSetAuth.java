@@ -28,6 +28,7 @@ public final class CommandSetAuth implements CommandRunnable {
 				throw new CommandFailedWithDetailsException("That command does not exist!");
 
 			try {
+				int oldAccess = rsCommand.getAccess();
 				int access = Integer.parseInt(params[1]);
 				Rank rank = Rank.get(access);
 				if(rank == null)
@@ -35,7 +36,7 @@ public final class CommandSetAuth implements CommandRunnable {
 				rsCommand.setRank(rank);
 				rsCommand.updateRow();
 
-				user.sendChat("Successfully changed the authorization required for command [" + rsCommand.getName() + "] to " + access, whisperBack);
+				user.sendChat("Successfully changed the authorization required for command [" + rsCommand.getName() + "] from [" + oldAccess + "] to [" + access + "]", whisperBack);
 			} catch(NumberFormatException e) {
 				throw new InvalidUseException();
 			}
