@@ -291,7 +291,7 @@ public class StatString {
 			    boolean expansion = (charFlags & 0x20) != 0;
 			    boolean ladder = (charFlags & 0x40) != 0;
 
-			    byte actsCompleted = (byte)((data[27] & 0x3E) >> 2);
+			    byte actsCompleted = (byte)((data[27] & 0x3E) >>> 1);
 
 			    byte difficulty;
 			    if(expansion) {
