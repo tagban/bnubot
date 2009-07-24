@@ -39,7 +39,7 @@ public final class CommandWhois implements CommandRunnable {
 
 				rsSubjectAccount = rsSubject.getAccount();
 				if(rsSubjectAccount == null)
-					throw new CommandFailedWithDetailsException("User [" + params[0] + "] has no account");
+					throw new CommandFailedWithDetailsException("User [" + rsSubject.getLogin() + "] has no account");
 			}
 
 			List<String> clauses = new LinkedList<String>();
@@ -101,7 +101,7 @@ public final class CommandWhois implements CommandRunnable {
 			}
 
 			if(lastSeen != null) {
-				clauses.add("was last seen [ " + TimeFormatter.formatTime(System.currentTimeMillis() - lastSeen.getTime()) + " ] ago");
+				clauses.add("was last seen " + TimeFormatter.formatTime(System.currentTimeMillis() - lastSeen.getTime()) + " ago");
 			}
 
 			// Recruiter
