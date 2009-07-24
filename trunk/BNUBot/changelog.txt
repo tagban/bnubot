@@ -2,6 +2,7 @@
 * Fixed a bug where D2 operators couldn't kick, ban, or designate
 * Added 'play' 'pause' and 'music' commands
 * The 'mail' command allows deleting specific mail messages
+* Fixed a bug in d2 statstring parsing (acts completed)
 
 2.1.1 (r1848) 2009-07-08:
 * Enabled hot-swapping plugins (may require re-configuring enabled plugins) (Issue 103)
