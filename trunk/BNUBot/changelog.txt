@@ -1,4 +1,5 @@
 2.1.2:
+* Mail command accepts "read all"
 * Fixed a bug where D2 operators couldn't kick, ban, or designate
 * Added 'play' 'pause' and 'music' commands
 * The 'mail' command allows deleting specific mail messages

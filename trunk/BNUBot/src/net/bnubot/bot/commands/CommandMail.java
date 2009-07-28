@@ -142,7 +142,11 @@ public final class CommandMail implements CommandRunnable {
 			} else
 				throw new InvalidUseException();
 		} catch(InvalidUseException e) {
-			user.sendChat("Use: %trigger%mail (read [number] | delete <number> | empty | send <account> <message>)", whisperBack);
+			user.sendChat("Use: " +
+					"%trigger%mail read [number | all], " +
+					"%trigger%mail delete <number>, " +
+					"%trigger%mail empty, " +
+					"%trigger%mail send <account> <message>", whisperBack);
 		}
 	}
 
