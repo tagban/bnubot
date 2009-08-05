@@ -9,11 +9,7 @@ import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.InetAddress;
-import java.net.Socket;
 import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -27,9 +23,8 @@ import net.bnubot.core.EventHandler;
 import net.bnubot.core.PluginManager;
 import net.bnubot.core.Profile;
 import net.bnubot.core.UnsupportedFeatureException;
-import net.bnubot.core.bnls.BNLSPacket;
-import net.bnubot.core.bnls.BNLSPacketId;
-import net.bnubot.core.bnls.BNLSPacketReader;
+import net.bnubot.core.bnls.BNLSConnection;
+import net.bnubot.core.bnls.VersionCheckResult;
 import net.bnubot.core.botnet.BotNetConnection;
 import net.bnubot.core.clan.ClanCreationInvitationCookie;
 import net.bnubot.core.clan.ClanInvitationCookie;
@@ -44,7 +39,6 @@ import net.bnubot.util.BNetInputStream;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.ByteArray;
 import net.bnubot.util.CookieUtility;
-import net.bnubot.util.MirrorSelector;
 import net.bnubot.util.StatString;
 import net.bnubot.util.TimeFormatter;
 import net.bnubot.util.UnloggedException;
@@ -71,29 +65,9 @@ public class BNCSConnection extends Connection {
 		return botnet;
 	}
 
-	private Socket bnlsSocket = null;
-	private InputStream bnlsInputStream = null;
-	private OutputStream bnlsOutputStream = null;
+	private BNLSConnection bnlsConnection = null;
 	private InputStream bncsInputStream = null;
 	private DataOutputStream bncsOutputStream = null;
-
-	private void setBNLSConnected(boolean c) throws IOException {
-		if(bnlsSocket != null) {
-			bnlsSocket.close();
-			bnlsSocket = null;
-			bnlsInputStream = null;
-			bnlsOutputStream = null;
-		}
-
-		if(c) {
-			InetAddress address = MirrorSelector.getClosestMirror(GlobalSettings.bnlsServer, GlobalSettings.bnlsPort);
-			dispatchRecieveInfo("Connecting to " + address + ":" + GlobalSettings.bnlsPort + ".");
-			bnlsSocket = new Socket(address, GlobalSettings.bnlsPort);
-			bnlsSocket.setKeepAlive(true);
-			bnlsInputStream = bnlsSocket.getInputStream();
-			bnlsOutputStream = bnlsSocket.getOutputStream();
-		}
-	}
 
 	private ProductIDs productID = null;
 	private int verByte;
@@ -121,78 +95,6 @@ public class BNCSConnection extends Connection {
 	@Override
 	public String getServerType() {
 		return BNCS_TYPE;
-	}
-
-	/**
-	 * Connect to BNLS and get verbyte
-	 *
-	 * @throws IOException
-	 * @throws SocketException
-	 */
-	private void initializeBNLS(Task connect) throws IOException,
-			SocketException {
-		// Connect to BNLS
-		connect.updateProgress("Connecting to BNLS");
-		setBNLSConnected(true);
-		myClan = null;
-		myClanRank = null;
-
-		// Log in to BNLS
-		connect.updateProgress("Logging in to BNLS");
-
-		// Send BNLS_AUTHORIZE
-		BNLSPacket loginPacket = new BNLSPacket(BNLSPacketId.BNLS_AUTHORIZE);
-		loginPacket.writeNTString("bnu2");
-		loginPacket.sendPacket(bnlsOutputStream);
-
-		// Recieve BNLS_AUTHORIZE
-		BNetInputStream is = new BNLSPacketReader(bnlsInputStream)
-				.getInputStream();
-		int serverCode = is.readDWord();
-
-		// Calculate checksum
-		int checksum = (int) (org.jbls.BNLSProtocol.BNLSlist.BNLSChecksum(
-				"bot", serverCode) & 0xFFFFFFFF);
-
-		// Send BNLS_AUTHORIZEPROOF
-		loginPacket = new BNLSPacket(BNLSPacketId.BNLS_AUTHORIZEPROOF);
-		loginPacket.writeDWord(checksum);
-		loginPacket.sendPacket(bnlsOutputStream);
-
-		// Recieve BNLS_AUTHORIZEPROOF
-		is = new BNLSPacketReader(bnlsInputStream).getInputStream();
-		int statusCode = is.readDWord();
-		if (statusCode != 0)
-			Out
-					.error(getClass(),
-							"Login to BNLS failed; logged in anonymously");
-
-		// Get the verbyte locally
-		verByte = HashMain.getVerByte(cs.product.getBnls());
-
-		BNLS_REQUESTVERSIONBYTE: {
-			// Ask BNLS for the verbyte
-			connect.updateProgress("Getting verbyte from BNLS");
-			BNLSPacket vbPacket = new BNLSPacket(
-					BNLSPacketId.BNLS_REQUESTVERSIONBYTE);
-			vbPacket.writeDWord(cs.product.getBnls());
-			vbPacket.sendPacket(bnlsOutputStream);
-
-			BNetInputStream vbInputStream = new BNLSPacketReader(
-					bnlsInputStream).getInputStream();
-			int vbProduct = vbInputStream.readDWord();
-			if (vbProduct == 0) {
-				dispatchRecieveError("BNLS_REQUESTVERSIONBYTE failed.");
-				break BNLS_REQUESTVERSIONBYTE;
-			}
-			int vb = vbInputStream.readWord();
-
-			if (vb != verByte) {
-				dispatchRecieveInfo("BNLS_REQUESTVERSIONBYTE: 0x"
-						+ Integer.toHexString(vb) + ".");
-				verByte = vb;
-			}
-		}
 	}
 
 	/**
@@ -318,9 +220,26 @@ public class BNCSConnection extends Connection {
 		if(botnet != null)
 			botnet.sendStatusUpdate();
 
+		myClan = null;
+		myClanRank = null;
+
+		// Get the verbyte locally
+		verByte = HashMain.getVerByte(cs.product.getBnls());
+
 		// Set up BNLS, get verbyte
 		try {
-			initializeBNLS(connect);
+			if(bnlsConnection == null)
+				bnlsConnection = new BNLSConnection();
+			bnlsConnection.initialize(connect);
+
+			connect.updateProgress("Getting verbyte from BNLS");
+			int vb = bnlsConnection.getVerByte(cs.product);
+
+			if (vb != verByte) {
+				dispatchRecieveInfo("BNLS_REQUESTVERSIONBYTE: 0x"
+						+ Integer.toHexString(vb) + ".");
+				verByte = vb;
+			}
 		} catch (EOFException e) {
 			completeTask(connect);
 			Out.error(getClass(), "BNLS login failed");
@@ -407,66 +326,11 @@ public class BNCSConnection extends Connection {
 						}
 					}
 
-					int exeHash = 0;
-					int exeVersion = 0;
-					byte[] exeInfo = null;
+					Task task = createTask("BNLS_VERSIONCHECKEX2", "...");
+					VersionCheckResult vcr = bnlsConnection.sendVersionCheckEx2(task, productID, MPQFileTime, MPQFileName, ValueStr);
+					completeTask(task);
 
-					try {
-						BNLSPacket bnlsOut = new BNLSPacket(BNLSPacketId.BNLS_VERSIONCHECKEX2);
-						bnlsOut.writeDWord(productID.getBnls());
-						bnlsOut.writeDWord(0); // Flags
-						bnlsOut.writeDWord(0); // Cookie
-						bnlsOut.writeQWord(MPQFileTime);
-						bnlsOut.writeNTString(MPQFileName);
-						bnlsOut.writeNTString(ValueStr);
-						bnlsOut.sendPacket(bnlsOutputStream);
-
-						long startTime = System.currentTimeMillis();
-						Task bnlsTask = createTask("BNLS_VERSIONCHECKEX2", 15000, "ms");
-						while (bnlsInputStream.available() < 3) {
-							Thread.sleep(50);
-
-							long timeElapsed = System.currentTimeMillis() - startTime;
-							if (timeElapsed > 15000) {
-								Out.error(getClass(), "BNLS_VERSIONCHECKEX2 timed out");
-								disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
-							}
-
-							if(!isConnected()) {
-								setBNLSConnected(false);
-								return false;
-							}
-							bnlsTask.setProgress((int) timeElapsed);
-						}
-						completeTask(bnlsTask);
-
-						BNLSPacketReader bpr = new BNLSPacketReader(bnlsInputStream);
-						BNetInputStream bnlsIn = bpr.getInputStream();
-						int success = bnlsIn.readDWord();
-						if (success != 1) {
-							dispatchRecieveError("BNLS_VERSIONCHECKEX2 Failed\n"
-									+ HexDump.hexDump(bpr.getData()));
-							setBNLSConnected(false);
-							disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
-							break;
-						}
-						exeVersion = bnlsIn.readDWord();
-						exeHash = bnlsIn.readDWord();
-						exeInfo = bnlsIn.readNTBytes();
-						bnlsIn.readDWord(); // cookie
-						bnlsIn.readDWord(); // verbyte
-						assert (bnlsIn.available() == 0);
-
-						dispatchRecieveInfo("Recieved version check from BNLS.");
-						setBNLSConnected(false);
-					} catch (UnknownHostException e) {
-						setBNLSConnected(false);
-						dispatchRecieveError("BNLS connection failed: " + e.getMessage());
-						disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
-						break;
-					}
-
-					if ((exeVersion == 0) || (exeHash == 0) || (exeInfo == null) || (exeInfo.length == 0)) {
+					if(vcr == null) {
 						dispatchRecieveError("CheckRevision failed.");
 						disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 						break;
@@ -478,8 +342,8 @@ public class BNCSConnection extends Connection {
 
 						BNCSPacket p = new BNCSPacket(this, BNCSPacketId.SID_AUTH_CHECK);
 						p.writeDWord(clientToken);
-						p.writeDWord(exeVersion);
-						p.writeDWord(exeHash);
+						p.writeDWord(vcr.exeVersion);
+						p.writeDWord(vcr.exeHash);
 						if (keyHash2 == null)
 							p.writeDWord(1); // Number of keys
 						else
@@ -497,7 +361,7 @@ public class BNCSConnection extends Connection {
 						}
 
 						// Finally,
-						p.writeNTString(exeInfo);
+						p.writeNTString(vcr.exeInfo);
 						p.writeNTString(cs.username);
 						p.sendPacket(bncsOutputStream);
 					} else {
@@ -513,9 +377,9 @@ public class BNCSConnection extends Connection {
 						p.writeDWord(PlatformIDs.PLATFORM_IX86);
 						p.writeDWord(productID.getDword());
 						p.writeDWord(verByte);
-						p.writeDWord(exeVersion);
-						p.writeDWord(exeHash);
-						p.writeNTString(exeInfo);
+						p.writeDWord(vcr.exeVersion);
+						p.writeDWord(vcr.exeHash);
+						p.writeNTString(vcr.exeInfo);
 						p.sendPacket(bncsOutputStream);
 					}
 					break;
