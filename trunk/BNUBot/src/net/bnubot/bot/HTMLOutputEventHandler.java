@@ -48,6 +48,7 @@ public class HTMLOutputEventHandler extends EventHandler {
 	@Override
 	public void bnetDisconnected(Connection source) {
 		writeUserList(source);
+		recieveError(source, "Disconnected from battle.net.");
 	}
 
 	@Override
