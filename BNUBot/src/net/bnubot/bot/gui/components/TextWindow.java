@@ -8,6 +8,7 @@ package net.bnubot.bot.gui.components;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Graphics;
+import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -133,7 +134,19 @@ public class TextWindow extends JScrollPane {
 		html += "<font color=\"#" + makeColor(c) + "\">";
 	}
 
+	private int last_day_of_week = -1;
 	private void appendDate() {
+		Calendar cal = TimeFormatter.getCalendar();
+		int day_of_week = cal.get(Calendar.DAY_OF_WEEK);
+		if(day_of_week != last_day_of_week) {
+			last_day_of_week = day_of_week;
+			addSeparator();
+			makeFont(cs.getInfoColor());
+			html += safeHtml(TimeFormatter.formatDate(cal.getTime()));
+			html += "</font><br>\n";
+			addSeparator();
+		}
+
 		if(addSeparator) {
 			if(html.length() > 0)
 				html += "<hr>\n";
