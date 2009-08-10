@@ -21,6 +21,9 @@ import net.bnubot.util.MirrorSelector;
 import net.bnubot.util.crypto.HexDump;
 import net.bnubot.util.task.Task;
 
+/**
+ * @author scotta
+ */
 public class BNLSConnection {
 
 	private Socket bnlsSocket = null;
