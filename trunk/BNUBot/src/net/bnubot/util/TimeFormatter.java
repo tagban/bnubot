@@ -24,12 +24,16 @@ public class TimeFormatter {
 	public static TimeZone timeZone = TimeZone.getDefault();
 	public static String tsFormat = "%1$tH:%1$tM:%1$tS.%1$tL";
 
+	public static Calendar getCalendar() {
+		return Calendar.getInstance(timeZone);
+	}
+
 	/**
 	 * @return a nicely formatted timestamp
 	 */
 	public static String getTimestamp() {
 		try {
-			return String.format(tsFormat, Calendar.getInstance(timeZone));
+			return String.format(tsFormat, getCalendar());
 		} catch(NoSuchMethodError e) {
 			return "";
 		}
@@ -170,22 +174,22 @@ public class TimeFormatter {
 	private static DateFormat dtf = DateFormat.getDateTimeInstance();
 
 	public static long parseDate(String d) throws ParseException {
-		df.setCalendar(Calendar.getInstance(timeZone));
+		df.setCalendar(getCalendar());
 		return df.parse(d).getTime();
 	}
 
 	public static String formatDate(Date d) {
-		df.setCalendar(Calendar.getInstance(timeZone));
+		df.setCalendar(getCalendar());
 		return df.format(d);
 	}
 
 	public static long parseDateTime(String dt) throws ParseException {
-		dtf.setCalendar(Calendar.getInstance(timeZone));
+		dtf.setCalendar(getCalendar());
 		return dtf.parse(dt).getTime();
 	}
 
 	public static String formatDateTime(Date d) {
-		dtf.setCalendar(Calendar.getInstance(timeZone));
+		dtf.setCalendar(getCalendar());
 		return dtf.format(d);
 	}
 }
