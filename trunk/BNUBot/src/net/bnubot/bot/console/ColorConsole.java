@@ -51,6 +51,7 @@ public class ColorConsole {
 	}
 
 	public void end() {
+		color();
 		out.println();
 	}
 
