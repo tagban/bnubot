@@ -54,7 +54,7 @@ public enum OperatingSystem {
 				osName += " Tiger";
 			else if(osVersion.startsWith("10.5"))
 				osName += " Leopard";
-			else if(osVersion.startsWith("10.5"))
+			else if(osVersion.startsWith("10.6"))
 				osName += " Snow Leopard";
 			break;
 		case WINDOWS:
