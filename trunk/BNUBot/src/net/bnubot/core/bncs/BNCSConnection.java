@@ -17,6 +17,7 @@ import java.util.Random;
 import java.util.TimeZone;
 
 import net.bnubot.bot.gui.ProfileEditor;
+import net.bnubot.core.BNFTPConnection;
 import net.bnubot.core.CommandResponseCookie;
 import net.bnubot.core.Connection;
 import net.bnubot.core.EventHandler;
@@ -396,6 +397,7 @@ public class BNCSConnection extends Connection {
 							switch (result) {
 							case 0x0100:
 								dispatchRecieveError("Update required: " + extraInfo);
+								BNFTPConnection.downloadFile(extraInfo);
 								break;
 							case 0x0101:
 								dispatchRecieveError("Invalid version.");
