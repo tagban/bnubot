@@ -88,8 +88,10 @@ public class BNCSConnection extends Connection {
 		if(cs.enableBotNet)
 			try {
 				botnet = new BotNetConnection(this, cs, profile);
+				botnet.start();
 			} catch (Exception e) {
 				Out.exception(e);
+				botnet = null;
 			}
 	}
 
