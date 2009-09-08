@@ -36,13 +36,12 @@ public class ClanMember {
 	@Override
 	public String toString() {
 		String out = username;
-		out += " (";
+		if(online == 0)
+			out += " (offline)";
 		//out += ClanRankIDs.ClanRank[rank];
 		//out += ", ";
-		out += (online==0 ? "off" : "on") + "line";
 		if(location.length() > 0)
 			out += ", " + location;
-		out += ")";
 		return out;
 	}
 
