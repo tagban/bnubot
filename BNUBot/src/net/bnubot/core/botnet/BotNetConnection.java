@@ -59,6 +59,11 @@ public class BotNetConnection extends Connection {
 	}
 
 	@Override
+	protected boolean isPrimaryConnection() {
+		return true;
+	}
+
+	@Override
 	protected String getServer() {
 		return GlobalSettings.botNetServer;
 	}
@@ -340,6 +345,12 @@ public class BotNetConnection extends Connection {
 			} else if(commands[0].equals("chat")) {
 				sendChat(false, text.substring(5));
 				return;
+			} else if(commands[0].equals("emote")) {
+				sendChat(false, text.substring(6));
+				return;
+			} else if(commands[0].equals("broadcast")) {
+				sendBroadcast(text.substring(10));
+				return;
 			}
 
 			dispatchRecieveError("Invalid BotNet command: " + text);
@@ -365,7 +376,7 @@ public class BotNetConnection extends Connection {
 	 */
 	public void sendBroadcast(String text) throws Exception {
 		sendBotNetChat(0, false, 0, text);
-		// TODO: recieveBroadcast()
+		super.dispatchRecieveEmote(myUser, "TODO: dispatchRecieveBroadcast()");
 	}
 
 	/**
