@@ -166,6 +166,9 @@ public class BotNetConnection extends Connection {
 				BotNetPacketReader pr = new BotNetPacketReader(bnInputStream);
 				BNetInputStream is = pr.getData();
 
+				eventHandlers.clear();
+				eventHandlers.addAll(master.getEventHandlers());
+
 				switch(pr.packetId) {
 				case PACKET_IDLE: {
 					sendIdle();
@@ -482,7 +485,7 @@ public class BotNetConnection extends Connection {
 				me.name = user.getShortLogonName();
 			me.channel = channel;
 			me.server = ip;
-			me.database = "PubEternalChat";
+			me.database = GlobalSettings.botNetDatabase;
 			dispatchBotnetUserStatus(me);
 		}
 
