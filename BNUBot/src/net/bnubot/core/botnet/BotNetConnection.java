@@ -99,6 +99,9 @@ public class BotNetConnection extends Connection {
 				BotNetPacketReader pr = new BotNetPacketReader(bnInputStream);
 				BNetInputStream is = pr.getData();
 
+				eventHandlers.clear();
+				eventHandlers.addAll(master.getEventHandlers());
+
 				switch(pr.packetId) {
 				case PACKET_BOTNETVERSION: {
 					serverRevision = is.readDWord();
@@ -487,7 +490,7 @@ public class BotNetConnection extends Connection {
 				(user == null) ? "BNUBot2" : user.getShortLogonName(),
 				channel,
 				ip,
-				"PubEternalChat f9q07r89iahdfjg47af9od",
+				"null qp09b198do3kd38a7e" /*"PubEternalChat f9q07r89iahdfjg47af9od"*/,
 				false);
 	}
 
