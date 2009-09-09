@@ -98,6 +98,8 @@ public class GlobalSettings {
 	public static int botNetPort;
 	public static String botNetUsername;
 	public static String botNetPassword;
+	public static String botNetDatabase;
+	public static String botNetDatabasePassword;
 
 	public static boolean socksEnabled;
 	public static SOCKSType socksType;
@@ -182,6 +184,8 @@ public class GlobalSettings {
 		ss.write("botNetPort", botNetPort);
 		ss.write("botNetUsername", botNetUsername);
 		ss.write("botNetPassword", botNetPassword);
+		ss.write("botNetDatabase", botNetDatabase);
+		ss.write("botNetDatabasePassword", botNetDatabasePassword);
 		ss.write("bnlsserver", bnlsServer);
 		ss.write("bnlsport", bnlsPort);
 		ss.write("colorScheme", colorScheme);
@@ -261,6 +265,8 @@ public class GlobalSettings {
 		botNetPort = ss.read("botNetPort", 0x5555);
 		botNetUsername = ss.read("botNetUsername", (String)null);
 		botNetPassword = ss.read("botNetPassword", (String)null);
+		botNetDatabase = ss.read("botNetDatabase", "PubEternalChat");
+		botNetDatabasePassword = ss.read("botNetDatabasePassword", "f9q07r89iahdfjg47af9od");
 		displaySlashCommands = ss.read("displaySlashCommands", false);
 		displayBattleNetMOTD = ss.read("displayBattleNetMOTD", true);
 		displayBattleNetChannels = ss.read("displayBattleNetChannels", false);
