@@ -490,7 +490,7 @@ public class BotNetConnection extends Connection {
 				(user == null) ? "BNUBot2" : user.getShortLogonName(),
 				channel,
 				ip,
-				"null qp09b198do3kd38a7e" /*"PubEternalChat f9q07r89iahdfjg47af9od"*/,
+				GlobalSettings.botNetDatabase + " " + GlobalSettings.botNetDatabasePassword,
 				false);
 	}
 
