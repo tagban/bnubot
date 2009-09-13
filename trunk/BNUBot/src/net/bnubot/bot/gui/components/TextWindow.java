@@ -99,7 +99,7 @@ public class TextWindow extends JScrollPane {
 
 	private void setText() {
 		while(html.length() > 0x8000) {
-			int i = html.indexOf("\n", 0);
+			int i = html.indexOf("\r\n", 0);
 			if(i > 0)
 				html = html.substring(i + 1);
 		}
@@ -143,13 +143,13 @@ public class TextWindow extends JScrollPane {
 			addSeparator();
 			makeFont(cs.getInfoColor());
 			html += safeHtml(TimeFormatter.formatDate(cal.getTime()));
-			html += "</font><br>\n";
+			html += "</font><br>\r\n";
 			addSeparator();
 		}
 
 		if(addSeparator) {
 			if(html.length() > 0)
-				html += "<hr>\n";
+				html += "<hr>\r\n";
 			addSeparator = false;
 		}
 
@@ -158,7 +158,7 @@ public class TextWindow extends JScrollPane {
 		html += "] </font>";
 	}
 
-	private static Pattern pattern = Pattern.compile("((.|\n)*?)\\b((([a-zA-Z]{3,6}://)|(www.)){1}([a-zA-Z0-9-.]+)([^-]\\.[a-zA-Z]{2,5}){1}((:[0-9]+)?)((/\\S+){1}|\\s*?)/?)((.|\n)*)");
+	private static Pattern pattern = Pattern.compile("((.|\r\n)*?)\\b((([a-zA-Z]{3,6}://)|(www.)){1}([a-zA-Z0-9-.]+)([^-]\\.[a-zA-Z]{2,5}){1}((:[0-9]+)?)((/\\S+){1}|\\s*?)/?)((.|\r\n)*)");
 	private String safeHtml(String in) {
 		try {
 			Matcher matcher = pattern.matcher(in);
@@ -181,7 +181,7 @@ public class TextWindow extends JScrollPane {
 		appendDate();
 		makeFont(col);
 		html += safeHtml(text);
-		html += "</font><br>\n";
+		html += "</font><br>\r\n";
 		setText();
 	}
 
@@ -189,7 +189,7 @@ public class TextWindow extends JScrollPane {
 		appendDate();
 		html += "<font class=\"" + clazz + "\">";
 		html += safeHtml(text);
-		html += "</font><br>\n";
+		html += "</font><br>\r\n";
 		setText();
 	}
 
@@ -200,7 +200,7 @@ public class TextWindow extends JScrollPane {
 		html += "</font>";
 		html += "<font class=\"" + clazz + "\">";
 		html += safeHtml(text2);
-		html += "</font><br>\n";
+		html += "</font><br>\r\n";
 		setText();
 	}
 
@@ -211,7 +211,7 @@ public class TextWindow extends JScrollPane {
 		html += "</font>";
 		makeFont(col2);
 		html += safeHtml(text2);
-		html += "</font><br>\n";
+		html += "</font><br>\r\n";
 		setText();
 	}
 
@@ -225,7 +225,7 @@ public class TextWindow extends JScrollPane {
 		html += "</font>";
 		makeFont(col3);
 		html += safeHtml(text3);
-		html += "</font><br>\n";
+		html += "</font><br>\r\n";
 		setText();
 	}
 
