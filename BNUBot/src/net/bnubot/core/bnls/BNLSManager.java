@@ -17,6 +17,13 @@ public class BNLSManager {
 	private static BNLSConnection bnls;
 
 	public static void initialize(Task connect) throws IOException {
+		if(bnls != null)
+			try {
+				bnls.keepAlive();
+			} catch(Exception e) {
+				bnls = null;
+			}
+
 		if(bnls == null)
 			bnls = new BNLSConnection();
 		bnls.initialize(connect);

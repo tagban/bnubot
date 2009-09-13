@@ -166,4 +166,8 @@ public class BNLSConnection {
 			return null;
 		}
 	}
+
+	public void keepAlive() throws IOException {
+		new BNLSPacket(BNLSPacketId.BNLS_NULL).sendPacket(bnlsOutputStream);
+	}
 }
