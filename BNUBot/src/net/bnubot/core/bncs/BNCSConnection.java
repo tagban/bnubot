@@ -24,7 +24,7 @@ import net.bnubot.core.EventHandler;
 import net.bnubot.core.PluginManager;
 import net.bnubot.core.Profile;
 import net.bnubot.core.UnsupportedFeatureException;
-import net.bnubot.core.bnls.BNLSConnection;
+import net.bnubot.core.bnls.BNLSManager;
 import net.bnubot.core.bnls.VersionCheckResult;
 import net.bnubot.core.botnet.BotNetConnection;
 import net.bnubot.core.clan.ClanCreationInvitationCookie;
@@ -66,7 +66,6 @@ public class BNCSConnection extends Connection {
 		return botnet;
 	}
 
-	private BNLSConnection bnlsConnection = null;
 	private InputStream bncsInputStream = null;
 	private DataOutputStream bncsOutputStream = null;
 
@@ -231,12 +230,10 @@ public class BNCSConnection extends Connection {
 
 		// Set up BNLS, get verbyte
 		try {
-			if(bnlsConnection == null)
-				bnlsConnection = new BNLSConnection();
-			bnlsConnection.initialize(connect);
+			BNLSManager.initialize(connect);
 
 			connect.updateProgress("Getting verbyte from BNLS");
-			int vb = bnlsConnection.getVerByte(cs.product);
+			int vb = BNLSManager.getVerByte(cs.product);
 
 			if (vb != verByte) {
 				dispatchRecieveInfo("BNLS_REQUESTVERSIONBYTE: 0x"
@@ -297,11 +294,11 @@ public class BNCSConnection extends Connection {
 						serverToken = is.readDWord();
 						is.skip(4); // int udpValue = is.readDWord();
 					}
-					long MPQFileTime = is.readQWord();
-					String MPQFileName = is.readNTString();
-					byte[] ValueStr = is.readNTBytes();
+					long mpqFileTime = is.readQWord();
+					String mpqFileName = is.readNTString();
+					byte[] valueStr = is.readNTBytes();
 
-					Out.debug(getClass(), "MPQ: " + MPQFileName);
+					Out.debug(getClass(), "MPQ: " + mpqFileName);
 
 					byte extraData[] = null;
 					if (is.available() == 0x80) {
@@ -330,7 +327,7 @@ public class BNCSConnection extends Connection {
 					}
 
 					Task task = createTask("BNLS_VERSIONCHECKEX2", "...");
-					VersionCheckResult vcr = bnlsConnection.sendVersionCheckEx2(task, productID, MPQFileTime, MPQFileName, ValueStr);
+					VersionCheckResult vcr = BNLSManager.sendVersionCheckEx2(task, productID, mpqFileTime, mpqFileName, valueStr);
 					completeTask(task);
 
 					if(vcr == null) {
