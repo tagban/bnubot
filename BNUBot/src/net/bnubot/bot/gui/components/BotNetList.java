@@ -194,7 +194,7 @@ public class BotNetList extends JPanel {
 
 		BNetIcon[] icons = IconsDotBniReader.getIcons();
 		if(icons != null) {
-			BNetIcon icon = icons[4];
+			BNetIcon icon = icons[4]; // Glasses
 
 			/* A = superuser, can perform any administrative action
 			 * B = broadcast, may use talk-to-all
