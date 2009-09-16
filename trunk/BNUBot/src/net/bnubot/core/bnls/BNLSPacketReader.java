@@ -19,7 +19,7 @@ import net.bnubot.util.crypto.HexDump;
  * @author scotta
  */
 public class BNLSPacketReader {
-	BNLSPacketId packetId;
+	public BNLSPacketId packetId;
 	int packetLength;
 	byte data[];
 

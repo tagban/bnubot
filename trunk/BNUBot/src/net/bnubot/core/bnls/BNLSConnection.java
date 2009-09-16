@@ -69,8 +69,7 @@ public class BNLSConnection {
 		loginPacket.sendPacket(bnlsOutputStream);
 
 		// Recieve BNLS_AUTHORIZE
-		BNetInputStream is = new BNLSPacketReader(bnlsInputStream)
-				.getInputStream();
+		BNetInputStream is = readPacket(BNLSPacketId.BNLS_AUTHORIZE);
 		int serverCode = is.readDWord();
 
 		// Calculate checksum
@@ -83,7 +82,7 @@ public class BNLSConnection {
 		loginPacket.sendPacket(bnlsOutputStream);
 
 		// Recieve BNLS_AUTHORIZEPROOF
-		is = new BNLSPacketReader(bnlsInputStream).getInputStream();
+		is = readPacket(BNLSPacketId.BNLS_AUTHORIZEPROOF);
 		int statusCode = is.readDWord();
 		if (statusCode != 0)
 			Out.error(getClass(), "Login to BNLS failed; logged in anonymously");
@@ -95,7 +94,7 @@ public class BNLSConnection {
 		vbPacket.writeDWord(product.getBnls());
 		vbPacket.sendPacket(bnlsOutputStream);
 
-		BNetInputStream vbInputStream = new BNLSPacketReader(bnlsInputStream).getInputStream();
+		BNetInputStream vbInputStream = readPacket(BNLSPacketId.BNLS_REQUESTVERSIONBYTE);
 		int vbProduct = vbInputStream.readDWord();
 		if (vbProduct == 0)
 			throw new IOException("BNLS_REQUESTVERSIONBYTE failed.");
@@ -130,6 +129,8 @@ public class BNLSConnection {
 			task.complete();
 
 			BNLSPacketReader bpr = new BNLSPacketReader(bnlsInputStream);
+			if(bpr.packetId != BNLSPacketId.BNLS_VERSIONCHECKEX2)
+				throw new IOException("Recieved the wrong packet (" + bpr.packetId.name() + ", but expected BNLS_VERSIONCHECKEX2)");
 			BNetInputStream bnlsIn = bpr.getInputStream();
 			int success = bnlsIn.readDWord();
 			if (success != 1) {
@@ -169,5 +170,37 @@ public class BNLSConnection {
 
 	public void keepAlive() throws IOException {
 		new BNLSPacket(BNLSPacketId.BNLS_NULL).sendPacket(bnlsOutputStream);
+	}
+
+	private BNetInputStream readPacket(BNLSPacketId expected) throws IOException {
+		BNLSPacketReader pr = new BNLSPacketReader(bnlsInputStream);
+		if(pr.packetId != expected)
+			throw new IOException("Recieved the wrong packet (" + pr.packetId.name() + ", but expected " + expected.name() + ")");
+		return pr.getInputStream();
+	}
+
+	public BNetInputStream sendWarden0(int cookie, int client, byte[] seed) throws IOException {
+		BNLSPacket p = new BNLSPacket(BNLSPacketId.BNLS_WARDEN);
+		p.writeByte(0);
+		p.writeDWord(cookie);
+		p.writeDWord(client);
+		p.writeWord(seed.length);
+		p.write(seed);
+		p.writeNTString("");
+		p.writeWord(0);
+		p.sendPacket(bnlsOutputStream);
+
+		return readPacket(BNLSPacketId.BNLS_WARDEN);
+	}
+
+	public BNetInputStream sendWarden1(int cookie, byte[] payload) throws IOException {
+		BNLSPacket p = new BNLSPacket(BNLSPacketId.BNLS_WARDEN);
+		p.writeByte(1);
+		p.writeDWord(cookie);
+		p.writeWord(payload.length);
+		p.write(payload);
+		p.sendPacket(bnlsOutputStream);
+
+		return readPacket(BNLSPacketId.BNLS_WARDEN);
 	}
 }
