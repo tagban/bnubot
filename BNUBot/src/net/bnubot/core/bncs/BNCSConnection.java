@@ -832,7 +832,9 @@ public class BNCSConnection extends Connection {
 			try {
 				warden.processWardenPacket(is.readFully(), bncsOutputStream);
 				return;
-			} catch(Exception e) {}
+			} catch(Exception e) {
+				Out.exception(e);
+			}
 		Out.error(getClass(),
 				"Recieved SID_WARDEN; " +
 				"you will be disconnected from battle.net in 2 minutes. Visit " +
