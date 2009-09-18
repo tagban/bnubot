@@ -23,6 +23,7 @@ import net.bnubot.util.BNetInputStream;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.ByteArray;
 import net.bnubot.util.MirrorSelector;
+import net.bnubot.util.crypto.GenericCrypto;
 import net.bnubot.util.crypto.HexDump;
 import net.bnubot.util.task.Task;
 
@@ -550,11 +551,13 @@ public class BotNetConnection extends Connection {
 		if(message.length() > 496)
 			throw new IllegalStateException("Chat length too long");
 
+		byte[] crypt = GenericCrypto.encode(new ByteArray(message), master.enabledCryptos).getBytes();
+
 		BotNetPacket p = new BotNetPacket(this, BotNetPacketId.PACKET_BOTNETCHAT);
 		p.writeDWord(command);
 		p.writeDWord(emote ? 1 : 0);
 		p.writeDWord(target);
-		p.writeNTString(message);
+		p.writeNTString(crypt);
 		p.sendPacket(bnOutputStream);
 	}
 
