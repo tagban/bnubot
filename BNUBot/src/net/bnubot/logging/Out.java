@@ -87,7 +87,7 @@ public class Out {
 	public static void exception(Throwable e) {
 		final OutputHandler oh = getOutputHandler();
 		if(oh != null)
-			error(e.getClass(), e.getMessage());
+			error(e.getClass(), getRelevantStack(e));
 		// Do not log UnloggedExceptions
 		if(!(e instanceof UnloggedException))
 			outLogger.exception(e);
