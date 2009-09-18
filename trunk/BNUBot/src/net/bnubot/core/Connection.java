@@ -88,7 +88,7 @@ public abstract class Connection extends Thread implements OutputHandler {
 	protected long lastNullPacket;
 
 	protected AcceptOrDecline lastAcceptDecline = null;
-	protected int enabledCryptos = 0;
+	public int enabledCryptos = 0;
 
 	protected Task createTask(String title, String currentStep) {
 		Task t = TaskManager.createTask(profile.getName() + ": " + title, currentStep);
@@ -243,6 +243,7 @@ public abstract class Connection extends Thread implements OutputHandler {
 				disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 			} catch(Exception e) {
 				dispatchRecieveError("Unhandled " + e.getClass().getSimpleName() + ": " + e.getMessage());
+				e.printStackTrace();
 				Out.exception(e);
 				disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 			}

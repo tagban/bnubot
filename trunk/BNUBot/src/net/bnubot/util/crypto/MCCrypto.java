@@ -8,6 +8,7 @@ package net.bnubot.util.crypto;
 import net.bnubot.util.ByteArray;
 
 /**
+ * MirageChat
  * @author scotta
  */
 public class MCCrypto {
