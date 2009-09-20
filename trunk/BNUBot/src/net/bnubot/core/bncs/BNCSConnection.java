@@ -230,8 +230,6 @@ public class BNCSConnection extends Connection {
 
 		// Set up BNLS, get verbyte
 		try {
-			BNLSManager.initialize(connect);
-
 			connect.updateProgress("Getting verbyte from BNLS");
 			int vb = BNLSManager.getVerByte(cs.product);
 
