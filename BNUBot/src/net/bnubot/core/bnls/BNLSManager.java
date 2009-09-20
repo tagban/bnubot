@@ -27,7 +27,7 @@ public class BNLSManager {
 	private static BNLSConnection bnls = null;
 	private static BNLSConnection bnls_warden = null;
 
-	public static void initialize(Task connect) throws IOException {
+	public static BNLSConnection getConnection() throws IOException {
 		if(bnls != null)
 			try {
 				bnls.keepAlive();
@@ -35,12 +35,10 @@ public class BNLSManager {
 				bnls = null;
 			}
 
-		if(bnls == null)
+		if(bnls == null) {
 			bnls = new BNLSConnection();
-		bnls.initialize(connect);
-	}
-
-	public static BNLSConnection getConnection() {
+			bnls.initialize();
+		}
 		return bnls;
 	}
 
@@ -70,7 +68,7 @@ public class BNLSManager {
 			pickWardenServer();
 			try {
 				bnls_warden = new BNLSConnection();
-				bnls_warden.initialize(new Task());
+				bnls_warden.initialize();
 			} catch(Exception e) {
 				bnls_warden = null;
 			}

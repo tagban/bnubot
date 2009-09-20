@@ -55,13 +55,9 @@ public class BNLSConnection {
 	 * @throws IOException
 	 * @throws SocketException
 	 */
-	public void initialize(Task connect) throws IOException, SocketException {
+	public void initialize() throws IOException, SocketException {
 		// Connect to BNLS
-		connect.updateProgress("Connecting to BNLS");
 		setBNLSConnected(true);
-
-		// Log in to BNLS
-		connect.updateProgress("Logging in to BNLS");
 
 		// Send BNLS_AUTHORIZE
 		BNLSPacket loginPacket = new BNLSPacket(BNLSPacketId.BNLS_AUTHORIZE);
