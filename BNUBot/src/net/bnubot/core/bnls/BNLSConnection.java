@@ -94,6 +94,8 @@ public class BNLSConnection {
 		int vbProduct = vbInputStream.readDWord();
 		if (vbProduct == 0)
 			throw new IOException("BNLS_REQUESTVERSIONBYTE failed.");
+		if(vbProduct != product.getBnls())
+			throw new IOException("BNLS_REQUESTVERSIONBYTE returned the wrong product [0x" + Integer.toHexString(vbProduct) + "]");
 		return vbInputStream.readWord();
 	}
 
