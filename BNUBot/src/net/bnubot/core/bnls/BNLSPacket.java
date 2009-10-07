@@ -34,6 +34,7 @@ public class BNLSPacket extends BNetOutputStream {
 			sckout.writeWord(data.length + 3);
 			sckout.writeByte(packetId.ordinal());
 			sckout.write(data);
+			sckout.flush();
 		} catch(IOException e) {
 			Out.fatalException(e);
 		}
