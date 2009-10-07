@@ -21,7 +21,6 @@ public class BNLSManager {
 		"senkin.myvnc.com:5007",
 		"80.86.83.93:9367",
 		"bnls.ghostbot.net:9367",
-		"seattle.servegame.com:6983"
 	};
 
 	private static BNLSConnection bnls = null;
