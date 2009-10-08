@@ -55,7 +55,7 @@ public class BNLSConnection {
 	 * @throws IOException
 	 * @throws SocketException
 	 */
-	public void initialize() throws IOException, SocketException {
+	public void initialize() throws IOException {
 		// Connect to BNLS
 		setBNLSConnected(true);
 
@@ -147,7 +147,6 @@ public class BNLSConnection {
 			assert (bnlsIn.available() == 0);
 
 			Out.info(getClass(), "Recieved version check from BNLS.");
-			setBNLSConnected(false);
 
 			if((vcr.exeVersion == 0)
 			|| (vcr.exeHash == 0)
