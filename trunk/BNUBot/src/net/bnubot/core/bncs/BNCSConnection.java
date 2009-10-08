@@ -73,6 +73,7 @@ public class BNCSConnection extends Connection {
 	private int verByte;
 	private Integer nlsRevision = null;
 	private BNCSWarden warden = null;
+	private byte[] warden_seed = null;
 	private int serverToken = 0;
 	private final int clientToken = Math.abs(new Random().nextInt());
 	private SRP srp = null;
@@ -107,6 +108,7 @@ public class BNCSConnection extends Connection {
 	private void initializeBNCS(Task connect) throws Exception {
 		nlsRevision = null;
 		warden = null;
+		warden_seed = null;
 		productID = cs.product;
 
 		// Set up BNCS
@@ -314,14 +316,9 @@ public class BNCSConnection extends Connection {
 						|| (productID == ProductIDs.W3XP))
 							keyHash2 = HashMain.hashKey(clientToken, serverToken, cs.cdkey2).getBuffer();
 
-						try {
-							byte[] warden_seed = new byte[4];
-							System.arraycopy(keyHash, 16, warden_seed, 0, 4);
-							warden = new BNCSWarden(this, warden_seed);
-						} catch (Exception e) {
-							warden = null;
-							Out.debug(getClass(), e.getMessage());
-						}
+						warden = null;
+						warden_seed = new byte[4];
+						System.arraycopy(keyHash, 16, warden_seed, 0, 4);
 					}
 
 					Task task = createTask("BNLS_VERSIONCHECKEX2", "...");
@@ -826,6 +823,13 @@ public class BNCSConnection extends Connection {
 	}
 
 	private void recieveWarden(BNetInputStream is) {
+		if(warden == null)
+			try {
+				warden = new BNCSWarden(this, warden_seed);
+			} catch(Exception e) {
+				warden = null;
+				Out.exception(e);
+			}
 		if(warden != null)
 			try {
 				warden.processWardenPacket(is.readFully(), bncsOutputStream);
