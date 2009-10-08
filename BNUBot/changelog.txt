@@ -8,7 +8,6 @@
 * Added "new day" separator to GuiEventHandler (Issue 113)
 * Unbroke botnet with a super hacky non permanent patch
 * Added BNLS_WARDEN, and some hacky stuff to make it work
-* Fixed a long-standing BNLS bug which typically caused BNLS_VERSIONCHECKEX2 to time out
 
 2.1.1 (r1848) 2009-07-08:
 * Enabled hot-swapping plugins (may require re-configuring enabled plugins) (Issue 103)

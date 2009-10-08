@@ -26,20 +26,19 @@ public class BNLSPacket extends BNetOutputStream {
 	}
 
 	public void sendPacket(OutputStream out) throws IOException, SocketException {
-		byte data[] = ((ByteArrayOutputStream)this.out).toByteArray();
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		BNetOutputStream sckout = new BNetOutputStream(baos);
 
 		try {
-			sckout.writeWord(data.length + 3);
+			byte raw_data[] = ((ByteArrayOutputStream)this.out).toByteArray();
+			BNetOutputStream sckout = new BNetOutputStream(baos);
+			sckout.writeWord(raw_data.length + 3);
 			sckout.writeByte(packetId.ordinal());
-			sckout.write(data);
-			sckout.flush();
+			sckout.write(raw_data);
 		} catch(IOException e) {
 			Out.fatalException(e);
 		}
 
-		data = baos.toByteArray();
+		byte data[] = baos.toByteArray();
 
 		if(GlobalSettings.packetLog) {
 			String msg = "SEND " + packetId.name();
