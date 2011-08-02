@@ -9,6 +9,7 @@
 * Unbroke botnet with a super hacky non permanent patch
 * Added BNLS_WARDEN, and some hacky stuff to make it work
 * Use user's preferred timezone for logging in HTMLOutputEventHandler
+* AP will recover existing accounts when safelisting new users
 
 2.1.1 (r1848) 2009-07-08:
 * Enabled hot-swapping plugins (may require re-configuring enabled plugins) (Issue 103)

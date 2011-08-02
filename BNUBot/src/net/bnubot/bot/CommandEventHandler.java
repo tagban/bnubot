@@ -512,7 +512,18 @@ public class CommandEventHandler extends EventHandler {
 								String name = user.getFullAccountName();
 								name = name.substring(0, name.indexOf('@'));
 								try {
-									rsAccount = createAccount(name, 0, null, rsUser);
+									Account recoverAccount = Account.get(name);
+									if((recoverAccount != null)
+									&& (recoverAccount.getAccess() <= 1)
+									&& (recoverAccount.getBnLogins().size() == 0)) {
+										rsAccount = recoverAccount;
+										// Reset the account to rank zero, just in case
+										rsAccount.setRank(Rank.get(0));
+										rsUser.setAccount(rsAccount);
+										rsUser.updateRow();
+									} else {
+										rsAccount = createAccount(name, 0, null, rsUser);
+									}
 								} catch(Exception e) {
 									Out.exception(e);
 									user.sendChat("I couldn't make an account for you: " + e.getMessage(), true);
