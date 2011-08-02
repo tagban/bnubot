@@ -13,7 +13,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.TimeZone;
 
 import javax.swing.SwingUtilities;
 
@@ -25,18 +24,14 @@ import net.bnubot.logging.Out;
 import net.bnubot.settings.GlobalSettings;
 import net.bnubot.util.BNetUser;
 import net.bnubot.util.StatString;
+import net.bnubot.util.TimeFormatter;
 import net.bnubot.util.crypto.HexDump;
 
 /**
  * @author scotta
  */
 public class HTMLOutputEventHandler extends EventHandler {
-	// TODO Allow the user to customize TimeZone
-	private static final TimeZone TIME_ZONE = TimeZone.getTimeZone("GMT-05");
 	private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-	static {
-		sdf.setTimeZone(TIME_ZONE);
-	}
 	private boolean generationNeeded = false;
 	private Runnable writeUserListRunnable = null;
 	private final ColorScheme cs = ColorScheme.getColors();
@@ -217,6 +212,7 @@ public class HTMLOutputEventHandler extends EventHandler {
 
 	private void logChat(Connection source, String text) {
 		String fName = "logs/" + source.getProfile().getName() + "/";
+		sdf.setTimeZone(TimeFormatter.timeZone);
 		fName += sdf.format(new Date());
 		fName += ".log";
 		File f = new File(fName);
@@ -234,7 +230,7 @@ public class HTMLOutputEventHandler extends EventHandler {
 
 	private String getDate() {
 		try {
-			return getColor(cs.getForegroundColor()) + String.format("[%1$tH:%1$tM:%1$tS] ", new GregorianCalendar(TIME_ZONE));
+			return getColor(cs.getForegroundColor()) + String.format("[%1$tH:%1$tM:%1$tS] ", new GregorianCalendar(TimeFormatter.timeZone));
 		} catch(NoSuchMethodError e) {
 			return "";
 		}
