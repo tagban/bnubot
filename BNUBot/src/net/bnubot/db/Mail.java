@@ -10,6 +10,8 @@ import java.util.Date;
 import net.bnubot.db.auto._Mail;
 import net.bnubot.db.conf.DatabaseContext;
 
+import org.apache.cayenne.DataObjectUtils;
+
 /**
  * @author scotta
  */
@@ -47,5 +49,10 @@ public class Mail extends _Mail {
 			if(!m.isIsread())
 				count++;
 		return count;
+	}
+
+	@Override
+	public Integer toSortField() {
+		return Integer.valueOf(DataObjectUtils.intPKForObject(this));
 	}
 }

@@ -18,8 +18,7 @@ import net.bnubot.db.CustomDataObject;
  * @author cayenne-generated-file
  */
 @SuppressWarnings("serial")
-public abstract class _BNLogin extends CustomDataObject {
-
+public abstract class _BNLogin extends CustomDataObject<String> {
     public static final String CREATED_PROPERTY = "created";
     public static final String LAST_ACTION_PROPERTY = "lastAction";
     public static final String LAST_SEEN_PROPERTY = "lastSeen";
@@ -99,8 +98,8 @@ public abstract class _BNLogin extends CustomDataObject {
     public void setAccount(Account account) {
         setToOneTarget(ACCOUNT_PROPERTY, account, true);
     }
+
     public Account getAccount() {
         return (Account)readProperty(ACCOUNT_PROPERTY);
     }
-
 }

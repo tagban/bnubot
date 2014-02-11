@@ -51,7 +51,7 @@ public class CommandAlias extends _CommandAlias {
 	}
 
 	@Override
-	public Comparable toSortField() {
+	public String toSortField() {
 		return getAlias();
 	}
 }

@@ -175,7 +175,7 @@ public class Account extends _Account {
 	}
 
 	@Override
-	public Comparable toSortField() {
+	public String toSortField() {
 		return getName();
 	}
 }

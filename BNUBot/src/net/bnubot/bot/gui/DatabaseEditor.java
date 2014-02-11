@@ -56,8 +56,8 @@ public class DatabaseEditor {
 	private final ObjectContext context;
 	private final String editorType;
 
-	private final Map<String, CustomDataObject> dataMap = new HashMap<String, CustomDataObject>();
-	private CustomDataObject currentRow = null;
+	private final Map<String, CustomDataObject<?>> dataMap = new HashMap<String, CustomDataObject<?>>();
+	private CustomDataObject<?> currentRow = null;
 	private final Map<ObjAttribute, getValueDelegate> data = new HashMap<ObjAttribute, getValueDelegate>();
 	private final Map<ObjRelationship, getValueDelegate> dataRel = new HashMap<ObjRelationship, getValueDelegate>();
 	private final JDialog jf = new JDialog();
@@ -70,11 +70,11 @@ public class DatabaseEditor {
 	}
 
 	@SuppressWarnings("unchecked")
-	public DatabaseEditor(Class<? extends CustomDataObject> clazz) throws Exception {
+	public DatabaseEditor(Class<? extends CustomDataObject<?>> clazz) throws Exception {
 		context = DatabaseContext.getContext();
 		if(context == null)
 			throw new UnloggedException("No database is initialized");
-		List<CustomDataObject>dataRows = context.performQuery(new SelectQuery(clazz));
+		List<CustomDataObject<?>>dataRows = context.performQuery(new SelectQuery(clazz));
 		Collections.sort(dataRows);
 
 		editorType = clazz.getSimpleName();
@@ -138,7 +138,7 @@ public class DatabaseEditor {
 
 		box.add(box2);
 
-		for(CustomDataObject row : dataRows) {
+		for(CustomDataObject<?> row : dataRows) {
 			String disp = getDisplayString(row);
 			model.addElement(disp);
 			dataMap.put(disp, row);
@@ -150,7 +150,7 @@ public class DatabaseEditor {
 				if(changesMade()) {
 					int option = JOptionPane.showConfirmDialog(
 							jf,
-							"You have made changes to the " + editorType + " " + currentRow.toDisplayString() + ". Do you want to save them?",
+							"You have made changes to the " + editorType + " " + currentRow.toString() + ". Do you want to save them?",
 							"Save changes?",
 							JOptionPane.YES_NO_OPTION,
 							JOptionPane.QUESTION_MESSAGE);
@@ -167,10 +167,10 @@ public class DatabaseEditor {
 		jf.setModal(true);
 	}
 
-	private String getDisplayString(CustomDataObject row) {
+	private String getDisplayString(CustomDataObject<?> row) {
 		if(row == null)
 			return "NULL";
-		return row.toDisplayString();
+		return row.toString();
 	}
 
 	private void loadData() {
@@ -205,7 +205,7 @@ public class DatabaseEditor {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void addField(Container jp, int y, ObjRelationship rel, CustomDataObject row) {
+	public void addField(Container jp, int y, ObjRelationship rel, CustomDataObject<?> row) {
 		final Class<?> fieldType = ((ObjEntity)rel.getTargetEntity()).getJavaClass();
 		final String propName = rel.getName();
 
@@ -218,7 +218,7 @@ public class DatabaseEditor {
 				}
 			}
 
-		final CustomDataObject value = (CustomDataObject)row.readProperty(propName);
+		final CustomDataObject<?> value = (CustomDataObject<?>)row.readProperty(propName);
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridy = y;
@@ -236,11 +236,11 @@ public class DatabaseEditor {
 			jp.add(new JLabel(), gbc);
 		}
 
-		final HashMap<String, CustomDataObject> theseOptions = new HashMap<String, CustomDataObject>();
-		List<CustomDataObject> relTargets = context.performQuery(new SelectQuery(fieldType));
+		final HashMap<String, CustomDataObject<?>> theseOptions = new HashMap<String, CustomDataObject<?>>();
+		List<CustomDataObject<?>> relTargets = context.performQuery(new SelectQuery(fieldType));
 		Collections.sort(relTargets);
 		DefaultComboBoxModel<String> model = new DefaultComboBoxModel<String>();
-		for(CustomDataObject v : relTargets) {
+		for(CustomDataObject<?> v : relTargets) {
 			String s = getDisplayString(v);
 			model.addElement(s);
 			theseOptions.put(s, v);
@@ -262,7 +262,7 @@ public class DatabaseEditor {
 			}});
 	}
 
-	public void addField(Container jp, int y, ObjAttribute attr, CustomDataObject row) {
+	public void addField(Container jp, int y, ObjAttribute attr, CustomDataObject<?> row) {
 		final Class<?> fieldType = attr.getJavaClass();
 		final String propName = attr.getName();
 		final Object value = row.readProperty(propName);

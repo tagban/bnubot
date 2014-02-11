@@ -19,15 +19,14 @@ import net.bnubot.db.Rank;
  * @author cayenne-generated-file
  */
 @SuppressWarnings("serial")
-public abstract class _Command extends CustomDataObject {
-
+public abstract class _Command extends CustomDataObject<String> {
     public static final String CMDGROUP_PROPERTY = "cmdgroup";
     public static final String DESCRIPTION_PROPERTY = "description";
     public static final String NAME_PROPERTY = "name";
     public static final String ALIASES_PROPERTY = "aliases";
     public static final String RANK_PROPERTY = "rank";
 
-    public static final String ID_PK_COLUMN = "id";
+    public static final String NAME_PK_COLUMN = "name";
 
     public void setCmdgroup(String cmdgroup) {
         writeProperty(CMDGROUP_PROPERTY, cmdgroup);
@@ -61,11 +60,12 @@ public abstract class _Command extends CustomDataObject {
         return (List<CommandAlias>)readProperty(ALIASES_PROPERTY);
     }
 
+
     public void setRank(Rank rank) {
         setToOneTarget(RANK_PROPERTY, rank, true);
     }
+
     public Rank getRank() {
         return (Rank)readProperty(RANK_PROPERTY);
     }
-
 }

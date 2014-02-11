@@ -60,7 +60,7 @@ public class BNLogin extends _BNLogin {
 	}
 
 	@Override
-	public Comparable toSortField() {
+	public String toSortField() {
 		return getLogin();
 	}
 
