@@ -61,13 +61,14 @@ public class MCPConnection extends RealmConnection {
 			//MCP
 			dos.writeByte(1);
 
-			MCPPacket p = new MCPPacket(MCPPacketID.MCP_STARTUP);
-			for(int i = 0; i < 4; i++)
-				p.writeDWord(MCPChunk1[i]);
-			for(int i = 0; i < 12; i++)
-				p.writeDWord(MCPChunk2[i]);
-			p.writeNTString(uniqueName);
-		    p.sendPacket(dos);
+			try (MCPPacket p = new MCPPacket(MCPPacketID.MCP_STARTUP)) {
+				for(int i = 0; i < 4; i++)
+					p.writeDWord(MCPChunk1[i]);
+				for(int i = 0; i < 12; i++)
+					p.writeDWord(MCPChunk2[i]);
+				p.writeNTString(uniqueName);
+				p.sendPacket(dos);
+			}
 
 			while(!s.isClosed() && connected) {
 				if(dis.available() > 0) {
@@ -89,9 +90,10 @@ public class MCPConnection extends RealmConnection {
 						case 0:
 							recieveRealmInfo("Realm logon success");
 
-							p = new MCPPacket(MCPPacketID.MCP_CHARLIST2);
-							p.writeDWord(8);	//Nubmer of chars to list
-							p.sendPacket(dos);
+							try (MCPPacket p = new MCPPacket(MCPPacketID.MCP_CHARLIST2)) {
+								p.writeDWord(8);	//Nubmer of chars to list
+								p.sendPacket(dos);
+							}
 							break;
 						case 0x02:
 						case 0x0A:
@@ -140,10 +142,11 @@ public class MCPConnection extends RealmConnection {
 							if(is.readByte() != 0)
 								throw new Exception("invalid statstr format\n" + HexDump.hexDump(baos.toByteArray()));
 
-							BNetOutputStream bos = new BNetOutputStream(baos);
-							bos.write(("PX2D[Realm]," + name + ",").getBytes());
-							bos.write(data);
-							bos.writeByte(0);
+							try (BNetOutputStream bos = new BNetOutputStream(baos)) {
+								bos.write(("PX2D[Realm]," + name + ",").getBytes());
+								bos.write(data);
+								bos.writeByte(0);
+							}
 							final StatString statstr = new StatString(new BNetInputStream(new ByteArrayInputStream(baos.toByteArray())));
 
 							MCPCharacter c = new MCPCharacter(time, name, statstr);
@@ -204,8 +207,7 @@ public class MCPConnection extends RealmConnection {
 
 	@Override
 	public void sendLogonCharacter(String c) {
-		try {
-			MCPPacket p = new MCPPacket(MCPPacketID.MCP_CHARLOGON);
+		try (MCPPacket p = new MCPPacket(MCPPacketID.MCP_CHARLOGON)) {
 			p.writeNTString(c);
 			p.sendPacket(dos);
 		} catch(Exception e) {

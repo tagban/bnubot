@@ -15,17 +15,18 @@ public class BNetOutputStreamTest extends TestCase {
 
 	public void testNumbers() throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		BNetOutputStream os = new BNetOutputStream(baos);
 
 		byte b = 0x01;
 		short word = 0x0203;
 		int dword = 0x03040506;
 		long qword = 0x0708090a0b0c0d0eL;
 
-		os.writeByte(b);
-		os.writeWord(word);
-		os.writeDWord(dword);
-		os.writeQWord(qword);
+		try (BNetOutputStream os = new BNetOutputStream(baos)) {
+			os.writeByte(b);
+			os.writeWord(word);
+			os.writeDWord(dword);
+			os.writeQWord(qword);
+		}
 
 		assertEquals(new ByteArray(baos.toByteArray()), new byte[] {
 			0x01,
@@ -37,17 +38,18 @@ public class BNetOutputStreamTest extends TestCase {
 
 	public void testSigned() throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		BNetOutputStream os = new BNetOutputStream(baos);
 
 		byte b = (byte)0xFF;
 		short word = (short)0xFF03;
 		int dword = 0xFF040506;
 		long qword = 0xFF08090a0b0c0d0eL;
 
-		os.writeByte(b);
-		os.writeWord(word);
-		os.writeDWord(dword);
-		os.writeQWord(qword);
+		try (BNetOutputStream os = new BNetOutputStream(baos)) {
+			os.writeByte(b);
+			os.writeWord(word);
+			os.writeDWord(dword);
+			os.writeQWord(qword);
+		}
 
 		assertEquals(new ByteArray(baos.toByteArray()), new byte[] {
 			(byte)0xFF,

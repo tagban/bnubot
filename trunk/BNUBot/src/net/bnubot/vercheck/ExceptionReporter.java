@@ -41,32 +41,33 @@ public class ExceptionReporter {
 
 	public static void reportErrors(File f) throws Exception {
 		// FIXME ask the user if it's okay to submit errors
-		BufferedReader br = new BufferedReader(new FileReader(f));
-		String line;
-		while((line = br.readLine()) != null) {
-			if (line.startsWith("["))
-				continue;
-			if (!line.contains(": "))
-				continue;
+		try (BufferedReader br = new BufferedReader(new FileReader(f))) {
+			String line;
+			while((line = br.readLine()) != null) {
+				if (line.startsWith("["))
+					continue;
+				if (!line.contains(": "))
+					continue;
 
-			String exception = line;
-			String exceptionAbstract = exception;
+				String exception = line;
+				String exceptionAbstract = exception;
 
-			line = br.readLine();
-			while(line != null) {
-				if (!line.startsWith("\t") && !line.startsWith("Caused by: "))
-					break;
-				exception += "\n" + line;
-
-				// Trim off the source info for the abstract
-				int i = line.indexOf('(');
-				if(i != -1)
-					line = line.substring(0, i);
-				exceptionAbstract += "\n" + line;
 				line = br.readLine();
-			}
+				while(line != null) {
+					if (!line.startsWith("\t") && !line.startsWith("Caused by: "))
+						break;
+					exception += "\n" + line;
 
-			reportException(exception, exceptionAbstract);
+					// Trim off the source info for the abstract
+					int i = line.indexOf('(');
+					if(i != -1)
+						line = line.substring(0, i);
+					exceptionAbstract += "\n" + line;
+					line = br.readLine();
+				}
+
+				reportException(exception, exceptionAbstract);
+			}
 		}
 	}
 

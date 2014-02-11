@@ -339,87 +339,89 @@ public class MPQFile implements MPQConstants {
 		is.reset();
 		is.skip(offset);
 
-		ByteArrayOutputStream baos = new ByteArrayOutputStream(size_unpacked);
-		BNetOutputStream os = new BNetOutputStream(baos);
-
-		if(f_single_unit) {
-			byte[] data = new byte[size_packed];
-			is.readFully(data);
-			if(f_encrypted)
-				MPQUtils.decrypt(data, crc_file-1);
-
-			if(data.length==size_unpacked) {
-				// The block is unpacked
-			} else {
-				// Block is packed
-				if(f_compressed) {
-					// Multiple compressions are possible
-					data = MPQUtils.unpack(data, size_unpacked);
-				} else {
-					// Just DCLib
-					data = Explode.explode(data, 0, data.length, size_unpacked);
-				}
-			}
-			os.write(data);
-		} else if(f_imploded | f_compressed) {
-			final int block_size = 0x1000;
-
-			int num_blocks = ((size_unpacked-1)/block_size)+2;
-			int header[] = new int[num_blocks + (f_has_extra ? 1 : 0)];
-			for(int i = 0; i < header.length; i++)
-				header[i] = is.readDWord();
-			if(f_encrypted)
-				MPQUtils.decrypt(header, crc_file-1);
-
-			for(int i = 0; i < num_blocks-1; i++) {
-				int length_read=header[i+1]-header[i];
-				byte[] data = new byte[length_read];
+		try (
+			ByteArrayOutputStream baos = new ByteArrayOutputStream(size_unpacked);
+			BNetOutputStream os = new BNetOutputStream(baos);
+		) {
+			if(f_single_unit) {
+				byte[] data = new byte[size_packed];
 				is.readFully(data);
 				if(f_encrypted)
-					MPQUtils.decrypt(data, crc_file++);
+					MPQUtils.decrypt(data, crc_file-1);
 
-				final int out_size;
-				if(i==num_blocks-2) {
-					if((size_unpacked & 0xFFF) == 0) {
-						// The last block could be either [0] or [block_size]
-						out_size = size_unpacked-(block_size*i);
-					} else {
-						out_size = (size_unpacked & 0xFFF);
-					}
-				} else {
-					out_size = block_size;
-				}
-
-				if(length_read==out_size) {
+				if(data.length==size_unpacked) {
 					// The block is unpacked
 				} else {
 					// Block is packed
 					if(f_compressed) {
 						// Multiple compressions are possible
-						data = MPQUtils.unpack(data, out_size);
+						data = MPQUtils.unpack(data, size_unpacked);
 					} else {
 						// Just DCLib
-						data = Explode.explode(data, 0, data.length, out_size);
+						data = Explode.explode(data, 0, data.length, size_unpacked);
 					}
 				}
 				os.write(data);
-			}
-		} else {
-			// File is not compressed
-			int block_size = f_encrypted ? 0x1000 : 0x60000;
-			for(int pos=0; pos<size_packed; pos += block_size) {
-				int length_read = block_size;
-				if(length_read + pos > size_packed)
-					length_read = size_packed % block_size;
+			} else if(f_imploded | f_compressed) {
+				final int block_size = 0x1000;
 
-				byte[] data = new byte[length_read];
-				is.readFully(data);
+				int num_blocks = ((size_unpacked-1)/block_size)+2;
+				int header[] = new int[num_blocks + (f_has_extra ? 1 : 0)];
+				for(int i = 0; i < header.length; i++)
+					header[i] = is.readDWord();
 				if(f_encrypted)
-					MPQUtils.decrypt(data, crc_file++);
-				os.write(data);
+					MPQUtils.decrypt(header, crc_file-1);
+
+				for(int i = 0; i < num_blocks-1; i++) {
+					int length_read=header[i+1]-header[i];
+					byte[] data = new byte[length_read];
+					is.readFully(data);
+					if(f_encrypted)
+						MPQUtils.decrypt(data, crc_file++);
+
+					final int out_size;
+					if(i==num_blocks-2) {
+						if((size_unpacked & 0xFFF) == 0) {
+							// The last block could be either [0] or [block_size]
+							out_size = size_unpacked-(block_size*i);
+						} else {
+							out_size = (size_unpacked & 0xFFF);
+						}
+					} else {
+						out_size = block_size;
+					}
+
+					if(length_read==out_size) {
+						// The block is unpacked
+					} else {
+						// Block is packed
+						if(f_compressed) {
+							// Multiple compressions are possible
+							data = MPQUtils.unpack(data, out_size);
+						} else {
+							// Just DCLib
+							data = Explode.explode(data, 0, data.length, out_size);
+						}
+					}
+					os.write(data);
+				}
+			} else {
+				// File is not compressed
+				int block_size = f_encrypted ? 0x1000 : 0x60000;
+				for(int pos=0; pos<size_packed; pos += block_size) {
+					int length_read = block_size;
+					if(length_read + pos > size_packed)
+						length_read = size_packed % block_size;
+
+					byte[] data = new byte[length_read];
+					is.readFully(data);
+					if(f_encrypted)
+						MPQUtils.decrypt(data, crc_file++);
+					os.write(data);
+				}
 			}
+			return new ByteArrayInputStream(baos.toByteArray());
 		}
-		return new ByteArrayInputStream(baos.toByteArray());
 	}
 
 	@Override

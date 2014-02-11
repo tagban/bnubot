@@ -61,9 +61,8 @@ public class JARLoader {
 
 		// Look at each JAR
 		for(URL url : urls) {
-			try {
-				File file = new File(url.toExternalForm().substring(5));
-				JarFile jf = new JarFile(file);
+			File file = new File(url.toExternalForm().substring(5));
+			try (JarFile jf = new JarFile(file)) {
 				// Look at each class inside the jar
 				Enumeration<JarEntry> en = jf.entries();
 				while(en.hasMoreElements()) {

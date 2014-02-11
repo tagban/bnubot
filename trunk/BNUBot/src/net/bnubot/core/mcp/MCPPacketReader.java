@@ -25,6 +25,8 @@ public class MCPPacketReader {
 	byte data[];
 
 	public MCPPacketReader(InputStream rawis) throws IOException {
+		// Operates on a socket, which we don't want to close; suppress the warning
+		@SuppressWarnings("resource")
 		BNetInputStream is = new BNetInputStream(rawis);
 
 		packetLength = is.readWord() & 0x0000FFFF;
@@ -37,15 +39,16 @@ public class MCPPacketReader {
 		}
 
 		if(GlobalSettings.packetLog) {
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			BNetOutputStream os = new BNetOutputStream(baos);
-			os.writeByte(packetId.ordinal());
-			os.writeWord(packetLength);
-			os.write(data);
-
 			String msg = "RECV " + packetId.name();
-			if(Out.isDebug())
+			if(Out.isDebug()) {
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				try (BNetOutputStream os = new BNetOutputStream(baos)) {
+					os.writeByte(packetId.ordinal());
+					os.writeWord(packetLength);
+					os.write(data);
+				}
 				msg += "\n" + HexDump.hexDump(baos.toByteArray());
+			}
 			Out.debugAlways(getClass(), msg);
 		}
 	}
