@@ -65,8 +65,7 @@ public class TelnetEventHandler extends EventHandler implements Runnable {
 
 	@Override
 	public void run() {
-		try {
-			ServerSocket ss = new ServerSocket(6112);
+		try (ServerSocket ss = new ServerSocket(6112)) {
 			while(true) {
 				ChatConnection cc = new ChatConnection(ss.accept());
 				connections.add(cc);

@@ -234,12 +234,13 @@ public class IconsDotBniReader {
 			icon.ySize = icon.getIcon().getIconHeight();
 		}
 
-		try {
-			Out.debug(IconsDotBniReader.class, "Writing " + f.getName());
+		try (
 			BNetOutputStream os = new BNetOutputStream(new FileOutputStream(f));
-
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			BNetOutputStream headerStream = new BNetOutputStream(baos);
+		) {
+			Out.debug(IconsDotBniReader.class, "Writing " + f.getName());
+
 			headerStream.writeWord(1); // BNI version
 			headerStream.writeWord(0); // Alignment Padding (unused)
 			headerStream.writeDWord(icons.length); // numIcons
@@ -308,19 +309,15 @@ public class IconsDotBniReader {
 					os.writeByte(col.getRed());
 				}
 			}
-
-			os.flush();
-			os.close();
 		} catch (Exception e) {
 			Out.fatalException(e);
 		}
 	}
 
 	private static BNetIcon[] readIconsDotBni(File f) {
-		try {
+		try (BNetInputStream is = new BNetInputStream(new FileInputStream(f))) {
 			Out.debug(IconsDotBniReader.class, "Reading " + f.getName());
 
-			BNetInputStream is = new BNetInputStream(new FileInputStream(f));
 			is.skip(4); //int headerSize = is.readDWord();
 			int bniVersion = is.readWord();
 			is.skip(2);	// Alignment Padding (unused)

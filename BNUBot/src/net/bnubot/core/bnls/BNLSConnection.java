@@ -60,9 +60,10 @@ public class BNLSConnection {
 		setBNLSConnected(true);
 
 		// Send BNLS_AUTHORIZE
-		BNLSPacket loginPacket = new BNLSPacket(BNLSPacketId.BNLS_AUTHORIZE);
-		loginPacket.writeNTString("bnu2");
-		loginPacket.sendPacket(bnlsOutputStream);
+		try (BNLSPacket loginPacket = new BNLSPacket(BNLSPacketId.BNLS_AUTHORIZE)) {
+			loginPacket.writeNTString("bnu2");
+			loginPacket.sendPacket(bnlsOutputStream);
+		}
 
 		// Recieve BNLS_AUTHORIZE
 		BNetInputStream is = readPacket(BNLSPacketId.BNLS_AUTHORIZE);
@@ -73,9 +74,10 @@ public class BNLSConnection {
 				"bot", serverCode) & 0xFFFFFFFF);
 
 		// Send BNLS_AUTHORIZEPROOF
-		loginPacket = new BNLSPacket(BNLSPacketId.BNLS_AUTHORIZEPROOF);
-		loginPacket.writeDWord(checksum);
-		loginPacket.sendPacket(bnlsOutputStream);
+		try (BNLSPacket loginPacket = new BNLSPacket(BNLSPacketId.BNLS_AUTHORIZEPROOF)) {
+			loginPacket.writeDWord(checksum);
+			loginPacket.sendPacket(bnlsOutputStream);
+		}
 
 		// Recieve BNLS_AUTHORIZEPROOF
 		is = readPacket(BNLSPacketId.BNLS_AUTHORIZEPROOF);
@@ -86,9 +88,11 @@ public class BNLSConnection {
 
 	public int getVerByte(ProductIDs product) throws IOException {
 		// Ask BNLS for the verbyte
-		BNLSPacket vbPacket = new BNLSPacket(BNLSPacketId.BNLS_REQUESTVERSIONBYTE);
-		vbPacket.writeDWord(product.getBnls());
-		vbPacket.sendPacket(bnlsOutputStream);
+		try (BNLSPacket vbPacket = new BNLSPacket(BNLSPacketId.BNLS_REQUESTVERSIONBYTE)) {
+			vbPacket.writeDWord(product.getBnls());
+			vbPacket.sendPacket(bnlsOutputStream);
+			vbPacket.close();
+		}
 
 		BNetInputStream vbInputStream = readPacket(BNLSPacketId.BNLS_REQUESTVERSIONBYTE);
 		int vbProduct = vbInputStream.readDWord();
@@ -100,8 +104,7 @@ public class BNLSConnection {
 	}
 
 	public VersionCheckResult sendVersionCheckEx2(Task task, ProductIDs productID, long MPQFileTime, String MPQFileName, byte[] ValueStr) throws IOException, InterruptedException {
-		try {
-			BNLSPacket bnlsOut = new BNLSPacket(BNLSPacketId.BNLS_VERSIONCHECKEX2);
+		try (BNLSPacket bnlsOut = new BNLSPacket(BNLSPacketId.BNLS_VERSIONCHECKEX2)) {
 			bnlsOut.writeDWord(productID.getBnls());
 			bnlsOut.writeDWord(0); // Flags
 			bnlsOut.writeDWord(0); // Cookie
@@ -166,7 +169,9 @@ public class BNLSConnection {
 	}
 
 	public void keepAlive() throws IOException {
-		new BNLSPacket(BNLSPacketId.BNLS_NULL).sendPacket(bnlsOutputStream);
+		try (BNLSPacket p = new BNLSPacket(BNLSPacketId.BNLS_NULL)) {
+			p.sendPacket(bnlsOutputStream);
+		}
 	}
 
 	private BNetInputStream readPacket(BNLSPacketId expected) throws IOException {
@@ -177,26 +182,28 @@ public class BNLSConnection {
 	}
 
 	public BNetInputStream sendWarden0(int cookie, int client, byte[] seed) throws IOException {
-		BNLSPacket p = new BNLSPacket(BNLSPacketId.BNLS_WARDEN);
-		p.writeByte(0);
-		p.writeDWord(cookie);
-		p.writeDWord(client);
-		p.writeWord(seed.length);
-		p.write(seed);
-		p.writeNTString("");
-		p.writeWord(0);
-		p.sendPacket(bnlsOutputStream);
+		try (BNLSPacket p = new BNLSPacket(BNLSPacketId.BNLS_WARDEN)) {
+			p.writeByte(0);
+			p.writeDWord(cookie);
+			p.writeDWord(client);
+			p.writeWord(seed.length);
+			p.write(seed);
+			p.writeNTString("");
+			p.writeWord(0);
+			p.sendPacket(bnlsOutputStream);
+		}
 
 		return readPacket(BNLSPacketId.BNLS_WARDEN);
 	}
 
 	public BNetInputStream sendWarden1(int cookie, byte[] payload) throws IOException {
-		BNLSPacket p = new BNLSPacket(BNLSPacketId.BNLS_WARDEN);
-		p.writeByte(1);
-		p.writeDWord(cookie);
-		p.writeWord(payload.length);
-		p.write(payload);
-		p.sendPacket(bnlsOutputStream);
+		try (BNLSPacket p = new BNLSPacket(BNLSPacketId.BNLS_WARDEN)) {
+			p.writeByte(1);
+			p.writeDWord(cookie);
+			p.writeWord(payload.length);
+			p.write(payload);
+			p.sendPacket(bnlsOutputStream);
+		}
 
 		return readPacket(BNLSPacketId.BNLS_WARDEN);
 	}

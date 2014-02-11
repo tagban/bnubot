@@ -28,9 +28,8 @@ public class BNLSPacket extends BNetOutputStream {
 	public void sendPacket(OutputStream out) throws IOException, SocketException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-		try {
+		try (BNetOutputStream sckout = new BNetOutputStream(baos)) {
 			byte raw_data[] = ((ByteArrayOutputStream)this.out).toByteArray();
-			BNetOutputStream sckout = new BNetOutputStream(baos);
 			sckout.writeWord(raw_data.length + 3);
 			sckout.writeByte(packetId.ordinal());
 			sckout.write(raw_data);

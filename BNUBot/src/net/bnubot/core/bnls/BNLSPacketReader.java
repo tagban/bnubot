@@ -24,6 +24,8 @@ public class BNLSPacketReader {
 	byte data[];
 
 	public BNLSPacketReader(InputStream rawis) throws IOException {
+		// Operates on a socket, which we don't want to close; suppress the warning
+		@SuppressWarnings("resource")
 		BNetInputStream is = new BNetInputStream(rawis);
 
 		packetLength = is.readWord() & 0x0000FFFF;
@@ -35,15 +37,16 @@ public class BNLSPacketReader {
 			data[i] = is.readByte();
 
 		if(GlobalSettings.packetLog) {
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			BNetOutputStream os = new BNetOutputStream(baos);
-			os.writeWord(packetLength);
-			os.writeByte(packetId.ordinal());
-			os.write(data);
-
 			String msg = "RECV " + packetId.name();
-			if(Out.isDebug())
+			if(Out.isDebug()) {
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				try (BNetOutputStream os = new BNetOutputStream(baos)) {
+					os.writeWord(packetLength);
+					os.writeByte(packetId.ordinal());
+					os.write(data);
+				}
 				msg += "\n" + HexDump.hexDump(baos.toByteArray());
+			}
 			Out.debugAlways(getClass(), msg);
 		}
 	}

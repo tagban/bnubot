@@ -63,8 +63,7 @@ public final class CurrentVersion {
 			if(ext != sf.getName().length() - 5)
 				continue;
 
-			try {
-				FileReader fr = new FileReader(sf);
+			try (FileReader fr = new FileReader(sf)) {
 				boolean revisionFound = false;
 				boolean authorFound = false;
 				do {

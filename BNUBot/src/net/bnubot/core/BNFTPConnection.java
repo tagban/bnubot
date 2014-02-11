@@ -11,7 +11,6 @@ import java.net.Socket;
 import java.util.Date;
 
 import net.bnubot.core.bncs.PlatformIDs;
-import net.bnubot.core.bncs.ProductIDs;
 import net.bnubot.logging.Out;
 import net.bnubot.settings.ConnectionSettings;
 import net.bnubot.settings.Settings;
@@ -56,71 +55,58 @@ public class BNFTPConnection {
 			Out.error(BNFTPConnection.class, fileName + " TARGET: " + lastModified.toString() + lastModified.getTime());
 		}
 
-		Socket s = new Socket(cs.server, cs.port);
-		f = downloadFile(s, cs.product, fileName, path);
-		s.close();
-		return f;
-	}
-
-
-	/**
-	 * Download a file using BNFTP
-	 * @param s The Socket which has already established a connection to Battle.net
-	 * @param fileName The file's name
-	 * @param path The folder to download the file to
-	 * @return The File, or null if there was an error
-	 */
-	private static File downloadFile(Socket s, ProductIDs product, String fileName, String path) throws Exception {
 		Out.info(BNFTPConnection.class, "Downloading " + fileName + "...");
+		try (
+			Socket s = new Socket(cs.server, cs.port);
+			BNetInputStream is = new BNetInputStream(s.getInputStream());
+			BNetOutputStream os = new BNetOutputStream(s.getOutputStream());
+		) {
+			//FTP
+			os.writeByte(0x02);
 
-		BNetInputStream is = new BNetInputStream(s.getInputStream());
-		BNetOutputStream os = new BNetOutputStream(s.getOutputStream());
+			//File request
+			os.writeWord(32 + fileName.length() + 1);
+			os.writeWord(0x100);		// Protocol version
+			os.writeDWord(PlatformIDs.PLATFORM_IX86);	// Platform ID
+			os.writeDWord(cs.product.getDword());	// Product ID
+			os.writeDWord(0);		// Banners ID
+			os.writeDWord(0);		// Banners File Extension
+			os.writeDWord(0);		// File position
+			os.writeQWord(0);		// Filetime
+			os.writeNTString(fileName);
 
-		//FTP
-		os.writeByte(0x02);
+			long startTime = System.currentTimeMillis();
+			while(is.available() == 0) {
+				if(s.isClosed() || (System.currentTimeMillis() - startTime) > 500)
+					throw new Exception("BNFTP download failed");
+			}
 
-		//File request
-		os.writeWord(32 + fileName.length() + 1);
-		os.writeWord(0x100);		// Protocol version
-		os.writeDWord(PlatformIDs.PLATFORM_IX86);	// Platform ID
-		os.writeDWord(product.getDword());	// Product ID
-		os.writeDWord(0);		// Banners ID
-		os.writeDWord(0);		// Banners File Extension
-		os.writeDWord(0);		// File position
-		os.writeQWord(0);		// Filetime
-		os.writeNTString(fileName);
+			//Receive the file
+			is.skip(2);	//int headerLength = is.readWord();
+			is.skip(2);	//int unknown = is.readWord();
+			int fileSize = is.readDWord();
+			is.skip(4);	//int bannersID = is.readDWord();
+			is.skip(4);	//int bannersFileExt = is.readDWord();
+			Date fileTime = TimeFormatter.fileTime(is.readQWord());
+			fileName = is.readNTString();
 
-		long startTime = System.currentTimeMillis();
-		while(is.available() == 0) {
-			if(s.isClosed() || (System.currentTimeMillis() - startTime) > 500)
-				throw new Exception("BNFTP download failed");
+			//The rest is the data
+			new File(path).mkdir();
+			f = new File(path + fileName);
+			FileOutputStream fw = new FileOutputStream(f);
+			for(int i = 0; i < fileSize; i++) {
+				int b = is.readByte();
+				b = b & 0xFF;
+				fw.write(b);
+			}
+			fw.close();
+
+			Out.info(BNFTPConnection.class, fileTime.toString());
+			f.setLastModified(fileTime.getTime());
+
+			Out.info(BNFTPConnection.class, fileSize + " bytes recieved.");
+
+			return f;
 		}
-
-		//Receive the file
-		is.skip(2);	//int headerLength = is.readWord();
-		is.skip(2);	//int unknown = is.readWord();
-		int fileSize = is.readDWord();
-		is.skip(4);	//int bannersID = is.readDWord();
-		is.skip(4);	//int bannersFileExt = is.readDWord();
-		Date fileTime = TimeFormatter.fileTime(is.readQWord());
-		fileName = is.readNTString();
-
-		//The rest is the data
-		new File(path).mkdir();
-		File f = new File(path + fileName);
-		FileOutputStream fw = new FileOutputStream(f);
-		for(int i = 0; i < fileSize; i++) {
-			int b = is.readByte();
-			b = b & 0xFF;
-			fw.write(b);
-		}
-		fw.close();
-
-		Out.info(BNFTPConnection.class, fileTime.toString());
-		f.setLastModified(fileTime.getTime());
-
-		Out.info(BNFTPConnection.class, fileSize + " bytes recieved.");
-
-		return f;
 	}
 }

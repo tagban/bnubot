@@ -28,9 +28,8 @@ public class MCPPacket extends BNetOutputStream {
 	public void sendPacket(OutputStream out) {
 		byte data[] = ((ByteArrayOutputStream)this.out).toByteArray();
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		BNetOutputStream sckout = new BNetOutputStream(baos);
 
-		try {
+		try (BNetOutputStream sckout = new BNetOutputStream(baos)) {
 			sckout.writeWord(data.length + 3);
 			sckout.writeByte(packetId.ordinal());
 			sckout.write(data);
