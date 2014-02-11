@@ -25,6 +25,7 @@ import org.apache.cayenne.query.RefreshQuery;
  * @author scotta
  */
 public final class CommandMail implements CommandRunnable {
+	@Override
 	public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
 	throws Exception {
 		if(commanderAccount == null)
@@ -154,6 +155,7 @@ public final class CommandMail implements CommandRunnable {
 		List<Mail> rsMail = account.getRecievedMail();
 		// Sort the mail by sent date
 		Collections.sort(rsMail, new Comparator<Mail>() {
+			@Override
 			public int compare(Mail arg0, Mail arg1) {
 				return arg0.getSent().compareTo(arg1.getSent());
 			}});

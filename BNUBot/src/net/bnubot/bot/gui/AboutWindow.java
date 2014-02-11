@@ -57,6 +57,7 @@ public class AboutWindow extends JDialog {
 			super("<html><a href=" + url + ">" + caption + "</a></html>");
 			setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			addMouseListener(new MouseListener() {
+				@Override
 				public void mouseClicked(MouseEvent e) {
 					try {
 						BrowserLauncher.openURL(url);
@@ -64,9 +65,13 @@ public class AboutWindow extends JDialog {
 						Out.exception(ex);
 					}
 				}
+				@Override
 				public void mouseEntered(MouseEvent e) {}
+				@Override
 				public void mouseExited(MouseEvent e) {}
+				@Override
 				public void mousePressed(MouseEvent e) {}
+				@Override
 				public void mouseReleased(MouseEvent e) {}
 			});
 		}

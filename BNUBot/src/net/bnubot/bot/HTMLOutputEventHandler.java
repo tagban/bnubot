@@ -169,6 +169,7 @@ public class HTMLOutputEventHandler extends EventHandler {
 	private void writeUserList(final Connection source) {
 		if(writeUserListRunnable == null)
 			writeUserListRunnable = new Runnable() {
+				@Override
 				public void run() {
 					if(!generationNeeded)
 						return;

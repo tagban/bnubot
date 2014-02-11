@@ -29,17 +29,15 @@ import net.bnubot.logging.Out;
  * @author scotta
  */
 public class RealmWindow extends EventHandler implements RealmEventHandler {
-	private static final long serialVersionUID = 3965057306231374646L;
-
 	protected final BNCSConnection con;
 	protected RealmConnection realmCon = null;
 	protected String[] realms = null;
 
 	protected JDialog jd;
 	protected Box b;
-	protected JList lstRealms;
-	protected JList lstCharacterTypes;
-	protected JList lstCharacters;
+	protected JList<String> lstRealms;
+	protected JList<String> lstCharacterTypes;
+	protected JList<String> lstCharacters;
 
 	public RealmWindow(BNCSConnection con, String[] realms, Profile profile) {
 		super(profile);
@@ -54,10 +52,10 @@ public class RealmWindow extends EventHandler implements RealmEventHandler {
 	}
 
 	public void initializeGUI() {
-		DefaultListModel lm = new DefaultListModel();
+		DefaultListModel<String> lm = new DefaultListModel<String>();
 		for(String realm : realms)
 			lm.addElement(realm);
-		lstRealms = new JList(lm);
+		lstRealms = new JList<String>(lm);
 		lstRealms.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
@@ -65,7 +63,7 @@ public class RealmWindow extends EventHandler implements RealmEventHandler {
 					Out.error(RealmWindow.class, "No BNCS connection set.");
 					return;
 				}
-				String realm = (String)lstRealms.getSelectedValue();
+				String realm = lstRealms.getSelectedValue();
 				Out.debug(RealmWindow.class, "Logging on to realm " + realm);
 				try {
 					con.sendLogonRealmEx(realm);
@@ -78,7 +76,7 @@ public class RealmWindow extends EventHandler implements RealmEventHandler {
 
 		b = new Box(BoxLayout.Y_AXIS);
 		{
-			lm = new DefaultListModel();
+			lm = new DefaultListModel<String>();
 			lm.addElement("Amazon");
 			lm.addElement("Sorceress");
 			lm.addElement("Necromancer");
@@ -86,10 +84,10 @@ public class RealmWindow extends EventHandler implements RealmEventHandler {
 			lm.addElement("Barbarian");
 			lm.addElement("Druid");
 			lm.addElement("Assassin");
-			lstCharacterTypes = new JList(lm);
+			lstCharacterTypes = new JList<String>(lm);
 			b.add(lstCharacterTypes);
 
-			lstCharacters = new JList(new DefaultListModel());
+			lstCharacters = new JList<String>(new DefaultListModel<String>());
 			lstCharacters.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseClicked(MouseEvent arg0) {
@@ -97,7 +95,7 @@ public class RealmWindow extends EventHandler implements RealmEventHandler {
 						Out.error(RealmWindow.class, "No MCP connection set.");
 						return;
 					}
-					String c = (String)lstCharacters.getSelectedValue();
+					String c = lstCharacters.getSelectedValue();
 					Out.debug(RealmWindow.class, "Logging on to character " + c);
 					try {
 						realmCon.sendLogonCharacter(c);
@@ -110,11 +108,14 @@ public class RealmWindow extends EventHandler implements RealmEventHandler {
 		}
 	}
 
+	@Override
 	public void initialize(RealmConnection rc) {
 		this.realmCon = rc;
 	}
 
+	@Override
 	public void realmConnected() {}
+	@Override
 	public void realmDisconnected() {
 		for(Connection c : profile.getConnections())
 			c.removeEventHandler(this);
@@ -130,16 +131,19 @@ public class RealmWindow extends EventHandler implements RealmEventHandler {
 		}
 	}
 
+	@Override
 	public void recieveRealmError(String text) {
 		con.dispatchRecieveError("[MCP] " + text);
 	}
 
+	@Override
 	public void recieveRealmInfo(String text) {
 		con.dispatchRecieveInfo("[MCP] " + text);
 	}
 
+	@Override
 	public void recieveCharacterList(List<MCPCharacter> chars) {
-		DefaultListModel lm = (DefaultListModel) lstCharacters.getModel();
+		DefaultListModel<String> lm = (DefaultListModel<String>) lstCharacters.getModel();
 		lm.removeAllElements();
 		for(MCPCharacter c : chars)
 			lm.addElement(c.getName());
@@ -150,5 +154,4 @@ public class RealmWindow extends EventHandler implements RealmEventHandler {
 		jd.setVisible(true);
 		jd.pack();
 	}
-
 }

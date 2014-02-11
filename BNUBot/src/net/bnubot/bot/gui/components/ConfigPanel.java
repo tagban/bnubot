@@ -88,21 +88,25 @@ public class ConfigPanel extends JPanel implements ConfigValueChangeListener, Do
 		return gbc;
 	}
 
+	@Override
 	public void configValueChanged() {
 		for(ConfigValueChangeListener l : listeners)
 			l.configValueChanged();
 	}
 
+	@Override
 	public void changedUpdate(DocumentEvent e) {
 		// DocumentListener
 		configValueChanged();
 	}
 
+	@Override
 	public void insertUpdate(DocumentEvent e) {
 		// DocumentListener
 		configValueChanged();
 	}
 
+	@Override
 	public void removeUpdate(DocumentEvent e) {
 		// DocumentListener
 		configValueChanged();
@@ -167,8 +171,8 @@ public class ConfigPanel extends JPanel implements ConfigValueChangeListener, Do
 		return pass;
 	}
 
-	public JComboBox makeCombo(String label, Object[] values, boolean editable) {
-		JComboBox cmb = new JComboBox(values);
+	public <T> JComboBox<T> makeCombo(String label, T[] values, boolean editable) {
+		JComboBox<T> cmb = new JComboBox<T>(values);
 		cmb.setEditable(editable);
 		cmb.setMaximumSize(maxComponentSize);
 		cmb.setPreferredSize(preferredTextSize);

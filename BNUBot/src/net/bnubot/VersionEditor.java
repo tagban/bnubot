@@ -32,7 +32,7 @@ public class VersionEditor extends JDialog {
 	}
 
 	VersionNumber vnCurrent = CurrentVersion.version();
-	JComboBox cmbReleaseType;
+	JComboBox<ReleaseType> cmbReleaseType;
 	ConfigSpinner spnMajor;
 	ConfigSpinner spnMinor;
 	ConfigSpinner spnRevision;
@@ -68,6 +68,7 @@ public class VersionEditor extends JDialog {
 
 		btnSave = new JButton("Save");
 		btnSave.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				save();
 			}});

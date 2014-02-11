@@ -53,6 +53,7 @@ public abstract class AbstractWizard implements ConfigValueChangeListener {
 		setEnableButtons();
 
 		btnBack.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				cardLayout.show(cards, Integer.toString(--currentStep));
 				setEnableButtons();
@@ -60,6 +61,7 @@ public abstract class AbstractWizard implements ConfigValueChangeListener {
 			}});
 
 		btnNext.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				AbstractWizardPage page = pages.get(currentStep);
 				String error = page.isPageComplete();
@@ -76,6 +78,7 @@ public abstract class AbstractWizard implements ConfigValueChangeListener {
 			}});
 
 		btnFinish.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				AbstractWizardPage page = pages.get(currentStep);
 				try {
@@ -112,6 +115,7 @@ public abstract class AbstractWizard implements ConfigValueChangeListener {
 		jd.pack();
 		WindowPosition.load(jd);
 		SwingUtilities.invokeLater(new Runnable() {
+			@Override
 			public void run() {
 				jd.setVisible(true);
 			}});
@@ -131,6 +135,7 @@ public abstract class AbstractWizard implements ConfigValueChangeListener {
 
 	public abstract void finish() throws Exception;
 
+	@Override
 	public void configValueChanged() {
 		setEnableButtons();
 	}

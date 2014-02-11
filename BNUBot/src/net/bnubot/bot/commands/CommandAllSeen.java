@@ -15,6 +15,7 @@ import net.bnubot.util.TimeFormatter;
  * @author scotta
  */
 public final class CommandAllSeen implements CommandRunnable {
+	@Override
 	public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
 	throws Exception {
 		String response = "Last 10 users seen: ";

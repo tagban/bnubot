@@ -408,7 +408,7 @@ public abstract class Connection extends Thread implements OutputHandler {
 	 * @param containing the string to look for in username
 	 * @return a list of users according to TC rules
 	 */
-	public Collection<String> findUsersForTabComplete(String containing) {
+	public List<String> findUsersForTabComplete(String containing) {
 		containing = containing.toLowerCase();
 
 		List<String> ret = new ArrayList<String>(users.size());
@@ -1232,6 +1232,7 @@ public abstract class Connection extends Thread implements OutputHandler {
 		}
 	}
 
+	@Override
 	public void dispatchRecieveDebug(String text) {
 		if(text == null)
 			return;
@@ -1276,6 +1277,7 @@ public abstract class Connection extends Thread implements OutputHandler {
 		}
 	}
 
+	@Override
 	public void dispatchRecieveInfo(String text) {
 		if(text == null)
 			return;
@@ -1300,6 +1302,7 @@ public abstract class Connection extends Thread implements OutputHandler {
 		}
 	}
 
+	@Override
 	public void dispatchRecieveError(String text) {
 		if(text == null)
 			return;

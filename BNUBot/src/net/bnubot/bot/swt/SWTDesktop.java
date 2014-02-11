@@ -96,6 +96,7 @@ public class SWTDesktop extends Thread {
 
 		final String setTo = (title == null) ? "NULL" : title;
 		display.syncExec(new Runnable() {
+			@Override
 			public void run() {
 				if(!shell.isDisposed())
 					shell.setText(setTo);
@@ -121,6 +122,7 @@ public class SWTDesktop extends Thread {
 		String t = seh.toString();
 		final String title = (t == null) ? "NULL" : t;
 		display.syncExec(new Runnable() {
+			@Override
 			public void run() {
 				for(CTabItem tab : tabs.getItems()) {
 					if(component == tab.getControl()) {
@@ -136,11 +138,13 @@ public class SWTDesktop extends Thread {
 	public static SWTEventHandler createSWTEventHandler(final Profile profile) {
 		final Holder<SWTEventHandler> eh = new Holder<SWTEventHandler>(null);
 		display.syncExec(new Runnable() {
+			@Override
 			public void run() {
 				CTabItem tab = new CTabItem(tabs, SWT.CLOSE);
 				Composite composite = new Composite(tabs, SWT.NULL);
 				final SWTEventHandler seh = new SWTEventHandler(composite, profile);
 				tab.addDisposeListener(new DisposeListener() {
+					@Override
 					public void widgetDisposed(DisposeEvent arg0) {
 						try {
 							seh.getFirstConnection().getProfile().dispose();

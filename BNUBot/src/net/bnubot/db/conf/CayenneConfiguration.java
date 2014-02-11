@@ -30,6 +30,7 @@ public class CayenneConfiguration implements DataSourceFactory {
 		super();
 	}
 
+	@Override
 	public DataSource getDataSource(String location) throws Exception {
 		if(dataSource != null)
 			return dataSource;
@@ -61,5 +62,6 @@ public class CayenneConfiguration implements DataSourceFactory {
 		return dataSource;
 	}
 
+	@Override
 	public void initializeWithParentConfiguration(Configuration parentConfiguration) {}
 }

@@ -34,6 +34,7 @@ public class Main {
 	static {
 		// Set default exception handler
 		Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+			@Override
 			public void uncaughtException(Thread thread, Throwable t) {
 				Out.fatalException(t);
 			}});

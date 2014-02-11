@@ -51,7 +51,6 @@ public class CommandAlias extends _CommandAlias {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public Comparable toSortField() {
 		return getAlias();
 	}

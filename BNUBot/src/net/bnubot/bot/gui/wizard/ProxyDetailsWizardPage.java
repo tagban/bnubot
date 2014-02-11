@@ -20,7 +20,7 @@ import net.bnubot.settings.GlobalSettings.SOCKSType;
 public class ProxyDetailsWizardPage extends AbstractWizardPage {
 	private final String header;
 	private JCheckBox chkProxyEnabled;
-	private JComboBox cmbProxyType;
+	private JComboBox<SOCKSType> cmbProxyType;
 	private ConfigTextField txtProxyHost;
 	private ConfigSpinner spnProxyPort;
 

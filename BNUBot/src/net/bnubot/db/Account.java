@@ -175,7 +175,6 @@ public class Account extends _Account {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public Comparable toSortField() {
 		return getName();
 	}

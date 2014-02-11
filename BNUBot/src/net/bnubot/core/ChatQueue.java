@@ -29,12 +29,14 @@ public class ChatQueue extends Thread {
 			this.priority = Integer.valueOf(priority);
 		}
 
+		@Override
 		public int compareTo(QueueEntry o) {
 			return priority.compareTo(o.priority);
 		}
 	}
 
 	private static final Comparator<QueueEntry> queueComparator = new Comparator<QueueEntry>() {
+		@Override
 		public int compare(QueueEntry o1, QueueEntry o2) {
 			return o1.priority.compareTo(o2.priority);
 		}};

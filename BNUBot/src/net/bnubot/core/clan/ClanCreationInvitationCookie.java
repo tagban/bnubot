@@ -30,11 +30,13 @@ public class ClanCreationInvitationCookie implements AcceptOrDecline {
 		source.dispatchRecieveInfo("Type /accept or /decline to respond.");
 	}
 
+	@Override
 	public void accept() throws Exception {
 		source.sendClanCreationInvitation(cookie, clanTag, inviter, 0x06);
 		source.dispatchRecieveInfo("You have accepted the invitation to create Clan " + HexDump.DWordToPretty(clanTag));
 	}
 
+	@Override
 	public void decline() throws Exception {
 		source.sendClanCreationInvitation(cookie, clanTag, inviter, 0x04);
 		source.dispatchRecieveInfo("You have declined the invitation to create Clan " + HexDump.DWordToPretty(clanTag));

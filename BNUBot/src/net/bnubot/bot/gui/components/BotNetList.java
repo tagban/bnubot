@@ -118,6 +118,7 @@ public class BotNetList extends JPanel {
 			ui.menu.add(new JLabel(user.toString() + user.toStringEx()));
 			JMenuItem menuItem = new JMenuItem("Whisper");
 			menuItem.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent arg0) {
 					UserInfo ui = getUserInfo(arg0);
 					if(ui != null)
@@ -126,6 +127,7 @@ public class BotNetList extends JPanel {
 			ui.menu.add(menuItem);
 			menuItem = new JMenuItem("Whois");
 			menuItem.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent arg0) {
 					UserInfo ui = getUserInfo(arg0);
 					if(ui != null)
@@ -153,6 +155,7 @@ public class BotNetList extends JPanel {
 			box.add(lbl);
 
 			ui.label.addMouseListener(new MouseListener() {
+				@Override
 				public void mouseClicked(MouseEvent arg0) {
 					UserInfo ui = getUI((JLabel) arg0.getSource());
 					switch(arg0.getButton()) {
@@ -164,9 +167,13 @@ public class BotNetList extends JPanel {
 						break;
 					}
 				}
+				@Override
 				public void mouseEntered(MouseEvent arg0) {}
+				@Override
 				public void mouseExited(MouseEvent arg0) {}
+				@Override
 				public void mousePressed(MouseEvent arg0) {}
+				@Override
 				public void mouseReleased(MouseEvent arg0) {}
 			});
 		} else {

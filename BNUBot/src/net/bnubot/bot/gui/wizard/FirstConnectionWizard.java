@@ -20,8 +20,6 @@ import net.bnubot.settings.GlobalSettings;
  * @author scotta
  */
 public class FirstConnectionWizard extends AbstractWizard {
-	private static final long serialVersionUID = -5866297845418113235L;
-
 	public static void main(String[] args) {
 		GlobalSettings.load();
 		new FirstConnectionWizard(1).displayAndBlock();
@@ -65,6 +63,7 @@ public class FirstConnectionWizard extends AbstractWizard {
 				cp.add(keys);
 
 				keys.addActionListener(new ActionListener() {
+					@Override
 					public void actionPerformed(ActionEvent e) {
 						try {
 							new GlobalConfigurationFrame(true);

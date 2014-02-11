@@ -142,6 +142,7 @@ public class UserList extends JPanel {
 			ui.menu.add(new JLabel(user.toString() + user.getStatString().toString()));
 			JMenuItem menuItem = new JMenuItem("Whisper");
 			menuItem.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent arg0) {
 					UserInfo ui = getUserInfo(arg0);
 					if(ui != null)
@@ -150,6 +151,7 @@ public class UserList extends JPanel {
 			ui.menu.add(menuItem);
 			menuItem = new JMenuItem("Whois");
 			menuItem.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent arg0) {
 					UserInfo ui = getUserInfo(arg0);
 					if(ui != null)
@@ -158,6 +160,7 @@ public class UserList extends JPanel {
 			ui.menu.add(menuItem);
 			menuItem = new JMenuItem("Profile");
 			menuItem.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent arg0) {
 					UserInfo ui = getUserInfo(arg0);
 					if(ui != null)
@@ -184,6 +187,7 @@ public class UserList extends JPanel {
 			box.add(lbl, getInsertPosition(ui.priority));
 
 			ui.label.addMouseListener(new MouseListener() {
+				@Override
 				public void mouseClicked(MouseEvent arg0) {
 					JLabel jl = (JLabel) arg0.getSource();
 					for(Entry<BNetUser, UserInfo> en : users.entrySet()) {
@@ -204,9 +208,13 @@ public class UserList extends JPanel {
 						}
 					}
 				}
+				@Override
 				public void mouseEntered(MouseEvent arg0) {}
+				@Override
 				public void mouseExited(MouseEvent arg0) {}
+				@Override
 				public void mousePressed(MouseEvent arg0) {}
+				@Override
 				public void mouseReleased(MouseEvent arg0) {}
 			});
 		}

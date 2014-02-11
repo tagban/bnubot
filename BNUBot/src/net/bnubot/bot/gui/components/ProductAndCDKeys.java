@@ -22,9 +22,9 @@ public class ProductAndCDKeys extends JComponent {
 	private static final long serialVersionUID = -8664330132641987612L;
 
 	private ConnectionSettings cs;
-	private JComboBox cmbProduct;
-	private JComboBox cmbCDKey;
-	private JComboBox cmbCDKey2;
+	private JComboBox<ProductIDs> cmbProduct;
+	private JComboBox<CDKey> cmbCDKey;
+	private JComboBox<CDKey> cmbCDKey2;
 
 	public ProductAndCDKeys(ConnectionSettings cs, ConfigPanel parent) {
 		this.cs = cs;
@@ -34,6 +34,7 @@ public class ProductAndCDKeys extends JComponent {
 
 		// Add a product-change listener
 		cmbProduct.addItemListener(new ItemListener() {
+			@Override
 			public void itemStateChanged(ItemEvent e) {
 				updateKeys();
 			}});

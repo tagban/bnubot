@@ -49,7 +49,7 @@ public class WhatsNewWindow extends JDialog {
 		}
 		String lastWhatsNewHash = Settings.getSection(null).read("whatsNewHash", (String)null);
 		if((lastWhatsNewHash == null)
-		|| !lastWhatsNewHash.equalsIgnoreCase(currentVersionHash)) {
+				|| !lastWhatsNewHash.equalsIgnoreCase(currentVersionHash)) {
 			Settings.getSection(null).write("whatsNewHash", currentVersionHash);
 			Settings.store();
 			WhatsNewWindow jd = new WhatsNewWindow();
@@ -65,8 +65,8 @@ public class WhatsNewWindow extends JDialog {
 	public WhatsNewWindow() {
 		final CardLayout cardLayout = new CardLayout();
 		final JPanel cards = new JPanel(cardLayout);
-		DefaultComboBoxModel model = new DefaultComboBoxModel();
-        final String[] changeLog = getText().split("\n\n");
+		DefaultComboBoxModel<String> model = new DefaultComboBoxModel<String>();
+		final String[] changeLog = getText().split("\n\n");
 
 		// Split up the change log by version
 		for(String entry : changeLog) {
@@ -78,9 +78,10 @@ public class WhatsNewWindow extends JDialog {
 			model.addElement(data[0]);
 		}
 
-		JComboBox cb = new JComboBox(model);
+		JComboBox<String> cb = new JComboBox<String>(model);
 		cb.setEditable(false);
 		cb.addItemListener(new ItemListener() {
+			@Override
 			public void itemStateChanged(ItemEvent e) {
 				cardLayout.show(cards, (String)e.getItem());
 			}});
@@ -89,6 +90,7 @@ public class WhatsNewWindow extends JDialog {
 
 		JButton btnOK = new JButton("OK");
 		btnOK.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				dispose();
 			}});

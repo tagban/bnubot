@@ -54,6 +54,7 @@ public class TriviaEventHandler extends EventHandler {
 		commandsInitialized = true;
 
 		Profile.registerCommand("trivia", new CommandRunnable() {
+			@Override
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
 			throws Exception {
 				TriviaEventHandler teh = EventHandler.findThis(source, TriviaEventHandler.class);

@@ -62,8 +62,8 @@ public class DatabaseEditor {
 	private final Map<ObjRelationship, getValueDelegate> dataRel = new HashMap<ObjRelationship, getValueDelegate>();
 	private final JDialog jf = new JDialog();
 	private final JPanel jp = new JPanel(new GridBagLayout());
-	private final DefaultComboBoxModel model = new DefaultComboBoxModel();
-	private final JList jl = new JList(model);
+	private final DefaultComboBoxModel<String> model = new DefaultComboBoxModel<String>();
+	private final JList<String> jl = new JList<String>(model);
 
 	private interface getValueDelegate {
 		public Object getValue();
@@ -89,6 +89,7 @@ public class DatabaseEditor {
 
 		JButton btnSave = new JButton("Save");
 		btnSave.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				saveData();
 				loadData();
@@ -96,12 +97,14 @@ public class DatabaseEditor {
 		box3.add(btnSave);
 		JButton btnRevert = new JButton("Revert");
 		btnRevert.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				loadData();
 			}});
 		box3.add(btnRevert);
 		JButton btnDelete = new JButton("Delete");
 		btnDelete.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				int option = JOptionPane.showConfirmDialog(
 						jf,
@@ -142,6 +145,7 @@ public class DatabaseEditor {
 		}
 
 		jl.addListSelectionListener(new ListSelectionListener() {
+			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				if(changesMade()) {
 					int option = JOptionPane.showConfirmDialog(
@@ -235,13 +239,13 @@ public class DatabaseEditor {
 		final HashMap<String, CustomDataObject> theseOptions = new HashMap<String, CustomDataObject>();
 		List<CustomDataObject> relTargets = context.performQuery(new SelectQuery(fieldType));
 		Collections.sort(relTargets);
-		DefaultComboBoxModel model = new DefaultComboBoxModel();
+		DefaultComboBoxModel<String> model = new DefaultComboBoxModel<String>();
 		for(CustomDataObject v : relTargets) {
 			String s = getDisplayString(v);
 			model.addElement(s);
 			theseOptions.put(s, v);
 		}
-		final JComboBox valueComponent = new JComboBox(model);
+		final JComboBox<String> valueComponent = new JComboBox<String>(model);
 		valueComponent.setSelectedItem((value == null) ? null : getDisplayString(value));
 
 		gbc.gridx++;
@@ -249,6 +253,7 @@ public class DatabaseEditor {
 		jp.add(valueComponent, gbc);
 
 		dataRel.put(rel, new getValueDelegate() {
+			@Override
 			public Object getValue() {
 				if((bNull != null) && bNull.isSelected())
 					return null;
@@ -299,6 +304,7 @@ public class DatabaseEditor {
 		jp.add(valueComponent, gbc);
 
 		data.put(attr, new getValueDelegate() {
+			@Override
 			public Object getValue() {
 				// If it's nullable, and it's null, return null
 				if(isNullable && bNull.isSelected())

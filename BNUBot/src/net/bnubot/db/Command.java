@@ -93,15 +93,14 @@ public class Command extends _Command {
 				"FROM command " +
 				"WHERE access <= " + access + " " +
 				"GROUP BY cmdgroup "));
-		List<String> groups = new ArrayList(cmds.size());
+		List<String> groups = new ArrayList<String>(cmds.size());
 		for(Command cmd : cmds)
 			groups.add(cmd.getCmdgroup());
 		return groups;
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public Comparable toSortField() {
+	public Comparable<?> toSortField() {
 		return getName();
 	}
 

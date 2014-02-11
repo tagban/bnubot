@@ -37,6 +37,7 @@ public enum ChannelListPriority {
 	}
 
 	private static final Comparator<BNetUser> bnetSorter = new Comparator<BNetUser>() {
+		@Override
 		public int compare(BNetUser arg0, BNetUser arg1) {
 			int prio0 = ChannelListPriority.getPrioByFlags(arg0.getFlags());
 			int prio1 = ChannelListPriority.getPrioByFlags(arg0.getFlags());

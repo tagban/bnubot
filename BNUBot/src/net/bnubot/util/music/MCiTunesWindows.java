@@ -30,10 +30,13 @@ class MCiTunesWindows implements MusicController {
 		}
 	}
 
+	@Override
 	public void play() { comCommand("Play"); }
 
+	@Override
 	public void pause() { comCommand("Pause"); }
 
+	@Override
 	public String getCurrentlyPlaying() {
 		// TODO Auto-generated method stub
 		return "[unsupported]";

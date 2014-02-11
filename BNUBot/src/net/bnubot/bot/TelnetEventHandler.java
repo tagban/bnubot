@@ -63,6 +63,7 @@ public class TelnetEventHandler extends EventHandler implements Runnable {
 		new Thread(this).start();
 	}
 
+	@Override
 	public void run() {
 		try {
 			ServerSocket ss = new ServerSocket(6112);
