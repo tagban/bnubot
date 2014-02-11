@@ -6,13 +6,13 @@
 package net.bnubot.db;
 
 import org.apache.cayenne.CayenneDataObject;
-import org.apache.cayenne.DataObjectUtils;
 
 /**
  * @author scotta
+ * @param <S> The type used in {@link #toSortField()}
  */
 @SuppressWarnings("serial")
-public abstract class CustomDataObject extends CayenneDataObject implements Comparable<CustomDataObject> {
+public abstract class CustomDataObject<S extends Comparable<S>> extends CayenneDataObject implements Comparable<CustomDataObject<S>> {
 	/**
 	 * Try to save changes to this object
 	 * @throws Exception If a commit error occurs
@@ -26,22 +26,15 @@ public abstract class CustomDataObject extends CayenneDataObject implements Comp
 		}
 	}
 
-	public Comparable toSortField() {
-		return Integer.valueOf(DataObjectUtils.intPKForObject(this));
-	}
+	public abstract S toSortField();
 
-	public final String toDisplayString() {
+	@Override
+	public String toString() {
 		return toSortField().toString();
 	}
 
 	@Override
-	public String toString() {
-		return toDisplayString();
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public final int compareTo(CustomDataObject o) {
+	public final int compareTo(CustomDataObject<S> o) {
 		return toSortField().compareTo(o.toSortField());
 	}
 }

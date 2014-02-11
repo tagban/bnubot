@@ -16,8 +16,7 @@ import net.bnubot.db.CustomDataObject;
  * @author cayenne-generated-file
  */
 @SuppressWarnings("serial")
-public abstract class _CommandAlias extends CustomDataObject {
-
+public abstract class _CommandAlias extends CustomDataObject<String> {
     public static final String ALIAS_PROPERTY = "alias";
     public static final String TO_COMMAND_PROPERTY = "toCommand";
 
@@ -33,8 +32,8 @@ public abstract class _CommandAlias extends CustomDataObject {
     public void setToCommand(Command toCommand) {
         setToOneTarget(TO_COMMAND_PROPERTY, toCommand, true);
     }
+
     public Command getToCommand() {
         return (Command)readProperty(TO_COMMAND_PROPERTY);
     }
-
 }

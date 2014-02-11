@@ -19,8 +19,7 @@ import net.bnubot.db.CustomDataObject;
  * @author cayenne-generated-file
  */
 @SuppressWarnings("serial")
-public abstract class _Rank extends CustomDataObject {
-
+public abstract class _Rank extends CustomDataObject<Integer> {
     public static final String AP_D2LEVEL_PROPERTY = "apD2Level";
     public static final String AP_DAYS_PROPERTY = "apDays";
     public static final String AP_MAIL_PROPERTY = "apMail";
@@ -136,5 +135,4 @@ public abstract class _Rank extends CustomDataObject {
     public List<Command> getCommandArray() {
         return (List<Command>)readProperty(COMMAND_ARRAY_PROPERTY);
     }
-
 }

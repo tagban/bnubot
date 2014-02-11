@@ -100,7 +100,7 @@ public class Command extends _Command {
 	}
 
 	@Override
-	public Comparable<?> toSortField() {
+	public String toSortField() {
 		return getName();
 	}
 

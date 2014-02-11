@@ -53,4 +53,9 @@ public class Rank extends _Rank {
 	public int getAccess() {
 		return DataObjectUtils.intPKForObject(this);
 	}
+
+	@Override
+	public Integer toSortField() {
+		return Integer.valueOf(DataObjectUtils.intPKForObject(this));
+	}
 }

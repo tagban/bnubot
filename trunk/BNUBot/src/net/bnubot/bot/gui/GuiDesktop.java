@@ -342,7 +342,7 @@ public class GuiDesktop extends JFrame {
 	/**
 	 * @param menu
 	 */
-	private void addDatabaseEditor(JMenu menu, final Class<? extends CustomDataObject> clazz) {
+	private void addDatabaseEditor(JMenu menu, final Class<? extends CustomDataObject<?>> clazz) {
 		JMenuItem menuItem;
 		menuItem = new JMenuItem(clazz.getSimpleName() + " Editor");
 		menuItem.addActionListener(new ActionListener() {

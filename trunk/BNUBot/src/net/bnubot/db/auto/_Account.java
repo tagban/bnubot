@@ -22,15 +22,14 @@ import net.bnubot.db.Rank;
  * @author cayenne-generated-file
  */
 @SuppressWarnings("serial")
-public abstract class _Account extends CustomDataObject {
-
+public abstract class _Account extends CustomDataObject<String> {
     public static final String BIRTHDAY_PROPERTY = "birthday";
     public static final String CREATED_PROPERTY = "created";
+    public static final String FLAG_SPOOF_PROPERTY = "flagSpoof";
     public static final String LAST_RANK_CHANGE_PROPERTY = "lastRankChange";
     public static final String NAME_PROPERTY = "name";
     public static final String TRIVIA_CORRECT_PROPERTY = "triviaCorrect";
     public static final String TRIVIA_WIN_PROPERTY = "triviaWin";
-    public static final String FLAG_SPOOF_PROPERTY = "flagSpoof";
     public static final String BN_LOGINS_PROPERTY = "bnLogins";
     public static final String RANK_PROPERTY = "rank";
     public static final String RECIEVED_MAIL_PROPERTY = "recievedMail";
@@ -52,6 +51,14 @@ public abstract class _Account extends CustomDataObject {
     }
     public Date getCreated() {
         return (Date)readProperty(CREATED_PROPERTY);
+    }
+
+    public void setFlagSpoof(int flagSpoof) {
+        writeProperty(FLAG_SPOOF_PROPERTY, flagSpoof);
+    }
+    public int getFlagSpoof() {
+        Object value = readProperty(FLAG_SPOOF_PROPERTY);
+        return (value != null) ? (Integer) value : 0;
     }
 
     public void setLastRankChange(Date lastRankChange) {
@@ -84,14 +91,6 @@ public abstract class _Account extends CustomDataObject {
         return (value != null) ? (Integer) value : 0;
     }
 
-    public void setFlagSpoof(int flagSpoof) {
-        writeProperty(FLAG_SPOOF_PROPERTY, flagSpoof);
-    }
-    public int getFlagSpoof() {
-        Object value = readProperty(FLAG_SPOOF_PROPERTY);
-        return (value != null) ? (Integer) value : 0;
-    }
-
     public void addToBnLogins(BNLogin obj) {
         addToManyTarget(BN_LOGINS_PROPERTY, obj, true);
     }
@@ -103,12 +102,15 @@ public abstract class _Account extends CustomDataObject {
         return (List<BNLogin>)readProperty(BN_LOGINS_PROPERTY);
     }
 
+
     public void setRank(Rank rank) {
         setToOneTarget(RANK_PROPERTY, rank, true);
     }
+
     public Rank getRank() {
         return (Rank)readProperty(RANK_PROPERTY);
     }
+
 
     public void addToRecievedMail(Mail obj) {
         addToManyTarget(RECIEVED_MAIL_PROPERTY, obj, true);
@@ -121,12 +123,15 @@ public abstract class _Account extends CustomDataObject {
         return (List<Mail>)readProperty(RECIEVED_MAIL_PROPERTY);
     }
 
+
     public void setRecruiter(Account recruiter) {
         setToOneTarget(RECRUITER_PROPERTY, recruiter, true);
     }
+
     public Account getRecruiter() {
         return (Account)readProperty(RECRUITER_PROPERTY);
     }
+
 
     public void addToRecruits(Account obj) {
         addToManyTarget(RECRUITS_PROPERTY, obj, true);
@@ -139,6 +144,7 @@ public abstract class _Account extends CustomDataObject {
         return (List<Account>)readProperty(RECRUITS_PROPERTY);
     }
 
+
     public void addToSentMail(Mail obj) {
         addToManyTarget(SENT_MAIL_PROPERTY, obj, true);
     }
@@ -149,5 +155,4 @@ public abstract class _Account extends CustomDataObject {
     public List<Mail> getSentMail() {
         return (List<Mail>)readProperty(SENT_MAIL_PROPERTY);
     }
-
 }

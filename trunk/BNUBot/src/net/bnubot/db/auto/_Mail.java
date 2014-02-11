@@ -18,8 +18,7 @@ import net.bnubot.db.CustomDataObject;
  * @author cayenne-generated-file
  */
 @SuppressWarnings("serial")
-public abstract class _Mail extends CustomDataObject {
-
+public abstract class _Mail extends CustomDataObject<Integer> {
     public static final String ISREAD_PROPERTY = "isread";
     public static final String MESSAGE_PROPERTY = "message";
     public static final String SENT_PROPERTY = "sent";
@@ -53,15 +52,17 @@ public abstract class _Mail extends CustomDataObject {
     public void setSentFrom(Account sentFrom) {
         setToOneTarget(SENT_FROM_PROPERTY, sentFrom, true);
     }
+
     public Account getSentFrom() {
         return (Account)readProperty(SENT_FROM_PROPERTY);
     }
 
+
     public void setSentTo(Account sentTo) {
         setToOneTarget(SENT_TO_PROPERTY, sentTo, true);
     }
+
     public Account getSentTo() {
         return (Account)readProperty(SENT_TO_PROPERTY);
     }
-
 }
