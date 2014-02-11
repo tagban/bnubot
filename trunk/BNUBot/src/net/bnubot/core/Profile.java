@@ -328,7 +328,7 @@ public class Profile {
 		return cons;
 	}
 
-	public static Collection<String> findCommandsForTabComplete(String containing) {
+	public static List<String> findCommandsForTabComplete(String containing) {
 		containing = containing.toLowerCase();
 
 		List<String> ret = new ArrayList<String>();

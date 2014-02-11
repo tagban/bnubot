@@ -60,9 +60,11 @@ public class GhostDefaultTextField extends ConfigTextField implements MouseListe
 		}
 	}
 
+	@Override
 	public void focusGained(FocusEvent e) {
 		setGhosted(false);
 	}
+	@Override
 	public void focusLost(FocusEvent e) {
 		if((getText() == null) || (getText().length() == 0))
 			reset();
@@ -74,15 +76,20 @@ public class GhostDefaultTextField extends ConfigTextField implements MouseListe
 		super.setText(t);
 	}
 
+	@Override
 	public void mouseClicked(MouseEvent e) {
 		if(!ghosted)
 			return;
 		setText(null);
 		requestFocus();
 	}
+	@Override
 	public void mouseEntered(MouseEvent e) {}
+	@Override
 	public void mouseExited(MouseEvent e) {}
+	@Override
 	public void mousePressed(MouseEvent e) {}
+	@Override
 	public void mouseReleased(MouseEvent e) {}
 
 

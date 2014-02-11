@@ -52,7 +52,8 @@ public class SWTEventHandler extends EventHandler {
 	    sashData.bottom = new FormAttachment(100, 0);
 	    sash.setLayoutData(sashData);
 	    sash.addListener(SWT.Selection, new Listener() {
-	      public void handleEvent(Event e) {
+	      @Override
+		public void handleEvent(Event e) {
 	        Rectangle sashRect = sash.getBounds();
 	        Rectangle shellRect = parent.getClientArea();
 	        int right = shellRect.width - sashRect.width - limit;

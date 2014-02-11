@@ -15,7 +15,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
@@ -47,10 +47,10 @@ import net.bnubot.core.EventHandler;
 import net.bnubot.core.PluginManager;
 import net.bnubot.logging.Out;
 import net.bnubot.settings.GlobalSettings;
-import net.bnubot.settings.Settings;
 import net.bnubot.settings.GlobalSettings.SOCKSType;
 import net.bnubot.settings.GlobalSettings.TabCompleteMode;
 import net.bnubot.settings.GlobalSettings.TrayIconMode;
+import net.bnubot.settings.Settings;
 import net.bnubot.util.TimeFormatter;
 import net.bnubot.vercheck.CurrentVersion;
 import net.bnubot.vercheck.ReleaseType;
@@ -71,8 +71,8 @@ public class GlobalConfigurationFrame extends JDialog {
 	// Settings
 	private ConfigTextField txtEmail = null;
 	private ConfigTextField txtBNLSServer = null;
-	private JComboBox cmbReleaseType = null;
-	private JComboBox cmbTimeZone = null;
+	private JComboBox<ReleaseType> cmbReleaseType = null;
+	private JComboBox<String> cmbTimeZone = null;
 	private JCheckBox chkAutoConnect = null;
 	private JCheckBox chkAutoRejoin = null;
 	private JCheckBox chkEnableMirrorSelector = null;
@@ -81,7 +81,7 @@ public class GlobalConfigurationFrame extends JDialog {
 
 	// Proxy
 	private JCheckBox chkProxyEnabled = null;
-	private JComboBox cmbProxyType = null;
+	private JComboBox<SOCKSType> cmbProxyType = null;
 	private ConfigTextField txtProxyHost = null;
 	private ConfigSpinner spnProxyPort = null;
 
@@ -92,26 +92,26 @@ public class GlobalConfigurationFrame extends JDialog {
 	private List<JCheckBox> chkEnabledPlugins = null;
 
 	// Display 1
-	private JComboBox cmbBNUserToString = null;
-	private JComboBox cmbBNUserToStringUserList = null;
-	private JComboBox cmbBNUserToStringCommandResponse = null;
-	private JComboBox cmbTrayIconMode = null;
+	private JComboBox<String> cmbBNUserToString = null;
+	private JComboBox<String> cmbBNUserToStringUserList = null;
+	private JComboBox<String> cmbBNUserToStringCommandResponse = null;
+	private JComboBox<TrayIconMode> cmbTrayIconMode = null;
 	private JCheckBox chkTrayMinimizeTo = null;
 	private JCheckBox chkTrayDisplayConnectDisconnect = null;
 	private JCheckBox chkTrayDisplayChannel = null;
 	private JCheckBox chkTrayDisplayJoinPart = null;
 	private JCheckBox chkTrayDisplayChatEmote = null;
 	private JCheckBox chkTrayDisplayWhisper = null;
-	private JComboBox cmbTabCompleteMode = null;
+	private JComboBox<TabCompleteMode> cmbTabCompleteMode = null;
 	private JCheckBox chkEnableTabCompleteUser = null;
 	private JCheckBox chkEnableTabCompleteCommand = null;
 
 	// Display 2
 	private JCheckBox chkEnableLegacyIcons = null;
-	private JComboBox cmbTSFormat = null;
-	private JComboBox cmbColorScheme = null;
-	private JComboBox cmbLookAndFeel = null;
-	private JComboBox cmbPlasticTheme = null;
+	private JComboBox<String> cmbTSFormat = null;
+	private JComboBox<String> cmbColorScheme = null;
+	private JComboBox<Object> cmbLookAndFeel = null;
+	private JComboBox<String> cmbPlasticTheme = null;
 	private JCheckBox chkDisplayBattleNetMOTD = null;
 	private JCheckBox chkDisplayBattleNetChannels = null;
 	private JCheckBox chkDisplayJoinParts = null;
@@ -185,25 +185,23 @@ public class GlobalConfigurationFrame extends JDialog {
 				txtBNLSServer = boxAll.makeText("BNLS Server", GlobalSettings.bnlsServer);
 				txtEmail = boxAll.makeText("Email", GlobalSettings.email);
 
-				Object[] values;
+				ReleaseType[] releaseTypes;
 				if(CurrentVersion.fromJar())
-					values = new ReleaseType[] {
+					releaseTypes = new ReleaseType[] {
 						ReleaseType.Stable,
 						ReleaseType.ReleaseCandidate,
 						ReleaseType.Beta,
 						ReleaseType.Alpha,
 						ReleaseType.Nightly };
 				else
-					values = new ReleaseType[] {
+					releaseTypes = new ReleaseType[] {
 						ReleaseType.Development };
-				cmbReleaseType = boxAll.makeCombo("Version Check", values, false);
+				cmbReleaseType = boxAll.makeCombo("Version Check", releaseTypes, false);
 				cmbReleaseType.setSelectedItem(GlobalSettings.releaseType);
 
-				List<String> tzs = new ArrayList<String>();
-				for(String x : TimeZone.getAvailableIDs())
-					tzs.add(x);
-				Collections.sort(tzs);
-				cmbTimeZone = boxAll.makeCombo("TimeZone", tzs.toArray(), false);
+				String[] values = TimeZone.getAvailableIDs();
+				Arrays.sort(values);
+				cmbTimeZone = boxAll.makeCombo("TimeZone", values, false);
 				cmbTimeZone.setSelectedItem(TimeFormatter.timeZone.getID());
 
 				chkAutoConnect = boxAll.makeCheck("Auto Connect", GlobalSettings.autoConnect);
@@ -245,7 +243,7 @@ public class GlobalConfigurationFrame extends JDialog {
 
 			boxAll = new ConfigPanel();
 			{
-				Object[] values = new String[] {
+				String[] values = new String[] {
 					"BNLogin@Gateway",
 					"BNLogin",
 					"ShortPrefix Account",
@@ -281,7 +279,7 @@ public class GlobalConfigurationFrame extends JDialog {
 			{
 				chkEnableLegacyIcons = boxAll.makeCheck("Enable Legacy Icons", GlobalSettings.enableLegacyIcons);
 
-				Object[] values = new String[] { TimeFormatter.tsFormat, "%1$tH:%1$tM:%1$tS.%1$tL", "%1$tH:%1$tM:%1$tS", "%1$tH:%1$tM" };
+				String[] values = new String[] { TimeFormatter.tsFormat, "%1$tH:%1$tM:%1$tS.%1$tL", "%1$tH:%1$tM:%1$tS", "%1$tH:%1$tM" };
 				cmbTSFormat = boxAll.makeCombo("TimeStamp", values, true);
 				cmbTSFormat.setSelectedItem(TimeFormatter.tsFormat);
 
@@ -295,6 +293,7 @@ public class GlobalConfigurationFrame extends JDialog {
 				cmbLookAndFeel = boxAll.makeCombo("Look and Feel", lafs.toArray(), false);
 				cmbLookAndFeel.setSelectedItem(GlobalSettings.getLookAndFeel());
 				cmbLookAndFeel.addItemListener(new ItemListener() {
+					@Override
 					public void itemStateChanged(ItemEvent e) {
 						for(LookAndFeelInfo lafi : UIManager.getInstalledLookAndFeels())
 							if(lafi.getName().equals(cmbLookAndFeel.getSelectedItem()))
@@ -305,6 +304,7 @@ public class GlobalConfigurationFrame extends JDialog {
 				cmbPlasticTheme = boxAll.makeCombo("Plastic Theme", GlobalSettings.getLookAndFeelThemes(), false);
 				cmbPlasticTheme.setSelectedItem(GlobalSettings.getLookAndFeelTheme());
 				cmbPlasticTheme.addItemListener(new ItemListener() {
+					@Override
 					public void itemStateChanged(ItemEvent e) {
 						GlobalSettings.setLookAndFeelTheme(cmbPlasticTheme.getSelectedItem().toString());
 					}
@@ -343,8 +343,10 @@ public class GlobalConfigurationFrame extends JDialog {
 		{
 			btnUndo = new JButton("Undo");
 			btnUndo.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent act) {
 					SwingUtilities.invokeLater(new Runnable() {
+						@Override
 						public void run() {
 							load();
 						}
@@ -354,8 +356,10 @@ public class GlobalConfigurationFrame extends JDialog {
 
 			btnOK = new JButton("OK");
 			btnOK.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent act) {
 					SwingUtilities.invokeLater(new Runnable() {
+						@Override
 						public void run() {
 							try {
 								save();
@@ -374,8 +378,10 @@ public class GlobalConfigurationFrame extends JDialog {
 
 			btnCancel = new JButton("Cancel");
 			btnCancel.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent act) {
 					SwingUtilities.invokeLater(new Runnable() {
+						@Override
 						public void run() {
 							cancel();
 						}
@@ -385,8 +391,10 @@ public class GlobalConfigurationFrame extends JDialog {
 
 			btnApply = new JButton("Apply");
 			btnApply.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent act) {
 					SwingUtilities.invokeLater(new Runnable() {
+						@Override
 						public void run() {
 							save();
 						}

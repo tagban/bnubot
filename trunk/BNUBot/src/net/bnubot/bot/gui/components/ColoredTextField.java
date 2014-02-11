@@ -29,10 +29,13 @@ public class ColoredTextField extends JTextField {
 		final ColoredTextField ctf = this;
 		// Bury the selection three full queue lengths deep to avoid the select all bug in windows/osx native look and feels
 		SwingUtilities.invokeLater(new Runnable() {
+			@Override
 			public void run() {
 				SwingUtilities.invokeLater(new Runnable() {
+					@Override
 					public void run() {
 						SwingUtilities.invokeLater(new Runnable() {
+							@Override
 							public void run() {
 								ctf.select2(start, end);
 							}});

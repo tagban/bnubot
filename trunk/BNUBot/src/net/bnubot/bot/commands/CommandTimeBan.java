@@ -20,6 +20,7 @@ import net.bnubot.util.TimeFormatter;
 public final class CommandTimeBan implements CommandRunnable {
 	private final Thread timeBanThread = new TimeBanThread();
 
+	@Override
 	public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
 	throws Exception {
 		try {

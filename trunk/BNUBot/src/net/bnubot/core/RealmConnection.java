@@ -32,34 +32,40 @@ public abstract class RealmConnection extends Thread implements RealmEventHandle
 			realmDisconnected();
 	}
 
+	@Override
 	public void initialize(RealmConnection rc) {
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
 	public void realmConnected() {
 		Iterator<RealmEventHandler> it = realmEventHandlers.iterator();
 		while(it.hasNext())
 			it.next().realmConnected();
 	}
 
+	@Override
 	public void realmDisconnected() {
 		Iterator<RealmEventHandler> it = realmEventHandlers.iterator();
 		while(it.hasNext())
 			it.next().realmDisconnected();
 	}
 
+	@Override
 	public void recieveRealmError(String text) {
 		Iterator<RealmEventHandler> it = realmEventHandlers.iterator();
 		while(it.hasNext())
 			it.next().recieveRealmError(text);
 	}
 
+	@Override
 	public void recieveRealmInfo(String text) {
 		Iterator<RealmEventHandler> it = realmEventHandlers.iterator();
 		while(it.hasNext())
 			it.next().recieveRealmInfo(text);
 	}
 
+	@Override
 	public void recieveCharacterList(List<MCPCharacter> chars) {
 		Iterator<RealmEventHandler> it = realmEventHandlers.iterator();
 		while(it.hasNext())

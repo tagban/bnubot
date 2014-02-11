@@ -40,6 +40,7 @@ public class LockdownEventHandler extends EventHandler {
 		commandsInitialized = true;
 
 		Profile.registerCommand("lockdown", new CommandRunnable() {
+			@Override
 			public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
 			throws Exception {
 				LockdownEventHandler leh = EventHandler.findThis(source, LockdownEventHandler.class);
@@ -78,6 +79,7 @@ public class LockdownEventHandler extends EventHandler {
 	private boolean lockdownEnabled = false;
 	private Connection lockdownThreadSource = null;
 	private final Runnable lockdownThread = new Runnable() {
+		@Override
 		public void run() {
 			long lockdownDisableTime = System.currentTimeMillis() + LOCKDOWN_DURATION;
 			while(System.currentTimeMillis() < lockdownDisableTime) {

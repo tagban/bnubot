@@ -26,7 +26,6 @@ public abstract class CustomDataObject extends CayenneDataObject implements Comp
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public Comparable toSortField() {
 		return Integer.valueOf(DataObjectUtils.intPKForObject(this));
 	}
@@ -40,6 +39,7 @@ public abstract class CustomDataObject extends CayenneDataObject implements Comp
 		return toDisplayString();
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public final int compareTo(CustomDataObject o) {
 		return toSortField().compareTo(o.toSortField());

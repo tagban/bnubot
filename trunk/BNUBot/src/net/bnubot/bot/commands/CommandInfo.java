@@ -15,6 +15,7 @@ import net.bnubot.vercheck.CurrentVersion;
  * @author scotta
  */
 public final class CommandInfo implements CommandRunnable {
+	@Override
 	public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
 	throws Exception {
 		user.sendChat("BNU-Bot " + CurrentVersion.version() + " running on " + OperatingSystem.osVersion() + " with " + OperatingSystem.javaVersion(), whisperBack);

@@ -44,6 +44,7 @@ public class ProfileEditor extends JDialog {
 		pack();
 		setResizable(false);
 		SwingUtilities.invokeLater(new Runnable() {
+			@Override
 			public void run() {
 				setModal(true);
 				setVisible(true);
@@ -72,6 +73,7 @@ public class ProfileEditor extends JDialog {
 				if(enableWrite) {
 					buttons.add(btnSave = new JButton("Save"));
 					btnSave.addActionListener(new ActionListener() {
+						@Override
 						public void actionPerformed(ActionEvent e) {
 							for(String key : txtBoxes.keySet())
 								p.put(key, txtBoxes.get(key).getText());
@@ -85,6 +87,7 @@ public class ProfileEditor extends JDialog {
 				}
 				buttons.add(btnClose = new JButton("Close"));
 				btnClose.addActionListener(new ActionListener() {
+					@Override
 					public void actionPerformed(ActionEvent e) {
 						dispose();
 					}});

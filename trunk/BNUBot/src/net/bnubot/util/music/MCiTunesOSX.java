@@ -55,14 +55,17 @@ class MCiTunesOSX implements MusicController {
 		}
 	}
 
+	@Override
 	public void pause() {
 		// TODO Auto-generated method stub
 	}
 
+	@Override
 	public void play() {
 		// TODO Auto-generated method stub
 	}
 
+	@Override
 	public String getCurrentlyPlaying() {
 		String data = "set sep to \"\\n\"\n"
 			+ "tell application \"iTunes\"\n"

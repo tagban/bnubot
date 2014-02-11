@@ -39,6 +39,7 @@ class MCJDIC implements MusicController {
 			throw new IllegalStateException("Failed to initialize a JDIC media player!");
 	}
 
+	@Override
 	public String getCurrentlyPlaying() {
 		if(!mp.isRunning())
 			return mp.getName() + ": Not running";
@@ -47,6 +48,7 @@ class MCJDIC implements MusicController {
 		return mp.getCurrentSong().getSongTitle();
 	}
 
+	@Override
 	public void pause() {
 		if(!mp.isRunning() || !mp.isPlaying())
 			return;
@@ -54,6 +56,7 @@ class MCJDIC implements MusicController {
 		mp.pause();
 	}
 
+	@Override
 	public void play() {
 		if(!mp.isRunning() || mp.isPlaying())
 			return;

@@ -44,6 +44,7 @@ public class ClanMOTDEditor extends JFrame {
 
 			btnSave = new JButton("Save");
 			btnSave.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent arg0) {
 					try {
 						c.sendClanSetMOTD(txtMOTD.getText());

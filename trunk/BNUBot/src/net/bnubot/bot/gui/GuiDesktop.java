@@ -60,8 +60,8 @@ import net.bnubot.db.Mail;
 import net.bnubot.db.Rank;
 import net.bnubot.logging.Out;
 import net.bnubot.settings.GlobalSettings;
-import net.bnubot.settings.Settings;
 import net.bnubot.settings.GlobalSettings.TrayIconMode;
+import net.bnubot.settings.Settings;
 import net.bnubot.util.OperatingSystem;
 import net.bnubot.util.task.TaskManager;
 import net.bnubot.vercheck.CurrentVersion;
@@ -110,6 +110,7 @@ public class GuiDesktop extends JFrame {
 
 		// Make sure the window gets laid out when maximized/restored
         addWindowStateListener(new WindowStateListener() {
+			@Override
 			public void windowStateChanged(WindowEvent e) {
 				if(e.getID() == WindowEvent.WINDOW_STATE_CHANGED)
 					((Window)e.getSource()).validate();
@@ -117,14 +118,17 @@ public class GuiDesktop extends JFrame {
 
         // When recieving focus, select the chat box
         addWindowFocusListener(new WindowFocusListener() {
+			@Override
 			public void windowGainedFocus(WindowEvent e) {
 				if(selectedGui != null)
 					selectedGui.getFrame().requestFocus();
 			}
+			@Override
 			public void windowLostFocus(WindowEvent e) {}
 		});
 
 		tabs.addChangeListener(new ChangeListener() {
+			@Override
 			public void stateChanged(ChangeEvent e) {
 				JTabbedPane jtp = (JTabbedPane)e.getSource();
 				JPanel jp = (JPanel)jtp.getSelectedComponent();
@@ -153,6 +157,7 @@ public class GuiDesktop extends JFrame {
 
 					// Move cursor focus to the chat box
 					SwingUtilities.invokeLater(new Runnable() {
+						@Override
 						public void run() {
 							gui.setChatText(null);
 						}
@@ -164,6 +169,7 @@ public class GuiDesktop extends JFrame {
 		});
 
 		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
+			@Override
 			public boolean dispatchKeyEvent(KeyEvent e) {
 				int mod = e.getModifiers();
 				if(mod != KEYMASK)
@@ -199,6 +205,7 @@ public class GuiDesktop extends JFrame {
 			{
 				JMenuItem menuItem = new JMenuItem("New Profile");
 				menuItem.addActionListener(new ActionListener() {
+					@Override
 					public void actionPerformed(ActionEvent e) {
 						Profile.newConnection();
 					} });
@@ -206,6 +213,7 @@ public class GuiDesktop extends JFrame {
 
 				menuItem = new JMenuItem("Close Profile");
 				menuItem.addActionListener(new ActionListener() {
+					@Override
 					public void actionPerformed(ActionEvent e) {
 						if(selectedGui != null)
 							selectedGui.getFirstConnection().getProfile().dispose();
@@ -214,6 +222,7 @@ public class GuiDesktop extends JFrame {
 
 				menuItem = new JMenuItem("Settings");
 				menuItem.addActionListener(new ActionListener() {
+					@Override
 					public void actionPerformed(ActionEvent e) {
 						try {
 							new GlobalConfigurationFrame();
@@ -223,6 +232,7 @@ public class GuiDesktop extends JFrame {
 
 				menuItem = new JMenuItem("Exit");
 				menuItem.addActionListener(new ActionListener() {
+					@Override
 					public void actionPerformed(ActionEvent e) {
 						System.exit(0);
 					} });
@@ -234,6 +244,7 @@ public class GuiDesktop extends JFrame {
 			{
 				updateDisplayJoinPartsMenuChecked();
 				mnuDisplayJoinParts.addActionListener(new ActionListener() {
+					@Override
 					public void actionPerformed(ActionEvent e) {
 						final boolean b = !GlobalSettings.getDisplayJoinParts();
 						GlobalSettings.setDisplayJoinParts(b);
@@ -262,6 +273,7 @@ public class GuiDesktop extends JFrame {
 			{
 				JMenuItem menuItem = new JMenuItem("Show Icons");
 				menuItem.addActionListener(new ActionListener() {
+					@Override
 					public void actionPerformed(ActionEvent event) {
 						IconsDotBniReader.showWindow();
 					} });
@@ -269,6 +281,7 @@ public class GuiDesktop extends JFrame {
 
 				updateDebugMenuChecked();
 				mnuDebug.addActionListener(new ActionListener() {
+					@Override
 					public void actionPerformed(ActionEvent event) {
 						Out.setDebug(!Out.isDebug());
 					}});
@@ -286,6 +299,7 @@ public class GuiDesktop extends JFrame {
 
 				menuItem = new JMenuItem("Check for updates");
 				menuItem.addActionListener(new ActionListener() {
+					@Override
 					public void actionPerformed(ActionEvent event) {
 						new Thread() {
 							@Override
@@ -302,6 +316,7 @@ public class GuiDesktop extends JFrame {
 
 				menuItem = new JMenuItem("View Change Log");
 				menuItem.addActionListener(new ActionListener() {
+					@Override
 					public void actionPerformed(ActionEvent event) {
 						new WhatsNewWindow();
 					} });
@@ -309,6 +324,7 @@ public class GuiDesktop extends JFrame {
 
 				menuItem = new JMenuItem("About");
 				menuItem.addActionListener(new ActionListener() {
+					@Override
 					public void actionPerformed(ActionEvent event) {
 						new AboutWindow();
 					} });
@@ -330,6 +346,7 @@ public class GuiDesktop extends JFrame {
 		JMenuItem menuItem;
 		menuItem = new JMenuItem(clazz.getSimpleName() + " Editor");
 		menuItem.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent event) {
 				try {
 					new DatabaseEditor(clazz);
@@ -373,6 +390,7 @@ public class GuiDesktop extends JFrame {
 
 			mi = new MenuItem("Hide/show");
 			mi.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					setVisible(!isVisible());
 					if(isVisible())
@@ -383,6 +401,7 @@ public class GuiDesktop extends JFrame {
 
 			mi = new MenuItem("Exit");
 			mi.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					System.exit(0);
 				}
@@ -394,6 +413,7 @@ public class GuiDesktop extends JFrame {
 		tray.setPopupMenu(pm);
 		if(OperatingSystem.userOS != OperatingSystem.OSX)
 			tray.addMouseListener(new MouseListener() {
+				@Override
 				public void mouseClicked(MouseEvent e) {
 					if(e.getButton() == MouseEvent.BUTTON1) {
 						setVisible(!isVisible());
@@ -401,9 +421,13 @@ public class GuiDesktop extends JFrame {
 							toFront();
 					}
 				}
+				@Override
 				public void mouseEntered(MouseEvent e) {}
+				@Override
 				public void mouseExited(MouseEvent e) {}
+				@Override
 				public void mousePressed(MouseEvent e) {}
+				@Override
 				public void mouseReleased(MouseEvent e) {}
 			});
 		tray.setImageAutoSize(true);
@@ -415,6 +439,7 @@ public class GuiDesktop extends JFrame {
 		}
 
 		addWindowStateListener(new WindowStateListener() {
+			@Override
 			public void windowStateChanged(WindowEvent e) {
 				if(GlobalSettings.trayMinimizeTo && ((e.getNewState() & Frame.ICONIFIED) != 0)) {
 					setVisible(false);

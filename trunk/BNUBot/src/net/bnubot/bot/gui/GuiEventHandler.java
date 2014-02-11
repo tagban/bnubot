@@ -27,8 +27,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -41,12 +41,12 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu.Separator;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
-import javax.swing.JPopupMenu.Separator;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
 
 import net.bnubot.bot.gui.components.BotNetList;
@@ -60,9 +60,9 @@ import net.bnubot.bot.gui.notifications.Growl;
 import net.bnubot.bot.gui.settings.ConfigurationFrame;
 import net.bnubot.bot.gui.settings.OperationCancelledException;
 import net.bnubot.core.Connection;
+import net.bnubot.core.Connection.ConnectionState;
 import net.bnubot.core.EventHandler;
 import net.bnubot.core.Profile;
-import net.bnubot.core.Connection.ConnectionState;
 import net.bnubot.core.bncs.BNCSConnection;
 import net.bnubot.core.botnet.BotNetConnection;
 import net.bnubot.core.botnet.BotNetUser;
@@ -93,7 +93,7 @@ public class GuiEventHandler extends EventHandler {
 	private JSplitPane jsp = null;
 	private boolean tabComplete = false;
 	private JDialog tcPopupWindow;
-	private final JList tcList = new JList();
+	private final JList<String> tcList = new JList<String>();
 	private boolean tcUserSearch = true;
 	private String tcBefore = null;
 	private String tcSearch = null;
@@ -115,6 +115,7 @@ public class GuiEventHandler extends EventHandler {
 	public void initialize(final Connection source) {
 		JMenuItem settings = new JMenuItem("Settings");
 		settings.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent event) {
 				try {
 					new ConfigurationFrame(source.getConnectionSettings());
@@ -165,7 +166,7 @@ public class GuiEventHandler extends EventHandler {
 		} else if(options.size() == 0) {
 			tcCancel();
 		} else {
-			tcList.setModel(new DefaultComboBoxModel(options.toArray()));
+			tcList.setModel(new DefaultComboBoxModel<String>(options.toArray(new String[options.size()])));
 			tcPopupWindow.pack();
 			tcPopupWindow.setVisible(true);
 			tcList.setSelectedIndex(0);
@@ -212,9 +213,11 @@ public class GuiEventHandler extends EventHandler {
 
 		// When gained focus, select the chat box
 		frame.addFocusListener(new FocusListener() {
+			@Override
 			public void focusGained(FocusEvent e) {
 				chatTextArea.requestFocus();
 			}
+			@Override
 			public void focusLost(FocusEvent e) {}
 		});
 
@@ -230,6 +233,7 @@ public class GuiEventHandler extends EventHandler {
 			{
 				menuItem = new JMenuItem("Connect");
 				menuItem.addActionListener(new ActionListener() {
+					@Override
 					public void actionPerformed(ActionEvent e) {
 						for(Connection con : getFirstConnection().getProfile().getConnections())
 							con.connect();
@@ -238,6 +242,7 @@ public class GuiEventHandler extends EventHandler {
 
 				menuItem = new JMenuItem("Reconnect");
 				menuItem.addActionListener(new ActionListener() {
+					@Override
 					public void actionPerformed(ActionEvent e) {
 						for(Connection con : getFirstConnection().getProfile().getConnections())
 							con.reconnect();
@@ -246,6 +251,7 @@ public class GuiEventHandler extends EventHandler {
 
 				menuItem = new JMenuItem("Disconnect");
 				menuItem.addActionListener(new ActionListener() {
+					@Override
 					public void actionPerformed(ActionEvent e) {
 						for(Connection con : getFirstConnection().getProfile().getConnections())
 							con.disconnect(ConnectionState.DO_NOT_ALLOW_CONNECT);
@@ -256,6 +262,7 @@ public class GuiEventHandler extends EventHandler {
 
 			menuItem = new JMenuItem("Realms");
 			menuItem.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent evt) {
 					try {
 						getFirstConnection().sendQueryRealms2();
@@ -269,6 +276,7 @@ public class GuiEventHandler extends EventHandler {
 			{
 				menuItem = new JMenuItem("Create a clan");
 				menuItem.addActionListener(new ActionListener() {
+					@Override
 					public void actionPerformed(ActionEvent event) {
 						try {
 							String ct = JOptionPane.showInputDialog(frame, "Clan tag (maximum of 4 characters):", "Create a clan", JOptionPane.INFORMATION_MESSAGE);
@@ -282,6 +290,7 @@ public class GuiEventHandler extends EventHandler {
 
 				menuItem = new JMenuItem("Edit MOTD");
 				menuItem.addActionListener(new ActionListener() {
+					@Override
 					public void actionPerformed(ActionEvent event) {
 						try {
 							getFirstConnection().sendClanMOTD(new ClanMOTDEditor(getFirstConnection()));
@@ -304,7 +313,9 @@ public class GuiEventHandler extends EventHandler {
 		chatTextArea.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, EMPTY_SET);
 		chatTextArea.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, EMPTY_SET);
 		chatTextArea.addKeyListener(new KeyListener() {
+			@Override
 			public void keyPressed(KeyEvent e) {}
+			@Override
 			public void keyTyped(KeyEvent e) {
 				switch(e.getKeyChar()) {
 				case '\n': {
@@ -357,6 +368,7 @@ public class GuiEventHandler extends EventHandler {
 					break;
 				}
 			}
+			@Override
 			public void keyReleased(KeyEvent e) {
 				if(!tabComplete)
 					return;
@@ -439,8 +451,10 @@ public class GuiEventHandler extends EventHandler {
 		tcPopupWindow = new JDialog();
 		tcPopupWindow.setUndecorated(true);
 		tcPopupWindow.addWindowFocusListener(new WindowFocusListener() {
+			@Override
 			public void windowGainedFocus(WindowEvent e) {
 				SwingUtilities.invokeLater(new Runnable() {
+					@Override
 					public void run() {
 						// Set location relative to chatTextArea
 						Point location = chatTextArea.getLocation();
@@ -452,6 +466,7 @@ public class GuiEventHandler extends EventHandler {
 					}
 				});
 			}
+			@Override
 			public void windowLostFocus(WindowEvent e) {
 				tcPopupWindow.setVisible(tabComplete = false);
 			}
@@ -462,8 +477,11 @@ public class GuiEventHandler extends EventHandler {
 
 		// Initialize TC list
 		tcList.addKeyListener(new KeyListener() {
+			@Override
 			public void keyPressed(KeyEvent e) {}
+			@Override
 			public void keyTyped(KeyEvent e) {}
+			@Override
 			public void keyReleased(KeyEvent e) {
 				switch(e.getKeyCode()) {
 				case KeyEvent.VK_SHIFT:
@@ -480,7 +498,7 @@ public class GuiEventHandler extends EventHandler {
 				case KeyEvent.VK_TAB:
 				case KeyEvent.VK_ENTER:
 					// Confirmed; the user selected with enter or tab
-					tcSelect(tcList.getSelectedValue().toString(), true);
+					tcSelect(tcList.getSelectedValue(), true);
 					break;
 				case KeyEvent.VK_ESCAPE:
 					tcCancel();
@@ -821,6 +839,7 @@ public class GuiEventHandler extends EventHandler {
 		final String autoRealm = realms[0];
 
 		SwingUtilities.invokeLater(new Runnable() {
+			@Override
 			public void run() {
 				source.addEventHandler(realmWindow);
 				if(showWindow)

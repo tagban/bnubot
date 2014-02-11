@@ -38,6 +38,7 @@ public class TextWindow extends JScrollPane {
 		public myJEP() {
 			super();
 			addHyperlinkListener(new HyperlinkListener() {
+				@Override
 				public void hyperlinkUpdate(HyperlinkEvent e) {
 					if(e.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED))
 						try {
@@ -106,6 +107,7 @@ public class TextWindow extends JScrollPane {
 
 		if(scrollDown == null)
 			scrollDown = new Runnable() {
+				@Override
 				public void run() {
 					disableRedraw = true;
 					jep.setText(head + html + foot);

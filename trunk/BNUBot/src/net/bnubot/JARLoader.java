@@ -40,6 +40,7 @@ public class JARLoader {
 			Out.fatalException(new FileNotFoundException(f.getName()));
 
 		FilenameFilter fnf = new FilenameFilter() {
+			@Override
 			public boolean accept(File dir, String name) {
 				return name.endsWith(".jar");
 			}};

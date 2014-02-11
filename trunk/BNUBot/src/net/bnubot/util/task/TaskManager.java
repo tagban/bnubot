@@ -12,8 +12,6 @@ import java.awt.Window;
  * @author scotta
  */
 public class TaskManager {
-	private static final long serialVersionUID = 641763656953338296L;
-
 	private static Container box = null;
 	private static Window window = null;
 

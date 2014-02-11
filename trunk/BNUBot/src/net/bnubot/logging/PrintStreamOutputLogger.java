@@ -23,19 +23,23 @@ public class PrintStreamOutputLogger implements OutputLogger {
 		this.out = s;
 	}
 
+	@Override
 	public void exception(Throwable e) {
 		// TODO Auto-generated method stub
 
 	}
 
+	@Override
 	public void error(Class<?> source, String text) {
 		print(source, ERROR, text);
 	}
 
+	@Override
 	public void info(Class<?> source, String text) {
 		print(source, INFO, text);
 	}
 
+	@Override
 	public void debug(Class<?> source, String text) {
 		print(source, DEBUG, text);
 	}

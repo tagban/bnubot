@@ -30,6 +30,7 @@ class OutputLoggerCollection implements OutputLogger {
 		loggers.add(logger);
 	}
 
+	@Override
 	public void exception(Throwable e) {
 		if(loggers.size() == 0) {
 			defaultLogger.exception(e);
@@ -39,6 +40,7 @@ class OutputLoggerCollection implements OutputLogger {
 		}
 	}
 
+	@Override
 	public void error(Class<?> source, String text) {
 		if(loggers.size() == 0) {
 			defaultLogger.error(source, text);
@@ -48,6 +50,7 @@ class OutputLoggerCollection implements OutputLogger {
 		}
 	}
 
+	@Override
 	public void info(Class<?> source, String text) {
 		if(loggers.size() == 0) {
 			defaultLogger.info(source, text);
@@ -57,6 +60,7 @@ class OutputLoggerCollection implements OutputLogger {
 		}
 	}
 
+	@Override
 	public void debug(Class<?> source, String text) {
 		if(loggers.size() == 0) {
 			defaultLogger.debug(source, text);

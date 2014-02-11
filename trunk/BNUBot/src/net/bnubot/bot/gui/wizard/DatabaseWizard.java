@@ -22,8 +22,6 @@ import net.bnubot.util.BNetUser;
  * @author scotta
  */
 public class DatabaseWizard extends AbstractWizard {
-	private static final long serialVersionUID = -3827493801847545042L;
-
 	public static void main(String[] args) {
 		GlobalSettings.load();
 		new DatabaseWizard().displayAndBlock();

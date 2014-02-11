@@ -17,6 +17,7 @@ import net.bnubot.util.BNetUser;
  * @author scotta
  */
 public final class CommandAddAlias implements CommandRunnable {
+	@Override
 	public void run(Connection source, BNetUser user, String param, String[] params, boolean whisperBack, Account commanderAccount, boolean superUser)
 	throws Exception {
 		try {

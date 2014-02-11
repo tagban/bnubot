@@ -46,8 +46,8 @@ public class ConfigurationFrame extends JDialog {
 	private JCheckBox chkBotNet = null;
 
 	// Profile
-	private JComboBox cmbConnectionType = null;
-	private JComboBox cmbServer = null;
+	private JComboBox<ConnectionType> cmbConnectionType = null;
+	private JComboBox<String> cmbServer = null;
 	private ConfigTextField txtChannel = null;
 	private ConfigTextField txtTrigger = null;
 	private JCheckBox chkAntiIdle = null;
@@ -90,6 +90,7 @@ public class ConfigurationFrame extends JDialog {
 
 			prodKeys = new ProductAndCDKeys(cs, boxSettings);
 			prodKeys.addProductListener(new ItemListener() {
+				@Override
 				public void itemStateChanged(ItemEvent e) {
 					setVisibleFields();
 				}});
@@ -99,6 +100,7 @@ public class ConfigurationFrame extends JDialog {
 			cmbConnectionType = boxSettings.makeCombo("Connection Type", ConnectionType.values(), false);
 			cmbConnectionType.setSelectedItem(cs.connectionType);
 			cmbConnectionType.addItemListener(new ItemListener() {
+				@Override
 				public void itemStateChanged(ItemEvent e) {
 					setVisibleFields();
 				}});
@@ -130,8 +132,10 @@ public class ConfigurationFrame extends JDialog {
 		{
 			btnKeys = new JButton("Key Editor");
 			btnKeys.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent act) {
 					SwingUtilities.invokeLater(new Runnable() {
+						@Override
 						public void run() {
 							remove(boxAll);
 							try {
@@ -144,8 +148,10 @@ public class ConfigurationFrame extends JDialog {
 
 			btnUndo = new JButton("Undo");
 			btnUndo.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent act) {
 					SwingUtilities.invokeLater(new Runnable() {
+						@Override
 						public void run() {
 							load();
 						}
@@ -155,8 +161,10 @@ public class ConfigurationFrame extends JDialog {
 
 			btnOK = new JButton("OK");
 			btnOK.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent act) {
 					SwingUtilities.invokeLater(new Runnable() {
+						@Override
 						public void run() {
 							try {
 								save();
@@ -175,8 +183,10 @@ public class ConfigurationFrame extends JDialog {
 
 			btnCancel = new JButton("Cancel");
 			btnCancel.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent act) {
 					SwingUtilities.invokeLater(new Runnable() {
+						@Override
 						public void run() {
 							cancel();
 						}
@@ -280,7 +290,7 @@ public class ConfigurationFrame extends JDialog {
 	}
 
 	private void setVisibleFields() {
-		DefaultComboBoxModel model = (DefaultComboBoxModel)cmbServer.getModel();
+		DefaultComboBoxModel<String> model = (DefaultComboBoxModel<String>)cmbServer.getModel();
 		model.removeAllElements();
 
 		if((ConnectionType)cmbConnectionType.getSelectedItem() == ConnectionType.DigitalText) {

@@ -14,6 +14,7 @@ import net.bnubot.vercheck.VersionCheck;
  * @author scotta
  */
 public final class CommandUpdate implements CommandRunnable {
+	@Override
 	public void run(Connection source, final BNetUser user, String param, String[] params, final boolean whisperBack, Account commanderAccount, boolean superUser)
 	throws Exception {
 		VersionCheck.checkVersion(true, user, whisperBack);

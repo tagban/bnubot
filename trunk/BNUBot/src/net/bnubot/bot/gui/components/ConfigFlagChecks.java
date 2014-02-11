@@ -30,6 +30,7 @@ public class ConfigFlagChecks extends Box {
 	private final Map<JCheckBox, Integer> cbs = new HashMap<JCheckBox, Integer>();
 	private final ConfigNumericHexTextField ctf;
 	private final ChangeListener cl = new ChangeListener() {
+		@Override
 		public void stateChanged(ChangeEvent e) {
 			JCheckBox cb = (JCheckBox) e.getSource();
 			int f = cbs.get(cb).intValue();
@@ -72,7 +73,9 @@ public class ConfigFlagChecks extends Box {
 		add(ctf = new ConfigNumericHexTextField(flags));
 		ctf.setEnabled(false);
 		ctf.addFocusListener(new FocusListener() {
+			@Override
 			public void focusGained(FocusEvent e) {}
+			@Override
 			public void focusLost(FocusEvent e) {
 				setFlags(ctf.getValue());
 			}});
