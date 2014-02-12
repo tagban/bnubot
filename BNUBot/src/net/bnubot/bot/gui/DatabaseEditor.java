@@ -70,11 +70,11 @@ public class DatabaseEditor {
 	}
 
 	@SuppressWarnings("unchecked")
-	public DatabaseEditor(Class<? extends CustomDataObject<?>> clazz) throws Exception {
+	public <S extends Comparable<? super S>, T extends CustomDataObject<S>> DatabaseEditor(Class<? extends CustomDataObject<S>> clazz) throws Exception {
 		context = DatabaseContext.getContext();
 		if(context == null)
 			throw new UnloggedException("No database is initialized");
-		List<CustomDataObject<?>>dataRows = context.performQuery(new SelectQuery(clazz));
+		List<T> dataRows = context.performQuery(new SelectQuery(clazz));
 		Collections.sort(dataRows);
 
 		editorType = clazz.getSimpleName();
