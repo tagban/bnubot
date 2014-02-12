@@ -51,13 +51,15 @@ import org.apache.cayenne.query.SelectQuery;
 
 /**
  * @author scotta
+ * @param <T> The {@link CustomDataObject} type
+ * @param <S> The sortable field type of the {@link CustomDataObject}
  */
-public class DatabaseEditor {
+public class DatabaseEditor<T extends CustomDataObject<S>, S extends Comparable<? super S>> {
 	private final ObjectContext context;
 	private final String editorType;
 
-	private final Map<String, CustomDataObject<?>> dataMap = new HashMap<String, CustomDataObject<?>>();
-	private CustomDataObject<?> currentRow = null;
+	private final Map<String, T> dataMap = new HashMap<String, T>();
+	private T currentRow = null;
 	private final Map<ObjAttribute, getValueDelegate> data = new HashMap<ObjAttribute, getValueDelegate>();
 	private final Map<ObjRelationship, getValueDelegate> dataRel = new HashMap<ObjRelationship, getValueDelegate>();
 	private final JDialog jf = new JDialog();
@@ -70,7 +72,7 @@ public class DatabaseEditor {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <S extends Comparable<? super S>, T extends CustomDataObject<S>> DatabaseEditor(Class<? extends CustomDataObject<S>> clazz) throws Exception {
+	public DatabaseEditor(Class<T> clazz) throws Exception {
 		context = DatabaseContext.getContext();
 		if(context == null)
 			throw new UnloggedException("No database is initialized");
@@ -138,7 +140,7 @@ public class DatabaseEditor {
 
 		box.add(box2);
 
-		for(CustomDataObject<?> row : dataRows) {
+		for(T row : dataRows) {
 			String disp = getDisplayString(row);
 			model.addElement(disp);
 			dataMap.put(disp, row);
@@ -167,7 +169,7 @@ public class DatabaseEditor {
 		jf.setModal(true);
 	}
 
-	private String getDisplayString(CustomDataObject<?> row) {
+	private String getDisplayString(T row) {
 		if(row == null)
 			return "NULL";
 		return row.toString();
@@ -218,7 +220,7 @@ public class DatabaseEditor {
 				}
 			}
 
-		final CustomDataObject<?> value = (CustomDataObject<?>)row.readProperty(propName);
+		final T value = (T)row.readProperty(propName);
 
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridy = y;
@@ -236,11 +238,11 @@ public class DatabaseEditor {
 			jp.add(new JLabel(), gbc);
 		}
 
-		final HashMap<String, CustomDataObject<?>> theseOptions = new HashMap<String, CustomDataObject<?>>();
-		List<CustomDataObject<?>> relTargets = context.performQuery(new SelectQuery(fieldType));
+		final HashMap<String, T> theseOptions = new HashMap<String, T>();
+		List<T> relTargets = context.performQuery(new SelectQuery(fieldType));
 		Collections.sort(relTargets);
 		DefaultComboBoxModel<String> model = new DefaultComboBoxModel<String>();
-		for(CustomDataObject<?> v : relTargets) {
+		for(T v : relTargets) {
 			String s = getDisplayString(v);
 			model.addElement(s);
 			theseOptions.put(s, v);
