@@ -7,7 +7,6 @@ package net.bnubot.core.mcp;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -32,7 +31,7 @@ public class MCPConnection extends RealmConnection {
 
 	protected Socket s;
 	protected int serverToken;
-	protected DataInputStream dis = null;
+	protected BNetInputStream dis = null;
 	protected DataOutputStream dos = null;
 	protected boolean connected = false;
 
@@ -53,7 +52,7 @@ public class MCPConnection extends RealmConnection {
 			Out.info(MCPConnection.class, "Connecting to MCP server " + server + ":" + port);
 
 			s = new Socket(server, port);
-			dis = new DataInputStream(s.getInputStream());
+			dis = new BNetInputStream(s.getInputStream());
 			dos = new DataOutputStream(s.getOutputStream());
 
 			connected = true;

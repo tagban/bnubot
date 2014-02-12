@@ -8,7 +8,6 @@ package net.bnubot.core.bncs;
 import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
@@ -66,7 +65,7 @@ public class BNCSConnection extends Connection {
 		return botnet;
 	}
 
-	private InputStream bncsInputStream = null;
+	private BNetInputStream bncsInputStream = null;
 	private DataOutputStream bncsOutputStream = null;
 
 	private ProductIDs productID = null;
@@ -114,7 +113,7 @@ public class BNCSConnection extends Connection {
 		// Set up BNCS
 		connect.updateProgress("Connecting to Battle.net");
 		socket = makeSocket(getServer(), getPort());
-		bncsInputStream = socket.getInputStream();
+		bncsInputStream = new BNetInputStream(socket.getInputStream());
 		bncsOutputStream = new DataOutputStream(socket.getOutputStream());
 
 		// Game

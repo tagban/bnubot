@@ -6,7 +6,6 @@
 package net.bnubot.core.botnet;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 import net.bnubot.core._super._PacketReader;
 import net.bnubot.util.BNetInputStream;
@@ -16,7 +15,7 @@ import net.bnubot.util.BNetInputStream;
  */
 public class BotNetPacketReader extends _PacketReader<BotNetPacketId> {
 
-	public BotNetPacketReader(InputStream rawis) throws IOException {
+	public BotNetPacketReader(BNetInputStream rawis) throws IOException {
 		super(rawis);
 	}
 

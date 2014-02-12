@@ -6,7 +6,6 @@ package net.bnubot.core._super;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 import net.bnubot.core.bncs.BNCSChatEventId;
 import net.bnubot.core.bncs.BNCSPacketId;
@@ -25,8 +24,8 @@ public abstract class _PacketReader<P extends _PacketId<?>> {
 	public int packetLength;
 	public byte data[];
 
-	public _PacketReader(InputStream rawis) throws IOException {
-		parse(new BNetInputStream(rawis));
+	public _PacketReader(BNetInputStream bnis) throws IOException {
+		parse(bnis);
 
 		if(GlobalSettings.packetLog) {
 			String msg = "RECV " + packetId.name();
@@ -36,6 +35,7 @@ public abstract class _PacketReader<P extends _PacketId<?>> {
 				msg += "\n" + HexDump.hexDump(data);
 			Out.debugAlways(getClass(), msg);
 		}
+
 	}
 
 	protected abstract void parse(BNetInputStream is) throws IOException;
