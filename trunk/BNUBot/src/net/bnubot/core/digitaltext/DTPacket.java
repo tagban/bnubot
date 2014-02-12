@@ -5,10 +5,7 @@
 
 package net.bnubot.core.digitaltext;
 
-import java.io.IOException;
-
 import net.bnubot.core._super._Packet;
-import net.bnubot.util.BNetOutputStream;
 
 /**
  * @author scotta
@@ -20,10 +17,13 @@ public class DTPacket extends _Packet<DTConnection, DTPacketId> {
 	}
 
 	@Override
-	protected void buildPacket(DTPacketId packetId, byte[] data, BNetOutputStream sckout) throws IOException {
-		sckout.writeByte(0xF4);
-		sckout.writeByte(packetId.ordinal());
-		sckout.writeWord(data.length + 4);
-		sckout.write(data);
+	protected byte[] buildPacket(DTPacketId packetId, byte[] data) {
+		byte[] out = new byte[data.length+4];
+		out[0] = (byte) 0xF4;
+		out[1] = (byte) packetId.ordinal();
+		out[2] = (byte) ((data.length + 4) & 0x00FF);
+		out[3] = (byte) (((data.length + 4) & 0xFF00) >> 8);
+		System.arraycopy(data, 0, out, 4, data.length);
+		return out;
 	}
 }
