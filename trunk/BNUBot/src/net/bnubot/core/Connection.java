@@ -215,11 +215,15 @@ public abstract class Connection extends Thread implements OutputHandler {
 
 				// Initialize connection to DT server
 				initializeConnection(connect);
+				if(!isConnecting())
+					continue;
 				connectionState = ConnectionState.CONNECTED;
 				dispatchTitleChanged();
 
 				// Log in
 				boolean loggedIn = sendLoginPackets(connect);
+				if(!isConnected())
+					continue;
 
 				// Connection established
 				completeTask(connect);
