@@ -6,7 +6,6 @@
 package net.bnubot.core.bncs;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 import net.bnubot.core._super._PacketReader;
 import net.bnubot.util.BNetInputStream;
@@ -16,7 +15,7 @@ import net.bnubot.util.BNetInputStream;
  */
 public class BNCSPacketReader extends _PacketReader<BNCSPacketId> {
 
-	public BNCSPacketReader(InputStream rawis) throws IOException {
+	public BNCSPacketReader(BNetInputStream rawis) throws IOException {
 		super(rawis);
 	}
 

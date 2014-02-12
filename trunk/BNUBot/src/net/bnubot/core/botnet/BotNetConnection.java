@@ -6,7 +6,6 @@
 package net.bnubot.core.botnet;
 
 import java.io.DataOutputStream;
-import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.HashMap;
@@ -38,7 +37,7 @@ public class BotNetConnection extends Connection {
 	private HashMap<Integer, BotNetUser> users = new HashMap<Integer, BotNetUser>();
 	private boolean userInit = false;
 
-	private InputStream bnInputStream = null;
+	private BNetInputStream bnInputStream = null;
 	private DataOutputStream bnOutputStream = null;
 
 	private int serverRevision = 0;
@@ -86,7 +85,7 @@ public class BotNetConnection extends Connection {
 		dispatchRecieveInfo("Connecting to " + address + ":" + port + ".");
 		socket = new Socket(address, port);
 		socket.setKeepAlive(true);
-		bnInputStream = socket.getInputStream();
+		bnInputStream = new BNetInputStream(socket.getInputStream());
 		bnOutputStream = new DataOutputStream(socket.getOutputStream());
 
 		// Connected

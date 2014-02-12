@@ -6,7 +6,6 @@
 package net.bnubot.core.digitaltext;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 import net.bnubot.core._super._PacketReader;
 import net.bnubot.util.BNetInputStream;
@@ -16,7 +15,7 @@ import net.bnubot.util.BNetInputStream;
  */
 public class DTPacketReader extends _PacketReader<DTPacketId> {
 
-	public DTPacketReader(InputStream rawis) throws IOException {
+	public DTPacketReader(BNetInputStream rawis) throws IOException {
 		super(rawis);
 	}
 

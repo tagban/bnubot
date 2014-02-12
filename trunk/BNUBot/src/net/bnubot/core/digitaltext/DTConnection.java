@@ -7,7 +7,6 @@ package net.bnubot.core.digitaltext;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 
@@ -29,7 +28,7 @@ import net.bnubot.util.task.Task;
  */
 public class DTConnection extends Connection {
 	private static final String DT_TYPE = "DigitalText";
-	private InputStream dtInputStream = null;
+	private BNetInputStream dtInputStream = null;
 	private DataOutputStream dtOutputStream = null;
 
 	public DTConnection(ConnectionSettings cs, Profile p) {
@@ -54,7 +53,7 @@ public class DTConnection extends Connection {
 		dispatchRecieveInfo("Connecting to " + address + ":" + port + ".");
 		socket = new Socket(address, port);
 		socket.setKeepAlive(true);
-		dtInputStream = socket.getInputStream();
+		dtInputStream = new BNetInputStream(socket.getInputStream());
 		dtOutputStream = new DataOutputStream(socket.getOutputStream());
 
 		// Connected

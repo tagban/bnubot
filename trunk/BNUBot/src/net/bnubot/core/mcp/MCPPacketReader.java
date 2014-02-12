@@ -8,7 +8,6 @@ package net.bnubot.core.mcp;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 import net.bnubot.logging.Out;
 import net.bnubot.settings.GlobalSettings;
@@ -24,11 +23,7 @@ public class MCPPacketReader {
 	int packetLength;
 	byte data[];
 
-	public MCPPacketReader(InputStream rawis) throws IOException {
-		// Operates on a socket, which we don't want to close; suppress the warning
-		@SuppressWarnings("resource")
-		BNetInputStream is = new BNetInputStream(rawis);
-
+	public MCPPacketReader(BNetInputStream is) throws IOException {
 		packetLength = is.readWord() & 0x0000FFFF;
 		packetId = MCPPacketID.values()[is.readByte() & 0x000000FF];
 		assert(packetLength >= 3);
