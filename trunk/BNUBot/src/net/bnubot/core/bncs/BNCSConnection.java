@@ -9,6 +9,7 @@ import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -115,6 +116,8 @@ public class BNCSConnection extends Connection {
 		socket = makeSocket(getServer(), getPort());
 		bncsInputStream = new BNetInputStream(socket.getInputStream());
 		bncsOutputStream = new DataOutputStream(socket.getOutputStream());
+		// Socket timeout will cause SocketTimeoutException to be thrown from read()
+		socket.setSoTimeout(1000);
 
 		// Game
 		bncsOutputStream.writeByte(0x01);
@@ -253,6 +256,18 @@ public class BNCSConnection extends Connection {
 		sendInitialPackets(connect);
 	}
 
+	private BNCSPacketReader obtainPacket() throws IOException {
+		byte magic;
+		do {
+			magic = bncsInputStream.readByte();
+		} while(magic != (byte)0xFF);
+		try {
+			return new BNCSPacketReader(bncsInputStream);
+		} catch(SocketTimeoutException e) {
+			throw new IOException("Unexpected socket timeout while reading packet", e);
+		}
+	}
+
 	/**
 	 * Do the login work up to SID_ENTERCHAT
 	 *
@@ -261,302 +276,268 @@ public class BNCSConnection extends Connection {
 	@Override
 	protected boolean sendLoginPackets(Task connect) throws Exception {
 		while (isConnected() && !socket.isClosed() && !disposed) {
-			if (bncsInputStream.available() <= 0) {
-				sleep(200);
-			} else {
-				BNCSPacketReader pr = new BNCSPacketReader(bncsInputStream);
-				BNetInputStream is = pr.getData();
+			BNCSPacketReader pr;
+			try {
+				pr = obtainPacket();
+			} catch(SocketTimeoutException e) {
+				// Socket timeout is normal; we just need to wait for more data
+				continue;
+			}
 
-				switch (pr.packetId) {
-				case SID_OPTIONALWORK:
-				case SID_EXTRAWORK:
-				case SID_REQUIREDWORK:
+			BNetInputStream is = pr.getData();
+			switch (pr.packetId) {
+			case SID_OPTIONALWORK:
+			case SID_EXTRAWORK:
+			case SID_REQUIREDWORK:
+				break;
+
+			case SID_NULL: {
+				BNCSPacket p = new BNCSPacket(this, BNCSPacketId.SID_NULL);
+				p.sendPacket(bncsOutputStream);
+				break;
+			}
+
+			case SID_PING: {
+				BNCSPacket p = new BNCSPacket(this, BNCSPacketId.SID_PING);
+				p.writeDWord(is.readDWord());
+				p.sendPacket(bncsOutputStream);
+				break;
+			}
+
+			case SID_AUTH_INFO:
+			case SID_STARTVERSIONING: {
+				if (pr.packetId == BNCSPacketId.SID_AUTH_INFO) {
+					nlsRevision = is.readDWord();
+					serverToken = is.readDWord();
+					is.skip(4); // int udpValue = is.readDWord();
+				}
+				long mpqFileTime = is.readQWord();
+				String mpqFileName = is.readNTString();
+				byte[] valueStr = is.readNTBytes();
+
+				Out.debug(getClass(), "MPQ: " + mpqFileName);
+
+				byte extraData[] = null;
+				if (is.available() == 0x80) {
+					extraData = new byte[0x80];
+					is.read(extraData, 0, 0x80);
+				}
+				assert (is.available() == 0);
+
+				// Hash the CD key
+				byte keyHash[] = null;
+				byte keyHash2[] = null;
+				if (nlsRevision != null) {
+					keyHash = HashMain.hashKey(clientToken, serverToken, cs.cdkey).getBuffer();
+					if((productID == ProductIDs.D2XP)
+					|| (productID == ProductIDs.W3XP))
+						keyHash2 = HashMain.hashKey(clientToken, serverToken, cs.cdkey2).getBuffer();
+
+					warden = null;
+					warden_seed = new byte[4];
+					System.arraycopy(keyHash, 16, warden_seed, 0, 4);
+				}
+
+				Task task = createTask("BNLS_VERSIONCHECKEX2", "...");
+				VersionCheckResult vcr = BNLSManager.sendVersionCheckEx2(task, productID, mpqFileTime, mpqFileName, valueStr);
+				completeTask(task);
+
+				if(vcr == null) {
+					dispatchRecieveError("CheckRevision failed.");
+					disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 					break;
+				}
 
-				case SID_NULL: {
-					BNCSPacket p = new BNCSPacket(this, BNCSPacketId.SID_NULL);
+				// Respond
+				if (nlsRevision != null) {
+					connect.updateProgress("CheckRevision/CD Key challenge");
+
+					BNCSPacket p = new BNCSPacket(this, BNCSPacketId.SID_AUTH_CHECK);
+					p.writeDWord(clientToken);
+					p.writeDWord(vcr.exeVersion);
+					p.writeDWord(vcr.exeHash);
+					if (keyHash2 == null)
+						p.writeDWord(1); // Number of keys
+					else
+						p.writeDWord(2); // Number of keys
+					p.writeDWord(0); // Spawn?
+
+					// For each key..
+					if (keyHash.length != 36)
+						throw new Exception("Invalid keyHash length");
+					p.write(keyHash);
+					if (keyHash2 != null) {
+						if (keyHash2.length != 36)
+							throw new Exception("Invalid keyHash2 length");
+						p.write(keyHash2);
+					}
+
+					// Finally,
+					p.writeNTString(vcr.exeInfo);
+					p.writeNTString(cs.username);
 					p.sendPacket(bncsOutputStream);
-					break;
-				}
+				} else {
+					connect.updateProgress("CheckRevision");
 
-				case SID_PING: {
-					BNCSPacket p = new BNCSPacket(this, BNCSPacketId.SID_PING);
-					p.writeDWord(is.readDWord());
-					p.sendPacket(bncsOutputStream);
-					break;
-				}
-
-				case SID_AUTH_INFO:
-				case SID_STARTVERSIONING: {
-					if (pr.packetId == BNCSPacketId.SID_AUTH_INFO) {
-						nlsRevision = is.readDWord();
-						serverToken = is.readDWord();
-						is.skip(4); // int udpValue = is.readDWord();
-					}
-					long mpqFileTime = is.readQWord();
-					String mpqFileName = is.readNTString();
-					byte[] valueStr = is.readNTBytes();
-
-					Out.debug(getClass(), "MPQ: " + mpqFileName);
-
-					byte extraData[] = null;
-					if (is.available() == 0x80) {
-						extraData = new byte[0x80];
-						is.read(extraData, 0, 0x80);
-					}
-					assert (is.available() == 0);
-
-					// Hash the CD key
-					byte keyHash[] = null;
-					byte keyHash2[] = null;
-					if (nlsRevision != null) {
-						keyHash = HashMain.hashKey(clientToken, serverToken, cs.cdkey).getBuffer();
-						if((productID == ProductIDs.D2XP)
-						|| (productID == ProductIDs.W3XP))
-							keyHash2 = HashMain.hashKey(clientToken, serverToken, cs.cdkey2).getBuffer();
-
-						warden = null;
-						warden_seed = new byte[4];
-						System.arraycopy(keyHash, 16, warden_seed, 0, 4);
-					}
-
-					Task task = createTask("BNLS_VERSIONCHECKEX2", "...");
-					VersionCheckResult vcr = BNLSManager.sendVersionCheckEx2(task, productID, mpqFileTime, mpqFileName, valueStr);
-					completeTask(task);
-
-					if(vcr == null) {
-						dispatchRecieveError("CheckRevision failed.");
-						disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
-						break;
-					}
-
-					// Respond
-					if (nlsRevision != null) {
-						connect.updateProgress("CheckRevision/CD Key challenge");
-
-						BNCSPacket p = new BNCSPacket(this, BNCSPacketId.SID_AUTH_CHECK);
-						p.writeDWord(clientToken);
-						p.writeDWord(vcr.exeVersion);
-						p.writeDWord(vcr.exeHash);
-						if (keyHash2 == null)
-							p.writeDWord(1); // Number of keys
-						else
-							p.writeDWord(2); // Number of keys
-						p.writeDWord(0); // Spawn?
-
-						// For each key..
-						if (keyHash.length != 36)
-							throw new Exception("Invalid keyHash length");
-						p.write(keyHash);
-						if (keyHash2 != null) {
-							if (keyHash2.length != 36)
-								throw new Exception("Invalid keyHash2 length");
-							p.write(keyHash2);
-						}
-
-						// Finally,
-						p.writeNTString(vcr.exeInfo);
-						p.writeNTString(cs.username);
-						p.sendPacket(bncsOutputStream);
-					} else {
-						connect.updateProgress("CheckRevision");
-
-						/*
-						 * (DWORD) Platform ID (DWORD) Product ID (DWORD)
-						 * Version Byte (DWORD) EXE Version (DWORD) EXE Hash
-						 * (STRING) EXE Information
-						 */
-						BNCSPacket p = new BNCSPacket(
-								this, BNCSPacketId.SID_REPORTVERSION);
-						p.writeDWord(PlatformIDs.PLATFORM_IX86);
-						p.writeDWord(productID.getDword());
-						p.writeDWord(verByte);
-						p.writeDWord(vcr.exeVersion);
-						p.writeDWord(vcr.exeHash);
-						p.writeNTString(vcr.exeInfo);
-						p.sendPacket(bncsOutputStream);
-					}
-					break;
-				}
-
-				case SID_REPORTVERSION:
-				case SID_AUTH_CHECK: {
-					int result = is.readDWord();
-					String extraInfo = is.readNTString();
-					assert (is.available() == 0);
-
-					if (pr.packetId == BNCSPacketId.SID_AUTH_CHECK) {
-						if (result != 0) {
-							switch (result) {
-							case 0x0100:
-								dispatchRecieveError("Update required: " + extraInfo);
-								BNFTPConnection.downloadFile(extraInfo);
-								break;
-							case 0x0101:
-								dispatchRecieveError("Invalid version.");
-								break;
-							case 0x102:
-								dispatchRecieveError("Game version must be downgraded: "
-										+ extraInfo);
-								break;
-							case 0x200:
-								dispatchRecieveError("Invalid CD key.");
-								break;
-							case 0x201:
-								dispatchRecieveError("CD key in use by " + extraInfo);
-								break;
-							case 0x202:
-								dispatchRecieveError("Banned key.");
-								break;
-							case 0x203:
-								dispatchRecieveError("Wrong product for CD key.");
-								break;
-							case 0x210:
-								dispatchRecieveError("Invalid second CD key.");
-								break;
-							case 0x211:
-								dispatchRecieveError("Second CD key in use by "
-										+ extraInfo);
-								break;
-							case 0x212:
-								dispatchRecieveError("Banned second key.");
-								break;
-							case 0x213:
-								dispatchRecieveError("Wrong product for second CD key.");
-								break;
-							default:
-								dispatchRecieveError("Unknown SID_AUTH_CHECK result 0x"
-										+ Integer.toHexString(result));
-								break;
-							}
-							disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
-							break;
-						}
-						dispatchRecieveInfo("Passed CD key challenge and CheckRevision.");
-					} else {
-						if (result != 2) {
-							switch (result) {
-							case 0:
-								dispatchRecieveError("Failed version check.");
-								break;
-							case 1:
-								dispatchRecieveError("Old game version.");
-								break;
-							case 3:
-								dispatchRecieveError("Reinstall required.");
-								break;
-
-							default:
-								dispatchRecieveError("Unknown SID_REPORTVERSION result 0x"
-										+ Integer.toHexString(result));
-								break;
-							}
-							disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
-							break;
-						}
-						dispatchRecieveInfo("Passed CheckRevision.");
-					}
-
-					connect.updateProgress("Logging in");
-					sendKeyOrPassword();
-					break;
-				}
-
-				case SID_CDKEY:
-				case SID_CDKEY2: {
 					/*
-					 * (DWORD) Result (STRING) Key owner
-					 *
-					 * 0x01: Ok 0x02: Invalid key 0x03: Bad product 0x04: Banned
-					 * 0x05: In use
+					 * (DWORD) Platform ID (DWORD) Product ID (DWORD)
+					 * Version Byte (DWORD) EXE Version (DWORD) EXE Hash
+					 * (STRING) EXE Information
 					 */
-					int result = is.readDWord();
-					String keyOwner = is.readNTString();
+					BNCSPacket p = new BNCSPacket(
+							this, BNCSPacketId.SID_REPORTVERSION);
+					p.writeDWord(PlatformIDs.PLATFORM_IX86);
+					p.writeDWord(productID.getDword());
+					p.writeDWord(verByte);
+					p.writeDWord(vcr.exeVersion);
+					p.writeDWord(vcr.exeHash);
+					p.writeNTString(vcr.exeInfo);
+					p.sendPacket(bncsOutputStream);
+				}
+				break;
+			}
 
-					if (result != 1) {
+			case SID_REPORTVERSION:
+			case SID_AUTH_CHECK: {
+				int result = is.readDWord();
+				String extraInfo = is.readNTString();
+				assert (is.available() == 0);
+
+				if (pr.packetId == BNCSPacketId.SID_AUTH_CHECK) {
+					if (result != 0) {
 						switch (result) {
-						case 0x02:
+						case 0x0100:
+							dispatchRecieveError("Update required: " + extraInfo);
+							BNFTPConnection.downloadFile(extraInfo);
+							break;
+						case 0x0101:
+							dispatchRecieveError("Invalid version.");
+							break;
+						case 0x102:
+							dispatchRecieveError("Game version must be downgraded: "
+									+ extraInfo);
+							break;
+						case 0x200:
 							dispatchRecieveError("Invalid CD key.");
 							break;
-						case 0x03:
-							dispatchRecieveError("Bad CD key product.");
+						case 0x201:
+							dispatchRecieveError("CD key in use by " + extraInfo);
 							break;
-						case 0x04:
-							dispatchRecieveError("CD key banned.");
+						case 0x202:
+							dispatchRecieveError("Banned key.");
 							break;
-						case 0x05:
-							dispatchRecieveError("CD key in use by " + keyOwner);
+						case 0x203:
+							dispatchRecieveError("Wrong product for CD key.");
+							break;
+						case 0x210:
+							dispatchRecieveError("Invalid second CD key.");
+							break;
+						case 0x211:
+							dispatchRecieveError("Second CD key in use by "
+									+ extraInfo);
+							break;
+						case 0x212:
+							dispatchRecieveError("Banned second key.");
+							break;
+						case 0x213:
+							dispatchRecieveError("Wrong product for second CD key.");
 							break;
 						default:
-							dispatchRecieveError("Unknown SID_CDKEY response 0x"
+							dispatchRecieveError("Unknown SID_AUTH_CHECK result 0x"
 									+ Integer.toHexString(result));
 							break;
 						}
 						disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 						break;
 					}
+					dispatchRecieveInfo("Passed CD key challenge and CheckRevision.");
+				} else {
+					if (result != 2) {
+						switch (result) {
+						case 0:
+							dispatchRecieveError("Failed version check.");
+							break;
+						case 1:
+							dispatchRecieveError("Old game version.");
+							break;
+						case 3:
+							dispatchRecieveError("Reinstall required.");
+							break;
 
-					dispatchRecieveInfo("CD key accepted.");
-					connect.updateProgress("Logging in");
-					sendPassword();
-					break;
-				}
-
-				case SID_AUTH_ACCOUNTLOGON: {
-					/*
-					 * (DWORD) Status (BYTE[32]) Salt (socket) (BYTE[32]) Server
-					 * Key (B)
-					 *
-					 * 0x00: Logon accepted, requires proof. 0x01: Account
-					 * doesn't exist. 0x05: Account requires upgrade. Other:
-					 * Unknown (failure).
-					 */
-					int status = is.readDWord();
-					switch (status) {
-					case 0x00:
-						dispatchRecieveInfo("Login accepted; requires proof.");
-						connect.updateProgress("Login accepted; proving");
-						break;
-					case 0x01:
-						dispatchRecieveError("Account doesn't exist; creating...");
-						connect.updateProgress("Creating account");
-
-						if (srp == null) {
-							dispatchRecieveError("SRP is not initialized!");
-							disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
+						default:
+							dispatchRecieveError("Unknown SID_REPORTVERSION result 0x"
+									+ Integer.toHexString(result));
 							break;
 						}
-
-						byte[] salt = new byte[32];
-						new Random().nextBytes(salt);
-						byte[] verifier = srp.get_v(salt).toByteArray();
-
-						if (salt.length != 32)
-							throw new Exception("Salt length wasn't 32!");
-						if (verifier.length != 32)
-							throw new Exception("Verifier length wasn't 32!");
-
-						BNCSPacket p = new BNCSPacket(
-								this, BNCSPacketId.SID_AUTH_ACCOUNTCREATE);
-						p.write(salt);
-						p.write(verifier);
-						p.writeNTString(cs.username);
-						p.sendPacket(bncsOutputStream);
-
-						break;
-					case 0x05:
-						dispatchRecieveError("Account requires upgrade");
-						disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
-						break;
-					default:
-						dispatchRecieveError("Unknown SID_AUTH_ACCOUNTLOGON status 0x"
-								+ Integer.toHexString(status));
 						disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 						break;
 					}
+					dispatchRecieveInfo("Passed CheckRevision.");
+				}
 
-					if (status != 0)
+				connect.updateProgress("Logging in");
+				sendKeyOrPassword();
+				break;
+			}
+
+			case SID_CDKEY:
+			case SID_CDKEY2: {
+				/*
+				 * (DWORD) Result (STRING) Key owner
+				 *
+				 * 0x01: Ok 0x02: Invalid key 0x03: Bad product 0x04: Banned
+				 * 0x05: In use
+				 */
+				int result = is.readDWord();
+				String keyOwner = is.readNTString();
+
+				if (result != 1) {
+					switch (result) {
+					case 0x02:
+						dispatchRecieveError("Invalid CD key.");
 						break;
+					case 0x03:
+						dispatchRecieveError("Bad CD key product.");
+						break;
+					case 0x04:
+						dispatchRecieveError("CD key banned.");
+						break;
+					case 0x05:
+						dispatchRecieveError("CD key in use by " + keyOwner);
+						break;
+					default:
+						dispatchRecieveError("Unknown SID_CDKEY response 0x"
+								+ Integer.toHexString(result));
+						break;
+					}
+					disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
+					break;
+				}
+
+				dispatchRecieveInfo("CD key accepted.");
+				connect.updateProgress("Logging in");
+				sendPassword();
+				break;
+			}
+
+			case SID_AUTH_ACCOUNTLOGON: {
+				/*
+				 * (DWORD) Status (BYTE[32]) Salt (socket) (BYTE[32]) Server
+				 * Key (B)
+				 *
+				 * 0x00: Logon accepted, requires proof. 0x01: Account
+				 * doesn't exist. 0x05: Account requires upgrade. Other:
+				 * Unknown (failure).
+				 */
+				int status = is.readDWord();
+				switch (status) {
+				case 0x00:
+					dispatchRecieveInfo("Login accepted; requires proof.");
+					connect.updateProgress("Login accepted; proving");
+					break;
+				case 0x01:
+					dispatchRecieveError("Account doesn't exist; creating...");
+					connect.updateProgress("Creating account");
 
 					if (srp == null) {
 						dispatchRecieveError("SRP is not initialized!");
@@ -564,257 +545,293 @@ public class BNCSConnection extends Connection {
 						break;
 					}
 
-					byte s[] = new byte[32];
-					byte B[] = new byte[32];
-					is.read(s, 0, 32);
-					is.read(B, 0, 32);
+					byte[] salt = new byte[32];
+					new Random().nextBytes(salt);
+					byte[] verifier = srp.get_v(salt).toByteArray();
 
-					byte M1[] = srp.getM1(s, B);
-					proof_M2 = srp.getM2(s, B);
-					if (M1.length != 20)
-						throw new Exception("Invalid M1 length");
+					if (salt.length != 32)
+						throw new Exception("Salt length wasn't 32!");
+					if (verifier.length != 32)
+						throw new Exception("Verifier length wasn't 32!");
 
 					BNCSPacket p = new BNCSPacket(
-							this, BNCSPacketId.SID_AUTH_ACCOUNTLOGONPROOF);
-					p.write(M1);
+							this, BNCSPacketId.SID_AUTH_ACCOUNTCREATE);
+					p.write(salt);
+					p.write(verifier);
+					p.writeNTString(cs.username);
 					p.sendPacket(bncsOutputStream);
+
+					break;
+				case 0x05:
+					dispatchRecieveError("Account requires upgrade");
+					disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
+					break;
+				default:
+					dispatchRecieveError("Unknown SID_AUTH_ACCOUNTLOGON status 0x"
+							+ Integer.toHexString(status));
+					disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 					break;
 				}
 
-				case SID_AUTH_ACCOUNTCREATE: {
-					/*
-					 * (DWORD) Status 0x00: Successfully created account name.
-					 * 0x04: Name already exists. 0x07: Name is too short/blank.
-					 * 0x08: Name contains an illegal character. 0x09: Name
-					 * contains an illegal word. 0x0a: Name contains too few
-					 * alphanumeric characters. 0x0b: Name contains adjacent
-					 * punctuation characters. 0x0c: Name contains too many
-					 * punctuation characters. Any other: Name already exists.
-					 */
-					int status = is.readDWord();
-					switch (status) {
-					case 0x00:
-						dispatchRecieveInfo("Account created; logging in.");
-						connect.updateProgress("Logging in");
-						sendKeyOrPassword();
-						break;
-					default:
-						dispatchRecieveError("Create account failed with error code 0x"
-								+ Integer.toHexString(status));
-						break;
-					}
+				if (status != 0)
+					break;
+
+				if (srp == null) {
+					dispatchRecieveError("SRP is not initialized!");
+					disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 					break;
 				}
 
-				case SID_AUTH_ACCOUNTLOGONPROOF: {
-					/*
-					 * (DWORD) Status (BYTE[20]) Server Password Proof (M2)
-					 * (STRING) Additional information
-					 *
-					 * Status: 0x00: Logon successful. 0x02: Incorrect password.
-					 * 0x0E: An email address should be registered for this
-					 * account. 0x0F: Custom error. A string at the end of this
-					 * message contains the error.
-					 */
-					int status = is.readDWord();
-					byte server_M2[] = new byte[20];
-					is.read(server_M2, 0, 20);
-					String additionalInfo = null;
-					if (is.available() != 0)
-						additionalInfo = is.readNTStringUTF8();
+				byte s[] = new byte[32];
+				byte B[] = new byte[32];
+				is.read(s, 0, 32);
+				is.read(B, 0, 32);
 
-					switch (status) {
-					case 0x00:
-						break;
-					case 0x02:
-						dispatchRecieveError("Incorrect password.");
-						disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
-						break;
-					case 0x0E:
-						dispatchRecieveError("An email address should be registered for this account.");
-						connect.updateProgress("Registering email address");
-						sendSetEmail();
-						break;
-					case 0x0F:
-						dispatchRecieveError("Custom bnet error: " + additionalInfo);
-						disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
-						break;
-					default:
-						dispatchRecieveError("Unknown SID_AUTH_ACCOUNTLOGONPROOF status: 0x"
-								+ Integer.toHexString(status));
-						disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
-						break;
-					}
-					if (!isConnected())
-						break;
+				byte M1[] = srp.getM1(s, B);
+				proof_M2 = srp.getM2(s, B);
+				if (M1.length != 20)
+					throw new Exception("Invalid M1 length");
 
-					for (int i = 0; i < 20; i++) {
-						if (server_M2[i] != proof_M2[i])
-							throw new Exception(
-									"Server couldn't prove password");
-					}
+				BNCSPacket p = new BNCSPacket(
+						this, BNCSPacketId.SID_AUTH_ACCOUNTLOGONPROOF);
+				p.write(M1);
+				p.sendPacket(bncsOutputStream);
+				break;
+			}
 
-					dispatchRecieveInfo("Login successful; entering chat.");
-					connect.updateProgress("Entering chat");
-					sendEnterChat();
+			case SID_AUTH_ACCOUNTCREATE: {
+				/*
+				 * (DWORD) Status 0x00: Successfully created account name.
+				 * 0x04: Name already exists. 0x07: Name is too short/blank.
+				 * 0x08: Name contains an illegal character. 0x09: Name
+				 * contains an illegal word. 0x0a: Name contains too few
+				 * alphanumeric characters. 0x0b: Name contains adjacent
+				 * punctuation characters. 0x0c: Name contains too many
+				 * punctuation characters. Any other: Name already exists.
+				 */
+				int status = is.readDWord();
+				switch (status) {
+				case 0x00:
+					dispatchRecieveInfo("Account created; logging in.");
+					connect.updateProgress("Logging in");
+					sendKeyOrPassword();
+					break;
+				default:
+					dispatchRecieveError("Create account failed with error code 0x"
+							+ Integer.toHexString(status));
 					break;
 				}
+				break;
+			}
 
-				case SID_LOGONRESPONSE2: {
-					int result = is.readDWord();
-					switch (result) {
-					case 0x00: // Success
-						dispatchRecieveInfo("Login successful; entering chat.");
-						connect.updateProgress("Entering chat");
-						sendEnterChat();
-						sendGetChannelList();
-						sendJoinChannel(cs.channel);
-						break;
-					case 0x01: // Account doesn't exist
-						dispatchRecieveInfo("Account doesn't exist; creating...");
-						connect.updateProgress("Creating account");
+			case SID_AUTH_ACCOUNTLOGONPROOF: {
+				/*
+				 * (DWORD) Status (BYTE[20]) Server Password Proof (M2)
+				 * (STRING) Additional information
+				 *
+				 * Status: 0x00: Logon successful. 0x02: Incorrect password.
+				 * 0x0E: An email address should be registered for this
+				 * account. 0x0F: Custom error. A string at the end of this
+				 * message contains the error.
+				 */
+				int status = is.readDWord();
+				byte server_M2[] = new byte[20];
+				is.read(server_M2, 0, 20);
+				String additionalInfo = null;
+				if (is.available() != 0)
+					additionalInfo = is.readNTStringUTF8();
 
-						int[] passwordHash = BrokenSHA1
-								.calcHashBuffer(cs.password.toLowerCase()
-										.getBytes());
-
-						BNCSPacket p = new BNCSPacket(
-								this, BNCSPacketId.SID_CREATEACCOUNT2);
-						p.writeDWord(passwordHash[0]);
-						p.writeDWord(passwordHash[1]);
-						p.writeDWord(passwordHash[2]);
-						p.writeDWord(passwordHash[3]);
-						p.writeDWord(passwordHash[4]);
-						p.writeNTString(cs.username);
-						p.sendPacket(bncsOutputStream);
-						break;
-					case 0x02: // Invalid password;
-						dispatchRecieveError("Incorrect password.");
-						disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
-						break;
-					case 0x06: // Account is closed
-						dispatchRecieveError("Your account is closed.");
-						disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
-						break;
-					default:
-						dispatchRecieveError("Unknown SID_LOGONRESPONSE2 result 0x"
-								+ Integer.toHexString(result));
-						disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
-						break;
-					}
+				switch (status) {
+				case 0x00:
 					break;
-				}
-
-				case SID_CLIENTID: {
-					// Sends new registration values; no longer used
+				case 0x02:
+					dispatchRecieveError("Incorrect password.");
+					disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 					break;
-				}
-
-				case SID_LOGONCHALLENGE: {
-					serverToken = is.readDWord();
-					break;
-				}
-
-				case SID_LOGONCHALLENGEEX: {
-					/* int udpToken = */is.readDWord();
-					serverToken = is.readDWord();
-					break;
-				}
-
-				case SID_CREATEACCOUNT2: {
-					int status = is.readDWord();
-					/* String suggestion = */is.readNTString();
-
-					switch (status) {
-					case 0x00:
-						dispatchRecieveInfo("Account created");
-						connect.updateProgress("Logging in");
-						sendKeyOrPassword();
-						break;
-					case 0x02:
-						dispatchRecieveError("Name contained invalid characters");
-						disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
-						break;
-					case 0x03:
-						dispatchRecieveError("Name contained a banned word");
-						disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
-						break;
-					case 0x04:
-						dispatchRecieveError("Account already exists");
-						disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
-						break;
-					case 0x06:
-						dispatchRecieveError("Name did not contain enough alphanumeric characters");
-						disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
-						break;
-					default:
-						dispatchRecieveError("Unknown SID_CREATEACCOUNT2 status 0x"
-								+ Integer.toHexString(status));
-						disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
-						break;
-					}
-					break;
-				}
-
-				case SID_SETEMAIL: {
+				case 0x0E:
 					dispatchRecieveError("An email address should be registered for this account.");
 					connect.updateProgress("Registering email address");
 					sendSetEmail();
 					break;
-				}
-
-				case SID_ENTERCHAT: {
-					String uniqueUserName = is.readNTString();
-					StatString myStatString = new StatString(is.readNTString());
-					/* String accountName = */is.readNTString();
-
-					myUser = new BNetUser(this, uniqueUserName, cs.myRealm);
-					myUser.setStatString(myStatString);
-					dispatchEnterChat(myUser);
-					dispatchTitleChanged();
-
-					// We are officially logged in!
-
-					// Get MOTD
-					if (GlobalSettings.displayBattleNetMOTD) {
-						BNCSPacket p = new BNCSPacket(this, BNCSPacketId.SID_NEWS_INFO);
-						p.writeDWord((int) (new java.util.Date().getTime() / 1000)); // timestamp
-						p.sendPacket(bncsOutputStream);
-					}
-
-					// Get friends list
-					sendFriendsList();
-
-					// Join home channel
-					if (nlsRevision != null) {
-						sendGetChannelList();
-						sendJoinChannel(cs.channel);
-					}
-
-					return true;
-				}
-
-				case SID_GETCHANNELLIST: {
-					recieveGetChannelList(is);
+				case 0x0F:
+					dispatchRecieveError("Custom bnet error: " + additionalInfo);
+					disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 					break;
-				}
-
-				case SID_CLANINFO: {
-					recvClanInfo(is);
-					break;
-				}
-
-				case SID_WARDEN: {
-					recieveWarden(is);
-					break;
-				}
-
 				default:
-					Out.debugAlways(getClass(), "Unexpected packet "
-							+ pr.packetId.name() + "\n"
-							+ HexDump.hexDump(pr.data));
+					dispatchRecieveError("Unknown SID_AUTH_ACCOUNTLOGONPROOF status: 0x"
+							+ Integer.toHexString(status));
+					disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 					break;
 				}
+				if (!isConnected())
+					break;
+
+				for (int i = 0; i < 20; i++) {
+					if (server_M2[i] != proof_M2[i])
+						throw new Exception(
+								"Server couldn't prove password");
+				}
+
+				dispatchRecieveInfo("Login successful; entering chat.");
+				connect.updateProgress("Entering chat");
+				sendEnterChat();
+				break;
+			}
+
+			case SID_LOGONRESPONSE2: {
+				int result = is.readDWord();
+				switch (result) {
+				case 0x00: // Success
+					dispatchRecieveInfo("Login successful; entering chat.");
+					connect.updateProgress("Entering chat");
+					sendEnterChat();
+					sendGetChannelList();
+					sendJoinChannel(cs.channel);
+					break;
+				case 0x01: // Account doesn't exist
+					dispatchRecieveInfo("Account doesn't exist; creating...");
+					connect.updateProgress("Creating account");
+
+					int[] passwordHash = BrokenSHA1
+							.calcHashBuffer(cs.password.toLowerCase()
+									.getBytes());
+
+					BNCSPacket p = new BNCSPacket(
+							this, BNCSPacketId.SID_CREATEACCOUNT2);
+					p.writeDWord(passwordHash[0]);
+					p.writeDWord(passwordHash[1]);
+					p.writeDWord(passwordHash[2]);
+					p.writeDWord(passwordHash[3]);
+					p.writeDWord(passwordHash[4]);
+					p.writeNTString(cs.username);
+					p.sendPacket(bncsOutputStream);
+					break;
+				case 0x02: // Invalid password;
+					dispatchRecieveError("Incorrect password.");
+					disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
+					break;
+				case 0x06: // Account is closed
+					dispatchRecieveError("Your account is closed.");
+					disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
+					break;
+				default:
+					dispatchRecieveError("Unknown SID_LOGONRESPONSE2 result 0x"
+							+ Integer.toHexString(result));
+					disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
+					break;
+				}
+				break;
+			}
+
+			case SID_CLIENTID: {
+				// Sends new registration values; no longer used
+				break;
+			}
+
+			case SID_LOGONCHALLENGE: {
+				serverToken = is.readDWord();
+				break;
+			}
+
+			case SID_LOGONCHALLENGEEX: {
+				/* int udpToken = */is.readDWord();
+				serverToken = is.readDWord();
+				break;
+			}
+
+			case SID_CREATEACCOUNT2: {
+				int status = is.readDWord();
+				/* String suggestion = */is.readNTString();
+
+				switch (status) {
+				case 0x00:
+					dispatchRecieveInfo("Account created");
+					connect.updateProgress("Logging in");
+					sendKeyOrPassword();
+					break;
+				case 0x02:
+					dispatchRecieveError("Name contained invalid characters");
+					disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
+					break;
+				case 0x03:
+					dispatchRecieveError("Name contained a banned word");
+					disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
+					break;
+				case 0x04:
+					dispatchRecieveError("Account already exists");
+					disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
+					break;
+				case 0x06:
+					dispatchRecieveError("Name did not contain enough alphanumeric characters");
+					disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
+					break;
+				default:
+					dispatchRecieveError("Unknown SID_CREATEACCOUNT2 status 0x"
+							+ Integer.toHexString(status));
+					disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
+					break;
+				}
+				break;
+			}
+
+			case SID_SETEMAIL: {
+				dispatchRecieveError("An email address should be registered for this account.");
+				connect.updateProgress("Registering email address");
+				sendSetEmail();
+				break;
+			}
+
+			case SID_ENTERCHAT: {
+				String uniqueUserName = is.readNTString();
+				StatString myStatString = new StatString(is.readNTString());
+				/* String accountName = */is.readNTString();
+
+				myUser = new BNetUser(this, uniqueUserName, cs.myRealm);
+				myUser.setStatString(myStatString);
+				dispatchEnterChat(myUser);
+				dispatchTitleChanged();
+
+				// We are officially logged in!
+
+				// Get MOTD
+				if (GlobalSettings.displayBattleNetMOTD) {
+					BNCSPacket p = new BNCSPacket(this, BNCSPacketId.SID_NEWS_INFO);
+					p.writeDWord((int) (new java.util.Date().getTime() / 1000)); // timestamp
+					p.sendPacket(bncsOutputStream);
+				}
+
+				// Get friends list
+				sendFriendsList();
+
+				// Join home channel
+				if (nlsRevision != null) {
+					sendGetChannelList();
+					sendJoinChannel(cs.channel);
+				}
+
+				return true;
+			}
+
+			case SID_GETCHANNELLIST: {
+				recieveGetChannelList(is);
+				break;
+			}
+
+			case SID_CLANINFO: {
+				recvClanInfo(is);
+				break;
+			}
+
+			case SID_WARDEN: {
+				recieveWarden(is);
+				break;
+			}
+
+			default:
+				Out.debugAlways(getClass(), "Unexpected packet "
+						+ pr.packetId.name() + "\n"
+						+ HexDump.hexDump(pr.data));
+				break;
 			}
 		}
 
@@ -1021,645 +1038,647 @@ public class BNCSConnection extends Connection {
 				}
 			}
 
-			if(bncsInputStream.available() <= 0) {
-				sleep(200);
-			} else {
-				BNCSPacketReader pr = new BNCSPacketReader(bncsInputStream);
-				BNetInputStream is = pr.getData();
+			BNCSPacketReader pr;
+			try {
+				pr = obtainPacket();
+			} catch(SocketTimeoutException e) {
+				// Socket timeout is normal; we just need to wait for more data
+				continue;
+			}
 
-				switch(pr.packetId) {
-				case SID_NULL: {
-					lastNullPacket = timeNow;
-					BNCSPacket p = new BNCSPacket(this, BNCSPacketId.SID_NULL);
-					p.sendPacket(bncsOutputStream);
-					break;
+			BNetInputStream is = pr.getData();
+			switch(pr.packetId) {
+			case SID_NULL: {
+				lastNullPacket = timeNow;
+				BNCSPacket p = new BNCSPacket(this, BNCSPacketId.SID_NULL);
+				p.sendPacket(bncsOutputStream);
+				break;
+			}
+
+			case SID_PING: {
+				BNCSPacket p = new BNCSPacket(this, BNCSPacketId.SID_PING);
+				p.writeDWord(is.readDWord());
+				p.sendPacket(bncsOutputStream);
+				break;
+			}
+
+			case SID_NEWS_INFO: {
+				int numEntries = is.readByte();
+				// int lastLogon = is.readDWord();
+				// int oldestNews = is.readDWord();
+				// int newestNews = is.readDWord();;
+				is.skip(12);
+
+				for(int i = 0; i < numEntries; i++) {
+					int timeStamp = is.readDWord();
+					String news = is.readNTStringUTF8().trim();
+					if(timeStamp == 0)	// MOTD
+						dispatchRecieveServerInfo(news);
 				}
 
-				case SID_PING: {
-					BNCSPacket p = new BNCSPacket(this, BNCSPacketId.SID_PING);
-					p.writeDWord(is.readDWord());
-					p.sendPacket(bncsOutputStream);
+				break;
+			}
+
+			case SID_GETCHANNELLIST: {
+				recieveGetChannelList(is);
+				break;
+			}
+
+			case SID_CHATEVENT: {
+				BNCSChatEventId eid = BNCSChatEventId.values()[is.readDWord()];
+				int flags = is.readDWord();
+				int ping = is.readDWord();
+				is.skip(12);
+			// is.readDWord(); // IP Address (defunct)
+			// is.readDWord(); // Account number (defunct)
+			// is.readDWord(); // Registration authority (defunct)
+				String username = is.readNTString();
+				ByteArray data = null;
+				StatString statstr = null;
+
+				switch(eid) {
+				case EID_SHOWUSER:
+				case EID_JOIN:
+					statstr = is.readStatString();
 					break;
-				}
-
-				case SID_NEWS_INFO: {
-					int numEntries = is.readByte();
-					// int lastLogon = is.readDWord();
-					// int oldestNews = is.readDWord();
-					// int newestNews = is.readDWord();;
-					is.skip(12);
-
-					for(int i = 0; i < numEntries; i++) {
-						int timeStamp = is.readDWord();
-						String news = is.readNTStringUTF8().trim();
-						if(timeStamp == 0)	// MOTD
-							dispatchRecieveServerInfo(news);
-					}
-
+				case EID_USERFLAGS:
+					// Sometimes USERFLAGS contains a statstring; sometimes
+					// it doesn't
+					statstr = is.readStatString();
+					if(statstr.toString().length() == 0)
+						statstr = null;
 					break;
-				}
-
-				case SID_GETCHANNELLIST: {
-					recieveGetChannelList(is);
-					break;
-				}
-
-				case SID_CHATEVENT: {
-					BNCSChatEventId eid = BNCSChatEventId.values()[is.readDWord()];
-					int flags = is.readDWord();
-					int ping = is.readDWord();
-					is.skip(12);
-				// is.readDWord(); // IP Address (defunct)
-				// is.readDWord(); // Account number (defunct)
-				// is.readDWord(); // Registration authority (defunct)
-					String username = is.readNTString();
-					ByteArray data = null;
-					StatString statstr = null;
-
-					switch(eid) {
-					case EID_SHOWUSER:
-					case EID_JOIN:
-						statstr = is.readStatString();
-						break;
-					case EID_USERFLAGS:
-						// Sometimes USERFLAGS contains a statstring; sometimes
-						// it doesn't
-						statstr = is.readStatString();
-						if(statstr.toString().length() == 0)
-							statstr = null;
-						break;
-					default:
-						data = new ByteArray(is.readNTBytes());
-						break;
-					}
-
-					BNetUser user = null;
-					switch(eid) {
-					case EID_SHOWUSER:
-					case EID_USERFLAGS:
-					case EID_JOIN:
-					case EID_LEAVE:
-					case EID_TALK:
-					case EID_EMOTE:
-					case EID_WHISPERSENT:
-					case EID_WHISPER:
-						switch(productID) {
-						case D2DV:
-						case D2XP:
-							int asterisk = username.indexOf('*');
-							if(asterisk >= 0)
-								username = username.substring(asterisk+1);
-							break;
-						}
-
-						// Get a BNetUser object for the user
-						if(myUser.equals(username))
-							user = myUser;
-						else
-							user = getCreateBNetUser(username, myUser);
-
-						// Set the flags, ping, statstr
-						user.setFlags(flags);
-						user.setPing(ping);
-						if(statstr != null)
-							user.setStatString(statstr);
-						break;
-					}
-
-					switch(eid) {
-					case EID_SHOWUSER:
-					case EID_USERFLAGS:
-						dispatchChannelUser(user);
-						break;
-					case EID_JOIN:
-						dispatchChannelJoin(user);
-						break;
-					case EID_LEAVE:
-						dispatchChannelLeave(user);
-						break;
-					case EID_TALK:
-						dispatchRecieveChat(user, data);
-						break;
-					case EID_BROADCAST:
-						dispatchRecieveBroadcast(username, flags, data.toString());
-						break;
-					case EID_EMOTE:
-						dispatchRecieveEmote(user, data.toString());
-						break;
-					case EID_INFO:
-						dispatchRecieveServerInfo(data.toString());
-						break;
-					case EID_ERROR:
-						dispatchRecieveServerError(data.toString());
-						break;
-					case EID_CHANNEL:
-						// Don't clear the queue if we're connecting for the first time or rejoining
-						String newChannel = data.toString();
-						if((channelName != null) && !channelName.equals(newChannel))
-							clearQueue();
-						channelName = newChannel;
-						dispatchJoinedChannel(newChannel, flags);
-						dispatchTitleChanged();
-						if(botnet != null)
-							botnet.sendStatusUpdate();
-						break;
-					case EID_WHISPERSENT:
-						dispatchWhisperSent(user, data.toString());
-						break;
-					case EID_WHISPER:
-						dispatchWhisperRecieved(user, data.toString());
-						break;
-					case EID_CHANNELDOESNOTEXIST:
-						dispatchRecieveError("Channel does not exist; creating");
-						sendJoinChannel2(data.toString());
-						break;
-					case EID_CHANNELRESTRICTED:
-						long timeSinceNormalJoin = timeNow - lastNormalJoin;
-						if((lastNormalJoin != 0) && (timeSinceNormalJoin < 5000)) {
-							dispatchRecieveError("Channel is restricted; forcing entry");
-							sendJoinChannel2(data.toString());
-						} else {
-							dispatchRecieveError("Channel " + data.toString() + " is restricted");
-						}
-						break;
-					case EID_CHANNELFULL:
-						dispatchRecieveError("Channel " + data.toString() + " is full");
-						break;
-					default:
-						dispatchRecieveError("Unknown SID_CHATEVENT " + eid + ": " + data.toString());
-						break;
-					}
-
-					break;
-				}
-
-				case SID_MESSAGEBOX: {
-					/* int style = */ is.readDWord();
-					String text = is.readNTStringUTF8();
-					String caption = is.readNTStringUTF8();
-
-					dispatchRecieveInfo("<" + caption + "> " + text);
-					break;
-				}
-
-				case SID_FLOODDETECTED: {
-					dispatchRecieveError("You have been disconnected for flooding.");
-					disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
-					break;
-				}
-
-				/*
-				 * .----------.
-				 * |  Realms  |
-				 * '----------'
-				 */
-				case SID_QUERYREALMS2: {
-					/*
-					 * (DWORD) Unknown0
-					 * (DWORD) Number of Realms
-					 *
-					 * For each realm:
-					 * (DWORD) UnknownR0
-					 * (STRING) Realm Name
-					 * (STRING) Realm Description
-					 */
-					is.readDWord();
-					int numRealms = is.readDWord();
-					String realms[] = new String[numRealms];
-					for(int i = 0; i < numRealms; i++) {
-						is.readDWord();
-						realms[i] = is.readNTStringUTF8();
-						is.readNTStringUTF8();
-					}
-					dispatchQueryRealms2(realms);
-					break;
-				}
-
-				case SID_LOGONREALMEX: {
-					/*
-					 * (DWORD) Cookie
-					 * (DWORD) Status
-					 * (DWORD[2]) MCP Chunk 1
-					 * (DWORD) IP
-					 * (DWORD) Port
-					 * (DWORD[12]) MCP Chunk 2
-					 * (STRING) BNCS unique name
-					 */
-					if(pr.packetLength < 12)
-						throw new Exception("pr.packetLength < 12");
-					else if(pr.packetLength == 12) {
-						/* int cookie = */ is.readDWord();
-						int status = is.readDWord();
-						switch(status) {
-						case 0x80000001:
-							dispatchRecieveError("Realm is unavailable.");
-							break;
-						case 0x80000002:
-							dispatchRecieveError("Realm logon failed");
-							break;
-						default:
-							throw new Exception("Unknown status code 0x" + Integer.toHexString(status));
-						}
-					} else {
-						int MCPChunk1[] = new int[4];
-						MCPChunk1[0] = is.readDWord();
-						MCPChunk1[1] = is.readDWord();
-						MCPChunk1[2] = is.readDWord();
-						MCPChunk1[3] = is.readDWord();
-						int ip = is.readDWord();
-						int port = is.readDWord();
-						port = ((port & 0xFF00) >> 8) | ((port & 0x00FF) << 8);
-						int MCPChunk2[] = new int[12];
-						MCPChunk2[0] = is.readDWord();
-						MCPChunk2[1] = is.readDWord();
-						MCPChunk2[2] = is.readDWord();
-						MCPChunk2[3] = is.readDWord();
-						MCPChunk2[4] = is.readDWord();
-						MCPChunk2[5] = is.readDWord();
-						MCPChunk2[6] = is.readDWord();
-						MCPChunk2[7] = is.readDWord();
-						MCPChunk2[8] = is.readDWord();
-						MCPChunk2[9] = is.readDWord();
-						MCPChunk2[10] = is.readDWord();
-						MCPChunk2[11] = is.readDWord();
-						String uniqueName = is.readNTString();
-						dispatchLogonRealmEx(MCPChunk1, ip, port, MCPChunk2, uniqueName);
-					}
-
-					break;
-				}
-
-				/*
-				 * .-----------.
-				 * |  Profile  |
-				 * '-----------'
-				 */
-
-				case SID_READUSERDATA: {
-					/*
-					 * (DWORD) Number of accounts
-					 * (DWORD) Number of keys
-					 * (DWORD) Request ID
-					 * (STRING[]) Requested Key Values
-					 */
-					int numAccounts = is.readDWord();
-					int numKeys = is.readDWord();
-					@SuppressWarnings("unchecked")
-					List<Object> keys = (List<Object>)CookieUtility.destroyCookie(is.readDWord());
-
-					if(numAccounts != 1)
-						throw new IllegalStateException("SID_READUSERDATA with numAccounts != 1");
-
-					UserProfile up = new UserProfile((String)keys.remove(0));
-					dispatchRecieveInfo("Profile for " + up.getUser());
-					for(int i = 0; i < numKeys; i++) {
-						String key = (String)keys.get(i);
-						String value = is.readNTStringUTF8();
-						if((key == null) || (key.length() == 0))
-							continue;
-						value = prettyProfileValue(key, value);
-
-						if(value.length() != 0) {
-							dispatchRecieveInfo(key + " = " + value);
-						} else if(
-							key.equals(UserProfile.PROFILE_DESCRIPTION) ||
-							key.equals(UserProfile.PROFILE_LOCATION) ||
-							key.equals(UserProfile.PROFILE_SEX)) {
-							// Always report these keys
-						} else {
-							continue;
-						}
-						up.put(key, value);
-					}
-
-					// FIXME this should be a dispatch
-					if(PluginManager.getEnableGui())
-						new ProfileEditor(up, this);
-					break;
-				}
-
-				/*
-				 * .-----------.
-				 * |  Friends  |
-				 * '-----------'
-				 */
-
-				case SID_FRIENDSLIST: {
-					/*
-					 * (BYTE) Number of Entries
-					 *
-					 * For each member:
-					 * (STRING) Account
-					 * (BYTE) Status
-					 * (BYTE) Location
-					 * (DWORD) ProductID
-					 * (STRING) Location name
-					 */
-					byte numEntries = is.readByte();
-					FriendEntry[] entries = new FriendEntry[numEntries];
-
-					for(int i = 0; i < numEntries; i++) {
-						String uAccount = is.readNTString();
-						byte uStatus = is.readByte();
-						byte uLocation = is.readByte();
-						int uProduct = is.readDWord();
-						String uLocationName = is.readNTStringUTF8();
-
-						entries[i] = new FriendEntry(uAccount, uStatus, uLocation, uProduct, uLocationName);
-					}
-
-					dispatchFriendsList(entries);
-					break;
-				}
-
-				case SID_FRIENDSUPDATE: {
-					/*
-					 * (BYTE) Entry number
-					 * (BYTE) Friend Location
-					 * (BYTE) Friend Status
-					 * (DWORD) ProductID
-					 * (STRING) Location
-					 */
-					byte fEntry = is.readByte();
-					byte fLocation = is.readByte();
-					byte fStatus = is.readByte();
-					int fProduct = is.readDWord();
-					String fLocationName = is.readNTStringUTF8();
-
-					dispatchFriendsUpdate(new FriendEntry(fEntry, fStatus, fLocation, fProduct, fLocationName));
-					break;
-				}
-
-				case SID_FRIENDSADD: {
-					/*
-					 * (STRING) Account
-					 * (BYTE) Friend Type
-					 * (BYTE) Friend Status
-					 * (DWORD) ProductID
-					 * (STRING) Location
-					 */
-					String fAccount = is.readNTString();
-					byte fLocation = is.readByte();
-					byte fStatus = is.readByte();
-					int fProduct = is.readDWord();
-					String fLocationName = is.readNTStringUTF8();
-
-					dispatchFriendsAdd(new FriendEntry(fAccount, fStatus, fLocation, fProduct, fLocationName));
-					break;
-				}
-
-				case SID_FRIENDSREMOVE: {
-					/*
-					 * (BYTE) Entry Number
-					 */
-					byte entry = is.readByte();
-
-					dispatchFriendsRemove(entry);
-					break;
-				}
-
-				case SID_FRIENDSPOSITION: {
-					/*
-					 * (BYTE) Old Position
-					 * (BYTE) New Position
-					 */
-					byte oldPosition = is.readByte();
-					byte newPosition = is.readByte();
-
-					dispatchFriendsPosition(oldPosition, newPosition);
-					break;
-				}
-
-				/*
-				 * .--------.
-				 * |  Clan  |
-				 * '--------'
-				 */
-
-				case SID_CLANINFO: {
-					recvClanInfo(is);
-					break;
-				}
-
-				case SID_CLANFINDCANDIDATES: {
-					Object cookie = CookieUtility.destroyCookie(is.readDWord());
-					byte status = is.readByte();
-					byte numCandidates = is.readByte();
-					List<String> candidates = new ArrayList<String>(numCandidates);
-					for(int i = 0 ; i < numCandidates; i++)
-						candidates.add(is.readNTString());
-
-					switch(status) {
-					case 0x00:
-						if(numCandidates < 9)
-							dispatchRecieveError("Insufficient elegible W3 players (" + numCandidates + "/9).");
-						else
-							dispatchClanFindCandidates(cookie, candidates);
-						break;
-					case 0x01:
-						dispatchRecieveError("Clan tag already taken");
-						break;
-					case 0x08:
-						dispatchRecieveError("Already in a clan");
-						break;
-					case 0x0a:
-						dispatchRecieveError("Invalid clan tag");
-						break;
-					default:
-						dispatchRecieveError("Unknown response 0x" + Integer.toHexString(status));
-						break;
-					}
-					break;
-				}
-				// SID_CLANINVITEMULTIPLE
-				case SID_CLANCREATIONINVITATION: {
-					int cookie = is.readDWord();
-					int clanTag = is.readDWord();
-					String clanName = is.readNTString();
-					String inviter = is.readNTString();
-
-					ClanCreationInvitationCookie c = new ClanCreationInvitationCookie(this, cookie, clanTag, clanName, inviter);
-					dispatchClanCreationInvitation(c);
-					break;
-				}
-				// SID_CLANDISBAND
-				// SID_CLANMAKECHIEFTAIN
-
-				// SID_CLANQUITNOTIFY
-				case SID_CLANINVITATION: {
-					Object cookie = CookieUtility.destroyCookie(is.readDWord());
-					byte status = is.readByte();
-
-					String result;
-					switch(status) {
-					case 0x00:
-						result = "Invitation accepted";
-						break;
-					case 0x04:
-						result = "Invitation declined";
-						break;
-					case 0x05:
-						result = "Failed to invite user";
-						break;
-					case 0x09:
-						result = "Clan is full";
-						break;
-					default:
-						result = "Unknown response 0x" + Integer.toHexString(status);
-						break;
-					}
-
-					if(cookie instanceof CommandResponseCookie)
-						((CommandResponseCookie)cookie).sendChat(result);
-					else
-						Out.info(getClass(), result);
-
-					break;
-				}
-
-				// SID_CLANREMOVEMEMBER
-
-				case SID_CLANINVITATIONRESPONSE: {
-					/*
-					 * (DWORD) Cookie
-					 * (DWORD) Clan tag
-					 * (STRING) Clan name
-					 * (STRING) Inviter
-					 */
-					int cookie = is.readDWord();
-					int clanTag = is.readDWord();
-					String clanName = is.readNTString();
-					String inviter = is.readNTString();
-
-					ClanInvitationCookie c = new ClanInvitationCookie(this, cookie, clanTag, clanName, inviter);
-					dispatchClanInvitation(c);
-					break;
-				}
-
-				case SID_CLANRANKCHANGE: {
-					int cookie = is.readDWord();
-					byte status = is.readByte();
-
-					Object obj = CookieUtility.destroyCookie(cookie);
-					String statusCode = null;
-					switch(status) {
-					case ClanStatusIDs.CLANSTATUS_SUCCESS:
-						statusCode = "Successfully changed rank";
-						break;
-					case 0x01:
-						statusCode = "Failed to change rank";
-						break;
-					case ClanStatusIDs.CLANSTATUS_TOO_SOON:
-						statusCode = "Cannot change user'socket rank yet";
-						break;
-					case ClanStatusIDs.CLANSTATUS_NOT_AUTHORIZED:
-						statusCode = "Not authorized to change user rank*";
-						break;
-					case 0x08:
-						statusCode = "Not allowed to change user rank**";
-						break;
-					default:	statusCode = "Unknown ClanStatusID 0x" + Integer.toHexString(status);
-					}
-
-					dispatchRecieveInfo(statusCode + "\n" + obj.toString());
-					// TODO: clanRankChange(obj, status)
-
-					break;
-				}
-
-				case SID_CLANMOTD: {
-					/*
-					 * (DWORD) Cookie
-					 * (DWORD) Unknown (0)
-					 * (STRING) MOTD
-					 */
-					int cookieId = is.readDWord();
-					is.readDWord();
-					String text = is.readNTStringUTF8();
-
-					Object cookie = CookieUtility.destroyCookie(cookieId);
-					dispatchClanMOTD(cookie, text);
-					break;
-				}
-
-				case SID_CLANMEMBERLIST: {
-					/*
-					 * (DWORD) Cookie
-					 * (BYTE) Number of Members
-					 *
-					 * For each member:
-					 * (STRING) Username
-					 * (BYTE) Rank
-					 * (BYTE) Online Status
-					 * (STRING) Location
-					 */
-					is.readDWord();
-					byte numMembers = is.readByte();
-					ClanMember[] members = new ClanMember[numMembers];
-
-					for(int i = 0; i < numMembers; i++) {
-						String uName = is.readNTString();
-						byte uRank = is.readByte();
-						byte uOnline = is.readByte();
-						String uLocation = is.readNTStringUTF8();
-
-						members[i] = new ClanMember(uName, uRank, uOnline, uLocation);
-					}
-
-					dispatchClanMemberList(members);
-					break;
-				}
-
-				case SID_CLANMEMBERREMOVED: {
-					/*
-					 * (STRING) Username
-					 */
-					String username = is.readNTString();
-					dispatchClanMemberRemoved(username);
-					break;
-				}
-
-				case SID_CLANMEMBERSTATUSCHANGE: {
-					/*
-					 * (STRING) Username
-					 * (BYTE) Rank
-					 * (BYTE) Status
-					 * (STRING) Location
-					 */
-					String username = is.readNTString();
-					byte rank = is.readByte();
-					byte status = is.readByte();
-					String location = is.readNTStringUTF8();
-
-					dispatchClanMemberStatusChange(new ClanMember(username, rank, status, location));
-					break;
-				}
-
-				case SID_CLANMEMBERRANKCHANGE: {
-					/*
-					 * (BYTE) Old rank
-					 * (BYTE) New rank
-					 * (STRING) Clan member who changed your rank
-					 */
-					byte oldRank = is.readByte();
-					byte newRank = is.readByte();
-					String user = is.readNTString();
-					dispatchRecieveInfo("Rank changed from " + ClanRankIDs.ClanRank[oldRank] + " to " + ClanRankIDs.ClanRank[newRank] + " by " + user);
-					dispatchClanMemberRankChange(oldRank, newRank, user);
-					break;
-				}
-
-				// TODO: SID_CLANMEMBERINFORMATION
-
-				case SID_WARDEN: {
-					recieveWarden(is);
-					break;
-				}
-
 				default:
-					Out.debugAlways(getClass(), "Unexpected packet " + pr.packetId.name() + "\n" + HexDump.hexDump(pr.data));
+					data = new ByteArray(is.readNTBytes());
 					break;
 				}
+
+				BNetUser user = null;
+				switch(eid) {
+				case EID_SHOWUSER:
+				case EID_USERFLAGS:
+				case EID_JOIN:
+				case EID_LEAVE:
+				case EID_TALK:
+				case EID_EMOTE:
+				case EID_WHISPERSENT:
+				case EID_WHISPER:
+					switch(productID) {
+					case D2DV:
+					case D2XP:
+						int asterisk = username.indexOf('*');
+						if(asterisk >= 0)
+							username = username.substring(asterisk+1);
+						break;
+					}
+
+					// Get a BNetUser object for the user
+					if(myUser.equals(username))
+						user = myUser;
+					else
+						user = getCreateBNetUser(username, myUser);
+
+					// Set the flags, ping, statstr
+					user.setFlags(flags);
+					user.setPing(ping);
+					if(statstr != null)
+						user.setStatString(statstr);
+					break;
+				}
+
+				switch(eid) {
+				case EID_SHOWUSER:
+				case EID_USERFLAGS:
+					dispatchChannelUser(user);
+					break;
+				case EID_JOIN:
+					dispatchChannelJoin(user);
+					break;
+				case EID_LEAVE:
+					dispatchChannelLeave(user);
+					break;
+				case EID_TALK:
+					dispatchRecieveChat(user, data);
+					break;
+				case EID_BROADCAST:
+					dispatchRecieveBroadcast(username, flags, data.toString());
+					break;
+				case EID_EMOTE:
+					dispatchRecieveEmote(user, data.toString());
+					break;
+				case EID_INFO:
+					dispatchRecieveServerInfo(data.toString());
+					break;
+				case EID_ERROR:
+					dispatchRecieveServerError(data.toString());
+					break;
+				case EID_CHANNEL:
+					// Don't clear the queue if we're connecting for the first time or rejoining
+					String newChannel = data.toString();
+					if((channelName != null) && !channelName.equals(newChannel))
+						clearQueue();
+					channelName = newChannel;
+					dispatchJoinedChannel(newChannel, flags);
+					dispatchTitleChanged();
+					if(botnet != null)
+						botnet.sendStatusUpdate();
+					break;
+				case EID_WHISPERSENT:
+					dispatchWhisperSent(user, data.toString());
+					break;
+				case EID_WHISPER:
+					dispatchWhisperRecieved(user, data.toString());
+					break;
+				case EID_CHANNELDOESNOTEXIST:
+					dispatchRecieveError("Channel does not exist; creating");
+					sendJoinChannel2(data.toString());
+					break;
+				case EID_CHANNELRESTRICTED:
+					long timeSinceNormalJoin = timeNow - lastNormalJoin;
+					if((lastNormalJoin != 0) && (timeSinceNormalJoin < 5000)) {
+						dispatchRecieveError("Channel is restricted; forcing entry");
+						sendJoinChannel2(data.toString());
+					} else {
+						dispatchRecieveError("Channel " + data.toString() + " is restricted");
+					}
+					break;
+				case EID_CHANNELFULL:
+					dispatchRecieveError("Channel " + data.toString() + " is full");
+					break;
+				default:
+					dispatchRecieveError("Unknown SID_CHATEVENT " + eid + ": " + data.toString());
+					break;
+				}
+
+				break;
+			}
+
+			case SID_MESSAGEBOX: {
+				/* int style = */ is.readDWord();
+				String text = is.readNTStringUTF8();
+				String caption = is.readNTStringUTF8();
+
+				dispatchRecieveInfo("<" + caption + "> " + text);
+				break;
+			}
+
+			case SID_FLOODDETECTED: {
+				dispatchRecieveError("You have been disconnected for flooding.");
+				disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
+				break;
+			}
+
+			/*
+			 * .----------.
+			 * |  Realms  |
+			 * '----------'
+			 */
+			case SID_QUERYREALMS2: {
+				/*
+				 * (DWORD) Unknown0
+				 * (DWORD) Number of Realms
+				 *
+				 * For each realm:
+				 * (DWORD) UnknownR0
+				 * (STRING) Realm Name
+				 * (STRING) Realm Description
+				 */
+				is.readDWord();
+				int numRealms = is.readDWord();
+				String realms[] = new String[numRealms];
+				for(int i = 0; i < numRealms; i++) {
+					is.readDWord();
+					realms[i] = is.readNTStringUTF8();
+					is.readNTStringUTF8();
+				}
+				dispatchQueryRealms2(realms);
+				break;
+			}
+
+			case SID_LOGONREALMEX: {
+				/*
+				 * (DWORD) Cookie
+				 * (DWORD) Status
+				 * (DWORD[2]) MCP Chunk 1
+				 * (DWORD) IP
+				 * (DWORD) Port
+				 * (DWORD[12]) MCP Chunk 2
+				 * (STRING) BNCS unique name
+				 */
+				if(pr.packetLength < 12)
+					throw new Exception("pr.packetLength < 12");
+				else if(pr.packetLength == 12) {
+					/* int cookie = */ is.readDWord();
+					int status = is.readDWord();
+					switch(status) {
+					case 0x80000001:
+						dispatchRecieveError("Realm is unavailable.");
+						break;
+					case 0x80000002:
+						dispatchRecieveError("Realm logon failed");
+						break;
+					default:
+						throw new Exception("Unknown status code 0x" + Integer.toHexString(status));
+					}
+				} else {
+					int MCPChunk1[] = new int[4];
+					MCPChunk1[0] = is.readDWord();
+					MCPChunk1[1] = is.readDWord();
+					MCPChunk1[2] = is.readDWord();
+					MCPChunk1[3] = is.readDWord();
+					int ip = is.readDWord();
+					int port = is.readDWord();
+					port = ((port & 0xFF00) >> 8) | ((port & 0x00FF) << 8);
+					int MCPChunk2[] = new int[12];
+					MCPChunk2[0] = is.readDWord();
+					MCPChunk2[1] = is.readDWord();
+					MCPChunk2[2] = is.readDWord();
+					MCPChunk2[3] = is.readDWord();
+					MCPChunk2[4] = is.readDWord();
+					MCPChunk2[5] = is.readDWord();
+					MCPChunk2[6] = is.readDWord();
+					MCPChunk2[7] = is.readDWord();
+					MCPChunk2[8] = is.readDWord();
+					MCPChunk2[9] = is.readDWord();
+					MCPChunk2[10] = is.readDWord();
+					MCPChunk2[11] = is.readDWord();
+					String uniqueName = is.readNTString();
+					dispatchLogonRealmEx(MCPChunk1, ip, port, MCPChunk2, uniqueName);
+				}
+
+				break;
+			}
+
+			/*
+			 * .-----------.
+			 * |  Profile  |
+			 * '-----------'
+			 */
+
+			case SID_READUSERDATA: {
+				/*
+				 * (DWORD) Number of accounts
+				 * (DWORD) Number of keys
+				 * (DWORD) Request ID
+				 * (STRING[]) Requested Key Values
+				 */
+				int numAccounts = is.readDWord();
+				int numKeys = is.readDWord();
+				@SuppressWarnings("unchecked")
+				List<Object> keys = (List<Object>)CookieUtility.destroyCookie(is.readDWord());
+
+				if(numAccounts != 1)
+					throw new IllegalStateException("SID_READUSERDATA with numAccounts != 1");
+
+				UserProfile up = new UserProfile((String)keys.remove(0));
+				dispatchRecieveInfo("Profile for " + up.getUser());
+				for(int i = 0; i < numKeys; i++) {
+					String key = (String)keys.get(i);
+					String value = is.readNTStringUTF8();
+					if((key == null) || (key.length() == 0))
+						continue;
+					value = prettyProfileValue(key, value);
+
+					if(value.length() != 0) {
+						dispatchRecieveInfo(key + " = " + value);
+					} else if(
+						key.equals(UserProfile.PROFILE_DESCRIPTION) ||
+						key.equals(UserProfile.PROFILE_LOCATION) ||
+						key.equals(UserProfile.PROFILE_SEX)) {
+						// Always report these keys
+					} else {
+						continue;
+					}
+					up.put(key, value);
+				}
+
+				// FIXME this should be a dispatch
+				if(PluginManager.getEnableGui())
+					new ProfileEditor(up, this);
+				break;
+			}
+
+			/*
+			 * .-----------.
+			 * |  Friends  |
+			 * '-----------'
+			 */
+
+			case SID_FRIENDSLIST: {
+				/*
+				 * (BYTE) Number of Entries
+				 *
+				 * For each member:
+				 * (STRING) Account
+				 * (BYTE) Status
+				 * (BYTE) Location
+				 * (DWORD) ProductID
+				 * (STRING) Location name
+				 */
+				byte numEntries = is.readByte();
+				FriendEntry[] entries = new FriendEntry[numEntries];
+
+				for(int i = 0; i < numEntries; i++) {
+					String uAccount = is.readNTString();
+					byte uStatus = is.readByte();
+					byte uLocation = is.readByte();
+					int uProduct = is.readDWord();
+					String uLocationName = is.readNTStringUTF8();
+
+					entries[i] = new FriendEntry(uAccount, uStatus, uLocation, uProduct, uLocationName);
+				}
+
+				dispatchFriendsList(entries);
+				break;
+			}
+
+			case SID_FRIENDSUPDATE: {
+				/*
+				 * (BYTE) Entry number
+				 * (BYTE) Friend Location
+				 * (BYTE) Friend Status
+				 * (DWORD) ProductID
+				 * (STRING) Location
+				 */
+				byte fEntry = is.readByte();
+				byte fLocation = is.readByte();
+				byte fStatus = is.readByte();
+				int fProduct = is.readDWord();
+				String fLocationName = is.readNTStringUTF8();
+
+				dispatchFriendsUpdate(new FriendEntry(fEntry, fStatus, fLocation, fProduct, fLocationName));
+				break;
+			}
+
+			case SID_FRIENDSADD: {
+				/*
+				 * (STRING) Account
+				 * (BYTE) Friend Type
+				 * (BYTE) Friend Status
+				 * (DWORD) ProductID
+				 * (STRING) Location
+				 */
+				String fAccount = is.readNTString();
+				byte fLocation = is.readByte();
+				byte fStatus = is.readByte();
+				int fProduct = is.readDWord();
+				String fLocationName = is.readNTStringUTF8();
+
+				dispatchFriendsAdd(new FriendEntry(fAccount, fStatus, fLocation, fProduct, fLocationName));
+				break;
+			}
+
+			case SID_FRIENDSREMOVE: {
+				/*
+				 * (BYTE) Entry Number
+				 */
+				byte entry = is.readByte();
+
+				dispatchFriendsRemove(entry);
+				break;
+			}
+
+			case SID_FRIENDSPOSITION: {
+				/*
+				 * (BYTE) Old Position
+				 * (BYTE) New Position
+				 */
+				byte oldPosition = is.readByte();
+				byte newPosition = is.readByte();
+
+				dispatchFriendsPosition(oldPosition, newPosition);
+				break;
+			}
+
+			/*
+			 * .--------.
+			 * |  Clan  |
+			 * '--------'
+			 */
+
+			case SID_CLANINFO: {
+				recvClanInfo(is);
+				break;
+			}
+
+			case SID_CLANFINDCANDIDATES: {
+				Object cookie = CookieUtility.destroyCookie(is.readDWord());
+				byte status = is.readByte();
+				byte numCandidates = is.readByte();
+				List<String> candidates = new ArrayList<String>(numCandidates);
+				for(int i = 0 ; i < numCandidates; i++)
+					candidates.add(is.readNTString());
+
+				switch(status) {
+				case 0x00:
+					if(numCandidates < 9)
+						dispatchRecieveError("Insufficient elegible W3 players (" + numCandidates + "/9).");
+					else
+						dispatchClanFindCandidates(cookie, candidates);
+					break;
+				case 0x01:
+					dispatchRecieveError("Clan tag already taken");
+					break;
+				case 0x08:
+					dispatchRecieveError("Already in a clan");
+					break;
+				case 0x0a:
+					dispatchRecieveError("Invalid clan tag");
+					break;
+				default:
+					dispatchRecieveError("Unknown response 0x" + Integer.toHexString(status));
+					break;
+				}
+				break;
+			}
+			// SID_CLANINVITEMULTIPLE
+			case SID_CLANCREATIONINVITATION: {
+				int cookie = is.readDWord();
+				int clanTag = is.readDWord();
+				String clanName = is.readNTString();
+				String inviter = is.readNTString();
+
+				ClanCreationInvitationCookie c = new ClanCreationInvitationCookie(this, cookie, clanTag, clanName, inviter);
+				dispatchClanCreationInvitation(c);
+				break;
+			}
+			// SID_CLANDISBAND
+			// SID_CLANMAKECHIEFTAIN
+
+			// SID_CLANQUITNOTIFY
+			case SID_CLANINVITATION: {
+				Object cookie = CookieUtility.destroyCookie(is.readDWord());
+				byte status = is.readByte();
+
+				String result;
+				switch(status) {
+				case 0x00:
+					result = "Invitation accepted";
+					break;
+				case 0x04:
+					result = "Invitation declined";
+					break;
+				case 0x05:
+					result = "Failed to invite user";
+					break;
+				case 0x09:
+					result = "Clan is full";
+					break;
+				default:
+					result = "Unknown response 0x" + Integer.toHexString(status);
+					break;
+				}
+
+				if(cookie instanceof CommandResponseCookie)
+					((CommandResponseCookie)cookie).sendChat(result);
+				else
+					Out.info(getClass(), result);
+
+				break;
+			}
+
+			// SID_CLANREMOVEMEMBER
+
+			case SID_CLANINVITATIONRESPONSE: {
+				/*
+				 * (DWORD) Cookie
+				 * (DWORD) Clan tag
+				 * (STRING) Clan name
+				 * (STRING) Inviter
+				 */
+				int cookie = is.readDWord();
+				int clanTag = is.readDWord();
+				String clanName = is.readNTString();
+				String inviter = is.readNTString();
+
+				ClanInvitationCookie c = new ClanInvitationCookie(this, cookie, clanTag, clanName, inviter);
+				dispatchClanInvitation(c);
+				break;
+			}
+
+			case SID_CLANRANKCHANGE: {
+				int cookie = is.readDWord();
+				byte status = is.readByte();
+
+				Object obj = CookieUtility.destroyCookie(cookie);
+				String statusCode = null;
+				switch(status) {
+				case ClanStatusIDs.CLANSTATUS_SUCCESS:
+					statusCode = "Successfully changed rank";
+					break;
+				case 0x01:
+					statusCode = "Failed to change rank";
+					break;
+				case ClanStatusIDs.CLANSTATUS_TOO_SOON:
+					statusCode = "Cannot change user'socket rank yet";
+					break;
+				case ClanStatusIDs.CLANSTATUS_NOT_AUTHORIZED:
+					statusCode = "Not authorized to change user rank*";
+					break;
+				case 0x08:
+					statusCode = "Not allowed to change user rank**";
+					break;
+				default:	statusCode = "Unknown ClanStatusID 0x" + Integer.toHexString(status);
+				}
+
+				dispatchRecieveInfo(statusCode + "\n" + obj.toString());
+				// TODO: clanRankChange(obj, status)
+
+				break;
+			}
+
+			case SID_CLANMOTD: {
+				/*
+				 * (DWORD) Cookie
+				 * (DWORD) Unknown (0)
+				 * (STRING) MOTD
+				 */
+				int cookieId = is.readDWord();
+				is.readDWord();
+				String text = is.readNTStringUTF8();
+
+				Object cookie = CookieUtility.destroyCookie(cookieId);
+				dispatchClanMOTD(cookie, text);
+				break;
+			}
+
+			case SID_CLANMEMBERLIST: {
+				/*
+				 * (DWORD) Cookie
+				 * (BYTE) Number of Members
+				 *
+				 * For each member:
+				 * (STRING) Username
+				 * (BYTE) Rank
+				 * (BYTE) Online Status
+				 * (STRING) Location
+				 */
+				is.readDWord();
+				byte numMembers = is.readByte();
+				ClanMember[] members = new ClanMember[numMembers];
+
+				for(int i = 0; i < numMembers; i++) {
+					String uName = is.readNTString();
+					byte uRank = is.readByte();
+					byte uOnline = is.readByte();
+					String uLocation = is.readNTStringUTF8();
+
+					members[i] = new ClanMember(uName, uRank, uOnline, uLocation);
+				}
+
+				dispatchClanMemberList(members);
+				break;
+			}
+
+			case SID_CLANMEMBERREMOVED: {
+				/*
+				 * (STRING) Username
+				 */
+				String username = is.readNTString();
+				dispatchClanMemberRemoved(username);
+				break;
+			}
+
+			case SID_CLANMEMBERSTATUSCHANGE: {
+				/*
+				 * (STRING) Username
+				 * (BYTE) Rank
+				 * (BYTE) Status
+				 * (STRING) Location
+				 */
+				String username = is.readNTString();
+				byte rank = is.readByte();
+				byte status = is.readByte();
+				String location = is.readNTStringUTF8();
+
+				dispatchClanMemberStatusChange(new ClanMember(username, rank, status, location));
+				break;
+			}
+
+			case SID_CLANMEMBERRANKCHANGE: {
+				/*
+				 * (BYTE) Old rank
+				 * (BYTE) New rank
+				 * (STRING) Clan member who changed your rank
+				 */
+				byte oldRank = is.readByte();
+				byte newRank = is.readByte();
+				String user = is.readNTString();
+				dispatchRecieveInfo("Rank changed from " + ClanRankIDs.ClanRank[oldRank] + " to " + ClanRankIDs.ClanRank[newRank] + " by " + user);
+				dispatchClanMemberRankChange(oldRank, newRank, user);
+				break;
+			}
+
+			// TODO: SID_CLANMEMBERINFORMATION
+
+			case SID_WARDEN: {
+				recieveWarden(is);
+				break;
+			}
+
+			default:
+				Out.debugAlways(getClass(), "Unexpected packet " + pr.packetId.name() + "\n" + HexDump.hexDump(pr.data));
+				break;
 			}
 		}
 	}

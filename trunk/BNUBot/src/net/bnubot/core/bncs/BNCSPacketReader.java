@@ -21,11 +21,6 @@ public class BNCSPacketReader extends _PacketReader<BNCSPacketId> {
 
 	@Override
 	protected void parse(BNetInputStream is) throws IOException {
-		byte magic;
-		do {
-			magic = is.readByte();
-		} while(magic != (byte)0xFF);
-
 		packetId = BNCSPacketId.values()[is.readByte() & 0x000000FF];
 		packetLength = is.readWord() & 0x0000FFFF;
 		assert(packetLength >= 4);
