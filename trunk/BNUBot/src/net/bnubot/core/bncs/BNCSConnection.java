@@ -282,6 +282,9 @@ public class BNCSConnection extends Connection {
 			} catch(SocketTimeoutException e) {
 				// Socket timeout is normal; we just need to wait for more data
 				continue;
+			} catch(SocketException e) {
+				// Connection closed
+				break;
 			}
 
 			BNetInputStream is = pr.getData();
@@ -1044,6 +1047,9 @@ public class BNCSConnection extends Connection {
 			} catch(SocketTimeoutException e) {
 				// Socket timeout is normal; we just need to wait for more data
 				continue;
+			} catch(SocketException e) {
+				// Connection closed
+				break;
 			}
 
 			BNetInputStream is = pr.getData();
