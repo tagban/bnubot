@@ -254,11 +254,14 @@ public abstract class Connection extends Thread implements OutputHandler {
 
 			clearTasks();
 
+			// Make sure we don't hang around in a connected state; if we're already in a disconnected state, this has no effect
 			disconnect(ConnectionState.ALLOW_CONNECT);
-			try {
-				// Wait at least five seconds before reconnecting
-				sleep(5000);
-			} catch (Exception e) {}
+			if(connectionState == ConnectionState.ALLOW_CONNECT) {
+				try {
+					// Disconnect which did not cause an error; wait a minimum of five seconds before reconnecting
+					sleep(5000);
+				} catch (Exception e) {}
+			}
 		}
 
 		clearTasks();
@@ -553,7 +556,7 @@ public abstract class Connection extends Thread implements OutputHandler {
 			// Allow change to any state when in a connected state
 			break;
 		default:
-			// Already disconnected
+			// Already disconnected; only accept FORCE_CONNECT (user-initiated)
 			switch(newState) {
 			case ALLOW_CONNECT:
 			case LONG_PAUSE_BEFORE_CONNECT:
