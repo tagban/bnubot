@@ -12,7 +12,7 @@ import org.apache.cayenne.CayenneDataObject;
  * @param <S> The type used in {@link #toSortField()}
  */
 @SuppressWarnings("serial")
-public abstract class CustomDataObject<S extends Comparable<S>> extends CayenneDataObject implements Comparable<CustomDataObject<S>> {
+public abstract class CustomDataObject<S extends Comparable<? super S>> extends CayenneDataObject implements Comparable<CustomDataObject<S>> {
 	/**
 	 * Try to save changes to this object
 	 * @throws Exception If a commit error occurs
