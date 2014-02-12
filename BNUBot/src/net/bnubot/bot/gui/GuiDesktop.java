@@ -349,7 +349,7 @@ public class GuiDesktop extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				try {
-					new DatabaseEditor(clazz);
+					new DatabaseEditor<T,S>(clazz);
 				} catch(Exception e) {
 					Out.exception(e);
 				}
