@@ -174,14 +174,15 @@ public abstract class Connection extends Thread implements OutputHandler {
 				myUser = null;
 				dispatchTitleChanged();
 
-				if(!connectionState.canConnect(0))
+				if(!connectionState.canConnect(0)) {
 					Out.debug(getClass(), "Pausing to meet connection criteria for " + connectionState.toString());
 
-				// Wait until we're supposed to connect
-				long waitStartTime = System.currentTimeMillis();
-				while(!connectionState.canConnect(System.currentTimeMillis() - waitStartTime)) {
-					yield();
-					sleep(200);
+					// Wait until we're supposed to connect
+					long waitStartTime = System.currentTimeMillis();
+					while(!connectionState.canConnect(System.currentTimeMillis() - waitStartTime)) {
+						yield();
+						sleep(200);
+					}
 				}
 
 				connectionState = ConnectionState.CONNECTING;
@@ -234,7 +235,16 @@ public abstract class Connection extends Thread implements OutputHandler {
 				if(loggedIn)
 					connectedLoop();
 
-				// Connection closed
+				// Connection closed gracefully
+				clearTasks();
+				// If we're already in a disconnected state, disconnect() has no effect
+				disconnect(ConnectionState.ALLOW_CONNECT);
+				if(connectionState == ConnectionState.ALLOW_CONNECT) {
+					// Disconnect which did not cause an error; wait a minimum of five seconds before reconnecting
+					try {
+						sleep(5000);
+					} catch (Exception e) {}
+				}
 			} catch(OperationCancelledException e) {
 				// Dispose the connection
 				disposed = true;
@@ -250,17 +260,6 @@ public abstract class Connection extends Thread implements OutputHandler {
 				e.printStackTrace();
 				Out.exception(e);
 				disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
-			}
-
-			clearTasks();
-
-			// Make sure we don't hang around in a connected state; if we're already in a disconnected state, this has no effect
-			disconnect(ConnectionState.ALLOW_CONNECT);
-			if(connectionState == ConnectionState.ALLOW_CONNECT) {
-				try {
-					// Disconnect which did not cause an error; wait a minimum of five seconds before reconnecting
-					sleep(5000);
-				} catch (Exception e) {}
 			}
 		}
 
