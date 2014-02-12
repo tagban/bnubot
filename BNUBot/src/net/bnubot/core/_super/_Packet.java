@@ -46,16 +46,7 @@ public abstract class _Packet<C extends Connection, P extends _PacketId<C>> exte
 			}
 		}
 
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		BNetOutputStream sckout = new BNetOutputStream(baos);
-
-		try {
-			buildPacket(packetId, data, sckout);
-		} catch(IOException e) {
-			Out.fatalException(e);
-		}
-
-		data = baos.toByteArray();
+		data = buildPacket(packetId, data);
 
 		if(GlobalSettings.packetLog) {
 			String msg = "SEND " + packetId.name();
@@ -72,5 +63,5 @@ public abstract class _Packet<C extends Connection, P extends _PacketId<C>> exte
 		}
 	}
 
-	protected abstract void buildPacket(P packetId, byte[] data, BNetOutputStream sckout) throws IOException;
+	protected abstract byte[] buildPacket(P packetId, byte[] data);
 }

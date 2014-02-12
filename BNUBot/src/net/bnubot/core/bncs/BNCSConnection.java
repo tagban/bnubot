@@ -284,6 +284,8 @@ public class BNCSConnection extends Connection {
 				continue;
 			} catch(SocketException e) {
 				// Connection closed
+				e.printStackTrace();
+				disconnect(ConnectionState.LONG_PAUSE_BEFORE_CONNECT);
 				break;
 			}
 
