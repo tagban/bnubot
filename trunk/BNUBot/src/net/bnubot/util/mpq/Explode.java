@@ -9,7 +9,7 @@ import java.nio.ByteBuffer;
 
 /**
  * Implementation of the pkware EXPLODE algorithm.
- * Copyright (C) 2008 volcore.net, Volker Schönefeld.  All rights reserved.
+ * Copyright (C) 2008 volcore.net, Volker SchÃ¶nefeld.  All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -30,7 +30,7 @@ import java.nio.ByteBuffer;
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
- * @author Volker Schönefeld
+ * @author Volker SchÃ¶nefeld
  */
 public class Explode
 {
